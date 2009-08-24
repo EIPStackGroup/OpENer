@@ -1,0 +1,15 @@
+This file serves as brainstorming buffer for ideas to improve and enhance OpENer:
+
+* New Features:
+  - Change of State and application triggered connections
+  - Implementation of common CIP-objects
+  - CIP-Sync
+  - CIP-Motion
+
+
+* Improvements and Optimizations
+  - Remove the need for the response buffer in the explicit message handling (zero copy stack)
+  - Rework I/O message handling:
+     - own buffers for each connection that are preconfigured and only runtime data needs to be changed.
+     - Use only one single outgoing UDP socket for I/O messages    
+          

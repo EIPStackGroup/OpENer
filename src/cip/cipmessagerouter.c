@@ -1,0 +1,305 @@
+/*******************************************************************************
+ * Copyright (c) 2009, Rockwell Automation, Inc.
+ * All rights reserved. 
+ *
+ * Contributors:
+ *     <date>: <author>, <author email> - changes
+ ******************************************************************************/
+#include <stdio.h>
+#include <assert.h>
+
+#include "opener_api.h"
+#include "cipcommon.h"
+#include "cipmessagerouter.h"
+#include "endianconv.h"
+#include "ciperror.h"
+
+S_CIP_MR_Request gMRRequest;
+S_CIP_MR_Response gMRResponse;
+
+/*! a class registry list node
+ * a linked list of this  object is the registry of classes known to the message router
+ * for small devices with very limited memory it could make sense to cange this list into an
+ * array with a given max size for removing the need for having to dynamically allocate 
+ * memory. The size of the array could be a paramter in the platform config file.
+ */
+typedef struct CIP_MR_Object
+  {
+    struct CIP_MR_Object *next; // link
+    S_CIP_Class *pt2Class; // object
+  } S_CIP_MR_Object;
+
+/* pointer to first registered object in MessageRouter*/
+S_CIP_MR_Object *g_pt2firstObject = 0;
+  
+/*! Register an Class to the message router
+ *  @param pa_pt2Class     pointer to a class object to be registered.
+ *  @return status      0 .. success
+ *                     -1 .. error no memory available to register more objects
+ */
+EIP_STATUS registerClass(S_CIP_Class * pa_pt2Class);     
+  
+/*!  Create MRRequest structure out of the recieved data.
+ * 
+ * Parses the UCMM header consisting of: service, IOI size, IOI, data into a request structure
+ * @param pa_pnData    pointer to the message data recieved
+ * @param pa_nLength   number of bytes in the message
+ * @param pa_pstMRReqdata   pointer to structure of MRRequest data item.
+ * @return status  0 .. success
+ *                 -1 .. error
+ */
+EIP_BYTE createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength, S_CIP_MR_Request * pa_pstMRReqdata);
+
+
+
+EIP_STATUS CIP_MessageRouter_Init()
+  {
+    // init the list of available objects 
+    g_pt2firstObject = 0;
+
+    S_CIP_Class *pstMessageRouter;
+
+    pstMessageRouter = createCIPClass(CIP_MESSAGE_ROUTER_CLASS_CODE, // class ID
+        0, // # of class attributes
+        0xffffffff, // class getAttributeAll mask
+        0, // # of class services
+        0, // # of instance attributes
+        0xffffffff, // instance getAttributeAll mask
+        0, // # of instance services
+        1, // # of instances
+        "message router", // class name
+        1); // revision
+    if (pstMessageRouter==0)
+      return EIP_ERROR;
+
+    /* reserved for future use -> set to zero */
+    gMRResponse.Reserved = 0;
+    return EIP_OK;
+  }
+
+/*! get the registered MessageRouter object corresponding to ClassID.
+ *  given a class ID, return a pointer to the registration node for that object
+ *  @param pa_nClassID      ClassCode to be searched for.
+ *  @return pointer to registered MR object
+ *      0 .. Class not registered
+ */
+S_CIP_MR_Object *getRegisteredObject(EIP_UINT32 pa_nClassID)
+  {
+    S_CIP_MR_Object *p = g_pt2firstObject; // get pointer to head of class registration list
+
+    while (p) // for each entry in list
+      {
+        assert(p->pt2Class!=0);
+        if (p->pt2Class->nClassID == pa_nClassID)
+          return p; // return registration node if it matches class ID
+        p = p->next;
+      }
+    return 0;
+  }
+
+S_CIP_Class *getCIPClass(EIP_UINT32 pa_nClassID)
+  {
+    S_CIP_MR_Object *p = getRegisteredObject(pa_nClassID);
+
+    if (p)
+      return p->pt2Class;
+    else
+      return 0;
+  }
+
+S_CIP_Instance *getCIPInstance(S_CIP_Class * pa_pstClass,
+    EIP_UINT16 pa_nInstanceNr)
+  {
+    S_CIP_Instance *p; // pointer to linked list of instances from the class object
+
+    if (pa_nInstanceNr==0)
+      return (S_CIP_Instance *)pa_pstClass; // if the instance number is zero, return the class object itself
+
+    for (p = pa_pstClass->pstInstances; p; p = p->pstNext) // follow the list
+      {
+        if (p->nInstanceNr == pa_nInstanceNr)
+          return p; // if the number matches, return the instance
+      }
+
+    return 0;
+  }
+
+EIP_STATUS registerClass(S_CIP_Class * pa_pt2Class)     
+  {
+    S_CIP_MR_Object **p = &g_pt2firstObject;
+
+    while (*p)
+      p = &(*p)->next; // follow the list until p points to an empty link (list end)
+
+    *p = IApp_CipCalloc(1, sizeof(S_CIP_MR_Object)); // create a new node at the end of the list
+    if (*p == 0)
+      return EIP_ERROR; // check for memory error
+
+    (*p)->pt2Class = pa_pt2Class; // fill in the new node
+
+    return EIP_OK;
+  }
+
+int notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
+  {
+    EIP_BYTE nStatus;
+    if (EIP_DEBUG>=EIP_VERBOSE)
+      printf("notifyMR: routing unconnected message\n");
+    if (CIP_ERROR_SUCCESS != (nStatus = createMRRequeststructure(pa_pnData,
+            pa_nDataLength, &gMRRequest)))
+      { // error from create MR structure
+        if (EIP_DEBUG>=EIP_TERSE)
+          printf("notifyMR: error from createMRRequeststructure\n");
+        gMRResponse.GeneralStatus = nStatus;
+        gMRResponse.SizeofAdditionalStatus = 0;
+        gMRResponse.Reserved = 0;
+        gMRResponse.DataLength = 0;
+        gMRResponse.ReplyService = (0x80 | gMRRequest.Service);
+        return 0;
+      }
+    else
+      {
+        // forward request to appropriate Object if it is registered
+        S_CIP_MR_Object *pt2regObject;
+
+        pt2regObject = getRegisteredObject(gMRRequest.RequestPath.ClassID);
+        if (pt2regObject == 0)
+          {
+            if (EIP_DEBUG>=EIP_TERSE)
+              printf(
+                  "notifyMR: sending CIP_ERROR_OBJECT_DOES_NOT_EXIST reply, class id 0x%x is not registered\n",
+                  (unsigned)gMRRequest.RequestPath.ClassID);
+            gMRResponse.GeneralStatus = CIP_ERROR_PATH_DESTINATION_UNKNOWN; //according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;
+            gMRResponse.SizeofAdditionalStatus = 0;
+            gMRResponse.Reserved = 0;
+            gMRResponse.DataLength = 0;
+            gMRResponse.ReplyService = (0x80 | gMRRequest.Service);
+            return 0;
+          }
+        else
+          {
+            // call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
+            // object will or will not make an reply into gMRResponse
+            EIP_STATUS status;
+
+            gMRResponse.Reserved = 0;
+            assert(pt2regObject->pt2Class);
+            if (EIP_DEBUG>=EIP_VERBOSE)
+              printf("notifyMR: calling notify function of class '%s'\n",
+                  pt2regObject->pt2Class->acName);
+            status = notifyClass(pt2regObject->pt2Class, &gMRRequest,
+                &gMRResponse);
+
+            if (EIP_DEBUG<EIP_VERBOSE)
+              {
+              }
+            else if (status == -1)
+              printf(
+                  "notifyMR: notify function of class '%s' returned an error\n",
+                  pt2regObject->pt2Class->acName);
+            else if (status == 0)
+              printf(
+                  "notifyMR: notify function of class '%s' returned no reply\n",
+                  pt2regObject->pt2Class->acName);
+            else
+              printf(
+                  "notifyMR: notify function of class '%s' returned a reply\n",
+                  pt2regObject->pt2Class->acName);
+            return status;
+          }
+      }
+  }
+
+EIP_BYTE createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength, S_CIP_MR_Request * pa_pstMRReqdata)
+  {
+    int i;
+
+    pa_pstMRReqdata->Service = *pa_pnData;
+    pa_pnData++;
+    pa_pstMRReqdata->RequestPath.PathSize = *pa_pnData;
+    pa_pnData++;
+    /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribut, need to be replaced with function */
+    pa_pstMRReqdata->RequestPath.ClassID = 0;
+    pa_pstMRReqdata->RequestPath.InstanceNr = 0;
+    pa_pstMRReqdata->RequestPath.AttributNr = 0;
+
+    for(i = 0; i < pa_pstMRReqdata->RequestPath.PathSize; i++)
+      {
+        if(0xE0 == ((*pa_pnData) & 0xE0))
+          {
+            //Invalid segment type
+            return CIP_ERROR_PATH_SEGMENT_ERROR;
+          }
+        switch (*pa_pnData)
+          {
+            case 0x20: /* classID */
+            pa_pstMRReqdata->RequestPath.ClassID = *(EIP_UINT8 *) (pa_pnData + 1);
+            pa_pnData += 2;
+            break;
+
+            case 0x21: /*classID 16Bit */
+            pa_pnData += 2;
+            pa_pstMRReqdata->RequestPath.ClassID = ltohs(&(pa_pnData));
+            i++;
+            break;
+
+            case 0x24: /* InstanceNr */
+            pa_pstMRReqdata->RequestPath.InstanceNr = *(EIP_UINT8 *) (pa_pnData + 1);
+            pa_pnData += 2;
+            break;
+
+            case 0x25: /* InstanceNr 16Bit */
+            pa_pnData += 2;
+            pa_pstMRReqdata->RequestPath.InstanceNr = ltohs(&(pa_pnData));
+            i++;
+            break;
+
+            case 0x30: /* AttributeNr */
+            pa_pstMRReqdata->RequestPath.AttributNr = *(EIP_UINT8 *) (pa_pnData + 1);
+            pa_pnData += 2;
+            break;
+
+            case 0x31: /* AttributeNr 16Bit */
+            pa_pnData += 2;
+            pa_pstMRReqdata->RequestPath.AttributNr = ltohs(&(pa_pnData));
+            i++;
+
+            default:
+//              if(0 == ((*pa_pnData) & 0xE0))
+//                {
+//                  // we recieved a port segment we will ignor this currently as we have no bridging devices
+//                  // the test is sending us port semgents normaly we should not get them
+//                  printf("Warning: port segment recieved will be ignored!\n");
+//                  if(0x10 == ((*pa_pnData) & 0x10))
+//                    {
+//                      // we have an extended port segemnt pa_pnData + 1 will have the size
+//                      buf = *(EIP_UINT8 *) (pa_pnData + 1);
+//                      i += buf / 2;
+//                      pa_pnData += buf;
+//                      if(buf & 0x01)
+//                      {
+//                        //we have an odd numer so there is an padd byte;
+//                        ++i;
+//                        ++pa_pnData;
+//                      }
+//                      
+//                    }
+//                  pa_pnData += 2;                 
+//                }
+//              else
+//                {
+                  printf("wrong path requested\n");
+                  return CIP_ERROR_PATH_SEGMENT_ERROR;
+//                }
+              break;
+          }
+      }
+
+    pa_pstMRReqdata->Data = pa_pnData;
+    pa_pstMRReqdata->DataLength = pa_nLength - ((pa_pstMRReqdata->RequestPath.PathSize)
+        * 2 + 2);
+    if (pa_pstMRReqdata->DataLength < 0)
+    return CIP_ERROR_PATH_SIZE_INVALID;
+    else
+    return CIP_ERROR_SUCCESS;
+  }

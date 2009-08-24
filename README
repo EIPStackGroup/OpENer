@@ -1,0 +1,53 @@
+==================
+OpENer Version 1.0
+==================
+
+Welcome to OpENer!
+
+OpENer is an EtherNet/IP(TM) stack for I/O adapter devices; supports multiple 
+I/O and explicit connections; includes objects and services to make EtherNet/IP-
+compliant products defined in THE ETHERNET/IP SPECIFICATION and published by 
+ODVA (www.odva.org).
+
+Requirements:
+=============
+OpENer has been developed to be highly portable. The default version targets PCs
+with a POSIX operating system and a BSD-socket network interface. To test this 
+version we recommend a Linux PC or Windows with Cygwin (www.cygwin.com) 
+installed. You will need to have the following installed:
+
+ gcc, make, binutils, etc. 
+ 
+for normal building. These should be installed on most Linux installations and
+are part of the development packages of cygwin.
+
+For the development itself we recommend the use of Eclipse with the CTD plugin 
+(www.eclipse.org).
+
+Compile for PCs:
+================
+  1. Directly in the shell:
+     1.1 Go into the bin/pc directory
+     1.2 Invoke make
+     1.3 For invoking opener type:
+          ./opener.exe ipaddress subnetmask gateway domainname hostaddress macaddress
+         e.g. ./opener.exe 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
+  2. Within Eclipse 
+     2.1 Import the project
+     2.2 Go to the bin/pc folder in the make targets view
+     2.3 Choose all from the make targets
+     2.4 The resulting executable will be in the directory
+        ./bin/pc
+
+Documentation:
+==============
+The documentation of the functions of OpENer is part of the source code. You 
+will need the program Doxygen for generating the HTML documentation.
+
+Porting OpENer:
+===============
+For porting OpENer to new platforms please see the porting section in the 
+Doxygen documentation.  
+
+
+
