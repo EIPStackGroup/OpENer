@@ -10,6 +10,11 @@
 
 #include "typedefs.h"
 
+
+/**  \defgroup ENCAP OpENer Ethernet encapsulation layer
+ * The Ethernet encapsulation layer handles provides the abstraction between the Ethernet and the CIP layer.
+ */
+
 /*** defines ***/
 
 #define ENCAPSULATION_HEADER_LENGTH 24
@@ -39,10 +44,15 @@ struct S_Encapsulation_Interface_Information
   };
 
 /*** global variables (public) ***/
-extern EIP_UINT8 g_acCommBuf[];   //!<Buffer to be used for communication data (in/out), has to be provided by the platform specific code.
+/*! \ingroup ENCAP 
+ * Buffer to be used for communication data (in/out), has to be provided by the platform specific code.
+ */
+extern EIP_UINT8 g_acCommBuf[];
 
 /*** public functions ***/
+/*! \ingroup ENCAP 
+ * \brief Initialize the encapsulationlayer.
+ */
 void encapInit(void);
-void closeSession(int pa_nSocket); //!<The remote host closed the connection. Clean up and close the session
 
 #endif /*ENCAP_H_*/

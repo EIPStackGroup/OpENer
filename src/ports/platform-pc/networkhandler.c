@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/time.h>
 
 #include <opener_api.h>
 #include "networkhandler.h"

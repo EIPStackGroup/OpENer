@@ -221,6 +221,14 @@ EIP_STATUS handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength)
  */
 EIP_STATUS manageConnections(void); 
 
+/*! \ingroup CIP_API
+ * Inform the encapsulation layer that the remote host has closed the connection.
+ * According to the specs that will clean up and close the session in the encapsulation layer.
+ * @param pa_nSocket the handler to the socket of the closed connection
+ */
+void closeSession(int pa_nSocket);
+
+
 /**  \defgroup CIP_CALLBACK_API Callback function demanded by the CIP Stack
  * \ingroup CIP_API
  * 

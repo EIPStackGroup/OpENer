@@ -70,22 +70,53 @@ typedef struct
     S_SockAddrInfo_Item AddrInfo[2];
   } S_CIP_CPF_Data;
 
-int notifyCPF(EIP_UINT8 * pa_nData, // message data
-    EIP_INT16 pa_nData_length, // data length
-    EIP_UINT8 * pa_replybuf); // reply buffer
+/*! \ingroup ENCAP
+ * Parse the CPF data from a recieved unconnected ecplicit message and 
+ * hand the data on to the message router 
+ *
+ * @param  pa_nData message data
+ * @param  pa_nData_length data length
+ * @param  pa_replybuf reply buffer
+ */
+int notifyCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_replybuf); 
 
+/*! \ingroup ENCAP
+ * Parse the CPF data from a recieved connected ecplicit message, check
+ * the connection status, update any timers, and hand the data on to 
+ * the message router 
+ *
+ * @param  pa_nData message data
+ * @param  pa_nData_length data length
+ * @param  pa_replybuf reply buffer
+ */
 int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
     EIP_INT16 pa_nData_length, // data length
     EIP_UINT8 * pa_replybuf); // reply buffer
 
+/*! \ingroup ENCAP
+ *  Create CPF structure out of the recieved data.
+ *  @param  pa_Data		pointer to data which need to be structured.
+ *  @param  pa_DataLength	length of data in pa_Data.
+ *  @param  pa_CPF_data	pointer to structure of CPF data item.
+ *  @return status
+ * 	       EIP_OK .. success
+ * 	       EIP_ERROR .. error
+ */
+EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength, S_CIP_CPF_Data * pa_CPF_data);
 
-EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
-    S_CIP_CPF_Data * pa_CPF_data);
-
+/*! \ingroup ENCAP
+ * Copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
+ * @param  pa_MRResponse	pointer to message router response which has to be alligned into linear memory.
+ * @param  pa_CPFDataItem	pointer to CPF stucture which has to be alligned into linear memory.
+ * @param  pa_msg		pointer to linear memory.
+ * @return length of reply in pa_msg in bytes
+ * 	   EIP_ERROR .. error
+ */
 int assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
     S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg);
 
-/*!Data storage for the any cpf data
+/*!\ingroup ENCAP 
+ * \brief Data storage for the any cpf data
  * Currently we are single threaded and need only one cpf at the time.
  * For future extensions towards multithreading maybe more cpf data items may be necessary
  */
