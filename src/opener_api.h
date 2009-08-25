@@ -13,7 +13,7 @@
 #include "ciperror.h"
 #include <opener_user_conf.h>
 
-/*! \mainpage OpENer - Open Source EtherNet/IP(TM) I/O Target Stack Documentation
+/*! \mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack Documentation
  *
  * EtherNet/IP stack for adapter devices (connection target); supports multiple
  * I/O and explicit connections; includes features and objects required by the
@@ -24,8 +24,36 @@
  *
  * This is the introduction.
  *
- * \section install_sec Installation
+ * \section install_sec Building
  * How to compile, install and run OpENer on a specific platform.
+ * \subsection build_req_sec Requirements
+ * OpENer has been developed to be highly portable. The default version targets PCs
+ * with a POSIX operating system and a BSD-socket network interface. To test this
+ * version we recommend a Linux PC or Windows with Cygwin (www.cygwin.com)
+ * installed. You will need to have the following installed:
+ *   - gcc, make, binutils, etc.
+ * 
+ * for normal building. These should be installed on most Linux installations and
+ * are part of the development packages of cygwin.
+ * 
+ * For the development itself we recommend the use of Eclipse with the CTD plugin
+ * (www.eclipse.org). For your convinience OpENer already comes with an Eclipse
+ * project file. This allows to just import the OpENer source tree into Eclipse.
+ * 
+ * \subsection compile_pcs_sec Compile for PCs
+ *   -# Directly in the shell
+ *       -# Go into the bin/pc directory
+ *       -# Invoke make
+ *       -# For invoking opener type:\n
+ *          ./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n
+ *          e.g., ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
+ *   -# Within Eclipse
+ *       -# Import the project
+ *       -# Go to the bin/pc folder in the make targets view
+ *       -# Choose all from the make targets
+ *       -# The resulting executable will be in the directory
+ *           ./bin/pc
+ *       -# The commandline parameters can be set in the run configuration dialog of Eclipse
  * 
  * \section porting_sec Porting OpENer
  * 

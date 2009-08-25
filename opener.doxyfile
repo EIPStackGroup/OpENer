@@ -31,7 +31,7 @@ PROJECT_NAME = "OpENer - Open Source EtherNet/IP(TM)  I/O Target Stack"
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER = 1
+PROJECT_NUMBER = 1.0
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -268,7 +268,7 @@ TYPEDEF_HIDES_STRUCT = NO
 # Private class members and static file members will be hidden unless 
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
 
-EXTRACT_ALL = NO
+EXTRACT_ALL = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class 
 # will be included in the documentation.
