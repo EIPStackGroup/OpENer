@@ -13,55 +13,6 @@
 #include "ciperror.h"
 #include <opener_user_conf.h>
 
-/*! \mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack Documentation
- *
- * EtherNet/IP stack for adapter devices (connection target); supports multiple
- * I/O and explicit connections; includes features and objects required by the
- * CIP specification to enable devices to comply with ODVA's conformance/
- * interoperability tests.
- * 
- * \section intro_sec Introduction
- *
- * This is the introduction.
- *
- * \section install_sec Building
- * How to compile, install and run OpENer on a specific platform.
- * \subsection build_req_sec Requirements
- * OpENer has been developed to be highly portable. The default version targets PCs
- * with a POSIX operating system and a BSD-socket network interface. To test this
- * version we recommend a Linux PC or Windows with Cygwin (www.cygwin.com)
- * installed. You will need to have the following installed:
- *   - gcc, make, binutils, etc.
- * 
- * for normal building. These should be installed on most Linux installations and
- * are part of the development packages of cygwin.
- * 
- * For the development itself we recommend the use of Eclipse with the CTD plugin
- * (www.eclipse.org). For your convinience OpENer already comes with an Eclipse
- * project file. This allows to just import the OpENer source tree into Eclipse.
- * 
- * \subsection compile_pcs_sec Compile for PCs
- *   -# Directly in the shell
- *       -# Go into the bin/pc directory
- *       -# Invoke make
- *       -# For invoking opener type:\n
- *          ./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n
- *          e.g., ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
- *   -# Within Eclipse
- *       -# Import the project
- *       -# Go to the bin/pc folder in the make targets view
- *       -# Choose all from the make targets
- *       -# The resulting executable will be in the directory
- *           ./bin/pc
- *       -# The commandline parameters can be set in the run configuration dialog of Eclipse
- * 
- * \section porting_sec Porting OpENer
- * 
- * \section extetnding_sec Extending OpENer
- * 
- */  
-
-
 /**  \defgroup CIP_API OpENer User interface
  * \brief This is the public interface of the OpENer. It provides all function needed to implement an EtherNet/IP enabled slave-device.
  */
@@ -357,5 +308,72 @@ EIP_STATUS IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
  * @param pa_nSockFd socket descriptor to close
  */
 void IApp_CloseSocket(int pa_nSockFd);
+
+
+/*! \mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack Documentation
+ *
+ * EtherNet/IP stack for adapter devices (connection target); supports multiple
+ * I/O and explicit connections; includes features and objects required by the
+ * CIP specification to enable devices to comply with ODVA's conformance/
+ * interoperability tests.
+ * 
+ * \section intro_sec Introduction
+ *
+ * This is the introduction.
+ *
+ * \section install_sec Building
+ * How to compile, install and run OpENer on a specific platform.
+ * \subsection build_req_sec Requirements
+ * OpENer has been developed to be highly portable. The default version targets PCs
+ * with a POSIX operating system and a BSD-socket network interface. To test this
+ * version we recommend a Linux PC or Windows with Cygwin (www.cygwin.com)
+ * installed. You will need to have the following installed:
+ *   - gcc, make, binutils, etc.
+ * 
+ * for normal building. These should be installed on most Linux installations and
+ * are part of the development packages of cygwin.
+ * 
+ * For the development itself we recommend the use of Eclipse with the CTD plugin
+ * (www.eclipse.org). For your convinience OpENer already comes with an Eclipse
+ * project file. This allows to just import the OpENer source tree into Eclipse.
+ * 
+ * \subsection compile_pcs_sec Compile for PCs
+ *   -# Directly in the shell
+ *       -# Go into the bin/pc directory
+ *       -# Invoke make
+ *       -# For invoking opener type:\n
+ *          ./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n
+ *          e.g., ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
+ *   -# Within Eclipse
+ *       -# Import the project
+ *       -# Go to the bin/pc folder in the make targets view
+ *       -# Choose all from the make targets
+ *       -# The resulting executable will be in the directory
+ *           ./bin/pc
+ *       -# The commandline parameters can be set in the run configuration dialog of Eclipse
+ * 
+ * \section further_reading_sec Further Topics
+ *   - \ref porting
+ *   - \ref building_products
+ *   - \ref extending
+ *   - \ref license 
+ * 
+ * \page porting Porting OpENer
+ * 
+ * 
+ * \page building_products Using OpENer in Products
+ * 
+ * \page extending Extending OpENer
+ * 
+ * \page license OpENer Open Source License
+ * The OpENer Open Source License is an adapted BSD style license. The 
+ * adaptations include the use of the term EtherNet/IP(TM) and the necessary 
+ * guarding conditions for using OpENer in own products. For this please look 
+ * in \ref building_products and the license text as shown below:
+ * 
+ * \include "license.txt"  
+ * 
+ */  
+
 
 #endif /*CIP_API_H_*/
