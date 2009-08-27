@@ -11,16 +11,23 @@
 #include "cipcommon.h"
 #include "opener_api.h"
 
-EIP_STATUS CIP_Assembly_Init()
+
+S_CIP_Class *createAssemblyClass()
   { /* create the CIP Assembly object with zero instances */
     return createCIPClass(CIP_ASSEMBLY_CLASS_CODE, 0, // # class attributes
-        0xffffffff, // class getAttributeAll mask
-        0, // # class services
-        1, // # instance attributes
-        0xffffffff, // instance getAttributeAll mask
-        1, // # instance services
-        0, // # instances
-        "assembly", 1) ? EIP_OK : EIP_ERROR;
+            0xffffffff, // class getAttributeAll mask
+            0, // # class services
+            1, // # instance attributes
+            0xffffffff, // instance getAttributeAll mask
+            0, // # instance services
+            0, // # instances
+            "assembly", 1);
+  }
+
+
+EIP_STATUS CIP_Assembly_Init()
+  { /* create the CIP Assembly object with zero instances */
+    return createAssemblyClass() ? EIP_OK : EIP_ERROR;
   }
 
 S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
@@ -30,16 +37,9 @@ S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
     S_CIP_Instance *pstAssemblyInstance;
     S_CIP_Byte_Array *stAssemblyByteArray;
 
-    if ((pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE)) == 0)
+    if (0 == (pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE)))
       {
-        if ((pstAssemblyClass = createCIPClass(CIP_ASSEMBLY_CLASS_CODE, 0, // # class attributes
-            0xffffffff, // class getAttributeAll mask
-            0, // # class services
-            1, // # instance attributes
-            0xffffffff, // instance getAttributeAll mask
-            1, // # instance services
-            0, // # instances
-            "assembly", 1)) == 0)
+        if (0 == (pstAssemblyClass = createAssemblyClass()))
           {
             return 0;
           }

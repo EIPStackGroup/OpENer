@@ -15,11 +15,11 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactName="OpENer" buildProperties="" id="cdt.managedbuild.toolchain.gnu.cygwin.base.1026482511" name="Cygwin GCC" parent="org.eclipse.cdt.build.core.emptycfg">
+<configuration artifactName="OpENer" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.cygwin.base.1026482511" name="Cygwin GCC" parent="org.eclipse.cdt.build.core.emptycfg">
 <folderInfo id="cdt.managedbuild.toolchain.gnu.cygwin.base.1026482511.288016310" name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base.337077287" name="cdt.managedbuild.toolchain.gnu.cygwin.base" superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
 <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.Cygwin_PE" id="cdt.managedbuild.target.gnu.platform.cygwin.base.1379908666" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.cygwin.base"/>
-<builder id="cdt.managedbuild.target.gnu.builder.cygwin.base.448784399" managedBuildOn="false" name="Gnu Make Builder.Cygwin GCC" superClass="cdt.managedbuild.target.gnu.builder.cygwin.base"/>
+<builder autoBuildTarget="all" buildPath="${workspace_loc:/OpENer/bin/pc}" cleanBuildTarget="clean" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.cygwin.base.448784399" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.cygwin.base"/>
 <tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.base.148994494" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.base">
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.443881293" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
@@ -30,7 +30,12 @@
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.base.1767451638" name="Cygwin C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.base">
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.1879919928" superClass="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin"/>
 </tool>
-<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.base.1530826068" name="Cygwin C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.base"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.base.1530826068" name="Cygwin C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.base">
+<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.871558919" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+</inputType>
+</tool>
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.base.1901443871" name="Cygwin C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.base">
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.23921161" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
