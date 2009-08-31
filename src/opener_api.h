@@ -17,10 +17,11 @@
  * \brief This is the public interface of the OpENer. It provides all function needed to implement an EtherNet/IP enabled slave-device.
  */
 
-/*! \ingroup CIP_API \brief configure the data of the network interface of the device
+/*! \ingroup CIP_API 
+ * \brief Configure the data of the network interface of the device
  * 
  *  This function setup the data of the network interface needed by OpENer.
- *  The multicast address is automatically calculated fromt he given data.
+ *  The multicast address is automatically calculated from he given data.
  * 
  *  @param pa_acIpAdress    the current ip address of the device
  *  @param pa_acSubNetMask  the subnetmask to be used
@@ -30,28 +31,33 @@
 EIP_STATUS configureNetworkInterface(const char *pa_acIpAdress,
     const char *pa_acSubNetMask, const char *pa_acGateway);
 
-/*! \ingroup CIP_API \brief configure the MAC address of the device
+/*! \ingroup CIP_API 
+ * \brief Configure the MAC address of the device
  * 
  *  @param pa_acMACAddress  the hardware MAC address of the network interface
  */
 void configureMACAddress(const EIP_UINT8 *pa_acMACAddress);
 
-/*! \ingroup CIP_API \brief configure the domain name of the device
+/*! \ingroup CIP_API 
+ * \brief Configure the domain name of the device
  *  @param pa_acDomainName the domain name to be used
  */
 void configureDomainName(const char *pa_acDomainName);
 
-/*! \ingroup CIP_API \brief configure the host name of the device
+/*! \ingroup CIP_API 
+ * \brief Configure the host name of the device
  *  @param pa_acHostName the host name to be used
  */
 void configureHostName(const char *pa_acHostName);
 
-/** \ingroup CIP_API \brief Initialize and setup the CIP-stack
+/** \ingroup CIP_API 
+ * \brief Initialize and setup the CIP-stack
  * 
  */
 void CIP_Init(void);
 
-/** \ingroup CIP_API Get a pointer to a cip object with given class code
+/** \ingroup CIP_API 
+ * \brief Get a pointer to a CIP object with given class code
  * 
  * @param pa_nClassID class ID of the object to retrieve 
  * @return pointer to CIP Object
@@ -59,7 +65,8 @@ void CIP_Init(void);
  */
 S_CIP_Class *getCIPClass(EIP_UINT32 pa_nClassID);
 
-/** \ingroup CIP_API Get a pointer to an instance
+/** \ingroup CIP_API 
+ * \brief Get a pointer to an instance
  * 
  * @param pa_pstObject pointer to the object the instance belongs to
  * @param pa_nInstanceNr number of the instance to retrieve
@@ -69,21 +76,23 @@ S_CIP_Class *getCIPClass(EIP_UINT32 pa_nClassID);
 S_CIP_Instance *getCIPInstance(S_CIP_Class *pa_pstObject,
     EIP_UINT16 pa_nInstanceNr);
 
-/** \ingroup CIP_API Get a pointer to an instance's attribute
+/** \ingroup CIP_API 
+ * \brief Get a pointer to an instance's attribute
  * 
- * As instances and objects are selsimilar this function can also be used
+ * As instances and objects are selfsimilar this function can also be used
  * to retrieve the attribute of an object. 
  * @param pa_pInstance  pointer to the instance the attribute belongs to
  * @param pa_nAttributeNr number of the attribute to retrieve
- * @return poitner to attribute
+ * @return pointer to attribute
  *          0 if instance is not in the object
  */
 S_CIP_attribute_struct *getAttribute(S_CIP_Instance * pa_pInstance,
     EIP_UINT8 pa_nAttributeNr);
 
-/*! \ingroup CIP_API Allocate memory for new CIP Class and attributes;
- *  and register the new CIP class at the stack to be able
- *  for recieving ecplicit messages
+/*! \ingroup CIP_API 
+ * \brief Allocate memory for new CIP Class and attributes
+ *  The new CIP class will be registered at the stack to be able
+ *  for receiving explicit messages.
  * 
  *  @param pa_nClassID class ID of the new class
  *  @param pa_nNr_of_ClassAttributes number of class attributes
@@ -102,9 +111,10 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttribute
     int pa_nNr_of_InstanceAttributes, EIP_UINT32 pa_nInstGetAttrAllMask, int pa_nNr_of_InstanceServices, 
     int pa_nNr_of_Instances, char *pa_acName, EIP_UINT16 pa_nRevision);
 
-/** \ingroup CIP_API \brief Add a number of cip instances to a given cip class
+/** \ingroup CIP_API 
+ * \brief Add a number of CIP instances to a given CIP class
  *
- * the required number of instances are created in a block, but are attached to the class as a linked list.
+ * The required number of instances are created in a block, but are attached to the class as a linked list.
  * the instances are numbered sequentially -- i.e. the first node in the chain is instance 1, the second is 2, etc.
  * you can add new instances at any time (you do not have to create all the instances of a class at the same time)
  * deleting instances once they have been created is not supported
@@ -113,25 +123,27 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttribute
  *
  * @param pa_pstCIPObject CIP object the instances should be added
  * @param pa_nNr_of_Instances number of instances to be generated.
- * @return return pointer to the first of the new instances
- * 	        0 on error
+ * @return pointer to the first of the new instances
+ *              0 on error
  */
 S_CIP_Instance *addCIPInstances(S_CIP_Class *pa_pstCIPObject,
     int pa_nNr_of_Instances);
 
-/** \ingroup CIP_API \brief Create one instance of a given class with a certain instance number
+/** \ingroup CIP_API 
+ * \brief Create one instance of a given class with a certain instance number
  *
  * This function can be used for creating out of order instance numbers
  * @param pa_pstCIPClass the class the instance should be created for
  * @param pa_nInstanceId the instance id of the created instance
  * @return pointer to the created instance, if an instance with the given id 
- *         already exists the exisiting is returned an no new instance is created
+ *         already exists the existing is returned an no new instance is created
  * 
  */
 S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass,
     EIP_UINT32 pa_nInstanceId);
 
-/*! \ingroup CIP_API Insert an attribute in an instance of a CIP class
+/*! \ingroup CIP_API 
+ * Insert an attribute in an instance of a CIP class
  *  @param pa_pInstance pointer to CIP class. (may be also instance 0)
  *  @param pa_nAttributeNr number of attribute to be inserted.
  *  @param pa_nCIP_Type type of attribute to be inserted.
@@ -140,8 +152,9 @@ S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass,
 void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
 
-/** \ingroup CIP_API \brief Insert a service in an instance of a CIP object
- *  note that services are stored in an array pointer to by the class object
+/** \ingroup CIP_API 
+ * \brief Insert a service in an instance of a CIP object
+ *  Note that services are stored in an array pointer to by the class object
  *  the service array is not expandable if you insert a service that has 
  *  already been defined, the previous service will be replaced
  * 
@@ -153,25 +166,26 @@ void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
 void insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
     TCIPServiceFunc pa_ptfuncService, char *name);
 
-/** \ingroup CIP_API \brief Create an instance of an assembly object
+/** \ingroup CIP_API 
+ * \brief Create an instance of an assembly object
  * 
  * @param pa_nInstanceID  instance number of the assembly object to create 
  * @param pa_data         pointer to the data the assembly object should contain
- * @param pa_datalength   lenght of the assembly object's data
+ * @param pa_datalength   length of the assembly object's data
  * @return pointer to the instance of the created assembly object. NULL on error
  *
  * Assembly Objects for Configuration Data:
  *
  * The CIP stack treats configuration assembly objects the same way as any other assembly object. 
  * In order to support a configuration assembly object it has to be created with this function.
- * The notification on recieved configuration data is handled with the IApp_after_receive function.
+ * The notification on received configuration data is handled with the IApp_after_receive function.
  */
 S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
     EIP_BYTE *pa_data, EIP_UINT16 pa_datalength);
 
 
 /** \ingroup CIP_API 
- * Notify the encapsulation layer that an explicit message has been recieved via TCP or UDP.
+ * Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
  * 
  * @param pa_socket socket handle from which data is received.
  * @param pa_buf buffer to be read.
@@ -183,7 +197,7 @@ int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length,
     int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
- *  Notfiy the connection manager that data for a connection has been recieved.
+ *  Notfiy the connection manager that data for a connection has been received.
  *  This function should be invoked by the network layer.
  *  @param pa_pnData pointer to the buffer of data that has been recieved 
  *  @param pa_nDataLength number of bytes in the data buffer
@@ -193,7 +207,7 @@ EIP_STATUS handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength)
 
 /*! \ingroup CIP_API
  * Check if any of the connection timers (TransmissionTrigger or WarchdogTimeout) has timed out.
- * If yes the function performs the necessary action. This function should be called periodicaly once every
+ * If yes the function performs the necessary action. This function should be called periodically once every
  * OPENER_TIMER_TICK ms. 
  * 
  * @return EIP_OK on success
@@ -208,22 +222,24 @@ EIP_STATUS manageConnections(void);
 void closeSession(int pa_nSocket);
 
 
-/**  \defgroup CIP_CALLBACK_API Callback function demanded by the CIP Stack
+/**  \defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * \ingroup CIP_API
  * 
- * \brief These functions have to implemented in order to give the CIP stack a method to inform the application on certain state changes
+ * \brief These functions have to implemented in order to give the OpENer a method to inform the application on certain state changes
  */
 
-/** \ingroup CIP_CALLBACK_API \brief Callback for the application initilisation
+/** \ingroup CIP_CALLBACK_API 
+ * \brief Callback for the application initialization
  *
- * This function will be called by the CIP stack after it has finished its initialisation. In this function the user can setup all CIP objects she likes to have.
+ * This function will be called by the CIP stack after it has finished its initialization. In this function the user can setup all CIP objects she likes to have.
  * TODO think if this is still the right way to do this. Maybe just after the CIP_INIT would be fine to. 
  *
  *  return status -1 .. error.
  */
 EIP_STATUS IApp_Init(void);
 
-/** \ingroup CIP_CALLBACK_API \brief Call back function to inform application on recieved data for an assembly object.
+/** \ingroup CIP_CALLBACK_API 
+ * \brief Call back function to inform application on received data for an assembly object.
  * 
  * This function has to be implemented by the user of the CIP-stack.
  * @param pa_pstInstance pointer to the assembly object data was received for
@@ -233,12 +249,13 @@ EIP_STATUS IApp_Init(void);
  *                 objects) 
  * 
  * Assembly Objects for Configuration Data:
- * The CIP-stack uses this function to inform on recieved configuration data. The length of the data
+ * The CIP-stack uses this function to inform on received configuration data. The length of the data
  * is already checked within the stack. Therefore the user only has to check if the data is valid.
  */
 EIP_STATUS IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance);
 
-/** \ingroup CIP_CALLBACK_API \brief Inform the application that the data of an assembly
+/** \ingroup CIP_CALLBACK_API 
+ * \brief Inform the application that the data of an assembly
  * object will be sent.
  *
  * Within this function the user can update the data of the assembly object before it
@@ -250,21 +267,24 @@ EIP_STATUS IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance);
  */
 EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance);
 
-/** \ingroup CIP_CALLBACK_API \brief Emulate as close a possible a power cycle of the device
+/** \ingroup CIP_CALLBACK_API 
+ * \brief Emulate as close a possible a power cycle of the device
  *  
  * @return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
 EIP_STATUS IApp_ResetDevice(void);
 
-/**\ingroup CIP_CALLBACK_API \brief Reset the device to the initial configuration and emulate as close as possible a power cycle of the device
+/**\ingroup CIP_CALLBACK_API 
+ * \brief Reset the device to the initial configuration and emulate as close as possible a power cycle of the device
  * 
  * return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
 EIP_STATUS IApp_ResetDeviceToInitialConfiguration(void);
 
-/**\ingroup CIP_CALLBACK_API \brief Allocate memory for the cip stack
+/**\ingroup CIP_CALLBACK_API 
+ * \brief Allocate memory for the cip stack
  * 
  * emulate the common c-libary function calloc
  * In OpENer allocation only happens on application startup and on class/instance creation
@@ -275,7 +295,8 @@ EIP_STATUS IApp_ResetDeviceToInitialConfiguration(void);
  */
 void *IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
 
-/**\ingroup CIP_CALLBACK_API \brief Inform the application that the Run/Idle State has been changed
+/**\ingroup CIP_CALLBACK_API 
+ * \brief Inform the application that the Run/Idle State has been changed
  *  by the originator. 
  * 
  * 
@@ -283,16 +304,18 @@ void *IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
  */
 void IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
 
-/**\ingroup CIP_CALLBACK_API \brief create a producing or consuming UDP socket
+/**\ingroup CIP_CALLBACK_API 
+ * \brief create a producing or consuming UDP socket
  * 
  * @param pa_nDirection PRODCUER or CONSUMER
  * @param pa_pstAddr pointer to the address holding structure
- * @return socket identfier on success
+ * @return socket identifier on success
  *         -1 on error 
  */
 int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr); // direction: PRODUCER or CONSUMER
 
-/**\ingroup CIP_CALLBACK_API \brief create a producing or consuming UDP socket
+/**\ingroup CIP_CALLBACK_API 
+ * \brief create a producing or consuming UDP socket
  * 
  * @param pa_pstAddr pointer to the sendto address
  * @param pa_nSockFd socket descriptor to send on
@@ -303,7 +326,8 @@ int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr); // 
 EIP_STATUS IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
     EIP_UINT8 *pa_acData, EIP_UINT16 pa_nDataLength);
 
-/**\ingroup CIP_CALLBACK_API \brief Close the given socket and clean up the stack 
+/**\ingroup CIP_CALLBACK_API 
+ * \brief Close the given socket and clean up the stack 
  * 
  * @param pa_nSockFd socket descriptor to close
  */
@@ -334,7 +358,7 @@ void IApp_CloseSocket(int pa_nSockFd);
  * are part of the development packages of cygwin.
  * 
  * For the development itself we recommend the use of Eclipse with the CTD plugin
- * (www.eclipse.org). For your convinience OpENer already comes with an Eclipse
+ * (www.eclipse.org). For your convenience OpENer already comes with an Eclipse
  * project file. This allows to just import the OpENer source tree into Eclipse.
  * 
  * \subsection compile_pcs_sec Compile for PCs
@@ -350,7 +374,7 @@ void IApp_CloseSocket(int pa_nSockFd);
  *       -# Choose all from the make targets
  *       -# The resulting executable will be in the directory
  *           ./bin/pc
- *       -# The commandline parameters can be set in the run configuration dialog of Eclipse
+ *       -# The command line parameters can be set in the run configuration dialog of Eclipse
  * 
  * \section further_reading_sec Further Topics
  *   - \ref porting
@@ -359,8 +383,88 @@ void IApp_CloseSocket(int pa_nSockFd);
  *   - \ref license 
  * 
  * \page porting Porting OpENer
+ * \section gen_config_section General Stack Configuration
+ * The general stack properties have to be defined prior to building your 
+ * production. This is done by providing a file called opener_user_conf.h. An 
+ * example file can be found in the src/ports/platform-pc directory. The 
+ * documentation of the example file for the necessary configuration options: 
+ * opener_user_conf.h
  * 
+ * \copydoc opener_user_conf.h
  * 
+* \section startup_sec Startup Sequence
+ * During startup of your EtherNet/IP(TM) device the following steps have to be 
+ * performed:
+ *   -# Configure the network properties:\n
+ *       With the following functions the network interface of OpENer is 
+ *       configured:
+ *        - EIP_STATUS configureNetworkInterface(const char *pa_acIpAdress, const char *pa_acSubNetMask, const char *pa_acGateway)
+ *        - void configureMACAddress(const EIP_UINT8 *pa_acMACAddress)
+ *        - void configureDomainName(const char *pa_acDomainName)
+ *        - void configureHostName(const char *pa_acHostName)
+ *        .
+ *       Depending on your platform these data can come from a configuration 
+ *       file or from operating system functions. If these values should be 
+ *       settable remotely via explicit messages the SetAttributeSingle functions
+ *       of the EtherNetLink and the TCPIPInterface object have to be adapted.
+ *   -# Initialize OpENer: \n
+ *      With the function CIP_Init(void) the internal data structures of opener are 
+ *      correctly setup. After this step own CIP objects and Assembly objects 
+ *      instances may be created. For your convenience we provide the call-back 
+ *      function IApp_Init(void). This call back function is called when the stack is
+ *      ready to receive application specific CIP objects.
+ *   -# Create Application Specific CIP Objects:\n
+ *      Within the call-back function IApp_Init(void) or after CIP_Init(void) 
+ *      has finished you may create and configure any CIP object or Assembly object instances. See 
+ *      the module \ref CIP_API for available functions. Currently no functions 
+ *      are available to remove any created objects or instances. This is planned
+ *      for future versions.
+ *   -# Setup the listening TCP and UDP port:\n
+ *      THE ETHERNET/IP SPECIFICATION demands from devices to listen to TCP 
+ *      connections and UDP datagrams on the port AF12hex for explicit messages.
+ *      Therefore before going into normal operation you need to configure your 
+ *      network library so that TCP and UDP messages on this port will be 
+ *      received and can be hand over to the Ethernet encapsulation layer.
+ * 
+ * \section normal_op_sec Normal Operation
+* During normal operation the following tasks have to be done by the platform
+ * specific code:
+ *   - Establish connections requested on TCP port AF12hex
+ *   - Receive explicit message data on connected TCP sockets and the UPD socket
+ *     for port AF12hex. The received data has to be hand over to Ethernet
+ *     encapsulation layer with the function int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length, int *pa_nRemainingBytes).\n
+ *     As a result of this function a response may have to be sent. The data to
+ *     be sent is in the variable \ref g_acCommBuf.
+ *   - Create UDP sending and receiving sockets for implicit connected messages\n
+ *     OpENer will use to call-back finction int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
+ *     for informing the platform specific code that a new connection is 
+ *     established and new sockets are necessary
+ *   - Receive implicit connected data on a receiving UDP socket\n
+ *     The received data has to be hand over to the Connection Manager Object 
+ *     with the function EIP_STATUS handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength)
+ *   - Close UDP and TCP sockets:
+ *      -# Requested by OpENer through the call back function: void IApp_CloseSocket(int pa_nSockFd)
+ *      -# For TCP connection when the peer closed the connection OpENer needs 
+ *         to be informed to clean up internal data structures. This is done with
+ *         the function void closeSession(int pa_nSocket).
+ *      .
+ *   - Cyclically update the connection status:\n
+ *     In order that OpENer can determine when to produce new data on 
+ *     connections or that a connection timed out every \ref OPENER_TIMER_TICK ms the 
+ *     function EIP_STATUS manageConnections(void) has to be called.
+ *    
+ * For all receiving functions OpENer provides the buffer \ref g_acCommBuf. The 
+ * size of this buffer can be configured in opener_user_conf.h with the configuration
+ * parameter \ref OPENER_ETHERNET_BUFFER_SIZE.  
+ * 
+ * \section callback_funcs_sec Callback Functions
+ * In order to make OpENer more platform independent and in order to inform the 
+ * application on certain state changes and actions within the stack a set of 
+ * call-back functions is provided. These call-back functions are declared in 
+ * the file opener_api.h and have to be implemented by the application specific 
+ * code. An overview and explanation of OpENer's call-back API may be found in 
+ * the module \ref CIP_CALLBACK_API.
+ *  
  * \page building_products Using OpENer in Products
  * 
  * \page extending Extending OpENer
@@ -377,3 +481,4 @@ void IApp_CloseSocket(int pa_nSockFd);
 
 
 #endif /*CIP_API_H_*/
+

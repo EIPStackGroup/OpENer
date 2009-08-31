@@ -18,7 +18,7 @@
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
 
-/*! The port address to be used for udp multi cast connections
+/*! The port address to be used for udp multi-cast connections
  */ 
 #define OPENER_UDP_MULTICAST_PORT   2222
 
@@ -56,8 +56,8 @@
 #define OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER 1
 
 
-/* Platform specific network include files
- * Opener needs defintions for the follwing data-types 
+/*! Platform specific network include files
+ * OpENer needs defintions for the follwing data-types 
  * and functions:
  *    - struct sockaddr_in
  *    - AF_INET
