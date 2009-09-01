@@ -30,8 +30,8 @@ Compile for PCs:
      1.1 Go into the bin/pc directory
      1.2 Invoke make
      1.3 For invoking opener type:
-          ./opener.exe ipaddress subnetmask gateway domainname hostaddress macaddress
-         e.g. ./opener.exe 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
+          ./opener ipaddress subnetmask gateway domainname hostaddress macaddress
+         e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87 
   2. Within Eclipse 
      2.1 Import the project
      2.2 Go to the bin/pc folder in the make targets view

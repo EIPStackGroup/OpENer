@@ -30,19 +30,11 @@ int main(int argc, char *arg[])
     EIP_UINT8 acMyMACAddress[6];
 
     if (argc != 12)
-      { /*! use default values
-            configureNetworkInterface("192.168.1.1", "255.255.252.0", "192.168.1.1"); */
-        configureNetworkInterface("128.131.86.182", "255.255.255.128", "128.131.86.129");
-        configureDomainName("azrael.acin.tuwien.ac.at");
-
-        acMyMACAddress[0] = 0x00;
-        acMyMACAddress[1] = 0x15;
-        acMyMACAddress[2] = 0xC5;
-        acMyMACAddress[3] = 0xBF;
-        acMyMACAddress[4] = 0xD0;
-        acMyMACAddress[5] = 0x87;
-        configureMACAddress(acMyMACAddress);
-        configureHostName("OpenEIP");
+      { printf("Wrong number of commandline parameters!\n");
+        printf("The correct commandline parameters are:\n"); 
+        printf("./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n");
+        printf("    e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");      
+        exit(0);
       }
     else
       {
@@ -59,6 +51,9 @@ int main(int argc, char *arg[])
         acMyMACAddress[5] = (EIP_UINT8)strtoul(arg[11], NULL, 16);
         configureMACAddress(acMyMACAddress);
       }
+    
+    /*for a real device the serial number should be unique per device */
+    setDeviceSerialNumber(123456789);
 
     /* Setup the CIP Layer */
     CIP_Init();

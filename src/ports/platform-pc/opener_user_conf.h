@@ -34,7 +34,6 @@
 #define OPENER_DEVICE_PRODUCT_CODE      200
 #define OPENER_DEVICE_MAJOR_REVISION      1
 #define OPENER_DEVICE_MINOR_REVISION      2
-#define OPENER_DEVICE_SERIAL       12345678      /*TODO -- this must made settable per device instance*/
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
 

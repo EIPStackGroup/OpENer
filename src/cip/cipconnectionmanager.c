@@ -254,6 +254,8 @@ EIP_STATUS handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength
                     = getConnectedObject(g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
                 if (pstConnectionObject == 0)
                   return EIP_ERROR;
+                
+                printf("Sequence nummer: %ld, %ld\n", g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming);
 
                 if (SEQ_GEQ32(g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming))
                   {

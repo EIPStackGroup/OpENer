@@ -50,6 +50,13 @@ void configureDomainName(const char *pa_acDomainName);
  */
 void configureHostName(const char *pa_acHostName);
 
+/*! \ingroup CIP_API
+ * Set the serial number of the device's identy object.
+ * 
+ * @param pa_nSerialNumber unique 32 bit number identifying the device
+ */ 
+void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
+
 /** \ingroup CIP_API 
  * \brief Initialize and setup the CIP-stack
  * 
