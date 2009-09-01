@@ -22,7 +22,7 @@ EIP_UINT8 g_assemblydata3[10]; /* Config */
 
 extern int newfd;
 
-// cast an int as a struct_inaddr (check the "inet_ntoa" man page -- it wants a struct_inaddr passed by value, not an int)
+/* cast an int as a struct_inaddr (check the "inet_ntoa" man page -- it wants a struct_inaddr passed by value, not an int) */
 #define INAD(ipaddr) (*(struct in_addr *)&(ipaddr))
 
 int main(int argc, char *arg[])
@@ -30,8 +30,8 @@ int main(int argc, char *arg[])
     EIP_UINT8 acMyMACAddress[6];
 
     if (argc != 12)
-      { //! use default values
-        //configureNetworkInterface("192.168.1.1", "255.255.252.0", "192.168.1.1");
+      { /*! use default values
+            configureNetworkInterface("192.168.1.1", "255.255.252.0", "192.168.1.1"); */
         configureNetworkInterface("128.131.86.182", "255.255.255.128", "128.131.86.129");
         configureDomainName("azrael.acin.tuwien.ac.at");
 
@@ -46,7 +46,7 @@ int main(int argc, char *arg[])
       }
     else
       {
-        // fetch internet address info from the platform
+        /* fetch internet address info from the platform */
         configureNetworkInterface(arg[1], arg[2], arg[3]);
         configureDomainName(arg[4]);
         configureHostName(arg[5]);
@@ -84,26 +84,26 @@ EIP_STATUS IApp_Init(void)
 
 EIP_STATUS IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
   {
-    //handle the data received e.g., update outputs of the device
+    /*handle the data received e.g., update outputs of the device */
 
     return EIP_OK;
   }
 
 bool IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
   {
-    //update data to be sent e.g., read inputs of the device
+    /*update data to be sent e.g., read inputs of the device */
     return true;
   }
 
 EIP_STATUS IApp_ResetDevice(void)
   {
-    // add reset code here
+    /* add reset code here*/
     return EIP_OK;
   }
 
 EIP_STATUS IApp_ResetDeviceToInitialConfiguration(void)
   {
-    //rest the parameters and than perform device reset
+    /*rest the parameters and than perform device reset*/
     return EIP_OK;
   }
 

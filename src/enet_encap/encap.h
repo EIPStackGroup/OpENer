@@ -28,8 +28,8 @@ struct S_Encapsulation_Data
     EIP_UINT16 nData_length;
     EIP_UINT32 nSession_handle;
     EIP_UINT32 nStatus;
-    // The sender context is not needed any more with the new minumum data copy design
-    // EIP_UINT8 anSender_context[SENDER_CONTEXT_SIZE];  
+    /* The sender context is not needed any more with the new minumum data copy design */
+    /* EIP_UINT8 anSender_context[SENDER_CONTEXT_SIZE];  */
     EIP_UINT32 nOptions;
     EIP_UINT8 *pEncapsulation_Data;
   };

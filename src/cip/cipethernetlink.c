@@ -33,19 +33,19 @@ EIP_STATUS CIP_Ethernet_Link_Init()
     stEthernetLink.InterfaceSpeed = 100;
     stEthernetLink.InterfaceFlags = 3; /* full duplex active link, in future it should be checked if link is active */
 
-    if ((pstEthernetLinkClass = createCIPClass(CIP_ETHERNETLINK_CLASS_CODE, 0, // # class attributes
-        0xffffffff, // class getAttributeAll mask
-        0, // # class services
-        3, // # instance attributes
-        0xffffffff, // instance getAttributeAll mask
-        0, // # instance services
-        1, // # instances
+    if ((pstEthernetLinkClass = createCIPClass(CIP_ETHERNETLINK_CLASS_CODE, 0, /* # class attributes*/
+        0xffffffff, /* class getAttributeAll mask*/
+        0, /* # class services*/
+        3, /* # instance attributes*/
+        0xffffffff, /* instance getAttributeAll mask*/
+        0, /* # instance services*/
+        1, /* # instances*/
         "Ethernet link", 1)) != 0)
       {
 
         pstEthernetLinkInstance = getCIPInstance(pstEthernetLinkClass, 1);
         insertAttribute(pstEthernetLinkInstance, 1, CIP_UDINT,
-            &stEthernetLink.InterfaceSpeed); // bind attributes to the instance
+            &stEthernetLink.InterfaceSpeed); /* bind attributes to the instance*/
         insertAttribute(pstEthernetLinkInstance, 2, CIP_DWORD,
             &stEthernetLink.InterfaceFlags);
         insertAttribute(pstEthernetLinkInstance, 3, CIP_6USINT,

@@ -43,7 +43,7 @@ static MILLISECONDS actualtime, lasttime;
 EIP_STATUS handleDataOnTCPSocket(int pa_nSocket);
 
 
-static inline MILLISECONDS getmilliseconds(void)
+static MILLISECONDS getmilliseconds(void)
   {
     struct timeval tv;
 
@@ -61,7 +61,7 @@ int isConnectedFd(int pa_nFD)
     int i;
     extern S_CIP_ConnectionObject stConnectionObject[];
 
-    S_CIP_ConnectionObject *con = &stConnectionObject[0]; // this is done this way because the debugger would not display the connection table
+    S_CIP_ConnectionObject *con = &stConnectionObject[0]; /* this is done this way because the debugger would not display the connection table */
 
     for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_CONNECTIONS; i++)
       {
@@ -177,14 +177,14 @@ EIP_STATUS Start_NetworkHandler()
                       continue;
                     }
 
-                  // see if this is a connection request to the TCP listener
-                  if (fd == listener) // handle new TCP connection
+                  /* see if this is a connection request to the TCP listener*/
+                  if (fd == listener) /* handle new TCP connection */
                     {
                       if (EIP_DEBUG >= EIP_VERBOSE)
                         printf("networkhandler: new TCP connection\n");
                       addrlen = sizeof(remote_addr);
                       newfd = accept(listener, (struct sockaddr *)&remote_addr,
-                          &addrlen); // remote_addr does not seem to be used
+                          &addrlen); /* remote_addr does not seem to be used*/
                       if (newfd == -1)
                         {
                           perror("networkhandler: error on accept");
@@ -192,7 +192,7 @@ EIP_STATUS Start_NetworkHandler()
                         }
 
                       FD_SET(newfd, &master);
-                      // add newfd to master set
+                      /* add newfd to master set */
                       if (newfd > fdmax)
                         fdmax = newfd;
                       if (EIP_DEBUG >= EIP_VERBOSE)
@@ -202,7 +202,7 @@ EIP_STATUS Start_NetworkHandler()
                       continue;
                     }
 
-                  // see if this is an unsolicited inbound UDP message
+                  /* see if this is an unsolicited inbound UDP message */
                   if (fd == nUDPListener)
                     {
                       if (EIP_DEBUG >= EIP_VERBOSE)
@@ -244,7 +244,7 @@ EIP_STATUS Start_NetworkHandler()
                                   dump(g_acCommBuf, replylen);
                                 }
 
-                              // if the active fd matches a registered UDP callback, handle a UDP packet
+                              /* if the active fd matches a registered UDP callback, handle a UDP packet */
                               res = sendto(fd, (char *)g_acCommBuf, replylen,
                                   0, (struct sockaddr *)&from, sizeof(from));
                               if (res != replylen)
@@ -256,7 +256,7 @@ EIP_STATUS Start_NetworkHandler()
                       continue;
                     }
 
-                  // see if the message is from a registered UDP socket
+                  /* see if the message is from a registered UDP socket */
                   if (isConnectedFd(fd))
                     {
                       fromlen = sizeof(from);
@@ -283,7 +283,7 @@ EIP_STATUS Start_NetworkHandler()
                       continue;
                     }
 
-                  // if not registered UDP, handle as a TCP receive
+                  /* if not registered UDP, handle as a TCP receive */
                   if (EIP_ERROR == handleDataOnTCPSocket(fd)) /* if error */
                     {
                       FD_CLR(fd, &master);
@@ -339,11 +339,14 @@ EIP_STATUS handleDataOnTCPSocket(int pa_nSocket)
     int nDataSent;
     int nRemainingBytes = 0;
 
-    // We will handle just one EIP packet here the rest is done by the select method which will inform us if more data is available in the socket
-    // because of the current implementation of the main loop this may not be the fastest way and a loop here with a non blocking socket would better fit
+    /* We will handle just one EIP packet here the rest is done by the select 
+     * method which will inform us if more data is available in the socket
+       because of the current implementation of the main loop this may not be 
+       the fastest way and a loop here with a non blocking socket would better 
+       fit*/
 
-    //Check how many data is here -- read the first four bytes from the connection
-    nDataSize = recv(pa_nSocket, g_acCommBuf, 4, 0); //TODO we may have to set the socket to a non blocking socket
+    /*Check how many data is here -- read the first four bytes from the connection */
+    nDataSize = recv(pa_nSocket, g_acCommBuf, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
 
     if (nDataSize == 0)
       {
@@ -356,12 +359,12 @@ EIP_STATUS handleDataOnTCPSocket(int pa_nSocket)
         return EIP_ERROR;
       }
 
-    rxp = &g_acCommBuf[2]; // at this place EIP stores the data length
-    nDataSize = ltohs(&rxp) + ENCAPSULATION_HEADER_LENGTH - 4; // -4 is for the 4 bytes we have already read
-    // (NOTE this advances the buffer pointer)
+    rxp = &g_acCommBuf[2]; /* at this place EIP stores the data length */
+    nDataSize = ltohs(&rxp) + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
+    /* (NOTE this advances the buffer pointer) */
     if (OPENER_ETHERNET_BUFFER_SIZE < nDataSize)
-      { //TODO can this be handled in a better way?
-        printf("too large packet recieved will be ignored\n"); // this may corrupt the connection ???
+      { /*TODO can this be handled in a better way?*/
+        printf("too large packet recieved will be ignored\n"); /* this may corrupt the connection ???*/
         return EIP_OK;
       }
 
@@ -379,7 +382,7 @@ EIP_STATUS handleDataOnTCPSocket(int pa_nSocket)
       }
 
     nDataSize += 4;
-    //TODO handle partial packets
+    /*TODO handle partial packets*/
     if (EIP_DEBUG> EIP_VVERBOSE)
       {
         printf("Data received on tcp:\n");
@@ -416,8 +419,8 @@ EIP_STATUS handleDataOnTCPSocket(int pa_nSocket)
     return EIP_OK;
   }
 
-// create a new UDP socket for the connection manager
-// returns the fd if successful, else -1
+/* create a new UDP socket for the connection manager
+ returns the fd if successful, else -1 */
 int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
   {
     /* create a new UDP socket */
@@ -442,7 +445,7 @@ int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
           printf("networkhandler: bind UDP socket %d\n", newfd);
       }
 
-    // add new fd to the master list
+    /* add new fd to the master list */
     FD_SET(newfd, &master);
     if (newfd > fdmax)
       {

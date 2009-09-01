@@ -29,7 +29,7 @@ extern EIP_UINT8 g_acMessageDataReplyBuffer[];
  *     - EIP_OK  ... no reply to send back
  *     - EIP_ERROR ... error
  */
-EIP_STATUS notifyClass(S_CIP_Class * pt2Class, S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse);
+EIP_STATUS notifyClass(S_CIP_Class *pt2Class, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse);
 
 /*   EIP_STATUS get_Attribut_Single(S_CIP_Instance *pa_pInstance, S_CIP_MR_Request *pa_stMRRequest, S_CIP_MR_Response *pa_stMRResponse, S_CIP_CPF_Data *pa_stCPFdata, INT8 *pa_msg)
  *   check from classID which Object requests an attribute, search if object has the appropriate attribute implemented.

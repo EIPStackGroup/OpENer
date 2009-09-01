@@ -20,7 +20,7 @@ void dump(unsigned char *p, int size)
     while (size > 0)
       {
         b = dumpbuf;
-        // b += sprintf(b,"%08x: ",(int)p);
+        /* b += sprintf(b,"%08x: ",(int)p);*/
         for (i = 0; i < 16; i++)
           {
             if (i < size)

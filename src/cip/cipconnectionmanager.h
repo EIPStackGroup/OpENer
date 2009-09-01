@@ -12,7 +12,7 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-#define CONSUMING 0           // these are used as array indexes, watch out if changing these values
+#define CONSUMING 0           /* these are used as array indexes, watch out if changing these values */
 #define PRODUCING 1
 
 /* define states of a connection */
@@ -45,8 +45,8 @@ typedef struct
   {
     CONN_STATE state;
     EIP_UINT16 ConnectionID;
-    //TODO think if this is needed anymore
-    //TCMReceiveDataFunc m_ptfuncReceiveData;
+    /*TODO think if this is needed anymore
+      TCMReceiveDataFunc m_ptfuncReceiveData; */
   } S_Link_Consumer;
 
 typedef struct
@@ -110,10 +110,10 @@ typedef struct
     S_Link_Object stLinkObject;
 
     S_CIP_Instance *p_stConsumingInstance;
-    //S_CIP_CM_Object *p_stConsumingCMObject;
+    /*S_CIP_CM_Object *p_stConsumingCMObject; */
 
     S_CIP_Instance *p_stProducingInstance;
-    //S_CIP_CM_Object *p_stProducingCMObject;
+    /*S_CIP_CM_Object *p_stProducingCMObject; */
 
     EIP_UINT32 EIPSequenceCountProducing; /* the EIP level sequence Count for Class 0/1 Producing Connections may have a different value than SequenceCountProducing*/
     EIP_UINT32 EIPSequenceCountConsuming; /* the EIP level sequence Count for Class 0/1 Producing Connections may have a different value than SequenceCountProducing*/

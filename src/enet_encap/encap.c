@@ -44,7 +44,7 @@
 #define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
 
 
-//identiy data from cipidentity.c
+/*identiy data from cipidentity.c*/
 extern EIP_UINT16 VendorID;
 extern EIP_UINT16 DeviceType;
 extern EIP_UINT16 ProductCode;
@@ -53,7 +53,7 @@ extern EIP_UINT16 ID_Status;
 extern EIP_UINT32 SerialNumber;
 extern S_CIP_Short_String ProductName;
 
-//ip address data taken from TCPIPInterfaceObject
+/*ip address data taken from TCPIPInterfaceObject*/
 extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 
 /*** defines ***/
@@ -62,12 +62,11 @@ extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 
 #define SUPPORTED_PROTOCOL_VERSION 1
 
-#define SUPPORTED_OPTIONS_MASK  0x00  //Mask of wich options are supported as of the current CIP specs no other option value as 0 should be supported.
+#define SUPPORTED_OPTIONS_MASK  0x00  /*Mask of wich options are supported as of the current CIP specs no other option value as 0 should be supported.*/
 
-#define ENCAPSULATION_HEADER_SESSION_HANDLE_POS 4   //the position of the session handle within the encapsulation header
-//struct S_Encapsulation_Data S_ReceiveData, S_SendData;
+#define ENCAPSULATION_HEADER_SESSION_HANDLE_POS 4   /*the position of the session handle within the encapsulation header*/
 
-struct S_Encapsulation_Data g_sEncapData; //buffer for the encapsulation data used for sending and recieving
+struct S_Encapsulation_Data g_sEncapData; /*buffer for the encapsulation data used for sending and recieving*/
 
 /*struct S_Identity S_Identity_Object;
  const static UINT8 productname[] = "test device";
@@ -87,7 +86,6 @@ int RegisterSession(int pa_nSockfd,
 int UnregisterSession(struct S_Encapsulation_Data *pa_stReceiveData);
 int SendUnitData(struct S_Encapsulation_Data *pa_stReceiveData);
 int SendRRData(struct S_Encapsulation_Data *pa_stReceiveData);
-//int UnsupportedCommandReceived(struct S_Encapsulation_Data *pa_stReceiveData, EIP_UINT16 pa_Status);
 
 int getFreeSessionIndex(void);
 EIP_INT16 createEncapsulationStructure(EIP_UINT8 * buf, int length,
@@ -110,10 +108,8 @@ void encapInit(void)
       {
         anRegisteredSessions[i] = EIP_INVALID_SOCKET;
       }
-    //   S_SendData.pEncapsulation_Data
-    //       = &eip_reply_buf[ENCAPSULATION_HEADER_LENGTH];
 
-    //TODO make th interface inforamtion configureable
+    /*TODO make th interface inforamtion configureable*/
     /* initialize interface information */
     g_stInterfaceInformation.TypeCode = CIP_ITEM_ID_LISTSERVICE_RESPONSE;
     g_stInterfaceInformation.Length
@@ -131,28 +127,28 @@ void encapInit(void)
  *      pa_length	length of the data in pa_buf.
  *  return length of reply
  */
-int handleReceivedExplictData(int pa_socket, // socket from which data was recevied
-    EIP_UINT8 * pa_buf, // input buffer
-    int pa_length, // length of input
-    int *pa_nRemainingBytes) // return how many bytes of the input are left over after we're done here
+int handleReceivedExplictData(int pa_socket, /* socket from which data was recevied*/
+    EIP_UINT8 * pa_buf, /* input buffer*/
+    int pa_length, /* length of input*/
+    int *pa_nRemainingBytes) /* return how many bytes of the input are left over after we're done here*/
   {
     int nRetVal = 0;
-    // eat the encapsulation header
-    // the structure contains a pointer to the encapsulated data
-    // returns how many bytes are left after the encapsulated data
+    /* eat the encapsulation header*/
+    /* the structure contains a pointer to the encapsulated data*/
+    /* returns how many bytes are left after the encapsulated data*/
     *pa_nRemainingBytes = createEncapsulationStructure(pa_buf, pa_length,
         &g_sEncapData);
 
-    if (SUPPORTED_OPTIONS_MASK == g_sEncapData.nOptions) //TODO generate aproriate error response
+    if (SUPPORTED_OPTIONS_MASK == g_sEncapData.nOptions) /*TODO generate aproriate error response*/
       {        
-        if (*pa_nRemainingBytes >= 0) // check if the message is corrupt: header size + claimed payload size > than what we actually received
+        if (*pa_nRemainingBytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
           {
             /* full package or more received */
             g_sEncapData.nStatus = OPENER_ENCAP_STATUS_SUCCESS;
-            // each of these can return one of:
-            //   reply size >0
-            //   0 (no reply shall be sent)
-            //   EIP_ERROR (i.e. -1) an error occurred, no reply shall be sent
+            /* each of these can return one of:
+               reply size >0
+               0 (no reply shall be sent)
+               EIP_ERROR (i.e. -1) an error occurred, no reply shall be sent*/
             switch (g_sEncapData.nCommand_code)
               {
             case (COMMAND_NOP):
@@ -184,7 +180,7 @@ int handleReceivedExplictData(int pa_socket, // socket from which data was recev
               break;
 
             case (COMMAND_SENDUNITDATA):
-              nRetVal = SendUnitData(&g_sEncapData); // not currently supported, SendUnitData is a stub
+              nRetVal = SendUnitData(&g_sEncapData); /* not currently supported, SendUnitData is a stub*/
               break;
             default:
               g_sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
@@ -206,17 +202,17 @@ int handleReceivedExplictData(int pa_socket, // socket from which data was recev
 int encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
   {
     pa_stSendData->pEncapsulation_Data = &g_acCommBuf[2];
-    //htols(pa_stSendData->nCommand_code, &pa_stSendData->pEncapsulation_Data);
+    /*htols(pa_stSendData->nCommand_code, &pa_stSendData->pEncapsulation_Data);*/
     htols(pa_stSendData->nData_length, &pa_stSendData->pEncapsulation_Data);
-    //the g_acCommBuf should already contain the correct session handle
-    //htoll(pa_stSendData->nSession_handle, &pa_stSendData->pEncapsulation_Data); 
+    /*the g_acCommBuf should already contain the correct session handle*/
+    /*htoll(pa_stSendData->nSession_handle, &pa_stSendData->pEncapsulation_Data); */
     pa_stSendData->pEncapsulation_Data += 4;
     htoll(pa_stSendData->nStatus, &pa_stSendData->pEncapsulation_Data);
-    //the g_acCommBuf should already contain the correct sender context
-    //memcpy(pa_stSendData->pEncapsulation_Data, pa_stSendData->anSender_context, SENDER_CONTEXT_SIZE);
-    pa_stSendData->pEncapsulation_Data += SENDER_CONTEXT_SIZE + 2; // the plus 2 is for the options value
-    //the g_acCommBuf should already contain the correct  options value
-    //htols((EIP_UINT16)pa_stSendData->nOptions, &pa_stSendData->pEncapsulation_Data);
+    /*the g_acCommBuf should already contain the correct sender context*/
+    /*memcpy(pa_stSendData->pEncapsulation_Data, pa_stSendData->anSender_context, SENDER_CONTEXT_SIZE);*/
+    pa_stSendData->pEncapsulation_Data += SENDER_CONTEXT_SIZE + 2; /* the plus 2 is for the options value*/
+    /*the g_acCommBuf should already contain the correct  options value*/
+    /*htols((EIP_UINT16)pa_stSendData->nOptions, &pa_stSendData->pEncapsulation_Data);*/
 
     return ENCAPSULATION_HEADER_LENGTH + pa_stSendData->nData_length;
   }
@@ -235,7 +231,6 @@ int nop(void)
  */
 int ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
   {
-    //      printf("ListServices called\n");
     pa_stReceiveData->nData_length = g_stInterfaceInformation.Length + 2;
 
     EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
@@ -252,8 +247,6 @@ int ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
 
 int ListInterfaces(struct S_Encapsulation_Data *pa_stReceiveData)
   {
-    //  printf("ListInterfaces called\n");
-
     pa_stReceiveData->nData_length = 2;
     EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
     htols(0x0000, &pacCommBuf); /* copy Interface data to nmsg for sending */
@@ -276,7 +269,7 @@ int ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
     htols(ITEM_ID_LISTIDENTITY, &pacCommBuf);
 
     EIP_BYTE *acIdLenBuf = pacCommBuf;
-    pacCommBuf += 2; //at this place the real length will be inserted below
+    pacCommBuf += 2; /*at this place the real length will be inserted below*/
 
     htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);
     htols(htons(AF_INET), &pacCommBuf); 
@@ -299,7 +292,7 @@ int ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
 
     pa_stReceiveData->nData_length = pacCommBuf
         - &g_acCommBuf[ENCAPSULATION_HEADER_LENGTH];
-    htols(pacCommBuf - acIdLenBuf - 2, &acIdLenBuf); // the -2 is for not counting the lenght field
+    htols(pacCommBuf - acIdLenBuf - 2, &acIdLenBuf); /* the -2 is for not counting the lenght field*/
 
     return encapsulate_data(pa_stReceiveData);
   }
@@ -323,19 +316,19 @@ int RegisterSession(int pa_nSockfd,
     /* check if requested protocol version is supported and the register session option flag is zero*/
     if ((0 < nProtocolVersion) && (nProtocolVersion
         <= SUPPORTED_PROTOCOL_VERSION) && (0 == nOptionFlag))
-      { //Option field should be zero
+      { /*Option field should be zero*/
         /* check if the socket has already a session open */
         for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
           {
             if (anRegisteredSessions[i] == pa_nSockfd)
               {
-                // the socket has already registered a session this is not allowed
-                pa_stReceiveData->nSession_handle = i + 1; //return the already assigned session back, the cip spec is not clear about this needs to be tested
+                /* the socket has already registered a session this is not allowed*/
+                pa_stReceiveData->nSession_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
                 pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL;
                 nSessionIndex = INVALID_SESSION;
                 pacBuf
                     = &g_acCommBuf[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
-                htoll(pa_stReceiveData->nSession_handle, &pacBuf); //encapsulate_data will not update the session handle so we have to do it here by hand
+                htoll(pa_stReceiveData->nSession_handle, &pacBuf); /*encapsulate_data will not update the session handle so we have to do it here by hand*/
                 break;
               }
           }
@@ -353,7 +346,7 @@ int RegisterSession(int pa_nSockfd,
                 pa_stReceiveData->nSession_handle = nSessionIndex + 1;
                 pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_SUCCESS;
                 pacBuf = &g_acCommBuf[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
-                htoll(pa_stReceiveData->nSession_handle, &pacBuf); //encapsulate_data will not update the session handle so we have to do it here by hand
+                htoll(pa_stReceiveData->nSession_handle, &pacBuf); /*encapsulate_data will not update the session handle so we have to do it here by hand*/
               }
           }
       }
@@ -406,11 +399,11 @@ int SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
     EIP_INT16 nSendSize;
     /* Commandspecific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
-    ltohl(&pa_stReceiveData->pEncapsulation_Data); // skip over null interface handle
-    ltohs(&pa_stReceiveData->pEncapsulation_Data); // skip over unnused timeout value
-    pa_stReceiveData->nData_length -= 6; // the rest is in CPF format
+    ltohl(&pa_stReceiveData->pEncapsulation_Data); /* skip over null interface handle*/
+    ltohs(&pa_stReceiveData->pEncapsulation_Data); /* skip over unnused timeout value*/
+    pa_stReceiveData->nData_length -= 6; /* the rest is in CPF format*/
 
-    if (checkRegisteredSessions(pa_stReceiveData) == EIP_ERROR) // see if the EIP session is registered
+    if (checkRegisteredSessions(pa_stReceiveData) == EIP_ERROR) /* see if the EIP session is registered*/
       { /* received a package with non registerd session handle */
         pa_stReceiveData->nData_length = 0;
         pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
@@ -441,11 +434,11 @@ int SendRRData(struct S_Encapsulation_Data * pa_stReceiveData)
     EIP_INT16 nSendSize;
     /* Commandspecific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
-    ltohl(&pa_stReceiveData->pEncapsulation_Data); // skip over null interface handle
-    ltohs(&pa_stReceiveData->pEncapsulation_Data); // skip over unnused timeout value
-    pa_stReceiveData->nData_length -= 6; // the rest is in CPF format
+    ltohl(&pa_stReceiveData->pEncapsulation_Data); /* skip over null interface handle*/
+    ltohs(&pa_stReceiveData->pEncapsulation_Data); /* skip over unnused timeout value*/
+    pa_stReceiveData->nData_length -= 6; /* the rest is in CPF format*/
 
-    if (checkRegisteredSessions(pa_stReceiveData) == EIP_ERROR) // see if the EIP session is registered
+    if (checkRegisteredSessions(pa_stReceiveData) == EIP_ERROR) /* see if the EIP session is registered*/
       { /* received a package with non registerd session handle */
         pa_stReceiveData->nData_length = 0;
         pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
@@ -492,16 +485,16 @@ int getFreeSessionIndex(void)
  * 			>0 .. more than one packet received
  * 			<0 .. only fragment of data portion received
  */
-EIP_INT16 createEncapsulationStructure( EIP_UINT8 * pa_buf, // receive buffer
-    int pa_length, // size of stuff in  buffer (might be more than one message)
-    struct S_Encapsulation_Data * pa_stData) // the struct to be created
+EIP_INT16 createEncapsulationStructure( EIP_UINT8 * pa_buf, /* receive buffer*/
+    int pa_length, /* size of stuff in  buffer (might be more than one message)*/
+    struct S_Encapsulation_Data * pa_stData) /* the struct to be created*/
 
   {
     pa_stData->nCommand_code = ltohs(&pa_buf);
     pa_stData->nData_length = ltohs(&pa_buf);
     pa_stData->nSession_handle = ltohl(&pa_buf);
     pa_stData->nStatus = ltohl(&pa_buf);
-    //memcpy(pa_stData->anSender_context, pa_buf, SENDER_CONTEXT_SIZE);
+    /*memcpy(pa_stData->anSender_context, pa_buf, SENDER_CONTEXT_SIZE);*/
     pa_buf += SENDER_CONTEXT_SIZE;
     pa_stData->nOptions = ltohl(&pa_buf);
     pa_stData->pEncapsulation_Data = pa_buf;

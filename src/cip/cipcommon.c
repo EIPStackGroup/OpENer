@@ -48,38 +48,38 @@ void CIP_Init(void)
     assert(CIP_Ethernet_Link_Init() == EIP_OK);
     assert(Connection_Manager_Init() == EIP_OK);
     assert(CIP_Assembly_Init() == EIP_OK);
-    // the application has to be initiliazed at last
+    /* the application has to be initiliazed at last */
     assert(IApp_Init() == EIP_OK);
   }
 
-EIP_STATUS notifyClass(S_CIP_Class * pt2Class, // class receiving the message
-    S_CIP_MR_Request * pa_MRRequest, // request message
+EIP_STATUS notifyClass(S_CIP_Class * pt2Class, 
+    S_CIP_MR_Request * pa_MRRequest, 
     S_CIP_MR_Response * pa_MRResponse)
   {
     int i;
     S_CIP_Instance *pstInstance;
     S_CIP_service_struct *p;
-    unsigned instNr; // my instance number
+    unsigned instNr; /* my instance number */
 
-    // find the instance: if instNr==0, the class is addressed, else find the instance
-    instNr = pa_MRRequest->RequestPath.InstanceNr; // get the instance number
-    pstInstance = getCIPInstance(pt2Class, instNr); // look up the instance (note that if inst==0 this will be the class itself)
-    if (pstInstance) // if instance is found
+    /* find the instance: if instNr==0, the class is addressed, else find the instance */
+    instNr = pa_MRRequest->RequestPath.InstanceNr; /* get the instance number */
+    pstInstance = getCIPInstance(pt2Class, instNr); /* look up the instance (note that if inst==0 this will be the class itself) */
+    if (pstInstance) /* if instance is found */
       {
         if (EIP_DEBUG >= EIP_VVERBOSE)
           {
             printf("notify: found instance %d%s\n", instNr,
                 instNr==0 ? " (class object)" : "");
           }
-        p = pstInstance->pstClass->pstServices; // get pointer to array of services
-        if (p) // if services are defined
+        p = pstInstance->pstClass->pstServices; /* get pointer to array of services */
+        if (p) /* if services are defined */
           {
-            for (i = 0; i < pstInstance->pstClass->nNr_of_Services; i++) // seach the services list
+            for (i = 0; i < pstInstance->pstClass->nNr_of_Services; i++) /* seach the services list */
               {
-                if (pa_MRRequest->Service == p->CIP_ServiceNr) // if match is found
+                if (pa_MRRequest->Service == p->CIP_ServiceNr) /* if match is found */
                   {
-                    pa_MRResponse->Data = &g_acMessageDataReplyBuffer[0]; // set reply buffer, using a fixed buffer (about 100 bytes)
-                    // call the service, and return what it returns
+                    pa_MRResponse->Data = &g_acMessageDataReplyBuffer[0]; /* set reply buffer, using a fixed buffer (about 100 bytes) */
+                    /* call the service, and return what it returns */
                     if (EIP_DEBUG>=EIP_VERBOSE)
                       printf("notify: calling %s service\n", p->name);
                     assert(p->m_ptfuncService);
@@ -92,78 +92,76 @@ EIP_STATUS notifyClass(S_CIP_Class * pt2Class, // class receiving the message
           }
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notify: service 0x%x not supported\n", pa_MRRequest->Service);
-        pa_MRResponse->GeneralStatus = CIP_ERROR_SERVICE_NOT_SUPPORTED; // if no services or service not found, return an error reply
+        pa_MRResponse->GeneralStatus = CIP_ERROR_SERVICE_NOT_SUPPORTED; /* if no services or service not found, return an error reply*/
       }
     else
       {
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notify: instance number %d unknown\n", instNr);
-        // if instance not found, return an error reply
-        pa_MRResponse->GeneralStatus = CIP_ERROR_PATH_DESTINATION_UNKNOWN; //according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;
+        /* if instance not found, return an error reply*/
+        pa_MRResponse->GeneralStatus = CIP_ERROR_PATH_DESTINATION_UNKNOWN; /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
       }
 
-    // handle error replies
-    pa_MRResponse->SizeofAdditionalStatus = 0; // fill in the rest of the reply with not much of anything
+    /* handle error replies*/
+    pa_MRResponse->SizeofAdditionalStatus = 0; /* fill in the rest of the reply with not much of anything*/
     pa_MRResponse->DataLength = 0;
-    pa_MRResponse->ReplyService = (0x80 | pa_MRRequest->Service); // except the reply code is an echo of the command + the reply flag
+    pa_MRResponse->ReplyService = (0x80 | pa_MRRequest->Service); /* except the reply code is an echo of the command + the reply flag */
 
     return EIP_OK_SEND;
   }
 
-S_CIP_Instance *addCIPInstances(S_CIP_Class * pa_pstCIPClass, // class being initialized
-    int pa_nNr_of_Instances) // number of instances to create
+S_CIP_Instance *addCIPInstances(S_CIP_Class * pa_pstCIPClass,  int pa_nNr_of_Instances) 
   {
     S_CIP_Instance *first, *p, **pp;
     int i;
-    int inst=1; // the first instance is number 1
+    int inst=1; /* the first instance is number 1 */
 
     if (EIP_DEBUG>=EIP_VERBOSE)
       printf("adding %d instances to class %s\n", pa_nNr_of_Instances,
           pa_pstCIPClass->acName);
 
-    pp = &pa_pstCIPClass->pstInstances; // get address of pointer to head of chain
-    while (*pp) // as long as what pp points to is not zero
+    pp = &pa_pstCIPClass->pstInstances; /* get address of pointer to head of chain */
+    while (*pp) /* as long as what pp points to is not zero */
       {
-        pp = &(*pp)->pstNext; //    follow the chain until pp points to pointer that contains a zero
-        inst++; //    keep track of what the first new instance number will be
+        pp = &(*pp)->pstNext; /*    follow the chain until pp points to pointer that contains a zero */
+        inst++; /*    keep track of what the first new instance number will be */
       }
 
-    first = p = IApp_CipCalloc(pa_nNr_of_Instances, sizeof(S_CIP_Instance)); // allocate a block of memory for all created instances
+    first = p = IApp_CipCalloc(pa_nNr_of_Instances, sizeof(S_CIP_Instance)); /* allocate a block of memory for all created instances*/
     assert(p);
-    // fail if run out of memory
+    /* fail if run out of memory */
 
-    pa_pstCIPClass->nNr_of_Instances += pa_nNr_of_Instances; // add the number of instances just created to the total recorded by the class
+    pa_pstCIPClass->nNr_of_Instances += pa_nNr_of_Instances; /* add the number of instances just created to the total recorded by the class */
 
-    for (i = 0; i < pa_nNr_of_Instances; i++) // initialize all the new instances
+    for (i = 0; i < pa_nNr_of_Instances; i++) /* initialize all the new instances */
       {
-        *pp = p; // link the previous pointer to this new node
+        *pp = p; /* link the previous pointer to this new node */
 
-        p->nInstanceNr = inst; // assign the next sequential instance number
-        p->pstClass = pa_pstCIPClass; // point each instance to its class
+        p->nInstanceNr = inst; /* assign the next sequential instance number */
+        p->pstClass = pa_pstCIPClass; /* point each instance to its class */
 
-        if (pa_pstCIPClass->nNr_of_Attributes) // if the class calls for instance attributes
-          { // then allocate storage for the attribute array
+        if (pa_pstCIPClass->nNr_of_Attributes) /* if the class calls for instance attributes */
+          { /* then allocate storage for the attribute array */
             p->pstAttributes = IApp_CipCalloc(
                 pa_pstCIPClass->nNr_of_Attributes,
                 sizeof(S_CIP_attribute_struct));
           }
 
-        pp = &p->pstNext; // update pp to point to the next link of the current node
-        inst++; // update to the number of the next node
-        p++; // point to the next node in the calloc'ed array
+        pp = &p->pstNext; /* update pp to point to the next link of the current node */
+        inst++; /* update to the number of the next node*/
+        p++; /* point to the next node in the calloc'ed array*/
       }
 
     return first;
   }
 
-S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass, // class being initialized
-    EIP_UINT32 pa_nInstanceId) // instance id of the instance to create
+S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass,  EIP_UINT32 pa_nInstanceId)
   {
     S_CIP_Instance *pstInstance =
         getCIPInstance(pa_pstCIPClass, pa_nInstanceId);
 
     if (0 == pstInstance)
-      { //we have no instance with given id
+      { /*we have no instance with given id*/
         pstInstance = addCIPInstances(pa_pstCIPClass, 1);
         pstInstance->nInstanceNr = pa_nInstanceId;
       }
@@ -176,63 +174,62 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID,
     EIP_UINT32 pa_nInstGetAttrAllMask, int pa_nNr_of_InstanceServices,
     int pa_nNr_of_Instances, char *pa_acName, EIP_UINT16 pa_nRevision)
   {
-    S_CIP_Class *pt2Class; // pointer to the class struct
-    S_CIP_Class *pt2MetaClass; // pointer to the metaclass struct
+    S_CIP_Class *pt2Class; /* pointer to the class struct */
+    S_CIP_Class *pt2MetaClass; /* pointer to the metaclass struct */
 
     printf("creating class '%s' with id: 0x%lx\n", pa_acName, pa_nClassID);
 
-    pt2Class = getCIPClass(pa_nClassID); // check if an class with the ClassID already exists
+    pt2Class = getCIPClass(pa_nClassID); /* check if an class with the ClassID already exists */
     assert(pt2Class==0);
-    // should never try to redefine a class
+    /* should never try to redefine a class*/
 
-    // a metaClass is a class that holds the class attributes and services
-    // CIP can talk to an instance, therefore an instance has a pointer to its class
-    // CIP can talk to a class, therefore a class struct is a subclass of the instance struct,
-    // and contains a pointer to a metaclass
-    // CIP never explicitly addresses a metaclass
+    /* a metaClass is a class that holds the class attributes and services
+     CIP can talk to an instance, therefore an instance has a pointer to its class
+     CIP can talk to a class, therefore a class struct is a subclass of the instance struct,
+     and contains a pointer to a metaclass
+     CIP never explicitly addresses a metaclass*/
 
-    pt2Class = IApp_CipCalloc(1, sizeof(S_CIP_Class)); // create the class object
-    pt2MetaClass = IApp_CipCalloc(1, sizeof(S_CIP_Class)); // create the metaclass object
+    pt2Class = IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the class object*/
+    pt2MetaClass = IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the metaclass object*/
 
-    // initialize the class-specific fields of the Class struct
-    pt2Class->nClassID = pa_nClassID; // the class remembers the class ID
-    pt2Class->nRevision = pa_nRevision; // the class remembers the class ID
-    pt2Class->nNr_of_Instances = 0; // the number of instances initially zero (more created below)
-    pt2Class->pstInstances = 0; //
-    pt2Class->nNr_of_Attributes = pa_nNr_of_InstanceAttributes; // the class remembers the number of instances of that class
-    pt2Class->nGetAttrAllMask = pa_nInstGetAttrAllMask; // indicate which attributes are included in instance getAttributeAll
-    pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices+2; // the class manages the behavior of the instances
-    pt2Class->pstServices = 0; //
-    pt2Class->acName = pa_acName;
-    // initialize the class-specific fields of the metaClass struct
-    pt2MetaClass->nClassID = 0xffffffff; // set metaclass ID (this should never be referenced)
-    pt2MetaClass->nNr_of_Instances = 1; // the class object is the only instance of the metaclass
-    pt2MetaClass->pstInstances = (S_CIP_Instance *)pt2Class; //
-    pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes+5; // the metaclass remembers how many class attributes exist
-    pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; // indicate which attributes are included in class getAttributeAll
-    pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices+2; // the metaclass manages the behavior of the class itself
-    pt2Class->pstServices = 0; //
-    pt2MetaClass->acName = IApp_CipCalloc(1, strlen(pa_acName)+6); // fabricate the name "meta<classname>"
+    /* initialize the class-specific fields of the Class struct*/
+    pt2Class->nClassID = pa_nClassID; /* the class remembers the class ID */
+    pt2Class->nRevision = pa_nRevision; /* the class remembers the class ID */
+    pt2Class->nNr_of_Instances = 0; /* the number of instances initially zero (more created below) */
+    pt2Class->pstInstances = 0; 
+    pt2Class->nNr_of_Attributes = pa_nNr_of_InstanceAttributes; /* the class remembers the number of instances of that class */
+    pt2Class->nGetAttrAllMask = pa_nInstGetAttrAllMask; /* indicate which attributes are included in instance getAttributeAll */
+    pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices+2; /* the class manages the behavior of the instances */
+    pt2Class->pstServices = 0; 
+    pt2Class->acName = pa_acName; /* initialize the class-specific fields of the metaClass struct */
+    pt2MetaClass->nClassID = 0xffffffff; /* set metaclass ID (this should never be referenced) */
+    pt2MetaClass->nNr_of_Instances = 1; /* the class object is the only instance of the metaclass */
+    pt2MetaClass->pstInstances = (S_CIP_Instance *)pt2Class; 
+    pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes+5; /* the metaclass remembers how many class attributes exist*/
+    pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; /* indicate which attributes are included in class getAttributeAll*/
+    pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices+2; /* the metaclass manages the behavior of the class itself */
+    pt2Class->pstServices = 0; 
+    pt2MetaClass->acName = IApp_CipCalloc(1, strlen(pa_acName)+6); /* fabricate the name "meta<classname>"*/
     strcpy(pt2MetaClass->acName, "meta-");
     strcat(pt2MetaClass->acName, pa_acName);
 
-    // initialize the instance-specific fields of the Class struct
-    pt2Class->nInstanceNr = 0; // the class object is instance zero of the class it describes (weird, but that's the spec)
-    pt2Class->pstAttributes = 0; // this will later point to the class attibutes
-    pt2Class->pstClass = pt2MetaClass; // the class's class is the metaclass (like SmallTalk)
-    pt2Class->pstNext = 0; // the next link will always be zero, sinc there is only one instance of any particular class object
+    /* initialize the instance-specific fields of the Class struct*/
+    pt2Class->nInstanceNr = 0; /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
+    pt2Class->pstAttributes = 0; /* this will later point to the class attibutes*/
+    pt2Class->pstClass = pt2MetaClass; /* the class's class is the metaclass (like SmallTalk)*/
+    pt2Class->pstNext = 0; /* the next link will always be zero, sinc there is only one instance of any particular class object */
 
-    pt2MetaClass->nInstanceNr = 0xffffffff; // the metaclass object does not really have a valid instance number
-    pt2MetaClass->pstAttributes = 0; // the metaclass has no attributes
-    pt2MetaClass->pstClass = 0; // the metaclass has no class
-    pt2MetaClass->pstNext = 0; // the next link will always be zero, since there is only one instance of any particular metaclass object
+    pt2MetaClass->nInstanceNr = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
+    pt2MetaClass->pstAttributes = 0; /* the metaclass has no attributes*/
+    pt2MetaClass->pstClass = 0; /* the metaclass has no class*/
+    pt2MetaClass->pstNext = 0; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
 
 
-    // further initialization of the class object
+    /* further initialization of the class object*/
 
     pt2Class->pstAttributes = IApp_CipCalloc(pa_nNr_of_ClassAttributes+5,
         sizeof(S_CIP_attribute_struct));
-    // TODO -- check that we didn't run out of memory?
+    /* TODO -- check that we didn't run out of memory?*/
 
     pt2MetaClass->pstServices = IApp_CipCalloc(pa_nNr_of_ClassServices+2,
         sizeof(S_CIP_service_struct));
@@ -242,53 +239,50 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID,
 
     if (pa_nNr_of_Instances > 0)
       {
-        addCIPInstances(pt2Class, pa_nNr_of_Instances); //TODO handle return value and clean up if necessary
+        addCIPInstances(pt2Class, pa_nNr_of_Instances); /*TODO handle return value and clean up if necessary*/
       }
 
     if ((registerClass(pt2Class)) == EIP_ERROR)
       { /* no memory to register class in Message Router */
-        return 0; //TODO handle return value and clean up if necessary
+        return 0; /*TODO handle return value and clean up if necessary*/
       }
 
-    // create the standard class attributes
+    /* create the standard class attributes*/
     insertAttribute((S_CIP_Instance *)pt2Class, 1, CIP_UINT,
-        (void *)&pt2Class->nRevision); // revision
+        (void *)&pt2Class->nRevision); /* revision */
     insertAttribute((S_CIP_Instance *)pt2Class, 2, CIP_UINT,
-        (void *)&pt2Class->nNr_of_Instances); // largest instance number
+        (void *)&pt2Class->nNr_of_Instances); /*  largest instance number */
     insertAttribute((S_CIP_Instance *)pt2Class, 3, CIP_UINT,
-        (void *)&pt2Class->nNr_of_Instances); // number of instances currently existing
+        (void *)&pt2Class->nNr_of_Instances); /* number of instances currently existing*/
     insertAttribute((S_CIP_Instance *)pt2Class, 6, CIP_UINT,
-        (void *)&pt2MetaClass->nMaxAttribute); // max class attribute number
+        (void *)&pt2MetaClass->nMaxAttribute); /* max class attribute number*/
     insertAttribute((S_CIP_Instance *)pt2Class, 7, CIP_UINT,
-        (void *)&pt2Class->nMaxAttribute); // max instance attribute number
+        (void *)&pt2Class->nMaxAttribute); /* max instance attribute number*/
 
 
-    // create the standard class services
+    /* create the standard class services*/
     insertService(pt2MetaClass, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
-        "GetAttributeAll"); // bind instance services to the metaclass
+        "GetAttributeAll"); /* bind instance services to the metaclass*/
     insertService(pt2MetaClass, CIP_GET_ATTRIBUTE_SINGLE, &getAttributeSingle,
         "GetAttributeSingle");
 
-    // create the standard instance services
+    /* create the standard instance services*/
     insertService(pt2Class, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
-        "GetAttributeAll"); // bind instance services to the class
+        "GetAttributeAll"); /* bind instance services to the class*/
     insertService(pt2Class, CIP_GET_ATTRIBUTE_SINGLE, &getAttributeSingle,
         "GetAttributeSingle");
 
     return pt2Class;
   }
 
-void insertAttribute(S_CIP_Instance * pa_pInstance, // pointer to instance
-    EIP_UINT8 pa_nAttributeNr, // attribute number
-    EIP_UINT8 pa_nCIP_Type, // attribute type
-    void *pa_pt2data) // attribute data
+void insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr, EIP_UINT8 pa_nCIP_Type,  void *pa_pt2data) 
   {
     int i;
     S_CIP_attribute_struct *p;
 
     p = pa_pInstance->pstAttributes;
     assert(p!=0);
-    // adding a attribute to a class that was not declared to have any attributes is not allowed
+    /* adding a attribute to a class that was not declared to have any attributes is not allowed */
     for (i = 0; i < pa_pInstance->pstClass->nNr_of_Attributes; i++)
       {
         if (p->pt2data == 0)
@@ -297,7 +291,7 @@ void insertAttribute(S_CIP_Instance * pa_pInstance, // pointer to instance
             p->CIP_Type = pa_nCIP_Type;
             p->pt2data = pa_pt2data;
 
-            if (pa_nAttributeNr > pa_pInstance->pstClass->nMaxAttribute) // remember the max attribute number that was defined
+            if (pa_nAttributeNr > pa_pInstance->pstClass->nMaxAttribute) /* remember the max attribute number that was defined*/
               {
                 pa_pInstance->pstClass->nMaxAttribute = pa_nAttributeNr;
               }
@@ -306,40 +300,38 @@ void insertAttribute(S_CIP_Instance * pa_pInstance, // pointer to instance
         p++;
       }
     assert(0);
-    // trying to insert too mmany attributes
+    /* trying to insert too mmany attributes*/
   }
 
-void insertService(S_CIP_Class * pa_pClass, // pointer to the class
-    EIP_UINT8 pa_nServiceNr, // the service number
-    TCIPServiceFunc pa_ptfuncService, // pointer to a service function
-    char *name) // service name
+void insertService(S_CIP_Class * pa_pClass,  EIP_UINT8 pa_nServiceNr,  
+    TCIPServiceFunc pa_ptfuncService, char *name)
   {
     int i;
     S_CIP_service_struct *p;
 
-    p = pa_pClass->pstServices; // get a pointer to the service array
+    p = pa_pClass->pstServices; /* get a pointer to the service array*/
     assert(p!=0);
-    // adding a service to a class that was not declared to have services is not allowed
-    for (i = 0; i < pa_pClass->nNr_of_Services; i++) // interate over all service slots attached to the class
+    /* adding a service to a class that was not declared to have services is not allowed*/
+    for (i = 0; i < pa_pClass->nNr_of_Services; i++) /* interate over all service slots attached to the class */
       {
-        if (p->CIP_ServiceNr == pa_nServiceNr || p->m_ptfuncService == 0) // found undefined service slot
+        if (p->CIP_ServiceNr == pa_nServiceNr || p->m_ptfuncService == 0) /* found undefined service slot*/
           {
-            p->CIP_ServiceNr = pa_nServiceNr; // fill in service number
-            p->m_ptfuncService = pa_ptfuncService; // fill in function address
+            p->CIP_ServiceNr = pa_nServiceNr; /* fill in service number*/
+            p->m_ptfuncService = pa_ptfuncService; /* fill in function address*/
             p->name = name;
             return;
           }
         p++;
       }
     assert(0);
-    // adding more services than were declared is a no-no
+    /* adding more services than were declared is a no-no*/
   }
 
 S_CIP_attribute_struct *getAttribute(S_CIP_Instance * pa_pInstance,
     EIP_UINT8 pa_nAttributeNr)
   {
     int i;
-    S_CIP_attribute_struct *p = pa_pInstance->pstAttributes; // init pointer to array of attributes
+    S_CIP_attribute_struct *p = pa_pInstance->pstAttributes; /* init pointer to array of attributes*/
     for (i = 0; i < pa_pInstance->pstClass->nNr_of_Attributes; i++)
       {
         if (pa_nAttributeNr == p->CIP_AttributNr)
@@ -352,11 +344,11 @@ S_CIP_attribute_struct *getAttribute(S_CIP_Instance * pa_pInstance,
     return 0;
   }
 
-// TODO this needs to check for buffer overflow
-EIP_STATUS getAttributeSingle(S_CIP_Instance * pa_pInstance, // pointer to instance
-    S_CIP_MR_Request * pa_stMRRequest, // request message
-    S_CIP_MR_Response * pa_stMRResponse, // response message
-    EIP_UINT8 * pa_msg) // reply buffer
+/* TODO this needs to check for buffer overflow*/
+EIP_STATUS getAttributeSingle(S_CIP_Instance * pa_pInstance, 
+    S_CIP_MR_Request * pa_stMRRequest, 
+    S_CIP_MR_Response * pa_stMRResponse, 
+    EIP_UINT8 * pa_msg) 
   {
     S_CIP_attribute_struct *p = getAttribute(pa_pInstance,
         pa_stMRRequest->RequestPath.AttributNr);
@@ -364,7 +356,7 @@ EIP_STATUS getAttributeSingle(S_CIP_Instance * pa_pInstance, // pointer to insta
     if ((p != 0) && (p->pt2data != 0))
       {
         if (EIP_DEBUG>=EIP_VERBOSE)
-          printf("getAttribute %ld\n", pa_stMRRequest->RequestPath.AttributNr); // create a reply message containing the data
+          printf("getAttribute %ld\n", pa_stMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
         pa_stMRResponse->DataLength = outputAttribute(p, pa_msg);
         pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
         pa_stMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
@@ -505,9 +497,9 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
         htoll(p[4], &pa_pnMsg);
         counter = 20;
         /* handle the string */
-        //TODO Think on how to use the string encoding mechanism
+        /*TODO Think on how to use the string encoding mechanism*/
         s = (S_CIP_String *)&p[5];
-        htols(s->Length, &pa_pnMsg); // length of string
+        htols(s->Length, &pa_pnMsg); /* length of string*/
         counter++;
         for (j = 0; j < s->Length; j++)
           {
@@ -541,8 +533,8 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
     case (CIP_BYTE_ARRAY):
       break;
 
-    case (INTERNAL_UINT16_6): // TODO for port class attribute 9, hopefully we can find a better way to do this
-      {
+    case (INTERNAL_UINT16_6): /* TODO for port class attribute 9, hopefully we can find a better way to do this*/
+      { 
         EIP_UINT16 *p = pa_ptstAttribute->pt2data;
 
         htols(p[0], &pa_pnMsg);
@@ -560,19 +552,19 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
     return counter;
   }
 
-EIP_STATUS getAttributeAll(S_CIP_Instance * pa_pstInstance, // instance that is getting this message
-    S_CIP_MR_Request * pa_stMRRequest, // pointer to the request
-    S_CIP_MR_Response * pa_stMRResponse, // pointer to the response
-    EIP_UINT8 * pa_msg) // pointer to the reply buffer
+EIP_STATUS getAttributeAll(S_CIP_Instance * pa_pstInstance, 
+    S_CIP_MR_Request * pa_stMRRequest,
+    S_CIP_MR_Response * pa_stMRResponse,
+    EIP_UINT8 * pa_msg) 
   {
     int i, j;
     EIP_UINT8 *ptmp;
     S_CIP_attribute_struct *p_attr;
     S_CIP_service_struct *p_service;
 
-    ptmp = pa_msg; // pointer into the reply
-    p_attr = pa_pstInstance->pstAttributes; // pointer to list of attributes
-    p_service = pa_pstInstance->pstClass->pstServices; // pointer to list of services
+    ptmp = pa_msg; /* pointer into the reply */
+    p_attr = pa_pstInstance->pstAttributes; /* pointer to list of attributes*/
+    p_service = pa_pstInstance->pstClass->pstServices; /* pointer to list of services*/
 
     if (pa_pstInstance->nInstanceNr==2)
       {
@@ -580,13 +572,13 @@ EIP_STATUS getAttributeAll(S_CIP_Instance * pa_pstInstance, // instance that is 
           printf("GetAttributeAll: instance number 2\n");
       }
 
-    for (i = 0; i < pa_pstInstance->pstClass->nNr_of_Services; i++) // hunt for the GET_ATTRIBUTE_SINGLE service
+    for (i = 0; i < pa_pstInstance->pstClass->nNr_of_Services; i++) /* hunt for the GET_ATTRIBUTE_SINGLE service*/
       {
-        if (p_service->CIP_ServiceNr == CIP_GET_ATTRIBUTE_SINGLE) // found the service
+        if (p_service->CIP_ServiceNr == CIP_GET_ATTRIBUTE_SINGLE) /* found the service */
           {
             if (0 == pa_pstInstance->pstClass->nNr_of_Attributes)
               {
-                pa_stMRResponse->DataLength = 0; //there are no attributes to be sent back
+                pa_stMRResponse->DataLength = 0; /*there are no attributes to be sent back*/
                 pa_stMRResponse->ReplyService
                     = (0x80 | pa_stMRRequest->Service);
                 pa_stMRResponse->GeneralStatus
@@ -595,12 +587,12 @@ EIP_STATUS getAttributeAll(S_CIP_Instance * pa_pstInstance, // instance that is 
               }
             else
               {
-                for (j = 0; j < pa_pstInstance->pstClass->nNr_of_Attributes; j++) // for each instance attribute of this class
+                for (j = 0; j < pa_pstInstance->pstClass->nNr_of_Attributes; j++) /* for each instance attribute of this class */
                   {
                     int attrNum = p_attr->CIP_AttributNr;
                     if (attrNum<32
                         && (pa_pstInstance->pstClass->nGetAttrAllMask & 1
-                            <<attrNum)) // only return attributes that are flagged as being part of GetAttributeALl
+                            <<attrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
                       {
                         pa_stMRRequest->RequestPath.AttributNr = attrNum;
                         pa_msg += p_service->m_ptfuncService(pa_pstInstance,
@@ -618,5 +610,5 @@ EIP_STATUS getAttributeAll(S_CIP_Instance * pa_pstInstance, // instance that is 
           }
         p_service++;
       }
-    return EIP_OK; // reurn 0 if cannot find GET_ATTRIBUTE_SINGLE service
+    return EIP_OK; /* reurn 0 if cannot find GET_ATTRIBUTE_SINGLE service*/
   }

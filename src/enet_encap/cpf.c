@@ -19,9 +19,9 @@
 /* CPF global data items */
 S_CIP_CPF_Data g_stCPFDataItem;
 
-int notifyCPF(EIP_UINT8 * pa_nData, // message data
-    EIP_INT16 pa_nData_length, // data length
-    EIP_UINT8 * pa_replybuf) // reply buffer
+int notifyCPF(EIP_UINT8 * pa_nData, /* message data*/
+    EIP_INT16 pa_nData_length, /* data length*/
+    EIP_UINT8 * pa_replybuf) /* reply buffer*/
   {
     EIP_STATUS res;
 
@@ -30,13 +30,13 @@ int notifyCPF(EIP_UINT8 * pa_nData, // message data
       {
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notifyMR: error from createCPFstructure\n");
-        return EIP_ERROR; // error from createCPFstructure
+        return EIP_ERROR; /* error from createCPFstructure */
       }
 
-    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) // check if NullAddressItem received, otherwise it is no unconnected message and should not be here
-      { // found null address item
+    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
+      { /* found null address item*/
         if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-          { // unconnected data item received
+          { /* unconnected data item received*/
             res = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
                 g_stCPFDataItem.stDataI_Item.Length);
             if (res == EIP_ERROR)
@@ -44,7 +44,7 @@ int notifyCPF(EIP_UINT8 * pa_nData, // message data
 
             return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
           }
-        // wrong data item detected
+        /* wrong data item detected*/
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         return EIP_ERROR;
@@ -55,9 +55,9 @@ int notifyCPF(EIP_UINT8 * pa_nData, // message data
     return EIP_ERROR;
   }
 
-int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
-    EIP_INT16 pa_nData_length, // data length
-    EIP_UINT8 * pa_replybuf) // reply buffer
+int notifyConnectedCPF(EIP_UINT8 * pa_nData, /* message data*/
+    EIP_INT16 pa_nData_length, /* data length*/
+    EIP_UINT8 * pa_replybuf) /* reply buffer*/
   {
     EIP_STATUS res;
     S_CIP_ConnectionObject *pstConnectionObject;
@@ -67,11 +67,11 @@ int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
       {
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notifyMR: error from createCPFstructure\n");
-        return EIP_ERROR; // error from createCPFstructure
+        return EIP_ERROR; /* error from createCPFstructure*/
       }
 
-    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) // check if ConnectedAddressItem received, otherwise it is no connected message and should not be here
-      { // ConnectedAddressItem item       
+    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
+      { /* ConnectedAddressItem item */      
         pstConnectionObject = getConnectedObject(g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
         if (pstConnectionObject == 0)
           return EIP_ERROR;
@@ -79,9 +79,9 @@ int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
         /* reset the watchdogtimer */
         pstConnectionObject->InnacitvityWatchdogTimer = (pstConnectionObject->O_to_T_RPI / 1000) << 2; 
       
-        //TODO check connection id  and sequence count        
+        /*TODO check connection id  and sequence count    */    
         if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-          { // connected data item received
+          { /* connected data item received*/
             EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
             g_stCPFDataItem.stAddr_Item.Data.SequenceNumber = (EIP_UINT32)ltohs(&pnBuf);              
             res = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length - 2);
@@ -90,7 +90,7 @@ int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
 
             return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
           }
-        // wrong data item detected
+        /* wrong data item detected*/
         if (EIP_DEBUG>=EIP_TERSE)
           printf("notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         return EIP_ERROR;
@@ -146,7 +146,7 @@ EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
         pa_Data += pa_CPF_data->stDataI_Item.Length;
         len_count += (4 + pa_CPF_data->stDataI_Item.Length);
       }
-    for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) // TODO there needs to be a limit check here???
+    for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) /* TODO there needs to be a limit check here???*/
       {
         pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
         if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)

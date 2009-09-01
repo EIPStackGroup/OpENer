@@ -7,9 +7,9 @@
  ******************************************************************************/
 #include "endianconv.h"
 
-// THESE ROUTINES MODIFY THE BUFFER POINTER
+/* THESE ROUTINES MODIFY THE BUFFER POINTER*/
 
-// little-endian-to-host unsigned 16 bit
+/* little-endian-to-host unsigned 16 bit*/
 
 EIP_UINT16 ltohs(EIP_UINT8 ** pa_buf)
   {

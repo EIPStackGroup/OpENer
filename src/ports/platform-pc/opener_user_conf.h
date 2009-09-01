@@ -8,13 +8,33 @@
 #ifndef OPENER_USER_CONF_H_
 #define OPENER_USER_CONF_H_
 
+/*! \file
+ * \brief OpENer configuration setup
+ * 
+ * This file containes the general application specific configuration for OpENer.
+ * 
+ * Furthermore you have to specifiy platform specific ntework include files.
+ * OpENer needs defintions for the follwing data-types 
+ * and functions:
+ *    - struct sockaddr_in
+ *    - AF_INET
+ *    - INADDR_ANY
+ *    - htons
+ *    - ntohl
+ *    - inet_addr
+ */
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+
 /*! Identiy configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
 #define OPENER_DEVICE_TYPE               12
 #define OPENER_DEVICE_PRODUCT_CODE      200
 #define OPENER_DEVICE_MAJOR_REVISION      1
 #define OPENER_DEVICE_MINOR_REVISION      2
-#define OPENER_DEVICE_SERIAL       12345678      //TODO -- this must made settable per device instance
+#define OPENER_DEVICE_SERIAL       12345678      /*TODO -- this must made settable per device instance*/
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
 
@@ -54,21 +74,5 @@
 /*! Define if RUN IDLE data is sent with consumed data
  */ 
 #define OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER 1
-
-
-/*! Platform specific network include files
- * OpENer needs defintions for the follwing data-types 
- * and functions:
- *    - struct sockaddr_in
- *    - AF_INET
- *    - INADDR_ANY
- *    - htons
- *    - ntohl
- *    - inet_addr
- */
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-
 
 #endif /*OPENER_USER_CONF_H_*/

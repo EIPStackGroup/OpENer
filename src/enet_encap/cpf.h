@@ -11,13 +11,14 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-// CPF is Common Packet Format
-// CPF packet := <number of items> {<items>}
-// item := <TypeID> <Length> <data>
-// <number of items> := two bytes
-// <TypeID> := two bytes
-// <Length> := two bytes
-// <data> := <the number of bytes specified by Length>
+/*/ CPF is Common Packet Format
+ CPF packet := <number of items> {<items>}
+ item := <TypeID> <Length> <data>
+ <number of items> := two bytes
+ <TypeID> := two bytes
+ <Length> := two bytes
+ <data> := <the number of bytes specified by Length>
+*/
 
 /* define Item ID numbers used for address and data items in CPF structures */
 #define CIP_ITEM_ID_NULL                                0x0000  /* Null Address Item */
@@ -60,7 +61,7 @@ typedef struct
     EIP_UINT8 nasin_zero[8];
   } S_SockAddrInfo_Item;
 
-// this one case of a CPF packet is supported:
+/* this one case of a CPF packet is supported:*/
 
 typedef struct
   {
@@ -89,9 +90,7 @@ int notifyCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_re
  * @param  pa_nData_length data length
  * @param  pa_replybuf reply buffer
  */
-int notifyConnectedCPF(EIP_UINT8 * pa_nData, // message data
-    EIP_INT16 pa_nData_length, // data length
-    EIP_UINT8 * pa_replybuf); // reply buffer
+int notifyConnectedCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_replybuf);
 
 /*! \ingroup ENCAP
  *  Create CPF structure out of the recieved data.

@@ -19,7 +19,7 @@ CFLAGS= \
 	-I ../../src/cip \
 	-I ../../src/ports/platform-pc \
 	-DEIP_DEBUG=$(VERBOSE) \
-	-W -Wall
+	-W -Wall -ansi
 
 LDFLAGS=
 

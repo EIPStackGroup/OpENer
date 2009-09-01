@@ -62,22 +62,23 @@ typedef enum
     EIP_ERROR = -1,
   } EIP_STATUS;
 
-typedef enum // define C++ -like "bool"
+typedef enum /* define C++ -like "bool"*/
   {
     false=0,
     true=1
   }bool;
 
-// by default an enum is 32 bits
-// __attribute((packed)) allows the compiler to use a shorter data type
-// the following forces an enum to a specified minimum length, it also documents the size of the enum
-//
-// example:
-//
-// typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;		// this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
-//										// the definition FOO_PACKED_SIZE is a dummy, but it forces the minimum size
+/* by default an enum is 32 bits
+ __attribute((packed)) allows the compiler to use a shorter data type
+ the following forces an enum to a specified minimum length, it also documents the size of the enum
 
-// TODO -- find some portable way of dealing with packed structs and typed enums
+ example:
+
+ typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;		 this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
+										 the definition FOO_PACKED_SIZE is a dummy, but it forces the minimum size
+*/
+  
+/* TODO -- find some portable way of dealing with packed structs and typed enums */
 #ifdef __GNUC__
 #define PACKED __attribute__((packed))
 
@@ -87,8 +88,8 @@ typedef enum // define C++ -like "bool"
 
 #endif
 
-#define EIP_SILENT	0	// print nothing
-#define EIP_TERSE	1	// print signifcant events and error messages
-#define EIP_VERBOSE	2	// print a running commentary on many events
-#define EIP_VVERBOSE	3	// print a running commentary plus dumps of messages
+#define EIP_SILENT	0	/* print nothing */
+#define EIP_TERSE	1	/* print signifcant events and error messages */
+#define EIP_VERBOSE	2	/* print a running commentary on many events */
+#define EIP_VVERBOSE	3	/* print a running commentary plus dumps of messages */
 #endif /*TYPEDEFS_H_*/

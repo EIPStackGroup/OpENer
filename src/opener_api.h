@@ -312,7 +312,7 @@ void IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
  * @return socket identifier on success
  *         -1 on error 
  */
-int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr); // direction: PRODUCER or CONSUMER
+int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr); 
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief create a producing or consuming UDP socket

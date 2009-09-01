@@ -18,15 +18,15 @@
 #include "cipethernetlink.h"
 #include "opener_api.h"
 
-EIP_UINT32 TCP_Status = 0;                   /* #1 */// This is a TCPIP object attribute. For now it is always zero.
-EIP_UINT32 Configuration_Capability = 0x04;  /* #2 */// This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP spec
-EIP_UINT32 Configuration_Control = 0;        /* #3 */// This is a TCPIP object attribute. For now it is always zero and is not used for anything.
+EIP_UINT32 TCP_Status = 0;                   /* #1  This is a TCPIP object attribute. For now it is always zero. */
+EIP_UINT32 Configuration_Capability = 0x04;  /* #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP spec*/
+EIP_UINT32 Configuration_Control = 0;        /* #3  This is a TCPIP object attribute. For now it is always zero and is not used for anything. */
 S_CIP_EPATH Physical_Link_Object = /* #4 */
-  { 2, // EIP_UINT8 PathSize
-      CIP_ETHERNETLINK_CLASS_CODE, // EIP_UINT32 ClassID
-      1, // EIP_UINT32 InstanceNr
-      0 // EIP_UINT32 AttributNr (not used as this is the EPATH the EthernetLink object)
-    }; // it was not initilized in the original code
+  { 2, /* EIP_UINT8 PathSize*/
+      CIP_ETHERNETLINK_CLASS_CODE, /* EIP_UINT32 ClassID*/
+      1, /* EIP_UINT32 InstanceNr*/
+      0 /* EIP_UINT32 AttributNr (not used as this is the EPATH the EthernetLink object)*/
+    }; /* it was not initilized in the original code*/
 
 
 S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
@@ -43,7 +43,7 @@ S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
 S_CIP_String Hostname = /* #6 */
   { 0, 0 };
 
-//!Multicast address to be used for I/O connections
+/*!Multicast address to be used for I/O connections*/
 EIP_UINT32 g_nMultiCastAddress;
 
 
@@ -54,9 +54,9 @@ EIP_STATUS configureNetworkInterface(const char *pa_acIpAdress,
     Interface_Configuration.NetworkMask = inet_addr(pa_acSubNetMask);
     Interface_Configuration.Gateway = inet_addr(pa_acGateway);
 
-    // calculate the CIP multicast address. The multicast address is calculated, not input
+    /* calculate the CIP multicast address. The multicast address is calculated, not input*/
     unsigned nHostId = ntohl(Interface_Configuration.IPAddress)
-        & ~ntohl(Interface_Configuration.NetworkMask); // see CIP spec 3-5.3 for multicast address algorithm
+        & ~ntohl(Interface_Configuration.NetworkMask); /* see CIP spec 3-5.3 for multicast address algorithm*/
     nHostId -= 1;
     nHostId &= 0x3ff;
     g_nMultiCastAddress = htonl(ntohl(inet_addr("239.192.1.0")) | nHostId << 5);
@@ -101,9 +101,9 @@ void configureHostName(const char *pa_acHostName)
       }
   }
 
-EIP_STATUS setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance, // pointer to instance
-    S_CIP_MR_Request *pa_pstMRRequest, // pointer to message router request 
-    S_CIP_MR_Response *pa_pstMRResponse, // pointer to message router response
+EIP_STATUS setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance, /* pointer to instance*/
+    S_CIP_MR_Request *pa_pstMRRequest, /* pointer to message router request */
+    S_CIP_MR_Response *pa_pstMRResponse, /* pointer to message router response*/
     EIP_UINT8 *pa_msg)
   {
     pa_pstObjectInstance = 0; /*surrpress compiler warning */
@@ -113,7 +113,7 @@ EIP_STATUS setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance, // pointe
         (pa_pstMRRequest->RequestPath.AttributNr <= 6))
       {
           /* it is an attribute we currently support, however no attribute is setable */
-          //TODO if you like to have a device that can be configured via this CIP object add your code here */
+          /*TODO if you like to have a device that can be configured via this CIP object add your code here */
         pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SETTABLE;
         
       }
@@ -134,17 +134,17 @@ EIP_STATUS CIP_TCPIP_Interface_Init()
     S_CIP_Class *p_stTCPIPClass;
     S_CIP_Instance *pstInstance;
 
-    if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, // # class attributes
-        0xffffffff, // class getAttributeAll mask
-        0, // # class services
-        6, // # instance attributes
-        0xffffffff, // instance getAttributeAll mask
-        1, // # instance services
-        1, // # instances
+    if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, /* # class attributes*/
+        0xffffffff, /* class getAttributeAll mask*/
+        0, /* # class services*/
+        6, /* # instance attributes*/
+        0xffffffff, /* instance getAttributeAll mask*/
+        1, /* # instance services*/
+        1, /* # instances*/
         "TCP/IP interface", 1)) == 0)
       return EIP_ERROR;
 
-    pstInstance = getCIPInstance(p_stTCPIPClass, 1); // bind attributes to the instance #1 that was created above
+    pstInstance = getCIPInstance(p_stTCPIPClass, 1); /* bind attributes to the instance #1 that was created above*/
 
     insertAttribute(pstInstance, 1, CIP_DWORD, (void *)&TCP_Status);
     insertAttribute(pstInstance, 2, CIP_DWORD,

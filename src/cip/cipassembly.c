@@ -14,13 +14,13 @@
 
 S_CIP_Class *createAssemblyClass()
   { /* create the CIP Assembly object with zero instances */
-    return createCIPClass(CIP_ASSEMBLY_CLASS_CODE, 0, // # class attributes
-            0xffffffff, // class getAttributeAll mask
-            0, // # class services
-            1, // # instance attributes
-            0xffffffff, // instance getAttributeAll mask
-            0, // # instance services
-            0, // # instances
+    return createCIPClass(CIP_ASSEMBLY_CLASS_CODE, 0, /* # class attributes*/
+            0xffffffff, /* class getAttributeAll mask*/
+            0, /* # class services*/
+            1, /* # instance attributes*/
+            0xffffffff, /* instance getAttributeAll mask*/
+            0, /* # instance services*/
+            0, /* # instances*/
             "assembly", 1);
   }
 
@@ -45,11 +45,11 @@ S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
           }
       }
 
-    pstAssemblyInstance = addCIPInstance(pstAssemblyClass, pa_nInstanceID); // add instances (always succeeds (or asserts))
+    pstAssemblyInstance = addCIPInstance(pstAssemblyClass, pa_nInstanceID); /* add instances (always succeeds (or asserts))*/
 
     if ((stAssemblyByteArray = IApp_CipCalloc(1, sizeof(S_CIP_Byte_Array))) == 0)
       {
-        return 0; //TODO remove assembly instance in case of error
+        return 0; /*TODO remove assembly instance in case of error*/
       }
 
     stAssemblyByteArray->len = pa_datalength;
@@ -71,7 +71,7 @@ EIP_STATUS notifyAssemblyConnectedDataReceived(S_CIP_Instance * pa_pstInstance,
       {
         if (EIP_DEBUG>EIP_VERBOSE)
           printf("too much data arrived\n");
-        return EIP_ERROR; //TODO question should we notify the application that wrong data has been recieved???
+        return EIP_ERROR; /*TODO question should we notify the application that wrong data has been recieved???*/
       }
     else
       {

@@ -10,7 +10,7 @@
 
 #include "typedefs.h"
 
-// TODO -- find some portable way of defining all these with enums rather than #defines so that the names rather than hex number are displayed in the debugger
+/* TODO -- find some portable way of defining all these with enums rather than #defines so that the names rather than hex number are displayed in the debugger*/
 #ifdef __GNUC__
 typedef enum
   {
@@ -70,7 +70,7 @@ typedef enum
 #define CIP_MEMBER_LIST			0xA3
 #define CIP_BYTE_ARRAY			0xA4
 
-#define INTERNAL_UINT16_6		0xf0				// bogus hack, for port class attribute 9, TODO figure out the right way to handle it
+#define INTERNAL_UINT16_6		0xf0				/* bogus hack, for port class attribute 9, TODO figure out the right way to handle it */
 /* definition of CIP service codes */
 #define CIP_GET_ATTRIBUTE_SINGLE	0x0E
 #define CIP_SET_ATTRIBUTE_SINGLE	0x10
@@ -171,47 +171,47 @@ typedef struct
 
 /* type definition of CIP service sructure */
 
-// instances are stored in a linked list
+/* instances are stored in a linked list*/
 typedef struct CIP_Instance
   {
-    EIP_UINT32 nInstanceNr; // this instance's number (unique within the class)
-    S_CIP_attribute_struct *pstAttributes; // pointer to an array of attributes which is unique to this instance
-    struct CIP_Class *pstClass; // class the instance belongs to
-    struct CIP_Instance *pstNext; // next instance, all instances of a class live in a linked list
+    EIP_UINT32 nInstanceNr; /*!> this instance's number (unique within the class) */
+    S_CIP_attribute_struct *pstAttributes; /* pointer to an array of attributes which is unique to this instance */
+    struct CIP_Class *pstClass; /*!> class the instance belongs to */
+    struct CIP_Instance *pstNext; /*!> next instance, all instances of a class live in a linked list */
   } S_CIP_Instance;
 
 typedef struct CIP_Class
-  { // Class is a subclass of Instance: the following group of fields must match CIP_Instance
-    EIP_UINT32 nInstanceNr; // this instance's number (unique within the class)
-    S_CIP_attribute_struct *pstAttributes; // pointer to an array of attributes which is unique to this instance
-    struct CIP_Class *pstClass; // class the instance belongs to
-    struct CIP_Instance *pstNext; // next instance, all instances of a class live in a linked list
+  { /* Class is a subclass of Instance: the following group of fields must match CIP_Instance */
+    EIP_UINT32 nInstanceNr; /*!> this instance's number (unique within the class)*/
+    S_CIP_attribute_struct *pstAttributes; /*!> pointer to an array of attributes which is unique to this instance */
+    struct CIP_Class *pstClass; /*!> class the instance belongs to*/
+    struct CIP_Instance *pstNext; /*!> next instance, all instances of a class live in a linked list*/
 
-    // the rest of theswe are specific to the Class class only.
-    EIP_UINT32 nClassID; // class ID
-    EIP_UINT16 nRevision; // class revision
-    EIP_UINT16 nNr_of_Instances; // number of instances in the class (not including instance 0)
-    EIP_UINT16 nNr_of_Attributes; // number of attributes of each instance
-    EIP_UINT16 nMaxAttribute; // highest defined attribute number (attribute numbers are not necessarily consecutive)
-    EIP_UINT32 nGetAttrAllMask; // mask indicating which attributes are returned by getAttributeAll
-    EIP_UINT16 nNr_of_Services; // number of services supported
-    S_CIP_Instance *pstInstances; // pointer to the list of instances
-    struct CIP_service_struct *pstServices; // pointer to the array of services
-    char *acName; // class name
+    /* the rest of theswe are specific to the Class class only. */
+    EIP_UINT32 nClassID; /*!> class ID */
+    EIP_UINT16 nRevision; /*!> class revision*/
+    EIP_UINT16 nNr_of_Instances; /*!> number of instances in the class (not including instance 0)*/
+    EIP_UINT16 nNr_of_Attributes; /*!> number of attributes of each instance*/
+    EIP_UINT16 nMaxAttribute; /*!> highest defined attribute number (attribute numbers are not necessarily consecutive)*/
+    EIP_UINT32 nGetAttrAllMask; /*!> mask indicating which attributes are returned by getAttributeAll*/
+    EIP_UINT16 nNr_of_Services; /*!> number of services supported*/
+    S_CIP_Instance *pstInstances; /*!> pointer to the list of instances*/
+    struct CIP_service_struct *pstServices; /*!> pointer to the array of services*/
+    char *acName; /*!> class name */
   } S_CIP_Class;
 
-// a metaClass is a class that holds the class attributes and services
+/* a metaClass is a class that holds the class attributes and services*/
 
 
 typedef EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
     S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse, EIP_UINT8 *pa_msg);
 
-// service descriptor. These are stored in an array
+/* service descriptor. These are stored in an array*/
 typedef struct CIP_service_struct
   {
-    EIP_UINT8 CIP_ServiceNr; // service number
-    TCIPServiceFunc m_ptfuncService; // pointer to a function call
-    char *name; // name of the service
+    EIP_UINT8 CIP_ServiceNr; /*!> service number*/
+    TCIPServiceFunc m_ptfuncService; /*!> pointer to a function call*/
+    char *name; /*!> name of the service */
   } S_CIP_service_struct;
 
 typedef struct
@@ -229,7 +229,6 @@ typedef struct
     EIP_UINT8 PathSize;
     EIP_UINT32 Port; /* support up to 32 bit path*/
     EIP_UINT32 Address;
-  // TODO: something else ?
   } S_CIP_RPATH;
 
 typedef struct CIP_UnconnectedSend_Param_Struct
@@ -244,8 +243,8 @@ typedef struct CIP_UnconnectedSend_Param_Struct
     void *CPFdata;
   } S_CIP_UnconnectedSend_Param_Struct;
 
-// these are used for creating the getAttributeAll masks
-// TODO there might be a way simplifying this using __VARARGS__ in #define
+/* these are used for creating the getAttributeAll masks
+ TODO there might be a way simplifying this using __VARARGS__ in #define */
 
 #define MASK1(a)               (1<<(a))
 #define MASK2(a,b)             (1<<(a) | 1<<(b))
