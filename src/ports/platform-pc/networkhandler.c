@@ -126,7 +126,15 @@ EIP_STATUS Start_NetworkHandler()
         perror("error with bind");
         return EIP_ERROR;
       }
-
+    
+    /* enable the udp socket to receive broadcast messages*/
+    int y = 1;
+    if (0 > setsockopt(nUDPListener, SOL_SOCKET, SO_BROADCAST, &y, sizeof(int)))
+      {
+        perror("error with setting broadcast receive for udp socket");
+        return EIP_ERROR;
+      }
+    
     if ((bind(nUDPListener, (struct sockaddr *) &my_addr,
         sizeof(struct sockaddr))) == -1)
       {
