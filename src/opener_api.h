@@ -238,10 +238,14 @@ void closeSession(int pa_nSocket);
 /** \ingroup CIP_CALLBACK_API 
  * \brief Callback for the application initialization
  *
- * This function will be called by the CIP stack after it has finished its initialization. In this function the user can setup all CIP objects she likes to have.
- * TODO think if this is still the right way to do this. Maybe just after the CIP_INIT would be fine to. 
+ * This function will be called by the CIP stack after it has finished its
+ * initialization. In this function the user can setup all CIP objects she
+ * likes to have.
  *
- *  return status -1 .. error.
+ * This function is provided for convenience reasons. After the void CIP_Init(void)
+ * function has finished it is okay to also generate your CIP objects.
+ *  return status EIP_ERROR .. error
+ *                EIP_OK ... successful finish
  */
 EIP_STATUS IApp_Init(void);
 
@@ -414,6 +418,11 @@ void IApp_CloseSocket(int pa_nSockFd);
  *       file or from operating system functions. If these values should be 
  *       settable remotely via explicit messages the SetAttributeSingle functions
  *       of the EtherNetLink and the TCPIPInterface object have to be adapted.
+ *   -# Set the device's serial number\n
+ *      According to the CIP specification a device vendor has to ensure that
+ *      each of its devices has a unique 32Bit device id. You can set it with
+ *      the function:
+ *       - void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber)
  *   -# Initialize OpENer: \n
  *      With the function CIP_Init(void) the internal data structures of opener are 
  *      correctly setup. After this step own CIP objects and Assembly objects 

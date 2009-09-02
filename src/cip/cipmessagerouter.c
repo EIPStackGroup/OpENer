@@ -131,7 +131,7 @@ EIP_STATUS registerClass(S_CIP_Class * pa_pt2Class)
     while (*p)
       p = &(*p)->next; /* follow the list until p points to an empty link (list end)*/
 
-    *p = IApp_CipCalloc(1, sizeof(S_CIP_MR_Object)); /* create a new node at the end of the list*/
+    *p = (S_CIP_MR_Object *)IApp_CipCalloc(1, sizeof(S_CIP_MR_Object)); /* create a new node at the end of the list*/
     if (*p == 0)
       return EIP_ERROR; /* check for memory error*/
 
@@ -140,8 +140,10 @@ EIP_STATUS registerClass(S_CIP_Class * pa_pt2Class)
     return EIP_OK;
   }
 
-int notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
+EIP_STATUS notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
   {
+    EIP_STATUS nRetVal = EIP_OK;
+
     EIP_BYTE nStatus;
     if (EIP_DEBUG>=EIP_VERBOSE)
       printf("notifyMR: routing unconnected message\n");
@@ -155,7 +157,6 @@ int notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
         gMRResponse.Reserved = 0;
         gMRResponse.DataLength = 0;
         gMRResponse.ReplyService = (0x80 | gMRRequest.Service);
-        return 0;
       }
     else
       {
@@ -174,30 +175,27 @@ int notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
             gMRResponse.Reserved = 0;
             gMRResponse.DataLength = 0;
             gMRResponse.ReplyService = (0x80 | gMRRequest.Service);
-            return 0;
           }
         else
           {
             /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
              object will or will not make an reply into gMRResponse*/
-            EIP_STATUS status;
-
             gMRResponse.Reserved = 0;
             assert(pt2regObject->pt2Class);
             if (EIP_DEBUG>=EIP_VERBOSE)
               printf("notifyMR: calling notify function of class '%s'\n",
                   pt2regObject->pt2Class->acName);
-            status = notifyClass(pt2regObject->pt2Class, &gMRRequest,
+            nRetVal = notifyClass(pt2regObject->pt2Class, &gMRRequest,
                 &gMRResponse);
 
             if (EIP_DEBUG<EIP_VERBOSE)
               {
               }
-            else if (status == -1)
+            else if (nRetVal == EIP_ERROR)
               printf(
                   "notifyMR: notify function of class '%s' returned an error\n",
                   pt2regObject->pt2Class->acName);
-            else if (status == 0)
+            else if (nRetVal == EIP_OK)
               printf(
                   "notifyMR: notify function of class '%s' returned no reply\n",
                   pt2regObject->pt2Class->acName);
@@ -205,9 +203,9 @@ int notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
               printf(
                   "notifyMR: notify function of class '%s' returned a reply\n",
                   pt2regObject->pt2Class->acName);
-            return status;
           }
       }
+    return nRetVal;
   }
 
 EIP_BYTE createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength, S_CIP_MR_Request * pa_pstMRReqdata)

@@ -10,7 +10,6 @@ TERSE=1			# error and connection up/down messages only
 VERBOSE=2		# running commentary
 VVERBOSE=3		# commentary plus message dumps
 
-
 CFLAGS= \
 	-g \
 	-I . \

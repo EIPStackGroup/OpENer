@@ -30,8 +30,8 @@ int main(int argc, char *arg[])
     EIP_UINT8 acMyMACAddress[6];
 
     if (argc != 12)
-      { printf("Wrong number of commandline parameters!\n");
-        printf("The correct commandline parameters are:\n"); 
+      { printf("Wrong number of command line parameters!\n");
+        printf("The correct command line parameters are:\n");
         printf("./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n");
         printf("    e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");      
         exit(0);

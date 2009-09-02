@@ -136,22 +136,22 @@ EIP_STATUS OpenMulticastConnection(int pa_direction,
 EIP_STATUS OpenConsumingPointToPointConnection(
     S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_CPF_Data *pa_CPF_data);
 
-EIP_STATUS OpenProducingPointToPointConnection(
+int OpenProducingPointToPointConnection(
     S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_CPF_Data *pa_CPF_data,
     EIP_UINT16 *pa_pnExtendedError);
 
 /** \brief check if the data given in the connection object match with an already established connection
  * 
- * The comparision is done according to the definitions in the CIP spec Section 3-5.5.2:
+ * The comparison is done according to the definitions in the CIP specification Section 3-5.5.2:
  * The following elements have to be equal: Vendor ID, Connection Serial Number, Originator Serial Number
- * @param pa_pstConnObj connection object containing the comparision elements from the forward open request
+ * @param pa_pstConnObj connection object containing the comparison elements from the forward open request
  * @return 
  *    - -1 if no equal established connection exists
- *    - the index number of the queal connection object       
+ *    - the index number of the equal connection object
  */
 int checkForExistingConnection(S_CIP_ConnectionObject *pa_pstConnObj);
 
-/** \brief Compare the electronic key recieved with a forward open request with the device's data.
+/** \brief Compare the electronic key received with a forward open request with the device's data.
  * 
  * @param pa_nKeyFormat format identifier given in the forward open request
  * @param pa_pstKeyData pointer to the electronic key data recieved in the forward open request
@@ -542,7 +542,7 @@ EIP_STATUS OpenConsumingPointToPointConnection(
     return EIP_OK;
   }
 
-EIP_STATUS OpenProducingPointToPointConnection(
+int OpenProducingPointToPointConnection(
     S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_CPF_Data *pa_CPF_data,
     EIP_UINT16 *pa_pnExtendedError)
   {
@@ -1544,7 +1544,7 @@ EIP_STATUS sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
 
     pCPFDataItem->stDataI_Item.TypeID = CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET;
 
-    p = pa_pstConnection->p_stProducingInstance->pstAttributes->pt2data;
+    p = (S_CIP_Byte_Array *) pa_pstConnection->p_stProducingInstance->pstAttributes->pt2data;
     pCPFDataItem->stDataI_Item.Length = 0;
 
     /* notify the application that data will be sent immediately after the call */

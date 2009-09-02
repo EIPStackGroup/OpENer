@@ -47,7 +47,7 @@ S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
 
     pstAssemblyInstance = addCIPInstance(pstAssemblyClass, pa_nInstanceID); /* add instances (always succeeds (or asserts))*/
 
-    if ((stAssemblyByteArray = IApp_CipCalloc(1, sizeof(S_CIP_Byte_Array))) == 0)
+    if ((stAssemblyByteArray = (S_CIP_Byte_Array *)IApp_CipCalloc(1, sizeof(S_CIP_Byte_Array))) == 0)
       {
         return 0; /*TODO remove assembly instance in case of error*/
       }
@@ -66,7 +66,7 @@ EIP_STATUS notifyAssemblyConnectedDataReceived(S_CIP_Instance * pa_pstInstance,
     
     /* empty path (path size = 0) need to be checked and taken care of in future */
     /* copy received data to Attribute 3 */
-    p = pa_pstInstance->pstAttributes->pt2data;
+    p = (S_CIP_Byte_Array *)pa_pstInstance->pstAttributes->pt2data;
     if (p->len < pa_nDataLength)
       {
         if (EIP_DEBUG>EIP_VERBOSE)

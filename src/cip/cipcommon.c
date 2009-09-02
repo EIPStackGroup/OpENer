@@ -127,7 +127,7 @@ S_CIP_Instance *addCIPInstances(S_CIP_Class * pa_pstCIPClass,  int pa_nNr_of_Ins
         inst++; /*    keep track of what the first new instance number will be */
       }
 
-    first = p = IApp_CipCalloc(pa_nNr_of_Instances, sizeof(S_CIP_Instance)); /* allocate a block of memory for all created instances*/
+    first = p = (S_CIP_Instance *) IApp_CipCalloc(pa_nNr_of_Instances, sizeof(S_CIP_Instance)); /* allocate a block of memory for all created instances*/
     assert(p);
     /* fail if run out of memory */
 
@@ -142,7 +142,7 @@ S_CIP_Instance *addCIPInstances(S_CIP_Class * pa_pstCIPClass,  int pa_nNr_of_Ins
 
         if (pa_pstCIPClass->nNr_of_Attributes) /* if the class calls for instance attributes */
           { /* then allocate storage for the attribute array */
-            p->pstAttributes = IApp_CipCalloc(
+            p->pstAttributes = (S_CIP_attribute_struct*)IApp_CipCalloc(
                 pa_pstCIPClass->nNr_of_Attributes,
                 sizeof(S_CIP_attribute_struct));
           }
@@ -189,8 +189,8 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID,
      and contains a pointer to a metaclass
      CIP never explicitly addresses a metaclass*/
 
-    pt2Class = IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the class object*/
-    pt2MetaClass = IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the metaclass object*/
+    pt2Class = (S_CIP_Class*)IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the class object*/
+    pt2MetaClass = (S_CIP_Class*)IApp_CipCalloc(1, sizeof(S_CIP_Class)); /* create the metaclass object*/
 
     /* initialize the class-specific fields of the Class struct*/
     pt2Class->nClassID = pa_nClassID; /* the class remembers the class ID */
@@ -209,7 +209,7 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID,
     pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; /* indicate which attributes are included in class getAttributeAll*/
     pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices+2; /* the metaclass manages the behavior of the class itself */
     pt2Class->pstServices = 0; 
-    pt2MetaClass->acName = IApp_CipCalloc(1, strlen(pa_acName)+6); /* fabricate the name "meta<classname>"*/
+    pt2MetaClass->acName = (char *)IApp_CipCalloc(1, strlen(pa_acName)+6); /* fabricate the name "meta<classname>"*/
     strcpy(pt2MetaClass->acName, "meta-");
     strcat(pt2MetaClass->acName, pa_acName);
 
@@ -227,14 +227,14 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID,
 
     /* further initialization of the class object*/
 
-    pt2Class->pstAttributes = IApp_CipCalloc(pa_nNr_of_ClassAttributes+5,
+    pt2Class->pstAttributes = (S_CIP_attribute_struct *)IApp_CipCalloc(pa_nNr_of_ClassAttributes+5,
         sizeof(S_CIP_attribute_struct));
     /* TODO -- check that we didn't run out of memory?*/
 
-    pt2MetaClass->pstServices = IApp_CipCalloc(pa_nNr_of_ClassServices+2,
+    pt2MetaClass->pstServices = (S_CIP_service_struct *)IApp_CipCalloc(pa_nNr_of_ClassServices+2,
         sizeof(S_CIP_service_struct));
 
-    pt2Class->pstServices = IApp_CipCalloc(pa_nNr_of_InstanceServices+2,
+    pt2Class->pstServices = (S_CIP_service_struct *)IApp_CipCalloc(pa_nNr_of_InstanceServices+2,
         sizeof(S_CIP_service_struct));
 
     if (pa_nNr_of_Instances > 0)
@@ -312,7 +312,7 @@ void insertService(S_CIP_Class * pa_pClass,  EIP_UINT8 pa_nServiceNr,
     p = pa_pClass->pstServices; /* get a pointer to the service array*/
     assert(p!=0);
     /* adding a service to a class that was not declared to have services is not allowed*/
-    for (i = 0; i < pa_pClass->nNr_of_Services; i++) /* interate over all service slots attached to the class */
+    for (i = 0; i < pa_pClass->nNr_of_Services; i++) /* Iterate over all service slots attached to the class */
       {
         if (p->CIP_ServiceNr == pa_nServiceNr || p->m_ptfuncService == 0) /* found undefined service slot*/
           {
@@ -413,9 +413,10 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
     case (CIP_DATE):
     case (CIP_TIME_OF_DAY):
     case (CIP_DATE_AND_TIME):
+        break;
     case (CIP_STRING):
       {
-        S_CIP_String *s = pa_ptstAttribute->pt2data;
+        S_CIP_String *s = (S_CIP_String *)pa_ptstAttribute->pt2data;
 
         htols(*(EIP_UINT16 *) &(s->Length), &pa_pnMsg);
         for (j = 0; j < s->Length; j++)
@@ -440,7 +441,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (CIP_SHORT_STRING):
       {
-        S_CIP_Short_String *ss = pa_ptstAttribute->pt2data;
+        S_CIP_Short_String *ss = (S_CIP_Short_String *)pa_ptstAttribute->pt2data;
 
         *pa_pnMsg++ = ss->Length;
         for (j = 0; j < ss->Length; j++)
@@ -456,7 +457,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (CIP_EPATH):
       {
-        EIP_UINT16 *p = pa_ptstAttribute->pt2data;
+        EIP_UINT16 *p = (EIP_UINT16 *)pa_ptstAttribute->pt2data;
         EIP_UINT16 len;
         EIP_UINT16 data;
 
@@ -477,7 +478,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (CIP_USINT_USINT):
       {
-        S_CIP_Revision *rv = pa_ptstAttribute->pt2data;
+        S_CIP_Revision *rv = (S_CIP_Revision *)pa_ptstAttribute->pt2data;
 
         *pa_pnMsg++ = rv->MajorRevision;
         *pa_pnMsg++ = rv->MinorRevision;
@@ -487,7 +488,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING):
       {
-        EIP_UINT32 *p = pa_ptstAttribute->pt2data;
+        EIP_UINT32 *p = (EIP_UINT32 *)pa_ptstAttribute->pt2data;
         S_CIP_String *s;
 
         htoll(p[0], &pa_pnMsg);
@@ -517,7 +518,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (CIP_6USINT):
       {
-        EIP_UINT8 *p = pa_ptstAttribute->pt2data;
+        EIP_UINT8 *p = (EIP_UINT8 *)pa_ptstAttribute->pt2data;
 
         for (j = 0; j < 6; j++)
           {
@@ -535,7 +536,7 @@ int outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute,
 
     case (INTERNAL_UINT16_6): /* TODO for port class attribute 9, hopefully we can find a better way to do this*/
       { 
-        EIP_UINT16 *p = pa_ptstAttribute->pt2data;
+        EIP_UINT16 *p = (EIP_UINT16 *)pa_ptstAttribute->pt2data;
 
         htols(p[0], &pa_pnMsg);
         htols(p[1], &pa_pnMsg);

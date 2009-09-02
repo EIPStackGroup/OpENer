@@ -35,7 +35,7 @@ EIP_STATUS CIP_MessageRouter_Init(void);
  *  @return  EIP_ERROR on fault
  *           EIP_OK on success           
  */ 
-int notifyMR(EIP_UINT8 *pa_pnData, int pa_nDataLength); 
+EIP_STATUS notifyMR(EIP_UINT8 *pa_pnData, int pa_nDataLength);
 
 /*! Register a class at the message router.
  *  In order that the message router can deliver

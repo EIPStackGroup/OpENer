@@ -59,14 +59,19 @@ typedef enum
   {
     EIP_OK = 0,
     EIP_OK_SEND = 1,
-    EIP_ERROR = -1,
+    EIP_ERROR = -1
   } EIP_STATUS;
 
-typedef enum /* define C++ -like "bool"*/
+
+#ifndef __cplusplus
+/*! If we don't have C++ define a C++ -like "bool"*/
+typedef enum
   {
     false=0,
     true=1
   }bool;
+
+#endif
 
 /* by default an enum is 32 bits
  __attribute((packed)) allows the compiler to use a shorter data type
