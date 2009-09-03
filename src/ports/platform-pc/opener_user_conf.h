@@ -11,10 +11,10 @@
 /*! \file
  * \brief OpENer configuration setup
  * 
- * This file containes the general application specific configuration for OpENer.
+ * This file contains the general application specific configuration for OpENer.
  * 
- * Furthermore you have to specifiy platform specific ntework include files.
- * OpENer needs defintions for the follwing data-types 
+ * Furthermore you have to specific platform specific network include files.
+ * OpENer needs definitions for the following data-types
  * and functions:
  *    - struct sockaddr_in
  *    - AF_INET
@@ -28,7 +28,7 @@
 #include <arpa/inet.h>
 
 
-/*! Identiy configuration of the device */
+/*! Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
 #define OPENER_DEVICE_TYPE               12
 #define OPENER_DEVICE_PRODUCT_CODE      200
@@ -37,7 +37,7 @@
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
 
-/*! The port address to be used for udp multi-cast connections
+/*! The port address to be used for UDP multi-cast connections
  */ 
 #define OPENER_UDP_MULTICAST_PORT   2222
 
@@ -47,9 +47,9 @@
 #define OPENER_NUMBER_OF_SUPPORTED_CONNECTIONS 10
 
 
-/*! The number of bytes used for the ethernet message buffer.
- *  This buffer size will be used for any recieved message.
- *  The same buffer is used for the replied eplicit message.
+/*! The number of bytes used for the Ethernet message buffer.
+ *  This buffer size will be used for any received message.
+ *  The same buffer is used for the replied explicit message.
  */ 
 #define OPENER_ETHERNET_BUFFER_SIZE 512
 
@@ -65,7 +65,7 @@
  */ 
 #define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 4
 
-/*! The time in ms of the timmer used in this implementations
+/*! The time in ms of the timer used in this implementations
  */ 
 #define OPENER_TIMER_TICK 10 
 
@@ -73,5 +73,15 @@
 /*! Define if RUN IDLE data is sent with consumed data
  */ 
 #define OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER 1
+
+#ifdef OPENER_WITH_TRACES
+/* If we have tracing enabled provide print tracing macro */
+#include <stdio.h>
+
+#define LOG_TRACE(args...)  fprintf(stderr,args)
+
+/*#define PRINT_TRACE(args...)  fprintf(stderr,args);*/
+
+#endif
 
 #endif /*OPENER_USER_CONF_H_*/

@@ -13,7 +13,8 @@
 
 #include "networkhandler.h"
 #include "opener_api.h"
-#include "cipcommon.h" 
+#include "cipcommon.h"
+#include "trace.h"
 
 /* global variables for demo application (3 assembly data fields) */
 EIP_UINT8 g_assemblydata[32]; /* Input */

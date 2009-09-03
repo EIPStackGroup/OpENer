@@ -28,7 +28,8 @@
  *  @param pa_acGateway     the gateway address 
  *  @return EIP_OK if the configuring worked otherwise EIP_ERROR
  */
-EIP_STATUS configureNetworkInterface(const char *pa_acIpAdress,
+EIP_STATUS
+configureNetworkInterface(const char *pa_acIpAdress,
     const char *pa_acSubNetMask, const char *pa_acGateway);
 
 /*! \ingroup CIP_API 
@@ -36,32 +37,37 @@ EIP_STATUS configureNetworkInterface(const char *pa_acIpAdress,
  * 
  *  @param pa_acMACAddress  the hardware MAC address of the network interface
  */
-void configureMACAddress(const EIP_UINT8 *pa_acMACAddress);
+void
+configureMACAddress(const EIP_UINT8 *pa_acMACAddress);
 
 /*! \ingroup CIP_API 
  * \brief Configure the domain name of the device
  *  @param pa_acDomainName the domain name to be used
  */
-void configureDomainName(const char *pa_acDomainName);
+void
+configureDomainName(const char *pa_acDomainName);
 
 /*! \ingroup CIP_API 
  * \brief Configure the host name of the device
  *  @param pa_acHostName the host name to be used
  */
-void configureHostName(const char *pa_acHostName);
+void
+configureHostName(const char *pa_acHostName);
 
 /*! \ingroup CIP_API
  * Set the serial number of the device's identy object.
  * 
  * @param pa_nSerialNumber unique 32 bit number identifying the device
- */ 
-void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
+ */
+void
+setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
 
 /** \ingroup CIP_API 
  * \brief Initialize and setup the CIP-stack
  * 
  */
-void CIP_Init(void);
+void
+CIP_Init(void);
 
 /** \ingroup CIP_API 
  * \brief Get a pointer to a CIP object with given class code
@@ -70,7 +76,8 @@ void CIP_Init(void);
  * @return pointer to CIP Object
  *          0 if object is not present in the stack
  */
-S_CIP_Class *getCIPClass(EIP_UINT32 pa_nClassID);
+S_CIP_Class *
+getCIPClass(EIP_UINT32 pa_nClassID);
 
 /** \ingroup CIP_API 
  * \brief Get a pointer to an instance
@@ -80,8 +87,8 @@ S_CIP_Class *getCIPClass(EIP_UINT32 pa_nClassID);
  * @return pointer to CIP Instance
  *          0 if instance is not in the object
  */
-S_CIP_Instance *getCIPInstance(S_CIP_Class *pa_pstObject,
-    EIP_UINT16 pa_nInstanceNr);
+S_CIP_Instance *
+getCIPInstance(S_CIP_Class *pa_pstObject, EIP_UINT16 pa_nInstanceNr);
 
 /** \ingroup CIP_API 
  * \brief Get a pointer to an instance's attribute
@@ -93,8 +100,8 @@ S_CIP_Instance *getCIPInstance(S_CIP_Class *pa_pstObject,
  * @return pointer to attribute
  *          0 if instance is not in the object
  */
-S_CIP_attribute_struct *getAttribute(S_CIP_Instance * pa_pInstance,
-    EIP_UINT8 pa_nAttributeNr);
+S_CIP_attribute_struct *
+getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr);
 
 /*! \ingroup CIP_API 
  * \brief Allocate memory for new CIP Class and attributes
@@ -114,9 +121,12 @@ S_CIP_attribute_struct *getAttribute(S_CIP_Instance * pa_pInstance,
  *  @return pointer to new class object
  *      0 on error
  */
-S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes, EIP_UINT32 pa_nClassGetAttrAllMask, int pa_nNr_of_ClassServices,
-    int pa_nNr_of_InstanceAttributes, EIP_UINT32 pa_nInstGetAttrAllMask, int pa_nNr_of_InstanceServices, 
-    int pa_nNr_of_Instances, char *pa_acName, EIP_UINT16 pa_nRevision);
+S_CIP_Class *
+createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
+    EIP_UINT32 pa_nClassGetAttrAllMask, int pa_nNr_of_ClassServices,
+    int pa_nNr_of_InstanceAttributes, EIP_UINT32 pa_nInstGetAttrAllMask,
+    int pa_nNr_of_InstanceServices, int pa_nNr_of_Instances, char *pa_acName,
+    EIP_UINT16 pa_nRevision);
 
 /** \ingroup CIP_API 
  * \brief Add a number of CIP instances to a given CIP class
@@ -133,8 +143,8 @@ S_CIP_Class *createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttribute
  * @return pointer to the first of the new instances
  *              0 on error
  */
-S_CIP_Instance *addCIPInstances(S_CIP_Class *pa_pstCIPObject,
-    int pa_nNr_of_Instances);
+S_CIP_Instance *
+addCIPInstances(S_CIP_Class *pa_pstCIPObject, int pa_nNr_of_Instances);
 
 /** \ingroup CIP_API 
  * \brief Create one instance of a given class with a certain instance number
@@ -146,8 +156,8 @@ S_CIP_Instance *addCIPInstances(S_CIP_Class *pa_pstCIPObject,
  *         already exists the existing is returned an no new instance is created
  * 
  */
-S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass,
-    EIP_UINT32 pa_nInstanceId);
+S_CIP_Instance *
+addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
 
 /*! \ingroup CIP_API 
  * Insert an attribute in an instance of a CIP class
@@ -156,7 +166,8 @@ S_CIP_Instance *addCIPInstance(S_CIP_Class * pa_pstCIPClass,
  *  @param pa_nCIP_Type type of attribute to be inserted.
  *  @param pa_pt2data pointer to data of attribute.
  */
-void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
+void
+insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
 
 /** \ingroup CIP_API 
@@ -170,7 +181,8 @@ void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
  * @param pa_ptfuncService pointer to function which represents the service.
  * @param name name of the service
  */
-void insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
+void
+insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
     TCIPServiceFunc pa_ptfuncService, char *name);
 
 /** \ingroup CIP_API 
@@ -187,9 +199,9 @@ void insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
  * In order to support a configuration assembly object it has to be created with this function.
  * The notification on received configuration data is handled with the IApp_after_receive function.
  */
-S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
-    EIP_BYTE *pa_data, EIP_UINT16 pa_datalength);
-
+S_CIP_Instance *
+createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE *pa_data,
+    EIP_UINT16 pa_datalength);
 
 /** \ingroup CIP_API 
  * Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
@@ -200,7 +212,8 @@ S_CIP_Instance *createAssemblyObject(EIP_UINT8 pa_nInstanceID,
  * @param pa_nRemainingBytes return how many bytes of the input are left over after we're done here
  * @return length of reply that need to be sent back
  */
-int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length,
+int
+handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length,
     int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
@@ -209,8 +222,9 @@ int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length,
  *  @param pa_pnData pointer to the buffer of data that has been recieved 
  *  @param pa_nDataLength number of bytes in the data buffer
  *  @return EIP_OK on success
- */ 
-EIP_STATUS handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength);
+ */
+EIP_STATUS
+handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength);
 
 /*! \ingroup CIP_API
  * Check if any of the connection timers (TransmissionTrigger or WarchdogTimeout) has timed out.
@@ -219,15 +233,16 @@ EIP_STATUS handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength)
  * 
  * @return EIP_OK on success
  */
-EIP_STATUS manageConnections(void); 
+EIP_STATUS
+manageConnections(void);
 
 /*! \ingroup CIP_API
  * Inform the encapsulation layer that the remote host has closed the connection.
  * According to the specs that will clean up and close the session in the encapsulation layer.
  * @param pa_nSocket the handler to the socket of the closed connection
  */
-void closeSession(int pa_nSocket);
-
+void
+closeSession(int pa_nSocket);
 
 /**  \defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * \ingroup CIP_API
@@ -247,7 +262,8 @@ void closeSession(int pa_nSocket);
  *  return status EIP_ERROR .. error
  *                EIP_OK ... successful finish
  */
-EIP_STATUS IApp_Init(void);
+EIP_STATUS
+IApp_Init(void);
 
 /** \ingroup CIP_CALLBACK_API 
  * \brief Call back function to inform application on received data for an assembly object.
@@ -263,8 +279,8 @@ EIP_STATUS IApp_Init(void);
  * The CIP-stack uses this function to inform on received configuration data. The length of the data
  * is already checked within the stack. Therefore the user only has to check if the data is valid.
  */
-EIP_STATUS IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance);
-
+EIP_STATUS
+IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance);
 /** \ingroup CIP_CALLBACK_API 
  * \brief Inform the application that the data of an assembly
  * object will be sent.
@@ -276,7 +292,8 @@ EIP_STATUS IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance);
  *          - true assembly data has changed
  *          - false assembly data has not changed
  */
-EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance);
+EIP_BOOL8
+IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance);
 
 /** \ingroup CIP_CALLBACK_API 
  * \brief Emulate as close a possible a power cycle of the device
@@ -284,7 +301,8 @@ EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance);
  * @return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
-EIP_STATUS IApp_ResetDevice(void);
+EIP_STATUS
+IApp_ResetDevice(void);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief Reset the device to the initial configuration and emulate as close as possible a power cycle of the device
@@ -292,7 +310,8 @@ EIP_STATUS IApp_ResetDevice(void);
  * return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
-EIP_STATUS IApp_ResetDeviceToInitialConfiguration(void);
+EIP_STATUS
+IApp_ResetDeviceToInitialConfiguration(void);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief Allocate memory for the cip stack
@@ -304,7 +323,8 @@ EIP_STATUS IApp_ResetDeviceToInitialConfiguration(void);
  * @param pa_nSizeOfElement size in bytes of one element
  * return pointer to the allocated memory, 0 on error
  */
-void *IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
+void *
+IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief Inform the application that the Run/Idle State has been changed
@@ -313,7 +333,8 @@ void *IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
  * 
  * @param pa_nRunIdleValue  the current value of the run/idle flag according to CIP spec Vol 1 3-6.5
  */
-void IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
+void
+IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief create a producing or consuming UDP socket
@@ -323,7 +344,8 @@ void IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
  * @return socket identifier on success
  *         -1 on error 
  */
-int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr); 
+int
+IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief create a producing or consuming UDP socket
@@ -334,7 +356,8 @@ int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr);
  * @param pa_nDataLength length of the data to send
  * @return  EIP_SUCCESS on success
  */
-EIP_STATUS IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
+EIP_STATUS
+IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
     EIP_UINT8 *pa_acData, EIP_UINT16 pa_nDataLength);
 
 /**\ingroup CIP_CALLBACK_API 
@@ -342,8 +365,8 @@ EIP_STATUS IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
  * 
  * @param pa_nSockFd socket descriptor to close
  */
-void IApp_CloseSocket(int pa_nSockFd);
-
+void
+IApp_CloseSocket(int pa_nSockFd);
 
 /*! \mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack Documentation
  *
@@ -403,7 +426,7 @@ void IApp_CloseSocket(int pa_nSockFd);
  * 
  * \copydoc opener_user_conf.h
  * 
-* \section startup_sec Startup Sequence
+ * \section startup_sec Startup Sequence
  * During startup of your EtherNet/IP(TM) device the following steps have to be 
  * performed:
  *   -# Configure the network properties:\n
@@ -443,7 +466,7 @@ void IApp_CloseSocket(int pa_nSockFd);
  *      received and can be hand over to the Ethernet encapsulation layer.
  * 
  * \section normal_op_sec Normal Operation
-* During normal operation the following tasks have to be done by the platform
+ * During normal operation the following tasks have to be done by the platform
  * specific code:
  *   - Establish connections requested on TCP port AF12hex
  *   - Receive explicit message data on connected TCP sockets and the UPD socket
@@ -493,8 +516,7 @@ void IApp_CloseSocket(int pa_nSockFd);
  * 
  * \include "license.txt"  
  * 
- */  
-
+ */
 
 #endif /*CIP_API_H_*/
 

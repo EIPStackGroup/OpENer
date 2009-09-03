@@ -23,8 +23,9 @@ extern S_CIP_MR_Response gMRResponse;
 /* public functions */
 
 /*!Initialize the data structures of the message router
- */ 
-EIP_STATUS CIP_MessageRouter_Init(void);
+ */
+EIP_STATUS
+CIP_MessageRouter_Init(void);
 
 /*! Notify the MessageRouter that an explicit message (connected or unnconnected)
  *  has been recieved. This function will be called from the encapsulation layer.
@@ -34,8 +35,9 @@ EIP_STATUS CIP_MessageRouter_Init(void);
  *  @param pa_nDataLength number of bytes in the data buffer
  *  @return  EIP_ERROR on fault
  *           EIP_OK on success           
- */ 
-EIP_STATUS notifyMR(EIP_UINT8 *pa_pnData, int pa_nDataLength);
+ */
+EIP_STATUS
+notifyMR(EIP_UINT8 *pa_pnData, int pa_nDataLength);
 
 /*! Register a class at the message router.
  *  In order that the message router can deliver
@@ -44,8 +46,8 @@ EIP_STATUS notifyMR(EIP_UINT8 *pa_pnData, int pa_nDataLength);
  *  createCIPClass.
  *  @param pa_pt2Object cip class to be registered
  *  @return EIP_OK on success
- */ 
-EIP_STATUS registerClass(S_CIP_Class *pa_pt2Object);
-
+ */
+EIP_STATUS
+registerClass(S_CIP_Class *pa_pt2Object);
 
 #endif /*CIPMESSAGEROUTER_H_*/

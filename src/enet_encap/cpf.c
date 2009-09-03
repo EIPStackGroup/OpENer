@@ -15,91 +15,94 @@
 #include "ciperror.h"
 #include "cpf.h"
 #include "cipconnectionmanager.h"
+#include "trace.h"
 
 /* CPF global data items */
 S_CIP_CPF_Data g_stCPFDataItem;
 
-int notifyCPF(EIP_UINT8 * pa_nData, /* message data*/
-    EIP_INT16 pa_nData_length, /* data length*/
-    EIP_UINT8 * pa_replybuf) /* reply buffer*/
-  {
-    EIP_STATUS res;
+int
+notifyCPF(EIP_UINT8 * pa_nData, /* message data*/
+EIP_INT16 pa_nData_length, /* data length*/
+EIP_UINT8 * pa_replybuf) /* reply buffer*/
+{
+  EIP_STATUS res;
 
-    if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
-        == EIP_ERROR)
-      {
-        if (EIP_DEBUG>=EIP_TERSE)
-          printf("notifyMR: error from createCPFstructure\n");
-        return EIP_ERROR; /* error from createCPFstructure */
-      }
+  if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
+      == EIP_ERROR)
+    {
+      OPENER_TRACE_ERR("notifyMR: error from createCPFstructure\n");
+      return EIP_ERROR; /* error from createCPFstructure */
+    }
 
-    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
-      { /* found null address item*/
-        if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-          { /* unconnected data item received*/
-            res = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
-                g_stCPFDataItem.stDataI_Item.Length);
-            if (res == EIP_ERROR)
-              return EIP_ERROR;
+  if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
+    { /* found null address item*/
+      if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
+        { /* unconnected data item received*/
+          res = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
+              g_stCPFDataItem.stDataI_Item.Length);
+          if (res == EIP_ERROR)
+            return EIP_ERROR;
 
-            return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
-          }
-        /* wrong data item detected*/
-        if (EIP_DEBUG>=EIP_TERSE)
-          printf("notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+          return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
+        }
+      /* wrong data item detected*/
+      OPENER_TRACE_ERR(
+          "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+      return EIP_ERROR;
+    }
+
+  OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
+  return EIP_ERROR;
+}
+
+int
+notifyConnectedCPF(EIP_UINT8 * pa_nData, /* message data*/
+EIP_INT16 pa_nData_length, /* data length*/
+EIP_UINT8 * pa_replybuf) /* reply buffer*/
+{
+  EIP_STATUS res;
+  S_CIP_ConnectionObject *pstConnectionObject;
+
+  if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
+      == EIP_ERROR)
+    {
+      OPENER_TRACE_ERR("notifyMR: error from createCPFstructure\n");
+      return EIP_ERROR; /* error from createCPFstructure*/
+    }
+
+  if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
+    { /* ConnectedAddressItem item */
+      pstConnectionObject = getConnectedObject(
+          g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
+      if (pstConnectionObject == 0)
         return EIP_ERROR;
-      }
 
-    if (EIP_DEBUG>=EIP_TERSE)
-      printf("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
-    return EIP_ERROR;
-  }
+      /* reset the watchdogtimer */
+      pstConnectionObject->InnacitvityWatchdogTimer
+          = (pstConnectionObject->O_to_T_RPI / 1000) << 2;
 
-int notifyConnectedCPF(EIP_UINT8 * pa_nData, /* message data*/
-    EIP_INT16 pa_nData_length, /* data length*/
-    EIP_UINT8 * pa_replybuf) /* reply buffer*/
-  {
-    EIP_STATUS res;
-    S_CIP_ConnectionObject *pstConnectionObject;
+      /*TODO check connection id  and sequence count    */
+      if (g_stCPFDataItem.stDataI_Item.TypeID
+          == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
+        { /* connected data item received*/
+          EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
+          g_stCPFDataItem.stAddr_Item.Data.SequenceNumber = (EIP_UINT32) ltohs(
+              &pnBuf);
+          res = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length - 2);
+          if (res == -1)
+            return EIP_ERROR;
 
-    if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
-        == EIP_ERROR)
-      {
-        if (EIP_DEBUG>=EIP_TERSE)
-          printf("notifyMR: error from createCPFstructure\n");
-        return EIP_ERROR; /* error from createCPFstructure*/
-      }
+          return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
+        }
+      /* wrong data item detected*/
+      OPENER_TRACE_ERR(
+          "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+      return EIP_ERROR;
+    }
 
-    if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
-      { /* ConnectedAddressItem item */      
-        pstConnectionObject = getConnectedObject(g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
-        if (pstConnectionObject == 0)
-          return EIP_ERROR;
-        
-        /* reset the watchdogtimer */
-        pstConnectionObject->InnacitvityWatchdogTimer = (pstConnectionObject->O_to_T_RPI / 1000) << 2; 
-      
-        /*TODO check connection id  and sequence count    */    
-        if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-          { /* connected data item received*/
-            EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
-            g_stCPFDataItem.stAddr_Item.Data.SequenceNumber = (EIP_UINT32)ltohs(&pnBuf);              
-            res = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length - 2);
-            if (res == -1)
-              return EIP_ERROR;
-
-            return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
-          }
-        /* wrong data item detected*/
-        if (EIP_DEBUG>=EIP_TERSE)
-          printf("notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-        return EIP_ERROR;
-      }
-
-    if (EIP_DEBUG>=EIP_TERSE)
-      printf("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
-    return EIP_ERROR;
-  }
+  OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
+  return EIP_ERROR;
+}
 
 /*   INT16 createCPFstructure(INT8 *pa_Data, INT16 pa_DataLength, S_CIP_CPF_Data *pa_CPF_data)
  *   create CPF structure out of pa_data.
@@ -110,94 +113,94 @@ int notifyConnectedCPF(EIP_UINT8 * pa_nData, /* message data*/
  * 		0 .. success
  * 	       -1 .. error
  */
-EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
+EIP_STATUS
+createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
     S_CIP_CPF_Data * pa_CPF_data)
-  {
-    int len_count, i, j;
-    
-    pa_CPF_data->AddrInfo[0].TypeID = 0;
-    pa_CPF_data->AddrInfo[1].TypeID = 0;
+{
+  int len_count, i, j;
 
-    len_count = 0;
-    pa_CPF_data->ItemCount = ltohs(&pa_Data);
-    len_count += 2;
-    if (pa_CPF_data->ItemCount >= 1)
-      {
-        pa_CPF_data->stAddr_Item.TypeID = ltohs(&pa_Data);
-        pa_CPF_data->stAddr_Item.Length = ltohs(&pa_Data);
-        len_count += 4;
-        if (pa_CPF_data->stAddr_Item.Length >= 4)
-          {
-            pa_CPF_data->stAddr_Item.Data.ConnectionIdentifier
-                = ltohl(&pa_Data);
-            len_count += 4;
-          }
-        if (pa_CPF_data->stAddr_Item.Length == 8)
-          {
-            pa_CPF_data->stAddr_Item.Data.SequenceNumber = ltohl(&pa_Data);
-            len_count += 4;
-          }
-      }
-    if (pa_CPF_data->ItemCount >= 2)
-      {
-        pa_CPF_data->stDataI_Item.TypeID = ltohs(&pa_Data);
-        pa_CPF_data->stDataI_Item.Length = ltohs(&pa_Data);
-        pa_CPF_data->stDataI_Item.Data = pa_Data;
-        pa_Data += pa_CPF_data->stDataI_Item.Length;
-        len_count += (4 + pa_CPF_data->stDataI_Item.Length);
-      }
-    for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) /* TODO there needs to be a limit check here???*/
-      {
-        pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
-        if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
-            || (pa_CPF_data->AddrInfo[j].TypeID
-                == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
-          {
-            len_count += 16;
-            pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
-            pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
-            pa_CPF_data->AddrInfo[j].nsin_port = ltohs(&pa_Data);
-            pa_CPF_data->AddrInfo[j].nsin_addr = ltohl(&pa_Data);
-            for (i = 0; i < 8; i++)
-              {
-                pa_CPF_data->AddrInfo[j].nasin_zero[i] = *pa_Data;
-                pa_Data++;
-              }
-            len_count += 16;
-          }
-        else
-          { /* no sockaddr item found */
-            pa_CPF_data->AddrInfo[j].TypeID = 0; /* mark as not set */
-            pa_Data -= 2;
-          }
-      }
-    /* set the addressInfoItems to not set if they werent received */
-    if (pa_CPF_data->ItemCount < 4)
-      {
-        pa_CPF_data->AddrInfo[1].TypeID = 0;
-        if (pa_CPF_data->ItemCount < 3)
-          {
-            pa_CPF_data->AddrInfo[0].TypeID = 0;
-          }
-      }
-    if (len_count == pa_DataLength)
-      { /* length of data is equal to length of Addr and length of Data */
-        return EIP_OK;
-      }
-    else
-      {
-        printf("something is wrong with the length in MR @ createCPFstructure\n");
-        if (pa_CPF_data->ItemCount > 2)
-          {
-            /* there is an optional packet in data stream which is not sockaddr item */
-            return EIP_OK;
-          }
-        else
-          { /* something with the length was wrong */
-            return EIP_ERROR;
-          }
-      }
-  }
+  pa_CPF_data->AddrInfo[0].TypeID = 0;
+  pa_CPF_data->AddrInfo[1].TypeID = 0;
+
+  len_count = 0;
+  pa_CPF_data->ItemCount = ltohs(&pa_Data);
+  len_count += 2;
+  if (pa_CPF_data->ItemCount >= 1)
+    {
+      pa_CPF_data->stAddr_Item.TypeID = ltohs(&pa_Data);
+      pa_CPF_data->stAddr_Item.Length = ltohs(&pa_Data);
+      len_count += 4;
+      if (pa_CPF_data->stAddr_Item.Length >= 4)
+        {
+          pa_CPF_data->stAddr_Item.Data.ConnectionIdentifier = ltohl(&pa_Data);
+          len_count += 4;
+        }
+      if (pa_CPF_data->stAddr_Item.Length == 8)
+        {
+          pa_CPF_data->stAddr_Item.Data.SequenceNumber = ltohl(&pa_Data);
+          len_count += 4;
+        }
+    }
+  if (pa_CPF_data->ItemCount >= 2)
+    {
+      pa_CPF_data->stDataI_Item.TypeID = ltohs(&pa_Data);
+      pa_CPF_data->stDataI_Item.Length = ltohs(&pa_Data);
+      pa_CPF_data->stDataI_Item.Data = pa_Data;
+      pa_Data += pa_CPF_data->stDataI_Item.Length;
+      len_count += (4 + pa_CPF_data->stDataI_Item.Length);
+    }
+  for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) /* TODO there needs to be a limit check here???*/
+    {
+      pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
+      if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
+          || (pa_CPF_data->AddrInfo[j].TypeID
+              == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
+        {
+          len_count += 16;
+          pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
+          pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
+          pa_CPF_data->AddrInfo[j].nsin_port = ltohs(&pa_Data);
+          pa_CPF_data->AddrInfo[j].nsin_addr = ltohl(&pa_Data);
+          for (i = 0; i < 8; i++)
+            {
+              pa_CPF_data->AddrInfo[j].nasin_zero[i] = *pa_Data;
+              pa_Data++;
+            }
+          len_count += 16;
+        }
+      else
+        { /* no sockaddr item found */
+          pa_CPF_data->AddrInfo[j].TypeID = 0; /* mark as not set */
+          pa_Data -= 2;
+        }
+    }
+  /* set the addressInfoItems to not set if they werent received */
+  if (pa_CPF_data->ItemCount < 4)
+    {
+      pa_CPF_data->AddrInfo[1].TypeID = 0;
+      if (pa_CPF_data->ItemCount < 3)
+        {
+          pa_CPF_data->AddrInfo[0].TypeID = 0;
+        }
+    }
+  if (len_count == pa_DataLength)
+    { /* length of data is equal to length of Addr and length of Data */
+      return EIP_OK;
+    }
+  else
+    {
+      OPENER_TRACE_WARN("something is wrong with the length in MR @ createCPFstructure\n");
+      if (pa_CPF_data->ItemCount > 2)
+        {
+          /* there is an optional packet in data stream which is not sockaddr item */
+          return EIP_OK;
+        }
+      else
+        { /* something with the length was wrong */
+          return EIP_ERROR;
+        }
+    }
+}
 
 /*   INT8 assembleLinearMsg(S_CIP_MR_Response *pa_MRResponse, S_CIP_CPF_Data *pa_CPFDataItem, INT8 *pa_msg)
  *   copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
@@ -207,125 +210,128 @@ EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
  *  return length of reply in pa_msg in bytes
  * 			-1 .. error
  */
-int assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
+int
+assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
     S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg)
-  {
-    int i, j, size;
+{
+  int i, j, size;
 
-    size = 0;
-    if (pa_MRResponse)
-      {
-        /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
-        htoll(0, &pa_msg);
-        htols(0, &pa_msg);
-        size += 6;
-      }
+  size = 0;
+  if (pa_MRResponse)
+    {
+      /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
+      htoll(0, &pa_msg);
+      htols(0, &pa_msg);
+      size += 6;
+    }
 
-    htols(pa_CPFDataItem->ItemCount, &pa_msg); /* item count */
-    size += 2;
-    /* process Address Item */
-    if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_NULL)
-      { /* null address item -> address length set to 0 */
-        htols(CIP_ITEM_ID_NULL, &pa_msg);
-        htols(0, &pa_msg);
-        size += 4;
-      }
-    if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED)
-      { /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
-        htols(CIP_ITEM_ID_CONNECTIONBASED, &pa_msg);
-        htols(4, &pa_msg);
-        htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
-        size += 8;
-      }
-    /* sequencenumber????? */
-    if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_SEQUENCEDADDRESS)
-      { /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
-        htols(CIP_ITEM_ID_SEQUENCEDADDRESS, &pa_msg);
-        htols(8, &pa_msg);
-        htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
-        htoll(pa_CPFDataItem->stAddr_Item.Data.SequenceNumber, &pa_msg);
-        size += 12;
-      }
+  htols(pa_CPFDataItem->ItemCount, &pa_msg); /* item count */
+  size += 2;
+  /* process Address Item */
+  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_NULL)
+    { /* null address item -> address length set to 0 */
+      htols(CIP_ITEM_ID_NULL, &pa_msg);
+      htols(0, &pa_msg);
+      size += 4;
+    }
+  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED)
+    { /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
+      htols(CIP_ITEM_ID_CONNECTIONBASED, &pa_msg);
+      htols(4, &pa_msg);
+      htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
+      size += 8;
+    }
+  /* sequencenumber????? */
+  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_SEQUENCEDADDRESS)
+    { /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
+      htols(CIP_ITEM_ID_SEQUENCEDADDRESS, &pa_msg);
+      htols(8, &pa_msg);
+      htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
+      htoll(pa_CPFDataItem->stAddr_Item.Data.SequenceNumber, &pa_msg);
+      size += 12;
+    }
 
-    /* process Data Item */
-    if ((pa_CPFDataItem->stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-        || (pa_CPFDataItem->stDataI_Item.TypeID
-            == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET))
-      {
-        if (pa_MRResponse)
-          {
-            htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
-            
-            if(pa_CPFDataItem->stDataI_Item.TypeID == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-              {
-                htols((EIP_UINT16)(pa_MRResponse->DataLength + 4 + 2 + (2
-                                                * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
-                
-                htols((EIP_UINT16)g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, &pa_msg);
-                
-                size += (4 + pa_MRResponse->DataLength + 4 + 2 + (2
-                                * pa_MRResponse->SizeofAdditionalStatus));
-              }
-            else
-              {
-                htols((EIP_UINT16)(pa_MRResponse->DataLength + 4 + (2
-                                * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
-                size += (4 + pa_MRResponse->DataLength + 4 + (2
-                                * pa_MRResponse->SizeofAdditionalStatus));
-              }
-              
+  /* process Data Item */
+  if ((pa_CPFDataItem->stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
+      || (pa_CPFDataItem->stDataI_Item.TypeID
+          == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET))
+    {
+      if (pa_MRResponse)
+        {
+          htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
 
-            /* write MR Response into linear memory */
-            *pa_msg = pa_MRResponse->ReplyService;
-            pa_msg++;
-            *pa_msg = pa_MRResponse->Reserved; /* reserved = 0 */
-            pa_msg++;
-            *pa_msg = pa_MRResponse->GeneralStatus;
-            pa_msg++;
-            *pa_msg = pa_MRResponse->SizeofAdditionalStatus;
-            pa_msg++;
-            for (i = 0; i < pa_MRResponse->SizeofAdditionalStatus; i++)
-              htols(pa_MRResponse->AdditionalStatus[i], &pa_msg);
+          if (pa_CPFDataItem->stDataI_Item.TypeID
+              == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
+            {
+              htols((EIP_UINT16) (pa_MRResponse->DataLength + 4 + 2 + (2
+                  * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
 
-            for (i = 0; i < pa_MRResponse->DataLength; i++)
-              {
-                *pa_msg = (EIP_UINT8) * (pa_MRResponse->Data + i);
-                pa_msg++;
-              }            
-          }
-        else
-          { /* connected IO Message to send */
-            htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
-            htols(pa_CPFDataItem->stDataI_Item.Length, &pa_msg);
-            for (i = 0; i < pa_CPFDataItem->stDataI_Item.Length; i++)
-              {
-                *pa_msg = (EIP_UINT8) * (pa_CPFDataItem->stDataI_Item.Data + i);
-                pa_msg++;
-              }
-            size += (pa_CPFDataItem->stDataI_Item.Length + 4);
-          }
-      }
-    /* process SockAddr Info Items */
-    for (j = 0; j < 2; j++)
-      {
-        if ((pa_CPFDataItem->AddrInfo[j].TypeID
-            == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
-            || (pa_CPFDataItem->AddrInfo[j].TypeID
-                == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
-          {
-            htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
-            htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
-            htols(pa_CPFDataItem->AddrInfo[j].nsin_family, &pa_msg);
-            htols(pa_CPFDataItem->AddrInfo[j].nsin_port, &pa_msg);
-            htoll(pa_CPFDataItem->AddrInfo[j].nsin_addr, &pa_msg);
-            for (i = 0; i < 8; i++)
-              {
-                *pa_msg = 0; /* sin_zero */
-                pa_msg++;
-              }
-            size += 20;
-          }
-      }
-    return size;
-  }
+              htols(
+                  (EIP_UINT16) g_stCPFDataItem.stAddr_Item.Data.SequenceNumber,
+                  &pa_msg);
+
+              size += (4 + pa_MRResponse->DataLength + 4 + 2 + (2
+                  * pa_MRResponse->SizeofAdditionalStatus));
+            }
+          else
+            {
+              htols((EIP_UINT16) (pa_MRResponse->DataLength + 4 + (2
+                  * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
+              size += (4 + pa_MRResponse->DataLength + 4 + (2
+                  * pa_MRResponse->SizeofAdditionalStatus));
+            }
+
+          /* write MR Response into linear memory */
+          *pa_msg = pa_MRResponse->ReplyService;
+          pa_msg++;
+          *pa_msg = pa_MRResponse->Reserved; /* reserved = 0 */
+          pa_msg++;
+          *pa_msg = pa_MRResponse->GeneralStatus;
+          pa_msg++;
+          *pa_msg = pa_MRResponse->SizeofAdditionalStatus;
+          pa_msg++;
+          for (i = 0; i < pa_MRResponse->SizeofAdditionalStatus; i++)
+            htols(pa_MRResponse->AdditionalStatus[i], &pa_msg);
+
+          for (i = 0; i < pa_MRResponse->DataLength; i++)
+            {
+              *pa_msg = (EIP_UINT8) *(pa_MRResponse->Data + i);
+              pa_msg++;
+            }
+        }
+      else
+        { /* connected IO Message to send */
+          htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
+          htols(pa_CPFDataItem->stDataI_Item.Length, &pa_msg);
+          for (i = 0; i < pa_CPFDataItem->stDataI_Item.Length; i++)
+            {
+              *pa_msg = (EIP_UINT8) *(pa_CPFDataItem->stDataI_Item.Data + i);
+              pa_msg++;
+            }
+          size += (pa_CPFDataItem->stDataI_Item.Length + 4);
+        }
+    }
+  /* process SockAddr Info Items */
+  for (j = 0; j < 2; j++)
+    {
+      if ((pa_CPFDataItem->AddrInfo[j].TypeID
+          == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
+          || (pa_CPFDataItem->AddrInfo[j].TypeID
+              == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
+        {
+          htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
+          htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
+          htols(pa_CPFDataItem->AddrInfo[j].nsin_family, &pa_msg);
+          htols(pa_CPFDataItem->AddrInfo[j].nsin_port, &pa_msg);
+          htoll(pa_CPFDataItem->AddrInfo[j].nsin_addr, &pa_msg);
+          for (i = 0; i < 8; i++)
+            {
+              *pa_msg = 0; /* sin_zero */
+              pa_msg++;
+            }
+          size += 20;
+        }
+    }
+  return size;
+}
 

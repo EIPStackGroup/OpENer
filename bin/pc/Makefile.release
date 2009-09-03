@@ -7,14 +7,12 @@
 # ******************************************************************************
 
 CFLAGS= \
-	-g \
+	-O2 \
 	-I . \
 	-I ../../src \
 	-I ../../src/enet_encap \
 	-I ../../src/cip \
 	-I ../../src/ports/platform-pc \
-	-DOPENER_WITH_TRACES \
-	-DOPENER_TRACE_LEVEL=0xFF \
 	-W -Wall -ansi
 
 LDFLAGS=
@@ -49,7 +47,7 @@ OBJECTS= \
 	../../src/enet_encap/encap.o
 
 
-EXECUTABLE=opener
+EXECUTABLE=opener_rel
 
 
 all: $(SOURCES) $(EXECUTABLE)

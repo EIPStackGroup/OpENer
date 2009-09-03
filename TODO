@@ -8,9 +8,7 @@ This file serves as brainstorming buffer for ideas to improve and enhance OpENer
 
 
 * Improvements and Optimizations
-  - test exclusive owner connections (inputs/outputs)
-  - Handle errno == EINTR do continue else 
-  - Rework logging and tracing facility
+  - Test exclusive owner connections (inputs/outputs)
   - Remove the need for the response buffer in the explicit message handling (zero copy stack)
   - Rework I/O message handling:
      - own buffers for each connection that are preconfigured and only runtime data needs to be changed.
