@@ -20,9 +20,9 @@ S_CIP_MR_Response gMRResponse;
 
 /*! A class registry list node
  * a linked list of this  object is the registry of classes known to the message router
- * for small devices with very limited memory it could make sense to cange this list into an
+ * for small devices with very limited memory it could make sense to change this list into an
  * array with a given max size for removing the need for having to dynamically allocate 
- * memory. The size of the array could be a paramter in the platform config file.
+ * memory. The size of the array could be a parameter in the platform config file.
  */
 typedef struct CIP_MR_Object
 {
@@ -41,10 +41,10 @@ S_CIP_MR_Object *g_pt2firstObject = 0;
 EIP_STATUS
 registerClass(S_CIP_Class * pa_pt2Class);
 
-/*!  Create MRRequest structure out of the recieved data.
+/*!  Create MRRequest structure out of the received data.
  * 
  * Parses the UCMM header consisting of: service, IOI size, IOI, data into a request structure
- * @param pa_pnData    pointer to the message data recieved
+ * @param pa_pnData    pointer to the message data received
  * @param pa_nLength   number of bytes in the message
  * @param pa_pstMRReqdata   pointer to structure of MRRequest data item.
  * @return status  0 .. success
@@ -227,7 +227,7 @@ createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
   pa_pnData++;
   pa_pstMRReqdata->RequestPath.PathSize = *pa_pnData;
   pa_pnData++;
-  /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribut, need to be replaced with function */
+  /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribute, need to be replaced with function */
   pa_pstMRReqdata->RequestPath.ClassID = 0;
   pa_pstMRReqdata->RequestPath.InstanceNr = 0;
   pa_pstMRReqdata->RequestPath.AttributNr = 0;

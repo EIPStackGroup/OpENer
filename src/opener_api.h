@@ -55,7 +55,7 @@ void
 configureHostName(const char *pa_acHostName);
 
 /*! \ingroup CIP_API
- * Set the serial number of the device's identy object.
+ * Set the serial number of the device's identity object.
  * 
  * @param pa_nSerialNumber unique 32 bit number identifying the device
  */
@@ -115,7 +115,7 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr);
  *  @param pa_nNr_of_InstanceAttributes number of attributes of each instance
  *  @param pa_nInstGetAttrAllMask  mask of which attributes are included in the instance getAttributeAll
  *  @param pa_nNr_of_InstanceServices number of instance services
- *  @param pa_nNr_of_Instances number of initial instances to creat
+ *  @param pa_nNr_of_Instances number of initial instances to create
  *  @param pa_acName  class name (for debugging class structure)
  *  @param pa_nRevision class revision
  *  @return pointer to new class object
@@ -238,7 +238,7 @@ manageConnections(void);
 
 /*! \ingroup CIP_API
  * Inform the encapsulation layer that the remote host has closed the connection.
- * According to the specs that will clean up and close the session in the encapsulation layer.
+ * According to the specifciations that will clean up and close the session in the encapsulation layer.
  * @param pa_nSocket the handler to the socket of the closed connection
  */
 void
@@ -316,7 +316,7 @@ IApp_ResetDeviceToInitialConfiguration(void);
 /**\ingroup CIP_CALLBACK_API 
  * \brief Allocate memory for the cip stack
  * 
- * emulate the common c-libary function calloc
+ * emulate the common c-library function calloc
  * In OpENer allocation only happens on application startup and on class/instance creation
  * and configuration not on during operation (processing messages)
  * @param pa_nNumberOfElements number of elements to allocate
@@ -475,7 +475,7 @@ IApp_CloseSocket(int pa_nSockFd);
  *     As a result of this function a response may have to be sent. The data to
  *     be sent is in the variable \ref g_acCommBuf.
  *   - Create UDP sending and receiving sockets for implicit connected messages\n
- *     OpENer will use to call-back finction int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
+ *     OpENer will use to call-back function int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
  *     for informing the platform specific code that a new connection is 
  *     established and new sockets are necessary
  *   - Receive implicit connected data on a receiving UDP socket\n

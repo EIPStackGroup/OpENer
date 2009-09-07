@@ -13,13 +13,6 @@
 
 #define CIP_ETHERNETLINK_CLASS_CODE 0xF6
 
-typedef struct
-  {
-    EIP_UINT32 InterfaceSpeed;
-    EIP_UINT32 InterfaceFlags;
-    EIP_UINT8 PhysicalAddress[6];
-  } S_CIP_EthernetLinkObject;
-
 /* public functions */
 /*!Initialize the Ethernet Link Objects data
  */

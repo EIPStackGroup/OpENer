@@ -26,7 +26,7 @@ S_CIP_EPATH Physical_Link_Object = /* #4 */
   CIP_ETHERNETLINK_CLASS_CODE, /* EIP_UINT32 ClassID*/
   1, /* EIP_UINT32 InstanceNr*/
   0 /* EIP_UINT32 AttributNr (not used as this is the EPATH the EthernetLink object)*/
-  }; /* it was not initilized in the original code*/
+  }; /* it was not initialized in the original code*/
 
 S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
   { 0, /* default IP address */

@@ -8,9 +8,17 @@ This file serves as brainstorming buffer for ideas to improve and enhance OpENer
 
 
 * Improvements and Optimizations
+  - Rework data serialization for the GetAttribute services
   - Test exclusive owner connections (inputs/outputs)
-  - Remove the need for the response buffer in the explicit message handling (zero copy stack)
+  - Remove the need for the response buffer in the explicit message handling 
+  	(zero copy stack)
   - Rework I/O message handling:
-     - own buffers for each connection that are preconfigured and only runtime data needs to be changed.
-     - Use only one single outgoing UDP socket for I/O messages    
-          
+     - own buffers for each connection that are preconfigured and only runtime 
+       data needs to be changed.
+     - Use only one single outgoing UDP socket for I/O messages  
+     
+     
+* Documentation
+  - Write general documentation section: 
+      - Using OpENer in Products
+      - Extending OpENer	       

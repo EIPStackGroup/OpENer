@@ -27,7 +27,7 @@ EIP_UINT8 g_acCommBuf[OPENER_ETHERNET_BUFFER_SIZE];
 typedef long MILLISECONDS;
 fd_set master;
 fd_set read_fds;
-/* temporary file discriptor for select() */
+/* temporary file descriptor for select() */
 
 int fdmax;
 int listener;
@@ -48,10 +48,10 @@ getmilliseconds(void)
   return (MILLISECONDS) tv.tv_sec * 1000 + (MILLISECONDS) tv.tv_usec / 1000;
 }
 
-/*! Check if the socket indentifier is associate with an active connection
+/*! Check if the socket identifier is associate with an active connection
  * 
  *  @param pa_nFD  socket handle
- *  @return 1 if the given socket handler is of an active conneciton otherwise 0
+ *  @return 1 if the given socket handler is of an active connection otherwise 0
  */
 int
 isConnectedFd(int pa_nFD)
@@ -73,7 +73,7 @@ isConnectedFd(int pa_nFD)
 }
 
 /* INT8 Start_NetworkHandler()
- * 	start a TCP listening socket, accept connections, receive data in select loop, call manageConnections periodicaly.
+ * 	start a TCP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  * 	return status
  * 			-1 .. error
  */
@@ -152,10 +152,10 @@ Start_NetworkHandler()
   FD_SET(listener, &master);
   FD_SET(nUDPListener, &master);
 
-  /* keep track of the biggest file discriptor */
+  /* keep track of the biggest file descriptor */
   fdmax = (listener > nUDPListener) ? listener : nUDPListener;
 
-  lasttime = getmilliseconds(); /* init timekeeping */
+  lasttime = getmilliseconds(); /* initialize time keeping */
   elapsedtime = 0;
 
   while (1)
@@ -377,7 +377,7 @@ handleDataOnTCPSocket(int pa_nSocket)
   /* (NOTE this advances the buffer pointer) */
   if (OPENER_ETHERNET_BUFFER_SIZE < nDataSize)
     { /*TODO can this be handled in a better way?*/
-      OPENER_TRACE_ERR("too large packet recieved will be ignored\n"); /* this may corrupt the connection ???*/
+      OPENER_TRACE_ERR("too large packet received will be ignored\n"); /* this may corrupt the connection ???*/
       return EIP_OK;
     }
 

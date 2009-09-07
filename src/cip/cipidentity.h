@@ -16,13 +16,7 @@
 /* global public variables */
 
 /* public functions */
-EIP_STATUS CIP_Identity_Init(void);
-
-typedef struct
-  {
-    EIP_UINT8 MajorRevision;
-    EIP_UINT8 MinorRevision;
-  } S_CIP_Revision;
-
+EIP_STATUS
+CIP_Identity_Init(void);
 
 #endif /*CIPIDENTITY_H_*/

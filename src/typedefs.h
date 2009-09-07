@@ -9,16 +9,16 @@
 #define TYPEDEFS_H_
 
 /*
+ Do not use interface types for internal variables, such as "int i;", which is
+ commonly used for loop counters or counting things.
 
- Do not use interface types for internal variables, such as "int i;", which is commonly used for loop counters or counting things.
-
- Do not over-constrain data types. Prefer the use of the native "int" and "unsigned" types.
+ Do not over-constrain data types. Prefer the use of the native "int" and
+ "unsigned" types.
 
  Use char for native character strings.
 
- Do not use "char" for data buffers - use "unsigned char" instead. Using char for data buffers can occasionally blow up in your face rather nastily.
-
-
+ Do not use "char" for data buffers - use "unsigned char" instead. Using char
+ for data buffers can occasionally blow up in your face rather nastily.
  */
 
 #define EIP_BYTE 	unsigned char
@@ -32,7 +32,7 @@
 #define EIP_DFLOAT	double
 #define EIP_BOOL8	bool
 
-/*! Constant idenfying if a socket desciptor is invalid
+/*! Constant identifying if a socket descriptor is invalid
  */
 #define EIP_INVALID_SOCKET      -1
 

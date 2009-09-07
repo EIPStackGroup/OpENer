@@ -11,7 +11,7 @@
 #include "typedefs.h"
 
 
-/*! Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodicaly.
+/*! Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  *  @return status
  *          EIP_ERROR .. error
  */

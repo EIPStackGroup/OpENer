@@ -23,9 +23,6 @@ EIP_UINT8 g_assemblydata3[10]; /* Config */
 
 extern int newfd;
 
-/* cast an int as a struct_inaddr (check the "inet_ntoa" man page -- it wants a struct_inaddr passed by value, not an int) */
-#define INAD(ipaddr) (*(struct in_addr *)&(ipaddr))
-
 int main(int argc, char *arg[])
   {
     EIP_UINT8 acMyMACAddress[6];
@@ -39,7 +36,7 @@ int main(int argc, char *arg[])
       }
     else
       {
-        /* fetch internet address info from the platform */
+        /* fetch Internet address info from the platform */
         configureNetworkInterface(arg[1], arg[2], arg[3]);
         configureDomainName(arg[4]);
         configureHostName(arg[5]);

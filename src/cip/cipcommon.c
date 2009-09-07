@@ -606,5 +606,5 @@ getAttributeAll(S_CIP_Instance * pa_pstInstance,
         }
       p_service++;
     }
-  return EIP_OK; /* reurn 0 if cannot find GET_ATTRIBUTE_SINGLE service*/
+  return EIP_OK; /* Return 0 if cannot find GET_ATTRIBUTE_SINGLE service*/
 }

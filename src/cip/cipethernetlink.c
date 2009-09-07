@@ -14,6 +14,13 @@
 #include "endianconv.h"
 #include "opener_api.h"
 
+typedef struct
+  {
+    EIP_UINT32 InterfaceSpeed;
+    EIP_UINT32 InterfaceFlags;
+    EIP_UINT8 PhysicalAddress[6];
+  } S_CIP_EthernetLinkObject;
+
 /* global private variables */
 S_CIP_EthernetLinkObject stEthernetLink;
 

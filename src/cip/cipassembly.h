@@ -21,16 +21,16 @@
  */
 EIP_STATUS CIP_Assembly_Init(void);
 
-/*! notify an Assembly object that data has been recieved for it.
+/*! notify an Assembly object that data has been received for it.
  * 
  *  The data will be copied into the assembly objects attribute 3 and
  *  the application will be informed with the IApp_after_assembly_data_received function.
  *  
- *  @param pa_pstInstance the assembly object instance for which the data was recieved
+ *  @param pa_pstInstance the assembly object instance for which the data was received
  *  @param pa_pnData pointer to the data received
- *  @param pa_nDatalength number of bytes recieved
+ *  @param pa_nDatalength number of bytes received
  *  @return 
- *     - EIP_OK the received data was ok 
+ *     - EIP_OK the received data was okay
  *     - EIP_ERROR the received data was wrong
  */ 
 EIP_STATUS notifyAssemblyConnectedDataReceived(S_CIP_Instance *pa_pstInstance,

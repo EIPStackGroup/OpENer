@@ -72,7 +72,7 @@ typedef struct
   } S_CIP_CPF_Data;
 
 /*! \ingroup ENCAP
- * Parse the CPF data from a recieved unconnected ecplicit message and 
+ * Parse the CPF data from a received unconnected explicit message and
  * hand the data on to the message router 
  *
  * @param  pa_nData message data
@@ -82,7 +82,7 @@ typedef struct
 int notifyCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_replybuf); 
 
 /*! \ingroup ENCAP
- * Parse the CPF data from a recieved connected ecplicit message, check
+ * Parse the CPF data from a received connected explicit message, check
  * the connection status, update any timers, and hand the data on to 
  * the message router 
  *
@@ -93,7 +93,7 @@ int notifyCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_re
 int notifyConnectedCPF(EIP_UINT8 * pa_nData, EIP_INT16 pa_nData_length, EIP_UINT8 * pa_replybuf);
 
 /*! \ingroup ENCAP
- *  Create CPF structure out of the recieved data.
+ *  Create CPF structure out of the received data.
  *  @param  pa_Data		pointer to data which need to be structured.
  *  @param  pa_DataLength	length of data in pa_Data.
  *  @param  pa_CPF_data	pointer to structure of CPF data item.
@@ -105,8 +105,8 @@ EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength, S_CIP_CPF_
 
 /*! \ingroup ENCAP
  * Copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
- * @param  pa_MRResponse	pointer to message router response which has to be alligned into linear memory.
- * @param  pa_CPFDataItem	pointer to CPF stucture which has to be alligned into linear memory.
+ * @param  pa_MRResponse	pointer to message router response which has to be aligned into linear memory.
+ * @param  pa_CPFDataItem	pointer to CPF structure which has to be aligned into linear memory.
  * @param  pa_msg		pointer to linear memory.
  * @return length of reply in pa_msg in bytes
  * 	   EIP_ERROR .. error

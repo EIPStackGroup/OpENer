@@ -204,8 +204,8 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
 
 /*   INT8 assembleLinearMsg(S_CIP_MR_Response *pa_MRResponse, S_CIP_CPF_Data *pa_CPFDataItem, INT8 *pa_msg)
  *   copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
- *      pa_MRResponse	pointer to message router response which has to be alligned into linear memory.
- *      pa_CPFDataItem	pointer to CPF stucture which has to be alligned into linear memory.
+ *      pa_MRResponse	pointer to message router response which has to be aligned into linear memory.
+ *      pa_CPFDataItem	pointer to CPF structure which has to be aligned into linear memory.
  *      pa_msg		pointer to linear memory.
  *  return length of reply in pa_msg in bytes
  * 			-1 .. error
