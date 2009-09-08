@@ -272,13 +272,9 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength)
               if (pstConnectionObject == 0)
                 return EIP_ERROR;
 
-              OPENER_TRACE_INFO("Sequence nummer: %ld, %ld\n",
-                  g_stCPFDataItem.stAddr_Item.Data.SequenceNumber,
-                  pstConnectionObject->EIPSequenceCountConsuming);
-
               if (SEQ_GEQ32(g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming))
                 {
-                  /* reset the watchdogtimer */
+                  /* reset the watchdog timer */
                   pstConnectionObject->InnacitvityWatchdogTimer
                       = (pstConnectionObject->O_to_T_RPI / 1000) << 2;
 
