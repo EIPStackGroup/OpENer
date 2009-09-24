@@ -298,8 +298,9 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
         }
       p++;
     }
+  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %d, instance %d\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
   assert(0);
-  /* trying to insert too mmany attributes*/
+  /* trying to insert too many attributes*/
 }
 
 void
@@ -338,7 +339,10 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr)
         return p;
       else
         p++;
-    }OPENER_TRACE_WARN("attribute %d not defined\n", pa_nAttributeNr);
+    }
+
+  OPENER_TRACE_WARN("attribute %d not defined\n", pa_nAttributeNr);
+
   return 0;
 }
 

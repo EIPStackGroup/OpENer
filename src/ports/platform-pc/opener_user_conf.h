@@ -36,12 +36,6 @@
 #define OPENER_DEVICE_MINOR_REVISION      2
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
-
-/*! The port address to be used for UDP multi-cast connections
- */ 
-#define OPENER_UDP_MULTICAST_PORT   2222
-
-
 /*! Define the number of supported connections (Class 0, 1, and 3 together)
  */  
 #define OPENER_NUMBER_OF_SUPPORTED_CONNECTIONS 10

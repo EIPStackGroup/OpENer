@@ -58,7 +58,11 @@ extern EIP_UINT32 g_nMultiCastAddress;
 #define SEQ_LEQ16(a, b) ((short)((a) - (b)) <= 0)
 #define SEQ_GEQ16(a, b) ((short)((a) - (b)) >= 0) 
 
-/*! buffer for holding the run idle infromation.*/
+
+/*The port to be used per default for I/O messages on UDP.*/
+#define OPENER_EIP_IO_UDP_PORT   0x08AE
+
+/*! buffer for holding the run idle information.*/
 EIP_UINT32 g_nRunIdleState;
 
 int
@@ -295,24 +299,28 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength)
                       g_stCPFDataItem.stDataI_Item.Length -= 2;
                     }
 
-                  if (OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
+                  if(g_stCPFDataItem.stDataI_Item.Length > 0)
                     {
-                      EIP_UINT32 nRunIdleBuf = ltohl(
-                          &(g_stCPFDataItem.stDataI_Item.Data));
-                      if (g_nRunIdleState != nRunIdleBuf)
+                      /* we have no heartbeat connection */
+                      if (OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
                         {
-                          IApp_RunIdleChanged(nRunIdleBuf);
+                          EIP_UINT32 nRunIdleBuf = ltohl(
+                              &(g_stCPFDataItem.stDataI_Item.Data));
+                          if (g_nRunIdleState != nRunIdleBuf)
+                            {
+                              IApp_RunIdleChanged(nRunIdleBuf);
+                            }
+                          g_nRunIdleState = nRunIdleBuf;
+                          g_stCPFDataItem.stDataI_Item.Length -= 4;
                         }
-                      g_nRunIdleState = nRunIdleBuf;
-                      g_stCPFDataItem.stDataI_Item.Length -= 4;
-                    }
 
-                  if (notifyAssemblyConnectedDataReceived(
-                      pstConnectionObject->p_stConsumingInstance,
-                      g_stCPFDataItem.stDataI_Item.Data,
-                      g_stCPFDataItem.stDataI_Item.Length) != 0)
-                    return EIP_ERROR;
-                }
+                      if (notifyAssemblyConnectedDataReceived(
+                          pstConnectionObject->p_stConsumingInstance,
+                          g_stCPFDataItem.stDataI_Item.Data,
+                          g_stCPFDataItem.stDataI_Item.Length) != 0)
+                        return EIP_ERROR;
+                    }
+                  }
 
             }
         }
@@ -562,38 +570,31 @@ int
 OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_CPF_Data *pa_CPF_data, EIP_UINT16 *pa_pnExtendedError)
 {
-  int j = -1;
   int newfd;
+  in_port_t nPort = OPENER_EIP_IO_UDP_PORT; /* the default port to be used if no port information is part of the forward open request */
+
 
   if (CIP_ITEM_ID_SOCKADDRINFO_T_TO_O == pa_CPF_data->AddrInfo[0].TypeID)
     {
-      j = 0;
+      nPort = pa_CPF_data->AddrInfo[0].nsin_port;
     }
   else
     {
       if (CIP_ITEM_ID_SOCKADDRINFO_T_TO_O == pa_CPF_data->AddrInfo[1].TypeID)
         {
-          j = 1;
-        }
-      else
-        {
-          /* the target should send us port and adress information  */
-          *pa_pnExtendedError
-              = CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE;
-          return CIP_ERROR_CONNECTION_FAILURE;
+          nPort = pa_CPF_data->AddrInfo[1].nsin_port;
         }
     }
 
   pa_pstConnObj->remote_addr.sin_family = AF_INET;
-  pa_pstConnObj->remote_addr.sin_addr.s_addr
-      = pa_CPF_data->AddrInfo[j].nsin_addr;
-  pa_pstConnObj->remote_addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port;
+  pa_pstConnObj->remote_addr.sin_addr.s_addr = 0; /* we don't know the address of the originate will be set in the IApp_CreateUDPSocket */
+  pa_pstConnObj->remote_addr.sin_port = nPort;
 
   newfd = IApp_CreateUDPSocket(PRODUCING, &pa_pstConnObj->remote_addr); /* the address is only needed for bind used if consuming */
   if (newfd == -1)
     {
       OPENER_TRACE_ERR("cannot create UDP socket in OpenPointToPointConnection\n");
-      *pa_pnExtendedError = 0x0315; /*miscelanouse*/
+      *pa_pnExtendedError = 0x0315; /* miscellaneous*/
       return CIP_ERROR_CONNECTION_FAILURE;
     }
   pa_pstConnObj->sockfd[PRODUCING] = newfd;
@@ -631,7 +632,7 @@ OpenMulticastConnection(int pa_direction,
 
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = g_nMultiCastAddress;
-  addr.sin_port = htons(OPENER_UDP_MULTICAST_PORT);
+  addr.sin_port = htons(OPENER_EIP_IO_UDP_PORT);
 
   newfd = IApp_CreateUDPSocket(pa_direction, &addr); /* the address is only needed for bind used if consuming */
   if (newfd == -1)
@@ -722,7 +723,7 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
   EIP_UINT16 ConnectionSerialNr, OriginatorVendorID;
   EIP_UINT32 OriginatorSerialNr;
 
-  /*supress compiler warning*/
+  /*Suppress compiler warning*/
   (void) pa_pstInstance;
 
   /* set AddressInfo Items to invalid TypeID to prevent assembleLinearMsg to read them */
@@ -768,12 +769,11 @@ UnconnectedSend(S_CIP_Instance * pa_pstInstance,
   S_CIP_UnconnectedSend_Param_Struct data;
   S_Data_Item stDataItem;
 
-  /*supress compiler warning*/
+  /*Suppress compiler warning*/
   (void) pa_pstInstance;
   (void) pa_MRResponse;
   (void) pa_msg;
 
-  /* additional code from smr for communication with Devicelogix */
   p = pa_MRRequest->Data;
   data.Priority = *p++;
   data.Timeout_Ticks = *p++;
@@ -800,10 +800,10 @@ UnconnectedSend(S_CIP_Instance * pa_pstInstance,
     }
   else
     {
-      /*TODO: other packet recieved */
+      /*TODO: other packet received */
       OPENER_TRACE_WARN("Warning: Route path data of unconnected send currently not handled\n");
     }
-  /*TODO correctly handle the path, currently we just ignor it and forward to the message router which should be ok for non routing devices*/
+  /*TODO correctly handle the path, currently we just ignore it and forward to the message router which should be ok for non routing devices*/
   return notifyMR(stDataItem.Data, data.Message_Request_Size);
 }
 
@@ -908,7 +908,7 @@ getFreeConnectionObject(void)
  *      pa_CPF_data	pointer to CPF Data Item
  *      pa_msg		pointer to memory where reply has to be stored
  *  return status
- * 			0 .. no reply need to ne sent back
+ * 			0 .. no reply need to be sent back
  * 			1 .. need to send reply
  * 		  -1 .. error
  */
@@ -1421,15 +1421,17 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObj,
               pstAttribute = getAttribute(pstInstance, 3);
               assert(pstAttribute != 0); /* an assembly object should always have an attribute 3 */
               nDataSize = pa_pstConnObj->ConsumedConnectionSize;
+
               if ((pa_pstConnObj->TransportTypeTrigger & 0x0F) == 1)
                 {
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
                 }
-              if (OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
-                {
+              if ((OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0))
+                { /* we only have an run idle header if it is not an hearbeat connection */
                   nDataSize -= 4; /* remove the 4 bytes needed for run/idle header */
                 }
+
               if (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len
                   != nDataSize)
                 {

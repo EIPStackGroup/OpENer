@@ -17,7 +17,7 @@
  * \brief This is the public interface of the OpENer. It provides all function needed to implement an EtherNet/IP enabled slave-device.
  */
 
-/*! \ingroup CIP_API 
+/*! \ingroup CIP_API
  * \brief Configure the data of the network interface of the device
  * 
  *  This function setup the data of the network interface needed by OpENer.
@@ -341,6 +341,9 @@ IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
  * 
  * @param pa_nDirection PRODCUER or CONSUMER
  * @param pa_pstAddr pointer to the address holding structure
+ *     Attention: For producing point-to-point connection the pa_pstAddr->sin_addr.s_addr
+ *         member is set to 0 by OpENer. The network layer of the application has
+ *         to set the correct addresss of the originator.
  * @return socket identifier on success
  *         -1 on error 
  */

@@ -72,6 +72,9 @@ EIP_STATUS IApp_Init(void)
     /*CONFIG*/
     createAssemblyObject(3, &g_assemblydata3[0], sizeof(g_assemblydata3));
 
+    /*Heartbeat output assembly for Listen only connections */
+    createAssemblyObject(4, 0, 0);
+
     return EIP_OK;
   }
 

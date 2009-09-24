@@ -152,11 +152,11 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
   for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) /* TODO there needs to be a limit check here???*/
     {
       pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
+      len_count += 2;
       if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
           || (pa_CPF_data->AddrInfo[j].TypeID
               == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
-        {
-          len_count += 16;
+        {         
           pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
           pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
           pa_CPF_data->AddrInfo[j].nsin_port = ltohs(&pa_Data);
@@ -166,7 +166,7 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
               pa_CPF_data->AddrInfo[j].nasin_zero[i] = *pa_Data;
               pa_Data++;
             }
-          len_count += 16;
+          len_count += 18;
         }
       else
         { /* no sockaddr item found */

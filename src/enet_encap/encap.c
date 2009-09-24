@@ -414,7 +414,7 @@ int
 SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   EIP_INT16 nSendSize;
-  /* Commandspecific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
+  /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
   /* don't use the data yet */
   ltohl(&pa_stReceiveData->pEncapsulation_Data); /* skip over null interface handle*/
   ltohs(&pa_stReceiveData->pEncapsulation_Data); /* skip over unused timeout value*/

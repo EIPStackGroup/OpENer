@@ -33,6 +33,12 @@ int fdmax;
 int listener;
 int newfd;
 
+/*!< This var holds the TCP socket the received to last explicit message.
+ * It is needed for opening point to point connection to determine the peer's
+ * address.
+ */
+int g_nCurrentActiveTCPSocket;
+
 static struct timeval tv;
 static MILLISECONDS actualtime, lasttime;
 
@@ -398,8 +404,13 @@ handleDataOnTCPSocket(int pa_nSocket)
   /*TODO handle partial packets*/
   OPENER_TRACE_INFO("Data received on tcp:\n");
 
+  g_nCurrentActiveTCPSocket = pa_nSocket;
+
   nDataSize = handleReceivedExplictData(pa_nSocket, g_acCommBuf, nDataSize,
       &nRemainingBytes);
+
+  g_nCurrentActiveTCPSocket = -1;
+
   if (nRemainingBytes != 0)
     {
       OPENER_TRACE_WARN("Warning: received packet was to long: %d Bytes left!\n",
@@ -425,6 +436,8 @@ handleDataOnTCPSocket(int pa_nSocket)
 int
 IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 {
+  struct sockaddr_in stPeerAdr;
+  int nPeerAddrLen = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
   if ((newfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
     {
@@ -445,6 +458,20 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
         }
 
       OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", newfd);
+    }
+  else
+    {
+      if(0 == pa_pstAddr->sin_addr.s_addr)
+        {
+          /* we have a peer to peer producer */
+          if (getpeername(g_nCurrentActiveTCPSocket, (struct sockaddr *)&stPeerAdr, &nPeerAddrLen) < 0)
+            {
+              OPENER_TRACE_ERR("networkhandler: could not get peername: %s", strerror(errno));
+              return EIP_ERROR;
+            }
+          pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
+        }
+
     }
 
   /* add new fd to the master list */
