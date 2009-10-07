@@ -661,18 +661,30 @@ OpenMulticastConnection(int pa_direction,
 }
 
 /*   void ConnectionObjectGeneralConfiguration(int pa_index)
- *   generate ConnectionID and set configurationparameter in connection object.
+ *   generate ConnectionID and set configuration parameter in connection object.
  *      pa_index	index of the connection object
  */
 void
 ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
 {
-  /* TODO improve the connection id algorithm, althoug this should not be a problem */
+  /* TODO improve the connection id algorithm, although this should not be a problem */
   static EIP_UINT32 connectionID = 18; /* start value to generate unique IDs */
 
   /* copy information to ConnectionObject, generate IDs and start a UDP socket in listen mode */
-  pa_pstConnObj->CIPConsumedConnectionID = connectionID++;
-  pa_pstConnObj->CIPProducedConnectionID = connectionID++;
+
+  /* check connection IDs if the IDs given in the Forward open are zero we have
+   * to choose an own connection ID.
+   * TODO use better method for generating connection IDs as suggested in the
+   * CIP spec vol2.
+   */
+  if(0 == pa_pstConnObj->CIPConsumedConnectionID)
+    {
+      pa_pstConnObj->CIPConsumedConnectionID = connectionID++;
+    }
+  if(0 == pa_pstConnObj->CIPProducedConnectionID)
+    {
+      pa_pstConnObj->CIPProducedConnectionID = connectionID++;
+    }
 
   pa_pstConnObj->EIPSequenceCountProducing = 0;
   pa_pstConnObj->SequenceCountProducing = 0;
@@ -688,7 +700,7 @@ ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
     { /* Client Type Connection requested */
       pa_pstConnObj->ExpectedPacketRate
           = (EIP_UINT16) ((pa_pstConnObj->T_to_O_RPI) / 1000);
-      /* As soon as we ara ready we should produce the connection. With the 0 here we will procude with the next timer tick
+      /* As soon as we are ready we should produce the connection. With the 0 here we will procude with the next timer tick
        * which should be sufficient. */
       pa_pstConnObj->TransmissionTriggerTimer = 0;
     }
@@ -748,7 +760,7 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
                   == OriginatorVendorID)
               && (stConnectionObject[i].OriginatorSerialNumber
                   == OriginatorSerialNr))
-            { /* found the corresponding connectionobject -> close it */
+            { /* found the corresponding connection object -> close it */
               closeConnection(&stConnectionObject[i]);
               nConnectionStatus = CIP_CON_MGR_SUCCESS;
             }
