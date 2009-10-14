@@ -47,6 +47,9 @@ extern EIP_UINT32 g_nMultiCastAddress;
 #define CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE 0x0205
 #define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH 0x0315
 
+#define CIP_POINT_TO_POINT_CONNECTION 0x4000
+#define CIP_MULTICAST_CONNECTION      0x2000
+
 #define FORWARD_OPEN_HEADER_LENGTH 36         /* the lenght in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 #define EQLOGICALPATH(x,y) (((x)&0xfc)==(y))
 
@@ -57,7 +60,6 @@ extern EIP_UINT32 g_nMultiCastAddress;
 /* similar macros for comparing 16 bit sequence numbers */
 #define SEQ_LEQ16(a, b) ((short)((a) - (b)) <= 0)
 #define SEQ_GEQ16(a, b) ((short)((a) - (b)) >= 0) 
-
 
 /*The port to be used per default for I/O messages on UDP.*/
 #define OPENER_EIP_IO_UDP_PORT   0x08AE
@@ -299,7 +301,7 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength)
                       g_stCPFDataItem.stDataI_Item.Length -= 2;
                     }
 
-                  if(g_stCPFDataItem.stDataI_Item.Length > 0)
+                  if (g_stCPFDataItem.stDataI_Item.Length > 0)
                     {
                       /* we have no heartbeat connection */
                       if (OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
@@ -320,7 +322,7 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength)
                           g_stCPFDataItem.stDataI_Item.Length) != 0)
                         return EIP_ERROR;
                     }
-                  }
+                }
 
             }
         }
@@ -572,7 +574,6 @@ OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   int newfd;
   in_port_t nPort = OPENER_EIP_IO_UDP_PORT; /* the default port to be used if no port information is part of the forward open request */
 
-
   if (CIP_ITEM_ID_SOCKADDRINFO_T_TO_O == pa_CPF_data->AddrInfo[0].TypeID)
     {
       nPort = pa_CPF_data->AddrInfo[0].nsin_port;
@@ -671,17 +672,29 @@ ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
 
   /* copy information to ConnectionObject, generate IDs and start a UDP socket in listen mode */
 
-  /* check connection IDs if the IDs given in the Forward open are zero we have
-   * to choose an own connection ID.
+  /*
+   *
+   * .
    * TODO use better method for generating connection IDs as suggested in the
    * CIP spec vol2.
    */
-  if(0 == pa_pstConnObj->CIPConsumedConnectionID)
+  if (CIP_POINT_TO_POINT_CONNECTION
+      == (pa_pstConnObj->O_to_T_NetworkConnectionParameter
+          & CIP_POINT_TO_POINT_CONNECTION))
     {
+      /* if we have a point to point connection for the O to T direction
+       * the target shall choose the connection ID.
+       */
       pa_pstConnObj->CIPConsumedConnectionID = connectionID++;
     }
-  if(0 == pa_pstConnObj->CIPProducedConnectionID)
+
+  if (CIP_MULTICAST_CONNECTION
+      == (pa_pstConnObj->T_to_O_NetworkConnectionParameter
+          & CIP_MULTICAST_CONNECTION))
     {
+      /* if we have a multi-cast connection for the T to O direction the
+       * target shall choose the connection ID.
+       */
       pa_pstConnObj->CIPProducedConnectionID = connectionID++;
     }
 
