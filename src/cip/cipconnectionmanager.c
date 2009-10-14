@@ -488,7 +488,6 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
        buffer the T_toO connection ID as we have to take the one given from the callee */
       tmp = stConnectionObject[index].CIPProducedConnectionID;
       ConnectionObjectGeneralConfiguration(&stConnectionObject[index]);
-      stConnectionObject[index].WatchdogTimeoutAction = enWatchdogAutoDelete; /* the default for explicit connections */
       stConnectionObject[index].CIPProducedConnectionID = tmp;
       stConnectionObject[index].Instance_Type = CONN_TYPE_EXPLICIT;
       stConnectionObject[index].sockfd[0] = stConnectionObject[index].sockfd[1]
@@ -692,6 +691,8 @@ ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
   pa_pstConnObj->SequenceCountConsuming = 0;
 
   pa_pstConnObj->TransportClassTrigger = pa_pstConnObj->TransportTypeTrigger;
+
+  pa_pstConnObj->WatchdogTimeoutAction = enWatchdogAutoDelete; /* the default for all connections on EIP*/
 
   pa_pstConnObj->Instance_Type = CONN_TYPE_IO;
   pa_pstConnObj->ExpectedPacketRate = 0; /* default value */
@@ -1499,8 +1500,6 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObj,
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
-
-      pa_pstConnObj->WatchdogTimeoutAction = enWatchdogTransitionToTimedOut; /* the default for I/O connections */
 
       /*get pointer to the cpf data, currently we have just one global instance of the struct. This may change in the future*/
       S_CIP_CPF_Data *pstCPF_data = &g_stCPFDataItem;

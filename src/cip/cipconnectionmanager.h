@@ -36,8 +36,8 @@ typedef enum
 /*! Possible values for the watch dog time out action of a connection */
 typedef enum
 {
-  enWatchdogTransitionToTimedOut = 0, /*!< Default for I/O connections, invalid for explicit message connections */
-  enWatchdogAutoDelete = 1, /*!< Default for explicit message connections */
+  enWatchdogTransitionToTimedOut = 0, /*!< , invalid for explicit message connections */
+  enWatchdogAutoDelete = 1, /*!< Default for explicit message connections, default for I/O connections on EIP*/
   enWatchdogAutoReset = 2, /*!< Invalid for explicit message connections */
   enWatchdogDeferredDelete = 3
 /*!< Only valid for DeviceNet, invalid for I/O connections */

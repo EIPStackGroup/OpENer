@@ -298,7 +298,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
         }
       p++;
     }
-  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %d, instance %d\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
+  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
   assert(0);
   /* trying to insert too many attributes*/
 }
@@ -348,28 +348,28 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr)
 
 /* TODO this needs to check for buffer overflow*/
 EIP_STATUS
-getAttributeSingle(S_CIP_Instance * pa_pInstance,
-    S_CIP_MR_Request * pa_stMRRequest, S_CIP_MR_Response * pa_stMRResponse,
-    EIP_UINT8 * pa_msg)
+getAttributeSingle(S_CIP_Instance *pa_pstInstance,
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse,
+    EIP_UINT8 *pa_acMsg)
 {
-  S_CIP_attribute_struct *p = getAttribute(pa_pInstance,
-      pa_stMRRequest->RequestPath.AttributNr);
+  S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
+      pa_pstMRRequest->RequestPath.AttributNr);
 
   if ((p != 0) && (p->pt2data != 0))
     {
       OPENER_TRACE_INFO("getAttribute %ld\n",
-          pa_stMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
-      pa_stMRResponse->DataLength = outputAttribute(p, pa_msg);
-      pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
-      pa_stMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
-      pa_stMRResponse->SizeofAdditionalStatus = 0;
-      return (EIP_STATUS) pa_stMRResponse->DataLength;
+          pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
+      pa_pstMRResponse->DataLength = outputAttribute(p, pa_acMsg);
+      pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
+      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+      pa_pstMRResponse->SizeofAdditionalStatus = 0;
+      return (EIP_STATUS) pa_pstMRResponse->DataLength;
     }
 
-  pa_stMRResponse->DataLength = 0;
-  pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
-  pa_stMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
-  pa_stMRResponse->SizeofAdditionalStatus = 0;
+  pa_pstMRResponse->DataLength = 0;
+  pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
+  pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
+  pa_pstMRResponse->SizeofAdditionalStatus = 0;
   return EIP_OK;
 }
 
