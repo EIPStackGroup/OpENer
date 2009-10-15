@@ -77,9 +77,10 @@ EIP_UINT8 * pa_replybuf) /* reply buffer*/
       if (pstConnectionObject == 0)
         return EIP_ERROR;
 
-      /* reset the watchdogtimer */
+      /* reset the watchdog timer */
       pstConnectionObject->InnacitvityWatchdogTimer
-          = (pstConnectionObject->O_to_T_RPI / 1000) << 2;
+          = (pstConnectionObject->O_to_T_RPI / 1000) << (2
+              + pstConnectionObject->ConnectionTimeoutMultiplier);
 
       /*TODO check connection id  and sequence count    */
       if (g_stCPFDataItem.stDataI_Item.TypeID
@@ -156,7 +157,7 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
       if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
           || (pa_CPF_data->AddrInfo[j].TypeID
               == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
-        {         
+        {
           pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
           pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
           pa_CPF_data->AddrInfo[j].nsin_port = ltohs(&pa_Data);

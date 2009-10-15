@@ -282,7 +282,8 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength)
                 {
                   /* reset the watchdog timer */
                   pstConnectionObject->InnacitvityWatchdogTimer
-                      = (pstConnectionObject->O_to_T_RPI / 1000) << 2;
+                      = (pstConnectionObject->O_to_T_RPI / 1000) << (2
+                          + pstConnectionObject->ConnectionTimeoutMultiplier);
 
                   /* only inform assembly object if the sequence counter is greater or equal */
                   pstConnectionObject->EIPSequenceCountConsuming
@@ -714,7 +715,7 @@ ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
     { /* Client Type Connection requested */
       pa_pstConnObj->ExpectedPacketRate
           = (EIP_UINT16) ((pa_pstConnObj->T_to_O_RPI) / 1000);
-      /* As soon as we are ready we should produce the connection. With the 0 here we will procude with the next timer tick
+      /* As soon as we are ready we should produce the connection. With the 0 here we will produce with the next timer tick
        * which should be sufficient. */
       pa_pstConnObj->TransmissionTriggerTimer = 0;
     }
@@ -725,10 +726,12 @@ ConnectionObjectGeneralConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
           = (EIP_UINT16) ((pa_pstConnObj->O_to_T_RPI) / 1000);
     }
 
-  /*setup the preconsuption timer: max(4* EpectetedPacketRate, 10s) */
-  pa_pstConnObj->InnacitvityWatchdogTimer = ((((pa_pstConnObj->T_to_O_RPI)
-      / 1000) << 2) > 10000) ? (((pa_pstConnObj->T_to_O_RPI) / 1000) << 2)
-      : 10000;
+  /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * EpectetedPacketRate, 10s) */
+  pa_pstConnObj->InnacitvityWatchdogTimer
+      = ((((pa_pstConnObj->O_to_T_RPI) / 1000) << (2
+          + pa_pstConnObj->ConnectionTimeoutMultiplier)) > 10000) ? (((pa_pstConnObj->O_to_T_RPI)
+          / 1000) << (2 + pa_pstConnObj->ConnectionTimeoutMultiplier))
+          : 10000;
 
   pa_pstConnObj->ConsumedConnectionSize
       = pa_pstConnObj->O_to_T_NetworkConnectionParameter & 0x01FF;
