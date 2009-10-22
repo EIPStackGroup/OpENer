@@ -28,6 +28,7 @@ SOURCES= \
 	../../src/cip/ciptcpipinterface.c \
 	../../src/cip/cipidentity.c \
 	../../src/cip/cipethernetlink.c \
+	../../src/cip/appcontype.c \
 	../../src/enet_encap/cpf.c \
 	../../src/enet_encap/endianconv.c \
 	../../src/enet_encap/encap.c \
@@ -44,6 +45,7 @@ OBJECTS= \
 	../../src/cip/ciptcpipinterface.o \
 	../../src/cip/cipidentity.o \
 	../../src/cip/cipethernetlink.o \
+	../../src/cip/appcontype.o  \
 	../../src/enet_encap/cpf.o \
 	../../src/enet_encap/endianconv.o \
 	../../src/enet_encap/encap.o

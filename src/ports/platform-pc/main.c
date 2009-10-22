@@ -72,8 +72,16 @@ EIP_STATUS IApp_Init(void)
     /*CONFIG*/
     createAssemblyObject(3, &g_assemblydata3[0], sizeof(g_assemblydata3));
 
-    /*Heartbeat output assembly for Listen only connections */
+    /*Heart-beat output assembly for Input only connections */
     createAssemblyObject(4, 0, 0);
+
+    /*Heart-beat output assembly for Listen only connections */
+    createAssemblyObject(5, 0, 0);
+
+
+    configureExclusiveOwnerConnectionPoint(0, 2, 1, 3);
+    configureInputOnlyConnectionPoint(0, 4, 1, 3);
+    configureListenOnlyConnectionPoint(0, 5, 1, 3);
 
     return EIP_OK;
   }

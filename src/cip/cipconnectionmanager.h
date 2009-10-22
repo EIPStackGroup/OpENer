@@ -30,8 +30,11 @@ typedef enum
 /* instance_type attributes */
 typedef enum
 {
-  CONN_TYPE_EXPLICIT = 0, CONN_TYPE_IO = 1
-} CONN_TYPE;
+  enConnTypeExplicit         = 0,
+  enConnTypeIOExclusiveOwner = 0x01,
+  enConnTypeIOInputOnly      = 0x11,
+  enConnTypeIOListenOnly     = 0x21
+} EConnType;
 
 /*! Possible values for the watch dog time out action of a connection */
 typedef enum
@@ -68,10 +71,10 @@ typedef struct
  * functionality of the connection object is not implemented. Therefore this
  * data can not be accessed with CIP means.
  */
-typedef struct
+typedef struct CIP_ConnectionObject
 {
   CONN_STATE State;
-  CONN_TYPE Instance_Type;
+  EConnType m_eInstanceType;
   EIP_BYTE TransportClassTrigger;
   /* conditional
    UINT16 DeviceNetProductedConnectionID;
@@ -127,11 +130,15 @@ typedef struct
   EIP_INT32 InnacitvityWatchdogTimer;
   struct sockaddr_in remote_addr; /* socket address for produce */
   int sockfd[2]; /* socket handles, indexed by CONSUMING or PRODUCING */
+
+  /* pointers to be used in the active connection list */
+  struct CIP_ConnectionObject *m_pstNext;
+  struct CIP_ConnectionObject *m_pstFirst;
 } S_CIP_ConnectionObject;
 
 #define CIP_CONNECTION_MANAGER_CLASS_CODE 0x06
 
-/* public funtions */
+/* public functions */
 
 /*! Initialize the data of the connection manager object
  */
@@ -147,6 +154,13 @@ Connection_Manager_Init(void);
  */
 S_CIP_ConnectionObject *
 getConnectedObject(EIP_UINT32 ConnectionID);
+
+/*! Copy the given connection data from pa_pstSrc to pa_pstDst
+ */
+void
+copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
+    S_CIP_ConnectionObject *pa_pstSrc);
+
 
 #endif /*CIPCONNECTIONMANAGER_H_*/
 

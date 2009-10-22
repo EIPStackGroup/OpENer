@@ -203,6 +203,51 @@ S_CIP_Instance *
 createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE *pa_data,
     EIP_UINT16 pa_datalength);
 
+/** \ingroup CIP_API
+ * Configures the connection point for an exclusive owner connection.
+ *
+ * @param pa_unConnNum the number of the exclusive owner connection. The
+ *        enumeration starts with 0. Has to be smaller than
+ *        OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS.
+ * @param pa_unOutputAssembly the O-to-T point to be used for this connection
+ * @param pa_unInputAssembly the T-to-O point to be used for this connection
+ * @param pa_unConfigAssembly the config point to be used for this connection
+ */
+void
+configureExclusiveOwnerConnectionPoint(unsigned int pa_unConnNum,
+    unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly,
+    unsigned int pa_unConfigAssembly);
+
+/** \ingroup CIP_API
+ * Configures the connection point for an input only connection.
+ *
+ * @param pa_unConnNum the number of the input only connection. The
+ *        enumeration starts with 0. Has to be smaller than
+ *        OPENER_CIP_NUM_INPUT_ONLY_CONNS.
+ * @param pa_unOutputAssembly the O-to-T point to be used for this connection
+ * @param pa_unInputAssembly the T-to-O point to be used for this connection
+ * @param pa_unConfigAssembly the config point to be used for this connection
+ */
+void
+configureInputOnlyConnectionPoint(unsigned int pa_unConnNum,
+    unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly,
+    unsigned int pa_unConfigAssembly);
+
+/** \ingroup CIP_API
+ * Configures the connection point for a listen only connection.
+ *
+ * @param pa_unConnNum the number of the input only connection. The
+ *        enumeration starts with 0. Has to be smaller than
+ *        OPENER_CIP_NUM_LISTEN_ONLY_CONNS.
+ * @param pa_unOutputAssembly the O-to-T point to be used for this connection
+ * @param pa_unInputAssembly the T-to-O point to be used for this connection
+ * @param pa_unConfigAssembly the config point to be used for this connection
+ */
+void
+configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
+    unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly,
+    unsigned int pa_unConfigAssembly);
+
 /** \ingroup CIP_API 
  * Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
  * 

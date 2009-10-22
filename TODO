@@ -2,6 +2,7 @@ This file serves as brainstorming buffer for ideas to improve and enhance OpENer
 
 * New Features:
   - Call-back interface to inform application on connection time outs
+     Establishment (acknowledge for listen only), Timeout, Close
   - Change of State and application triggered connections
   - Implementation of common CIP-objects
   - CIP-Sync

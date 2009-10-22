@@ -20,6 +20,10 @@
 #include <endianconv.h> 
 #include <trace.h>
 
+/* values needed from the connection manager */
+extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
+
+/* communication buffer */
 EIP_UINT8 g_acCommBuf[OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
@@ -62,18 +66,16 @@ getmilliseconds(void)
 int
 isConnectedFd(int pa_nFD)
 {
-  int i;
-  extern S_CIP_ConnectionObject stConnectionObject[];
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
 
-  S_CIP_ConnectionObject *con = &stConnectionObject[0]; /* this is done this way because the debugger would not display the connection table */
-
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_CONNECTIONS; i++)
+  while (NULL != pstRunner)
     {
-      if ((stConnectionObject[i].sockfd[0] == pa_nFD)
-          || (stConnectionObject[i].sockfd[1] == pa_nFD))
+      if ((pstRunner->sockfd[0] == pa_nFD)
+          || (pstRunner->sockfd[1] == pa_nFD))
         {
           return 1;
         }
+      pstRunner = pstRunner->m_pstNext;
     }
   return 0;
 }
@@ -461,10 +463,11 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
     }
   else
     {
-      if(0 == pa_pstAddr->sin_addr.s_addr)
+      if (0 == pa_pstAddr->sin_addr.s_addr)
         {
           /* we have a peer to peer producer */
-          if (getpeername(g_nCurrentActiveTCPSocket, (struct sockaddr *)&stPeerAdr, &nPeerAddrLen) < 0)
+          if (getpeername(g_nCurrentActiveTCPSocket,
+              (struct sockaddr *) &stPeerAdr, &nPeerAddrLen) < 0)
             {
               OPENER_TRACE_ERR("networkhandler: could not get peername: %s", strerror(errno));
               return EIP_ERROR;

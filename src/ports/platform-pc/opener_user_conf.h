@@ -36,9 +36,40 @@
 #define OPENER_DEVICE_MINOR_REVISION      2
 #define OPENER_DEVICE_NAME      "ENetIP EC"
 
-/*! Define the number of supported connections (Class 0, 1, and 3 together)
+/*! Define the number of supported explicit connections.
+ *  According to ODVA's PUB 70 this number should be greater than 6.
  */  
-#define OPENER_NUMBER_OF_SUPPORTED_CONNECTIONS 10
+#define OPENER_CIP_NUM_EXPLICIT_CONNS 6
+
+/*! Define the number of supported exclusive owner connections.
+ *  Each of these connections has to be configured with the function
+ *  void configureExclusiveOwnerConnectionPoint(unsigned int pa_unConnNum, unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly, unsigned int pa_unConfigAssembly)
+ *
+ */
+#define OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS 1
+
+/*! Define the number of supported input only connections.
+ *  Each of these connections has to be configured with the function
+ *  void configureInputOnlyConnectionPoint(unsigned int pa_unConnNum, unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly, unsigned int pa_unConfigAssembly)
+ *
+ */
+#define OPENER_CIP_NUM_INPUT_ONLY_CONNS 1
+
+/*! Define the number of supported input only connections per connection path
+ */
+#define OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH 1
+
+
+/*! Define the number of supported listen only connections.
+ *  Each of these connections has to be configured with the function
+ *  void configureListenOnlyConnectionPoint(unsigned int pa_unConnNum, unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly, unsigned int pa_unConfigAssembly)
+ *
+ */
+#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS 1
+
+/*! Define the number of supported Listen only connections per connection path
+ */
+#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH   1
 
 
 /*! The number of bytes used for the Ethernet message buffer.
