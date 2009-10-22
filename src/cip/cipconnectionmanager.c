@@ -750,6 +750,12 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
               && (pstRunner->OriginatorVendorID == OriginatorVendorID)
               && (pstRunner->OriginatorSerialNumber == OriginatorSerialNr))
             { /* found the corresponding connection object -> close it */
+              if (enConnTypeExplicit != pstRunner->m_eInstanceType)
+                {
+                  IApp_IOConnectionEvent(
+                      pstRunner->ConnectionPath.ConnectionPoint[0],
+                      pstRunner->ConnectionPath.ConnectionPoint[1], enTimedOut);
+                }
               closeConnection(pstRunner);
               nConnectionStatus = CIP_CON_MGR_SUCCESS;
               break;
@@ -843,6 +849,15 @@ manageConnections(void)
                 {
                   /* we have a timed out connection perform watchdog time out action*/
                   OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
+                  if (enConnTypeExplicit != pstRunner->m_eInstanceType)
+                    {
+                      IApp_IOConnectionEvent(
+                          pstRunner->ConnectionPath.ConnectionPoint[0],
+                          pstRunner->ConnectionPath.ConnectionPoint[1],
+                          enTimedOut);
+
+                    }
+
                   switch (pstRunner->WatchdogTimeoutAction)
                     {
                   case enWatchdogTransitionToTimedOut:
@@ -1414,10 +1429,10 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
       return CIP_ERROR_CONNECTION_FAILURE;
     }
 
-  O2TConnectionType = (pstIOConnObj->O_to_T_NetworkConnectionParameter
-      & 0x6000) >> 13;
-  T2OConnectionType = (pstIOConnObj->T_to_O_NetworkConnectionParameter
-      & 0x6000) >> 13;
+  O2TConnectionType
+      = (pstIOConnObj->O_to_T_NetworkConnectionParameter & 0x6000) >> 13;
+  T2OConnectionType
+      = (pstIOConnObj->T_to_O_NetworkConnectionParameter & 0x6000) >> 13;
 
   generalConnectionConfiguration(pstIOConnObj);
 
@@ -1576,6 +1591,8 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
 
     }
   addNewActiveConnection(pstIOConnObj);
+  IApp_IOConnectionEvent(pstIOConnObj->ConnectionPath.ConnectionPoint[0],
+      pstIOConnObj->ConnectionPath.ConnectionPoint[1], enTimedOut);
   return EIP_OK;
 }
 

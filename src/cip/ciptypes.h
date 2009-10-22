@@ -82,6 +82,11 @@ typedef enum
 #define CIP_UNCONNECTED_SEND		  0x52
 #define CIP_GET_CONNECTION_OWNER	0x5A
 
+typedef enum
+{
+  enOpened, enTimedOut, enClosed
+} EIOConnectionEvent;
+
 /* typedefinition to general CIP structure */
 typedef struct
 {

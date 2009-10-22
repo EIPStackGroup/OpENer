@@ -310,6 +310,18 @@ closeSession(int pa_nSocket);
 EIP_STATUS
 IApp_Init(void);
 
+
+/** \ingroup CIP_CALLBACK_API
+ * \brief Inform the application on changes occurred for a connection
+ *
+ * @param pa_unOutputAssembly the output assembly connection point of the connection
+ * @param pa_unInputAssembly the input assembly connection point of the connection
+ * @param pa_eIOConnectionEvent information on the change occurred
+ */
+void
+IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
+    unsigned int pa_unInputAssembly, EIOConnectionEvent pa_eIOConnectionEvent);
+
 /** \ingroup CIP_CALLBACK_API 
  * \brief Call back function to inform application on received data for an assembly object.
  * 
