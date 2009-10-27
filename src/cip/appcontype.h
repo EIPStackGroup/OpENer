@@ -27,4 +27,40 @@ S_CIP_ConnectionObject *
 getIOConnectionForConnectionData(S_CIP_ConnectionObject *pa_pstConnData,
     EIP_UINT16 *pa_pnExtendedError);
 
+/*! \brief Check if there exists already an exclusive owner or listen only connection
+ *         which produces the input assembly.
+ *
+ *  @param pa_unInputPoint the Input point to be produced
+ *  @return if a connection could be found a pointer to this connection if not NULL
+ */
+S_CIP_ConnectionObject *
+getExistingProdMulticastConnection(EIP_UINT32 pa_unInputPoint);
+
+/*! \brief check if there exists an producing multicast exclusive owner or
+ * listen only connection that should produce the same input but is not in charge
+ * of the connection.
+ *
+ * @param pa_unInputPoint the produced input
+ * @return if a connection could be found the pointer to this connection
+ *      otherwise NULL.
+ */
+S_CIP_ConnectionObject *
+getNextNonCtrlMasterCon(EIP_UINT32 pa_unInputPoint);
+
+/*! \brief Close all connection producing the same input and have the same type
+ * (i.e., listen only or input only).
+ *
+ * @param pa_unInputPoint  the input point
+ * @param pa_eInstanceType the connection application type
+ */
+void
+closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
+    EConnType pa_eInstanceType);
+
+/*! \brief Check if there is an established connection that uses the same
+ * config point.
+ */
+bool
+connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint);
+
 #endif /* APPCONTYPE_H_ */

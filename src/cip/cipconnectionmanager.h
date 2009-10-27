@@ -15,6 +15,9 @@
 #define CONSUMING 0           /* these are used as array indexes, watch out if changing these values */
 #define PRODUCING 1
 
+#define CIP_POINT_TO_POINT_CONNECTION 0x4000
+#define CIP_MULTICAST_CONNECTION      0x2000
+
 /*! States of a connection */
 typedef enum
 {
@@ -160,6 +163,14 @@ getConnectedObject(EIP_UINT32 ConnectionID);
 void
 copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
     S_CIP_ConnectionObject *pa_pstSrc);
+
+/** \brief Close the given connection
+ *
+ * This function will take the data form the connection and correctly closes the connection (e.g., open sockets)
+ * @param pa_pstConnObj pointer to the connection object structure to be closed
+ */
+void
+closeConnection(S_CIP_ConnectionObject *pa_pstConnObj);
 
 
 #endif /*CIPCONNECTIONMANAGER_H_*/

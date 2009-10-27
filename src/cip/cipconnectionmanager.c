@@ -36,6 +36,7 @@ extern EIP_UINT32 g_nMultiCastAddress;
 #define CIP_CON_MGR_SUCCESS 0x00
 #define CIP_CON_MGR_ERROR_CONNECTION_IN_USE 0x0100
 #define CIP_CON_MGR_ERROR_TRANSPORT_TRIGGER_NOT_SUPPORTED 0x0103
+#define CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT 0x0106
 #define CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION 0x0107
 #define CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE 0x0108
 #define CIP_CON_MGR_ERROR_INVALID_CONNECTION_SIZE 0x0109  
@@ -47,9 +48,6 @@ extern EIP_UINT32 g_nMultiCastAddress;
 #define CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT 0x0118
 #define CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE 0x0205
 #define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH 0x0315
-
-#define CIP_POINT_TO_POINT_CONNECTION 0x4000
-#define CIP_MULTICAST_CONNECTION      0x2000
 
 #define CIP_CONN_PATH_INVALID 1
 #define CIP_CONN_PATH_CONFIGURATION 2
@@ -91,6 +89,11 @@ S_CIP_ConnectionObject g_stDummyConnectionObject;
 S_CIP_ConnectionObject
     g_astExplicitConnections[OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
 
+/* buffers for the config data coming with a forward open request.
+ */
+EIP_UINT8 *g_pnConfigDataBuffer;
+unsigned int g_unConfigDataLen;
+
 /* private functions */
 EIP_STATUS
 ForwardOpen(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
@@ -123,6 +126,13 @@ getFreeExplicitConnection(void);
 
 void
 generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj);
+
+/* producing multicast connection have to consider the rules that apply for
+ * application connection types.
+ */
+EIP_STATUS
+openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
+    S_CIP_CPF_Data *pa_CPF_data);
 
 EIP_STATUS
 OpenMulticastConnection(int pa_direction,
@@ -202,13 +212,11 @@ EIP_UINT8
 establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
     EIP_UINT16 *pa_pnExtendedError);
 
-/** \brief Close the given connection
- *
- * This function will take the data form the connection and correctly closes the connection (e.g., open sockets)
- * @param pa_pstConnObj pointer to the connection object structure to be closed 
+/* Regularly close the IO connection. If it is an exclusive owner or input only
+ * connection and in charge of the connection a new owner will be searched
  */
 void
-closeConnection(S_CIP_ConnectionObject *pa_pstConnObj);
+closeIOConnection(S_CIP_ConnectionObject *pa_pstConnObjData);
 
 /*!  Send the data from the produced CIP Object of the connection via the socket of the connection object
  *   on UDP.
@@ -224,6 +232,13 @@ addNewActiveConnection(S_CIP_ConnectionObject *pa_pstConn);
 
 void
 removeFromeActiveConnections(S_CIP_ConnectionObject *pa_pstConn);
+
+void
+handleIOConnectionTimeOut(S_CIP_ConnectionObject *pa_pstConn);
+
+EIP_UINT16
+handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
+    S_CIP_ConnectionObject *pa_pstIOConnObj);
 
 int
 GETPADDEDLOGICALPATH(unsigned char **x)
@@ -508,7 +523,7 @@ EIP_STATUS
 OpenConsumingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_CPF_Data *pa_CPF_data)
 {
-  static EIP_UINT16 nUDPPort = 2222; /*TODO think on improving the udp port assigment for point to point connections */
+  /*static EIP_UINT16 nUDPPort = 2222; TODO think on improving the udp port assigment for point to point connections */
   int j;
   struct sockaddr_in addr;
   int newfd;
@@ -525,7 +540,8 @@ OpenConsumingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
 
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = INADDR_ANY;
-  addr.sin_port = htons(nUDPPort++);
+  /*addr.in_port = htons(nUDPPort++);*/
+  addr.sin_port = htons(OPENER_EIP_IO_UDP_PORT);
 
   newfd = IApp_CreateUDPSocket(CONSUMING, &addr); /* the address is only needed for bind used if consuming */
   if (newfd == -1)
@@ -578,6 +594,57 @@ OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
       return CIP_ERROR_CONNECTION_FAILURE;
     }
   pa_pstConnObj->sockfd[PRODUCING] = newfd;
+
+  return EIP_OK;
+}
+
+EIP_STATUS
+openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
+    S_CIP_CPF_Data *pa_CPF_data)
+{
+  S_CIP_ConnectionObject *pstExistingConn = getExistingProdMulticastConnection(
+      pa_pstConnObj->ConnectionPath.ConnectionPoint[1]);
+
+  if (NULL == pstExistingConn)
+    { /* we are the first connection producing for the given Input Assembly */
+      return OpenMulticastConnection(PRODUCING, pa_pstConnObj, pa_CPF_data);
+    }
+
+  /* we have a connection reuse the data and the socket */
+  int j;
+
+  j = 0; /* allocate an unused sockaddr struct to use */
+  if (g_stCPFDataItem.AddrInfo[0].TypeID == 0)
+    { /* it is not used yet */
+      j = 0;
+    }
+  else if (g_stCPFDataItem.AddrInfo[1].TypeID == 0)
+    {
+      j = 1;
+    }
+
+  if (enConnTypeIOExclusiveOwner == pa_pstConnObj->m_eInstanceType)
+    {
+      /* eclusive owners take the socket and further manage the connection
+       * especially in the case of time outs.
+       */
+      pa_pstConnObj->sockfd[PRODUCING] = pstExistingConn->sockfd[PRODUCING];
+      pstExistingConn->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
+    }
+  else
+    { /* this connection will not produce the data */
+      pa_pstConnObj->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
+    }
+
+  pa_CPF_data->AddrInfo[j].Length = 16;
+  pa_CPF_data->AddrInfo[j].TypeID = CIP_ITEM_ID_SOCKADDRINFO_T_TO_O;
+  pa_pstConnObj->remote_addr.sin_family = AF_INET;
+  pa_pstConnObj->remote_addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port
+      = htons(OPENER_EIP_IO_UDP_PORT);
+  pa_pstConnObj->remote_addr.sin_addr.s_addr
+      = pa_CPF_data->AddrInfo[j].nsin_addr = g_nMultiCastAddress;
+  memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
+  pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
 
   return EIP_OK;
 }
@@ -752,11 +819,12 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
             { /* found the corresponding connection object -> close it */
               if (enConnTypeExplicit != pstRunner->m_eInstanceType)
                 {
-                  IApp_IOConnectionEvent(
-                      pstRunner->ConnectionPath.ConnectionPoint[0],
-                      pstRunner->ConnectionPath.ConnectionPoint[1], enTimedOut);
+                  closeIOConnection(pstRunner);
                 }
-              closeConnection(pstRunner);
+              else
+                {
+                  closeConnection(pstRunner);
+                }
               nConnectionStatus = CIP_CON_MGR_SUCCESS;
               break;
             }
@@ -850,23 +918,12 @@ manageConnections(void)
                   /* we have a timed out connection perform watchdog time out action*/
                   OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
                   if (enConnTypeExplicit != pstRunner->m_eInstanceType)
-                    {
-                      IApp_IOConnectionEvent(
-                          pstRunner->ConnectionPath.ConnectionPoint[0],
-                          pstRunner->ConnectionPath.ConnectionPoint[1],
-                          enTimedOut);
-
+                    { /* explicit connection have to be closed */
+                      closeConnection(pstRunner);
                     }
-
-                  switch (pstRunner->WatchdogTimeoutAction)
+                  else
                     {
-                  case enWatchdogTransitionToTimedOut:
-                    pstRunner->State = CONN_STATE_TIMEDOUT;
-                    break;
-                  case enWatchdogAutoDelete:
-                  default:
-                    closeConnection(pstRunner);
-                    break;
+                      handleIOConnectionTimeOut(pstRunner);
                     }
                 }
             }
@@ -875,7 +932,8 @@ manageConnections(void)
             {
               /* client connection */
               if ((0 == (pstRunner->TransportClassTrigger & 0x70)) && /* cyclic connection */
-              (pstRunner->ExpectedPacketRate != 0))
+              (pstRunner->ExpectedPacketRate != 0) && (EIP_INVALID_SOCKET
+                  != pstRunner->sockfd[PRODUCING])) /* only produce for the master connection */
                 {
                   pstRunner->TransmissionTriggerTimer -= OPENER_TIMER_TICK;
                   if (pstRunner->TransmissionTriggerTimer <= 0)
@@ -1249,15 +1307,13 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
         }
       nRemainingPathSize -= 1; /* 1 16Bit word for the class part of the path */
 
-      S_CIP_Instance *pstConfigInstance;
-
       if (EQLOGICALPATH(*pnMsg,0x24))
         { /* store the configuration ID for later checking in the application connection types */
           pa_pstConnObj->ConnectionPath.ConnectionPoint[2]
               = GETPADDEDLOGICALPATH(&pnMsg);
           OPENER_TRACE_INFO("Configuration instance id %ld\n", pa_pstConnObj->ConnectionPath.ConnectionPoint[2]);
-          if (0 == (pstConfigInstance = getCIPInstance(pstClass,
-              pa_pstConnObj->ConnectionPath.ConnectionPoint[2])))
+          if (NULL == getCIPInstance(pstClass,
+              pa_pstConnObj->ConnectionPath.ConnectionPoint[2]))
             {
               /*according to the test tool we should respond with this extended error code */
               *pa_pnExtendedError
@@ -1274,16 +1330,16 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
       nRemainingPathSize -= 1; /* 1 16Bit word for the configuration instance part of the path */
 
       if (0x03 == (pa_pstConnObj->TransportTypeTrigger & 0x03))
-        { /* we have Class 3 connection, connection endpoint has to be the message router instance 1 */
+        { /* we have Class 3 connection, connection end point has to be the message router instance 1 */
           if ((pa_pstConnObj->ConnectionPath.ClassID
               != CIP_MESSAGE_ROUTER_CLASS_CODE)
-              || (pstConfigInstance->nInstanceNr != 1))
+              || (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] != 1))
             {
               *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
           pa_pstConnObj->ConnectionPath.ConnectionPoint[0]
-              = pstConfigInstance->nInstanceNr;
+              = pa_pstConnObj->ConnectionPath.ConnectionPoint[2];
         }
       else
         { /* we have an IO connection */
@@ -1354,22 +1410,16 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                 }
             }
 
+          g_unConfigDataLen = 0;
+          g_pnConfigDataBuffer = NULL;
+
           if (nRemainingPathSize > 0)
             { /* have something left in the path should be configuration data */
               if (0x80 == *pnMsg)
                 { /* we have a simple data segment
                  TODO do we have to handle ANSI extended symbol data segments too? */
-                  int nLen = pnMsg[1] * 2; /*data segments store length 16-bit word wise */
-                  /*put the data on the configuration assembly object with the current
-                   design this can be done rather efficiently */
-                  if (EIP_OK != notifyAssemblyConnectedDataReceived(
-                      pstConfigInstance, &(pnMsg[2]), nLen))
-                    {
-                      OPENER_TRACE_WARN("Configuration data was invalid\n");
-                      *pa_pnExtendedError
-                          = CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT;
-                      return CIP_ERROR_CONNECTION_FAILURE;
-                    }
+                  g_unConfigDataLen = pnMsg[1] * 2; /*data segments store length 16-bit word wise */
+                  g_pnConfigDataBuffer = &(pnMsg[2]);
                 }
               else
                 {
@@ -1543,6 +1593,15 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
             }
         }
 
+      if (NULL != g_pnConfigDataBuffer)
+        { /* config data has been sent with this forward open request */
+          *pa_pnExtendedError
+              = handleConfigData(pstAssemblyClass, pstIOConnObj);
+          if (0 != *pa_pnExtendedError)
+            {
+              return CIP_ERROR_CONNECTION_FAILURE;
+            }
+        }
       /*get pointer to the cpf data, currently we have just one global instance of the struct. This may change in the future*/
       S_CIP_CPF_Data *pstCPF_data = &g_stCPFDataItem;
 
@@ -1570,7 +1629,7 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
 
       if (T2OConnectionType == 1) /* Multicast producing */
         {
-          if (OpenMulticastConnection(PRODUCING, pstIOConnObj, pstCPF_data)
+          if (openProducingMulticastConnection(pstIOConnObj, pstCPF_data)
               == EIP_ERROR)
             {
               OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
@@ -1726,4 +1785,133 @@ removeFromeActiveConnections(S_CIP_ConnectionObject *pa_pstConn)
     }
   pa_pstConn->m_pstFirst = NULL;
   pa_pstConn->m_pstNext = NULL;
+}
+
+void
+closeIOConnection(S_CIP_ConnectionObject *pa_pstConnObjData)
+{
+  S_CIP_ConnectionObject *pstNextNonCtrlMasterCon;
+
+  IApp_IOConnectionEvent(pa_pstConnObjData->ConnectionPath.ConnectionPoint[0],
+      pa_pstConnObjData->ConnectionPath.ConnectionPoint[1], enClosed);
+
+  if ((enConnTypeIOExclusiveOwner == pa_pstConnObjData->m_eInstanceType)
+      || (enConnTypeIOInputOnly == pa_pstConnObjData->m_eInstanceType))
+    {
+      if ((CIP_MULTICAST_CONNECTION
+          == (pa_pstConnObjData->T_to_O_NetworkConnectionParameter
+              & CIP_MULTICAST_CONNECTION)) && (EIP_INVALID_SOCKET
+          != pa_pstConnObjData->sockfd[PRODUCING]))
+        {
+          pstNextNonCtrlMasterCon = getNextNonCtrlMasterCon(
+              pa_pstConnObjData->ConnectionPath.ConnectionPoint[1]);
+          if (NULL != pstNextNonCtrlMasterCon)
+            {
+              pstNextNonCtrlMasterCon->sockfd[PRODUCING]
+                  = pa_pstConnObjData->sockfd[PRODUCING];
+              pa_pstConnObjData->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
+              pstNextNonCtrlMasterCon->TransmissionTriggerTimer
+                  = pa_pstConnObjData->TransmissionTriggerTimer;
+            }
+          else
+            { /* this was the last master connection close all listen only connections listening on the port */
+              closeAllConnsForInputWithSameType(
+                  pa_pstConnObjData->ConnectionPath.ConnectionPoint[1],
+                  enConnTypeIOListenOnly);
+            }
+        }
+    }
+  closeConnection(pa_pstConnObjData);
+}
+
+void
+handleIOConnectionTimeOut(S_CIP_ConnectionObject *pa_pstConn)
+{
+  S_CIP_ConnectionObject *pstNextNonCtrlMasterCon;
+  IApp_IOConnectionEvent(pa_pstConn->ConnectionPath.ConnectionPoint[0],
+      pa_pstConn->ConnectionPath.ConnectionPoint[1], enTimedOut);
+
+  if (CIP_MULTICAST_CONNECTION
+      == (pa_pstConn->T_to_O_NetworkConnectionParameter
+          & CIP_MULTICAST_CONNECTION))
+    {
+      switch (pa_pstConn->m_eInstanceType)
+        {
+      case enConnTypeIOExclusiveOwner:
+        closeAllConnsForInputWithSameType(
+            pa_pstConn->ConnectionPath.ConnectionPoint[1],
+            enConnTypeIOInputOnly);
+        closeAllConnsForInputWithSameType(
+            pa_pstConn->ConnectionPath.ConnectionPoint[1],
+            enConnTypeIOListenOnly);
+        break;
+      case enConnTypeIOInputOnly:
+        if (EIP_INVALID_SOCKET != pa_pstConn->sockfd[PRODUCING])
+          { /* we are the controlling input only connection find a new controller*/
+            pstNextNonCtrlMasterCon = getNextNonCtrlMasterCon(
+                pa_pstConn->ConnectionPath.ConnectionPoint[1]);
+            if (NULL != pstNextNonCtrlMasterCon)
+              {
+                pstNextNonCtrlMasterCon->sockfd[PRODUCING]
+                    = pa_pstConn->sockfd[PRODUCING];
+                pa_pstConn->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
+                pstNextNonCtrlMasterCon->TransmissionTriggerTimer
+                    = pa_pstConn->TransmissionTriggerTimer;
+              }
+            else
+              { /* this was the last master connection close all listen only connections listening on the port */
+                closeAllConnsForInputWithSameType(
+                    pa_pstConn->ConnectionPath.ConnectionPoint[1],
+                    enConnTypeIOListenOnly);
+              }
+          }
+        break;
+      default:
+        break;
+        }
+    }
+
+  closeConnection(pa_pstConn);
+}
+
+EIP_UINT16
+handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
+    S_CIP_ConnectionObject *pa_pstIOConnObj)
+{
+  EIP_UINT16 unRetVal = 0;
+  S_CIP_Instance *pstConfigInstance = getCIPInstance(pa_pstAssemblyClass,
+      pa_pstIOConnObj->ConnectionPath.ConnectionPoint[2]);
+
+  if (connectionWithSameConfigPointExists(
+      pa_pstIOConnObj->ConnectionPath.ConnectionPoint[2]))
+    { /* there is a connected connection with the same config point
+     * we have to have the same data as already present in the config point*/
+      S_CIP_Byte_Array *p = (S_CIP_Byte_Array *) getAttribute(
+          pstConfigInstance, 3)->pt2data;
+      if (p->len != g_unConfigDataLen)
+        {
+          unRetVal = CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT;
+        }
+      else
+        {
+          /*FIXME check if this is correct */
+          if (memcmp(p->Data, g_pnConfigDataBuffer, g_unConfigDataLen))
+            {
+              unRetVal = CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT;
+            }
+        }
+    }
+  else
+    {
+
+      /*put the data on the configuration assembly object with the current
+       design this can be done rather efficiently */
+      if (EIP_OK != notifyAssemblyConnectedDataReceived(pstConfigInstance,
+          g_pnConfigDataBuffer, g_unConfigDataLen))
+        {
+          OPENER_TRACE_WARN("Configuration data was invalid\n");
+          unRetVal = CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT;
+        }
+    }
+  return unRetVal;
 }

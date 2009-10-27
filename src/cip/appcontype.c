@@ -5,8 +5,9 @@
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
-
+#include "appcontype.h"
 #include "cipconnectionmanager.h"
+#include "opener_api.h"
 
 #define CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT 0x0106
 #define CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH 0x0117
@@ -61,9 +62,6 @@ getInputOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
 S_CIP_ConnectionObject *
 getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
     EIP_UINT16 *pa_pnExtendedError);
-
-bool
-establishedMasterConnectionExists(S_CIP_ConnectionObject * pa_pstConnData);
 
 void
 configureExclusiveOwnerConnectionPoint(unsigned int pa_unConnNum,
@@ -251,6 +249,15 @@ getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
   S_CIP_ConnectionObject *pstRetVal = NULL;
   int i, j;
 
+  if (CIP_MULTICAST_CONNECTION
+      != (pa_pstConnData->T_to_O_NetworkConnectionParameter
+          & CIP_MULTICAST_CONNECTION))
+    {
+      /* a listen only connection has to be a multicast connection. */
+      *pa_pnExtendedError = CIP_CON_MGR_NON_LISTEN_ONLY_CONNECTION_NOT_OPENED; /* maybe not the best error message however there is no suitable definition in the cip spec */
+      return NULL;
+    }
+
   for (i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++)
     {
       if (g_astListenOnlyConnections[i].m_unOutputAssembly
@@ -271,7 +278,8 @@ getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
               break;
             }
 
-          if (!establishedMasterConnectionExists(pa_pstConnData))
+          if (NULL != getExistingProdMulticastConnection(
+              pa_pstConnData->ConnectionPath.ConnectionPoint[1]))
             {
               *pa_pnExtendedError
                   = CIP_CON_MGR_NON_LISTEN_ONLY_CONNECTION_NOT_OPENED;
@@ -293,8 +301,8 @@ getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
   return pstRetVal;
 }
 
-bool
-establishedMasterConnectionExists(S_CIP_ConnectionObject * pa_pstConnData)
+S_CIP_ConnectionObject *
+getExistingProdMulticastConnection(EIP_UINT32 pa_unInputPoint)
 {
   S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
 
@@ -303,13 +311,89 @@ establishedMasterConnectionExists(S_CIP_ConnectionObject * pa_pstConnData)
       if ((enConnTypeIOExclusiveOwner == pstRunner->m_eInstanceType)
           || (enConnTypeIOInputOnly == pstRunner->m_eInstanceType))
         {
-          if (pa_pstConnData->ConnectionPath.ConnectionPoint[1]
-              == pstRunner->ConnectionPath.ConnectionPoint[1])
+          if ((pa_unInputPoint == pstRunner->ConnectionPath.ConnectionPoint[1])
+              && (CIP_MULTICAST_CONNECTION
+                  == (pstRunner->T_to_O_NetworkConnectionParameter
+                      & CIP_MULTICAST_CONNECTION)) && (EIP_INVALID_SOCKET
+              != pstRunner->sockfd[PRODUCING]))
             {
-              return true;
+              /* we have a connection that produces the same input assembly,
+               * is a multicast producer and manages the connection.
+               */
+              break;
             }
         }
       pstRunner = pstRunner->m_pstNext;
     }
-  return false;
+  return pstRunner;
+}
+
+S_CIP_ConnectionObject *
+getNextNonCtrlMasterCon(EIP_UINT32 pa_unInputPoint)
+{
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+
+  while (NULL != pstRunner)
+    {
+      if ((enConnTypeIOExclusiveOwner == pstRunner->m_eInstanceType)
+          || (enConnTypeIOInputOnly == pstRunner->m_eInstanceType))
+        {
+          if ((pa_unInputPoint == pstRunner->ConnectionPath.ConnectionPoint[1])
+              && (CIP_MULTICAST_CONNECTION
+                  == (pstRunner->T_to_O_NetworkConnectionParameter
+                      & CIP_MULTICAST_CONNECTION)) && (EIP_INVALID_SOCKET
+              == pstRunner->sockfd[PRODUCING]))
+            {
+              /* we have a connection that produces the same input assembly,
+               * is a multicast producer and does not manages the connection.
+               */
+              break;
+            }
+        }
+      pstRunner = pstRunner->m_pstNext;
+    }
+  return pstRunner;
+}
+
+void
+closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
+    EConnType pa_eInstanceType)
+{
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+  S_CIP_ConnectionObject *pstToDelete;
+
+  while (NULL != pstRunner)
+    {
+      if ((pa_eInstanceType == pstRunner->m_eInstanceType) && (pa_unInputPoint
+          == pstRunner->ConnectionPath.ConnectionPoint[1]))
+        {
+          pstToDelete = pstRunner;
+          pstRunner = pstRunner->m_pstNext;
+          IApp_IOConnectionEvent(
+              pstToDelete->ConnectionPath.ConnectionPoint[0],
+              pstToDelete->ConnectionPath.ConnectionPoint[1], enClosed);
+
+          closeConnection(pstToDelete); /* will remove the connection from the active connection list */
+        }
+      else
+        {
+          pstRunner = pstRunner->m_pstNext;
+        }
+    }
+}
+
+bool
+connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint)
+{
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+
+  while (NULL != pstRunner)
+    {
+      if (pa_unConfigPoint == pstRunner->ConnectionPath.ConnectionPoint[2])
+        {
+          break;
+        }
+      pstRunner = pstRunner->m_pstNext;
+    }
+  return (NULL != pstRunner);
 }
