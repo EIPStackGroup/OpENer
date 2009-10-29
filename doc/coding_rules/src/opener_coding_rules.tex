@@ -1,0 +1,177 @@
+\documentclass[final,a4paper,10pt, oneside]{article}
+\usepackage[latin1]{inputenc}
+
+\usepackage{a4wide} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%   important definitions at the beginning
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{Coding Rules for\\ \emph{OpENer} --- Open Source EtherNet/IP$^{TM}$ Adapter Stack\\\large Version 1.0}
+\author{Alois Zoitl\thanks{zoitl\@@acin.tuwien.ac.at}}
+\date{2009-10-29}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Links
+\usepackage{ifpdf}
+\ifpdf
+ \usepackage[pdftex, colorlinks, pdfstartview=FitH, plainpages=false, pdfpagelabels]{hyperref}
+ \pdfcompresslevel=9
+\else
+ \usepackage[dvipdfm, colorlinks]{hyperref}
+\fi
+
+\hypersetup{colorlinks, linkcolor=black, filecolor=black, urlcolor=black, citecolor=black, pdftitle={Coding Rules for OpENer},pdfauthor={Alois Zoitl}}
+
+% Font
+\usepackage{mathpazo}
+
+\usepackage[centerlast,small,bf]{caption} %zentriert, kleiner als fliesstext, fett (gilt nur fuer 'Abbildung x:')
+
+% Figures
+\usepackage[dvips]{graphicx}
+
+% Listings
+\usepackage{listings}
+\lstset{language=C++}
+\lstset{commentstyle=\textit}
+\lstset{linewidth=\textwidth}
+\lstset{basicstyle=\scriptsize}
+
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Comments}
+A sufficient amount of comments has to be written. There are never too many comments, whereas invalid comments are worse than none --- thus
+invalid comments have to be removed from the source code. Comments have to be written in English. 
+
+\begin{quote}
+Comments for function, structure, \ldots~ definitions have to follow the conventions of \emph{Doxygen} to allow the automated generation of documentation for the sourcecode. 
+\end{quote}
+
+Comments have to be meaningful, to describe to program and to be up to date.
+
+
+\subsection{Fileheaders}
+Every source-file must contain a fileheader as follows:
+\begin{lstlisting}[frame=trbl]{}
+/*******************************************************************************
+ * Copyright (c) 2009, Rockwell Automation, Inc.
+ * All rights reserved. 
+ *
+ * Contributors:
+ *     <date>: <author>, <author email> - changes
+ ******************************************************************************/
+\end{lstlisting}
+Each author needs to explain his changes in the code. 
+\subsection{Revision History}
+%To track changes in the source files every new file version must contain it's version information in the followoing form:
+%\begin{center}
+%  @version: $<$date$>$/$<$author$>$: $<$description$>$
+%\end{center}
+%An additional example is given in the appendix \ref{subsec:FileHeader} of this document.
+The revision history has to be done in a style  usable by Doxygen. This means that the history is independent of the files, but all classes are documented.
+
+\subsection{Keywords}
+The following Keywords should be used in the source code to mark special comments:
+\begin{itemize}
+	\item \textbf{TODO:} For comments about possible or needed extensions
+	\item \textbf{FIXME:} To be used for comments about potential (or known) bugs
+\end{itemize}
+
+\section{Datatypes}
+The following table contains the definitions of important standard datatypes. This is done to ensure a machine independant defintion of the bit-width of the standard data types. For \emph{OpENer}-development these definitions are in the file: \verb|src/typedefs.h|
+
+\begin{table}[h]
+	\centering
+		\begin{tabular}{lll}
+			defined data type	& bit-width / description & used C-datatype \\
+			\hline
+			EIP\_BYTE	&	8 bit unsigned	&   char\\
+			EIP\_INT8	&	8 bit signed	&	signed char	 \\
+			EIP\_INT16	&	16 bit signed	&	short	 \\
+			EIP\_INT32	&	32 bit signed	&	long	 \\
+			EIP\_UINT8	&	8 bit unsigned	&	char	 \\
+			EIP\_UINT16	&	16 bit unsigned	&	unsigned short	 \\
+			EIP\_UINT32	&	32 bit unsigned	&	unsigned long	 \\
+			EIP\_FLOAT	&	single precission IEEE float (32 bit)&	float	 \\
+			EIP\_DFLOAT	&	double precission IEEE float (64 bit) &	double	\\
+			EIP\_BOOL8	&	byte variable as boolean value	&	bool	 \\
+		\end{tabular}
+\end{table}
+
+These data types shall only be used when the bit size is important for the correct operation of the code. If not we advice to use the type \verb|int| or \verb|unsigned int| for most variables, as this is the most efficent data type and can lead on some platforms (e.g., ARM) even to smaller code size.
+
+\section{Naming of Identifiers}
+Every identifier has to be named in English. The first character of an identifier must not contain underscores (there are some compiler directives which start with underscores and this could lead to conflicts). Mixed case letters has to be used and the appropriate prefixes have to be inserted where necessary.
+
+
+\subsection{Variables}
+Variables have to be named self explanatory. The names have to be provided with the appropriate prefixes and they have to start with an uppercase letter. In case of combining prefixes, the use of ranges, arrays, pointer, enumerations, or structures is at first, followed by basic data types or object prefixes. The only exception are loop variables (thereby the use of i, j, k is allowed). Only one variable declaration per line is allowed. Pointer operators at the declaration have to be located in front of the variable (not after the type identifier). If possible initializations have to be done directly at the declaration.
+
+\subsection{Prefixes}
+The following prefixes have to be applied to identifiers:\\
+\begin{tabular}{ll}
+&\\
+\textbf{Type Definitions} & \textbf{Ranges} \\
+\begin{tabular}{ll}
+S& for structures \\
+E& for enum\\
+T\_& for types (e.g. typedef in C++)\\ 
+\end{tabular} &
+
+\begin{tabular}{ll}
+m\_ & for member variables of classes\\	
+g\_ & for global variables\\
+s\_ & for static variables\\
+pa\_ & for function parameters\\
+\end{tabular}	\vspace{1mm}\\
+\textbf{Variable Types} & \textbf{Basic Data Types} \\
+\begin{tabular}{ll}
+a & for arrays\\
+p & for pointers\\ 	
+e & for enumerations\\
+st & for structures\\
+\end{tabular}	&
+
+\begin{tabular}{ll}
+c & for characters \\
+b & for booleans\\
+n & for integers\\	
+f & for all floating point numbers
+\end{tabular} \vspace{1mm}\\
+\end{tabular}
+
+\paragraph{Examples}
+\begin{quote}
+\verb|struct SCIPObject;|\\
+\verb|int nNumber;|\\
+\verb|int *pnNumber = &nNumber;|\\
+\verb|char cKey;|\\
+\verb|bool g_bIsInitialized;|\\
+\verb|float m_fPi = 3.1415;|\\
+\verb|int anNumbers[10];|\\
+\end{quote}
+
+
+\subsection{Constants}
+Constants have to be named with block letters (only upper case letters). If a name consists of more words, underscores for separation are
+allowed.  Avoid the using ``magic numbers'' 
+(e.g. \verb|if (x == 3){...}|). Instead use constants.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Code Formatting}
+In order to have consitent code formating the rules of GNU shall apply. When using Eclipse as development environment this format is alread set as preset. By pressing <ctrl><shift>f the formater will format the code according to these rules.
+
+
+\end{document}
