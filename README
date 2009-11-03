@@ -39,6 +39,16 @@ Compile for PCs:
      2.4 The resulting executable will be in the directory
         ./bin/pc
 
+Directory structure:
+====================
+  - bin ...  The resulting binaries and make files for different ports (currently only pc)
+  - doc ...  Doxygen generated documentation (has to be generated for the SVN version) and Coding rules
+  - data ... EDS file for the default application
+  - src
+     - cip ... the CIP layer of the stack
+     - enet_encap ... the Ethernet encapsulation layer
+     - ports ... the platform specific code
+
 Documentation:
 ==============
 The documentation of the functions of OpENer is part of the source code. You 

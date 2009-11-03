@@ -472,7 +472,6 @@ IApp_CloseSocket(int pa_nSockFd);
  * 
  * \section further_reading_sec Further Topics
  *   - \ref porting
- *   - \ref building_products
  *   - \ref extending
  *   - \ref license 
  * 
@@ -564,15 +563,22 @@ IApp_CloseSocket(int pa_nSockFd);
  * code. An overview and explanation of OpENer's call-back API may be found in 
  * the module \ref CIP_CALLBACK_API.
  *  
- * \page building_products Using OpENer in Products
- * 
  * \page extending Extending OpENer
+ * OpENer provides an API for adding own CIP objects and instances with
+ * specific services and attributes. Therefore OpENer can be easily adapted to
+ * support different device profiles and specific CIP objects needed for your
+ * device. The functions to be used are:
+ *   - S_CIP_Class * createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes, EIP_UINT32 pa_nClassGetAttrAllMask, int pa_nNr_of_ClassServices, int pa_nNr_of_InstanceAttributes, EIP_UINT32 pa_nInstGetAttrAllMask, int pa_nNr_of_InstanceServices, int pa_nNr_of_Instances, char *pa_acName, EIP_UINT16 pa_nRevision);
+ *   - S_CIP_Instance * addCIPInstances(S_CIP_Class *pa_pstCIPObject, int pa_nNr_of_Instances);
+ *   - S_CIP_Instance * addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
+ *   - void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr, EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
+ *   - void insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr, TCIPServiceFunc pa_ptfuncService, char *name);
  * 
  * \page license OpENer Open Source License
  * The OpENer Open Source License is an adapted BSD style license. The 
  * adaptations include the use of the term EtherNet/IP(TM) and the necessary 
  * guarding conditions for using OpENer in own products. For this please look 
- * in \ref building_products and the license text as shown below:
+ * in license text as shown below:
  * 
  * \include "license.txt"  
  * 

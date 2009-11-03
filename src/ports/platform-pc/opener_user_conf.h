@@ -34,7 +34,7 @@
 #define OPENER_DEVICE_PRODUCT_CODE      200
 #define OPENER_DEVICE_MAJOR_REVISION      1
 #define OPENER_DEVICE_MINOR_REVISION      2
-#define OPENER_DEVICE_NAME      "ENetIP EC"
+#define OPENER_DEVICE_NAME      "OpENer PC"
 
 /*! Define the number of supported explicit connections.
  *  According to ODVA's PUB 70 this number should be greater than 6.
