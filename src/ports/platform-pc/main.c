@@ -102,6 +102,13 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
 {
   /*handle the data received e.g., update outputs of the device */
 
+  if (pa_pstInstance->nInstanceNr == 2)
+    {
+      /* Data for the output assembly has been received.
+       * Mirror it to the inputs */
+      memcpy(&g_assemblydata[0], &g_assemblydata2[0], sizeof(g_assemblydata));
+    }
+
   return EIP_OK;
 }
 
@@ -109,6 +116,10 @@ bool
 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
 {
   /*update data to be sent e.g., read inputs of the device */
+  /*In this sample app we mirror the data from out to inputs on data receive
+   * therefore we need nothing to do here. Just return true to inform that
+   * the data is new.
+   */
   return true;
 }
 
