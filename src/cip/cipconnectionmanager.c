@@ -208,7 +208,7 @@ establishClass3Connection(S_CIP_ConnectionObject *pa_pstConnObj,
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EIP_UINT8
+int
 establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
     EIP_UINT16 *pa_pnExtendedError);
 
@@ -496,7 +496,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
     {
       OPENER_TRACE_INFO("connection manager: connect failed\n");
       /* in case of error the dummy objects holds all necessary information */
-      tmp = assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
+      return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           tmp, nConnectionStatus, pa_msg);
     }
   else
@@ -504,10 +504,9 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
       OPENER_TRACE_INFO("connection manager: connect succeeded\n");
       /* in case of success the g_pstActiveConnectionList points to the new connection */
       g_pstActiveConnectionList->State = CONN_STATE_ESTABLISHED;
-      tmp = assembleFWDOpenResponse(g_pstActiveConnectionList, pa_MRResponse,
+      return assembleFWDOpenResponse(g_pstActiveConnectionList, pa_MRResponse,
           CIP_ERROR_SUCCESS, 0, pa_msg);
     }
-  return tmp;
 }
 
 /*   EIP_STATUS OpenPointToPointConnection(S_CIP_CPF_Data *pa_CPF_data, S_CIP_CM_Object *pa_pstCMObject, INT8 pa_direction, int pa_index)
@@ -1465,7 +1464,7 @@ establishClass3Connection(S_CIP_ConnectionObject *pa_pstConnObj,
   return nRetVal;
 }
 
-EIP_UINT8
+int
 establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
     EIP_UINT16 *pa_pnExtendedError)
 {

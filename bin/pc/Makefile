@@ -6,6 +6,8 @@
 # *     <date>: <author>, <author email> - changes
 # ******************************************************************************
 
+#CC=g++
+
 CFLAGS= \
 	-g \
 	-I . \
@@ -15,7 +17,7 @@ CFLAGS= \
 	-I ../../src/ports/platform-pc \
 	-DOPENER_WITH_TRACES \
 	-DOPENER_TRACE_LEVEL=0xFF \
-	-W -Wall -ansi
+	-W -Wall -ansi -std=c99
 
 LDFLAGS=
 
