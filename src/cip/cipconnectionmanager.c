@@ -916,7 +916,7 @@ manageConnections(void)
                 {
                   /* we have a timed out connection perform watchdog time out action*/
                   OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
-                  if (enConnTypeExplicit != pstRunner->m_eInstanceType)
+                  if (enConnTypeExplicit == pstRunner->m_eInstanceType)
                     { /* explicit connection have to be closed */
                       closeConnection(pstRunner);
                     }
