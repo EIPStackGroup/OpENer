@@ -1650,7 +1650,7 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
     }
   addNewActiveConnection(pstIOConnObj);
   IApp_IOConnectionEvent(pstIOConnObj->ConnectionPath.ConnectionPoint[0],
-      pstIOConnObj->ConnectionPath.ConnectionPoint[1], enTimedOut);
+      pstIOConnObj->ConnectionPath.ConnectionPoint[1], enOpened);
   return EIP_OK;
 }
 
