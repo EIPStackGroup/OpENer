@@ -384,6 +384,15 @@ void *
 IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
 
 /**\ingroup CIP_CALLBACK_API 
+ * \brief Free memory allocated by the OpENer
+ *
+ * emulate the common c-library function free
+ * @param pointer to the allocated memory
+ * return
+ */
+void IApp_CipFree(void *pa_poData);
+
+/**\ingroup CIP_CALLBACK_API
  * \brief Inform the application that the Run/Idle State has been changed
  *  by the originator. 
  * 

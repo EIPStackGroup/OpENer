@@ -143,6 +143,10 @@ IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement)
   return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
 }
 
+void IApp_CipFree(void *pa_poData){
+  free(pa_poData);
+}
+
 void
 IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue)
 {

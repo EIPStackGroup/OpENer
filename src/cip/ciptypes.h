@@ -71,15 +71,16 @@ typedef enum
 #define CIP_BYTE_ARRAY			0xA4
 
 #define INTERNAL_UINT16_6		0xf0				/* bogus hack, for port class attribute 9, TODO figure out the right way to handle it */
+
 /* definition of CIP service codes */
 #define CIP_GET_ATTRIBUTE_SINGLE	0x0E
 #define CIP_SET_ATTRIBUTE_SINGLE	0x10
-#define CIP_RESET			            0x05
-#define CIP_CREATE                0x08  
-#define CIP_GET_ATTRIBUTE_ALL		  0x01
-#define CIP_FORWARD_OPEN		      0x54
-#define CIP_FORWARD_CLOSE		      0x4E
-#define CIP_UNCONNECTED_SEND		  0x52
+#define CIP_RESET			0x05
+#define CIP_CREATE                      0x08
+#define CIP_GET_ATTRIBUTE_ALL		0x01
+#define CIP_FORWARD_OPEN		0x54
+#define CIP_FORWARD_CLOSE		0x4E
+#define CIP_UNCONNECTED_SEND		0x52
 #define CIP_GET_CONNECTION_OWNER	0x5A
 
 typedef enum

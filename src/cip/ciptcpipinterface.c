@@ -66,7 +66,7 @@ configureDomainName(const char *pa_acDomainName)
 {
   if (0 != Interface_Configuration.DomainName.String)
     {
-      free(Interface_Configuration.DomainName.String);
+    IApp_CipFree(Interface_Configuration.DomainName.String);
     }
   Interface_Configuration.DomainName.Length = strlen(pa_acDomainName);
   if (Interface_Configuration.DomainName.Length)
@@ -86,7 +86,7 @@ configureHostName(const char *pa_acHostName)
 {
   if (0 != Hostname.String)
     {
-      free(Hostname.String);
+      IApp_CipFree(Hostname.String);
     }
   Hostname.Length = strlen(pa_acHostName);
   if (Hostname.Length)
@@ -136,16 +136,18 @@ CIP_TCPIP_Interface_Init()
   S_CIP_Class *p_stTCPIPClass;
   S_CIP_Instance *pstInstance;
 
-  if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, /* # class attributes*/
-  0xffffffff, /* class getAttributeAll mask*/
-  0, /* # class services*/
-  6, /* # instance attributes*/
-  0xffffffff, /* instance getAttributeAll mask*/
-  1, /* # instance services*/
-  1, /* # instances*/
-  "TCP/IP interface", 1)) == 0)
-    return EIP_ERROR;
-
+  if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE,
+      0, /* # class attributes*/
+      0xffffffff, /* class getAttributeAll mask*/
+      0, /* # class services*/
+      6, /* # instance attributes*/
+      0xffffffff, /* instance getAttributeAll mask*/
+      1, /* # instance services*/
+      1, /* # instances*/
+      "TCP/IP interface", 1)) == 0)
+    {
+      return EIP_ERROR;
+    }
   pstInstance = getCIPInstance(p_stTCPIPClass, 1); /* bind attributes to the instance #1 that was created above*/
 
   insertAttribute(pstInstance, 1, CIP_DWORD, (void *) &TCP_Status);
