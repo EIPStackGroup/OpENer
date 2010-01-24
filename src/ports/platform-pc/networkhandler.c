@@ -444,7 +444,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
   if ((newfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
     {
       OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %s\n", strerror(errno));
-      return EIP_ERROR;
+      return EIP_INVALID_SOCKET;
     }
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", newfd);
@@ -456,7 +456,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
           == -1)
         {
           OPENER_TRACE_ERR("error on bind udp: %s\n", strerror(errno));
-          return EIP_ERROR;
+          return EIP_INVALID_SOCKET;
         }
 
       OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", newfd);
@@ -470,7 +470,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
               (struct sockaddr *) &stPeerAdr, &nPeerAddrLen) < 0)
             {
               OPENER_TRACE_ERR("networkhandler: could not get peername: %s", strerror(errno));
-              return EIP_ERROR;
+              return EIP_INVALID_SOCKET;
             }
           pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
         }

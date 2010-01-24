@@ -543,7 +543,7 @@ OpenConsumingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   addr.sin_port = htons(OPENER_EIP_IO_UDP_PORT);
 
   newfd = IApp_CreateUDPSocket(CONSUMING, &addr); /* the address is only needed for bind used if consuming */
-  if (newfd == -1)
+  if (newfd == EIP_INVALID_SOCKET)
     {
       OPENER_TRACE_ERR("cannot create UDP socket in OpenPointToPointConnection\n");
       return EIP_ERROR;
@@ -586,7 +586,7 @@ OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   pa_pstConnObj->remote_addr.sin_port = nPort;
 
   newfd = IApp_CreateUDPSocket(PRODUCING, &pa_pstConnObj->remote_addr); /* the address is only needed for bind used if consuming */
-  if (newfd == -1)
+  if (newfd == EIP_INVALID_SOCKET)
     {
       OPENER_TRACE_ERR("cannot create UDP socket in OpenPointToPointConnection\n");
       *pa_pnExtendedError = 0x0315; /* miscellaneous*/
@@ -681,7 +681,7 @@ OpenMulticastConnection(int pa_direction,
   addr.sin_port = htons(OPENER_EIP_IO_UDP_PORT);
 
   newfd = IApp_CreateUDPSocket(pa_direction, &addr); /* the address is only needed for bind used if consuming */
-  if (newfd == -1)
+  if (newfd == EIP_INVALID_SOCKET)
     {
       OPENER_TRACE_ERR("cannot create UDP socket in OpenMulticastConnection\n");
       return EIP_ERROR;
