@@ -302,7 +302,7 @@ ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
   *pacCommBuf++ = (unsigned char) ProductName.Length;
   memcpy(pacCommBuf, ProductName.String, ProductName.Length);
   pacCommBuf += ProductName.Length;
-  *pacCommBuf++ = 0x03;
+  *pacCommBuf++ = ID_Status;
 
   pa_stReceiveData->nData_length = pacCommBuf
       - &g_acCommBuf[ENCAPSULATION_HEADER_LENGTH];

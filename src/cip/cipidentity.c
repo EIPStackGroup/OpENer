@@ -21,7 +21,7 @@ EIP_UINT16 DeviceType = OPENER_DEVICE_TYPE; /* #2 */
 EIP_UINT16 ProductCode = OPENER_DEVICE_PRODUCT_CODE; /* #3 */
 S_CIP_Revision Revison =
   { OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION }; /* #4 */
-EIP_UINT16 ID_Status = 0; /* #5 TODO find out what this is and how it gets set */
+EIP_UINT16 ID_Status = CIP_IDENTITY_STATE_OPERATIONAL; /* #5 TODO find out what this is and how it gets set */
 EIP_UINT32 SerialNumber = 0; /* #6  Has to be set prior to OpENer initialization */
 S_CIP_Short_String ProductName =
   { sizeof(OPENER_DEVICE_NAME) - 1, OPENER_DEVICE_NAME }; /* #7 */
