@@ -66,7 +66,7 @@ configureDomainName(const char *pa_acDomainName)
 {
   if (0 != Interface_Configuration.DomainName.String)
     {
-    IApp_CipFree(Interface_Configuration.DomainName.String);
+      IApp_CipFree(Interface_Configuration.DomainName.String);
     }
   Interface_Configuration.DomainName.Length = strlen(pa_acDomainName);
   if (Interface_Configuration.DomainName.Length)
@@ -136,15 +136,14 @@ CIP_TCPIP_Interface_Init()
   S_CIP_Class *p_stTCPIPClass;
   S_CIP_Instance *pstInstance;
 
-  if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE,
-      0, /* # class attributes*/
-      0xffffffff, /* class getAttributeAll mask*/
-      0, /* # class services*/
-      6, /* # instance attributes*/
-      0xffffffff, /* instance getAttributeAll mask*/
-      1, /* # instance services*/
-      1, /* # instances*/
-      "TCP/IP interface", 1)) == 0)
+  if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, /* # class attributes*/
+  0xffffffff, /* class getAttributeAll mask*/
+  0, /* # class services*/
+  6, /* # instance attributes*/
+  0xffffffff, /* instance getAttributeAll mask*/
+  1, /* # instance services*/
+  1, /* # instances*/
+  "TCP/IP interface", 1)) == 0)
     {
       return EIP_ERROR;
     }
@@ -162,5 +161,19 @@ CIP_TCPIP_Interface_Init()
       &setAttributeSingleTCP, "SetAttributeSingle");
 
   return EIP_OK;
+}
+
+void
+shutdownTCPIP_Interface(void)
+{
+  if (Hostname.Length)
+    {
+      IApp_CipFree(Hostname.String);
+    }
+
+  if (Interface_Configuration.DomainName.Length)
+    {
+      IApp_CipFree(Interface_Configuration.DomainName.String);
+  }
 }
 

@@ -328,6 +328,7 @@ Start_NetworkHandler()
     }
   close(nTCPListener);
   close(nUDPListener);
+  return EIP_OK;
 }
 
 EIP_STATUS

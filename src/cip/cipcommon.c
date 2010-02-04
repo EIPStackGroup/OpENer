@@ -59,6 +59,13 @@ void shutdownCIP(void){
   closeAllConnections();
   /* Than free the sockets of currently active encapsulation sessions */
   encapShutDown();
+  /*clean the data needed for the assembly object's attribute 3*/
+  shutdownAssemblies();
+
+  shutdownTCPIP_Interface();
+
+  /*no clear all the instances and classes */
+  deleteAllClasses();
 }
 
 EIP_STATUS

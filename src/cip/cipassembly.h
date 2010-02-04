@@ -21,6 +21,15 @@
  */
 EIP_STATUS CIP_Assembly_Init(void);
 
+/*! \brief clean up the data allocated in the assembly object instances
+ *
+ * Assembly object instances allocate per instance data to store attribute 3.
+ * This will be freed here. The assembly object data given by the application
+ * is not freed neither the assembly object instances. These are handled in the
+ * main shutdown function.
+ */
+void shutdownAssemblies(void);
+
 /*! notify an Assembly object that data has been received for it.
  * 
  *  The data will be copied into the assembly objects attribute 3 and

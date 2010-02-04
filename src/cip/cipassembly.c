@@ -31,6 +31,27 @@ CIP_Assembly_Init()
   return createAssemblyClass() ? EIP_OK : EIP_ERROR;
 }
 
+void shutdownAssemblies(void)
+{
+  S_CIP_Class *pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE);
+  S_CIP_attribute_struct *pstAttribute;
+  S_CIP_Instance *pstRunner;
+
+  if(NULL != pstAssemblyClass)
+    {
+      pstRunner = pstAssemblyClass->pstInstances;
+      while(NULL != pstRunner)
+        {
+          pstAttribute = getAttribute(pstRunner, 3);
+          if(NULL != pstAttribute)
+            {
+              IApp_CipFree(pstAttribute->pt2data);
+            }
+          pstRunner = pstRunner->pstNext;
+        }
+    }
+}
+
 S_CIP_Instance *
 createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE * pa_data,
     EIP_UINT16 pa_datalength)
@@ -39,20 +60,20 @@ createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE * pa_data,
   S_CIP_Instance *pstAssemblyInstance;
   S_CIP_Byte_Array *stAssemblyByteArray;
 
-  if (0 == (pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE)))
+  if (NULL == (pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE)))
     {
-      if (0 == (pstAssemblyClass = createAssemblyClass()))
+      if (NULL == (pstAssemblyClass = createAssemblyClass()))
         {
-          return 0;
+          return NULL;
         }
     }
 
   pstAssemblyInstance = addCIPInstance(pstAssemblyClass, pa_nInstanceID); /* add instances (always succeeds (or asserts))*/
 
   if ((stAssemblyByteArray = (S_CIP_Byte_Array *) IApp_CipCalloc(1,
-      sizeof(S_CIP_Byte_Array))) == 0)
+      sizeof(S_CIP_Byte_Array))) == NULL)
     {
-      return 0; /*TODO remove assembly instance in case of error*/
+      return NULL; /*TODO remove assembly instance in case of error*/
     }
 
   stAssemblyByteArray->len = pa_datalength;
