@@ -57,6 +57,15 @@ void
 closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
     EConnType pa_eInstanceType);
 
+
+/*!\brief close all open connections.
+ *
+ * For I/O connections the sockets will be freed. The sockets for explicit
+ * connections are handled by the encapsulation layer, and freed there.
+ */
+void closeAllConnections(void);
+
+
 /*! \brief Check if there is an established connection that uses the same
  * config point.
  */

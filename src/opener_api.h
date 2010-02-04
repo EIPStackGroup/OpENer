@@ -69,6 +69,20 @@ setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
 void
 CIP_Init(void);
 
+
+/** \ingroup CIP_API
+ * \brief Shutdown the CIP-stack
+ *
+ * This will
+ *   - close all open I/O connections,
+ *   - close all open explicit connections, and
+ *   - free all memory allocated by the stack.
+ *
+ * Memory allocated by the application will not be freed. This has to be done
+ * by the application!
+ */
+void shutdownCIP(void);
+
 /** \ingroup CIP_API 
  * \brief Get a pointer to a CIP object with given class code
  * 

@@ -35,30 +35,6 @@
 
 #define OPENER_TRACE_ENABLED      /* can be used for conditional code compilation */
 
-/*#ifdef OPENER_EIP_TRACE_TIME
- //
- //#define OPENER_TRACE_TIME_ENABLED // can be used for conditional code compilation
- //
- //extern struct timeval trace_now;
- //
- //#define TRACE_ERR(args...)   do { if ((0x01 & trace_level) && trace_stream) \
-//        { gettimeofday(&trace_now, NULL); fprintf(stderr,"[%09lu:%06lu]: ", trace_now.tv_sec, trace_now.tv_usec);  \
-//          fprintf(stderr,args); }} while(0)
- //#define TRACE_WARN(args...)  do { if ((0x02 & trace_level) && trace_stream) \
-//        { gettimeofday(&trace_now, NULL); fprintf(trace_stream,"[%09lu:%06lu]: ", trace_now.tv_sec, trace_now.tv_usec);  \
-//          fprintf(trace_stream,args); }} while(0)
- //#define TRACE_STATE(args...) do { if ((0x04 & trace_level) && trace_stream) \
-//        { gettimeofday(&trace_now, NULL); fprintf(trace_stream,"[%09lu:%06lu]: ", trace_now.tv_sec, trace_now.tv_usec);  \
-//          fprintf(trace_stream,args); }} while(0)
- //#define TRACE_PROTO(args...) do { if ((0x08 & trace_level) && trace_stream) \
-//        { gettimeofday(&trace_now, NULL); fprintf(trace_stream,"[%09lu:%06lu]: ", trace_now.tv_sec, trace_now.tv_usec);  \
-//          fprintf(trace_stream,args); }} while(0)
- //#define TRACE_INFO(args...)  do { if ((0x10 & trace_level) && trace_stream) \
-//        { gettimeofday(&trace_now, NULL); fprintf(trace_stream,"[%09lu:%06lu]: ", trace_now.tv_sec, trace_now.tv_usec);  \
-//          fprintf(trace_stream,args); }} while(0)
- //#else
- */
-
 /*! Trace error messages.
  *  In order to activate this trace level set the OPENER_TRACE_LEVEL_ERROR flag
  *  in OPENER_TRACE_LEVEL.

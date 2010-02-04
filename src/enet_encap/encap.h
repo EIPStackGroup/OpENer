@@ -51,8 +51,15 @@ extern EIP_UINT8 g_acCommBuf[];
 
 /*** public functions ***/
 /*! \ingroup ENCAP 
- * \brief Initialize the encapsulationlayer.
+ * \brief Initialize the encapsulation layer.
  */
 void encapInit(void);
+
+/*! \ingroup ENCAP
+ * \brief Shutdown the encapsulation layer.
+ *
+ * This means that all open sessions including their sockets are closed.
+ */
+void encapShutDown(void);
 
 #endif /*ENCAP_H_*/

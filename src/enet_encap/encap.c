@@ -302,7 +302,7 @@ ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
   *pacCommBuf++ = (unsigned char) ProductName.Length;
   memcpy(pacCommBuf, ProductName.String, ProductName.Length);
   pacCommBuf += ProductName.Length;
-  *pacCommBuf++ = ID_Status;
+  *pacCommBuf++ = 0xFF;
 
   pa_stReceiveData->nData_length = pacCommBuf
       - &g_acCommBuf[ENCAPSULATION_HEADER_LENGTH];
@@ -561,3 +561,16 @@ closeSession(int pa_nSocket)
         }
     }
 }
+
+void encapShutDown(void){
+  int i;
+    for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
+      {
+        if (EIP_INVALID_SOCKET == anRegisteredSessions[i])
+          {
+            IApp_CloseSocket(anRegisteredSessions[i]);
+            anRegisteredSessions[i] = EIP_INVALID_SOCKET;
+          }
+      }
+}
+

@@ -23,6 +23,7 @@
 #include "cipmessagerouter.h"
 #include "cpf.h"
 #include "trace.h"
+#include "appcontype.h"
 
 /* global public variables */
 EIP_UINT8 g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
@@ -49,8 +50,15 @@ CIP_Init(void)
   assert(CIP_Ethernet_Link_Init() == EIP_OK);
   assert(Connection_Manager_Init() == EIP_OK);
   assert(CIP_Assembly_Init() == EIP_OK);
-  /* the application has to be initiliazed at last */
+  /* the application has to be initialized at last */
   assert(IApp_Init() == EIP_OK);
+}
+
+void shutdownCIP(void){
+  /* First close all connections */
+  closeAllConnections();
+  /* Than free the sockets of currently active encapsulation sessions */
+  encapShutDown();
 }
 
 EIP_STATUS

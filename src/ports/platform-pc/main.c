@@ -61,6 +61,9 @@ main(int argc, char *arg[])
   CIP_Init();
 
   Start_NetworkHandler(); /* here is the select loop implemented */
+
+  /* close remaining sessions and connections, cleanup used data */
+  shutdownCIP();
   return -1;
 }
 

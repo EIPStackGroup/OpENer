@@ -382,6 +382,18 @@ closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
     }
 }
 
+void closeAllConnections(void){
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+  while (NULL != pstRunner){
+    closeConnection(pstRunner);
+    /* Close connection will remove the connection from the list therefore we
+     * need to get again the start until there is no connection left
+     */
+    pstRunner = g_pstActiveConnectionList;
+  }
+
+}
+
 bool
 connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint)
 {

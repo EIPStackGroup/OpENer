@@ -34,7 +34,6 @@ fd_set read_fds;
 /* temporary file descriptor for select() */
 
 int fdmax;
-int listener;
 int newfd;
 
 /*!< This var holds the TCP socket the received to last explicit message.
@@ -93,6 +92,7 @@ Start_NetworkHandler()
   struct sockaddr_in my_addr;
   socklen_t addrlen;
   socklen_t fromlen = sizeof(from);
+  int nTCPListener;
   int nUDPListener;
 
   int nReceived_size;
@@ -108,7 +108,7 @@ Start_NetworkHandler()
   FD_ZERO(&read_fds);
 
   /* create a new TCP socket */
-  if ((listener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+  if ((nTCPListener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
     {
       OPENER_TRACE_ERR("error allocating socket stream listener, %d\n", errno);
       return EIP_ERROR;
@@ -127,7 +127,7 @@ Start_NetworkHandler()
   memset(&my_addr.sin_zero, 0, sizeof(my_addr.sin_zero));
 
   /* bind the new socket to port 0xAF12 (CIP) */
-  if ((bind(listener, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)))
+  if ((bind(nTCPListener, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)))
       == -1)
     {
       OPENER_TRACE_ERR("error with bind: %s", strerror(errno));
@@ -150,23 +150,23 @@ Start_NetworkHandler()
     }
 
   /* switch socket in listen mode */
-  if ((listen(listener, MAX_NO_OF_TCP_SOCKETS)) == -1)
+  if ((listen(nTCPListener, MAX_NO_OF_TCP_SOCKETS)) == -1)
     {
       OPENER_TRACE_ERR("networkhandler: error with listen: %s", strerror(errno));
       return EIP_ERROR;
     }
 
   /* add the listener socket to the master set */
-  FD_SET(listener, &master);
+  FD_SET(nTCPListener, &master);
   FD_SET(nUDPListener, &master);
 
   /* keep track of the biggest file descriptor */
-  fdmax = (listener > nUDPListener) ? listener : nUDPListener;
+  fdmax = (nTCPListener > nUDPListener) ? nTCPListener : nUDPListener;
 
   lasttime = getmilliseconds(); /* initialize time keeping */
   elapsedtime = 0;
 
-  while (1)
+  while (1)  /*TODO add code here allowing to end OpENer*/
     {
       read_fds = master;
 
@@ -203,11 +203,11 @@ Start_NetworkHandler()
                   }
 
                 /* see if this is a connection request to the TCP listener*/
-                if (fd == listener) /* handle new TCP connection */
+                if (fd == nTCPListener) /* handle new TCP connection */
                   {
                     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
                     addrlen = sizeof(remote_addr);
-                    newfd = accept(listener, (struct sockaddr *) &remote_addr,
+                    newfd = accept(nTCPListener, (struct sockaddr *) &remote_addr,
                         &addrlen); /* remote_addr does not seem to be used*/
                     if (newfd == -1)
                       {
@@ -326,6 +326,8 @@ Start_NetworkHandler()
           elapsedtime -= OPENER_TIMER_TICK;
         }
     }
+  close(nTCPListener);
+  close(nUDPListener);
 }
 
 EIP_STATUS
