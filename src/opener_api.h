@@ -432,7 +432,7 @@ IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
  *         -1 on error 
  */
 int
-IApp_CreateUDPSocket(int pa_nDirection, struct v *pa_pstAddr);
+IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief create a producing or consuming UDP socket

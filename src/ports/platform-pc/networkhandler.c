@@ -447,7 +447,7 @@ int
 IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 {
   struct sockaddr_in stPeerAdr;
-  int nPeerAddrLen = sizeof(struct sockaddr_in);
+  socklen_t nPeerAddrLen = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
   if ((newfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
     {
