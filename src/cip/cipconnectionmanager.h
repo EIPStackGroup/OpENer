@@ -132,6 +132,7 @@ typedef struct CIP_ConnectionObject
   EIP_INT32 TransmissionTriggerTimer;
   EIP_INT32 InnacitvityWatchdogTimer;
   struct sockaddr_in remote_addr; /* socket address for produce */
+  struct sockaddr_in m_stOriginatorAddr;  /* the address of the originator that established the connection. needed for scanning if the right packet is arriving */
   int sockfd[2]; /* socket handles, indexed by CONSUMING or PRODUCING */
 
   /* pointers to be used in the active connection list */

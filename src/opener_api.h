@@ -423,12 +423,16 @@ IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue);
  * @param pa_pstAddr pointer to the address holding structure
  *     Attention: For producing point-to-point connection the pa_pstAddr->sin_addr.s_addr
  *         member is set to 0 by OpENer. The network layer of the application has
- *         to set the correct addresss of the originator.
+ *         to set the correct address of the originator.
+ *     Attention: For consuming connection the network layer has to set the pa_pstAddr->sin_addr.s_addr
+ *         to the correct address of the originator.
+ * FIXME add an additional parameter that can be used by the CIP stack to request the originators sockaddr_in
+ * data.
  * @return socket identifier on success
  *         -1 on error 
  */
 int
-IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr);
+IApp_CreateUDPSocket(int pa_nDirection, struct v *pa_pstAddr);
 
 /**\ingroup CIP_CALLBACK_API 
  * \brief create a producing or consuming UDP socket

@@ -60,23 +60,23 @@ getmilliseconds(void)
 /*! Check if the socket identifier is associate with an active connection
  * 
  *  @param pa_nFD  socket handle
- *  @return 1 if the given socket handler is of an active connection otherwise 0
+ *  @return pointer to the connection if the given socket hanlder is an active connection otherwise NULL
  */
-int
+S_CIP_ConnectionObject *
 isConnectedFd(int pa_nFD)
 {
   S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
 
   while (NULL != pstRunner)
     {
-      if ((pstRunner->sockfd[0] == pa_nFD)
-          || (pstRunner->sockfd[1] == pa_nFD))
+      if ((pstRunner->sockfd[0] == pa_nFD) || (pstRunner->sockfd[1] == pa_nFD))
         {
-          return 1;
+          break;
         }
       pstRunner = pstRunner->m_pstNext;
     }
-  return 0;
+
+  return pstRunner;
 }
 
 /* INT8 Start_NetworkHandler()
@@ -102,6 +102,7 @@ Start_NetworkHandler()
   EIP_UINT8 *rxp;
   int nRemainingBytes;
   int replylen;
+  S_CIP_ConnectionObject *pstConnection;
 
   /* clear the master an temp sets */
   FD_ZERO(&master);
@@ -166,7 +167,7 @@ Start_NetworkHandler()
   lasttime = getmilliseconds(); /* initialize time keeping */
   elapsedtime = 0;
 
-  while (1)  /*TODO add code here allowing to end OpENer*/
+  while (1) /*TODO add code here allowing to end OpENer*/
     {
       read_fds = master;
 
@@ -207,8 +208,8 @@ Start_NetworkHandler()
                   {
                     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
                     addrlen = sizeof(remote_addr);
-                    newfd = accept(nTCPListener, (struct sockaddr *) &remote_addr,
-                        &addrlen); /* remote_addr does not seem to be used*/
+                    newfd = accept(nTCPListener,
+                        (struct sockaddr *) &remote_addr, &addrlen); /* remote_addr does not seem to be used*/
                     if (newfd == -1)
                       {
                         OPENER_TRACE_ERR("networkhandler: error on accept: %s", strerror(errno));
@@ -275,7 +276,8 @@ Start_NetworkHandler()
                   }
 
                 /* see if the message is from a registered UDP socket */
-                if (isConnectedFd(fd))
+                pstConnection = isConnectedFd(fd);
+                if (NULL != pstConnection)
                   {
                     fromlen = sizeof(from);
                     nReceived_size = recvfrom(fd, g_acCommBuf,
@@ -297,8 +299,11 @@ Start_NetworkHandler()
                         close(fd); /* close socket */
                         continue;
                       }
-
-                    handleReceivedConnectedData(g_acCommBuf, nReceived_size);
+                    /* only handle the data if it is coming from the originator */
+                    if(pstConnection->m_stOriginatorAddr.sin_addr.s_addr == from.sin_addr.s_addr)
+                      {
+                        handleReceivedConnectedData(g_acCommBuf, nReceived_size);
+                      }
                     continue;
                   }
 
@@ -464,20 +469,18 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 
       OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", newfd);
     }
-  else
-    {
-      if (0 == pa_pstAddr->sin_addr.s_addr)
-        {
-          /* we have a peer to peer producer */
-          if (getpeername(g_nCurrentActiveTCPSocket,
-              (struct sockaddr *) &stPeerAdr, &nPeerAddrLen) < 0)
-            {
-              OPENER_TRACE_ERR("networkhandler: could not get peername: %s", strerror(errno));
-              return EIP_INVALID_SOCKET;
-            }
-          pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
-        }
 
+  if ((pa_nDirection == CONSUMING) || (0 == pa_pstAddr->sin_addr.s_addr))
+    {
+      /* we have a peer to peer producer or a consuming connection*/
+      if (getpeername(g_nCurrentActiveTCPSocket,
+              (struct sockaddr *) &stPeerAdr, &nPeerAddrLen) < 0)
+        {
+          OPENER_TRACE_ERR("networkhandler: could not get peername: %s", strerror(errno));
+          return EIP_INVALID_SOCKET;
+        }
+      /* store the orignators address */
+      pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
     }
 
   /* add new fd to the master list */

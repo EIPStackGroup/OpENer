@@ -548,6 +548,9 @@ OpenConsumingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
       OPENER_TRACE_ERR("cannot create UDP socket in OpenPointToPointConnection\n");
       return EIP_ERROR;
     }
+
+  pa_pstConnObj->m_stOriginatorAddr = addr;   /* store the address of the originator for packet scanning */
+  addr.sin_addr.s_addr = INADDR_ANY;          /* restore the address */
   pa_pstConnObj->sockfd[CONSUMING] = newfd;
 
   pa_CPF_data->AddrInfo[j].Length = 16;
@@ -692,6 +695,8 @@ OpenMulticastConnection(int pa_direction,
   if (pa_direction == CONSUMING)
     {
       pa_CPF_data->AddrInfo[j].TypeID = CIP_ITEM_ID_SOCKADDRINFO_O_TO_T;
+      pa_pstConnObj->m_stOriginatorAddr = addr;
+      addr.sin_addr.s_addr = g_nMultiCastAddress;  /* restore the multicast address */
     }
   else
     {
