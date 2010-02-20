@@ -57,8 +57,14 @@ main(int argc, char *arg[])
   /*for a real device the serial number should be unique per device */
   setDeviceSerialNumber(123456789);
 
+
+  /* nUniqueConnectionID should be sufficiently random or incremented and stored
+   *  in non-volatile memory each time the device boots.
+   */
+  EIP_UINT16 nUniqueConnectionID = rand();
+
   /* Setup the CIP Layer */
-  CIP_Init();
+  CIP_Init(nUniqueConnectionID);
 
   Start_NetworkHandler(); /* here is the select loop implemented */
 

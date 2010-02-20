@@ -94,6 +94,9 @@ S_CIP_ConnectionObject
 EIP_UINT8 *g_pnConfigDataBuffer;
 unsigned int g_unConfigDataLen;
 
+/*! value holds the connection ID's "incarnation ID" in the upper 16 bits */
+EIP_UINT32 g_nIncarnationID;
+
 /* private functions */
 EIP_STATUS
 ForwardOpen(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
@@ -263,8 +266,22 @@ GETPADDEDLOGICALPATH(unsigned char **x)
   return tmp;
 }
 
+/*! \brief Generate a new connection Id utilizing the Incarnation Id as
+ * descibed in the EIP specs.
+ *
+ * A unique connectionID is formed from the boot-time-specified "incarnation ID"
+ * and the per-new-connection-incremented connection number/counter.
+ * @return new connection id
+ */
+EIP_UINT32 getConnectionId()
+{
+  static EIP_UINT32 nConnectionId = 18;
+  nConnectionId++;
+  return (g_nIncarnationID | (nConnectionId & 0x0000FFFF));
+}
+
 EIP_STATUS
-Connection_Manager_Init()
+Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
 {
   S_CIP_Class *pstConnectionManager;
 
@@ -289,6 +306,8 @@ Connection_Manager_Init()
       &GetConnectionOwner, "GetConnectionOwner");
   insertService(pstConnectionManager, CIP_UNCONNECTED_SEND, &UnconnectedSend,
       "UnconnectedSend");
+
+  g_nIncarnationID = ((EIP_UINT32) pa_nUniqueConnID) << 16;
 
   return EIP_OK;
 }
@@ -718,12 +737,6 @@ OpenMulticastConnection(int pa_direction,
 void
 generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
 {
-  /* TODO improve the connection id algorithm, although this should not be a problem
-   * use better method for generating connection IDs as suggested in the
-   * CIP spec vol2.
-   */
-  static EIP_UINT32 connectionID = 18; /* start value to generate unique IDs */
-
   if (CIP_POINT_TO_POINT_CONNECTION
       == (pa_pstConnObj->O_to_T_NetworkConnectionParameter
           & CIP_POINT_TO_POINT_CONNECTION))
@@ -731,7 +744,7 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
       /* if we have a point to point connection for the O to T direction
        * the target shall choose the connection ID.
        */
-      pa_pstConnObj->CIPConsumedConnectionID = connectionID++;
+      pa_pstConnObj->CIPConsumedConnectionID = getConnectionId();
     }
 
   if (CIP_MULTICAST_CONNECTION
@@ -741,7 +754,7 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
       /* if we have a multi-cast connection for the T to O direction the
        * target shall choose the connection ID.
        */
-      pa_pstConnObj->CIPProducedConnectionID = connectionID++;
+      pa_pstConnObj->CIPProducedConnectionID = getConnectionId();
     }
 
   pa_pstConnObj->EIPSequenceCountProducing = 0;

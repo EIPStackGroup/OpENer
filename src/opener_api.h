@@ -65,9 +65,12 @@ setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
 /** \ingroup CIP_API 
  * \brief Initialize and setup the CIP-stack
  * 
+ * @param pa_nUniqueConnID value passed to Connection_Manager_Init()to form a
+ *                      "per boot" unique connection ID.
+ *
  */
 void
-CIP_Init(void);
+CIP_Init(EIP_UINT16 pa_nUniqueConnID);
 
 
 /** \ingroup CIP_API

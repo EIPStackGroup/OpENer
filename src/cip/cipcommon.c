@@ -40,7 +40,7 @@ int
 outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg);
 
 void
-CIP_Init(void)
+CIP_Init(EIP_UINT16 pa_nUniqueConnID)
 {
   encapInit();
   /* The message router is the first CIP object that has to be initialized first!!! */
@@ -48,7 +48,7 @@ CIP_Init(void)
   assert(CIP_Identity_Init() == EIP_OK);
   assert(CIP_TCPIP_Interface_Init() == EIP_OK);
   assert(CIP_Ethernet_Link_Init() == EIP_OK);
-  assert(Connection_Manager_Init() == EIP_OK);
+  assert(Connection_Manager_Init(pa_nUniqueConnID) == EIP_OK);
   assert(CIP_Assembly_Init() == EIP_OK);
   /* the application has to be initialized at last */
   assert(IApp_Init() == EIP_OK);

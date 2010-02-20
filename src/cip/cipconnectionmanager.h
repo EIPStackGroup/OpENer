@@ -147,7 +147,7 @@ typedef struct CIP_ConnectionObject
 /*! Initialize the data of the connection manager object
  */
 EIP_STATUS
-Connection_Manager_Init(void);
+Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID);
 
 /*!  Get a connected object dependent on requested ConnectionID.
  *   The returned connection may not be in established state. The user has to check
