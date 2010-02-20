@@ -35,10 +35,10 @@ S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
   0, /* NameServer */
   0, /* NameServer2 */
     { /* DomainName */
-    0, 0, } };
+    0, NULL, } };
 
 S_CIP_String Hostname = /* #6 */
-  { 0, 0 };
+  { 0, NULL};
 
 /*!Multicast address to be used for I/O connections*/
 EIP_UINT32 g_nMultiCastAddress;
@@ -61,11 +61,16 @@ configureNetworkInterface(const char *pa_acIpAdress,
   return EIP_OK;
 }
 
+//FIXME check on NULL
+
 void
 configureDomainName(const char *pa_acDomainName)
 {
-  if (0 != Interface_Configuration.DomainName.String)
+  if (NULL != Interface_Configuration.DomainName.String)
     {
+      /* if the string is already set to a value we have to free the resources
+       * before we can set the new value in order to avoid memory leaks.
+       */
       IApp_CipFree(Interface_Configuration.DomainName.String);
     }
   Interface_Configuration.DomainName.Length = strlen(pa_acDomainName);
@@ -77,15 +82,18 @@ configureDomainName(const char *pa_acDomainName)
     }
   else
     {
-      Interface_Configuration.DomainName.String = 0;
+      Interface_Configuration.DomainName.String = NULL;
     }
 }
 
 void
 configureHostName(const char *pa_acHostName)
 {
-  if (0 != Hostname.String)
+  if (NULL != Hostname.String)
     {
+      /* if the string is already set to a value we have to free the resources
+       * before we can set the new value in order to avoid memory leaks.
+       */
       IApp_CipFree(Hostname.String);
     }
   Hostname.Length = strlen(pa_acHostName);
@@ -97,7 +105,7 @@ configureHostName(const char *pa_acHostName)
     }
   else
     {
-      Hostname.String = 0;
+      Hostname.String = NULL;
     }
 }
 
@@ -166,14 +174,17 @@ CIP_TCPIP_Interface_Init()
 void
 shutdownTCPIP_Interface(void)
 {
-  if (Hostname.Length)
+  /*Only free the resources if they are initialized */
+  if (NULL != Hostname.String)
     {
       IApp_CipFree(Hostname.String);
+      Hostname.String = NULL;
     }
 
-  if (Interface_Configuration.DomainName.Length)
+  if (NULL != Interface_Configuration.DomainName.String)
     {
       IApp_CipFree(Interface_Configuration.DomainName.String);
+      Interface_Configuration.DomainName.String = NULL;
   }
 }
 
