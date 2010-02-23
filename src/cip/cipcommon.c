@@ -42,16 +42,24 @@ outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg);
 void
 CIP_Init(EIP_UINT16 pa_nUniqueConnID)
 {
+  EIP_STATUS nRetVal;
   encapInit();
   /* The message router is the first CIP object that has to be initialized first!!! */
-  assert(CIP_MessageRouter_Init() == EIP_OK);
-  assert(CIP_Identity_Init() == EIP_OK);
-  assert(CIP_TCPIP_Interface_Init() == EIP_OK);
-  assert(CIP_Ethernet_Link_Init() == EIP_OK);
-  assert(Connection_Manager_Init(pa_nUniqueConnID) == EIP_OK);
-  assert(CIP_Assembly_Init() == EIP_OK);
+  nRetVal = CIP_MessageRouter_Init();
+  assert(EIP_OK == nRetVal);
+  nRetVal = CIP_Identity_Init();
+  assert(EIP_OK == nRetVal);
+  nRetVal = CIP_TCPIP_Interface_Init();
+  assert(EIP_OK == nRetVal);
+  nRetVal = CIP_Ethernet_Link_Init();
+  assert(EIP_OK == nRetVal);
+  nRetVal = Connection_Manager_Init(pa_nUniqueConnID);
+  assert(EIP_OK == nRetVal);
+  nRetVal = CIP_Assembly_Init();
+  assert(EIP_OK == nRetVal);
   /* the application has to be initialized at last */
-  assert(IApp_Init() == EIP_OK);
+  nRetVal = IApp_Init();
+  assert(EIP_OK == nRetVal);
 }
 
 void shutdownCIP(void){

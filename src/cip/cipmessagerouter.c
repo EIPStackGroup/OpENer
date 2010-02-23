@@ -139,6 +139,7 @@ registerClass(S_CIP_Class * pa_pt2Class)
     return EIP_ERROR; /* check for memory error*/
 
   (*p)->pt2Class = pa_pt2Class; /* fill in the new node*/
+  (*p)->next = NULL;
 
   return EIP_OK;
 }
