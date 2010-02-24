@@ -625,6 +625,7 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
 {
   S_CIP_ConnectionObject *pstExistingConn = getExistingProdMulticastConnection(
       pa_pstConnObj->ConnectionPath.ConnectionPoint[1]);
+  int j;
 
   if (NULL == pstExistingConn)
     { /* we are the first connection producing for the given Input Assembly */
@@ -632,7 +633,7 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     }
 
   /* we have a connection reuse the data and the socket */
-  int j;
+
 
   j = 0; /* allocate an unused sockaddr struct to use */
   if (g_stCPFDataItem.AddrInfo[0].TypeID == 0)
@@ -807,6 +808,7 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
       CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION;
   EIP_UINT16 ConnectionSerialNr, OriginatorVendorID;
   EIP_UINT32 OriginatorSerialNr;
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
 
   /*Suppress compiler warning*/
   (void) pa_pstInstance;
@@ -821,8 +823,6 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
   OriginatorSerialNr = ltohl(&pa_MRRequest->Data);
 
   OPENER_TRACE_INFO("ForwardClose: ConnSerNo %d\n", ConnectionSerialNr);
-
-  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
 
   while (NULL != pstRunner)
     {
@@ -1233,6 +1233,9 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
   int i;
   EIP_UINT8 *pnMsg = pa_MRRequest->Data;
   int nRemainingPathSize = pa_pstConnObj->ConnectionPathSize = *pnMsg++; /* length in words */
+  S_CIP_Class *pstClass = NULL;
+  int O2TConnectionType, T2OConnectionType, imax;
+      
 
   if ((FORWARD_OPEN_HEADER_LENGTH + nRemainingPathSize * 2)
       < pa_MRRequest->DataLength)
@@ -1291,8 +1294,6 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
         {
           OPENER_TRACE_INFO("no key\n");
         }
-
-      S_CIP_Class *pstClass = 0;
 
       if (EQLOGICALPATH(*pnMsg,0x20))
         { /* classID */
@@ -1365,8 +1366,6 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
-
-          int O2TConnectionType, T2OConnectionType, imax;
 
           O2TConnectionType = (pa_pstConnObj->O_to_T_NetworkConnectionParameter
               & 0x6000) >> 13;
@@ -1488,9 +1487,15 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
 {
   int O2TConnectionType, T2OConnectionType;
   S_CIP_attribute_struct *pstAttribute;
+  /* currently we allow I/O connections only to assembly objects */
+  S_CIP_Class *pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE); /* we don't need to check for zero as this is handled in the connection path parsing */
+  S_CIP_Instance *pstInstance = NULL;
 
   S_CIP_ConnectionObject *pstIOConnObj = getIOConnectionForConnectionData(
       pa_pstConnObjData, pa_pnExtendedError);
+  /*get pointer to the cpf data, currently we have just one global instance of the struct. This may change in the future*/
+  S_CIP_CPF_Data *pstCPF_data = &g_stCPFDataItem;
+
   if (NULL == pstIOConnObj)
     {
       return CIP_ERROR_CONNECTION_FAILURE;
@@ -1503,9 +1508,6 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
 
   generalConnectionConfiguration(pstIOConnObj);
 
-  /* currently we allow I/O connections only to assembly objects */
-  S_CIP_Class *pstAssemblyClass = getCIPClass(CIP_ASSEMBLY_CLASS_CODE); /* we don't need to check for zero as this is handled in the connection path parsing */
-  S_CIP_Instance *pstInstance = 0;
 
   if ((O2TConnectionType == 0) && (T2OConnectionType == 0))
     { /* this indicates an re-configuration of the connection currently not supported and we should not come here as this is handled in the forwardopen function*/
@@ -1619,8 +1621,6 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
-      /*get pointer to the cpf data, currently we have just one global instance of the struct. This may change in the future*/
-      S_CIP_CPF_Data *pstCPF_data = &g_stCPFDataItem;
 
       /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
       if (O2TConnectionType == 1) /* Multicast consuming */
@@ -1693,6 +1693,9 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
   S_CIP_CPF_Data *pCPFDataItem;
   S_CIP_Byte_Array *p;
   EIP_UINT16 replylength;
+  EIP_UINT8 *pnBuf;
+  int i;
+
 
   /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
@@ -1738,7 +1741,7 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
   replylength = assembleLinearMsg(0, pCPFDataItem,
       &g_acMessageDataReplyBuffer[0]);
 
-  EIP_UINT8 *pnBuf = &g_acMessageDataReplyBuffer[replylength - 2];
+  pnBuf = &g_acMessageDataReplyBuffer[replylength - 2];
   pCPFDataItem->stDataI_Item.Length = p->len;
   if ((pa_pstConnection->TransportTypeTrigger & 0x0F) == 1)
     {
@@ -1750,8 +1753,6 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
     {
       htols(pCPFDataItem->stDataI_Item.Length, &pnBuf);
     }
-
-  int i;
 
   for (i = 0; i < p->len; i++)
     {

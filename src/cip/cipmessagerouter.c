@@ -323,5 +323,5 @@ void deleteAllClasses(void)
       IApp_CipFree(pstToDelete->pt2Class);
       IApp_CipFree(pstToDelete);
     }
-  g_pt2firstObject = 0;
+  g_pt2firstObject = NULL;
 }

@@ -51,13 +51,22 @@ OBJECTS= \
 	../../src/enet_encap/cpf.o \
 	../../src/enet_encap/endianconv.o \
 	../../src/enet_encap/encap.o
+	
+SPLINTFLAGS = -I../../src \
+	-I../../src/enet_encap \
+	-I../../src/cip \
+	-I../../src/ports/platform-pc \
+	+posixlib
 
 
 EXECUTABLE=opener
 
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXECUTABLE)	
 	
+splint:
+	splint $(SPLINTFLAGS) $(SOURCES) 
+    	
 $(EXECUTABLE): $(OBJECTS) Makefile
 	@echo "  [LD]	" $@
 	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@

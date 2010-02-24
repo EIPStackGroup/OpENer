@@ -27,6 +27,7 @@ int
 main(int argc, char *arg[])
 {
   EIP_UINT8 acMyMACAddress[6];
+  EIP_UINT16 nUniqueConnectionID;
 
   if (argc != 12)
     {
@@ -61,7 +62,7 @@ main(int argc, char *arg[])
   /* nUniqueConnectionID should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots.
    */
-  EIP_UINT16 nUniqueConnectionID = rand();
+  nUniqueConnectionID = rand();
 
   /* Setup the CIP Layer */
   CIP_Init(nUniqueConnectionID);

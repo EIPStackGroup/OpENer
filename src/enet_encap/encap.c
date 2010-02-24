@@ -242,9 +242,10 @@ nop(void)
 int
 ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
 {
+  EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
+
   pa_stReceiveData->nData_length = g_stInterfaceInformation.Length + 2;
 
-  EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
   /* copy Interface data to nmsg for sending */
   htols(1, &pacCommBuf);
   htols(g_stInterfaceInformation.TypeCode, &pacCommBuf);
@@ -260,8 +261,8 @@ ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
 int
 ListInterfaces(struct S_Encapsulation_Data *pa_stReceiveData)
 {
-  pa_stReceiveData->nData_length = 2;
   EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
+  pa_stReceiveData->nData_length = 2;
   htols(0x0000, &pacCommBuf); /* copy Interface data to nmsg for sending */
 
   return encapsulate_data(pa_stReceiveData); /* encapsulate the data from structure and send to originator a reply */
@@ -278,11 +279,12 @@ ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   /* List Identity reply according to EIP/CIP Specification */
   EIP_UINT8 *pacCommBuf = pa_stReceiveData->pEncapsulation_Data;
+  EIP_BYTE *acIdLenBuf;
 
   htols(1, &pacCommBuf); /* one item */
   htols(ITEM_ID_LISTIDENTITY, &pacCommBuf);
 
-  EIP_BYTE *acIdLenBuf = pacCommBuf;
+  acIdLenBuf = pacCommBuf;
   pacCommBuf += 2; /*at this place the real length will be inserted below*/
 
   htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);

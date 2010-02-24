@@ -12,6 +12,8 @@
 #include <errno.h>
 #include <assert.h>
 #include <sys/time.h>
+#include <signal.h>
+
 
 #include <opener_api.h>
 #include "networkhandler.h"
@@ -41,6 +43,8 @@ int newfd;
  * address.
  */
 int g_nCurrentActiveTCPSocket;
+
+int end = 0;
 
 static struct timeval tv;
 static MILLISECONDS actualtime, lasttime;
@@ -79,6 +83,11 @@ isConnectedFd(int pa_nFD)
   return pstRunner;
 }
 
+void leave(int sig) {
+  fprintf(stderr, "got sig hup\n");
+  end = 1;
+}
+
 /* INT8 Start_NetworkHandler()
  * 	start a TCP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  * 	return status
@@ -103,10 +112,14 @@ Start_NetworkHandler()
   int nRemainingBytes;
   int replylen;
   S_CIP_ConnectionObject *pstConnection;
+  int y;
 
   /* clear the master an temp sets */
   FD_ZERO(&master);
   FD_ZERO(&read_fds);
+
+  end = 0;
+  signal(SIGHUP, leave);
 
   /* create a new TCP socket */
   if ((nTCPListener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
@@ -136,7 +149,7 @@ Start_NetworkHandler()
     }
 
   /* enable the udp socket to receive broadcast messages*/
-  int y = 1;
+  y = 1;
   if (0 > setsockopt(nUDPListener, SOL_SOCKET, SO_BROADCAST, &y, sizeof(int)))
     {
       OPENER_TRACE_ERR("error with setting broadcast receive for udp socket: %s", strerror(errno));
@@ -167,7 +180,7 @@ Start_NetworkHandler()
   lasttime = getmilliseconds(); /* initialize time keeping */
   elapsedtime = 0;
 
-  while (1) /*TODO add code here allowing to end OpENer*/
+  while (0 == end) /*TODO add code here allowing to end OpENer*/
     {
       read_fds = master;
 

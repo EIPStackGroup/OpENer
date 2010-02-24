@@ -28,7 +28,7 @@ non-zero status. */
 #define CIP_ERROR_OBJECT_ALREADY_EXISTS 0x0D /*!< The requested instance of object to be created already exists.*/
 #define CIP_ERROR_ATTRIBUTE_NOT_SETTABLE 0x0E /*!< A request to modify a non-modifiable attribute was received. */
 #define CIP_ERROR_PRIVILEGE_VIOLATION 0x0F /*!< A permission/privilege check failed */
-#define CIP_ERROR_DEVICE_STATE_CONFLICT 0x10 /*!< The device’s current mode/state prohibits the execution of the requested service. */
+#define CIP_ERROR_DEVICE_STATE_CONFLICT 0x10 /*!< The deviceï¿½s current mode/state prohibits the execution of the requested service. */
 #define CIP_ERROR_REPLY_DATA_TOO_LARGE 0x11 /*!< The data to be transmitted in the response buffer is larger than the allocated response buffer */
 #define CIP_ERROR_FRAGMENTATION_OF_A_PRIMITIVE_VALUE 0x12 /*!< The service specified an operation that is going to fragment a primitive data
 value, i.e. half a REAL data type. */
@@ -45,7 +45,7 @@ path to the destination. The routing device was forced to abort the service. */
 #define CIP_ERROR_ROUTING_FAILURE_RESPONSE_PACKET_TOO_LARGE 0x1B /*!< The service response packet was too large for transmission on a network in the
 path from the destination. The routing device was forced to abort the service. */
 #define CIP_ERROR_MISSING_ATTIRBUTE_LIST_ENTRIY 0x1C /*!< The service did not supply an attribute in a list of attributes that was needed by
-the service to perform the requested behaviour. */
+the service to perform the requested behavior. */
 #define CIP_ERROR_INVALID_ATTRIBUTE_VALUE_LIST 0x1D /*!< The service is returning the list of attributes supplied with status information
 for those attributes that were invalid. */
 #define CIP_ERROR_EMBEDDED_SERVICE_ERROR 0x1E /*!< An embedded service resulted in an error. */

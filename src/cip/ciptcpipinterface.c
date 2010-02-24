@@ -47,12 +47,14 @@ EIP_STATUS
 configureNetworkInterface(const char *pa_acIpAdress,
     const char *pa_acSubNetMask, const char *pa_acGateway)
 {
+  unsigned nHostId;
+  
   Interface_Configuration.IPAddress = inet_addr(pa_acIpAdress);
   Interface_Configuration.NetworkMask = inet_addr(pa_acSubNetMask);
   Interface_Configuration.Gateway = inet_addr(pa_acGateway);
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  unsigned nHostId = ntohl(Interface_Configuration.IPAddress) & ~ntohl(
+  nHostId = ntohl(Interface_Configuration.IPAddress) & ~ntohl(
       Interface_Configuration.NetworkMask); /* see CIP spec 3-5.3 for multicast address algorithm*/
   nHostId -= 1;
   nHostId &= 0x3ff;
