@@ -26,7 +26,7 @@
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
 /* communication buffer */
-EIP_UINT8 g_acCommBuf[OPENER_ETHERNET_BUFFER_SIZE];
+EIP_UINT8 g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -247,8 +247,8 @@ Start_NetworkHandler()
                         fd);
 
                     /*Handle udp broadcast messages */
-                    nReceived_size = recvfrom(fd, g_acCommBuf,
-                        OPENER_ETHERNET_BUFFER_SIZE, 0,
+                    nReceived_size = recvfrom(fd, g_acPCEthernetCommBuffer,
+                        PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
                         (struct sockaddr *) &from, &fromlen);
 
                     if (nReceived_size <= 0)
@@ -261,7 +261,7 @@ Start_NetworkHandler()
 
                     OPENER_TRACE_INFO("Data received on udp:\n");
 
-                    rxp = &g_acCommBuf[0];
+                    rxp = &g_acPCEthernetCommBuffer[0];
                     do
                       {
                         replylen = handleReceivedExplictData(fd, rxp,
@@ -275,7 +275,7 @@ Start_NetworkHandler()
                             OPENER_TRACE_INFO("reply sent:\n");
 
                             /* if the active fd matches a registered UDP callback, handle a UDP packet */
-                            res = sendto(fd, (char *) g_acCommBuf, replylen, 0,
+                            res = sendto(fd, (char *) g_acPCEthernetCommBuffer, replylen, 0,
                                 (struct sockaddr *) &from, sizeof(from));
                             if (res != replylen)
                               {
@@ -293,8 +293,8 @@ Start_NetworkHandler()
                 if (NULL != pstConnection)
                   {
                     fromlen = sizeof(from);
-                    nReceived_size = recvfrom(fd, g_acCommBuf,
-                        OPENER_ETHERNET_BUFFER_SIZE, 0,
+                    nReceived_size = recvfrom(fd, g_acPCEthernetCommBuffer,
+                        PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
                         (struct sockaddr *) &from, &fromlen);
                     if (nReceived_size == 0)
                       {
@@ -315,7 +315,7 @@ Start_NetworkHandler()
                     /* only handle the data if it is coming from the originator */
                     if(pstConnection->m_stOriginatorAddr.sin_addr.s_addr == from.sin_addr.s_addr)
                       {
-                        handleReceivedConnectedData(g_acCommBuf, nReceived_size);
+                        handleReceivedConnectedData(g_acPCEthernetCommBuffer, nReceived_size);
                       }
                     continue;
                   }
@@ -388,7 +388,7 @@ handleDataOnTCPSocket(int pa_nSocket)
    fit*/
 
   /*Check how many data is here -- read the first four bytes from the connection */
-  nDataSize = recv(pa_nSocket, g_acCommBuf, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
+  nDataSize = recv(pa_nSocket, g_acPCEthernetCommBuffer, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
 
   if (nDataSize == 0)
     {
@@ -401,16 +401,16 @@ handleDataOnTCPSocket(int pa_nSocket)
       return EIP_ERROR;
     }
 
-  rxp = &g_acCommBuf[2]; /* at this place EIP stores the data length */
+  rxp = &g_acPCEthernetCommBuffer[2]; /* at this place EIP stores the data length */
   nDataSize = ltohs(&rxp) + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
   /* (NOTE this advances the buffer pointer) */
-  if (OPENER_ETHERNET_BUFFER_SIZE < nDataSize)
+  if (PC_OPENER_ETHERNET_BUFFER_SIZE < nDataSize)
     { /*TODO can this be handled in a better way?*/
       OPENER_TRACE_ERR("too large packet received will be ignored\n"); /* this may corrupt the connection ???*/
       return EIP_OK;
     }
 
-  nDataSize = recv(pa_nSocket, &g_acCommBuf[4], nDataSize, 0);
+  nDataSize = recv(pa_nSocket, &g_acPCEthernetCommBuffer[4], nDataSize, 0);
 
   if (nDataSize == 0) /* got error or connection closed by client */
     {
@@ -429,7 +429,7 @@ handleDataOnTCPSocket(int pa_nSocket)
 
   g_nCurrentActiveTCPSocket = pa_nSocket;
 
-  nDataSize = handleReceivedExplictData(pa_nSocket, g_acCommBuf, nDataSize,
+  nDataSize = handleReceivedExplictData(pa_nSocket, g_acPCEthernetCommBuffer, nDataSize,
       &nRemainingBytes);
 
   g_nCurrentActiveTCPSocket = -1;
@@ -444,7 +444,7 @@ handleDataOnTCPSocket(int pa_nSocket)
     {
       OPENER_TRACE_INFO("reply sent:\n");
 
-      nDataSent = send(pa_nSocket, (char *) g_acCommBuf, nDataSize, 0);
+      nDataSent = send(pa_nSocket, (char *) g_acPCEthernetCommBuffer, nDataSize, 0);
       if (nDataSent != nDataSize)
         {
           OPENER_TRACE_WARN("TCP response was not fully sent\n");

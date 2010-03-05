@@ -31,7 +31,8 @@ struct S_Encapsulation_Data
     /* The sender context is not needed any more with the new minimum data copy design */
     /* EIP_UINT8 anSender_context[SENDER_CONTEXT_SIZE];  */
     EIP_UINT32 nOptions;
-    EIP_UINT8 *pEncapsulation_Data;
+    EIP_UINT8 *m_acCommBufferStart;       /*Pointer to the communication buffer used for this message */
+    EIP_UINT8 *m_acCurrentCommBufferPos;  /*The current position in the communication buffer during the decoding process */
   };
 
 struct S_Encapsulation_Interface_Information
@@ -44,10 +45,6 @@ struct S_Encapsulation_Interface_Information
   };
 
 /*** global variables (public) ***/
-/*! \ingroup ENCAP 
- * Buffer to be used for communication data (in/out), has to be provided by the platform specific code.
- */
-extern EIP_UINT8 g_acCommBuf[];
 
 /*** public functions ***/
 /*! \ingroup ENCAP 

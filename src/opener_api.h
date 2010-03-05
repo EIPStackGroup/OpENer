@@ -269,7 +269,8 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
  * Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
  * 
  * @param pa_socket socket handle from which data is received.
- * @param pa_buf buffer to be read.
+ * @param pa_buf buffer that contains the recieved data. This buffer will also contain the 
+ *       response if one is to be sent.  
  * @param pa_length length of the data in pa_buf.
  * @param pa_nRemainingBytes return how many bytes of the input are left over after we're done here
  * @return length of reply that need to be sent back
@@ -562,7 +563,7 @@ IApp_CloseSocket(int pa_nSockFd);
  *     for port AF12hex. The received data has to be hand over to Ethernet
  *     encapsulation layer with the function int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length, int *pa_nRemainingBytes).\n
  *     As a result of this function a response may have to be sent. The data to
- *     be sent is in the variable \ref g_acCommBuf.
+ *     be sent is in the given buffer pa_buf.
  *   - Create UDP sending and receiving sockets for implicit connected messages\n
  *     OpENer will use to call-back function int IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
  *     for informing the platform specific code that a new connection is 
@@ -580,10 +581,6 @@ IApp_CloseSocket(int pa_nSockFd);
  *     In order that OpENer can determine when to produce new data on 
  *     connections or that a connection timed out every \ref OPENER_TIMER_TICK ms the 
  *     function EIP_STATUS manageConnections(void) has to be called.
- *    
- * For all receiving functions OpENer provides the buffer \ref g_acCommBuf. The 
- * size of this buffer can be configured in opener_user_conf.h with the configuration
- * parameter \ref OPENER_ETHERNET_BUFFER_SIZE.  
  * 
  * \section callback_funcs_sec Callback Functions
  * In order to make OpENer more platform independent and in order to inform the 
