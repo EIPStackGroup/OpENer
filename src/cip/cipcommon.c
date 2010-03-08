@@ -526,7 +526,7 @@ outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg)
       /*TODO Think on how to use the string encoding mechanism*/
       s = (S_CIP_String *) &p[5];
       htols(s->Length, &pa_pnMsg); /* length of string*/
-      counter++;
+      counter+=2;
       for (j = 0; j < s->Length; j++)
         {
           *pa_pnMsg++ = s->String[j];
