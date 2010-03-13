@@ -6,8 +6,6 @@
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "opener_user_conf.h"
 #include "ciptcpipinterface.h"

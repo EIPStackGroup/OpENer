@@ -100,6 +100,43 @@
 
 /*#define PRINT_TRACE(args...)  fprintf(stderr,args);*/
 
+
+/*! A specialized assertion command that will log the assertion and block
+ *  further execution in an while(1) loop.
+ */
+#define OPENER_ASSERT(assertion) \
+    do { \
+      if(!(assertion)) { \
+        LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", #assertion, __FILE__, __LINE__); \
+        while(1){;} \
+      } \
+    } while(0)
+
+/* else use standard assert() */
+//#include <assert.h>
+//#include <stdio.h>
+//#define OPENER_ASSERT(assertion) assert(assertion)
+
+#else
+
+/* for release builds execute the assertion, but don't test it */
+#define OPENER_ASSERT(assertion) assertion
+
+/* the above may result in "statement with no effect" warnings.
+ *  If you do not use assert()s to run functions, the an empty
+ *  macro can be used as below
+ */
+//#define OPENER_ASSERT(assertion)
+
+/* else if you still want assertions to stop execution but without tracing, use the following */
+//#define OPENER_ASSERT(assertion) do { if(!(assertion)) { while(1){;} } } while (0)
+
+/* else use standard assert() */
+//#include <assert.h>
+//#include <stdio.h>
+//#define OPENER_ASSERT(assertion) assert(assertion)
+
+
 #endif
 
 /*! The number of bytes used for the Ethernet message buffer on

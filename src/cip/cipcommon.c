@@ -5,9 +5,7 @@
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
-#include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include "opener_user_conf.h"
 #include "opener_api.h"
@@ -46,20 +44,20 @@ CIP_Init(EIP_UINT16 pa_nUniqueConnID)
   encapInit();
   /* The message router is the first CIP object that has to be initialized first!!! */
   nRetVal = CIP_MessageRouter_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK != nRetVal);
   nRetVal = CIP_Identity_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = CIP_TCPIP_Interface_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = CIP_Ethernet_Link_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = Connection_Manager_Init(pa_nUniqueConnID);
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = CIP_Assembly_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   /* the application has to be initialized at last */
   nRetVal = IApp_Init();
-  assert(EIP_OK == nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
 }
 
 void shutdownCIP(void){
@@ -103,7 +101,7 @@ notifyClass(S_CIP_Class * pt2Class, S_CIP_MR_Request * pa_MRRequest,
                   pa_MRResponse->Data = &g_acMessageDataReplyBuffer[0]; /* set reply buffer, using a fixed buffer (about 100 bytes) */
                   /* call the service, and return what it returns */
                   OPENER_TRACE_INFO("notify: calling %s service\n", p->name);
-                  assert(p->m_ptfuncService);
+                  OPENER_ASSERT(p->m_ptfuncService);
                   return p->m_ptfuncService(pstInstance, pa_MRRequest,
                       pa_MRResponse, &g_acMessageDataReplyBuffer[0]);
                 }
@@ -148,7 +146,7 @@ addCIPInstances(S_CIP_Class * pa_pstCIPClass, int pa_nNr_of_Instances)
 
   first = p = (S_CIP_Instance *) IApp_CipCalloc(pa_nNr_of_Instances,
       sizeof(S_CIP_Instance)); /* allocate a block of memory for all created instances*/
-  assert(p);
+  OPENER_ASSERT(p);
   /* fail if run out of memory */
 
   pa_pstCIPClass->nNr_of_Instances += pa_nNr_of_Instances; /* add the number of instances just created to the total recorded by the class */
@@ -202,7 +200,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%lx\n", pa_acName, pa_nClassID);
 
   pt2Class = getCIPClass(pa_nClassID); /* check if an class with the ClassID already exists */
-  assert(pt2Class==0);
+  OPENER_ASSERT(pt2Class==0);
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -303,7 +301,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
   S_CIP_attribute_struct *p;
 
   p = pa_pInstance->pstAttributes;
-  assert(p!=0);
+  OPENER_ASSERT(p!=0);
   /* adding a attribute to a class that was not declared to have any attributes is not allowed */
   for (i = 0; i < pa_pInstance->pstClass->nNr_of_Attributes; i++)
     {
@@ -322,7 +320,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
       p++;
     }
   OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
-  assert(0);
+  OPENER_ASSERT(0);
   /* trying to insert too many attributes*/
 }
 
@@ -334,7 +332,7 @@ insertService(S_CIP_Class * pa_pClass, EIP_UINT8 pa_nServiceNr,
   S_CIP_service_struct *p;
 
   p = pa_pClass->pstServices; /* get a pointer to the service array*/
-  assert(p!=0);
+  OPENER_ASSERT(p!=0);
   /* adding a service to a class that was not declared to have services is not allowed*/
   for (i = 0; i < pa_pClass->nNr_of_Services; i++) /* Iterate over all service slots attached to the class */
     {
@@ -347,7 +345,7 @@ insertService(S_CIP_Class * pa_pClass, EIP_UINT8 pa_nServiceNr,
         }
       p++;
     }
-  assert(0);
+  OPENER_ASSERT(0);
   /* adding more services than were declared is a no-no*/
 }
 

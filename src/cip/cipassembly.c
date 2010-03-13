@@ -5,7 +5,6 @@
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
-#include <stdio.h>
 #include <string.h>    /*needed for memcpy */
 #include "cipassembly.h"
 #include "cipcommon.h"

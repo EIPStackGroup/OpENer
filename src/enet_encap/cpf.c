@@ -5,9 +5,6 @@
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
-#include <stdio.h>
-#include <assert.h>
-
 #include "opener_api.h"
 #include "cipcommon.h"
 #include "cipmessagerouter.h"

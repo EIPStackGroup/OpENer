@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/time.h>
 #include <signal.h>
 
@@ -84,6 +83,7 @@ isConnectedFd(int pa_nFD)
 }
 
 void leave(int sig) {
+  sig = sig; /* kill unused parameter warning */
   fprintf(stderr, "got sig hup\n");
   end = 1;
 }

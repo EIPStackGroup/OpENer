@@ -5,9 +5,7 @@
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
-#include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include "opener_user_conf.h"
 #include "cipconnectionmanager.h"
@@ -1543,7 +1541,7 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
               pstIOConnObj->ConsumedConnectionPath.AttributNr = 3;
 
               pstAttribute = getAttribute(pstInstance, 3);
-              assert(pstAttribute != 0); /* an assembly object should always have an attribute 3 */
+              OPENER_ASSERT(pstAttribute != 0); /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ConsumedConnectionSize;
 
               if ((pstIOConnObj->TransportTypeTrigger & 0x0F) == 1)
@@ -1588,7 +1586,7 @@ establishIOConnction(S_CIP_ConnectionObject *pa_pstConnObjData,
               pstIOConnObj->ProducedConnectionPath.AttributNr = 3;
 
               pstAttribute = getAttribute(pstInstance, 3);
-              assert(pstAttribute != 0); /* an assembly object should always have an attribute 3 */
+              OPENER_ASSERT(pstAttribute != 0); /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ProducedConnectionSize;
               if ((pstIOConnObj->TransportTypeTrigger & 0x0F) == 1)
                 {
