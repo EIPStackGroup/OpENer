@@ -87,7 +87,7 @@ getRegisteredObject(EIP_UINT32 pa_nClassID)
 
   while (p) /* for each entry in list*/
     {
-      OPENER_ASSERT(p->pt2Class != 0);
+      OPENER_ASSERT(p->pt2Class != NULL);
       if (p->pt2Class->nClassID == pa_nClassID)
         return p; /* return registration node if it matches class ID*/
       p = p->next;
@@ -180,7 +180,7 @@ notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
           /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
            object will or will not make an reply into gMRResponse*/
           gMRResponse.Reserved = 0;
-          OPENER_ASSERT(pt2regObject->pt2Class);
+          OPENER_ASSERT(NULL != pt2regObject->pt2Class);
           OPENER_TRACE_INFO(
               "notifyMR: calling notify function of class '%s'\n",
               pt2regObject->pt2Class->acName);

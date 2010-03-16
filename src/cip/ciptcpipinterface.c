@@ -52,11 +52,11 @@ configureNetworkInterface(const char *pa_acIpAdress,
   Interface_Configuration.Gateway = inet_addr(pa_acGateway);
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  nHostId = ntohl(Interface_Configuration.IPAddress) & ~ntohl(
+  nHostId = ntohl(Interface_Configuration.IPAddress) & ~ ntohl(
       Interface_Configuration.NetworkMask); /* see CIP spec 3-5.3 for multicast address algorithm*/
   nHostId -= 1;
   nHostId &= 0x3ff;
-  g_nMultiCastAddress = htonl(ntohl(inet_addr("239.192.1.0")) | nHostId << 5);
+  g_nMultiCastAddress = htonl(ntohl(inet_addr("239.192.1.0")) + (nHostId << 5));
 
   return EIP_OK;
 }

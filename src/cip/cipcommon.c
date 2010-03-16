@@ -44,7 +44,7 @@ CIP_Init(EIP_UINT16 pa_nUniqueConnID)
   encapInit();
   /* The message router is the first CIP object that has to be initialized first!!! */
   nRetVal = CIP_MessageRouter_Init();
-  OPENER_ASSERT(EIP_OK != nRetVal);
+  OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = CIP_Identity_Init();
   OPENER_ASSERT(EIP_OK == nRetVal);
   nRetVal = CIP_TCPIP_Interface_Init();
@@ -101,7 +101,7 @@ notifyClass(S_CIP_Class * pt2Class, S_CIP_MR_Request * pa_MRRequest,
                   pa_MRResponse->Data = &g_acMessageDataReplyBuffer[0]; /* set reply buffer, using a fixed buffer (about 100 bytes) */
                   /* call the service, and return what it returns */
                   OPENER_TRACE_INFO("notify: calling %s service\n", p->name);
-                  OPENER_ASSERT(p->m_ptfuncService);
+                  OPENER_ASSERT(NULL != p->m_ptfuncService);
                   return p->m_ptfuncService(pstInstance, pa_MRRequest,
                       pa_MRResponse, &g_acMessageDataReplyBuffer[0]);
                 }
@@ -146,7 +146,7 @@ addCIPInstances(S_CIP_Class * pa_pstCIPClass, int pa_nNr_of_Instances)
 
   first = p = (S_CIP_Instance *) IApp_CipCalloc(pa_nNr_of_Instances,
       sizeof(S_CIP_Instance)); /* allocate a block of memory for all created instances*/
-  OPENER_ASSERT(p);
+  OPENER_ASSERT(NULL != p);
   /* fail if run out of memory */
 
   pa_pstCIPClass->nNr_of_Instances += pa_nNr_of_Instances; /* add the number of instances just created to the total recorded by the class */
@@ -200,7 +200,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%lx\n", pa_acName, pa_nClassID);
 
   pt2Class = getCIPClass(pa_nClassID); /* check if an class with the ClassID already exists */
-  OPENER_ASSERT(pt2Class==0);
+  OPENER_ASSERT(NULL == pt2Class);
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -301,7 +301,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
   S_CIP_attribute_struct *p;
 
   p = pa_pInstance->pstAttributes;
-  OPENER_ASSERT(p!=0);
+  OPENER_ASSERT(NULL != p);
   /* adding a attribute to a class that was not declared to have any attributes is not allowed */
   for (i = 0; i < pa_pInstance->pstClass->nNr_of_Attributes; i++)
     {
