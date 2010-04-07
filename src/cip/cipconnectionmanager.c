@@ -85,7 +85,7 @@ S_CIP_ConnectionObject g_stDummyConnectionObject;
 
 /*!Array of the available explicit connections */
 S_CIP_ConnectionObject
-    g_astExplicitConnections[OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
+    g_astExplicitConnections[OPENER_CIP_NUM_EXPLICIT_CONNS];
 
 /* buffers for the config data coming with a forward open request.
  */
