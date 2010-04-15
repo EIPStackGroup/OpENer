@@ -2,8 +2,6 @@
  * Copyright (c) 2009, Rockwell Automation, Inc.
  * All rights reserved. 
  *
- * Contributors:
- *     <date>: <author>, <author email> - changes
  ******************************************************************************/
 #ifndef CIP_API_H_
 #define CIP_API_H_
