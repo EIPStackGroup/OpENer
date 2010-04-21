@@ -13,10 +13,11 @@
 #include "cipcommon.h"
 #include "trace.h"
 
-/* global variables for demo application (3 assembly data fields) */
+/* global variables for demo application (4 assembly data fields) */
 EIP_UINT8 g_assemblydata[32]; /* Input */
 EIP_UINT8 g_assemblydata2[32]; /* Output */
 EIP_UINT8 g_assemblydata3[10]; /* Config */
+EIP_UINT8 g_assemblydata6[32]; /* Explicit */
 
 extern int newfd;
 
@@ -55,7 +56,6 @@ main(int argc, char *arg[])
   /*for a real device the serial number should be unique per device */
   setDeviceSerialNumber(123456789);
 
-
   /* nUniqueConnectionID should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots.
    */
@@ -90,6 +90,9 @@ IApp_Init(void)
   /*Heart-beat output assembly for Listen only connections */
   createAssemblyObject(5, 0, 0);
 
+  /* assembly for explicit messaging */
+  createAssemblyObject(6, &g_assemblydata6[0], sizeof(g_assemblydata6));
+
   configureExclusiveOwnerConnectionPoint(0, 2, 1, 3);
   configureInputOnlyConnectionPoint(0, 4, 1, 3);
   configureListenOnlyConnectionPoint(0, 5, 1, 3);
@@ -102,6 +105,10 @@ IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
     unsigned int pa_unInputAssembly, EIOConnectionEvent pa_eIOConnectionEvent)
 {
   /* maintain a correct output state according to the connection state*/
+
+  (void) pa_unOutputAssembly; /* suppress compiler warning */
+  pa_unInputAssembly = pa_unInputAssembly; /* suppress compiler warning */
+  pa_eIOConnectionEvent = pa_eIOConnectionEvent; /* suppress compiler warning */
 }
 
 EIP_STATUS
@@ -115,6 +122,11 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
        * Mirror it to the inputs */
       memcpy(&g_assemblydata[0], &g_assemblydata2[0], sizeof(g_assemblydata));
     }
+  else if (pa_pstInstance->nInstanceNr == 6)
+    {
+      /* do something interesting with the new data from
+       * the explicit set-data-attribute message */
+    }
 
   return EIP_OK;
 }
@@ -127,6 +139,12 @@ IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
    * therefore we need nothing to do here. Just return true to inform that
    * the data is new.
    */
+
+  if (pa_pstInstance->nInstanceNr == 6)
+    {
+      /* do something interesting with the existing data
+       * for the explicit get-data-attribute message */
+    }
   return true;
 }
 
@@ -150,7 +168,9 @@ IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement)
   return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
 }
 
-void IApp_CipFree(void *pa_poData){
+void
+IApp_CipFree(void *pa_poData)
+{
   free(pa_poData);
 }
 

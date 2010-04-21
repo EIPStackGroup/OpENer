@@ -26,7 +26,7 @@ non-zero status. */
 #define CIP_ERROR_OBJECT_ALREADY_EXISTS 0x0D /*!< The requested instance of object to be created already exists.*/
 #define CIP_ERROR_ATTRIBUTE_NOT_SETTABLE 0x0E /*!< A request to modify a non-modifiable attribute was received. */
 #define CIP_ERROR_PRIVILEGE_VIOLATION 0x0F /*!< A permission/privilege check failed */
-#define CIP_ERROR_DEVICE_STATE_CONFLICT 0x10 /*!< The device�s current mode/state prohibits the execution of the requested service. */
+#define CIP_ERROR_DEVICE_STATE_CONFLICT 0x10 /*!< The device's current mode/state prohibits the execution of the requested service. */
 #define CIP_ERROR_REPLY_DATA_TOO_LARGE 0x11 /*!< The data to be transmitted in the response buffer is larger than the allocated response buffer */
 #define CIP_ERROR_FRAGMENTATION_OF_A_PRIMITIVE_VALUE 0x12 /*!< The service specified an operation that is going to fragment a primitive data
 value, i.e. half a REAL data type. */

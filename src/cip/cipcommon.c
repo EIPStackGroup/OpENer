@@ -58,7 +58,9 @@ CIP_Init(EIP_UINT16 pa_nUniqueConnID)
   OPENER_ASSERT(EIP_OK == nRetVal);
 }
 
-void shutdownCIP(void){
+void
+shutdownCIP(void)
+{
   /* First close all connections */
   closeAllConnections();
   /* Than free the sockets of currently active encapsulation sessions */
@@ -316,8 +318,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
           return;
         }
       p++;
-    }
-  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
+    }OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
   OPENER_ASSERT(0);
   /* trying to insert too many attributes*/
 }
@@ -374,21 +375,33 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
   S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
 
-  if ((p != 0) && (p->pt2data != 0))
-    {
-      OPENER_TRACE_INFO("getAttribute %ld\n",
-          pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
-      pa_pstMRResponse->DataLength = outputAttribute(p, pa_acMsg);
-      pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
-      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
-      pa_pstMRResponse->SizeofAdditionalStatus = 0;
-      return (EIP_STATUS) pa_pstMRResponse->DataLength;
-    }
-
   pa_pstMRResponse->DataLength = 0;
   pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
   pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
   pa_pstMRResponse->SizeofAdditionalStatus = 0;
+
+  if ((p != 0) && (p->pt2data != 0))
+    {
+      OPENER_TRACE_INFO("getAttribute %ld\n",
+          pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
+
+      /*TODO think if it is better to put this code in an own
+       * getAssemblyAttributeSingle functions which will call get attribute
+       * single.
+       */
+      if (p->CIP_Type == CIP_BYTE_ARRAY && pa_pstInstance->pstClass->nClassID
+          == CIP_ASSEMBLY_CLASS_CODE)
+        {
+          /* we are getting a byte array of a assembly object, kick out to the app callback */
+          OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
+          IApp_BeforeAssemblyDataSend(pa_pstInstance);
+        }
+
+      pa_pstMRResponse->DataLength = outputAttribute(p, pa_acMsg);
+      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+      return (EIP_STATUS) pa_pstMRResponse->DataLength;
+    }
+
   return EIP_OK;
 }
 
@@ -522,7 +535,7 @@ outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg)
       /*TODO Think on how to use the string encoding mechanism*/
       s = (S_CIP_String *) &p[5];
       htols(s->Length, &pa_pnMsg); /* length of string*/
-      counter+=2;
+      counter += 2;
       for (j = 0; j < s->Length; j++)
         {
           *pa_pnMsg++ = s->String[j];
@@ -553,6 +566,16 @@ outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg)
     break;
 
   case (CIP_BYTE_ARRAY):
+    {
+      OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
+
+      S_CIP_Byte_Array * p = (S_CIP_Byte_Array *) pa_ptstAttribute->pt2data;
+      for (counter = 0; counter < p->len; counter++)
+        {
+          OPENER_TRACE_INFO("%d: %d\r\n", counter, p->Data[counter]);
+          *pa_pnMsg++ = p->Data[counter];
+        }
+    }
     break;
 
   case (INTERNAL_UINT16_6): /* TODO for port class attribute 9, hopefully we can find a better way to do this*/
