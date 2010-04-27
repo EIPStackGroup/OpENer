@@ -1,0 +1,513 @@
+------------------------------------------------------------------------
+r52 | alil | 2010-04-07 21:16:21 +0200 (Wed, 07 Apr 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+fixed bug 2983235
+------------------------------------------------------------------------
+r51 | alil | 2010-03-16 09:22:21 +0100 (Tue, 16 Mar 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/ciptcpipinterface.c
+
+fixed assert error thanks to csar
+------------------------------------------------------------------------
+r50 | alil | 2010-03-13 11:21:35 +0100 (Sat, 13 Mar 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipassembly.c
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/enet_encap/cpf.c
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+applied custom assertion patch, thanks to bumpp
+------------------------------------------------------------------------
+r49 | alil | 2010-03-08 15:49:38 +0100 (Mon, 08 Mar 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipcommon.c
+
+applied domain name patch
+------------------------------------------------------------------------
+r48 | alil | 2010-03-05 20:51:43 +0100 (Fri, 05 Mar 2010) | 1 line
+Changed paths:
+   M /trunk/src/enet_encap/encap.c
+
+moved the encapsulate data to one central plaze
+------------------------------------------------------------------------
+r47 | alil | 2010-03-05 20:19:48 +0100 (Fri, 05 Mar 2010) | 1 line
+Changed paths:
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/enet_encap/encap.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+improved buffer usage in the encapsulation layer. this uses global vars makes opener easier to read and is the basis for multiple requests at the same time. This request is based on the patch submitted by bumpp. Thanks.
+------------------------------------------------------------------------
+r46 | alil | 2010-02-24 21:15:08 +0100 (Wed, 24 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/.cproject
+   M /trunk/.settings/org.eclipse.cdt.core.prefs
+   M /trunk/bin/pc/Makefile
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/ciperror.h
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+made some changes reported by splint
+------------------------------------------------------------------------
+r45 | alil | 2010-02-23 09:51:13 +0100 (Tue, 23 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipmessagerouter.c
+
+fixed wrong asserts in cip startup. Thanks to Mr. Kaiser for reporting this issue.
+------------------------------------------------------------------------
+r44 | alil | 2010-02-20 16:24:47 +0100 (Sat, 20 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+
+added patch for incarnation id based connection id generation. Thanks to bumpp
+------------------------------------------------------------------------
+r43 | alil | 2010-02-20 16:04:18 +0100 (Sat, 20 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/ciptcpipinterface.c
+
+fixed some pointer checks in ciptcpipinterface.c string handling
+------------------------------------------------------------------------
+r42 | alil | 2010-02-11 22:32:59 +0100 (Thu, 11 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+fixed issue in api declaration; fixed issue for compiling networkhandler under linux
+------------------------------------------------------------------------
+r41 | alil | 2010-02-11 19:01:50 +0100 (Thu, 11 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+first quick fix for the "hijacked" port problem
+------------------------------------------------------------------------
+r40 | alil | 2010-02-04 20:50:25 +0100 (Thu, 04 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipassembly.c
+   M /trunk/src/cip/cipassembly.h
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/cipmessagerouter.h
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/cip/ciptcpipinterface.h
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+finished work on shutdown and clean up code. If opener is now shutdown it should free all allocated resources.
+------------------------------------------------------------------------
+r39 | alil | 2010-02-04 19:42:01 +0100 (Thu, 04 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/appcontype.c
+   M /trunk/src/cip/appcontype.h
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/enet_encap/encap.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/trace.h
+
+added support for connection shutdown on opener close
+------------------------------------------------------------------------
+r38 | alil | 2010-02-03 10:50:37 +0100 (Wed, 03 Feb 2010) | 5 lines
+Changed paths:
+   M /trunk/src/cip/cipidentity.c
+   M /trunk/src/cip/cipidentity.h
+   M /trunk/src/enet_encap/encap.c
+
+Applied patch from bumpp: 
+This patch adds value definitions for the List Identity Object's State
+attribute, and adds use of the "operational" define in ListIdentity()
+function.
+Changed in ListIdentity() to use the status value of the identity object instead of a constant. 
+------------------------------------------------------------------------
+r36 | alil | 2010-01-24 22:36:47 +0100 (Sun, 24 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+applied EIP_INVALID_SOCKET patch
+------------------------------------------------------------------------
+r35 | alil | 2010-01-15 14:06:00 +0100 (Fri, 15 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/cip/ciptypes.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+
+added new api for freeing allocated memory
+------------------------------------------------------------------------
+r34 | alil | 2010-01-13 14:42:00 +0100 (Wed, 13 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+fixed wrong IO connection event on application establishment.
+------------------------------------------------------------------------
+r33 | alil | 2010-01-13 13:02:03 +0100 (Wed, 13 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+fixed wrong if statement in manageConnections handling connection timeouts
+------------------------------------------------------------------------
+r31 | alil | 2009-11-04 22:43:00 +0100 (Wed, 04 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/bin/pc/Makefile
+   M /trunk/src/cip/cipconnectionmanager.c
+
+fixed issue in an return value of ForwardOpen
+------------------------------------------------------------------------
+r30 | alil | 2009-11-03 21:49:00 +0100 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/src/ports/platform-pc/main.c
+
+changed sample app to mirror outputs to the inputs
+------------------------------------------------------------------------
+r29 | alil | 2009-11-03 21:41:50 +0100 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/data
+   A /trunk/data/opener_sample_app.eds
+
+added first simple eds file with just the connections
+------------------------------------------------------------------------
+r28 | alil | 2009-11-03 17:17:18 +0100 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/README
+   M /trunk/bin/pc/Makefile.release
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+reworked documentation
+------------------------------------------------------------------------
+r27 | alil | 2009-10-29 20:58:48 +0100 (Thu, 29 Oct 2009) | 1 line
+Changed paths:
+   A /trunk/.settings
+   A /trunk/.settings/org.eclipse.cdt.core.prefs
+   A /trunk/.settings/org.eclipse.cdt.ui.prefs
+   A /trunk/doc/coding_rules
+   A /trunk/doc/coding_rules/opener_coding_rules.pdf
+   A /trunk/doc/coding_rules/src
+   A /trunk/doc/coding_rules/src/opener_coding_rules.tex
+
+added coding rules, and eclipse project settings for the code formatting
+------------------------------------------------------------------------
+r26 | alil | 2009-10-27 16:42:00 +0100 (Tue, 27 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/appcontype.c
+   M /trunk/src/cip/appcontype.h
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+
+fully implemented the correct behavior of exclusive owner, input only, and listen only connections.
+------------------------------------------------------------------------
+r25 | alil | 2009-10-22 23:11:48 +0200 (Thu, 22 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/ciptypes.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+
+added callback for informing the application on connection state changes
+------------------------------------------------------------------------
+r24 | alil | 2009-10-22 17:17:56 +0200 (Thu, 22 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/bin/pc/Makefile
+   A /trunk/src/cip/appcontype.c
+   A /trunk/src/cip/appcontype.h
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+starting point for new IO connection handling supporting application connection types, Attention not finished implementation!!!
+However exclusive owner and input only should work. Please check for the new application interface. 
+------------------------------------------------------------------------
+r23 | alil | 2009-10-15 15:25:14 +0200 (Thu, 15 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/enet_encap/cpf.c
+
+fixed wrong handling of timeout multiplier
+------------------------------------------------------------------------
+r22 | alil | 2009-10-14 17:55:23 +0200 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+updated connection id choosing to conform to the EIP specs
+------------------------------------------------------------------------
+r21 | alil | 2009-10-14 17:16:34 +0200 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipcommon.h
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+
+changed watchdogtimeout behavior to be per default timed out as it is required on EIP
+------------------------------------------------------------------------
+r20 | alil | 2009-10-07 11:39:23 +0200 (Wed, 07 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+fixed issue with wrong usage of connectionIDs when given by the originator
+------------------------------------------------------------------------
+r19 | alil | 2009-09-24 13:58:07 +0200 (Thu, 24 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/TODO
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/enet_encap/cpf.c
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+implemented support for heartbeat connections; fixed some issues with peer-to-peer connections
+------------------------------------------------------------------------
+r18 | alil | 2009-09-08 16:11:41 +0200 (Tue, 08 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/src/cip/cipconnectionmanager.c
+
+removed testing output message
+------------------------------------------------------------------------
+r17 | alil | 2009-09-07 15:47:45 +0200 (Mon, 07 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/TODO
+   M /trunk/src/cip/cipassembly.h
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipcommon.h
+   M /trunk/src/cip/cipconnectionmanager.h
+   M /trunk/src/cip/cipethernetlink.c
+   M /trunk/src/cip/cipethernetlink.h
+   M /trunk/src/cip/cipidentity.h
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/cip/ciptypes.h
+   M /trunk/src/enet_encap/cpf.c
+   M /trunk/src/enet_encap/cpf.h
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/enet_encap/encap.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/networkhandler.h
+   M /trunk/src/typedefs.h
+
+worked on documentation, fixed spelling errors
+------------------------------------------------------------------------
+r16 | alil | 2009-09-03 11:28:48 +0200 (Thu, 03 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/.cproject
+   M /trunk/TODO
+   M /trunk/bin/pc/Makefile
+   A /trunk/bin/pc/Makefile.release
+   M /trunk/src/cip/cipassembly.c
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/cipmessagerouter.h
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/enet_encap/cpf.c
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+   D /trunk/src/ports/platform-pc/stubs.c
+   A /trunk/src/trace.h
+   M /trunk/src/typedefs.h
+
+reworked tracing facilities to create better code especially for production code
+------------------------------------------------------------------------
+r15 | alil | 2009-09-02 16:19:28 +0200 (Wed, 02 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/bin/pc/Makefile
+   M /trunk/src/cip/cipassembly.c
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/cipmessagerouter.h
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/typedefs.h
+
+made OpENer compile able with c++, updated porting guide to include ref to setDeviceSerial
+------------------------------------------------------------------------
+r14 | alil | 2009-09-01 21:55:41 +0200 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipidentity.c
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+added function for setting the serial number during device setup allowing to set the serial number more easily per device; changed main to prompt for command line parameters, updated TODO and README
+------------------------------------------------------------------------
+r13 | alil | 2009-09-01 12:24:04 +0200 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+added setsockopt for listen to broadcast messages. is necessary on some linuxes
+------------------------------------------------------------------------
+r12 | alil | 2009-09-01 11:43:01 +0200 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/TODO
+   M /trunk/bin/pc/Makefile
+   M /trunk/src/cip/cipassembly.c
+   M /trunk/src/cip/cipcommon.c
+   M /trunk/src/cip/cipcommon.h
+   M /trunk/src/cip/cipconnectionmanager.c
+   M /trunk/src/cip/cipconnectionmanager.h
+   M /trunk/src/cip/cipethernetlink.c
+   M /trunk/src/cip/cipidentity.c
+   M /trunk/src/cip/cipmessagerouter.c
+   M /trunk/src/cip/ciptcpipinterface.c
+   M /trunk/src/cip/ciptypes.h
+   M /trunk/src/enet_encap/cpf.c
+   M /trunk/src/enet_encap/cpf.h
+   M /trunk/src/enet_encap/encap.c
+   M /trunk/src/enet_encap/encap.h
+   M /trunk/src/enet_encap/endianconv.c
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/main.c
+   M /trunk/src/ports/platform-pc/networkhandler.c
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+   M /trunk/src/ports/platform-pc/stubs.c
+   M /trunk/src/typedefs.h
+
+made opener compile with ansi switch
+------------------------------------------------------------------------
+r11 | alil | 2009-08-31 13:08:40 +0200 (Mon, 31 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/opener.doxyfile
+
+finished porting guide documentation, update and fixed some doxygen issues
+------------------------------------------------------------------------
+r10 | alil | 2009-08-31 13:08:18 +0200 (Mon, 31 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/opener_user_conf.h
+
+finished porting guide documentation, update and fixed some doxygen issues
+------------------------------------------------------------------------
+r9 | alil | 2009-08-27 09:56:02 +0200 (Thu, 27 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/.cproject
+   M /trunk/.project
+   M /trunk/opener.doxyfile
+   M /trunk/src/cip/cipassembly.c
+
+fixed issue in assembly object creation, correctly setup default build in eclipse project
+------------------------------------------------------------------------
+r8 | alil | 2009-08-26 18:42:27 +0200 (Wed, 26 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/src/opener_api.h
+
+worked on general documentation and introduction
+------------------------------------------------------------------------
+r7 | alil | 2009-08-25 22:09:32 +0200 (Tue, 25 Aug 2009) | 1 line
+Changed paths:
+   A /trunk/.cdtproject
+   M /trunk/.project
+   M /trunk/opener.doxyfile
+   M /trunk/src/opener_api.h
+
+updated documentation main page
+------------------------------------------------------------------------
+r6 | alil | 2009-08-25 21:23:20 +0200 (Tue, 25 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/opener.doxyfile
+   M /trunk/src/enet_encap/cpf.h
+   M /trunk/src/enet_encap/encap.h
+   M /trunk/src/enet_encap/endianconv.h
+   M /trunk/src/opener_api.h
+   M /trunk/src/ports/platform-pc/networkhandler.c
+
+updated documentation of the encapsulation layer
+------------------------------------------------------------------------
+r5 | alil | 2009-08-24 17:55:00 +0200 (Mon, 24 Aug 2009) | 1 line
+Changed paths:
+   A /trunk/.cproject
+   A /trunk/.project
+   A /trunk/AUTHORS
+   A /trunk/ChangeLog
+   A /trunk/README
+   A /trunk/TODO
+   A /trunk/bin
+   A /trunk/bin/pc
+   A /trunk/bin/pc/Makefile
+   A /trunk/doc
+   A /trunk/doc/api_doc
+   A /trunk/license.txt
+   A /trunk/opener.doxyfile
+   A /trunk/src
+   A /trunk/src/cip
+   A /trunk/src/cip/cipassembly.c
+   A /trunk/src/cip/cipassembly.h
+   A /trunk/src/cip/cipcommon.c
+   A /trunk/src/cip/cipcommon.h
+   A /trunk/src/cip/cipconnectionmanager.c
+   A /trunk/src/cip/cipconnectionmanager.h
+   A /trunk/src/cip/ciperror.h
+   A /trunk/src/cip/cipethernetlink.c
+   A /trunk/src/cip/cipethernetlink.h
+   A /trunk/src/cip/cipidentity.c
+   A /trunk/src/cip/cipidentity.h
+   A /trunk/src/cip/cipmessagerouter.c
+   A /trunk/src/cip/cipmessagerouter.h
+   A /trunk/src/cip/ciptcpipinterface.c
+   A /trunk/src/cip/ciptcpipinterface.h
+   A /trunk/src/cip/ciptypes.h
+   A /trunk/src/enet_encap
+   A /trunk/src/enet_encap/cpf.c
+   A /trunk/src/enet_encap/cpf.h
+   A /trunk/src/enet_encap/encap.c
+   A /trunk/src/enet_encap/encap.h
+   A /trunk/src/enet_encap/endianconv.c
+   A /trunk/src/enet_encap/endianconv.h
+   A /trunk/src/opener_api.h
+   A /trunk/src/ports
+   A /trunk/src/ports/platform-pc
+   A /trunk/src/ports/platform-pc/main.c
+   A /trunk/src/ports/platform-pc/networkhandler.c
+   A /trunk/src/ports/platform-pc/networkhandler.h
+   A /trunk/src/ports/platform-pc/opener_user_conf.h
+   A /trunk/src/ports/platform-pc/stubs.c
+   A /trunk/src/typedefs.h
+
+initial import
+------------------------------------------------------------------------
+r1 | alil | 2009-08-24 17:44:56 +0200 (Mon, 24 Aug 2009) | 1 line
+Changed paths:
+   A /trunk
+
+
+------------------------------------------------------------------------
