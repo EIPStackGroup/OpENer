@@ -1341,7 +1341,8 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
           return CIP_ERROR_CONNECTION_FAILURE;
         }
 
-      nRemainingPathSize -= 1; /* 1 16Bit word for the configuration instance part of the path */
+      /* 1 or 2 16Bit words for the configuration instance part of the path  */
+      nRemainingPathSize -= (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] > 0xFF ) ? 2 : 1;
 
       if (0x03 == (pa_pstConnObj->TransportTypeTrigger & 0x03))
         { /* we have Class 3 connection, connection end point has to be the message router instance 1 */
@@ -1412,7 +1413,8 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                           = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
                       return CIP_ERROR_CONNECTION_FAILURE;
                     }
-                  nRemainingPathSize -= 1; /* 1 16Bit word for the connection point part of the path */
+                  /* 1 or 2 16Bit word for the connection point part of the path */
+                  nRemainingPathSize -= (pa_pstConnObj->ConnectionPath.ConnectionPoint[i] > 0xFF ) ? 2 : 1;
                 }
               else
                 {

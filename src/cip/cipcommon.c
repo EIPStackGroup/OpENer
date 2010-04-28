@@ -294,7 +294,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
 }
 
 void
-insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr,
+insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void *pa_pt2data)
 {
   int i;

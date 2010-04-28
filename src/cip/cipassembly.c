@@ -69,7 +69,7 @@ shutdownAssemblies(void)
 }
 
 S_CIP_Instance *
-createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE * pa_data,
+createAssemblyObject(EIP_UINT32 pa_nInstanceID, EIP_BYTE * pa_data,
     EIP_UINT16 pa_datalength)
 {
   S_CIP_Class *pstAssemblyClass;

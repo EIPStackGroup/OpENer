@@ -105,7 +105,7 @@ getCIPClass(EIP_UINT32 pa_nClassID)
 }
 
 S_CIP_Instance *
-getCIPInstance(S_CIP_Class * pa_pstClass, EIP_UINT16 pa_nInstanceNr)
+getCIPInstance(S_CIP_Class * pa_pstClass, EIP_UINT32 pa_nInstanceNr)
 {
   S_CIP_Instance *p; /* pointer to linked list of instances from the class object*/
 

@@ -103,7 +103,7 @@ getCIPClass(EIP_UINT32 pa_nClassID);
  *          0 if instance is not in the object
  */
 S_CIP_Instance *
-getCIPInstance(S_CIP_Class *pa_pstObject, EIP_UINT16 pa_nInstanceNr);
+getCIPInstance(S_CIP_Class *pa_pstObject, EIP_UINT32 pa_nInstanceNr);
 
 /** \ingroup CIP_API 
  * \brief Get a pointer to an instance's attribute
@@ -182,7 +182,7 @@ addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
  *  @param pa_pt2data pointer to data of attribute.
  */
 void
-insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr,
+insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT32 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
 
 /** \ingroup CIP_API 
@@ -215,7 +215,7 @@ insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
  * The notification on received configuration data is handled with the IApp_after_receive function.
  */
 S_CIP_Instance *
-createAssemblyObject(EIP_UINT8 pa_nInstanceID, EIP_BYTE *pa_data,
+createAssemblyObject(EIP_UINT32 pa_nInstanceID, EIP_BYTE *pa_data,
     EIP_UINT16 pa_datalength);
 
 /** \ingroup CIP_API
