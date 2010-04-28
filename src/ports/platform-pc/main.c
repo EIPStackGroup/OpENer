@@ -13,11 +13,19 @@
 #include "cipcommon.h"
 #include "trace.h"
 
+#define DEMO_APP_INPUT_ASSEMBLY_NUM                0x301
+#define DEMO_APP_OUTPUT_ASSEMBLY_NUM               0x302
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM               0x303
+#define DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM  0x304
+#define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 0x305
+#define DEMO_APP_EXPLICT_ASSEMBLY_NUM              0x306
+
+
 /* global variables for demo application (4 assembly data fields) */
-EIP_UINT8 g_assemblydata[32]; /* Input */
-EIP_UINT8 g_assemblydata2[32]; /* Output */
-EIP_UINT8 g_assemblydata3[10]; /* Config */
-EIP_UINT8 g_assemblydata6[32]; /* Explicit */
+EIP_UINT8 g_assemblydata301[32]; /* Input */
+EIP_UINT8 g_assemblydata302[32]; /* Output */
+EIP_UINT8 g_assemblydata303[10]; /* Config */
+EIP_UINT8 g_assemblydata306[32]; /* Explicit */
 
 extern int newfd;
 
@@ -76,26 +84,26 @@ IApp_Init(void)
 {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  createAssemblyObject(1, &g_assemblydata[0], sizeof(g_assemblydata));
+  createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata301[0], sizeof(g_assemblydata301));
 
   /*OUTPUT*/
-  createAssemblyObject(2, &g_assemblydata2[0], sizeof(g_assemblydata2));
+  createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata302[0], sizeof(g_assemblydata302));
 
   /*CONFIG*/
-  createAssemblyObject(3, &g_assemblydata3[0], sizeof(g_assemblydata3));
+  createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata303[0], sizeof(g_assemblydata303));
 
   /*Heart-beat output assembly for Input only connections */
-  createAssemblyObject(4, 0, 0);
+  createAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /*Heart-beat output assembly for Listen only connections */
-  createAssemblyObject(5, 0, 0);
+  createAssemblyObject(DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  createAssemblyObject(6, &g_assemblydata6[0], sizeof(g_assemblydata6));
+  createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata306[0], sizeof(g_assemblydata306));
 
-  configureExclusiveOwnerConnectionPoint(0, 2, 1, 3);
-  configureInputOnlyConnectionPoint(0, 4, 1, 3);
-  configureListenOnlyConnectionPoint(0, 5, 1, 3);
+  configureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  configureInputOnlyConnectionPoint(0, DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  configureListenOnlyConnectionPoint(0, DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
   return EIP_OK;
 }
@@ -116,13 +124,13 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
 {
   /*handle the data received e.g., update outputs of the device */
 
-  if (pa_pstInstance->nInstanceNr == 2)
+  if (pa_pstInstance->nInstanceNr == DEMO_APP_OUTPUT_ASSEMBLY_NUM)
     {
       /* Data for the output assembly has been received.
        * Mirror it to the inputs */
-      memcpy(&g_assemblydata[0], &g_assemblydata2[0], sizeof(g_assemblydata));
+      memcpy(&g_assemblydata301[0], &g_assemblydata302[0], sizeof(g_assemblydata301));
     }
-  else if (pa_pstInstance->nInstanceNr == 6)
+  else if (pa_pstInstance->nInstanceNr == DEMO_APP_EXPLICT_ASSEMBLY_NUM)
     {
       /* do something interesting with the new data from
        * the explicit set-data-attribute message */
@@ -140,7 +148,7 @@ IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
    * the data is new.
    */
 
-  if (pa_pstInstance->nInstanceNr == 6)
+  if (pa_pstInstance->nInstanceNr == DEMO_APP_EXPLICT_ASSEMBLY_NUM)
     {
       /* do something interesting with the existing data
        * for the explicit get-data-attribute message */

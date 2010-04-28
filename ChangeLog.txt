@@ -1,0 +1,343 @@
+2010-04-28  alil
+
+	* src/cip/cipassembly.c, src/cip/cipcommon.c,
+	  src/cip/cipconnectionmanager.c, src/cip/cipmessagerouter.c,
+	  src/opener_api.h: fixed bug that dissallowed using 16bit class
+	  instance ids
+
+2010-04-27  alil
+
+	* ChangeLog: updated ChangeLog
+
+2010-04-21  alil
+
+	* src/cip/cipassembly.c, src/cip/cipcommon.c, src/cip/ciperror.h,
+	  src/ports/platform-pc/main.c: Applied patch ID: 2989571 (explicit
+	  message access get/setattribute single) for assembly objects
+
+2010-04-15  alil
+
+	* src/cip/appcontype.c, src/cip/appcontype.h,
+	  src/cip/cipassembly.c, src/cip/cipassembly.h,
+	  src/cip/cipcommon.c, src/cip/cipcommon.h,
+	  src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h,
+	  src/cip/ciperror.h, src/cip/cipethernetlink.c,
+	  src/cip/cipethernetlink.h, src/cip/cipidentity.c,
+	  src/cip/cipidentity.h, src/cip/cipmessagerouter.c,
+	  src/cip/cipmessagerouter.h, src/cip/ciptcpipinterface.c,
+	  src/cip/ciptcpipinterface.h, src/cip/ciptypes.h,
+	  src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h,
+	  src/enet_encap/endianconv.c, src/enet_encap/endianconv.h,
+	  src/opener_api.h, src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/networkhandler.h,
+	  src/ports/platform-pc/opener_user_conf.h, src/trace.h,
+	  src/typedefs.h: changed file headers to make them easier to
+	  maintain
+
+2010-04-07  alil
+
+	* src/cip/cipconnectionmanager.c: fixed bug 2983235
+
+2010-03-16  alil
+
+	* src/cip/cipcommon.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipmessagerouter.c, src/cip/ciptcpipinterface.c: fixed
+	  assert error thanks to csar
+
+2010-03-13  alil
+
+	* src/cip/cipassembly.c, src/cip/cipcommon.c,
+	  src/cip/cipconnectionmanager.c, src/cip/cipmessagerouter.c,
+	  src/cip/ciptcpipinterface.c, src/enet_encap/cpf.c,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h: applied custom
+	  assertion patch, thanks to bumpp
+
+2010-03-08  alil
+
+	* src/cip/cipcommon.c: applied domain name patch
+
+2010-03-05  alil
+
+	* src/enet_encap/encap.c: moved the encapsulate data to one central
+	  plaze
+	* src/enet_encap/encap.c, src/enet_encap/encap.h, src/opener_api.h,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h: improved buffer usage
+	  in the encapsulation layer. this uses global vars makes opener
+	  easier to read and is the basis for multiple requests at the same
+	  time. This request is based on the patch submitted by bumpp.
+	  Thanks.
+
+2010-02-24  alil
+
+	* .cproject, .settings/org.eclipse.cdt.core.prefs, bin/pc/Makefile,
+	  src/cip/cipconnectionmanager.c, src/cip/ciperror.h,
+	  src/cip/cipmessagerouter.c, src/cip/ciptcpipinterface.c,
+	  src/enet_encap/encap.c, src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c: made some changes
+	  reported by splint
+
+2010-02-23  alil
+
+	* src/cip/cipcommon.c, src/cip/cipmessagerouter.c: fixed wrong
+	  asserts in cip startup. Thanks to Mr. Kaiser for reporting this
+	  issue.
+
+2010-02-20  alil
+
+	* src/cip/cipcommon.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h, src/opener_api.h,
+	  src/ports/platform-pc/main.c: added patch for incarnation id
+	  based connection id generation. Thanks to bumpp
+	* src/cip/ciptcpipinterface.c: fixed some pointer checks in
+	  ciptcpipinterface.c string handling
+
+2010-02-11  alil
+
+	* src/opener_api.h, src/ports/platform-pc/networkhandler.c: fixed
+	  issue in api declaration; fixed issue for compiling
+	  networkhandler under linux
+	* src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h,
+	  src/opener_api.h, src/ports/platform-pc/networkhandler.c: first
+	  quick fix for the "hijacked" port problem
+
+2010-02-04  alil
+
+	* src/cip/cipassembly.c, src/cip/cipassembly.h,
+	  src/cip/cipcommon.c, src/cip/cipmessagerouter.c,
+	  src/cip/cipmessagerouter.h, src/cip/ciptcpipinterface.c,
+	  src/cip/ciptcpipinterface.h,
+	  src/ports/platform-pc/networkhandler.c: finished work on shutdown
+	  and clean up code. If opener is now shutdown it should free all
+	  allocated resources.
+	* src/cip/appcontype.c, src/cip/appcontype.h, src/cip/cipcommon.c,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h, src/opener_api.h,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c, src/trace.h: added
+	  support for connection shutdown on opener close
+
+2010-02-03  alil
+
+	* src/cip/cipidentity.c, src/cip/cipidentity.h,
+	  src/enet_encap/encap.c: Applied patch from bumpp:
+	  This patch adds value definitions for the List Identity Object's
+	  State
+	  attribute, and adds use of the "operational" define in
+	  ListIdentity()
+	  function.
+	  Changed in ListIdentity() to use the status value of the identity
+	  object instead of a constant.
+
+2010-01-24  alil
+
+	* src/cip/cipconnectionmanager.c,
+	  src/ports/platform-pc/networkhandler.c: applied
+	  EIP_INVALID_SOCKET patch
+
+2010-01-15  alil
+
+	* src/cip/ciptcpipinterface.c, src/cip/ciptypes.h,
+	  src/opener_api.h, src/ports/platform-pc/main.c: added new api for
+	  freeing allocated memory
+
+2010-01-13  alil
+
+	* src/cip/cipconnectionmanager.c: fixed wrong IO connection event
+	  on application establishment.
+	* src/cip/cipconnectionmanager.c: fixed wrong if statement in
+	  manageConnections handling connection timeouts
+
+2009-11-04  alil
+
+	* bin/pc/Makefile, src/cip/cipconnectionmanager.c: fixed issue in
+	  an return value of ForwardOpen
+
+2009-11-03  alil
+
+	* src/ports/platform-pc/main.c: changed sample app to mirror
+	  outputs to the inputs
+	* data, data/opener_sample_app.eds: added first simple eds file
+	  with just the connections
+	* bin/pc/Makefile.release, README, src/opener_api.h,
+	  src/ports/platform-pc/opener_user_conf.h: reworked documentation
+
+2009-10-29  alil
+
+	* .settings, .settings/org.eclipse.cdt.core.prefs,
+	  .settings/org.eclipse.cdt.ui.prefs, doc/coding_rules,
+	  doc/coding_rules/opener_coding_rules.pdf, doc/coding_rules/src,
+	  doc/coding_rules/src/opener_coding_rules.tex: added coding rules,
+	  and eclipse project settings for the code formatting
+
+2009-10-27  alil
+
+	* src/cip/appcontype.c, src/cip/appcontype.h,
+	  src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h:
+	  fully implemented the correct behavior of exclusive owner, input
+	  only, and listen only connections.
+
+2009-10-22  alil
+
+	* src/cip/cipconnectionmanager.c, src/cip/ciptypes.h,
+	  src/opener_api.h, src/ports/platform-pc/main.c: added callback
+	  for informing the application on connection state changes
+	* bin/pc/Makefile, src/cip/appcontype.c, src/cip/appcontype.h,
+	  src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h,
+	  src/opener_api.h, src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h, TODO: starting point
+	  for new IO connection handling supporting application connection
+	  types, Attention not finished implementation!!!
+	  However exclusive owner and input only should work. Please check
+	  for the new application interface.
+
+2009-10-15  alil
+
+	* src/cip/cipconnectionmanager.c, src/enet_encap/cpf.c: fixed wrong
+	  handling of timeout multiplier
+
+2009-10-14  alil
+
+	* src/cip/cipconnectionmanager.c: updated connection id choosing to
+	  conform to the EIP specs
+	* src/cip/cipcommon.c, src/cip/cipcommon.h,
+	  src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h:
+	  changed watchdogtimeout behavior to be per default timed out as
+	  it is required on EIP
+
+2009-10-07  alil
+
+	* src/cip/cipconnectionmanager.c: fixed issue with wrong usage of
+	  connectionIDs when given by the originator
+
+2009-09-24  alil
+
+	* src/cip/cipcommon.c, src/cip/cipconnectionmanager.c,
+	  src/enet_encap/cpf.c, src/enet_encap/encap.c, src/opener_api.h,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h, TODO: implemented
+	  support for heartbeat connections; fixed some issues with
+	  peer-to-peer connections
+
+2009-09-08  alil
+
+	* src/cip/cipconnectionmanager.c: removed testing output message
+
+2009-09-07  alil
+
+	* src/cip/cipassembly.h, src/cip/cipcommon.c, src/cip/cipcommon.h,
+	  src/cip/cipconnectionmanager.h, src/cip/cipethernetlink.c,
+	  src/cip/cipethernetlink.h, src/cip/cipidentity.h,
+	  src/cip/cipmessagerouter.c, src/cip/ciptcpipinterface.c,
+	  src/cip/ciptypes.h, src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h, src/opener_api.h,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/networkhandler.h, src/typedefs.h, TODO:
+	  worked on documentation, fixed spelling errors
+
+2009-09-03  alil
+
+	* .cproject, bin/pc/Makefile, bin/pc/Makefile.release,
+	  src/cip/cipassembly.c, src/cip/cipcommon.c,
+	  src/cip/cipconnectionmanager.c, src/cip/cipmessagerouter.c,
+	  src/cip/cipmessagerouter.h, src/cip/ciptcpipinterface.c,
+	  src/enet_encap/cpf.c, src/enet_encap/encap.c, src/opener_api.h,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h,
+	  src/ports/platform-pc/stubs.c, src/trace.h, src/typedefs.h, TODO:
+	  reworked tracing facilities to create better code especially for
+	  production code
+
+2009-09-02  alil
+
+	* bin/pc/Makefile, src/cip/cipassembly.c, src/cip/cipcommon.c,
+	  src/cip/cipconnectionmanager.c, src/cip/cipmessagerouter.c,
+	  src/cip/cipmessagerouter.h, src/cip/ciptcpipinterface.c,
+	  src/opener_api.h, src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c, src/typedefs.h: made
+	  OpENer compile able with c++, updated porting guide to include
+	  ref to setDeviceSerial
+
+2009-09-01  alil
+
+	* README, src/cip/cipconnectionmanager.c, src/cip/cipidentity.c,
+	  src/opener_api.h, src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/opener_user_conf.h, TODO: added function
+	  for setting the serial number during device setup allowing to set
+	  the serial number more easily per device; changed main to prompt
+	  for command line parameters, updated TODO and README
+	* src/ports/platform-pc/networkhandler.c: added setsockopt for
+	  listen to broadcast messages. is necessary on some linuxes
+	* bin/pc/Makefile, src/cip/cipassembly.c, src/cip/cipcommon.c,
+	  src/cip/cipcommon.h, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h, src/cip/cipethernetlink.c,
+	  src/cip/cipidentity.c, src/cip/cipmessagerouter.c,
+	  src/cip/ciptcpipinterface.c, src/cip/ciptypes.h,
+	  src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h,
+	  src/enet_encap/endianconv.c, src/opener_api.h,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/opener_user_conf.h,
+	  src/ports/platform-pc/stubs.c, src/typedefs.h, TODO: made opener
+	  compile with ansi switch
+
+2009-08-31  alil
+
+	* opener.doxyfile: finished porting guide documentation, update and
+	  fixed some doxygen issues
+	* src/opener_api.h, src/ports/platform-pc/opener_user_conf.h:
+	  finished porting guide documentation, update and fixed some
+	  doxygen issues
+
+2009-08-27  alil
+
+	* .cproject, .project, opener.doxyfile, src/cip/cipassembly.c:
+	  fixed issue in assembly object creation, correctly setup default
+	  build in eclipse project
+
+2009-08-26  alil
+
+	* src/opener_api.h: worked on general documentation and
+	  introduction
+
+2009-08-25  alil
+
+	* .cdtproject, .project, opener.doxyfile, src/opener_api.h: updated
+	  documentation main page
+	* opener.doxyfile, src/enet_encap/cpf.h, src/enet_encap/encap.h,
+	  src/enet_encap/endianconv.h, src/opener_api.h,
+	  src/ports/platform-pc/networkhandler.c: updated documentation of
+	  the encapsulation layer
+
+2009-08-24  alil
+
+	* .cproject, .project, AUTHORS, bin, bin/pc, bin/pc/Makefile,
+	  ChangeLog, doc, doc/api_doc, license.txt, opener.doxyfile,
+	  README, src, src/cip, src/cip/cipassembly.c,
+	  src/cip/cipassembly.h, src/cip/cipcommon.c, src/cip/cipcommon.h,
+	  src/cip/cipconnectionmanager.c, src/cip/cipconnectionmanager.h,
+	  src/cip/ciperror.h, src/cip/cipethernetlink.c,
+	  src/cip/cipethernetlink.h, src/cip/cipidentity.c,
+	  src/cip/cipidentity.h, src/cip/cipmessagerouter.c,
+	  src/cip/cipmessagerouter.h, src/cip/ciptcpipinterface.c,
+	  src/cip/ciptcpipinterface.h, src/cip/ciptypes.h, src/enet_encap,
+	  src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h,
+	  src/enet_encap/endianconv.c, src/enet_encap/endianconv.h,
+	  src/opener_api.h, src/ports, src/ports/platform-pc,
+	  src/ports/platform-pc/main.c,
+	  src/ports/platform-pc/networkhandler.c,
+	  src/ports/platform-pc/networkhandler.h,
+	  src/ports/platform-pc/opener_user_conf.h,
+	  src/ports/platform-pc/stubs.c, src/typedefs.h, TODO: initial
+	  import
+	* .:
+
