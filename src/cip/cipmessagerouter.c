@@ -142,7 +142,7 @@ registerClass(S_CIP_Class * pa_pt2Class)
 EIP_STATUS
 notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
 {
-  EIP_STATUS nRetVal = EIP_OK;
+  EIP_STATUS nRetVal = EIP_OK_SEND;
 
   EIP_BYTE nStatus;
   OPENER_TRACE_INFO("notifyMR: routing unconnected message\n");

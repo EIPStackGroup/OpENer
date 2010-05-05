@@ -219,7 +219,8 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   pt2Class->pstInstances = 0;
   pt2Class->nNr_of_Attributes = pa_nNr_of_InstanceAttributes; /* the class remembers the number of instances of that class */
   pt2Class->nGetAttrAllMask = pa_nInstGetAttrAllMask; /* indicate which attributes are included in instance getAttributeAll */
-  pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices + 2; /* the class manages the behavior of the instances */
+  pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices + ((0
+      == pa_nInstGetAttrAllMask) ? 1 : 2); /* the class manages the behavior of the instances */
   pt2Class->pstServices = 0;
   pt2Class->acName = pa_acName; /* initialize the class-specific fields of the metaClass struct */
   pt2MetaClass->nClassID = 0xffffffff; /* set metaclass ID (this should never be referenced) */
@@ -227,7 +228,8 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   pt2MetaClass->pstInstances = (S_CIP_Instance *) pt2Class;
   pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes + 5; /* the metaclass remembers how many class attributes exist*/
   pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; /* indicate which attributes are included in class getAttributeAll*/
-  pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices + 2; /* the metaclass manages the behavior of the class itself */
+  pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices + ((0
+      == pa_nClassGetAttrAllMask) ? 1 : 2); /* the metaclass manages the behavior of the class itself */
   pt2Class->pstServices = 0;
   pt2MetaClass->acName = (char *) IApp_CipCalloc(1, strlen(pa_acName) + 6); /* fabricate the name "meta<classname>"*/
   strcpy(pt2MetaClass->acName, "meta-");
@@ -251,10 +253,10 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   /* TODO -- check that we didn't run out of memory?*/
 
   pt2MetaClass->pstServices = (S_CIP_service_struct *) IApp_CipCalloc(
-      pa_nNr_of_ClassServices + 2, sizeof(S_CIP_service_struct));
+      pt2MetaClass->nNr_of_Services, sizeof(S_CIP_service_struct));
 
   pt2Class->pstServices = (S_CIP_service_struct *) IApp_CipCalloc(
-      pa_nNr_of_InstanceServices + 2, sizeof(S_CIP_service_struct));
+      pt2Class->nNr_of_Services, sizeof(S_CIP_service_struct));
 
   if (pa_nNr_of_Instances > 0)
     {
@@ -279,14 +281,20 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
       (void *) &pt2Class->nMaxAttribute); /* max instance attribute number*/
 
   /* create the standard class services*/
-  insertService(pt2MetaClass, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
-      "GetAttributeAll"); /* bind instance services to the metaclass*/
+  if (0 != pa_nClassGetAttrAllMask)
+    { /*only if the mask has values add the get_attribute_all service */
+      insertService(pt2MetaClass, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
+          "GetAttributeAll"); /* bind instance services to the metaclass*/
+    }
   insertService(pt2MetaClass, CIP_GET_ATTRIBUTE_SINGLE, &getAttributeSingle,
       "GetAttributeSingle");
 
   /* create the standard instance services*/
-  insertService(pt2Class, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
-      "GetAttributeAll"); /* bind instance services to the class*/
+  if (0 != pa_nInstGetAttrAllMask)
+    { /*only if the mask has values add the get_attribute_all service */
+      insertService(pt2Class, CIP_GET_ATTRIBUTE_ALL, &getAttributeAll,
+          "GetAttributeAll"); /* bind instance services to the class*/
+    }
   insertService(pt2Class, CIP_GET_ATTRIBUTE_SINGLE, &getAttributeSingle,
       "GetAttributeSingle");
 
@@ -399,10 +407,9 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
 
       pa_pstMRResponse->DataLength = outputAttribute(p, pa_acMsg);
       pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
-      return (EIP_STATUS) pa_pstMRResponse->DataLength;
     }
 
-  return EIP_OK;
+  return EIP_OK_SEND;
 }
 
 int
@@ -637,18 +644,19 @@ getAttributeAll(S_CIP_Instance * pa_pstInstance,
                           << attrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
                     {
                       pa_stMRRequest->RequestPath.AttributNr = attrNum;
-                      pa_msg += p_service->m_ptfuncService(pa_pstInstance,
-                          pa_stMRRequest, pa_stMRResponse, pa_msg);
-                      if (pa_stMRResponse->GeneralStatus != CIP_ERROR_SUCCESS)
+                      if (EIP_OK_SEND != p_service->m_ptfuncService(
+                          pa_pstInstance, pa_stMRRequest, pa_stMRResponse,
+                          pa_msg))
                         {
                           return EIP_ERROR;
                         }
+                      pa_msg += pa_stMRResponse->DataLength;
                     }
                   p_attr++;
                 }
               pa_stMRResponse->DataLength = pa_msg - ptmp;
             }
-          return (EIP_STATUS) pa_stMRResponse->DataLength;
+          return EIP_OK_SEND;
         }
       p_service++;
     }

@@ -126,9 +126,11 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr);
  *  @param pa_nClassID class ID of the new class
  *  @param pa_nNr_of_ClassAttributes number of class attributes
  *  @param pa_nClassGetAttrAllMask mask of which attributes are included in the class getAttributeAll
+ *       If the mask is 0 the getAttributeAll service will not be added as class service
  *  @param pa_nNr_of_ClassServices number of class services
  *  @param pa_nNr_of_InstanceAttributes number of attributes of each instance
  *  @param pa_nInstGetAttrAllMask  mask of which attributes are included in the instance getAttributeAll
+ *       If the mask is 0 the getAttributeAll service will not be added as class service
  *  @param pa_nNr_of_InstanceServices number of instance services
  *  @param pa_nNr_of_Instances number of initial instances to create
  *  @param pa_acName  class name (for debugging class structure)

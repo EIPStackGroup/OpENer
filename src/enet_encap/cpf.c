@@ -85,10 +85,12 @@ EIP_UINT8 * pa_replybuf) /* reply buffer*/
           g_stCPFDataItem.stAddr_Item.Data.SequenceNumber = (EIP_UINT32) ltohs(
               &pnBuf);
           res = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length - 2);
-          if (res == -1)
-            return EIP_ERROR;
 
-          return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
+          if(EIP_OK_SEND == res)
+            {
+              return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
+            }
+          return res;
         }
       /* wrong data item detected*/
       OPENER_TRACE_ERR(
