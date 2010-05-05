@@ -30,7 +30,9 @@ createAssemblyClass()
   0xffffffff, /* instance getAttributeAll mask*/
   1, /* # instance services*/
   0, /* # instances*/
-  "assembly", 1);
+  "assembly",
+  2 /* Revision, according to the CIP spec currently this has to be 2 */
+  );
   if (NULL != pstAssemblyClass)
     {
       insertService(pstAssemblyClass, CIP_SET_ATTRIBUTE_SINGLE,
