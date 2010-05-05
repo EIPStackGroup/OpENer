@@ -166,7 +166,11 @@ IApp_ResetDevice(void)
 EIP_STATUS
 IApp_ResetDeviceToInitialConfiguration(void)
 {
-  /*rest the parameters and than perform device reset*/
+  /*rest the parameters */
+
+
+  /*than perform device reset*/
+  IApp_ResetDevice();
   return EIP_OK;
 }
 
