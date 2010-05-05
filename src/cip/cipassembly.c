@@ -30,8 +30,7 @@ createAssemblyClass()
   0xffffffff, /* instance getAttributeAll mask*/
   1, /* # instance services*/
   0, /* # instances*/
-  "assembly",
-  2 /* Revision, according to the CIP spec currently this has to be 2 */
+  "assembly", 2 /* Revision, according to the CIP spec currently this has to be 2 */
   );
   if (NULL != pstAssemblyClass)
     {
@@ -143,45 +142,54 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
   S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
 
-  if ((p != 0) && (p->pt2data != 0))
+  if ((p != 0) && (3 == pa_pstMRRequest->RequestPath.AttributNr))
     {
-      if (p->CIP_Type == CIP_BYTE_ARRAY && pa_pstInstance->pstClass->nClassID
-          == CIP_ASSEMBLY_CLASS_CODE)
+      if (p->pt2data != 0)
         {
-          /* we are setting a assembly data attribute */
+          S_CIP_Byte_Array * pacData = (S_CIP_Byte_Array * )p->pt2data;
 
-          S_CIP_Byte_Array * pacData = pa_pstInstance->pstAttributes->pt2data;
-
-          if (pa_pstMRRequest->DataLength != pacData->len)
+          if (pa_pstMRRequest->DataLength < pacData->len)
             {
-              OPENER_TRACE_INFO(" data length mis-match\r\n");
-              return EIP_OK;
+              OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: not enough data received.\r\n");
+              pa_pstMRResponse->GeneralStatus = CIP_ERROR_NOT_ENOUGH_DATA;
             }
-
-          for (int i = 0; i < pacData->len; i++)
+          else
             {
-              OPENER_TRACE_INFO("%d: %d\r\n", i, *pa_acReqData);
-              pacData->Data[i] = *pa_acReqData++;
+              if (pa_pstMRRequest->DataLength > pacData->len)
+                {
+                  OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: too much data received.\r\n");
+                  pa_pstMRResponse->GeneralStatus = CIP_ERROR_TOO_MUCH_DATA;
+                }
+              else
+                {
+                  memcpy(pacData->Data, pa_acReqData, pacData->len);
+
+                  if (IApp_AfterAssemblyDataReceived(pa_pstInstance) != EIP_OK)
+                    {
+                      /* punt early without updating the status... though I don't know
+                       * how much this helps us here, as the attribute's data has already
+                       * been overwritten.
+                       *
+                       * however this is the task of the application side which will
+                       * take the data. In addition we have to inform the sender that the
+                       * data was not ok.
+                       */
+                      pa_pstMRResponse->GeneralStatus
+                          = CIP_ERROR_INVALID_ATTRIBUTE_VALUE;
+                    }
+                  else
+                    {
+                      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+                    }
+                }
             }
-
-          if (IApp_AfterAssemblyDataReceived(pa_pstInstance) != EIP_OK)
-            {
-              /* punt early without updating the status... though I don't know
-               * how much this helps us here, as the attribute's data has already
-               * been overwritten.
-               *
-               * however this is the task of the application side which will
-               * take the data. In addition we have to inform the sender that the
-               * data was not ok.
-               */
-              pa_pstMRResponse->GeneralStatus = CIP_ERROR_INVALID_ATTRIBUTE_VALUE;
-              return EIP_OK;
-            }
-
-          pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
-
+        }
+      else
+        {
+          /* the attribute was zero we are a heartbeat assembly */
+          pa_pstMRResponse->GeneralStatus = CIP_ERROR_TOO_MUCH_DATA;
         }
     }
 
-  return EIP_OK;
+  return EIP_OK_SEND;
 }
