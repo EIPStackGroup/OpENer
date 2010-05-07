@@ -16,90 +16,110 @@
 S_CIP_CPF_Data g_stCPFDataItem;
 
 int
-notifyCPF(EIP_UINT8 * pa_nData, /* message data*/
-EIP_INT16 pa_nData_length, /* data length*/
-EIP_UINT8 * pa_replybuf) /* reply buffer*/
+notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
+EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
 {
-  EIP_STATUS res;
+  EIP_STATUS nRetVal;
 
-  if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
-      == EIP_ERROR)
+  if ((nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
+      pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
     {
       OPENER_TRACE_ERR("notifyMR: error from createCPFstructure\n");
-      return EIP_ERROR; /* error from createCPFstructure */
     }
-
-  if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
-    { /* found null address item*/
-      if (g_stCPFDataItem.stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-        { /* unconnected data item received*/
-          res = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
-              g_stCPFDataItem.stDataI_Item.Length);
-          if (res == EIP_ERROR)
-            return EIP_ERROR;
-
-          return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
+  else
+    {
+      nRetVal = EIP_OK; /* In cases of errors we normaly need to send an error response */
+      if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
+        { /* found null address item*/
+          if (g_stCPFDataItem.stDataI_Item.TypeID
+              == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
+            { /* unconnected data item received*/
+              nRetVal = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
+                  g_stCPFDataItem.stDataI_Item.Length);
+              if (nRetVal != EIP_ERROR)
+                {
+                  nRetVal = assembleLinearMsg(&gMRResponse, &g_stCPFDataItem,
+                      pa_acReplyBuf);
+                }
+            }
+          else
+            {
+              /* wrong data item detected*/
+              OPENER_TRACE_ERR(
+                  "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+              pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
+            }
         }
-      /* wrong data item detected*/
-      OPENER_TRACE_ERR(
-          "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-      return EIP_ERROR;
+      else
+        {
+          OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
+          pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
+        }
     }
-
-  OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
-  return EIP_ERROR;
+  return nRetVal;
 }
 
 int
-notifyConnectedCPF(EIP_UINT8 * pa_nData, /* message data*/
-EIP_INT16 pa_nData_length, /* data length*/
-EIP_UINT8 * pa_replybuf) /* reply buffer*/
+notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
+EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
 {
-  EIP_STATUS res;
+  EIP_STATUS nRetVal;
   S_CIP_ConnectionObject *pstConnectionObject;
 
-  if ((createCPFstructure(pa_nData, pa_nData_length, &g_stCPFDataItem))
-      == EIP_ERROR)
+  if ((nRetVal == createCPFstructure(
+      pa_stReceiveData->m_acCurrentCommBufferPos,
+      pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
     {
-      OPENER_TRACE_ERR("notifyMR: error from createCPFstructure\n");
-      return EIP_ERROR; /* error from createCPFstructure*/
+      OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
     }
-
-  if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
-    { /* ConnectedAddressItem item */
-      pstConnectionObject = getConnectedObject(
-          g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
-      if (pstConnectionObject == 0)
-        return EIP_ERROR;
-
-      /* reset the watchdog timer */
-      pstConnectionObject->InnacitvityWatchdogTimer
-          = (pstConnectionObject->O_to_T_RPI / 1000) << (2
-              + pstConnectionObject->ConnectionTimeoutMultiplier);
-
-      /*TODO check connection id  and sequence count    */
-      if (g_stCPFDataItem.stDataI_Item.TypeID
-          == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-        { /* connected data item received*/
-          EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
-          g_stCPFDataItem.stAddr_Item.Data.SequenceNumber = (EIP_UINT32) ltohs(
-              &pnBuf);
-          res = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length - 2);
-
-          if(EIP_OK_SEND == res)
+  else
+    {
+      nRetVal = EIP_ERROR; /* For connected explicit messages status always has to be 0*/
+      if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
+        { /* ConnectedAddressItem item */
+          pstConnectionObject = getConnectedObject(
+              g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
+          if (NULL != pstConnectionObject)
             {
-              return assembleLinearMsg(&gMRResponse, &g_stCPFDataItem, pa_replybuf);
-            }
-          return res;
-        }
-      /* wrong data item detected*/
-      OPENER_TRACE_ERR(
-          "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-      return EIP_ERROR;
-    }
+              /* reset the watchdog timer */
+              pstConnectionObject->InnacitvityWatchdogTimer
+                  = (pstConnectionObject->O_to_T_RPI / 1000) << (2
+                      + pstConnectionObject->ConnectionTimeoutMultiplier);
 
-  OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
-  return EIP_ERROR;
+              /*TODO check connection id  and sequence count    */
+              if (g_stCPFDataItem.stDataI_Item.TypeID
+                  == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
+                { /* connected data item received*/
+                  EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
+                  g_stCPFDataItem.stAddr_Item.Data.SequenceNumber
+                      = (EIP_UINT32) ltohs(&pnBuf);
+                  nRetVal = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length
+                      - 2);
+
+                  if (nRetVal != EIP_ERROR)
+                    {
+                      nRetVal = assembleLinearMsg(&gMRResponse,
+                          &g_stCPFDataItem, pa_acReplyBuf);
+                    }
+                }
+              else
+                {
+                  /* wrong data item detected*/
+                  OPENER_TRACE_ERR(
+                      "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+                }
+            }
+          else
+            {
+              OPENER_TRACE_ERR("notifyConnectedCPF: connection with given ID could not be found\n");
+            }
+        }
+      else
+        {
+          OPENER_TRACE_ERR("notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
+        }
+    }
+  return nRetVal;
 }
 
 /*   INT16 createCPFstructure(INT8 *pa_Data, INT16 pa_DataLength, S_CIP_CPF_Data *pa_CPF_data)

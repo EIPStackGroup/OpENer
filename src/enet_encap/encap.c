@@ -27,15 +27,6 @@
 #define COMMAND_SENDRRDATA              0x006F
 #define COMMAND_SENDUNITDATA            0x0070
 
-/* definition of status codes in encapsulation protocol */
-#define OPENER_ENCAP_STATUS_SUCCESS                     0x0000
-#define OPENER_ENCAP_STATUS_INVALID_COMMAND             0x0001
-#define OPENER_ENCAP_STATUS_INSUFFICIENT_MEM            0x0002
-#define OPENER_ENCAP_STATUS_INCORRECT_DATA              0x0003
-#define OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE      0x0064
-#define OPENER_ENCAP_STATUS_INVALID_LENGTH              0x0065
-#define OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL        0x0069  
-
 /* definition of capability flags */
 #define SUPPORT_CIP_TCP                 0x0020
 #define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
@@ -191,7 +182,7 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
             }
           /* if nRetVal is greater then 0 data has to be sent */
-          if(0 < nRetVal)
+          if(0 <= nRetVal)
             {
               nRetVal = encapsulate_data(&sEncapData);
             }  
@@ -406,8 +397,7 @@ SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
   if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
     {
       nSendSize
-      = notifyConnectedCPF(pa_stReceiveData->m_acCurrentCommBufferPos,
-          pa_stReceiveData->nData_length,
+      = notifyConnectedCPF(pa_stReceiveData,
           &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
       if (0 < nSendSize)
@@ -443,11 +433,10 @@ SendRRData(struct S_Encapsulation_Data * pa_stReceiveData)
   if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
     {
       nSendSize
-      = notifyCPF(pa_stReceiveData->m_acCurrentCommBufferPos,
-          pa_stReceiveData->nData_length,
+      = notifyCPF(pa_stReceiveData,
           &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
-      if (nSendSize > 0)
+      if (nSendSize >= 0)
         { /* need to send reply */
           pa_stReceiveData->nData_length = nSendSize;
         }

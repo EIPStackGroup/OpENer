@@ -18,6 +18,15 @@
 #define ENCAPSULATION_HEADER_LENGTH 24
 #define OPENER_ETHERNET_PORT 0xAF12
 
+/* definition of status codes in encapsulation protocol */
+#define OPENER_ENCAP_STATUS_SUCCESS                     0x0000
+#define OPENER_ENCAP_STATUS_INVALID_COMMAND             0x0001
+#define OPENER_ENCAP_STATUS_INSUFFICIENT_MEM            0x0002
+#define OPENER_ENCAP_STATUS_INCORRECT_DATA              0x0003
+#define OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE      0x0064
+#define OPENER_ENCAP_STATUS_INVALID_LENGTH              0x0065
+#define OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL        0x0069
+
 
 /*** structs ***/
 struct S_Encapsulation_Data
