@@ -434,8 +434,10 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
           CIP_ERROR_CONNECTION_FAILURE, CIP_CON_MGR_ERROR_CONNECTION_IN_USE,
           pa_msg);
     }
-  /* set state to configuring */
-  g_stDummyConnectionObject.State = CONN_STATE_CONFIGURING;
+  /* keep it to none existent till the setup is done this eases error handling and
+   * the state changes within the forward open request can not be detected from
+   * the application or from outside (reason we are single threaded)*/
+  g_stDummyConnectionObject.State = CONN_STATE_NONEXISTENT;
   g_stDummyConnectionObject.SequenceCountProducing = 0; /* set the sequence count to zero */
 
   g_stDummyConnectionObject.ConnectionTimeoutMultiplier = *pa_MRRequest->Data++;
