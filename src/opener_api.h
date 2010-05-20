@@ -60,6 +60,14 @@ configureHostName(const char *pa_acHostName);
 void
 setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
 
+/*!\ingroup CIP_API
+ * Set the current status of the device.
+ *
+ * @param pa_unStatus the new status value
+ */
+void
+setDeviceStatus(EIP_UINT16 pa_unStatus);
+
 /** \ingroup CIP_API 
  * \brief Initialize and setup the CIP-stack
  * 
@@ -69,7 +77,6 @@ setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
  */
 void
 CIP_Init(EIP_UINT16 pa_nUniqueConnID);
-
 
 /** \ingroup CIP_API
  * \brief Shutdown the CIP-stack
@@ -82,7 +89,8 @@ CIP_Init(EIP_UINT16 pa_nUniqueConnID);
  * Memory allocated by the application will not be freed. This has to be done
  * by the application!
  */
-void shutdownCIP(void);
+void
+shutdownCIP(void);
 
 /** \ingroup CIP_API 
  * \brief Get a pointer to a CIP object with given class code
@@ -328,7 +336,6 @@ closeSession(int pa_nSocket);
 EIP_STATUS
 IApp_Init(void);
 
-
 /** \ingroup CIP_CALLBACK_API
  * \brief Inform the application on changes occurred for a connection
  *
@@ -408,7 +415,8 @@ IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
  * @param pointer to the allocated memory
  * return
  */
-void IApp_CipFree(void *pa_poData);
+void
+IApp_CipFree(void *pa_poData);
 
 /**\ingroup CIP_CALLBACK_API
  * \brief Inform the application that the Run/Idle State has been changed
