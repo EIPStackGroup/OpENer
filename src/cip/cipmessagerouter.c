@@ -267,6 +267,7 @@ createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
         pa_pnData += 2;
         pa_pstMRReqdata->RequestPath.AttributNr = ltohs(&(pa_pnData));
         i++;
+        break;
 
       default:
         OPENER_TRACE_ERR("wrong path requested\n");
