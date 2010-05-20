@@ -116,7 +116,7 @@ getCIPInstance(S_CIP_Class *pa_pstObject, EIP_UINT32 pa_nInstanceNr);
  *          0 if instance is not in the object
  */
 S_CIP_attribute_struct *
-getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr);
+getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr);
 
 /*! \ingroup CIP_API 
  * \brief Allocate memory for new CIP Class and attributes

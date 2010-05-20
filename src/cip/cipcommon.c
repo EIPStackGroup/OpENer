@@ -357,7 +357,7 @@ insertService(S_CIP_Class * pa_pClass, EIP_UINT8 pa_nServiceNr,
 }
 
 S_CIP_attribute_struct *
-getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr)
+getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr)
 {
   int i;
   S_CIP_attribute_struct *p = pa_pInstance->pstAttributes; /* init pointer to array of attributes*/
@@ -369,7 +369,7 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT8 pa_nAttributeNr)
         p++;
     }
 
-  OPENER_TRACE_WARN("attribute %d not defined\n", pa_nAttributeNr);
+  OPENER_TRACE_WARN("attribute %ld not defined\n", pa_nAttributeNr);
 
   return 0;
 }
