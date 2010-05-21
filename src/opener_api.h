@@ -124,7 +124,7 @@ getCIPInstance(S_CIP_Class *pa_pstObject, EIP_UINT32 pa_nInstanceNr);
  *          0 if instance is not in the object
  */
 S_CIP_attribute_struct *
-getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr);
+getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr);
 
 /*! \ingroup CIP_API 
  * \brief Allocate memory for new CIP Class and attributes
@@ -192,7 +192,7 @@ addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
  *  @param pa_pt2data pointer to data of attribute.
  */
 void
-insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT32 pa_nAttributeNr,
+insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT16 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
 
 /** \ingroup CIP_API 

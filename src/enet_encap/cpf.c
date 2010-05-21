@@ -19,7 +19,7 @@ int
 notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
 EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
 {
-  EIP_STATUS nRetVal;
+  int nRetVal;
 
   if ((nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
       pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
@@ -63,7 +63,7 @@ int
 notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
 EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
 {
-  EIP_STATUS nRetVal;
+  int nRetVal;
   S_CIP_ConnectionObject *pstConnectionObject;
 
   if ((nRetVal == createCPFstructure(

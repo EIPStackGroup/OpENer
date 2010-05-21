@@ -109,7 +109,7 @@ typedef struct
   EIP_UINT8 PathSize;
   EIP_UINT32 ClassID; /* support up to 32 bit path*/
   EIP_UINT32 InstanceNr;
-  EIP_UINT32 AttributNr;
+  EIP_UINT16 AttributNr;
 } S_CIP_EPATH;
 
 typedef struct
@@ -166,7 +166,7 @@ typedef struct
 
 typedef struct
 {
-  EIP_UINT32 CIP_AttributNr;
+  EIP_UINT16 CIP_AttributNr;
   EIP_UINT8 CIP_Type;
   void *pt2data;
 } S_CIP_attribute_struct;

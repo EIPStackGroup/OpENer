@@ -129,7 +129,7 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
     EIP_UINT8 *pa_acMsg)
 {
 
-  OPENER_TRACE_INFO(" setAttribute %ld\n", pa_pstMRRequest->RequestPath.AttributNr);
+  OPENER_TRACE_INFO(" setAttribute %d\n", pa_pstMRRequest->RequestPath.AttributNr);
   EIP_UINT8 * pa_acReqData = pa_pstMRRequest->Data;
 
   pa_acMsg = pa_acMsg; /* suppress compiler warning */

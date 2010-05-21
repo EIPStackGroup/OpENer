@@ -302,7 +302,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
 }
 
 void
-insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr,
+insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr,
     EIP_UINT8 pa_nCIP_Type, void *pa_pt2data)
 {
   int i;
@@ -357,7 +357,7 @@ insertService(S_CIP_Class * pa_pClass, EIP_UINT8 pa_nServiceNr,
 }
 
 S_CIP_attribute_struct *
-getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr)
+getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr)
 {
   int i;
   S_CIP_attribute_struct *p = pa_pInstance->pstAttributes; /* init pointer to array of attributes*/
@@ -369,7 +369,7 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT32 pa_nAttributeNr)
         p++;
     }
 
-  OPENER_TRACE_WARN("attribute %ld not defined\n", pa_nAttributeNr);
+  OPENER_TRACE_WARN("attribute %d not defined\n", pa_nAttributeNr);
 
   return 0;
 }
@@ -390,7 +390,7 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
 
   if ((p != 0) && (p->pt2data != 0))
     {
-      OPENER_TRACE_INFO("getAttribute %ld\n",
+      OPENER_TRACE_INFO("getAttribute %d\n",
           pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
 
       /*TODO think if it is better to put this code in an own
