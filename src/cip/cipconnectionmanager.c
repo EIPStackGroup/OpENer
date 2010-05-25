@@ -100,10 +100,7 @@ ForwardOpen(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
 EIP_STATUS
 ForwardClose(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
     S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 * pa_msg);
-EIP_STATUS
-UnconnectedSend(S_CIP_Instance * pa_pstInstance,
-    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT8 * pa_msg); /* for originating and routing devices */
+
 EIP_STATUS
 GetConnectionOwner(S_CIP_Instance * pa_pstInstance,
     S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
@@ -287,7 +284,7 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
   0, /* # of class services */
   0, /* # of instance attributes */
   0xffffffff, /* instance getAttributeAll mask */
-  4, /* # of instance services */
+  3, /* # of instance services */
   1, /* # of instances */
   "connection manager", /* class name */
   1); /* revision */
@@ -300,8 +297,6 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
       "ForwardClose");
   insertService(pstConnectionManager, CIP_GET_CONNECTION_OWNER,
       &GetConnectionOwner, "GetConnectionOwner");
-  insertService(pstConnectionManager, CIP_UNCONNECTED_SEND, &UnconnectedSend,
-      "UnconnectedSend");
 
   g_nIncarnationID = ((EIP_UINT32) pa_nUniqueConnID) << 16;
 
@@ -850,53 +845,6 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
   return assembleFWDCloseResponse(ConnectionSerialNr, OriginatorVendorID,
       OriginatorSerialNr, pa_MRRequest, pa_MRResponse, nConnectionStatus,
       pa_msg);
-}
-
-EIP_STATUS
-UnconnectedSend(S_CIP_Instance * pa_pstInstance,
-    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT8 * pa_msg)
-{
-  EIP_UINT8 *p;
-  S_CIP_UnconnectedSend_Param_Struct data;
-  S_Data_Item stDataItem;
-
-  /*Suppress compiler warning*/
-  (void) pa_pstInstance;
-  (void) pa_MRResponse;
-  (void) pa_msg;
-
-  p = pa_MRRequest->Data;
-  data.Priority = *p++;
-  data.Timeout_Ticks = *p++;
-  data.Message_Request_Size = ltohs(&p);
-
-  if (data.Message_Request_Size != 0)
-    {
-      stDataItem.TypeID = g_stCPFDataItem.stDataI_Item.TypeID;
-      stDataItem.Length = data.Message_Request_Size;
-      stDataItem.Data = p;
-    }
-
-  p = pa_MRRequest->Data + 4 + data.Message_Request_Size;
-  /* check for padding */
-  if (data.Message_Request_Size % 2 != 0)
-    p++;
-
-  data.Route_Path.PathSize = *p++;
-  data.Reserved = *p++;
-  if (data.Route_Path.PathSize == 1)
-    {
-      data.Route_Path.Port = *p++;
-      data.Route_Path.Address = *p;
-    }
-  else
-    {
-      /*TODO: other packet received */
-      OPENER_TRACE_WARN("Warning: Route path data of unconnected send currently not handled\n");
-    }
-  /*TODO correctly handle the path, currently we just ignore it and forward to the message router which should be ok for non routing devices*/
-  return notifyMR(stDataItem.Data, data.Message_Request_Size);
 }
 
 EIP_STATUS
