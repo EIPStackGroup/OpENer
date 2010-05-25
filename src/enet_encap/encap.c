@@ -70,11 +70,11 @@ void
 ListIdentity(struct S_Encapsulation_Data *pa_stReceiveData);
 void 
 RegisterSession(int pa_nSockfd, struct S_Encapsulation_Data *pa_stReceiveData);
-EIP_STATUS
+void
 UnregisterSession(struct S_Encapsulation_Data *pa_stReceiveData);
-int
+void
 SendUnitData(struct S_Encapsulation_Data *pa_stReceiveData);
-int
+void
 SendRRData(struct S_Encapsulation_Data *pa_stReceiveData);
 
 int
@@ -165,15 +165,15 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
 
           case (COMMAND_UNREGISTERSESSION):
-            nRetVal = UnregisterSession(&sEncapData);
+            UnregisterSession(&sEncapData);
             break;
 
           case (COMMAND_SENDRRDATA):
-            nRetVal = SendRRData(&sEncapData);
+            SendRRData(&sEncapData);
             break;
 
           case (COMMAND_SENDUNITDATA):
-            nRetVal = SendUnitData(&sEncapData); 
+            SendUnitData(&sEncapData);
             break;
             
           default:
@@ -182,7 +182,7 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
             }
           /* if nRetVal is greater then 0 data has to be sent */
-          if(0 <= nRetVal)
+          if(0 < nRetVal)
             {
               nRetVal = encapsulate_data(&sEncapData);
             }  
@@ -351,10 +351,8 @@ RegisterSession(int pa_nSockfd, struct S_Encapsulation_Data * pa_stReceiveData)
 /*   INT8 UnregisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
  *   close all corresponding TCP connections and delete session handle.
  *      pa_S_ReceiveData pointer to unregister session request with corresponding socket handle.
- *  return status
- * 			0.. success
  */
-EIP_STATUS
+void
 UnregisterSession(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   int i;
@@ -368,24 +366,20 @@ UnregisterSession(struct S_Encapsulation_Data * pa_stReceiveData)
         {
           IApp_CloseSocket(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
-          return EIP_OK;
+          return;
         }
     }
 
   /* no such session registered */
   pa_stReceiveData->nData_length = 0;
   pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
-  return EIP_OK_SEND;
 }
 
 /*   INT8 SendUnitData(struct S_Encapsulation_Data *pa_S_ReceiveData)
  *   Call Connection Manager.
  *      pa_S_ReceiveData pointer to structure with data and header information.
- *  return status 	0 .. success.
- * 					-1 .. error
  */
-int
-SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
+void SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   EIP_INT16 nSendSize;
   /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
@@ -409,9 +403,7 @@ SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
     { /* received a package with non registered session handle */
       pa_stReceiveData->nData_length = 0;
       pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
-      nSendSize = 1; /* we need to send reply*/
     }
-  return nSendSize;
 }
 
 /*   INT8 SendRRData(struct S_Encapsulation_Data *pa_stReceiveData)
@@ -420,7 +412,7 @@ SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
  *  return status 	0 .. success.
  * 					-1 .. error
  */
-int
+void
 SendRRData(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   EIP_INT16 nSendSize;
@@ -445,9 +437,7 @@ SendRRData(struct S_Encapsulation_Data * pa_stReceiveData)
     { /* received a package with non registered session handle */
       pa_stReceiveData->nData_length = 0;
       pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
-      nSendSize = 1; /* we need to send reply */
     }
-  return nSendSize;
 }
 
 /*   INT8 getFreeSessionIndex()
