@@ -43,7 +43,7 @@ EIP_STATUS
 configureNetworkInterface(const char *pa_acIpAdress,
     const char *pa_acSubNetMask, const char *pa_acGateway)
 {
-  unsigned nHostId;
+  EIP_UINT32 nHostId;
   
   Interface_Configuration.IPAddress = inet_addr(pa_acIpAdress);
   Interface_Configuration.NetworkMask = inet_addr(pa_acSubNetMask);

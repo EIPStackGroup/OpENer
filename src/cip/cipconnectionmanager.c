@@ -428,6 +428,11 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
 
   g_stDummyConnectionObject.O_to_T_RPI = ltohl(&pa_MRRequest->Data);
 
+
+  g_stDummyConnectionObject.O_to_T_NetworkConnectionParameter = ltohs(
+      &pa_MRRequest->Data);
+  g_stDummyConnectionObject.T_to_O_RPI = ltohl(&pa_MRRequest->Data);
+
   tmp = g_stDummyConnectionObject.T_to_O_RPI % (OPENER_TIMER_TICK * 1000);
   if (tmp > 0)
     {
@@ -436,10 +441,6 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
               / (OPENER_TIMER_TICK * 1000)) * (OPENER_TIMER_TICK * 1000)
               + (OPENER_TIMER_TICK * 1000);
     }
-
-  g_stDummyConnectionObject.O_to_T_NetworkConnectionParameter = ltohs(
-      &pa_MRRequest->Data);
-  g_stDummyConnectionObject.T_to_O_RPI = ltohl(&pa_MRRequest->Data);
 
   g_stDummyConnectionObject.T_to_O_NetworkConnectionParameter = ltohs(
       &pa_MRRequest->Data);
