@@ -7,12 +7,6 @@
 #include "cipconnectionmanager.h"
 #include "opener_api.h"
 
-#define CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT 0x0106
-#define CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH 0x0117
-#define CIP_CON_MGR_INVALID_OR_INCONSISTENT_CONFIGURATION_APPLICATION_PATH 0x0117
-#define CIP_CON_MGR_NON_LISTEN_ONLY_CONNECTION_NOT_OPENED 0x0119
-#define CIP_CON_MGR_TARGET_OBJECT_OUT_OF_CONNECTIONS 0x011A
-
 /* external globals neeeded from connectionmanager.c */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
