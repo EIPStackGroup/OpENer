@@ -66,9 +66,11 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
   int nRetVal;
   S_CIP_ConnectionObject *pstConnectionObject;
 
-  if ((nRetVal == createCPFstructure(
-      pa_stReceiveData->m_acCurrentCommBufferPos,
-      pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
+  nRetVal = createCPFstructure(
+        pa_stReceiveData->m_acCurrentCommBufferPos,
+        pa_stReceiveData->nData_length, &g_stCPFDataItem);
+
+  if (EIP_ERROR == nRetVal)
     {
       OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
     }
