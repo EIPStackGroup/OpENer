@@ -529,14 +529,16 @@ outputAttribute(S_CIP_attribute_struct *pa_ptstAttribute, EIP_UINT8 *pa_pnMsg)
 
   case (CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING):
     {
+      /* TCP/IP attribute 5 */
       EIP_UINT32 *p = (EIP_UINT32 *) pa_ptstAttribute->pt2data;
       S_CIP_String *s;
 
-      htoll(p[0], &pa_pnMsg);
-      htoll(p[1], &pa_pnMsg);
-      htoll(p[2], &pa_pnMsg);
-      htoll(p[3], &pa_pnMsg);
-      htoll(p[4], &pa_pnMsg);
+      htoll(ntohl(p[0]), &pa_pnMsg);
+      htoll(ntohl(p[1]), &pa_pnMsg);
+      htoll(ntohl(p[2]), &pa_pnMsg);
+      htoll(ntohl(p[3]), &pa_pnMsg);
+      htoll(ntohl(p[4]), &pa_pnMsg);
+
       counter = 20;
       /* handle the string */
       /*TODO Think on how to use the string encoding mechanism*/
