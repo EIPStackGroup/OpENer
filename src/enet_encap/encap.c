@@ -122,7 +122,7 @@ encapInit(void)
 int
 handleReceivedExplictData(int pa_socket, /* socket from which data was received*/
 EIP_UINT8 * pa_buf, /* input buffer*/
-int pa_length, /* length of input*/
+unsigned int pa_length, /* length of input*/
 int *pa_nRemainingBytes) /* return how many bytes of the input are left over after we're done here*/
 {
   int nRetVal = 0;

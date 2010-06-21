@@ -284,7 +284,7 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
  * @return length of reply that need to be sent back
  */
 int
-handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length,
+handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, unsigned int pa_length,
     int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
