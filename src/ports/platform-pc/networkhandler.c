@@ -556,7 +556,7 @@ IApp_CloseSocket(int pa_nSockFd)
   if (EIP_INVALID_SOCKET != pa_nSockFd)
     {
       FD_CLR(pa_nSockFd, &master);
-      //close(pa_nSockFd);
       shutdown(pa_nSockFd, SHUT_RDWR);
+      close(pa_nSockFd);
     }
 }
