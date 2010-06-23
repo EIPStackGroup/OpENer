@@ -25,6 +25,8 @@
 EIP_UINT8 g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
 
 /* private functions*/
+int
+encodeEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 **pa_pnMsg);
 
 void
 CIP_Init(EIP_UINT16 pa_nUniqueConnID)
@@ -490,21 +492,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
     break;
 
   case (CIP_EPATH):
-    {
-      EIP_UINT16 *p = (EIP_UINT16 *) pa_pt2data;
-      EIP_UINT16 len;
-      EIP_UINT16 data;
-
-      len = *p++;
-      htols(len, pa_pnMsg);
-      counter = 2;
-      while (len--)
-        {
-          data = *p++;
-          htols(data, pa_pnMsg);
-          counter += 2;
-        }
-    }
+    counter = encodeEPath((S_CIP_EPATH *) pa_pt2data, pa_pnMsg);
     break;
 
   case (CIP_ENGUNIT):
@@ -636,3 +624,75 @@ getAttributeAll(S_CIP_Instance * pa_pstInstance,
     }
   return EIP_OK; /* Return 0 if cannot find GET_ATTRIBUTE_SINGLE service*/
 }
+
+int
+encodeEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 **pa_pnMsg)
+{
+  int nLen;
+
+  nLen = pa_pstEPath->PathSize;
+  htols(pa_pstEPath->PathSize, pa_pnMsg);
+
+  if (pa_pstEPath->ClassID < 256)
+    {
+      **pa_pnMsg = 0x20; /*8Bit Class Id */
+      ++(*pa_pnMsg);
+      **pa_pnMsg = (EIP_UINT8) pa_pstEPath->ClassID;
+      ++(*pa_pnMsg);
+      nLen -= 1;
+    }
+  else
+    {
+      **pa_pnMsg = 0x21; /*16Bit Class Id */
+      ++(*pa_pnMsg);
+      **pa_pnMsg = 0; /*padd byte */
+      ++(*pa_pnMsg);
+      htols(pa_pstEPath->ClassID, pa_pnMsg);
+      nLen -= 2;
+    }
+
+  if (0 < nLen)
+    {
+      if (pa_pstEPath->InstanceNr < 256)
+        {
+          **pa_pnMsg = 0x24; /*8Bit Instance Id */
+          ++(*pa_pnMsg);
+          **pa_pnMsg = (EIP_UINT8) pa_pstEPath->InstanceNr;
+          ++(*pa_pnMsg);
+          nLen -= 1;
+        }
+      else
+        {
+          **pa_pnMsg = 0x25; /*16Bit Instance Id */
+          ++(*pa_pnMsg);
+          **pa_pnMsg = 0; /*padd byte */
+          ++(*pa_pnMsg);
+          htols(pa_pstEPath->InstanceNr, pa_pnMsg);
+          nLen -= 2;
+        }
+
+      if (0 < nLen)
+        {
+          if (pa_pstEPath->AttributNr < 256)
+            {
+              **pa_pnMsg = 0x30; /*8Bit Attribute Id */
+              ++(*pa_pnMsg);
+              **pa_pnMsg = (EIP_UINT8) pa_pstEPath->AttributNr;
+              ++(*pa_pnMsg);
+              nLen -= 1;
+            }
+          else
+            {
+              **pa_pnMsg = 0x31; /*16Bit Attribute Id */
+              ++(*pa_pnMsg);
+              **pa_pnMsg = 0; /*padd byte */
+              ++(*pa_pnMsg);
+              htols(pa_pstEPath->AttributNr, pa_pnMsg);
+              nLen -= 2;
+            }
+        }
+    }
+
+  return 2 + pa_pstEPath->PathSize * 2;  /*path size is in 16 bit chunks according to the spec */
+}
+

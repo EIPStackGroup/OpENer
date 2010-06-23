@@ -107,8 +107,8 @@ typedef struct
 typedef struct
 {
   EIP_UINT8 PathSize;
-  EIP_UINT32 ClassID; /* support up to 32 bit path*/
-  EIP_UINT32 InstanceNr;
+  EIP_UINT16 ClassID;
+  EIP_UINT16 InstanceNr;
   EIP_UINT16 AttributNr;
 } S_CIP_EPATH;
 

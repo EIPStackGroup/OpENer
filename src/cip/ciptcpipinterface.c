@@ -18,11 +18,11 @@ EIP_UINT32 TCP_Status = 0; /* #1  This is a TCPIP object attribute. For now it i
 EIP_UINT32 Configuration_Capability = 0x04; /* #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP spec*/
 EIP_UINT32 Configuration_Control = 0; /* #3  This is a TCPIP object attribute. For now it is always zero and is not used for anything. */
 S_CIP_EPATH Physical_Link_Object = /* #4 */
-  { 2, /* EIP_UINT8 PathSize*/
-  CIP_ETHERNETLINK_CLASS_CODE, /* EIP_UINT32 ClassID*/
-  1, /* EIP_UINT32 InstanceNr*/
-  0 /* EIP_UINT32 AttributNr (not used as this is the EPATH the EthernetLink object)*/
-  }; /* it was not initialized in the original code*/
+  { 2, /* EIP_UINT8 PathSize in 16 Bit chunks*/
+  CIP_ETHERNETLINK_CLASS_CODE, /* EIP_UINT16 ClassID*/
+  1, /* EIP_UINT16 InstanceNr*/
+  0 /* EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object)*/
+  };
 
 S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
   { 0, /* default IP address */
