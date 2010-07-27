@@ -513,16 +513,14 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING):
     {
       /* TCP/IP attribute 5 */
-      EIP_UINT32 *p = (EIP_UINT32 *) pa_pt2data;
-      htoll(ntohl(p[0]), pa_pnMsg);
-      htoll(ntohl(p[1]), pa_pnMsg);
-      htoll(ntohl(p[2]), pa_pnMsg);
-      htoll(ntohl(p[3]), pa_pnMsg);
-      htoll(ntohl(p[4]), pa_pnMsg);
-
+      S_CIP_TCPIPNetworkInterfaceConfiguration *p = (S_CIP_TCPIPNetworkInterfaceConfiguration *) pa_pt2data;
+      htoll(ntohl(p->IPAddress), pa_pnMsg);
+      htoll(ntohl(p->NetworkMask), pa_pnMsg);
+      htoll(ntohl(p->Gateway), pa_pnMsg);
+      htoll(ntohl(p->NameServer), pa_pnMsg);
+      htoll(ntohl(p->NameServer2), pa_pnMsg);
       counter = 20;
-      counter += encodeData(CIP_STRING, &p[5], pa_pnMsg);
-
+      counter += encodeData(CIP_STRING, &(p->DomainName), pa_pnMsg);
       break;
     }
 
