@@ -299,17 +299,13 @@ Start_NetworkHandler()
                     if (nReceived_size == 0)
                       {
                         OPENER_TRACE_STATE("connection closed by client\n");
-                        FD_CLR(fd, &master);
-                        /* remove from master set */
-                        close(fd); /* close socket */
+                        closeConnection(pstConnection);
                         continue;
                       }
                     if (nReceived_size <= 0)
                       {
                         OPENER_TRACE_ERR("networkhandler: error on recv: %s\n", strerror(errno));
-                        FD_CLR(fd, &master);
-                        /* remove from master set */
-                        close(fd); /* close socket */
+                        closeConnection(pstConnection);
                         continue;
                       }
                     /* only handle the data if it is coming from the originator */
@@ -346,8 +342,9 @@ Start_NetworkHandler()
           elapsedtime -= OPENER_TIMER_TICK;
         }
     }
-  close(nTCPListener);
-  close(nUDPListener);
+
+  IApp_CloseSocket(nTCPListener);
+  IApp_CloseSocket(nUDPListener);
   return EIP_OK;
 }
 
