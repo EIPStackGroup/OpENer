@@ -100,6 +100,7 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
 
                   if (nRetVal != EIP_ERROR)
                     {
+                      g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier = pstConnectionObject->CIPProducedConnectionID;
                       nRetVal = assembleLinearMsg(&gMRResponse,
                           &g_stCPFDataItem, pa_acReplyBuf);
                     }
