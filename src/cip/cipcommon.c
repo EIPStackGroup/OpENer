@@ -437,6 +437,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
     counter = 4;
     break;
 
+#ifdef OPENER_SUPPORT_64BIT_DATATYPES
   case (CIP_LINT):
   case (CIP_ULINT):
   case (CIP_LWORD):
@@ -455,6 +456,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
       counter = 8;
     }
     break;
+#endif
 
   case (CIP_REAL):
   case (CIP_LREAL):
@@ -612,6 +614,7 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
     nRetVal = 4;
     break;
 
+#ifdef OPENER_SUPPORT_64BIT_DATATYPES
   case (CIP_LINT):
   case (CIP_ULINT):
   case (CIP_LWORD):
@@ -630,6 +633,8 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
       nRetVal = 8;
     }
     break;
+#endif
+
   case (CIP_STRING):
     {
       S_CIP_String *s = (S_CIP_String *) pa_pt2data;

@@ -147,4 +147,10 @@
 #define PC_OPENER_ETHERNET_BUFFER_SIZE 512
 
 
+/*! If this define is here opener will enable 64Bit dattype support.
+ *
+ */
+#define OPENER_SUPPORT_64BIT_DATATYPES 1
+
+
 #endif /*OPENER_USER_CONF_H_*/
