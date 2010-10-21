@@ -13,24 +13,6 @@
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
 
-#define INVALID_SESSION -1
-
-#define SENDER_CONTEXT_SIZE 8                   /*size of sender context in encapsulation header*/
-
-/* definition of known encapsulation commands */
-#define COMMAND_NOP                     0x0000
-#define COMMAND_LISTSERVICES            0x0004
-#define COMMAND_LISTIDENTITY            0x0063
-#define COMMAND_LISTINTERFACES          0x0064
-#define COMMAND_REGISTERSESSION         0x0065
-#define COMMAND_UNREGISTERSESSION       0x0066
-#define COMMAND_SENDRRDATA              0x006F
-#define COMMAND_SENDUNITDATA            0x0070
-
-/* definition of capability flags */
-#define SUPPORT_CIP_TCP                 0x0020
-#define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
-
 /*Identity data from cipidentity.c*/
 extern EIP_UINT16 VendorID;
 extern EIP_UINT16 DeviceType;
@@ -53,9 +35,24 @@ extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 
 #define ENCAPSULATION_HEADER_SESSION_HANDLE_POS 4   /*the position of the session handle within the encapsulation header*/
 
-/*struct S_Identity S_Identity_Object;
- const static UINT8 productname[] = "test device";
- */
+#define INVALID_SESSION -1
+
+#define SENDER_CONTEXT_SIZE 8                   /*size of sender context in encapsulation header*/
+
+/* definition of known encapsulation commands */
+#define COMMAND_NOP                     0x0000
+#define COMMAND_LISTSERVICES            0x0004
+#define COMMAND_LISTIDENTITY            0x0063
+#define COMMAND_LISTINTERFACES          0x0064
+#define COMMAND_REGISTERSESSION         0x0065
+#define COMMAND_UNREGISTERSESSION       0x0066
+#define COMMAND_SENDRRDATA              0x006F
+#define COMMAND_SENDUNITDATA            0x0070
+
+/* definition of capability flags */
+#define SUPPORT_CIP_TCP                 0x0020
+#define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
+
 
 struct S_Encapsulation_Interface_Information g_stInterfaceInformation;
 
@@ -63,19 +60,19 @@ int anRegisteredSessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
 /*** private functions ***/
 void
-ListServices(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void
-ListInterfaces(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void
-ListIdentity(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListIdentityCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void 
-RegisterSession(int pa_nSockfd, struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedRegisterSessionCmd(int pa_nSockfd, struct S_Encapsulation_Data *pa_stReceiveData);
 EIP_STATUS
-UnregisterSession(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedUnregisterSessionCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 EIP_STATUS
-SendUnitData(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 EIP_STATUS
-SendRRData(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedSendRRDataCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 
 int
 getFreeSessionIndex(void);
@@ -149,31 +146,31 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
 
           case (COMMAND_LISTSERVICES):
-            ListServices(&sEncapData);
+            handleReceivedListServicesCmd(&sEncapData);
             break;
 
           case (COMMAND_LISTIDENTITY):
-            ListIdentity(&sEncapData);
+            handleReceivedListIdentityCmd(&sEncapData);
             break;
 
           case (COMMAND_LISTINTERFACES):
-            ListInterfaces(&sEncapData);
+            handleReceivedListInterfacesCmd(&sEncapData);
             break;
 
           case (COMMAND_REGISTERSESSION):
-            RegisterSession(pa_socket, &sEncapData);
+            handleReceivedRegisterSessionCmd(pa_socket, &sEncapData);
             break;
 
           case (COMMAND_UNREGISTERSESSION):
-            nRetVal = UnregisterSession(&sEncapData);
+            nRetVal = handleReceivedUnregisterSessionCmd(&sEncapData);
             break;
 
           case (COMMAND_SENDRRDATA):
-            nRetVal = SendRRData(&sEncapData);
+            nRetVal = handleReceivedSendRRDataCmd(&sEncapData);
             break;
 
           case (COMMAND_SENDUNITDATA):
-            nRetVal = SendUnitData(&sEncapData);
+            nRetVal = handleReceivedSendUnitDataCmd(&sEncapData);
             break;
             
           default:
@@ -222,7 +219,7 @@ encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
  *      pa_S_ReceiveData pointer to structure with received data
  */
 void
-ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
+handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
 {
   EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
 
@@ -239,7 +236,7 @@ ListServices(struct S_Encapsulation_Data *pa_stReceiveData)
 }
 
 void
-ListInterfaces(struct S_Encapsulation_Data *pa_stReceiveData)
+handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
 {
   EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
   pa_stReceiveData->nData_length = 2;
@@ -253,7 +250,7 @@ ListInterfaces(struct S_Encapsulation_Data *pa_stReceiveData)
  * 			0 .. success
  */
 void
-ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedListIdentityCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   /* List Identity reply according to EIP/CIP Specification */
   EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
@@ -295,7 +292,7 @@ ListIdentity(struct S_Encapsulation_Data * pa_stReceiveData)
  *      pa_S_ReceiveData pointer to received data with request/response.
  */
 void
-RegisterSession(int pa_nSockfd, struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedRegisterSessionCmd(int pa_nSockfd, struct S_Encapsulation_Data * pa_stReceiveData)
 {
   int i;
   int nSessionIndex = 0;
@@ -353,7 +350,7 @@ RegisterSession(int pa_nSockfd, struct S_Encapsulation_Data * pa_stReceiveData)
  *      pa_S_ReceiveData pointer to unregister session request with corresponding socket handle.
  */
 EIP_STATUS
-UnregisterSession(struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedUnregisterSessionCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   int i;
 
@@ -381,7 +378,7 @@ UnregisterSession(struct S_Encapsulation_Data * pa_stReceiveData)
  *      pa_S_ReceiveData pointer to structure with data and header information.
  */
 EIP_STATUS
-SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
@@ -422,7 +419,7 @@ SendUnitData(struct S_Encapsulation_Data * pa_stReceiveData)
  * 					-1 .. error
  */
 EIP_STATUS
-SendRRData(struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
