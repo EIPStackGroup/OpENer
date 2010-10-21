@@ -211,6 +211,32 @@ insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
     TCIPServiceFunc pa_ptfuncService, char *name);
 
 /** \ingroup CIP_API 
+ * \brief Produce the given attribute onto the message buffer.
+ *
+ * This function may be used in own services for sending data back to the
+ * requester (e.g., getAttributeSingle for special structs).
+ *  @param pa_nCIP_Type the cip type to encode
+ *  @param pa_pt2data pointer to data value.
+ *  @param pa_pnMsg pointer to memory where response should be written
+ *  @return length of attribute in bytes
+ *          -1 .. error
+ */
+int encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
+
+
+/*! Retrieve the given attribute from the message buffer.
+ *
+ * This function may be used in in own services for handling data from the
+ * requester (e.g., setAttributeSingle).
+ *  @param pa_nCIP_Type the cip type to decode
+ *  @param pa_pt2data pointer to data value to written.
+ *  @param pa_pnMsg pointer to memory where the data should be taken from
+ *  @return length of taken bytes
+ *          -1 .. error
+ */
+int decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
+
+/** \ingroup CIP_API
  * \brief Create an instance of an assembly object
  * 
  * @param pa_nInstanceID  instance number of the assembly object to create 

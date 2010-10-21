@@ -440,6 +440,20 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_LINT):
   case (CIP_ULINT):
   case (CIP_LWORD):
+    {
+      EIP_UINT64 unVal = *(EIP_UINT64 *) (pa_pt2data);
+      EIP_UINT8 *pnBuffer = *pa_pnMsg;
+      pnBuffer[0] = (EIP_UINT8) (unVal >> 56) & 0xFF;
+      pnBuffer[1] = (EIP_UINT8) (unVal >> 48) & 0xFF;
+      pnBuffer[2] = (EIP_UINT8) (unVal >> 40) & 0xFF;
+      pnBuffer[3] = (EIP_UINT8) (unVal >> 32) & 0xFF;
+      pnBuffer[4] = (EIP_UINT8) (unVal >> 24) & 0xFF;
+      pnBuffer[5] = (EIP_UINT8) (unVal >> 16) & 0xFF;
+      pnBuffer[6] = (EIP_UINT8) (unVal >> 8) & 0xFF;
+      pnBuffer[7] = (EIP_UINT8) (unVal) & 0xFF;
+      pa_pnMsg += 8;
+      counter = 8;
+    }
     break;
 
   case (CIP_REAL):
@@ -513,7 +527,8 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING):
     {
       /* TCP/IP attribute 5 */
-      S_CIP_TCPIPNetworkInterfaceConfiguration *p = (S_CIP_TCPIPNetworkInterfaceConfiguration *) pa_pt2data;
+      S_CIP_TCPIPNetworkInterfaceConfiguration *p =
+          (S_CIP_TCPIPNetworkInterfaceConfiguration *) pa_pt2data;
       htoll(ntohl(p->IPAddress), pa_pnMsg);
       htoll(ntohl(p->NetworkMask), pa_pnMsg);
       htoll(ntohl(p->Gateway), pa_pnMsg);
@@ -558,10 +573,98 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
       counter = 12;
       break;
     }
+  default:
+    break;
 
     }
 
   return counter;
+}
+
+int
+decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
+{
+  int nRetVal = -1;
+
+  switch (pa_nCIP_Type)
+    /* check the datatype of attribute */
+    {
+  case (CIP_BOOL):
+  case (CIP_SINT):
+  case (CIP_USINT):
+  case (CIP_BYTE):
+    *(EIP_UINT8 *) (pa_pt2data) = **pa_pnMsg;
+    ++(*pa_pnMsg);
+    nRetVal = 1;
+    break;
+
+  case (CIP_INT):
+  case (CIP_UINT):
+  case (CIP_WORD):
+    (*(EIP_UINT16 *) (pa_pt2data)) = ltohs(pa_pnMsg);
+    nRetVal = 2;
+    break;
+
+  case (CIP_DINT):
+  case (CIP_UDINT):
+  case (CIP_DWORD):
+    (*(EIP_UINT32 *) (pa_pt2data)) = ltohl(pa_pnMsg);
+    nRetVal = 4;
+    break;
+
+  case (CIP_LINT):
+  case (CIP_ULINT):
+  case (CIP_LWORD):
+    {
+      EIP_UINT8 *pnBuffer = *pa_pnMsg;
+      (*(EIP_UINT32 *) (pa_pt2data)) = ((((EIP_UINT64) pnBuffer[0]) << 56)
+          & 0xFF00000000000000LL) + ((((EIP_UINT64) pnBuffer[1]) << 48)
+          & 0x00FF000000000000LL) + ((((EIP_UINT64) pnBuffer[2]) << 40)
+          & 0x0000FF0000000000LL) + ((((EIP_UINT64) pnBuffer[3]) << 32)
+          & 0x000000FF00000000LL) + ((((EIP_UINT64) pnBuffer[4]) << 24)
+          & 0x00000000FF000000) + ((((EIP_UINT64) pnBuffer[5]) << 16)
+          & 0x0000000000FF0000) + ((((EIP_UINT64) pnBuffer[6]) << 8)
+          & 0x000000000000FF00) + (((EIP_UINT64) pnBuffer[7])
+          & 0x00000000000000FF);
+      pa_pnMsg += 8;
+      nRetVal = 8;
+    }
+    break;
+  case (CIP_STRING):
+    {
+      S_CIP_String *s = (S_CIP_String *) pa_pt2data;
+      s->Length = ltohs(pa_pnMsg);
+      memcpy(s->String, *pa_pnMsg, s->Length);
+      *pa_pnMsg += s->Length;
+
+      nRetVal = s->Length + 2; /* we have a two byte length field */
+      if (nRetVal & 0x01)
+        {
+          /* we have an odd byte count */
+          ++(*pa_pnMsg);
+          nRetVal++;
+        }
+    }
+    break;
+  case (CIP_SHORT_STRING):
+    {
+      S_CIP_Short_String *ss = (S_CIP_Short_String *) pa_pt2data;
+
+      ss->Length = **pa_pnMsg;
+      ++(*pa_pnMsg);
+
+      memcpy(ss->String, *pa_pnMsg, ss->Length);
+      *pa_pnMsg += ss->Length;
+
+      nRetVal = ss->Length + 1;
+      break;
+    }
+
+  default:
+    break;
+    }
+
+  return nRetVal;
 }
 
 EIP_STATUS
@@ -691,6 +794,6 @@ encodeEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 **pa_pnMsg)
         }
     }
 
-  return 2 + pa_pstEPath->PathSize * 2;  /*path size is in 16 bit chunks according to the spec */
+  return 2 + pa_pstEPath->PathSize * 2; /*path size is in 16 bit chunks according to the spec */
 }
 

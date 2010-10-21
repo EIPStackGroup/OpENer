@@ -56,14 +56,4 @@ EIP_STATUS getAttributeAll(S_CIP_Instance *pa_pstObjectInstance,
     S_CIP_MR_Request *pa_stMRRequest, S_CIP_MR_Response *pa_stMRResponse,
     EIP_UINT8 *pa_msg);
 
-/*! Produce the given attribute the message buffer.
- *
- *  @param pa_nCIP_Type the cip type to encode
- *  @param pa_pt2data pointer to data value.
- *  @param pa_pnMsg pointer to memory where response should be written
- *  @return length of attribute in bytes
- *          -1 .. error
- */
-int encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
-
 #endif /*CIPCOMMON_H_*/

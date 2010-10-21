@@ -23,9 +23,11 @@
 #define EIP_INT8 	char
 #define EIP_INT16	short
 #define EIP_INT32	long
+#define EIP_INT64       long long
 #define EIP_UINT8	unsigned char
 #define EIP_UINT16	unsigned short
 #define EIP_UINT32	unsigned long
+#define EIP_UINT64       unsigned long long
 #define EIP_FLOAT	float
 #define EIP_DFLOAT	double
 #define EIP_BOOL8	bool
