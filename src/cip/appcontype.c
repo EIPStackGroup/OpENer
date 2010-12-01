@@ -270,7 +270,7 @@ getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
               break;
             }
 
-          if (NULL != getExistingProdMulticastConnection(
+          if (NULL == getExistingProdMulticastConnection(
               pa_pstConnData->ConnectionPath.ConnectionPoint[1]))
             {
               *pa_pnExtendedError
