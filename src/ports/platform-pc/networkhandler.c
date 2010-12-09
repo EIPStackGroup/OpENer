@@ -127,10 +127,25 @@ Start_NetworkHandler()
       return EIP_ERROR;
     }
 
+  int nOptVal = 1;
+  if (setsockopt(nTCPListener, SOL_SOCKET, SO_REUSEADDR, &nOptVal,
+      sizeof(nOptVal)) == -1)
+    {
+      OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nTCPListener\n");
+      return EIP_ERROR;
+    }
+
   /* create a new UDP socket */
   if ((nUDPListener = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
     {
       OPENER_TRACE_ERR("error allocating udp listener socket, %d\n", errno);
+      return EIP_ERROR;
+    }
+
+  if (setsockopt(nUDPListener, SOL_SOCKET, SO_REUSEADDR, &nOptVal,
+      sizeof(nOptVal)) == -1)
+    {
+      OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nUDPListener\n");
       return EIP_ERROR;
     }
 
@@ -308,13 +323,9 @@ Start_NetworkHandler()
                         closeConnection(pstConnection);
                         continue;
                       }
-                    /* only handle the data if it is coming from the originator */
-                    if (pstConnection->m_stOriginatorAddr.sin_addr.s_addr
-                        == from.sin_addr.s_addr)
-                      {
-                        handleReceivedConnectedData(g_acPCEthernetCommBuffer,
-                            nReceived_size);
-                      }
+
+                    handleReceivedConnectedData(g_acPCEthernetCommBuffer,
+                            nReceived_size, &from);
                     continue;
                   }
 
@@ -512,7 +523,16 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 
   /* check if it is sending or receiving */
   if (pa_nDirection == CONSUMING)
-    { /* bind is only for consuming necessary */
+    {
+      int nOptVal = 1;
+      if (setsockopt(newfd, SOL_SOCKET, SO_REUSEADDR, &nOptVal, sizeof(nOptVal))
+          == -1)
+        {
+          OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on consuming udp socket\n");
+          return EIP_ERROR;
+        }
+
+      /* bind is only for consuming necessary */
       if ((bind(newfd, (struct sockaddr *) pa_pstAddr, sizeof(struct sockaddr)))
           == -1)
         {

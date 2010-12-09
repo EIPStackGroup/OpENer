@@ -221,8 +221,8 @@ insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
  *  @return length of attribute in bytes
  *          -1 .. error
  */
-int encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
-
+int
+encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
 
 /*! Retrieve the given attribute from the message buffer.
  *
@@ -234,7 +234,8 @@ int encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
  *  @return length of taken bytes
  *          -1 .. error
  */
-int decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
+int
+decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
 
 /** \ingroup CIP_API
  * \brief Create an instance of an assembly object
@@ -310,18 +311,22 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
  * @return length of reply that need to be sent back
  */
 int
-handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, unsigned int pa_length,
-    int *pa_nRemainingBytes);
+handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf,
+    unsigned int pa_length, int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
  *  Notfiy the connection manager that data for a connection has been received.
  *  This function should be invoked by the network layer.
- *  @param pa_pnData pointer to the buffer of data that has been recieved 
+ *  @param pa_pnData pointer to the buffer of data that has been received
  *  @param pa_nDataLength number of bytes in the data buffer
+ *  @param pa_pstFromAddr address from which the data has been received. Only
+ *           data from the connections originator may be accepted. Avoids
+ *           connection hijacking
  *  @return EIP_OK on success
  */
 EIP_STATUS
-handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength);
+handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength,
+    struct sockaddr_in *pa_pstFromAddr);
 
 /*! \ingroup CIP_API
  * Check if any of the connection timers (TransmissionTrigger or WarchdogTimeout) has timed out.
