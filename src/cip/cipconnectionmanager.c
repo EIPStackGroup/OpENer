@@ -608,6 +608,13 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     { /* we are the first connection producing for the given Input Assembly */
       return OpenMulticastConnection(PRODUCING, pa_pstConnObj, pa_CPF_data);
     }
+  else
+    {
+     /* we need to infrom our originator on the correct connection id */
+      pa_pstConnObj->CIPProducedConnectionID = pstExistingConn->CIPProducedConnectionID;
+    }
+
+
 
   /* we have a connection reuse the data and the socket */
 
