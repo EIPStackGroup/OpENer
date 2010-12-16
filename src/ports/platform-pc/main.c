@@ -20,7 +20,6 @@
 #define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 0x305
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              0x306
 
-
 /* global variables for demo application (4 assembly data fields) */
 EIP_UINT8 g_assemblydata301[32]; /* Input */
 EIP_UINT8 g_assemblydata302[32]; /* Output */
@@ -84,13 +83,16 @@ IApp_Init(void)
 {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata301[0], sizeof(g_assemblydata301));
+  createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata301[0],
+      sizeof(g_assemblydata301));
 
   /*OUTPUT*/
-  createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata302[0], sizeof(g_assemblydata302));
+  createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata302[0],
+      sizeof(g_assemblydata302));
 
   /*CONFIG*/
-  createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata303[0], sizeof(g_assemblydata303));
+  createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata303[0],
+      sizeof(g_assemblydata303));
 
   /*Heart-beat output assembly for Input only connections */
   createAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -99,11 +101,17 @@ IApp_Init(void)
   createAssemblyObject(DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata306[0], sizeof(g_assemblydata306));
+  createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata306[0],
+      sizeof(g_assemblydata306));
 
-  configureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
-  configureInputOnlyConnectionPoint(0, DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
-  configureListenOnlyConnectionPoint(0, DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  configureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
+      DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  configureInputOnlyConnectionPoint(0,
+      DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
+      DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  configureListenOnlyConnectionPoint(0,
+      DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
+      DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
   return EIP_OK;
 }
@@ -122,21 +130,30 @@ IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
 EIP_STATUS
 IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
 {
+  EIP_STATUS nRetVal = EIP_OK;
+
   /*handle the data received e.g., update outputs of the device */
-
-  if (pa_pstInstance->nInstanceNr == DEMO_APP_OUTPUT_ASSEMBLY_NUM)
+  switch (pa_pstInstance->nInstanceNr)
     {
-      /* Data for the output assembly has been received.
-       * Mirror it to the inputs */
-      memcpy(&g_assemblydata301[0], &g_assemblydata302[0], sizeof(g_assemblydata301));
+  case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
+    /* Data for the output assembly has been received.
+     * Mirror it to the inputs */
+    memcpy(&g_assemblydata301[0], &g_assemblydata302[0],
+        sizeof(g_assemblydata301));
+    break;
+  case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
+    /* do something interesting with the new data from
+     * the explicit set-data-attribute message */
+    break;
+  case DEMO_APP_CONFIG_ASSEMBLY_NUM:
+    /* Add here code to handle configuration data and check if it is ok
+     * The demo application does not handle config data and therefore returns
+     * EIP_ERROR
+     */
+    nRetVal = EIP_ERROR;
+    break;
     }
-  else if (pa_pstInstance->nInstanceNr == DEMO_APP_EXPLICT_ASSEMBLY_NUM)
-    {
-      /* do something interesting with the new data from
-       * the explicit set-data-attribute message */
-    }
-
-  return EIP_OK;
+  return nRetVal;
 }
 
 bool
@@ -167,7 +184,6 @@ EIP_STATUS
 IApp_ResetDeviceToInitialConfiguration(void)
 {
   /*rest the parameters */
-
 
   /*than perform device reset*/
   IApp_ResetDevice();

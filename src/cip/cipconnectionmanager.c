@@ -1850,35 +1850,37 @@ handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
   S_CIP_Instance *pstConfigInstance = getCIPInstance(pa_pstAssemblyClass,
       pa_pstIOConnObj->ConnectionPath.ConnectionPoint[2]);
 
-  if (connectionWithSameConfigPointExists(
-      pa_pstIOConnObj->ConnectionPath.ConnectionPoint[2]))
-    { /* there is a connected connection with the same config point
-     * we have to have the same data as already present in the config point*/
-      S_CIP_Byte_Array *p = (S_CIP_Byte_Array *) getAttribute(
-          pstConfigInstance, 3)->pt2data;
-      if (p->len != g_unConfigDataLen)
-        {
-          unRetVal = CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT;
-        }
-      else
-        {
-          /*FIXME check if this is correct */
-          if (memcmp(p->Data, g_pnConfigDataBuffer, g_unConfigDataLen))
+  if (0 != g_unConfigDataLen)
+    {
+      if (connectionWithSameConfigPointExists(
+          pa_pstIOConnObj->ConnectionPath.ConnectionPoint[2]))
+        { /* there is a connected connection with the same config point
+         * we have to have the same data as already present in the config point*/
+          S_CIP_Byte_Array *p = (S_CIP_Byte_Array *) getAttribute(
+              pstConfigInstance, 3)->pt2data;
+          if (p->len != g_unConfigDataLen)
             {
               unRetVal = CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT;
             }
+          else
+            {
+              /*FIXME check if this is correct */
+              if (memcmp(p->Data, g_pnConfigDataBuffer, g_unConfigDataLen))
+                {
+                  unRetVal = CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT;
+                }
+            }
         }
-    }
-  else
-    {
-
-      /*put the data on the configuration assembly object with the current
-       design this can be done rather efficiently */
-      if (EIP_OK != notifyAssemblyConnectedDataReceived(pstConfigInstance,
-          g_pnConfigDataBuffer, g_unConfigDataLen))
+      else
         {
-          OPENER_TRACE_WARN("Configuration data was invalid\n");
-          unRetVal = CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT;
+          /*put the data on the configuration assembly object with the current
+           design this can be done rather efficiently */
+          if (EIP_OK != notifyAssemblyConnectedDataReceived(pstConfigInstance,
+              g_pnConfigDataBuffer, g_unConfigDataLen))
+            {
+              OPENER_TRACE_WARN("Configuration data was invalid\n");
+              unRetVal = CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT;
+            }
         }
     }
   return unRetVal;
