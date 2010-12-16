@@ -8,6 +8,7 @@
 #include "cipcommon.h"
 #include "opener_api.h"
 #include "trace.h"
+#include "cipconnectionmanager.h"
 
 /*! \brief Implementation of the SetAttributeSingle CIP service for Assembly
  *          Objects.
@@ -146,40 +147,49 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
     {
       if (p->pt2data != 0)
         {
-          S_CIP_Byte_Array * pacData = (S_CIP_Byte_Array * )p->pt2data;
+          S_CIP_Byte_Array * pacData = (S_CIP_Byte_Array *) p->pt2data;
 
-          if (pa_pstMRRequest->DataLength < pacData->len)
+          if (true == isConnectedOutputAssembly(pa_pstInstance->nInstanceNr))
             {
-              OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: not enough data received.\r\n");
-              pa_pstMRResponse->GeneralStatus = CIP_ERROR_NOT_ENOUGH_DATA;
+              OPENER_TRACE_WARN("Assembly AssemblyAttributeSingle: received data for connected output assembly\n\r");
+              pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SETTABLE;
             }
           else
             {
-              if (pa_pstMRRequest->DataLength > pacData->len)
+              if (pa_pstMRRequest->DataLength < pacData->len)
                 {
-                  OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: too much data received.\r\n");
-                  pa_pstMRResponse->GeneralStatus = CIP_ERROR_TOO_MUCH_DATA;
+                  OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: not enough data received.\r\n");
+                  pa_pstMRResponse->GeneralStatus = CIP_ERROR_NOT_ENOUGH_DATA;
                 }
               else
                 {
-                  memcpy(pacData->Data, pa_acReqData, pacData->len);
-
-                  if (IApp_AfterAssemblyDataReceived(pa_pstInstance) != EIP_OK)
+                  if (pa_pstMRRequest->DataLength > pacData->len)
                     {
-                      /* punt early without updating the status... though I don't know
-                       * how much this helps us here, as the attribute's data has already
-                       * been overwritten.
-                       *
-                       * however this is the task of the application side which will
-                       * take the data. In addition we have to inform the sender that the
-                       * data was not ok.
-                       */
-                      pa_pstMRResponse->GeneralStatus
-                          = CIP_ERROR_INVALID_ATTRIBUTE_VALUE;
+                      OPENER_TRACE_INFO("Assembly setAssemblyAttributeSingle: too much data received.\r\n");
+                      pa_pstMRResponse->GeneralStatus = CIP_ERROR_TOO_MUCH_DATA;
                     }
                   else
                     {
-                      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+                      memcpy(pacData->Data, pa_acReqData, pacData->len);
+
+                      if (IApp_AfterAssemblyDataReceived(pa_pstInstance)
+                          != EIP_OK)
+                        {
+                          /* punt early without updating the status... though I don't know
+                           * how much this helps us here, as the attribute's data has already
+                           * been overwritten.
+                           *
+                           * however this is the task of the application side which will
+                           * take the data. In addition we have to inform the sender that the
+                           * data was not ok.
+                           */
+                          pa_pstMRResponse->GeneralStatus
+                              = CIP_ERROR_INVALID_ATTRIBUTE_VALUE;
+                        }
+                      else
+                        {
+                          pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+                        }
                     }
                 }
             }

@@ -1885,3 +1885,21 @@ handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
     }
   return unRetVal;
 }
+
+bool
+isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr)
+{
+  bool bRetVal = false;
+
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+
+  while (NULL != pstRunner)
+    {
+      if (pa_nInstanceNr == pstRunner->ConnectionPath.ConnectionPoint[0])
+        {
+          bRetVal = true;
+          break;
+        }
+    }
+  return bRetVal;
+}

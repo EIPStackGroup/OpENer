@@ -193,6 +193,8 @@ copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
 void
 closeConnection(S_CIP_ConnectionObject *pa_pstConnObj);
 
+bool isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr);
+
 
 #endif /*CIPCONNECTIONMANAGER_H_*/
 
