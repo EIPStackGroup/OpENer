@@ -55,7 +55,7 @@
 
 /*! Define the number of supported input only connections per connection path
  */
-#define OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH 1
+#define OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH 3
 
 
 /*! Define the number of supported listen only connections.
@@ -67,7 +67,7 @@
 
 /*! Define the number of supported Listen only connections per connection path
  */
-#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH   1
+#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH   3
 
 
 /*! The number of bytes used for the buffer that will be used for generating any
