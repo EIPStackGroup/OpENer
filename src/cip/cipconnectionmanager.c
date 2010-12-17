@@ -1900,6 +1900,7 @@ isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr)
           bRetVal = true;
           break;
         }
+      pstRunner = pstRunner->m_pstNext;
     }
   return bRetVal;
 }
