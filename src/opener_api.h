@@ -71,7 +71,7 @@ setDeviceStatus(EIP_UINT16 pa_unStatus);
 /** \ingroup CIP_API 
  * \brief Initialize and setup the CIP-stack
  * 
- * @param pa_nUniqueConnID value passed to Connection_Manager_Init()to form a
+ * @param pa_nUniqueConnID value passed to Connection_Manager_Init() to form a
  *                      "per boot" unique connection ID.
  *
  */
@@ -202,7 +202,7 @@ insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT16 pa_nAttributeNr,
  *  already been defined, the previous service will be replaced
  * 
  * @param pa_pClass pointer to CIP object. (may be also instance 0)
- * @param pa_nServiceNr servicecode of service to be inserted.
+ * @param pa_nServiceNr service code of service to be inserted.
  * @param pa_ptfuncService pointer to function which represents the service.
  * @param name name of the service
  */
@@ -340,7 +340,7 @@ manageConnections(void);
 
 /*! \ingroup CIP_API
  * Inform the encapsulation layer that the remote host has closed the connection.
- * According to the specifciations that will clean up and close the session in the encapsulation layer.
+ * According to the specifications that will clean up and close the session in the encapsulation layer.
  * @param pa_nSocket the handler to the socket of the closed connection
  */
 void
@@ -443,7 +443,7 @@ IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement);
  * \brief Free memory allocated by the OpENer
  *
  * emulate the common c-library function free
- * @param pointer to the allocated memory
+ * @param pa_poData pointer to the allocated memory
  * return
  */
 void
@@ -568,7 +568,7 @@ IApp_CloseSocket(int pa_nSockFd);
  *        .
  *       Depending on your platform these data can come from a configuration 
  *       file or from operating system functions. If these values should be 
- *       settable remotely via explicit messages the SetAttributeSingle functions
+ *       setable remotely via explicit messages the SetAttributeSingle functions
  *       of the EtherNetLink and the TCPIPInterface object have to be adapted.
  *   -# Set the device's serial number\n
  *      According to the CIP specification a device vendor has to ensure that
@@ -576,10 +576,10 @@ IApp_CloseSocket(int pa_nSockFd);
  *      the function:
  *       - void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber)
  *   -# Initialize OpENer: \n
- *      With the function CIP_Init(void) the internal data structures of opener are 
+ *      With the function CIP_Init(EIP_UINT16 pa_nUniqueConnID) the internal data structures of opener are
  *      correctly setup. After this step own CIP objects and Assembly objects 
  *      instances may be created. For your convenience we provide the call-back 
- *      function IApp_Init(void). This call back function is called when the stack is
+ *      function CIP_Init(EIP_UINT16 pa_nUniqueConnID). This call back function is called when the stack is
  *      ready to receive application specific CIP objects.
  *   -# Create Application Specific CIP Objects:\n
  *      Within the call-back function IApp_Init(void) or after CIP_Init(void) 
@@ -637,7 +637,7 @@ IApp_CloseSocket(int pa_nSockFd);
  *   - S_CIP_Class * createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes, EIP_UINT32 pa_nClassGetAttrAllMask, int pa_nNr_of_ClassServices, int pa_nNr_of_InstanceAttributes, EIP_UINT32 pa_nInstGetAttrAllMask, int pa_nNr_of_InstanceServices, int pa_nNr_of_Instances, char *pa_acName, EIP_UINT16 pa_nRevision);
  *   - S_CIP_Instance * addCIPInstances(S_CIP_Class *pa_pstCIPObject, int pa_nNr_of_Instances);
  *   - S_CIP_Instance * addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
- *   - void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT8 pa_nAttributeNr, EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
+ *   - void insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT16 pa_nAttributeNr, EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
  *   - void insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr, TCIPServiceFunc pa_ptfuncService, char *name);
  * 
  * \page license OpENer Open Source License

@@ -1,3 +1,258 @@
+2010-06-04  alil
+
+	* src/enet_encap/cpf.c: Fixed Bug# 3011151: Bug in
+	  notifyConnectedCPF (== should be =)
+
+2010-05-27  alil
+
+	* src/cip/cipconnectionmanager.c, src/cip/ciptcpipinterface.c:
+	  Fixed Bug# 3007819: T_to_O_RPI
+	* src/cip/appcontype.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h: consolidated connection manager
+	  extended error defintions
+
+2010-05-25  alil
+
+	* src/enet_encap/encap.c: fixed issue when explicit messages should
+	  not return a value
+	* src/enet_encap/encap.c: fixed issues in returning the correct
+	  messages.
+	* src/cip/cipconnectionmanager.c: Fixed Bug# 3006795: unconnected
+	  send
+
+2010-05-21  alil
+
+	* src/cip/cipassembly.c, src/cip/cipcommon.c, src/cip/ciptypes.h,
+	  src/enet_encap/cpf.c, src/opener_api.h: changed attrib type back
+	  to 16Bit
+
+2010-05-20  alil
+
+	* src/cip/cipidentity.c, src/cip/cipidentity.h, src/opener_api.h:
+	  Fixed Bug# 2996649: Identity object mixes Status (#5) with State
+	  (#8)
+	* src/cip/cipcommon.c, src/cip/ciptypes.h, src/opener_api.h: Fixed
+	  Bug# 3004678: attribute id bug: 8/16/32-bit?
+	* src/cip/cipmessagerouter.c: Fixed Bug 3004683: Message Router:
+	  16-bit attribute id
+
+2010-05-14  alil
+
+	* data/OpenerPC.stc: added stc file for example application
+
+2010-05-12  alil
+
+	* src/cip/cipconnectionmanager.c: Fixed Bug #3000134: connection
+	  failures can put stack in unrecoverable state
+
+2010-05-11  alil
+
+	* src/cip/cipconnectionmanager.c: Applied Patch #3000005: trivial:
+	  mark correct socket closed
+
+2010-05-07  alil
+
+	* src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h: fixed Bug
+	  2997845: if CIP Item Id is bad, need to return encapsulation
+	  error
+
+2010-05-05  alil
+
+	* src/ports/platform-pc/main.c: improved reset handling in demo app
+	* src/cip/cipassembly.c: changed assembly object to do not have
+	  getAttributeAll per default
+	* src/cip/cipcommon.c, src/cip/cipidentity.c,
+	  src/cip/cipmessagerouter.c, src/enet_encap/cpf.c,
+	  src/opener_api.h: fixed explicit messaging handling regarding the
+	  return vars of the involved functions; allow that objects do not
+	  have getAttributeAll per default (e.g., needed for assembly
+	  object)
+	* src/cip/cipassembly.c: corrected setAssemblyAttributeSingle to
+	  return the right error values
+	* src/cip/cipassembly.c: changed revision of assembly class to 2 as
+	  required by the cip spec
+
+2010-05-03  alil
+
+	* doc/coding_rules/opener_coding_rules.pdf,
+	  doc/coding_rules/src/opener_coding_rules.tex: merged changes from
+	  1.0.1 release
+
+2010-12-17  alil
+
+	* src/cip/cipconnectionmanager.c: fixed wrong endless loop in
+	  isConnectedOutputAssembly
+
+2010-12-16  alil
+
+	* src/cip/cipassembly.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h: added check in setAttributeSingle
+	  of assembly objects if they are the write target in any open
+	  connection
+	* src/cip/cipconnectionmanager.c, src/ports/platform-pc/main.c:
+	  fixed handling of configuration data
+	* src/ports/platform-pc/opener_user_conf.h: added more than 1
+	  simultaneous connections for listen only and input only
+	* src/cip/appcontype.c: fixed wrong initialization of listen only
+	  connections
+
+2010-12-09  alil
+
+	* src/cip/cipconnectionmanager.c, src/opener_api.h,
+	  src/ports/platform-pc/networkhandler.c: moved checking of correct
+	  originator address for connected messages into the
+	  handleReceivedConnectedData function in order to correctly check
+	  even if data is presented from wrong socket.
+	* src/cip/cipconnectionmanager.c: fixed an issue in forward open of
+	  listen and input only connections
+
+2010-12-01  alil
+
+	* src/cip/appcontype.c: Fixed Bug# 3124374: faulty if in
+	  getListenOnlyConnection()
+	  thanks csar
+
+2010-10-21  alil
+
+	* src/cip/cipcommon.c, src/ports/platform-pc/opener_user_conf.h,
+	  src/typedefs.h: added config flag for enabling/disabling the
+	  support of 64Bit datatypes
+	* src/cip/cipcommon.c, src/cip/cipcommon.h, src/opener_api.h,
+	  src/typedefs.h: Added support for 64Bit integers, implemented a
+	  basic data type decoding infrastructure that simplifies the
+	  implementation of services like SetAttributeSingle, moved
+	  encodeData and decodeData into the public interface of opener in
+	  order to allow device implementers to use them for implementing
+	  setting and getting of special attributes like structs.
+	* src/enet_encap/encap.c: Refactored the names of the encapsulation
+	  message handling functions to better show that these are the
+	  functions for handling received messages.
+
+2010-09-24  alil
+
+	* src/enet_encap/cpf.c: Fixed wrong reply connection ID in
+	  connected explicit messages
+
+2010-08-11  alil
+
+	* src/ports/platform-pc/networkhandler.c: fixed bug# 3042699:
+	  Network handler should close sockets consistently
+
+2010-07-27  alil
+
+	* src/cip/cipcommon.c: Fixed Bug# 3034698: alignment
+
+2010-06-23  alil
+
+	* src/cip/cipcommon.c, src/cip/ciptcpipinterface.c,
+	  src/cip/ciptypes.h: fixed Bug# 3020064: error in tcpip object
+	  attr. 4
+
+2010-06-22  alil
+
+	* src/ports/platform-pc/networkhandler.c: Fixed Bug# 3019069:
+	  socket close
+
+2010-06-21  alil
+
+	* src/enet_encap/encap.c, src/opener_api.h,
+	  src/ports/platform-pc/networkhandler.c: worked to improve
+	  handling of to large packets
+
+2010-06-16  alil
+
+	* src/cip/cipcommon.c, src/cip/cipcommon.h: reworked
+	  outputAttribute function to be more flexible and better usable
+	  for encoding not only certain attributes but also for arrays and
+	  structures.
+
+2010-06-14  alil
+
+	* src/cip/cipcommon.c: Fixed Bug# 3015757: endianess bug in
+	  cipcommon.c
+
+2010-06-04  alil
+
+	* src/enet_encap/cpf.c: Fixed Bug# 3011151: Bug in
+	  notifyConnectedCPF (== should be =)
+
+2010-05-27  alil
+
+	* src/cip/cipconnectionmanager.c, src/cip/ciptcpipinterface.c:
+	  Fixed Bug# 3007819: T_to_O_RPI
+	* src/cip/appcontype.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h: consolidated connection manager
+	  extended error defintions
+
+2010-05-25  alil
+
+	* src/enet_encap/encap.c: fixed issue when explicit messages should
+	  not return a value
+	* src/enet_encap/encap.c: fixed issues in returning the correct
+	  messages.
+	* src/cip/cipconnectionmanager.c: Fixed Bug# 3006795: unconnected
+	  send
+
+2010-05-21  alil
+
+	* src/cip/cipassembly.c, src/cip/cipcommon.c, src/cip/ciptypes.h,
+	  src/enet_encap/cpf.c, src/opener_api.h: changed attrib type back
+	  to 16Bit
+
+2010-05-20  alil
+
+	* src/cip/cipidentity.c, src/cip/cipidentity.h, src/opener_api.h:
+	  Fixed Bug# 2996649: Identity object mixes Status (#5) with State
+	  (#8)
+	* src/cip/cipcommon.c, src/cip/ciptypes.h, src/opener_api.h: Fixed
+	  Bug# 3004678: attribute id bug: 8/16/32-bit?
+	* src/cip/cipmessagerouter.c: Fixed Bug 3004683: Message Router:
+	  16-bit attribute id
+
+2010-05-14  alil
+
+	* data/OpenerPC.stc: added stc file for example application
+
+2010-05-12  alil
+
+	* src/cip/cipconnectionmanager.c: Fixed Bug #3000134: connection
+	  failures can put stack in unrecoverable state
+
+2010-05-11  alil
+
+	* src/cip/cipconnectionmanager.c: Applied Patch #3000005: trivial:
+	  mark correct socket closed
+
+2010-05-07  alil
+
+	* src/enet_encap/cpf.c, src/enet_encap/cpf.h,
+	  src/enet_encap/encap.c, src/enet_encap/encap.h: fixed Bug
+	  2997845: if CIP Item Id is bad, need to return encapsulation
+	  error
+
+2010-05-05  alil
+
+	* src/ports/platform-pc/main.c: improved reset handling in demo app
+	* src/cip/cipassembly.c: changed assembly object to do not have
+	  getAttributeAll per default
+	* src/cip/cipcommon.c, src/cip/cipidentity.c,
+	  src/cip/cipmessagerouter.c, src/enet_encap/cpf.c,
+	  src/opener_api.h: fixed explicit messaging handling regarding the
+	  return vars of the involved functions; allow that objects do not
+	  have getAttributeAll per default (e.g., needed for assembly
+	  object)
+	* src/cip/cipassembly.c: corrected setAssemblyAttributeSingle to
+	  return the right error values
+	* src/cip/cipassembly.c: changed revision of assembly class to 2 as
+	  required by the cip spec
+
+2010-05-03  alil
+
+	* doc/coding_rules/opener_coding_rules.pdf,
+	  doc/coding_rules/src/opener_coding_rules.tex: merged changes from
+	  1.0.1 release
+
 2010-04-28  alil
 
 	* src/cip/cipassembly.c, src/cip/cipcommon.c,

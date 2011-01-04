@@ -47,7 +47,7 @@ OBJECTS= \
 	../../src/cip/ciptcpipinterface.o \
 	../../src/cip/cipidentity.o \
 	../../src/cip/cipethernetlink.o \
-	../../src/cip/appcontype.o  \
+	../../src/cip/appcontype.o \
 	../../src/enet_encap/cpf.o \
 	../../src/enet_encap/endianconv.o \
 	../../src/enet_encap/encap.o
@@ -62,7 +62,7 @@ SPLINTFLAGS = -I../../src \
 EXECUTABLE=opener
 
 
-all: $(SOURCES) $(EXECUTABLE)	
+all: $(SOURCES) $(EXECUTABLE)
 	
 splint:
 	splint $(SPLINTFLAGS) $(SOURCES) 
@@ -70,30 +70,20 @@ splint:
 $(EXECUTABLE): $(OBJECTS) Makefile
 	@echo "  [LD]	" $@
 	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	@echo BUILD COMPLETE
 
-# pull in dependency info for *existing* .o files
--include ./.deps/*.d
--include ../ethernet/.deps/*.d
--include ../cip/.deps/*.d
+# pull in dependency info for existing .o files
+-include .deps/*.d
 
-# compile and generate dependency info;
-# see http://www.cs.berkeley.edu/~smcpeak/autodepend/autodepend.html
-
-DEP="`dirname $*`/.deps/`basename $*.d`"
-
-%.o: %.c Makefile
+%.o: %.c .deps Makefile
 	@echo "  [CC]	" $*.c
-	@$(CC) -c $(CFLAGS) $*.c -o $*.o
-	@install -d `dirname $*`/.deps
-	@$(CC) -MM $(CFLAGS) $*.c > $(DEP)
-	@mv -f $(DEP) $(DEP).tmp
-	@sed -e 's|.*:|$*.o:|' < $(DEP).tmp > $(DEP)
-	@sed -e 's/.*://' -e 's/\\$$//' < $(DEP).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(DEP)
-	@rm -f $(DEP).tmp
+	@$(CC) -c $(CFLAGS) -MMD -MP -MF .deps/$(*F).d $*.c -o $*.o
+
+.deps:
+	mkdir .deps
 
 
-clean :
+clean:
 	@echo "  [CLEAN]"
-	@-rm -f $(EXECUTABLE) $(OBJECTS)
-	@-find .. -name .deps | xargs rm -rf
+	@-rm -f $(EXECUTABLE) $(OBJECTS) .deps/*
 

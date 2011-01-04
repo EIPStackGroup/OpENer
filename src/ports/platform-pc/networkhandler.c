@@ -459,7 +459,7 @@ handleDataOnTCPSocket(int pa_nSocket)
       return EIP_ERROR;
     }
 
-  if (nCheckVal == unDataSize)
+  if ((unsigned)nCheckVal == unDataSize)
     {
       /*we got the right amount of data */
       unDataSize += 4;

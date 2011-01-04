@@ -13,7 +13,7 @@ CFLAGS= \
 	-I ../../src/enet_encap \
 	-I ../../src/cip \
 	-I ../../src/ports/platform-pc \
-	-W -Wall -ansi
+	-W -Wall -ansi -std=c99
 
 LDFLAGS=
 
@@ -26,7 +26,7 @@ SOURCES= \
 	../../src/cip/ciptcpipinterface.c \
 	../../src/cip/cipidentity.c \
 	../../src/cip/cipethernetlink.c \
-	../../src/cip/appcontype.c  \
+	../../src/cip/appcontype.c \
 	../../src/enet_encap/cpf.c \
 	../../src/enet_encap/endianconv.c \
 	../../src/enet_encap/encap.c \
@@ -54,33 +54,23 @@ EXECUTABLE=opener_rel
 
 all: $(SOURCES) $(EXECUTABLE)
 	
-$(EXECUTABLE): $(OBJECTS) Makefile
+$(EXECUTABLE): $(OBJECTS) Makefile.release
 	@echo "  [LD]	" $@
 	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	@echo BUILD COMPLETE
 
-# pull in dependency info for *existing* .o files
--include ./.deps/*.d
--include ../ethernet/.deps/*.d
--include ../cip/.deps/*.d
+# pull in dependency info for existing .o files
+-include .deps/*.d
 
-# compile and generate dependency info;
-# see http://www.cs.berkeley.edu/~smcpeak/autodepend/autodepend.html
-
-DEP="`dirname $*`/.deps/`basename $*.d`"
-
-%.o: %.c Makefile
+%.o: %.c .deps Makefile.release
 	@echo "  [CC]	" $*.c
-	@$(CC) -c $(CFLAGS) $*.c -o $*.o
-	@install -d `dirname $*`/.deps
-	@$(CC) -MM $(CFLAGS) $*.c > $(DEP)
-	@mv -f $(DEP) $(DEP).tmp
-	@sed -e 's|.*:|$*.o:|' < $(DEP).tmp > $(DEP)
-	@sed -e 's/.*://' -e 's/\\$$//' < $(DEP).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(DEP)
-	@rm -f $(DEP).tmp
+	@$(CC) -c $(CFLAGS) -MMD -MP -MF .deps/$(*F).d $*.c -o $*.o
+
+.deps:
+	mkdir .deps
 
 
-clean :
+clean:
 	@echo "  [CLEAN]"
-	@-rm -f $(EXECUTABLE) $(OBJECTS)
-	@-find .. -name .deps | xargs rm -rf
+	@-rm -f $(EXECUTABLE) $(OBJECTS) .deps/*
 
