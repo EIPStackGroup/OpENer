@@ -6,6 +6,8 @@
 #ifndef TYPEDEFS_H_
 #define TYPEDEFS_H_
 
+#include <opener_user_conf.h>
+
 /*
  Do not use interface types for internal variables, such as "int i;", which is
  commonly used for loop counters or counting things.
