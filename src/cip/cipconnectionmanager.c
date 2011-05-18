@@ -579,7 +579,9 @@ OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_CPF_Data *pa_CPF_data, EIP_UINT16 *pa_pnExtendedError)
 {
   int newfd;
-  in_port_t nPort = OPENER_EIP_IO_UDP_PORT; /* the default port to be used if no port information is part of the forward open request */
+  in_port_t nPort; 
+  
+  nPort = OPENER_EIP_IO_UDP_PORT; /* the default port to be used if no port information is part of the forward open request */
 
   if (CIP_ITEM_ID_SOCKADDRINFO_T_TO_O == pa_CPF_data->AddrInfo[0].TypeID)
     {

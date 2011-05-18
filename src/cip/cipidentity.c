@@ -40,9 +40,11 @@ static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
     S_CIP_MR_Response *pa_stMRResponse, /* pointer to message router response*/
     EIP_UINT8 *pa_anMsg)
   {
+	EIP_STATUS nRetVal;
     (void)pa_pstInstance;
     (void)pa_anMsg;
-    EIP_STATUS nRetVal = EIP_OK_SEND;
+
+    nRetVal = EIP_OK_SEND;
 
     pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
     pa_stMRResponse->SizeofAdditionalStatus = 0;

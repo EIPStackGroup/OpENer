@@ -130,8 +130,12 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
     EIP_UINT8 *pa_acMsg)
 {
 
+  
+  EIP_UINT8 *pa_acReqData;
+  S_CIP_attribute_struct *p; 
   OPENER_TRACE_INFO(" setAttribute %d\n", pa_pstMRRequest->RequestPath.AttributNr);
-  EIP_UINT8 * pa_acReqData = pa_pstMRRequest->Data;
+  
+  pa_acReqData = pa_pstMRRequest->Data;
 
   pa_acMsg = pa_acMsg; /* suppress compiler warning */
 
@@ -140,7 +144,8 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
   pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
   pa_pstMRResponse->SizeofAdditionalStatus = 0;
 
-  S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
+
+  p = getAttribute(pa_pstInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
 
   if ((p != 0) && (3 == pa_pstMRRequest->RequestPath.AttributNr))

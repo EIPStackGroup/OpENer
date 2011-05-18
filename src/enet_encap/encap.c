@@ -206,7 +206,7 @@ encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
   htoll(pa_stSendData->nStatus, &acCommBuf);
   /*the CommBuf should already contain the correct sender context*/
   /*memcpy(pa_stSendData->pEncapsulation_Data, pa_stSendData->anSender_context, SENDER_CONTEXT_SIZE);*/
-  //pa_stSendData->pEncapsulation_Data += SENDER_CONTEXT_SIZE + 2; /* the plus 2 is for the options value*/
+  /*pa_stSendData->pEncapsulation_Data += SENDER_CONTEXT_SIZE + 2;*/ /* the plus 2 is for the options value*/
   /*the CommBuf should already contain the correct  options value*/
   /*htols((EIP_UINT16)pa_stSendData->nOptions, &pa_stSendData->pEncapsulation_Data);*/
 

@@ -410,6 +410,7 @@ int
 encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
 {
   int counter = 0;
+  S_CIP_Byte_Array *p;
 
   switch (pa_nCIP_Type)
     /* check the datatype of attribute */
@@ -555,7 +556,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_BYTE_ARRAY):
     {
       OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
-      S_CIP_Byte_Array * p = (S_CIP_Byte_Array *) pa_pt2data;
+      p = (S_CIP_Byte_Array *) pa_pt2data;
       memcpy(*pa_pnMsg, p->Data, p->len);
       *pa_pnMsg += p->len;
       counter = p->len;

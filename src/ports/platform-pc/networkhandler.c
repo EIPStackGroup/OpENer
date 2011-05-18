@@ -21,8 +21,8 @@
 /* values needed from the connection manager */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
-/* communication buffer */
-EIP_UINT8 g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
+/* communication buffer */EIP_UINT8
+    g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -51,10 +51,15 @@ handleDataOnTCPSocket(int pa_nSocket);
 static MILLISECONDS
 getmilliseconds(void)
 {
+#ifdef WIN32
+  SYSTEMTIME tt;
+  GetSystemTime(&tt);
+  return (MILLISECONDS) tt.wSecond * 1000 + (MILLISECONDS) tt.wMilliseconds;
+#else
   struct timeval tv;
-
   gettimeofday(&tv, 0);
   return (MILLISECONDS) tv.tv_sec * 1000 + (MILLISECONDS) tv.tv_usec / 1000;
+#endif
 }
 
 /*! Check if the socket identifier is associate with an active connection
@@ -98,27 +103,42 @@ Start_NetworkHandler()
 {
   struct sockaddr_in remote_addr, from;
   struct sockaddr_in my_addr;
-  socklen_t addrlen;
-  socklen_t fromlen = sizeof(from);
   int nTCPListener;
   int nUDPListener;
 
   int nReceived_size;
   int res;
-  MILLISECONDS elapsedtime = 0;
+  MILLISECONDS elapsedtime;
   int fd;
   EIP_UINT8 *rxp;
   int nRemainingBytes;
   int replylen;
   S_CIP_ConnectionObject *pstConnection;
   int y;
+  int nOptVal;
 
-  /* clear the master an temp sets */
-  FD_ZERO(&master);
+#ifdef WIN32
+  unsigned long addrlen;
+  unsigned long fromlen;
+  WORD wVersionRequested;
+  WSADATA wsaData;
+
+  wVersionRequested = MAKEWORD(2, 2);
+  WSAStartup(wVersionRequested, &wsaData);
+#else
+  socklen_t addrlen;
+  socklen_t fromlen;
+
+  signal(SIGHUP, leave);
+#endif
+
+  fromlen = sizeof(from);
+  elapsedtime = 0;
+
+  /* clear the master an temp sets */FD_ZERO(&master);
   FD_ZERO(&read_fds);
 
   end = 0;
-  signal(SIGHUP, leave);
 
   /* create a new TCP socket */
   if ((nTCPListener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
@@ -127,7 +147,7 @@ Start_NetworkHandler()
       return EIP_ERROR;
     }
 
-  int nOptVal = 1;
+  nOptVal = 1;
   if (setsockopt(nTCPListener, SOL_SOCKET, SO_REUSEADDR, &nOptVal,
       sizeof(nOptVal)) == -1)
     {
@@ -184,8 +204,7 @@ Start_NetworkHandler()
       return EIP_ERROR;
     }
 
-  /* add the listener socket to the master set */
-  FD_SET(nTCPListener, &master);
+  /* add the listener socket to the master set */FD_SET(nTCPListener, &master);
   FD_SET(nUDPListener, &master);
 
   /* keep track of the biggest file descriptor */
@@ -325,7 +344,7 @@ Start_NetworkHandler()
                       }
 
                     handleReceivedConnectedData(g_acPCEthernetCommBuffer,
-                            nReceived_size, &from);
+                        nReceived_size, &from);
                     continue;
                   }
 
@@ -387,9 +406,9 @@ EIP_STATUS
 handleDataOnTCPSocket(int pa_nSocket)
 {
   EIP_UINT8 *rxp;
-  ssize_t nCheckVal;
+  long nCheckVal;
   size_t unDataSize;
-  ssize_t nDataSent;
+  long nDataSent;
   int nRemainingBytes = 0;
 
   /* We will handle just one EIP packet here the rest is done by the select
@@ -459,7 +478,7 @@ handleDataOnTCPSocket(int pa_nSocket)
       return EIP_ERROR;
     }
 
-  if ((unsigned)nCheckVal == unDataSize)
+  if ((unsigned) nCheckVal == unDataSize)
     {
       /*we got the right amount of data */
       unDataSize += 4;
@@ -511,7 +530,13 @@ int
 IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 {
   struct sockaddr_in stPeerAdr;
-  socklen_t nPeerAddrLen = sizeof(struct sockaddr_in);
+#ifdef WIN32
+  unsigned long nPeerAddrLen;
+#else
+  socklen_t nPeerAddrLen;
+#endif
+
+  nPeerAddrLen = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
   if ((newfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
     {
@@ -556,8 +581,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
       pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
     }
 
-  /* add new fd to the master list */
-  FD_SET(newfd, &master);
+  /* add new fd to the master list */FD_SET(newfd, &master);
   if (newfd > fdmax)
     {
       fdmax = newfd;
@@ -573,7 +597,11 @@ IApp_CloseSocket(int pa_nSockFd)
   if (EIP_INVALID_SOCKET != pa_nSockFd)
     {
       FD_CLR(pa_nSockFd, &master);
+#ifdef WIN32
+      closesocket(pa_nSockFd);
+#else
       shutdown(pa_nSockFd, SHUT_RDWR);
       close(pa_nSockFd);
+#endif
     }
 }
