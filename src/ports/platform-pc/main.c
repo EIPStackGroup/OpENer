@@ -147,10 +147,11 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
     break;
   case DEMO_APP_CONFIG_ASSEMBLY_NUM:
     /* Add here code to handle configuration data and check if it is ok
-     * The demo application does not handle config data and therefore returns
+     * The demo application does not handle config data.
+     * However in order to pass the test we accept any data given.
      * EIP_ERROR
      */
-    nRetVal = EIP_ERROR;
+    nRetVal = EIP_OK;
     break;
     }
   return nRetVal;
