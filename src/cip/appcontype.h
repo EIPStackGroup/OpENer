@@ -67,7 +67,7 @@ void closeAllConnections(void);
 /*! \brief Check if there is an established connection that uses the same
  * config point.
  */
-bool
+EIP_BOOL8
 connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint);
 
 #endif /* APPCONTYPE_H_ */

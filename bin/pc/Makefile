@@ -31,6 +31,8 @@ SOURCES= \
 	../../src/cip/cipidentity.c \
 	../../src/cip/cipethernetlink.c \
 	../../src/cip/appcontype.c \
+	../../src/cip/cipclass3connection.c \
+	../../src/cip/cipioconnection.c \
 	../../src/enet_encap/cpf.c \
 	../../src/enet_encap/endianconv.c \
 	../../src/enet_encap/encap.c \
@@ -48,6 +50,8 @@ OBJECTS= \
 	../../src/cip/cipidentity.o \
 	../../src/cip/cipethernetlink.o \
 	../../src/cip/appcontype.o \
+	../../src/cip/cipclass3connection.o \
+	../../src/cip/cipioconnection.o \
 	../../src/enet_encap/cpf.o \
 	../../src/enet_encap/endianconv.o \
 	../../src/enet_encap/encap.o
@@ -56,7 +60,7 @@ SPLINTFLAGS = -I../../src \
 	-I../../src/enet_encap \
 	-I../../src/cip \
 	-I../../src/ports/platform-pc \
-	+posixlib
+	+posixlib -skipposixheaders
 
 
 EXECUTABLE=opener

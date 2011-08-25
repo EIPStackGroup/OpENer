@@ -255,6 +255,29 @@ S_CIP_Instance *
 createAssemblyObject(EIP_UINT32 pa_nInstanceID, EIP_BYTE *pa_data,
     EIP_UINT16 pa_datalength);
 
+
+struct CIP_ConnectionObject;
+
+
+typedef int (*TConnOpenFunc)(struct CIP_ConnectionObject *pa_pstConnObj, EIP_UINT16 *pa_pnExtendedError);
+typedef void (*TConnCloseFunc)(struct CIP_ConnectionObject *pa_pstConnObj);
+typedef void (*TConnTimeOutFunc)(struct CIP_ConnectionObject *pa_pstConnObj);
+typedef EIP_STATUS (*TConnSendDataFunc)(struct CIP_ConnectionObject *pa_pstConnection);
+typedef EIP_STATUS (*TConnRecvDataFunc)(struct CIP_ConnectionObject *pa_pstConnection, EIP_UINT8 * pa_pnData, EIP_UINT16 pa_nDataLength);
+
+
+/*!\ingroup CIP_API
+ * \brief register open and close functions for an specific object.
+ *
+ * With this function any object can be enabled to be a target for forward open/close
+ * request.
+ * @param pa_nClassId    the class id
+ * @param pa_pfOpenFunc   pointer to the function handling the open process
+ * @return EIP_OK on success
+ */
+EIP_STATUS
+addConnectableObject(EIP_UINT32 pa_nClassId, TConnOpenFunc pa_pfOpenFunc);
+
 /** \ingroup CIP_API
  * Configures the connection point for an exclusive owner connection.
  *

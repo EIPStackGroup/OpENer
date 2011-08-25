@@ -156,7 +156,7 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
   return nRetVal;
 }
 
-bool
+EIP_BOOL8
 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
 {
   /*update data to be sent e.g., read inputs of the device */

@@ -38,6 +38,14 @@ typedef unsigned short in_port_t;
 #define OPENER_DEVICE_MINOR_REVISION      2
 #define OPENER_DEVICE_NAME      "OpENer PC"
 
+/*! Define the number of objects that may be used in connections
+ *
+ *  This number needs only to consider additional objects. Connections to
+ *  the connection manager object as well as to the assembly object are supported
+ *  in any case.
+ */
+#define OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS 1
+
 /*! Define the number of supported explicit connections.
  *  According to ODVA's PUB 70 this number should be greater than 6.
  */  
@@ -122,7 +130,7 @@ typedef unsigned short in_port_t;
 #else
 
 /* for release builds execute the assertion, but don't test it */
-#define OPENER_ASSERT(assertion) assertion
+#define OPENER_ASSERT(assertion) (assertion)
 
 /* the above may result in "statement with no effect" warnings.
  *  If you do not use assert()s to run functions, the an empty

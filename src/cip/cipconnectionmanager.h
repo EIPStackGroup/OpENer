@@ -7,6 +7,7 @@
 #define CIPCONNECTIONMANAGER_H_
 
 #include "opener_user_conf.h"
+#include "opener_api.h"
 #include "typedefs.h"
 #include "ciptypes.h"
 
@@ -37,6 +38,15 @@
 #define CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE 0x0205
 #define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH 0x0315
 #define CIP_CON_MGR_TARGET_OBJECT_OUT_OF_CONNECTIONS 0x011A
+
+/*macros for comparing sequence numbers according to CIP spec vol 2 3-4.2*/
+#define SEQ_LEQ32(a, b) ((int)((a) - (b)) <= 0)
+#define SEQ_GEQ32(a, b) ((int)((a) - (b)) >= 0)
+
+/* similar macros for comparing 16 bit sequence numbers */
+#define SEQ_LEQ16(a, b) ((short)((a) - (b)) <= 0)
+#define SEQ_GEQ16(a, b) ((short)((a) - (b)) >= 0)
+
 
 /*! States of a connection */
 typedef enum
@@ -155,6 +165,12 @@ typedef struct CIP_ConnectionObject
   struct sockaddr_in m_stOriginatorAddr;  /* the address of the originator that established the connection. needed for scanning if the right packet is arriving */
   int sockfd[2]; /* socket handles, indexed by CONSUMING or PRODUCING */
 
+  /* pointers to connection handling functions */
+  TConnCloseFunc m_pfCloseFunc;
+  TConnTimeOutFunc m_pfTimeOutFunc;
+  TConnSendDataFunc m_pfSendDataFunc;
+  TConnRecvDataFunc m_pfReceiveDataFunc;
+
   /* pointers to be used in the active connection list */
   struct CIP_ConnectionObject *m_pstNext;
   struct CIP_ConnectionObject *m_pstFirst;
@@ -193,8 +209,29 @@ copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
 void
 closeConnection(S_CIP_ConnectionObject *pa_pstConnObj);
 
-bool isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr);
+EIP_BOOL8 isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr);
 
+/** \brief Generate the ConnectionIDs and set the general configuration parameter
+ * in the given connection object.
+ *
+ * @param pa_pstConnObj pointer to the connection object that should be set up.
+ */
+void
+generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj);
+
+
+/** \brief Insert the given connection object to the list of currently active and managed connections.
+ *
+ * By adding a connection to the active connection list the connection manager will
+ * perform the supervision and handle the timing (e.g., timeout, production inhibit, etc).
+ *
+ * @param pa_pstConnObj pointer to the connection object to be added.
+ */
+void
+addNewActiveConnection(S_CIP_ConnectionObject *pa_pstConn);
+
+void
+removeFromActiveConnections(S_CIP_ConnectionObject *pa_pstConn);
 
 #endif /*CIPCONNECTIONMANAGER_H_*/
 

@@ -333,13 +333,13 @@ Start_NetworkHandler()
                     if (nReceived_size == 0)
                       {
                         OPENER_TRACE_STATE("connection closed by client\n");
-                        closeConnection(pstConnection);
+                        pstConnection->m_pfCloseFunc(pstConnection);
                         continue;
                       }
                     if (nReceived_size <= 0)
                       {
                         OPENER_TRACE_ERR("networkhandler: error on recv: %s\n", strerror(errno));
-                        closeConnection(pstConnection);
+                        pstConnection->m_pfCloseFunc(pstConnection);
                         continue;
                       }
 

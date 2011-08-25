@@ -369,7 +369,9 @@ closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
               pstToDelete->ConnectionPath.ConnectionPoint[0],
               pstToDelete->ConnectionPath.ConnectionPoint[1], enClosed);
 
-          closeConnection(pstToDelete); /* will remove the connection from the active connection list */
+          //FIXME check if this is ok
+          pstToDelete->m_pfCloseFunc(pstToDelete);
+          //closeConnection(pstToDelete); /* will remove the connection from the active connection list */
         }
       else
         {
@@ -381,6 +383,7 @@ closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
 void closeAllConnections(void){
   S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
   while (NULL != pstRunner){
+      //FIXME check if m_pfCloseFunc would be suitable
     closeConnection(pstRunner);
     /* Close connection will remove the connection from the list therefore we
      * need to get again the start until there is no connection left
@@ -390,7 +393,7 @@ void closeAllConnections(void){
 
 }
 
-bool
+EIP_BOOL8
 connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint)
 {
   S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
