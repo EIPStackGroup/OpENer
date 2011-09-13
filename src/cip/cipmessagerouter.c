@@ -310,11 +310,11 @@ void deleteAllClasses(void)
         }
 
       /*clear meta class data*/
-      IApp_CipFree(pstToDelete->pt2Class->pstClass->acName);
-      IApp_CipFree(pstToDelete->pt2Class->pstClass->pstServices);
-      IApp_CipFree(pstToDelete->pt2Class->pstClass);
+      IApp_CipFree(pstToDelete->pt2Class->m_stSuper.pstClass->acName);
+      IApp_CipFree(pstToDelete->pt2Class->m_stSuper.pstClass->pstServices);
+      IApp_CipFree(pstToDelete->pt2Class->m_stSuper.pstClass);
       /*clear class data*/
-      IApp_CipFree(pstToDelete->pt2Class->pstAttributes);
+      IApp_CipFree(pstToDelete->pt2Class->m_stSuper.pstAttributes);
       IApp_CipFree(pstToDelete->pt2Class->pstServices);
       IApp_CipFree(pstToDelete->pt2Class);
       IApp_CipFree(pstToDelete);

@@ -21,8 +21,8 @@
 #include "trace.h"
 #include "appcontype.h"
 
-/* global public variables */
-EIP_UINT8 g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
+/* global public variables */EIP_UINT8
+    g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
 
 /* private functions*/
 int
@@ -229,19 +229,19 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   strcat(pt2MetaClass->acName, pa_acName);
 
   /* initialize the instance-specific fields of the Class struct*/
-  pt2Class->nInstanceNr = 0; /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
-  pt2Class->pstAttributes = 0; /* this will later point to the class attibutes*/
-  pt2Class->pstClass = pt2MetaClass; /* the class's class is the metaclass (like SmallTalk)*/
-  pt2Class->pstNext = 0; /* the next link will always be zero, sinc there is only one instance of any particular class object */
+  pt2Class->m_stSuper.nInstanceNr = 0; /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
+  pt2Class->m_stSuper.pstAttributes = 0; /* this will later point to the class attibutes*/
+  pt2Class->m_stSuper.pstClass = pt2MetaClass; /* the class's class is the metaclass (like SmallTalk)*/
+  pt2Class->m_stSuper.pstNext = 0; /* the next link will always be zero, sinc there is only one instance of any particular class object */
 
-  pt2MetaClass->nInstanceNr = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
-  pt2MetaClass->pstAttributes = 0; /* the metaclass has no attributes*/
-  pt2MetaClass->pstClass = 0; /* the metaclass has no class*/
-  pt2MetaClass->pstNext = 0; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
+  pt2MetaClass->m_stSuper.nInstanceNr = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
+  pt2MetaClass->m_stSuper.pstAttributes = 0; /* the metaclass has no attributes*/
+  pt2MetaClass->m_stSuper.pstClass = 0; /* the metaclass has no class*/
+  pt2MetaClass->m_stSuper.pstNext = 0; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
 
   /* further initialization of the class object*/
 
-  pt2Class->pstAttributes = (S_CIP_attribute_struct *) IApp_CipCalloc(
+  pt2Class->m_stSuper.pstAttributes = (S_CIP_attribute_struct *) IApp_CipCalloc(
       pa_nNr_of_ClassAttributes + 5, sizeof(S_CIP_attribute_struct));
   /* TODO -- check that we didn't run out of memory?*/
 
@@ -319,7 +319,9 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr,
           return;
         }
       p++;
-    }OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->nInstanceNr, pa_pInstance->nInstanceNr );
+    }
+
+  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->m_stSuper.nInstanceNr, pa_pInstance->nInstanceNr );
   OPENER_ASSERT(0);
   /* trying to insert too many attributes*/
 }

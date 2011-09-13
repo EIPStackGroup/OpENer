@@ -183,11 +183,8 @@ typedef struct CIP_Instance
 } S_CIP_Instance;
 
 typedef struct CIP_Class
-{ /* Class is a subclass of Instance: the following group of fields must match CIP_Instance */
-  EIP_UINT32 nInstanceNr; /*!> this instance's number (unique within the class)*/
-  S_CIP_attribute_struct *pstAttributes; /*!> pointer to an array of attributes which is unique to this instance */
-  struct CIP_Class *pstClass; /*!> class the instance belongs to*/
-  struct CIP_Instance *pstNext; /*!> next instance, all instances of a class live in a linked list*/
+{ /* Class is a subclass of Instance*/
+  struct CIP_Instance m_stSuper;
 
   /* the rest of theswe are specific to the Class class only. */
   EIP_UINT32 nClassID; /*!> class ID */
