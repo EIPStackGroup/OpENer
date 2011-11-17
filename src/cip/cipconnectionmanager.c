@@ -507,8 +507,8 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
               && (pstRunner->OriginatorVendorID == OriginatorVendorID)
               && (pstRunner->OriginatorSerialNumber == OriginatorSerialNr))
             {
-              /* found the corresponding connection object -> close it */OPENER_ASSERT(
-                  NULL != pstRunner->m_pfCloseFunc);
+              /* found the corresponding connection object -> close it */
+              OPENER_ASSERT(NULL != pstRunner->m_pfCloseFunc);
               pstRunner->m_pfCloseFunc(pstRunner);
               nConnectionStatus = CIP_CON_MGR_SUCCESS;
               break;
@@ -540,9 +540,12 @@ EIP_STATUS
 manageConnections(void)
 {
   EIP_STATUS res;
+  S_CIP_ConnectionObject *pstRunner;
 
-  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+  /*Inform application that it can execute                                    */
+  IApp_HandleApplication();
 
+  pstRunner = g_pstActiveConnectionList;
   while (NULL != pstRunner)
     {
       if (pstRunner->State == CONN_STATE_ESTABLISHED)
@@ -554,8 +557,8 @@ manageConnections(void)
               if (pstRunner->InnacitvityWatchdogTimer <= 0)
                 {
                   /* we have a timed out connection perform watchdog time out action*/
-                  OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");OPENER_ASSERT(
-                      NULL != pstRunner->m_pfTimeOutFunc);
+                  OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
+                  OPENER_ASSERT(NULL != pstRunner->m_pfTimeOutFunc);
                   pstRunner->m_pfTimeOutFunc(pstRunner);
                 }
             }
@@ -570,8 +573,7 @@ manageConnections(void)
                   pstRunner->TransmissionTriggerTimer -= OPENER_TIMER_TICK;
                   if (pstRunner->TransmissionTriggerTimer <= 0)
                     { /* need to send package */
-                      /* send() */OPENER_ASSERT(
-                          NULL != pstRunner->m_pfSendDataFunc);
+                      OPENER_ASSERT(NULL != pstRunner->m_pfSendDataFunc);
                       res = pstRunner->m_pfSendDataFunc(pstRunner);
                       if (res == EIP_ERROR)
                         {

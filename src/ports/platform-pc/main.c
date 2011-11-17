@@ -115,6 +115,10 @@ IApp_Init(void)
   return EIP_OK;
 }
 
+void IApp_HandleApplication(void){
+  /* check if application needs to trigger an connection */
+}
+
 void
 IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
     unsigned int pa_unInputAssembly, EIOConnectionEvent pa_eIOConnectionEvent)
@@ -122,8 +126,8 @@ IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
   /* maintain a correct output state according to the connection state*/
 
   (void) pa_unOutputAssembly; /* suppress compiler warning */
-  pa_unInputAssembly = pa_unInputAssembly; /* suppress compiler warning */
-  pa_eIOConnectionEvent = pa_eIOConnectionEvent; /* suppress compiler warning */
+  (void) pa_unInputAssembly; /* suppress compiler warning */
+  (void) pa_eIOConnectionEvent; /* suppress compiler warning */
 }
 
 EIP_STATUS

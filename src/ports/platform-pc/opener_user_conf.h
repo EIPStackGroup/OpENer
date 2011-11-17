@@ -159,10 +159,15 @@ typedef unsigned short in_port_t;
 #define PC_OPENER_ETHERNET_BUFFER_SIZE 512
 
 
-/*! If this define is here opener will enable 64Bit dattype support.
+/*! If this define is here opener will enable 64Bit data type support.
  *
  */
 #define OPENER_SUPPORT_64BIT_DATATYPES 1
 
+/* TODO think if this is helpfull */
+/*! If this define is here opener will enable support for application triggered
+ * connections.
+ */
+#define OPENER_SUPPORT_APLICATION_TRIGGERED_CONNECTIONS 1
 
 #endif /*OPENER_USER_CONF_H_*/

@@ -390,6 +390,17 @@ closeSession(int pa_nSocket);
 EIP_STATUS
 IApp_Init(void);
 
+
+/**\brief Allow the device specific application to perform its execution
+ *
+ * This function will be executed by the stack at the beginning of each
+ * execution of EIP_STATUS manageConnections(void). It allows to implement
+ * device specific application functions. Execution within this function should
+ * be short.
+ *
+ */
+void IApp_HandleApplication(void);
+
 /** \ingroup CIP_CALLBACK_API
  * \brief Inform the application on changes occurred for a connection
  *
