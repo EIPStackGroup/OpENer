@@ -967,9 +967,23 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
           nRemainingPathSize -=
               (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] > 0xFF) ? 2 : 1;
         }
+      else
+        {
+          OPENER_TRACE_INFO("no config data\n");
+        }
 
       if (0x03 == (pa_pstConnObj->TransportTypeTrigger & 0x03))
-        { /* we have Class 3 connection, connection end point has to be the message router instance 1 */
+        {
+          /*we have Class 3 connection*/
+          if (nRemainingPathSize > 0)
+            {
+              OPENER_TRACE_WARN(
+                  "Too much data in connection path for class 3 connection\n");
+              *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
+              return CIP_ERROR_CONNECTION_FAILURE;
+            }
+
+          /* connection end point has to be the message router instance 1 */
           if ((pa_pstConnObj->ConnectionPath.ClassID
               != CIP_MESSAGE_ROUTER_CLASS_CODE)
               || (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] != 1))
