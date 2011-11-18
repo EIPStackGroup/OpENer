@@ -36,7 +36,7 @@ EIP_STATUS CIP_Ethernet_Link_Init()
 
     /* set attributes to initial values */
     stEthernetLink.InterfaceSpeed = 100;
-    stEthernetLink.InterfaceFlags = 3; /* full duplex active link, in future it should be checked if link is active */
+    stEthernetLink.InterfaceFlags = 0xF; /* successful speed and duplex neg, full duplex active link, TODO in future it should be checked if link is active */
 
     if ((pstEthernetLinkClass = createCIPClass(CIP_ETHERNETLINK_CLASS_CODE, 0, /* # class attributes*/
         0xffffffff, /* class getAttributeAll mask*/

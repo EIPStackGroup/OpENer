@@ -14,7 +14,7 @@
 #include "cipethernetlink.h"
 #include "opener_api.h"
 
-EIP_UINT32 TCP_Status = 0; /* #1  This is a TCPIP object attribute. For now it is always zero. */
+EIP_UINT32 TCP_Status = 0x1; /* #1  TCP status with 1 we indicate that we got a valid configuration from dhcp or bootp */
 EIP_UINT32 Configuration_Capability = 0x04; /* #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP spec*/
 EIP_UINT32 Configuration_Control = 0; /* #3  This is a TCPIP object attribute. For now it is always zero and is not used for anything. */
 S_CIP_EPATH Physical_Link_Object = /* #4 */
