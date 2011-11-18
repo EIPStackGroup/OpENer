@@ -161,6 +161,17 @@ typedef struct CIP_ConnectionObject
 
   EIP_INT32 TransmissionTriggerTimer;
   EIP_INT32 InnacitvityWatchdogTimer;
+
+
+  /*! Minimal time between the production of two application triggered or change of state triggered
+   * I/O connection messages
+   */
+  EIP_UINT16 m_unProductionInhibitTime;
+  /*! Timer for the production inhibition of application triggered or change-of-state
+   *  I/O connections.
+   */
+  EIP_INT32 m_nProductionInhibitTimer;
+
   struct sockaddr_in remote_addr; /* socket address for produce */
   struct sockaddr_in m_stOriginatorAddr;  /* the address of the originator that established the connection. needed for scanning if the right packet is arriving */
   int sockfd[2]; /* socket handles, indexed by CONSUMING or PRODUCING */

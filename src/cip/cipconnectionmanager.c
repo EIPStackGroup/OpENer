@@ -37,6 +37,12 @@ extern S_CIP_Revision Revison;
 
 #define CIP_CONN_TYPE_MASK 0x6000   /*Bit 13&14 true*/
 
+#define CIP_CONN_PRODUCTION_TRIGGER_MASK 0x70
+#define CIP_CONN_CYCLIC_CONNECTION       0x0
+#define CIP_CONN_COS_TRIGGERED_CONNECTION 0x10
+#define CIP_CONN_APLICATION_TRIGGERED_CONNECTION 0x20
+
+
 #define FORWARD_OPEN_HEADER_LENGTH 36         /* the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 #define EQLOGICALPATH(x,y) (((x)&0xfc)==(y))
 
@@ -454,6 +460,8 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
           (EIP_UINT16) ((pa_pstConnObj->O_to_T_RPI) / 1000);
     }
 
+  pa_pstConnObj->m_unProductionInhibitTime = pa_pstConnObj->m_unProductionInhibitTime = 0;
+
   /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * EpectetedPacketRate, 10s) */
   pa_pstConnObj->InnacitvityWatchdogTimer =
       ((((pa_pstConnObj->O_to_T_RPI) / 1000)
@@ -566,10 +574,17 @@ manageConnections(void)
           if (CONN_STATE_ESTABLISHED == pstRunner->State)
             {
               /* client connection */
-              if ((0 == (pstRunner->TransportClassTrigger & 0x70)) && /* cyclic connection */
-              (pstRunner->ExpectedPacketRate != 0)
+              if((pstRunner->ExpectedPacketRate != 0)
                   && (EIP_INVALID_SOCKET != pstRunner->sockfd[PRODUCING])) /* only produce for the master connection */
                 {
+                  if (CIP_CONN_CYCLIC_CONNECTION != (pstRunner->TransportClassTrigger & CIP_CONN_PRODUCTION_TRIGGER_MASK))
+                  {
+                    /* non cyclic connections have to decrement production inhibit timer */
+                    if(0 <= pstRunner->m_nProductionInhibitTimer)
+                      {
+                        pstRunner->m_nProductionInhibitTimer -= OPENER_TIMER_TICK;
+                      }
+                  }
                   pstRunner->TransmissionTriggerTimer -= OPENER_TIMER_TICK;
                   if (pstRunner->TransmissionTriggerTimer <= 0)
                     { /* need to send package */
@@ -583,6 +598,11 @@ manageConnections(void)
                       /* reload the timer value */
                       pstRunner->TransmissionTriggerTimer =
                           pstRunner->ExpectedPacketRate;
+                      if (CIP_CONN_CYCLIC_CONNECTION != (pstRunner->TransportClassTrigger & CIP_CONN_PRODUCTION_TRIGGER_MASK))
+                        {
+                          /* non cyclic connections have to reload the production inhibit timer */
+                          pstRunner->m_nProductionInhibitTimer = pstRunner->m_unProductionInhibitTime;
+                        }
                     }
                 }
             }
@@ -1166,4 +1186,27 @@ getConnMgmEntry(EIP_UINT32 pa_nClassId)
         }
     }
   return pstRetVal;
+}
+
+EIP_STATUS
+triggerConnections(unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly)
+{
+  EIP_STATUS nRetVal = EIP_ERROR;
+
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+  while (NULL != pstRunner)
+    {
+      if((pa_unOutputAssembly == pstRunner->ConnectionPath.ConnectionPoint[0]) &&
+          (pa_unInputAssembly == pstRunner->ConnectionPath.ConnectionPoint[1]))
+        {
+          if (CIP_CONN_APLICATION_TRIGGERED_CONNECTION == (pstRunner->TransportClassTrigger & CIP_CONN_PRODUCTION_TRIGGER_MASK))
+            {
+              /* produce at the next allowed occurrence */
+              pstRunner->TransmissionTriggerTimer = pstRunner->m_nProductionInhibitTimer;
+              nRetVal = EIP_OK;
+            }
+          break;
+        }
+    }
+  return nRetVal;
 }

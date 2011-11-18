@@ -362,6 +362,25 @@ EIP_STATUS
 manageConnections(void);
 
 /*! \ingroup CIP_API
+ * Trigger the production of an application triggered connection. This will issue
+ * the production of the specified connection at the next possible ocation. Depending
+ * on the values for the RPI and the production inhibit timer. The application is
+ * informed via the EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
+ * callback function when the production will happen. This function should only be
+ * invoked from void IApp_HandleApplication(void).
+ *
+ * The connection can only be triggered if the application is established and it
+ * is of application application triggered type.
+ *
+ * @param pa_unOutputAssembly the output assembly connection point of the connection
+ * @param pa_unInputAssembly the input assembly connection point of the connection
+ * @return EIP_OK on success
+ */
+EIP_STATUS
+triggerConnections(unsigned int pa_unOutputAssembly,
+    unsigned int pa_unInputAssembly);
+
+/*! \ingroup CIP_API
  * Inform the encapsulation layer that the remote host has closed the connection.
  * According to the specifications that will clean up and close the session in the encapsulation layer.
  * @param pa_nSocket the handler to the socket of the closed connection
