@@ -51,8 +51,11 @@ Directory structure:
 
 Documentation:
 ==============
-The documentation of the functions of OpENer is part of the source code. You 
-will need the program Doxygen for generating the HTML documentation.
+The documentation of the functions of OpENer is part of the source code. The source 
+packages contain the generated documentation in the directory doc/api_doc. If you 
+use the SVN version you will need the program Doxygen for generating the HTML 
+documentation. You can generate the documentation by invoking doxygen from the 
+command line in the opener main directory.
 
 Porting OpENer:
 ===============

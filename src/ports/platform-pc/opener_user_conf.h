@@ -164,10 +164,4 @@ typedef unsigned short in_port_t;
  */
 #define OPENER_SUPPORT_64BIT_DATATYPES 1
 
-/* TODO think if this is helpfull */
-/*! If this define is here opener will enable support for application triggered
- * connections.
- */
-#define OPENER_SUPPORT_APLICATION_TRIGGERED_CONNECTIONS 1
-
 #endif /*OPENER_USER_CONF_H_*/
