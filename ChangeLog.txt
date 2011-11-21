@@ -1,6 +1,5 @@
 2011-11-21  alil
 
-	* .:
 	* : updated documentation for upcoming release
 
 2011-11-18  alil

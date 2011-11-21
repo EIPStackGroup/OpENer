@@ -39,6 +39,11 @@
 #define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH 0x0315
 #define CIP_CON_MGR_TARGET_OBJECT_OUT_OF_CONNECTIONS 0x011A
 
+#define CIP_CONN_PRODUCTION_TRIGGER_MASK 0x70
+#define CIP_CONN_CYCLIC_CONNECTION       0x0
+#define CIP_CONN_COS_TRIGGERED_CONNECTION 0x10
+#define CIP_CONN_APLICATION_TRIGGERED_CONNECTION 0x20
+
 /*macros for comparing sequence numbers according to CIP spec vol 2 3-4.2*/
 #define SEQ_LEQ32(a, b) ((int)((a) - (b)) <= 0)
 #define SEQ_GEQ32(a, b) ((int)((a) - (b)) >= 0)

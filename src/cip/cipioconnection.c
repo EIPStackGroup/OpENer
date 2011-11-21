@@ -97,6 +97,27 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
 
   //TODO add check for transport type trigger
 
+  if (CIP_CONN_CYCLIC_CONNECTION != (pstIOConnObj->TransportClassTrigger
+      & CIP_CONN_PRODUCTION_TRIGGER_MASK))
+    {
+      if (256 == pstIOConnObj->m_unProductionInhibitTime)
+        {
+          /* there was no PIT segment in the connection path set PIT to one fourth of RPI */
+          pstIOConnObj->m_unProductionInhibitTime
+              = ((EIP_UINT16) (pstIOConnObj->T_to_O_RPI) / 4000);
+        }
+      else
+        {
+          /* if production inhibit time has been provided it needs to be smaller than the RPI */
+          if (pstIOConnObj->m_unProductionInhibitTime
+              > ((EIP_UINT16) ((pstIOConnObj->T_to_O_RPI) / 1000)))
+            {
+              /* see section C-1.4.3.3 */
+              *pa_pnExtendedError = 0x111;
+              return 0x01;
+            }
+        }
+    }
   /* set the connection call backs */
   pstIOConnObj->m_pfCloseFunc = closeIOConnection;
   pstIOConnObj->m_pfTimeOutFunc = handleIOConnectionTimeOut;
