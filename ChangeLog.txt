@@ -1,5 +1,17 @@
+2011-11-22  alil
+
+	* src/cip/cipclass3connection.c, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h, src/cip/cipioconnection.c: fixed
+	  issue in handling connection class trigger
+
 2011-11-21  alil
 
+	* ChangeLog.txt, src/cip/cipconnectionmanager.c,
+	  src/cip/cipconnectionmanager.h, src/cip/cipioconnection.c: added
+	  support for production inhibit time network segment
+	* ChangeLog.txt, README: updated ChangeLog.txt and README for 1.1.
+	  release
+	* .:
 	* : updated documentation for upcoming release
 
 2011-11-18  alil
