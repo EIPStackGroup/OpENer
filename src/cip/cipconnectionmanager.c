@@ -37,7 +37,6 @@ extern S_CIP_Revision Revison;
 
 #define CIP_CONN_TYPE_MASK 0x6000   /*Bit 13&14 true*/
 
-
 #define CIP_CONN_PIT_NETWORK_SEGEMENT_ID  0x43  /* identifier indicating a production inhibit time network segment */
 
 #define FORWARD_OPEN_HEADER_LENGTH 36         /* the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
@@ -199,7 +198,8 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
 
   g_nIncarnationID = ((EIP_UINT32) pa_nUniqueConnID) << 16;
 
-  addConnectableObject(CIP_MESSAGE_ROUTER_CLASS_CODE, establishClass3Connection);
+  addConnectableObject(CIP_MESSAGE_ROUTER_CLASS_CODE,
+      establishClass3Connection);
   addConnectableObject(CIP_ASSEMBLY_CLASS_CODE, establishIOConnction);
 
   return EIP_OK;
@@ -219,8 +219,7 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength,
     {
       /* check if connected address item or sequenced address item  received, otherwise it is no connected message and should not be here */
       if ((g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED)
-          || (g_stCPFDataItem.stAddr_Item.TypeID
-              == CIP_ITEM_ID_SEQUENCEDADDRESS))
+          || (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_SEQUENCEDADDRESS))
         { /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
           if (g_stCPFDataItem.stDataI_Item.TypeID
               == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
@@ -238,14 +237,14 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength,
                   if (SEQ_GEQ32(g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming))
                     {
                       /* reset the watchdog timer */
-                      pstConnectionObject->InnacitvityWatchdogTimer
-                          = (pstConnectionObject->O_to_T_RPI / 1000)
+                      pstConnectionObject->InnacitvityWatchdogTimer =
+                          (pstConnectionObject->O_to_T_RPI / 1000)
                               << (2
                                   + pstConnectionObject->ConnectionTimeoutMultiplier);
 
                       /* only inform assembly object if the sequence counter is greater or equal */
-                      pstConnectionObject->EIPSequenceCountConsuming
-                          = g_stCPFDataItem.stAddr_Item.Data.SequenceNumber;
+                      pstConnectionObject->EIPSequenceCountConsuming =
+                          g_stCPFDataItem.stAddr_Item.Data.SequenceNumber;
 
                       if (NULL != pstConnectionObject->m_pfReceiveDataFunc)
                         {
@@ -291,11 +290,11 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   g_stDummyConnectionObject.Priority_Timetick = *pa_MRRequest->Data++;
   g_stDummyConnectionObject.Timeoutticks = *pa_MRRequest->Data++;
   /* O_to_T Conn ID */
-  g_stDummyConnectionObject.CIPConsumedConnectionID
-      = ltohl(&pa_MRRequest->Data);
+  g_stDummyConnectionObject.CIPConsumedConnectionID = ltohl(
+      &pa_MRRequest->Data);
   /* T_to_O Conn ID */
-  g_stDummyConnectionObject.CIPProducedConnectionID
-      = ltohl(&pa_MRRequest->Data);
+  g_stDummyConnectionObject.CIPProducedConnectionID = ltohl(
+      &pa_MRRequest->Data);
   g_stDummyConnectionObject.ConnectionSerialNumber = ltohs(&pa_MRRequest->Data);
   g_stDummyConnectionObject.OriginatorVendorID = ltohs(&pa_MRRequest->Data);
   g_stDummyConnectionObject.OriginatorSerialNumber = ltohl(&pa_MRRequest->Data);
@@ -305,8 +304,8 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
       /* TODO this test is  incorrect, see CIP spec 3-5.5.2 re: duplicate forward open
        it should probably be testing the connection type fields
        TODO think on how a reconfigurationrequest could be handled correctly */
-      if ((0 == g_stDummyConnectionObject.CIPConsumedConnectionID) && (0
-          == g_stDummyConnectionObject.CIPProducedConnectionID))
+      if ((0 == g_stDummyConnectionObject.CIPConsumedConnectionID)
+          && (0 == g_stDummyConnectionObject.CIPProducedConnectionID))
         {
           /*TODO implement reconfiguration of connection*/
 
@@ -339,8 +338,8 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   tmp = g_stDummyConnectionObject.T_to_O_RPI % (OPENER_TIMER_TICK * 1000);
   if (tmp > 0)
     {
-      g_stDummyConnectionObject.T_to_O_RPI
-          = (EIP_UINT32) (g_stDummyConnectionObject.T_to_O_RPI
+      g_stDummyConnectionObject.T_to_O_RPI =
+          (EIP_UINT32) (g_stDummyConnectionObject.T_to_O_RPI
               / (OPENER_TIMER_TICK * 1000)) * (OPENER_TIMER_TICK * 1000)
               + (OPENER_TIMER_TICK * 1000);
     }
@@ -351,18 +350,19 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   /*check if Network connection paramters are ok */
   if ((CIP_CONN_TYPE_MASK
       == (g_stDummyConnectionObject.O_to_T_NetworkConnectionParameter
-          & CIP_CONN_TYPE_MASK)) || (CIP_CONN_TYPE_MASK
-      == (g_stDummyConnectionObject.T_to_O_NetworkConnectionParameter
-          & CIP_CONN_TYPE_MASK)))
+          & CIP_CONN_TYPE_MASK))
+      || (CIP_CONN_TYPE_MASK
+          == (g_stDummyConnectionObject.T_to_O_NetworkConnectionParameter
+              & CIP_CONN_TYPE_MASK)))
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           CIP_ERROR_CONNECTION_FAILURE,
           CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE, pa_msg);
     }
 
-  g_stDummyConnectionObject.TransportTypeTrigger = *pa_MRRequest->Data++;
+  g_stDummyConnectionObject.TransportTypeClassTrigger = *pa_MRRequest->Data++;
   /*check if the trigger type value is ok */
-  if (0x40 & g_stDummyConnectionObject.TransportTypeTrigger)
+  if (0x40 & g_stDummyConnectionObject.TransportTypeClassTrigger)
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           CIP_ERROR_CONNECTION_FAILURE,
@@ -435,16 +435,14 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
   pa_pstConnObj->EIPSequenceCountConsuming = 0;
   pa_pstConnObj->SequenceCountConsuming = 0;
 
-  pa_pstConnObj->TransportClassTrigger = pa_pstConnObj->TransportTypeTrigger;
-
   pa_pstConnObj->WatchdogTimeoutAction = enWatchdogAutoDelete; /* the default for all connections on EIP*/
 
   pa_pstConnObj->ExpectedPacketRate = 0; /* default value */
 
-  if ((pa_pstConnObj->TransportClassTrigger & 0x80) == 0x00)
+  if ((pa_pstConnObj->TransportTypeClassTrigger & 0x80) == 0x00)
     { /* Client Type Connection requested */
-      pa_pstConnObj->ExpectedPacketRate
-          = (EIP_UINT16) ((pa_pstConnObj->T_to_O_RPI) / 1000);
+      pa_pstConnObj->ExpectedPacketRate =
+          (EIP_UINT16) ((pa_pstConnObj->T_to_O_RPI) / 1000);
       /* As soon as we are ready we should produce the connection. With the 0 here we will produce with the next timer tick
        * which should be sufficient. */
       pa_pstConnObj->TransmissionTriggerTimer = 0;
@@ -452,25 +450,25 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
   else
     {
       /* Server Type Connection requested */
-      pa_pstConnObj->ExpectedPacketRate
-          = (EIP_UINT16) ((pa_pstConnObj->O_to_T_RPI) / 1000);
+      pa_pstConnObj->ExpectedPacketRate =
+          (EIP_UINT16) ((pa_pstConnObj->O_to_T_RPI) / 1000);
     }
 
-  pa_pstConnObj->m_unProductionInhibitTime
-      = pa_pstConnObj->m_unProductionInhibitTime = 0;
+  pa_pstConnObj->m_unProductionInhibitTime =
+      pa_pstConnObj->m_unProductionInhibitTime = 0;
 
   /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * EpectetedPacketRate, 10s) */
-  pa_pstConnObj->InnacitvityWatchdogTimer
-      = ((((pa_pstConnObj->O_to_T_RPI) / 1000) << (2
-          + pa_pstConnObj->ConnectionTimeoutMultiplier)) > 10000) ? (((pa_pstConnObj->O_to_T_RPI)
-          / 1000) << (2 + pa_pstConnObj->ConnectionTimeoutMultiplier))
-          : 10000;
+  pa_pstConnObj->InnacitvityWatchdogTimer =
+      ((((pa_pstConnObj->O_to_T_RPI) / 1000)
+          << (2 + pa_pstConnObj->ConnectionTimeoutMultiplier)) > 10000) ? (((pa_pstConnObj->O_to_T_RPI)
+          / 1000) << (2 + pa_pstConnObj->ConnectionTimeoutMultiplier)) :
+          10000;
 
-  pa_pstConnObj->ConsumedConnectionSize
-      = pa_pstConnObj->O_to_T_NetworkConnectionParameter & 0x01FF;
+  pa_pstConnObj->ConsumedConnectionSize =
+      pa_pstConnObj->O_to_T_NetworkConnectionParameter & 0x01FF;
 
-  pa_pstConnObj->ProducedConnectionSize
-      = pa_pstConnObj->T_to_O_NetworkConnectionParameter & 0x01FF;
+  pa_pstConnObj->ProducedConnectionSize =
+      pa_pstConnObj->T_to_O_NetworkConnectionParameter & 0x01FF;
 
 }
 
@@ -487,8 +485,8 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
   (void) pa_pstInstance;
 
   /* check connection serial number && Vendor ID && OriginatorSerialNr if connection is established */
-  nConnectionStatus
-      = CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION;
+  nConnectionStatus =
+      CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION;
   pstRunner = g_pstActiveConnectionList;
 
   /* set AddressInfo Items to invalid TypeID to prevent assembleLinearMsg to read them */
@@ -505,14 +503,15 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
   while (NULL != pstRunner)
     {
       /* this check should not be necessary as only established connections should be in the active connection list */
-      if ((pstRunner->State == CONN_STATE_ESTABLISHED) || (pstRunner->State
-          == CONN_STATE_TIMEDOUT))
+      if ((pstRunner->State == CONN_STATE_ESTABLISHED)
+          || (pstRunner->State == CONN_STATE_TIMEDOUT))
         {
           if ((pstRunner->ConnectionSerialNumber == ConnectionSerialNr)
               && (pstRunner->OriginatorVendorID == OriginatorVendorID)
               && (pstRunner->OriginatorSerialNumber == OriginatorSerialNr))
             {
-              /* found the corresponding connection object -> close it */OPENER_ASSERT(NULL != pstRunner->m_pfCloseFunc);
+              /* found the corresponding connection object -> close it */OPENER_ASSERT(
+                  NULL != pstRunner->m_pfCloseFunc);
               pstRunner->m_pfCloseFunc(pstRunner);
               nConnectionStatus = CIP_CON_MGR_SUCCESS;
               break;
@@ -555,14 +554,14 @@ manageConnections(void)
       if (pstRunner->State == CONN_STATE_ESTABLISHED)
         {
           if ((0 != pstRunner->p_stConsumingInstance) || /* we have a consuming connection check innacitivitywatchdog timer */
-          (pstRunner->TransportClassTrigger & 0x80)) /* all sever connections have to maintain an innacitivitywatchdog timer */
+          (pstRunner->TransportTypeClassTrigger & 0x80)) /* all sever connections have to maintain an innacitivitywatchdog timer */
             {
               pstRunner->InnacitvityWatchdogTimer -= OPENER_TIMER_TICK;
               if (pstRunner->InnacitvityWatchdogTimer <= 0)
                 {
                   /* we have a timed out connection perform watchdog time out action*/
-                  OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
-                  OPENER_ASSERT(NULL != pstRunner->m_pfTimeOutFunc);
+                  OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");OPENER_ASSERT(
+                      NULL != pstRunner->m_pfTimeOutFunc);
                   pstRunner->m_pfTimeOutFunc(pstRunner);
                 }
             }
@@ -570,18 +569,18 @@ manageConnections(void)
           if (CONN_STATE_ESTABLISHED == pstRunner->State)
             {
               /* client connection */
-              if ((pstRunner->ExpectedPacketRate != 0) && (EIP_INVALID_SOCKET
-                  != pstRunner->sockfd[PRODUCING])) /* only produce for the master connection */
+              if ((pstRunner->ExpectedPacketRate != 0)
+                  && (EIP_INVALID_SOCKET != pstRunner->sockfd[PRODUCING])) /* only produce for the master connection */
                 {
                   if (CIP_CONN_CYCLIC_CONNECTION
-                      != (pstRunner->TransportClassTrigger
+                      != (pstRunner->TransportTypeClassTrigger
                           & CIP_CONN_PRODUCTION_TRIGGER_MASK))
                     {
                       /* non cyclic connections have to decrement production inhibit timer */
                       if (0 <= pstRunner->m_nProductionInhibitTimer)
                         {
-                          pstRunner->m_nProductionInhibitTimer
-                              -= OPENER_TIMER_TICK;
+                          pstRunner->m_nProductionInhibitTimer -=
+                              OPENER_TIMER_TICK;
                         }
                     }
                   pstRunner->TransmissionTriggerTimer -= OPENER_TIMER_TICK;
@@ -595,15 +594,15 @@ manageConnections(void)
                               "sending of UDP data in manage Connection failed\n");
                         }
                       /* reload the timer value */
-                      pstRunner->TransmissionTriggerTimer
-                          = pstRunner->ExpectedPacketRate;
+                      pstRunner->TransmissionTriggerTimer =
+                          pstRunner->ExpectedPacketRate;
                       if (CIP_CONN_CYCLIC_CONNECTION
-                          != (pstRunner->TransportClassTrigger
+                          != (pstRunner->TransportTypeClassTrigger
                               & CIP_CONN_PRODUCTION_TRIGGER_MASK))
                         {
                           /* non cyclic connections have to reload the production inhibit timer */
-                          pstRunner->m_nProductionInhibitTimer
-                              = pstRunner->m_unProductionInhibitTime;
+                          pstRunner->m_nProductionInhibitTimer =
+                              pstRunner->m_unProductionInhibitTime;
                         }
                     }
                 }
@@ -835,8 +834,7 @@ checkElectronicKeyData(EIP_UINT8 pa_nKeyFormat, S_CIP_KeyData *pa_pstKeyData,
                     }
                   else
                     {
-                      if ((pa_pstKeyData->MajorRevision
-                          != Revison.MajorRevision)
+                      if ((pa_pstKeyData->MajorRevision != Revison.MajorRevision)
                           || ((pa_pstKeyData->MajorRevision
                               == Revison.MajorRevision)
                               && (pa_pstKeyData->MinorRevision
@@ -863,6 +861,9 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
   int nRemainingPathSize = pa_pstConnObj->ConnectionPathSize = *pnMsg++; /* length in words */
   S_CIP_Class *pstClass = NULL;
   int O2TConnectionType, T2OConnectionType, imax;
+
+  /* with 256 we mark that we haven't got a PIT segment */
+  pa_pstConnObj->m_unProductionInhibitTime = 256;
 
   if ((FORWARD_OPEN_HEADER_LENGTH + nRemainingPathSize * 2)
       < pa_MRRequest->DataLength)
@@ -910,9 +911,9 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               pa_pstConnObj->ElectronicKey.KeyData.MajorRevision,
               pa_pstConnObj->ElectronicKey.KeyData.MinorRevision);
 
-          if (EIP_OK != checkElectronicKeyData(
-              pa_pstConnObj->ElectronicKey.KeyFormat,
-              &(pa_pstConnObj->ElectronicKey.KeyData), pa_pnExtendedError))
+          if (EIP_OK
+              != checkElectronicKeyData(pa_pstConnObj->ElectronicKey.KeyFormat,
+                  &(pa_pstConnObj->ElectronicKey.KeyData), pa_pnExtendedError))
             {
               return CIP_ERROR_CONNECTION_FAILURE;
             }
@@ -920,6 +921,19 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
       else
         {
           OPENER_TRACE_INFO("no key\n");
+        }
+
+      if (CIP_CONN_CYCLIC_CONNECTION
+          != (pa_pstConnObj->TransportTypeClassTrigger
+              & CIP_CONN_PRODUCTION_TRIGGER_MASK))
+        {
+          /*non cyclic connections may have a production inhibit */
+          if (CIP_CONN_PIT_NETWORK_SEGEMENT_ID == *pnMsg)
+            {
+              pa_pstConnObj->m_unProductionInhibitTime = pnMsg[1];
+              pnMsg += 2;
+              nRemainingPathSize -= 1;
+            }
         }
 
       if (EQLOGICALPATH(*pnMsg,0x20))
@@ -933,13 +947,13 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               if (pa_pstConnObj->ConnectionPath.ClassID >= 0xC8) /*reserved range of class ids */
 
                 {
-                  *pa_pnExtendedError
-                      = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
+                  *pa_pnExtendedError =
+                      CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
                 }
               else
                 {
-                  *pa_pnExtendedError
-                      = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+                  *pa_pnExtendedError =
+                      CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
                 }
               return CIP_ERROR_CONNECTION_FAILURE;
             }OPENER_TRACE_INFO("classid %lx (%s)\n",
@@ -954,36 +968,36 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
 
       if (EQLOGICALPATH(*pnMsg,0x24))
         { /* store the configuration ID for later checking in the application connection types */
-          pa_pstConnObj->ConnectionPath.ConnectionPoint[2]
-              = GETPADDEDLOGICALPATH(&pnMsg);
+          pa_pstConnObj->ConnectionPath.ConnectionPoint[2] =
+              GETPADDEDLOGICALPATH(&pnMsg);
           OPENER_TRACE_INFO("Configuration instance id %ld\n", pa_pstConnObj->ConnectionPath.ConnectionPoint[2]);
-          if (NULL == getCIPInstance(pstClass,
-              pa_pstConnObj->ConnectionPath.ConnectionPoint[2]))
+          if (NULL
+              == getCIPInstance(pstClass,
+                  pa_pstConnObj->ConnectionPath.ConnectionPoint[2]))
             {
               /*according to the test tool we should respond with this extended error code */
-              *pa_pnExtendedError
-                  = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
+              *pa_pnExtendedError =
+                  CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
           /* 1 or 2 16Bit words for the configuration instance part of the path  */
-          nRemainingPathSize
-              -= (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] > 0xFF) ? 2
-                  : 1;
+          nRemainingPathSize -=
+              (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] > 0xFF) ? 2 : 1;
         }
       else
         {
           OPENER_TRACE_INFO("no config data\n");
         }
 
-      if (0x03 == (pa_pstConnObj->TransportTypeTrigger & 0x03))
+      if (0x03 == (pa_pstConnObj->TransportTypeClassTrigger & 0x03))
         {
           /*we have Class 3 connection*/
           if (nRemainingPathSize > 0)
             {
               OPENER_TRACE_WARN(
                   "Too much data in connection path for class 3 connection\n");
-              *pa_pnExtendedError
-                  = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
+              *pa_pnExtendedError =
+                  CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
 
@@ -995,8 +1009,8 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
-          pa_pstConnObj->ConnectionPath.ConnectionPoint[0]
-              = pa_pstConnObj->ConnectionPath.ConnectionPoint[2];
+          pa_pstConnObj->ConnectionPath.ConnectionPoint[0] =
+              pa_pstConnObj->ConnectionPath.ConnectionPoint[2];
         }
       else
         { /* we have an IO connection */
@@ -1038,35 +1052,33 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
             {
               if (EQLOGICALPATH(*pnMsg,0x24) || EQLOGICALPATH(*pnMsg,0x2C)) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
                 { /* InstanceNR */
-                  pa_pstConnObj->ConnectionPath.ConnectionPoint[i]
-                      = GETPADDEDLOGICALPATH(&pnMsg);
+                  pa_pstConnObj->ConnectionPath.ConnectionPoint[i] =
+                      GETPADDEDLOGICALPATH(&pnMsg);
                   OPENER_TRACE_INFO("connection point %lu\n",
                       pa_pstConnObj->ConnectionPath.ConnectionPoint[i]);
-                  if (0 == getCIPInstance(pstClass,
-                      pa_pstConnObj->ConnectionPath.ConnectionPoint[i]))
+                  if (0
+                      == getCIPInstance(pstClass,
+                          pa_pstConnObj->ConnectionPath.ConnectionPoint[i]))
                     {
-                      *pa_pnExtendedError
-                          = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+                      *pa_pnExtendedError =
+                          CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
                       return CIP_ERROR_CONNECTION_FAILURE;
                     }
                   /* 1 or 2 16Bit word for the connection point part of the path */
-                  nRemainingPathSize
-                      -= (pa_pstConnObj->ConnectionPath.ConnectionPoint[i]
-                          > 0xFF) ? 2 : 1;
+                  nRemainingPathSize -=
+                      (pa_pstConnObj->ConnectionPath.ConnectionPoint[i] > 0xFF) ? 2 :
+                          1;
                 }
               else
                 {
-                  *pa_pnExtendedError
-                      = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
+                  *pa_pnExtendedError =
+                      CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
                   return CIP_ERROR_CONNECTION_FAILURE;
                 }
             }
 
           g_unConfigDataLen = 0;
           g_pnConfigDataBuffer = NULL;
-
-          /* with 256 we mark that we haven't got a PIT segment */
-          pa_pstConnObj->m_unProductionInhibitTime = 256;
 
           while (nRemainingPathSize > 0)
             { /* have something left in the path should be configuration data */
@@ -1083,7 +1095,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                 /*TODO do we have to handle ANSI extended symbol data segments too? */
               case CIP_CONN_PIT_NETWORK_SEGEMENT_ID:
                 if (CIP_CONN_CYCLIC_CONNECTION
-                    != (pa_pstConnObj->TransportClassTrigger
+                    != (pa_pstConnObj->TransportTypeClassTrigger
                         & CIP_CONN_PRODUCTION_TRIGGER_MASK))
                   {
                     /* only non cyclic connections may have a production inhibit */
@@ -1119,7 +1131,7 @@ void
 closeConnection(S_CIP_ConnectionObject *pa_pstConnObj)
 {
   pa_pstConnObj->State = CONN_STATE_NONEXISTENT;
-  if (0x03 != (pa_pstConnObj->TransportTypeTrigger & 0x03))
+  if (0x03 != (pa_pstConnObj->TransportTypeClassTrigger & 0x03))
     {
       /* only close the udp connection for not class 3 connections */
       IApp_CloseSocket(pa_pstConnObj->sockfd[CONSUMING]);
@@ -1199,8 +1211,8 @@ addConnectableObject(EIP_UINT32 pa_nClassId, TConnOpenFunc pa_pfOpenFunc)
   /*parsing is now finished all data is available and check now establish the connection */
   for (i = 0; i < scg_nNumConnectableObjects; ++i)
     {
-      if ((0 == g_astConnMgmList[i].m_nClassID) || (pa_nClassId
-          == g_astConnMgmList[i].m_nClassID))
+      if ((0 == g_astConnMgmList[i].m_nClassID)
+          || (pa_nClassId == g_astConnMgmList[i].m_nClassID))
         {
           g_astConnMgmList[i].m_nClassID = pa_nClassId;
           g_astConnMgmList[i].m_pfOpenFunc = pa_pfOpenFunc;
@@ -1240,16 +1252,15 @@ triggerConnections(unsigned int pa_unOutputAssembly,
   while (NULL != pstRunner)
     {
       if ((pa_unOutputAssembly == pstRunner->ConnectionPath.ConnectionPoint[0])
-          && (pa_unInputAssembly
-              == pstRunner->ConnectionPath.ConnectionPoint[1]))
+          && (pa_unInputAssembly == pstRunner->ConnectionPath.ConnectionPoint[1]))
         {
           if (CIP_CONN_APLICATION_TRIGGERED_CONNECTION
-              == (pstRunner->TransportClassTrigger
+              == (pstRunner->TransportTypeClassTrigger
                   & CIP_CONN_PRODUCTION_TRIGGER_MASK))
             {
               /* produce at the next allowed occurrence */
-              pstRunner->TransmissionTriggerTimer
-                  = pstRunner->m_nProductionInhibitTimer;
+              pstRunner->TransmissionTriggerTimer =
+                  pstRunner->m_nProductionInhibitTimer;
               nRetVal = EIP_OK;
             }
           break;

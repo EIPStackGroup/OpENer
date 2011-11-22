@@ -24,7 +24,7 @@ establishClass3Connection(struct CIP_ConnectionObject *pa_pstConnObj,
   EIP_UINT32 nTmp;
 
   //TODO add check for transport type trigger
-  //if (0x03 == (g_stDummyConnectionObject.TransportTypeTrigger & 0x03))
+  //if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03))
 
   S_CIP_ConnectionObject *pstExplConn = getFreeExplicitConnection();
 

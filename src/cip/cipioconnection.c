@@ -97,7 +97,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
 
   //TODO add check for transport type trigger
 
-  if (CIP_CONN_CYCLIC_CONNECTION != (pstIOConnObj->TransportClassTrigger
+  if (CIP_CONN_CYCLIC_CONNECTION != (pstIOConnObj->TransportTypeClassTrigger
       & CIP_CONN_PRODUCTION_TRIGGER_MASK))
     {
       if (256 == pstIOConnObj->m_unProductionInhibitTime)
@@ -168,7 +168,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
               OPENER_ASSERT(pstAttribute != NULL); /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ConsumedConnectionSize;
 
-              if ((pstIOConnObj->TransportTypeTrigger & 0x0F) == 1)
+              if ((pstIOConnObj->TransportTypeClassTrigger & 0x0F) == 1)
                 {
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
@@ -212,7 +212,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
               pstAttribute = getAttribute(pstInstance, 3);
               OPENER_ASSERT(pstAttribute != NULL); /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ProducedConnectionSize;
-              if ((pstIOConnObj->TransportTypeTrigger & 0x0F) == 1)
+              if ((pstIOConnObj->TransportTypeClassTrigger & 0x0F) == 1)
                 {
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
@@ -618,7 +618,7 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
 
   /* assembleCPFData */
   pCPFDataItem->ItemCount = 2;
-  if ((pa_pstConnection->TransportClassTrigger & 0x0F) != 0)
+  if ((pa_pstConnection->TransportTypeClassTrigger & 0x0F) != 0)
     { /* use Sequenced Address Items if not Connection Class 0 */
       pCPFDataItem->stAddr_Item.TypeID = CIP_ITEM_ID_SEQUENCEDADDRESS;
       pCPFDataItem->stAddr_Item.Length = 8;
@@ -656,7 +656,7 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
 
   pnBuf = &g_acMessageDataReplyBuffer[replylength - 2];
   pCPFDataItem->stDataI_Item.Length = p->len;
-  if ((pa_pstConnection->TransportTypeTrigger & 0x0F) == 1)
+  if ((pa_pstConnection->TransportTypeClassTrigger & 0x0F) == 1)
     {
       pCPFDataItem->stDataI_Item.Length += 2;
       htols(pCPFDataItem->stDataI_Item.Length, &pnBuf);
@@ -686,7 +686,7 @@ handleReceivedIOConnData(struct CIP_ConnectionObject *pa_pstConnection,
 {
 
   /* check class 1 sequence number*/
-  if ((pa_pstConnection->TransportTypeTrigger & 0x0F) == 1)
+  if ((pa_pstConnection->TransportTypeClassTrigger & 0x0F) == 1)
     {
       EIP_UINT16 nSequenceBuf = ltohs(&(pa_pnData));
       if (SEQ_LEQ16(nSequenceBuf, pa_pstConnection->SequenceCountConsuming))

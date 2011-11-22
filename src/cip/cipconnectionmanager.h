@@ -113,7 +113,7 @@ typedef struct CIP_ConnectionObject
 {
   CONN_STATE State;
   EConnType m_eInstanceType;
-  EIP_BYTE TransportClassTrigger;
+
   /* conditional
    UINT16 DeviceNetProductedConnectionID;
    UINT16 DeviceNetConsumedConnectionID;
@@ -146,7 +146,7 @@ typedef struct CIP_ConnectionObject
   EIP_UINT16 O_to_T_NetworkConnectionParameter;
   EIP_UINT32 T_to_O_RPI;
   EIP_UINT16 T_to_O_NetworkConnectionParameter;
-  EIP_BYTE TransportTypeTrigger;
+  EIP_BYTE TransportTypeClassTrigger;
   EIP_UINT8 ConnectionPathSize;
   S_CIP_ElectronicKey ElectronicKey;
   S_CIP_ConnectionPath ConnectionPath; /* padded EPATH*/
