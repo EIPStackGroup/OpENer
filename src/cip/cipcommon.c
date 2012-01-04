@@ -444,20 +444,8 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_LINT):
   case (CIP_ULINT):
   case (CIP_LWORD):
-    {
-      EIP_UINT64 unVal = *(EIP_UINT64 *) (pa_pt2data);
-      EIP_UINT8 *pnBuffer = *pa_pnMsg;
-      pnBuffer[0] = (EIP_UINT8) (unVal >> 56) & 0xFF;
-      pnBuffer[1] = (EIP_UINT8) (unVal >> 48) & 0xFF;
-      pnBuffer[2] = (EIP_UINT8) (unVal >> 40) & 0xFF;
-      pnBuffer[3] = (EIP_UINT8) (unVal >> 32) & 0xFF;
-      pnBuffer[4] = (EIP_UINT8) (unVal >> 24) & 0xFF;
-      pnBuffer[5] = (EIP_UINT8) (unVal >> 16) & 0xFF;
-      pnBuffer[6] = (EIP_UINT8) (unVal >> 8) & 0xFF;
-      pnBuffer[7] = (EIP_UINT8) (unVal) & 0xFF;
-      pa_pnMsg += 8;
-      counter = 8;
-    }
+    htol64(*(EIP_UINT64 *) (pa_pt2data), pa_pnMsg);
+    counter = 8;
     break;
 #endif
 
@@ -623,16 +611,7 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_LWORD):
     {
       EIP_UINT8 *pnBuffer = *pa_pnMsg;
-      (*(EIP_UINT32 *) (pa_pt2data)) = ((((EIP_UINT64) pnBuffer[0]) << 56)
-          & 0xFF00000000000000LL) + ((((EIP_UINT64) pnBuffer[1]) << 48)
-          & 0x00FF000000000000LL) + ((((EIP_UINT64) pnBuffer[2]) << 40)
-          & 0x0000FF0000000000LL) + ((((EIP_UINT64) pnBuffer[3]) << 32)
-          & 0x000000FF00000000LL) + ((((EIP_UINT64) pnBuffer[4]) << 24)
-          & 0x00000000FF000000) + ((((EIP_UINT64) pnBuffer[5]) << 16)
-          & 0x0000000000FF0000) + ((((EIP_UINT64) pnBuffer[6]) << 8)
-          & 0x000000000000FF00) + (((EIP_UINT64) pnBuffer[7])
-          & 0x00000000000000FF);
-      pa_pnMsg += 8;
+      (*(EIP_UINT32 *) (pa_pt2data)) = ltoh64(pa_pnMsg);
       nRetVal = 8;
     }
     break;

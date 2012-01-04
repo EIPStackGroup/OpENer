@@ -34,4 +34,13 @@ void htols(EIP_UINT16 data, EIP_UINT8 **pa_buf);
  */
 void htoll(EIP_UINT32 data, EIP_UINT8 **pa_buf);
 
+#ifdef OPENER_SUPPORT_64BIT_DATATYPES
+
+EIP_UINT64 ltoh64(EIP_UINT8 ** pa_pnBuf);
+
+void htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf);
+
+#endif
+
+
 #endif /*ENDIANCONV_H_*/
