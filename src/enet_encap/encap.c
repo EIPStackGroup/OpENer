@@ -388,7 +388,7 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
 
-  if (pa_stReceiveData->nData_length < 6)
+  if (pa_stReceiveData->nData_length >= 6)
     {
       /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
       /* don't use the data yet */
@@ -433,7 +433,7 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
 
-  if (pa_stReceiveData->nData_length < 6)
+  if (pa_stReceiveData->nData_length >= 6)
     {
       /* Commandspecific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
       /* don't use the data yet */
