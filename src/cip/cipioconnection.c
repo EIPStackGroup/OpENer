@@ -67,7 +67,8 @@ handleReceivedIOConnData(struct CIP_ConnectionObject *pa_pstConnection,
 /**** Global variables ****/
 
 /* buffers for the config data coming with a forward open request.
- */EIP_UINT8 *g_pnConfigDataBuffer = NULL;
+ */
+EIP_UINT8 *g_pnConfigDataBuffer = NULL;
 unsigned int g_unConfigDataLen = 0;
 
 /*! buffer for holding the run idle information.                             */

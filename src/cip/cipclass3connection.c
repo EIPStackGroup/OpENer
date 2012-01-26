@@ -6,6 +6,7 @@
 
 #include "cipclass3connection.h"
 #include "cipconnectionmanager.h"
+#include <string.h>
 
 S_CIP_ConnectionObject *
 getFreeExplicitConnection(void);
@@ -62,4 +63,8 @@ getFreeExplicitConnection(void)
         return &(g_astExplicitConnections[i]);
     }
   return NULL;
+}
+
+void initializeClass3ConnectionData(){
+  memset(g_astExplicitConnections, 0, OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(S_CIP_ConnectionObject));
 }

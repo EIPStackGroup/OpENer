@@ -6,6 +6,7 @@
 #include "appcontype.h"
 #include "cipconnectionmanager.h"
 #include "opener_api.h"
+#include <string.h>
 
 /* external globals neeeded from connectionmanager.c */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
@@ -407,4 +408,10 @@ connectionWithSameConfigPointExists(EIP_UINT32 pa_unConfigPoint)
       pstRunner = pstRunner->m_pstNext;
     }
   return (NULL != pstRunner);
+}
+
+void initializeIOConnectionData(){
+  memset(g_astExlusiveOwnerConnections, 0, OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS * sizeof(S_ExclusiveOwnerConnection));
+  memset(g_astInputOnlyConnections, 0, OPENER_CIP_NUM_INPUT_ONLY_CONNS * sizeof(S_InputOnlyConnection));
+  memset(g_astListenOnlyConnections, 0, OPENER_CIP_NUM_LISTEN_ONLY_CONNS * sizeof(S_ListenOnlyConnection));
 }

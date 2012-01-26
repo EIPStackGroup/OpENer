@@ -22,5 +22,6 @@
 int
 establishClass3Connection(struct CIP_ConnectionObject *pa_pstConnObj, EIP_UINT16 *pa_pnExtendedError);
 
+void initializeClass3ConnectionData();
 
 #endif /* CIPCLASS3CONNECTION_H_ */
