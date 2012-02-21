@@ -91,15 +91,16 @@ notifyClass(S_CIP_Class * pt2Class, S_CIP_MR_Request * pa_MRRequest,
             {
               if (pa_MRRequest->Service == p->CIP_ServiceNr) /* if match is found */
                 {
-                  pa_MRResponse->Data = &g_acMessageDataReplyBuffer[0]; /* set reply buffer, using a fixed buffer (about 100 bytes) */
                   /* call the service, and return what it returns */
                   OPENER_TRACE_INFO("notify: calling %s service\n", p->name);
                   OPENER_ASSERT(NULL != p->m_ptfuncService);
                   return p->m_ptfuncService(pstInstance, pa_MRRequest,
-                      pa_MRResponse, &g_acMessageDataReplyBuffer[0]);
+                      pa_MRResponse, pa_MRResponse->Data);
                 }
               else
-                p++;
+                {
+                  p++;
+                }
             }
         }OPENER_TRACE_WARN("notify: service 0x%x not supported\n",
           pa_MRRequest->Service);

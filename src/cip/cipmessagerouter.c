@@ -69,6 +69,8 @@ CIP_MessageRouter_Init()
 
   /* reserved for future use -> set to zero */
   gMRResponse.Reserved = 0;
+  gMRResponse.Data = &g_acMessageDataReplyBuffer[0]; /* set reply buffer, using a fixed buffer (about 100 bytes) */
+
   return EIP_OK;
 }
 
