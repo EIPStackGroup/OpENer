@@ -71,26 +71,25 @@ EIP_UINT32 g_nIncarnationID;
 /* private functions */
 EIP_STATUS
 ForwardOpen(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
-    S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 * pa_msg);
+    S_CIP_MR_Response * pa_MRResponse);
 EIP_STATUS
 ForwardClose(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
-    S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 * pa_msg);
+    S_CIP_MR_Response * pa_MRResponse);
 
 EIP_STATUS
 GetConnectionOwner(S_CIP_Instance * pa_pstInstance,
-    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT8 * pa_msg);
+    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse);
 
 EIP_STATUS
 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus,
-    EIP_UINT16 pa_nExtendedStatus, EIP_UINT8 * pa_msg);
+    EIP_UINT16 pa_nExtendedStatus);
 
 EIP_STATUS
 assembleFWDCloseResponse(EIP_UINT16 pa_ConnectionSerialNr,
     EIP_UINT16 pa_OriginatorVendorID, EIP_UINT32 pa_OriginatorSerialNr,
     S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT16 pa_nExtErrorCode, EIP_UINT8 * pa_msg);
+    EIP_UINT16 pa_nExtErrorCode);
 
 /** \brief check if the data given in the connection object match with an already established connection
  * 
@@ -134,7 +133,8 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
 TConnMgmHandling *
 getConnMgmEntry(EIP_UINT32 pa_nClassId);
 
-void initializeConnectionManagerData();
+void
+initializeConnectionManagerData();
 
 int
 GETPADDEDLOGICALPATH(unsigned char **x)
@@ -282,7 +282,7 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength,
  */
 EIP_STATUS
 ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
-    S_CIP_MR_Response *pa_MRResponse, EIP_UINT8 *pa_msg)
+    S_CIP_MR_Response *pa_MRResponse)
 {
   EIP_UINT16 nConnectionStatus = CIP_CON_MGR_SUCCESS;
   EIP_UINT32 tmp;
@@ -316,8 +316,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
           OPENER_TRACE_ERR("this looks like a duplicate forward open -- I can't handle this yet, sending a CIP_CON_MGR_ERROR_CONNECTION_IN_USE response\n");
         }
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
-          CIP_ERROR_CONNECTION_FAILURE, CIP_CON_MGR_ERROR_CONNECTION_IN_USE,
-          pa_msg);
+          CIP_ERROR_CONNECTION_FAILURE, CIP_CON_MGR_ERROR_CONNECTION_IN_USE);
     }
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
@@ -361,7 +360,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           CIP_ERROR_CONNECTION_FAILURE,
-          CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE, pa_msg);
+          CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE);
     }
 
   g_stDummyConnectionObject.TransportTypeClassTrigger = *pa_MRRequest->Data++;
@@ -370,7 +369,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           CIP_ERROR_CONNECTION_FAILURE,
-          CIP_CON_MGR_ERROR_TRANSPORT_TRIGGER_NOT_SUPPORTED, pa_msg);
+          CIP_CON_MGR_ERROR_TRANSPORT_TRIGGER_NOT_SUPPORTED);
     }
 
   tmp = parseConnectionPath(&g_stDummyConnectionObject, pa_MRRequest,
@@ -378,7 +377,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   if (EIP_OK != tmp)
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
-          tmp, nConnectionStatus, pa_msg);
+          tmp, nConnectionStatus);
     }
 
   /*parsing is now finished all data is available and check now establish the connection */
@@ -400,14 +399,14 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
       OPENER_TRACE_INFO("connection manager: connect failed\n");
       /* in case of error the dummy objects holds all necessary information */
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
-          tmp, nConnectionStatus, pa_msg);
+          tmp, nConnectionStatus);
     }
   else
     {
       OPENER_TRACE_INFO("connection manager: connect succeeded\n");
       /* in case of success the g_pstActiveConnectionList points to the new connection */
       return assembleFWDOpenResponse(g_pstActiveConnectionList, pa_MRResponse,
-          CIP_ERROR_SUCCESS, 0, pa_msg);
+          CIP_ERROR_SUCCESS, 0);
     }
 }
 
@@ -478,7 +477,7 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
 
 EIP_STATUS
 ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
-    S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 * pa_msg)
+    S_CIP_MR_Response * pa_MRResponse)
 {
   EIP_UINT16 ConnectionSerialNr, OriginatorVendorID;
   EIP_UINT32 OriginatorSerialNr;
@@ -525,20 +524,17 @@ ForwardClose(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
     }
 
   return assembleFWDCloseResponse(ConnectionSerialNr, OriginatorVendorID,
-      OriginatorSerialNr, pa_MRRequest, pa_MRResponse, nConnectionStatus,
-      pa_msg);
+      OriginatorSerialNr, pa_MRRequest, pa_MRResponse, nConnectionStatus);
 }
 
 EIP_STATUS
 GetConnectionOwner(S_CIP_Instance * pa_pstInstance,
-    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT8 * pa_msg)
+    S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse)
 {
   /* suppress compiler warnings */
   (void) pa_pstInstance;
   (void) pa_MRRequest;
   (void) pa_MRResponse;
-  (void) pa_msg;
 
   return EIP_OK;
 }
@@ -634,12 +630,12 @@ manageConnections(void)
 EIP_STATUS
 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus,
-    EIP_UINT16 pa_nExtendedStatus, EIP_UINT8 * pa_msg)
+    EIP_UINT16 pa_nExtendedStatus)
 {
   /* write reply information in CPF struct dependent of pa_status */
   S_CIP_CPF_Data *pa_CPF_data = &g_stCPFDataItem;
+  EIP_BYTE *paMsg = pa_MRResponse->Data;
   pa_CPF_data->ItemCount = 2;
-  pa_MRResponse->Data = pa_msg;
   pa_CPF_data->stDataI_Item.TypeID = CIP_ITEM_ID_UNCONNECTEDMESSAGE;
   pa_CPF_data->stAddr_Item.TypeID = CIP_ITEM_ID_NULL;
   pa_CPF_data->stAddr_Item.Length = 0;
@@ -662,8 +658,8 @@ assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj,
             }
         }
 
-      htoll(pa_pstConnObj->CIPConsumedConnectionID, &pa_msg);
-      htoll(pa_pstConnObj->CIPProducedConnectionID, &pa_msg);
+      htoll(pa_pstConnObj->CIPConsumedConnectionID, &paMsg);
+      htoll(pa_pstConnObj->CIPProducedConnectionID, &paMsg);
     }
   else
     {
@@ -675,21 +671,21 @@ assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj,
       pa_MRResponse->AdditionalStatus[0] = pa_nExtendedStatus;
     }
 
-  htols(pa_pstConnObj->ConnectionSerialNumber, &pa_msg);
-  htols(pa_pstConnObj->OriginatorVendorID, &pa_msg);
-  htoll(pa_pstConnObj->OriginatorSerialNumber, &pa_msg);
+  htols(pa_pstConnObj->ConnectionSerialNumber, &paMsg);
+  htols(pa_pstConnObj->OriginatorVendorID, &paMsg);
+  htoll(pa_pstConnObj->OriginatorSerialNumber, &paMsg);
 
   if (CIP_ERROR_SUCCESS == pa_nGeneralStatus)
     {
       /* set the actual packet rate to requested packet rate */
-      htoll(pa_pstConnObj->O_to_T_RPI, &pa_msg);
-      htoll(pa_pstConnObj->T_to_O_RPI, &pa_msg);
+      htoll(pa_pstConnObj->O_to_T_RPI, &paMsg);
+      htoll(pa_pstConnObj->T_to_O_RPI, &paMsg);
     }
 
-  *pa_msg = 0; /* remaining path size -  for routing devices relevant */
-  pa_msg++;
-  *pa_msg = 0; /* reserved */
-  pa_msg++;
+  *paMsg = 0; /* remaining path size -  for routing devices relevant */
+  paMsg++;
+  *paMsg = 0; /* reserved */
+  paMsg++;
 
   return EIP_OK_SEND; /* send reply */
 }
@@ -713,40 +709,40 @@ EIP_STATUS
 assembleFWDCloseResponse(EIP_UINT16 pa_ConnectionSerialNr,
     EIP_UINT16 pa_OriginatorVendorID, EIP_UINT32 pa_OriginatorSerialNr,
     S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse,
-    EIP_UINT16 pa_nExtErrorCode, EIP_UINT8 * pa_msg)
+    EIP_UINT16 pa_nExtErrorCode)
 {
   /* write reply information in CPF struct dependent of pa_status */
   S_CIP_CPF_Data *pa_CPF_data = &g_stCPFDataItem;
+  EIP_BYTE *paMsg = pa_MRResponse->Data;
   pa_CPF_data->ItemCount = 2;
-  pa_MRResponse->Data = pa_msg;
   pa_CPF_data->stDataI_Item.TypeID = CIP_ITEM_ID_UNCONNECTEDMESSAGE;
   pa_CPF_data->stAddr_Item.TypeID = CIP_ITEM_ID_NULL;
   pa_CPF_data->stAddr_Item.Length = 0;
 
-  htols(pa_ConnectionSerialNr, &pa_msg);
-  htols(pa_OriginatorVendorID, &pa_msg);
-  htoll(pa_OriginatorSerialNr, &pa_msg);
+  htols(pa_ConnectionSerialNr, &paMsg);
+  htols(pa_OriginatorVendorID, &paMsg);
+  htoll(pa_OriginatorSerialNr, &paMsg);
 
   pa_MRResponse->ReplyService = (0x80 | pa_MRRequest->Service);
   pa_MRResponse->DataLength = 10; /* if there is no application specific data */
 
   if (CIP_CON_MGR_SUCCESS == pa_nExtErrorCode)
     {
-      *pa_msg = 0; /* no application data */
+      *paMsg = 0; /* no application data */
       pa_MRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
       pa_MRResponse->SizeofAdditionalStatus = 0;
     }
   else
     {
-      *pa_msg = *pa_MRRequest->Data; /* remaining path size */
+      *paMsg = *pa_MRRequest->Data; /* remaining path size */
       pa_MRResponse->GeneralStatus = CIP_ERROR_CONNECTION_FAILURE;
       pa_MRResponse->AdditionalStatus[0] = pa_nExtErrorCode;
       pa_MRResponse->SizeofAdditionalStatus = 1;
     }
 
-  pa_msg++;
-  *pa_msg = 0; /* reserved */
-  pa_msg++;
+  paMsg++;
+  *paMsg = 0; /* reserved */
+  paMsg++;
 
   return EIP_OK_SEND;
 }
@@ -1273,8 +1269,11 @@ triggerConnections(unsigned int pa_unOutputAssembly,
   return nRetVal;
 }
 
-void initializeConnectionManagerData(){
-  memset(g_astConnMgmList, 0, scg_nNumConnectableObjects * sizeof(TConnMgmHandling));
+void
+initializeConnectionManagerData()
+{
+  memset(g_astConnMgmList, 0,
+      scg_nNumConnectableObjects * sizeof(TConnMgmHandling));
   initializeClass3ConnectionData();
   initializeIOConnectionData();
 }

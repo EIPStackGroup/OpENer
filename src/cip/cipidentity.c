@@ -37,12 +37,10 @@ void setDeviceStatus(EIP_UINT16 pa_unStatus)
 
 static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
     S_CIP_MR_Request *pa_stMRRequest, /* pointer to message router request*/
-    S_CIP_MR_Response *pa_stMRResponse, /* pointer to message router response*/
-    EIP_UINT8 *pa_anMsg)
+    S_CIP_MR_Response *pa_stMRResponse) /* pointer to message router response*/
   {
 	EIP_STATUS nRetVal;
     (void)pa_pstInstance;
-    (void)pa_anMsg;
 
     nRetVal = EIP_OK_SEND;
 

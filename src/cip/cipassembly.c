@@ -16,8 +16,7 @@
  */
 EIP_STATUS
 setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse,
-    EIP_UINT8 *pa_acMsg);
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse);
 
 S_CIP_Class *
 createAssemblyClass()
@@ -126,18 +125,15 @@ notifyAssemblyConnectedDataReceived(S_CIP_Instance * pa_pstInstance,
 
 EIP_STATUS
 setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse,
-    EIP_UINT8 *pa_acMsg)
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse)
 {
 
   
-  EIP_UINT8 *pa_acReqData;
+  EIP_UINT8 *acReqData;
   S_CIP_attribute_struct *p; 
   OPENER_TRACE_INFO(" setAttribute %d\n", pa_pstMRRequest->RequestPath.AttributNr);
   
-  pa_acReqData = pa_pstMRRequest->Data;
-
-  pa_acMsg = pa_acMsg; /* suppress compiler warning */
+  acReqData = pa_pstMRRequest->Data;
 
   pa_pstMRResponse->DataLength = 0;
   pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
@@ -175,7 +171,7 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
                     }
                   else
                     {
-                      memcpy(pacData->Data, pa_acReqData, pacData->len);
+                      memcpy(pacData->Data, acReqData, pacData->len);
 
                       if (IApp_AfterAssemblyDataReceived(pa_pstInstance)
                           != EIP_OK)

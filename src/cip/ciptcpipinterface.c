@@ -110,11 +110,9 @@ configureHostName(const char *pa_acHostName)
 EIP_STATUS
 setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance, /* pointer to instance*/
 S_CIP_MR_Request *pa_pstMRRequest, /* pointer to message router request */
-S_CIP_MR_Response *pa_pstMRResponse, /* pointer to message router response*/
-EIP_UINT8 *pa_msg)
+S_CIP_MR_Response *pa_pstMRResponse) /* pointer to message router response*/
 {
-  pa_pstObjectInstance = 0; /*surrpress compiler warning */
-  pa_msg = 0; /*surrpress compiler warning */
+  (void) pa_pstObjectInstance; /*Suppress compiler warning */
 
   if ((1 <= pa_pstMRRequest->RequestPath.AttributNr)
       && (pa_pstMRRequest->RequestPath.AttributNr <= 6))
@@ -122,7 +120,6 @@ EIP_UINT8 *pa_msg)
       /* it is an attribute we currently support, however no attribute is setable */
       /*TODO if you like to have a device that can be configured via this CIP object add your code here */
       pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SETTABLE;
-
     }
   else
     {

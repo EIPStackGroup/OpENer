@@ -40,8 +40,7 @@ EIP_STATUS notifyClass(S_CIP_Class *pt2Class, S_CIP_MR_Request *pa_MRRequest, S_
  *          -1 .. requested attribute not available
  */
 EIP_STATUS getAttributeSingle(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse,
-    EIP_UINT8 *pa_acMsg);
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse);
 
 /* \brief Generic implementation of the GetAttributeAll CIP service
  * Copy all attributes from Object into the global message buffer.
@@ -53,7 +52,6 @@ EIP_STATUS getAttributeSingle(S_CIP_Instance *pa_pstInstance,
  *              0 .. no reply to send
  */
 EIP_STATUS getAttributeAll(S_CIP_Instance *pa_pstObjectInstance,
-    S_CIP_MR_Request *pa_stMRRequest, S_CIP_MR_Response *pa_stMRResponse,
-    EIP_UINT8 *pa_msg);
+    S_CIP_MR_Request *pa_stMRRequest, S_CIP_MR_Response *pa_stMRResponse);
 
 #endif /*CIPCOMMON_H_*/

@@ -95,7 +95,7 @@ notifyClass(S_CIP_Class * pt2Class, S_CIP_MR_Request * pa_MRRequest,
                   OPENER_TRACE_INFO("notify: calling %s service\n", p->name);
                   OPENER_ASSERT(NULL != p->m_ptfuncService);
                   return p->m_ptfuncService(pstInstance, pa_MRRequest,
-                      pa_MRResponse, pa_MRResponse->Data);
+                      pa_MRResponse);
                 }
               else
                 {
@@ -373,11 +373,11 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr)
 /* TODO this needs to check for buffer overflow*/
 EIP_STATUS
 getAttributeSingle(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse,
-    EIP_UINT8 *pa_acMsg)
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse)
 {
   S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
+  EIP_BYTE *paMsg = pa_pstMRResponse->Data;
 
   pa_pstMRResponse->DataLength = 0;
   pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
@@ -402,7 +402,7 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
         }
 
       pa_pstMRResponse->DataLength = encodeData(p->CIP_Type, p->pt2data,
-          &pa_acMsg);
+          &paMsg);
       pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
     }
 
@@ -656,15 +656,14 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
 
 EIP_STATUS
 getAttributeAll(S_CIP_Instance * pa_pstInstance,
-    S_CIP_MR_Request * pa_stMRRequest, S_CIP_MR_Response * pa_stMRResponse,
-    EIP_UINT8 * pa_msg)
+    S_CIP_MR_Request * pa_stMRRequest, S_CIP_MR_Response * pa_stMRResponse)
 {
   int i, j;
   EIP_UINT8 *ptmp;
   S_CIP_attribute_struct *p_attr;
   S_CIP_service_struct *p_service;
 
-  ptmp = pa_msg; /* pointer into the reply */
+  ptmp = pa_stMRResponse->Data; /* pointer into the reply */
   p_attr = pa_pstInstance->pstAttributes; /* pointer to list of attributes*/
   p_service = pa_pstInstance->pstClass->pstServices; /* pointer to list of services*/
 
@@ -695,16 +694,17 @@ getAttributeAll(S_CIP_Instance * pa_pstInstance,
                     {
                       pa_stMRRequest->RequestPath.AttributNr = attrNum;
                       if (EIP_OK_SEND != p_service->m_ptfuncService(
-                          pa_pstInstance, pa_stMRRequest, pa_stMRResponse,
-                          pa_msg))
+                          pa_pstInstance, pa_stMRRequest, pa_stMRResponse))
                         {
+                          pa_stMRResponse->Data = ptmp;
                           return EIP_ERROR;
                         }
-                      pa_msg += pa_stMRResponse->DataLength;
+                      pa_stMRResponse->Data += pa_stMRResponse->DataLength;
                     }
                   p_attr++;
                 }
-              pa_stMRResponse->DataLength = pa_msg - ptmp;
+              pa_stMRResponse->DataLength = pa_stMRResponse->Data - ptmp;
+              pa_stMRResponse->Data = ptmp;
             }
           return EIP_OK_SEND;
         }

@@ -201,8 +201,7 @@ typedef struct CIP_Class
 
 typedef EIP_STATUS
 (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse,
-    EIP_UINT8 *pa_msg);
+    S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse);
 
 /* service descriptor. These are stored in an array*/
 typedef struct CIP_service_struct
