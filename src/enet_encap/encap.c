@@ -556,7 +556,7 @@ encapShutDown(void)
   int i;
   for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
     {
-      if (EIP_INVALID_SOCKET == anRegisteredSessions[i])
+      if (EIP_INVALID_SOCKET != anRegisteredSessions[i])
         {
           IApp_CloseSocket(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
