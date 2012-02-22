@@ -78,7 +78,7 @@ ltoh64(EIP_UINT8 ** pa_pnBuf)
           + ((((EIP_UINT64) pnBuffer[5]) << 16) & 0x0000000000FF0000)
           + ((((EIP_UINT64) pnBuffer[6]) << 8) & 0x000000000000FF00)
           + (((EIP_UINT64) pnBuffer[7]) & 0x00000000000000FF);
-  pa_pnBuf += 8;
+  (*pa_pnBuf) += 8;
   return unData;
 }
 
@@ -94,7 +94,7 @@ htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf)
   pnBuffer[5] = (EIP_UINT8) (pa_unData >> 16) & 0xFF;
   pnBuffer[6] = (EIP_UINT8) (pa_unData >> 8) & 0xFF;
   pnBuffer[7] = (EIP_UINT8) (pa_unData) & 0xFF;
-  pa_pnBuf += 8;
+  (*pa_pnBuf) += 8;
 }
 
 #endif
