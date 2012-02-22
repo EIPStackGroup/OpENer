@@ -103,25 +103,25 @@ htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf)
 
 #endif
 
-void encapsulateIPAdress(EIP_UINT16 pa_unPort, 
-										EIP_UINT32 pa_unAddr,
-										EIP_BYTE *pa_acCommBuf)
+void
+encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
+    EIP_BYTE *pa_acCommBuf)
 {
 #ifdef OPENER_LITTLE_ENDIAN_ARCHITECUTRE
-  htols(htons(AF_INET), &pacCommBuf)
-  htols(htons(pa_unPort), &pacCommBuf);
-  htoll(pa_unAddr, &pacCommBuf);
+  htols(htons(AF_INET), &pa_acCommBuf);
+  htols(htons(pa_unPort), &pa_acCommBuf);
+  htoll(pa_unAddr, &pa_acCommBuf);
 #endif
 
 #ifdef OPENER_BIG_ENDIAN_ARCHITECUTRE
   pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
-	pa_acCommBuf[1] = (unsigned char) AF_INET;
+  pa_acCommBuf[1] = (unsigned char) AF_INET;
   pa_acCommBuf += 2;
-	
+
   pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
-	pa_acCommBuf[1] = (unsigned char) pa_unPort;
+  pa_acCommBuf[1] = (unsigned char) pa_unPort;
   pa_acCommBuf += 2;
-	
+
   pa_acCommBuf[3] = (unsigned char) pa_unAddr;
   pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
   pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
