@@ -11,6 +11,7 @@
 #include "cpf.h"
 #include "cipconnectionmanager.h"
 #include "trace.h"
+#include <string.h>
 
 /* CPF global data items */
 S_CIP_CPF_Data g_stCPFDataItem;
@@ -342,15 +343,12 @@ assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
         {
           htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
           htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
-          htols(pa_CPFDataItem->AddrInfo[j].nsin_family, &pa_msg);
-          htols(pa_CPFDataItem->AddrInfo[j].nsin_port, &pa_msg);
-          htoll(pa_CPFDataItem->AddrInfo[j].nsin_addr, &pa_msg);
-          for (i = 0; i < 8; i++)
-            {
-              *pa_msg = 0; /* sin_zero */
-              pa_msg++;
-            }
-          size += 20;
+					
+					encapsulateIPAdress(pa_CPFDataItem->AddrInfo[j].nsin_port, pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
+					pa_msg += 8;
+	
+					memset(pa_msg, 0, 8);
+					size += 20;
         }
     }
   return size;

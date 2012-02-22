@@ -42,5 +42,9 @@ void htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf);
 
 #endif
 
+void encapsulateIPAdress(EIP_UINT16 pa_unPort, 
+										EIP_UINT32 pa_unAddr,
+										EIP_BYTE *pa_acCommBuf);
+
 
 #endif /*ENDIANCONV_H_*/

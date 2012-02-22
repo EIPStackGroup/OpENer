@@ -13,6 +13,7 @@
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
 
+
 /*Identity data from cipidentity.c*/
 extern EIP_UINT16 VendorID;
 extern EIP_UINT16 DeviceType;
@@ -263,9 +264,10 @@ handleReceivedListIdentityCmd(struct S_Encapsulation_Data * pa_stReceiveData)
   pacCommBuf += 2; /*at this place the real length will be inserted below*/
 
   htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);
-  htols(htons(AF_INET), &pacCommBuf);
-  htols(htons(OPENER_ETHERNET_PORT), &pacCommBuf);
-  htoll(Interface_Configuration.IPAddress, &pacCommBuf);
+	
+	encapsulateIPAdress(OPENER_ETHERNET_PORT, Interface_Configuration.IPAddress, pacCommBuf);
+	pacCommBuf += 8;
+	
   memset(pacCommBuf, 0, 8);
   pacCommBuf += 8;
 

@@ -59,7 +59,7 @@ TConnMgmHandling g_astConnMgmList[2
     + OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS];
 
 /*! List holding all currently active connections*/
-S_CIP_ConnectionObject *g_pstActiveConnectionList = NULL;
+/*@null@*/S_CIP_ConnectionObject *g_pstActiveConnectionList = NULL; 
 
 /*! buffer connection object needed for forward open */
 S_CIP_ConnectionObject g_stDummyConnectionObject;
@@ -136,10 +136,10 @@ getConnMgmEntry(EIP_UINT32 pa_nClassId);
 void
 initializeConnectionManagerData();
 
-int
+unsigned int
 GETPADDEDLOGICALPATH(unsigned char **x)
 {
-  int tmp;
+  unsigned int tmp;
 
   tmp = *(*x)++;
   if ((tmp & 3) == 0)
