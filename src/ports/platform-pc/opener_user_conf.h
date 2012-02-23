@@ -30,12 +30,6 @@ typedef unsigned short in_port_t;
 #include <arpa/inet.h>
 #endif
 
-
-
-/*! Specification of the platform endianess */
-/* #define OPENER_LITTLE_ENDIAN_ARCHITECUTRE 1 */
-/* #define OPENER_BIG_ENDIAN_ARCHITECUTRE    1 */
-
 /*! Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
 #define OPENER_DEVICE_TYPE               12

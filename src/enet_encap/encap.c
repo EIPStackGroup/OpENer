@@ -95,6 +95,8 @@ encapInit(void)
 {
   int i;
 
+  determineEndianess();
+
   /* initialize Sessions to invalid == free session */
   for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
     {

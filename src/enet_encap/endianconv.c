@@ -5,9 +5,7 @@
  ******************************************************************************/
 #include "endianconv.h"
 
-#if !defined(OPENER_LITTLE_ENDIAN_ARCHITECUTRE) && !defined(OPENER_BIG_ENDIAN_ARCHITECUTRE)
-#error "Endianess of the architecture is not defined!"
-#endif
+int g_nOpENerPlatformEndianess = -1;
 
 /* THESE ROUTINES MODIFY THE BUFFER POINTER*/
 
@@ -107,25 +105,51 @@ void
 encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     EIP_BYTE *pa_acCommBuf)
 {
-#ifdef OPENER_LITTLE_ENDIAN_ARCHITECUTRE
-  htols(htons(AF_INET), &pa_acCommBuf);
-  htols(htons(pa_unPort), &pa_acCommBuf);
-  htoll(pa_unAddr, &pa_acCommBuf);
-#endif
 
-#ifdef OPENER_BIG_ENDIAN_ARCHITECUTRE
-  pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
-  pa_acCommBuf[1] = (unsigned char) AF_INET;
-  pa_acCommBuf += 2;
+  if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
+    {
+      htols(htons(AF_INET), &pa_acCommBuf);
+      htols(htons(pa_unPort), &pa_acCommBuf);
+      htoll(pa_unAddr, &pa_acCommBuf);
 
-  pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
-  pa_acCommBuf[1] = (unsigned char) pa_unPort;
-  pa_acCommBuf += 2;
+    }
+  else
+    {
+      if (OPENER_BIG_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
+        {
+          pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
+          pa_acCommBuf[1] = (unsigned char) AF_INET;
+          pa_acCommBuf += 2;
 
-  pa_acCommBuf[3] = (unsigned char) pa_unAddr;
-  pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
-  pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
-  pa_acCommBuf[0] = (unsigned char) (pa_unAddr >> 24);
-#endif
+          pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
+          pa_acCommBuf[1] = (unsigned char) pa_unPort;
+          pa_acCommBuf += 2;
+
+          pa_acCommBuf[3] = (unsigned char) pa_unAddr;
+          pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
+          pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
+          pa_acCommBuf[0] = (unsigned char) (pa_unAddr >> 24);
+        }
+    }
 }
 
+void
+determineEndianess()
+{
+  int i = 1;
+  char *p = (char *) &i;
+  if (p[0] == 1)
+    {
+      g_nOpENerPlatformEndianess = OPENER_LITTLE_ENDIAN_PLATFORM;
+    }
+  else
+    {
+      g_nOpENerPlatformEndianess = OPENER_BIG_ENDIAN_PLATFORM;
+    }
+}
+
+int
+getEndianess()
+{
+  return g_nOpENerPlatformEndianess;
+}
