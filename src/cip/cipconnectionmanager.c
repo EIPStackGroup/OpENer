@@ -19,6 +19,7 @@
 #include "cipassembly.h"
 #include "cpf.h"
 #include "appcontype.h"
+#include "encap.h"
 
 /* values needed from cipidentiy */
 extern EIP_UINT16 VendorID;
@@ -547,6 +548,7 @@ manageConnections(void)
 
   /*Inform application that it can execute                                    */
   IApp_HandleApplication();
+  manageEncapsulationMessages();
 
   pstRunner = g_pstActiveConnectionList;
   while (NULL != pstRunner)

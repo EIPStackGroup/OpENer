@@ -66,4 +66,14 @@ void encapInit(void);
  */
 void encapShutDown(void);
 
+
+/*! \ingroup ENCAP
+ * \brief Handle delayed encapsulation message responses
+ *
+ * Certain encapsulation message requests require a delayed sending of the response
+ * message. This functions checks if messages need to be sent and performs the
+ * sending.
+ */
+void manageEncapsulationMessages();
+
 #endif /*ENCAP_H_*/

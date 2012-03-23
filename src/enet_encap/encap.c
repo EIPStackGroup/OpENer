@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 #include <string.h>
+#include <stdlib.h>
 #include "opener_api.h"
 #include "cpf.h"
 #include "encap.h"
@@ -13,7 +14,6 @@
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
 
-
 /*Identity data from cipidentity.c*/
 extern EIP_UINT16 VendorID;
 extern EIP_UINT16 DeviceType;
@@ -22,6 +22,10 @@ extern S_CIP_Revision Revison;
 extern EIP_UINT16 ID_Status;
 extern EIP_UINT32 SerialNumber;
 extern S_CIP_Short_String ProductName;
+
+/* FIXME Quick fix for getting the last upd originator
+ */
+extern struct sockaddr_in from;
 
 /*ip address data taken from TCPIPInterfaceObject*/
 extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
@@ -54,9 +58,26 @@ extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 #define SUPPORT_CIP_TCP                 0x0020
 #define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
 
+#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /*According to EIP spec at least 2 delayed message requests schould be supporte */
+
+#define ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE  (ENCAPSULATION_HEADER_LENGTH + 39 + sizeof(OPENER_DEVICE_NAME)) /* currently we only have the size of an encapsulation message */
+
+/* Encapsulation layer data  */
+
+struct SDelayedEncapsulationMessage
+{
+  EIP_INT32 m_unTimeOut;
+  int m_nSocket;
+  struct sockaddr_in m_stSendToAddr;
+  EIP_BYTE m_anMsg[ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE];
+  unsigned int m_unMessageSize;
+};
+
 struct S_Encapsulation_Interface_Information g_stInterfaceInformation;
 
 int anRegisteredSessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
+
+struct SDelayedEncapsulationMessage g_stDelayedEncapsulationMessages[ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES];
 
 /*** private functions ***/
 void
@@ -64,7 +85,8 @@ handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void
 handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void
-handleReceivedListIdentityCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListIdentityCmd(int pa_nSocket,
+    struct S_Encapsulation_Data *pa_stReceiveData);
 void
 handleReceivedRegisterSessionCmd(int pa_nSockfd,
     struct S_Encapsulation_Data *pa_stReceiveData);
@@ -86,6 +108,10 @@ checkRegisteredSessions(struct S_Encapsulation_Data *pa_S_ReceiveData);
 int
 encapsulate_data(struct S_Encapsulation_Data *pa_S_SendData);
 
+void
+determineDelayTime(EIP_BYTE *pa_acBufferStart,
+    struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer);
+
 /*   void encapInit(void)
  *   initialize sessionlist and interfaceinformation.
  */
@@ -93,14 +119,23 @@ encapsulate_data(struct S_Encapsulation_Data *pa_S_SendData);
 void
 encapInit(void)
 {
-  int i;
+  unsigned int i;
 
   determineEndianess();
+
+  /*initialize random numbers for random delayed response message generation
+   * we use the ip address as seed as suggested in the spec */
+  srand(Interface_Configuration.IPAddress);
 
   /* initialize Sessions to invalid == free session */
   for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
     {
       anRegisteredSessions[i] = EIP_INVALID_SOCKET;
+    }
+
+  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+    {
+      g_stDelayedEncapsulationMessages[i].m_nSocket = -1;
     }
 
   /*TODO make the interface information configurable*/
@@ -154,7 +189,8 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
 
           case (COMMAND_LISTIDENTITY):
-            handleReceivedListIdentityCmd(&sEncapData);
+            handleReceivedListIdentityCmd(pa_socket, &sEncapData);
+            nRetVal = EIP_OK; /* as the response has to be delayed do not send it now */
             break;
 
           case (COMMAND_LISTINTERFACES):
@@ -253,41 +289,89 @@ handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
  * 			0 .. success
  */
 void
-handleReceivedListIdentityCmd(struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedListIdentityCmd(int pa_nSocket,
+    struct S_Encapsulation_Data * pa_stReceiveData)
 {
-  /* List Identity reply according to EIP/CIP Specification */
-  EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
-  EIP_BYTE *acIdLenBuf;
+  struct SDelayedEncapsulationMessage *pstDelayedMessageBuffer = NULL;
+  unsigned int i;
 
-  htols(1, &pacCommBuf); /* one item */
-  htols(ITEM_ID_LISTIDENTITY, &pacCommBuf);
+  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+    {
+      if (-1 == g_stDelayedEncapsulationMessages[i].m_nSocket)
+        {
+          pstDelayedMessageBuffer = &(g_stDelayedEncapsulationMessages[i]);
+        }
+    }
 
-  acIdLenBuf = pacCommBuf;
-  pacCommBuf += 2; /*at this place the real length will be inserted below*/
+  if (NULL != pstDelayedMessageBuffer)
+    {
+      pstDelayedMessageBuffer->m_nSocket = pa_nSocket;
+      memcpy((&pstDelayedMessageBuffer->m_stSendToAddr), &from, sizeof(from));
 
-  htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);
-	
-	encapsulateIPAdress(OPENER_ETHERNET_PORT, Interface_Configuration.IPAddress, pacCommBuf);
-	pacCommBuf += 8;
-	
-  memset(pacCommBuf, 0, 8);
-  pacCommBuf += 8;
+      determineDelayTime(pa_stReceiveData->m_acCommBufferStart,
+          pstDelayedMessageBuffer);
 
-  htols(VendorID, &pacCommBuf);
-  htols(DeviceType, &pacCommBuf);
-  htols(ProductCode, &pacCommBuf);
-  *(pacCommBuf)++ = Revison.MajorRevision;
-  *(pacCommBuf)++ = Revison.MinorRevision;
-  htols(ID_Status, &pacCommBuf);
-  htoll(SerialNumber, &pacCommBuf);
-  *pacCommBuf++ = (unsigned char) ProductName.Length;
-  memcpy(pacCommBuf, ProductName.String, ProductName.Length);
-  pacCommBuf += ProductName.Length;
-  *pacCommBuf++ = 0xFF;
+      memcpy(&(pstDelayedMessageBuffer->m_anMsg[0]),
+          pa_stReceiveData->m_acCommBufferStart, ENCAPSULATION_HEADER_LENGTH);
 
-  pa_stReceiveData->nData_length = pacCommBuf
-      - &(pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
-  htols(pacCommBuf - acIdLenBuf - 2, &acIdLenBuf); /* the -2 is for not counting the length field*/
+      EIP_UINT8 *pacCommBuf =
+          &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]);
+      EIP_BYTE *acIdLenBuf;
+
+      htols(1, &pacCommBuf); /* one item */
+      htols(ITEM_ID_LISTIDENTITY, &pacCommBuf);
+
+      acIdLenBuf = pacCommBuf;
+      pacCommBuf += 2; /*at this place the real length will be inserted below*/
+
+      htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);
+
+      encapsulateIPAdress(OPENER_ETHERNET_PORT,
+          Interface_Configuration.IPAddress, pacCommBuf);
+      pacCommBuf += 8;
+
+      memset(pacCommBuf, 0, 8);
+      pacCommBuf += 8;
+
+      htols(VendorID, &pacCommBuf);
+      htols(DeviceType, &pacCommBuf);
+      htols(ProductCode, &pacCommBuf);
+      *(pacCommBuf)++ = Revison.MajorRevision;
+      *(pacCommBuf)++ = Revison.MinorRevision;
+      htols(ID_Status, &pacCommBuf);
+      htoll(SerialNumber, &pacCommBuf);
+      *pacCommBuf++ = (unsigned char) ProductName.Length;
+      memcpy(pacCommBuf, ProductName.String, ProductName.Length);
+      pacCommBuf += ProductName.Length;
+      *pacCommBuf++ = 0xFF;
+
+      pstDelayedMessageBuffer->m_unMessageSize = pacCommBuf
+          - &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]);
+      htols(pacCommBuf - acIdLenBuf - 2, &acIdLenBuf); /* the -2 is for not counting the length field*/
+
+      pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
+      htols(pstDelayedMessageBuffer->m_unMessageSize, &pacCommBuf);
+      pstDelayedMessageBuffer->m_unMessageSize += ENCAPSULATION_HEADER_LENGTH;
+    }
+}
+
+void
+determineDelayTime(EIP_BYTE *pa_acBufferStart,
+    struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer)
+{
+  pa_acBufferStart += 12; /* start of the sender context */
+  EIP_UINT16 unMaxDelayTime = ltohs(&pa_acBufferStart);
+  if (0 == unMaxDelayTime)
+    {
+      unMaxDelayTime = 2000;
+    }
+  else if (500 > unMaxDelayTime)
+    {
+      unMaxDelayTime = 500;
+    }
+
+  pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand())
+      / RAND_MAX;
 }
 
 /*   void RegisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
@@ -403,8 +487,7 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
       if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
         {
           nSendSize =
-              notifyConnectedCPF(
-                  pa_stReceiveData,
+              notifyConnectedCPF(pa_stReceiveData,
                   &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
           if (0 < nSendSize)
@@ -448,8 +531,7 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
       if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
         {
           nSendSize =
-              notifyCPF(
-                  pa_stReceiveData,
+              notifyCPF(pa_stReceiveData,
                   &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
           if (nSendSize >= 0)
@@ -568,3 +650,24 @@ encapShutDown(void)
     }
 }
 
+void
+manageEncapsulationMessages()
+{
+  unsigned int i;
+  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+    {
+      if (-1 != g_stDelayedEncapsulationMessages[i].m_nSocket)
+        {
+          g_stDelayedEncapsulationMessages[i].m_unTimeOut -= OPENER_TIMER_TICK;
+          if (0 >= g_stDelayedEncapsulationMessages[i].m_unTimeOut)
+            {
+              IApp_SendUDPData(
+                  &(g_stDelayedEncapsulationMessages[i].m_stSendToAddr),
+                  g_stDelayedEncapsulationMessages[i].m_nSocket,
+                  &(g_stDelayedEncapsulationMessages[i].m_anMsg[0]),
+                  g_stDelayedEncapsulationMessages[i].m_unMessageSize);
+              g_stDelayedEncapsulationMessages[i].m_nSocket = -1;
+            }
+        }
+    }
+}

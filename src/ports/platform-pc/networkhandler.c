@@ -98,10 +98,12 @@ leave(int sig)
  * 			-1 .. error
  */
 
+struct sockaddr_in from;
+
 EIP_STATUS
 Start_NetworkHandler()
 {
-  struct sockaddr_in remote_addr, from;
+  struct sockaddr_in remote_addr;
   struct sockaddr_in my_addr;
   int nTCPListener;
   int nUDPListener;
@@ -577,7 +579,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
           OPENER_TRACE_ERR("networkhandler: could not get peername: %s\n", strerror(errno));
           return EIP_INVALID_SOCKET;
         }
-      /* store the orignators address */
+      /* store the originators address */
       pa_pstAddr->sin_addr.s_addr = stPeerAdr.sin_addr.s_addr;
     }
 
