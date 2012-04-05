@@ -1,12 +1,13 @@
-$ EZ-EDS Version 3.3 Generated Electronic Data Sheet
+$ EZ-EDS Version 3.9 Generated Electronic Data Sheet
 
 [File]
         DescText = "EDS file for the sample application of OpENer";
         CreateDate = 11-03-2009;
         CreateTime = 13:15:23;
-        ModDate = 11-03-2009;
-        ModTime = 13:16:08;
+        ModDate = 04-05-2012;
+        ModTime = 19:01:44;
         Revision = 1.0;
+        HomeURL = "opener.sf.net";
 
 [Device]
         VendCode = 1;
