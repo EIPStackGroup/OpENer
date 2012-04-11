@@ -199,9 +199,20 @@ typedef struct CIP_Class
   char *acName; /*!> class name */
 } S_CIP_Class;
 
+/*! \ingroup CIP_API
+ *  \typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
+ *  \brief Signature definition for the implementation of CIP services.
+ *
+ *  CIP services have to follow this signature in order to be handled correctly by the stack.
+ *  @param pa_pstInstance the instance which was referenced in the service request
+ *  @param pa_MRRequest request data
+ *  @param pa_MRResponse storage for the response data, including a buffer for extended data
+ *  @return EIP_OK_SEND if service could be executed successfully and a response should be sent
+ */
 typedef EIP_STATUS
 (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
     S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse);
+
 
 /* service descriptor. These are stored in an array*/
 typedef struct CIP_service_struct

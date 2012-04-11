@@ -15,6 +15,7 @@
  * \brief This is the public interface of the OpENer. It provides all function needed to implement an EtherNet/IP enabled slave-device.
  */
 
+
 /*! \ingroup CIP_API
  * \brief Configure the data of the network interface of the device
  * 
