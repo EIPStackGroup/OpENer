@@ -7,6 +7,7 @@
 #define TYPEDEFS_H_
 
 #include <opener_user_conf.h>
+#include <stddef.h>
 
 /*
  Do not use interface types for internal variables, such as "int i;", which is
