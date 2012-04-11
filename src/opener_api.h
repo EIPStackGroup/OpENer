@@ -632,7 +632,7 @@ IApp_CloseSocket(int pa_nSockFd);
  *      With the function CIP_Init(EIP_UINT16 pa_nUniqueConnID) the internal data structures of opener are
  *      correctly setup. After this step own CIP objects and Assembly objects 
  *      instances may be created. For your convenience we provide the call-back 
- *      function CIP_Init(EIP_UINT16 pa_nUniqueConnID). This call back function is called when the stack is
+ *      function IApp_Init(void). This call back function is called when the stack is
  *      ready to receive application specific CIP objects.
  *   -# Create Application Specific CIP Objects:\n
  *      Within the call-back function IApp_Init(void) or after CIP_Init(void) 
