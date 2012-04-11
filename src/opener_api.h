@@ -53,7 +53,7 @@ void
 configureHostName(const char *pa_acHostName);
 
 /*! \ingroup CIP_API
- * Set the serial number of the device's identity object.
+ * \brief Set the serial number of the device's identity object.
  * 
  * @param pa_nSerialNumber unique 32 bit number identifying the device
  */
@@ -61,7 +61,7 @@ void
 setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber);
 
 /*!\ingroup CIP_API
- * Set the current status of the device.
+ * \brief Set the current status of the device.
  *
  * @param pa_unStatus the new status value
  */
@@ -128,6 +128,7 @@ getAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr);
 
 /*! \ingroup CIP_API 
  * \brief Allocate memory for new CIP Class and attributes
+ *
  *  The new CIP class will be registered at the stack to be able
  *  for receiving explicit messages.
  * 
@@ -185,7 +186,12 @@ S_CIP_Instance *
 addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
 
 /*! \ingroup CIP_API 
- * Insert an attribute in an instance of a CIP class
+ * \brief Insert an attribute in an instance of a CIP class
+ *
+ *  Note that attributes are stored in an array pointer in the instance
+ *  the attributes array is not expandable if you insert an attributes that has
+ *  already been defined, the previous attributes will be replaced
+ *
  *  @param pa_pInstance pointer to CIP class. (may be also instance 0)
  *  @param pa_nAttributeNr number of attribute to be inserted.
  *  @param pa_nCIP_Type type of attribute to be inserted.
@@ -197,7 +203,8 @@ insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT16 pa_nAttributeNr,
 
 /** \ingroup CIP_API 
  * \brief Insert a service in an instance of a CIP object
- *  Note that services are stored in an array pointer to by the class object
+ *
+ *  Note that services are stored in an array pointer in the class object
  *  the service array is not expandable if you insert a service that has 
  *  already been defined, the previous service will be replaced
  * 
@@ -211,7 +218,7 @@ insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
     TCIPServiceFunc pa_ptfuncService, char *name);
 
 /** \ingroup CIP_API 
- * \brief Produce the given attribute onto the message buffer.
+ * \brief Produce the data according to CIP encoding onto the message buffer.
  *
  * This function may be used in own services for sending data back to the
  * requester (e.g., getAttributeSingle for special structs).
@@ -224,7 +231,8 @@ insertService(S_CIP_Class *pa_pClass, EIP_UINT8 pa_nServiceNr,
 int
 encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
 
-/*! Retrieve the given attribute from the message buffer.
+/*! \ingroup CIP_API
+ * \brief Retrieve the given data according to CIP encoding from the message buffer.
  *
  * This function may be used in in own services for handling data from the
  * requester (e.g., setAttributeSingle).
@@ -267,7 +275,7 @@ typedef EIP_STATUS (*TConnRecvDataFunc)(struct CIP_ConnectionObject *pa_pstConne
 
 
 /*!\ingroup CIP_API
- * \brief register open and close functions for an specific object.
+ * \brief register open functions for an specific object.
  *
  * With this function any object can be enabled to be a target for forward open/close
  * request.
@@ -279,14 +287,14 @@ EIP_STATUS
 addConnectableObject(EIP_UINT32 pa_nClassId, TConnOpenFunc pa_pfOpenFunc);
 
 /** \ingroup CIP_API
- * Configures the connection point for an exclusive owner connection.
+ * \brief Configures the connection point for an exclusive owner connection.
  *
  * @param pa_unConnNum the number of the exclusive owner connection. The
  *        enumeration starts with 0. Has to be smaller than
  *        OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS.
  * @param pa_unOutputAssembly the O-to-T point to be used for this connection
  * @param pa_unInputAssembly the T-to-O point to be used for this connection
- * @param pa_unConfigAssembly the config point to be used for this connection
+ * @param pa_unConfigAssembly the configuration point to be used for this connection
  */
 void
 configureExclusiveOwnerConnectionPoint(unsigned int pa_unConnNum,
@@ -294,14 +302,14 @@ configureExclusiveOwnerConnectionPoint(unsigned int pa_unConnNum,
     unsigned int pa_unConfigAssembly);
 
 /** \ingroup CIP_API
- * Configures the connection point for an input only connection.
+ * \brief Configures the connection point for an input only connection.
  *
  * @param pa_unConnNum the number of the input only connection. The
  *        enumeration starts with 0. Has to be smaller than
  *        OPENER_CIP_NUM_INPUT_ONLY_CONNS.
  * @param pa_unOutputAssembly the O-to-T point to be used for this connection
  * @param pa_unInputAssembly the T-to-O point to be used for this connection
- * @param pa_unConfigAssembly the config point to be used for this connection
+ * @param pa_unConfigAssembly the configuration point to be used for this connection
  */
 void
 configureInputOnlyConnectionPoint(unsigned int pa_unConnNum,
@@ -309,14 +317,14 @@ configureInputOnlyConnectionPoint(unsigned int pa_unConnNum,
     unsigned int pa_unConfigAssembly);
 
 /** \ingroup CIP_API
- * Configures the connection point for a listen only connection.
+ * \brief Configures the connection point for a listen only connection.
  *
  * @param pa_unConnNum the number of the input only connection. The
  *        enumeration starts with 0. Has to be smaller than
  *        OPENER_CIP_NUM_LISTEN_ONLY_CONNS.
  * @param pa_unOutputAssembly the O-to-T point to be used for this connection
  * @param pa_unInputAssembly the T-to-O point to be used for this connection
- * @param pa_unConfigAssembly the config point to be used for this connection
+ * @param pa_unConfigAssembly the configuration point to be used for this connection
  */
 void
 configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
@@ -324,10 +332,10 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
     unsigned int pa_unConfigAssembly);
 
 /** \ingroup CIP_API 
- * Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
+ * \brief Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
  * 
  * @param pa_socket socket handle from which data is received.
- * @param pa_buf buffer that contains the recieved data. This buffer will also contain the 
+ * @param pa_buf buffer that contains the received data. This buffer will also contain the
  *       response if one is to be sent.  
  * @param pa_length length of the data in pa_buf.
  * @param pa_nRemainingBytes return how many bytes of the input are left over after we're done here
@@ -338,7 +346,8 @@ handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf,
     unsigned int pa_length, int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
- *  Notfiy the connection manager that data for a connection has been received.
+ *  \brief Notify the connection manager that data for a connection has been received.
+ *
  *  This function should be invoked by the network layer.
  *  @param pa_pnData pointer to the buffer of data that has been received
  *  @param pa_nDataLength number of bytes in the data buffer
@@ -352,8 +361,9 @@ handleReceivedConnectedData(EIP_UINT8 *pa_pnData, int pa_nDataLength,
     struct sockaddr_in *pa_pstFromAddr);
 
 /*! \ingroup CIP_API
- * Check if any of the connection timers (TransmissionTrigger or WarchdogTimeout) has timed out.
- * If yes the function performs the necessary action. This function should be called periodically once every
+ * \brief Check if any of the connection timers (TransmissionTrigger or WarchdogTimeout) have timed out.
+ *
+ * If the a timeout occurs the function performs the necessary action. This function should be called periodically once every
  * OPENER_TIMER_TICK ms. 
  * 
  * @return EIP_OK on success
@@ -362,10 +372,12 @@ EIP_STATUS
 manageConnections(void);
 
 /*! \ingroup CIP_API
- * Trigger the production of an application triggered connection. This will issue
- * the production of the specified connection at the next possible ocation. Depending
- * on the values for the RPI and the production inhibit timer. The application is
- * informed via the EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
+ * \brief Trigger the production of an application triggered connection.
+ *
+ * This will issue the production of the specified connection at the next
+ * possible occasion. Depending on the values for the RPI and the production
+ * inhibit timer. The application is informed via the
+ * EIP_BOOL8 IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
  * callback function when the production will happen. This function should only be
  * invoked from void IApp_HandleApplication(void).
  *
@@ -381,7 +393,8 @@ triggerConnections(unsigned int pa_unOutputAssembly,
     unsigned int pa_unInputAssembly);
 
 /*! \ingroup CIP_API
- * Inform the encapsulation layer that the remote host has closed the connection.
+ * \brief Inform the encapsulation layer that the remote host has closed the connection.
+ *
  * According to the specifications that will clean up and close the session in the encapsulation layer.
  * @param pa_nSocket the handler to the socket of the closed connection
  */
@@ -391,7 +404,8 @@ closeSession(int pa_nSocket);
 /**  \defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * \ingroup CIP_API
  * 
- * \brief These functions have to implemented in order to give the OpENer a method to inform the application on certain state changes
+ * \brief These functions have to implemented in order to give the OpENer a
+ * method to inform the application on certain state changes.
  */
 
 /** \ingroup CIP_CALLBACK_API 
@@ -410,7 +424,8 @@ EIP_STATUS
 IApp_Init(void);
 
 
-/**\brief Allow the device specific application to perform its execution
+/**\ingroup CIP_CALLBACK_API
+ * \brief Allow the device specific application to perform its execution
  *
  * This function will be executed by the stack at the beginning of each
  * execution of EIP_STATUS manageConnections(void). It allows to implement
