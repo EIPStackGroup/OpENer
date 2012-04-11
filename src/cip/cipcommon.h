@@ -35,7 +35,6 @@ EIP_STATUS notifyClass(S_CIP_Class *pt2Class, S_CIP_MR_Request *pa_MRRequest, S_
  * @param pa_pstInstance pointer to instance.
  * @param pa_pstMRRequest pointer to request.
  * @param pa_pstMRResponse pointer to response.
- * @param pa_acMsg pointer to memory where response should be written
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */

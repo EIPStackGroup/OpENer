@@ -37,7 +37,7 @@ openCommunicationChannels(struct CIP_ConnectionObject *pa_pstIOConnObj);
 /*! \brief close the communication channels of the given connection and remove it
  * from the active connections list.
  *
- * @param pa_pstIOConnObj pointer to the connection object data
+ * @param pa_pstConnObjData pointer to the connection object data
  */
 void
 closeCommChannelsAndRemoveFromActiveConnsList(

@@ -241,7 +241,7 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj);
  * By adding a connection to the active connection list the connection manager will
  * perform the supervision and handle the timing (e.g., timeout, production inhibit, etc).
  *
- * @param pa_pstConnObj pointer to the connection object to be added.
+ * @param pa_pstConn pointer to the connection object to be added.
  */
 void
 addNewActiveConnection(S_CIP_ConnectionObject *pa_pstConn);
