@@ -109,9 +109,9 @@ notifyAssemblyConnectedDataReceived(S_CIP_Instance * pa_pstInstance,
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
   p = (S_CIP_Byte_Array *) pa_pstInstance->pstAttributes->pt2data;
-  if (p->len < pa_nDataLength)
+  if (p->len != pa_nDataLength)
     {
-      OPENER_TRACE_ERR("too much data arrived\n");
+      OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
       return EIP_ERROR; /*TODO question should we notify the application that wrong data has been recieved???*/
     }
   else
