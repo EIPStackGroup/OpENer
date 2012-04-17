@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef NETWORKHANDLER_H_
@@ -13,6 +13,8 @@
  *  @return status
  *          EIP_ERROR .. error
  */
-EIP_STATUS Start_NetworkHandler(void);
+EIP_STATUS NetworkHandler_Init(void);
+EIP_STATUS NetworkHandler_ProcessOnce(void);
+EIP_STATUS NetworkHandler_Finish(void);
 
 #endif /*NETWORKHANDLER_H_*/

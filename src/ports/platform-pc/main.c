@@ -70,10 +70,21 @@ main(int argc, char *arg[])
   /* Setup the CIP Layer */
   CIP_Init(nUniqueConnectionID);
 
-  Start_NetworkHandler(); /* here is the select loop implemented */
+  /* Setup Network Handles */
+  NetworkHandler_Init();
+
+  /* The event loop. Put other processing you need done continually in here */
+  while(true)
+    {
+      NetworkHandler_ProcessOnce();
+    }
+
+  /* clean up network state */
+  NetworkHandler_Finish();
 
   /* close remaining sessions and connections, cleanup used data */
   shutdownCIP();
+
   return -1;
 }
 
