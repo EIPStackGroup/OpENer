@@ -109,7 +109,7 @@ encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
   if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
     {
       htols(htons(AF_INET), &pa_acCommBuf);
-      htols(htons(pa_unPort), &pa_acCommBuf);
+      htols(pa_unPort, &pa_acCommBuf);
       htoll(pa_unAddr, &pa_acCommBuf);
 
     }
