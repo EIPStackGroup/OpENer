@@ -300,6 +300,7 @@ handleReceivedListIdentityCmd(int pa_nSocket,
       if (-1 == g_stDelayedEncapsulationMessages[i].m_nSocket)
         {
           pstDelayedMessageBuffer = &(g_stDelayedEncapsulationMessages[i]);
+          break;
         }
     }
 
@@ -371,7 +372,7 @@ determineDelayTime(EIP_BYTE *pa_acBufferStart,
     }
 
   pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand())
-      / RAND_MAX;
+      / RAND_MAX + 1;
 }
 
 /*   void RegisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)

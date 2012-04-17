@@ -344,7 +344,7 @@ assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
           htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
           htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
 
-          encapsulateIPAdress(pa_CPFDataItem->AddrInfo[j].nsin_port,
+          encapsulateIPAdressCPF(pa_CPFDataItem->AddrInfo[j].nsin_port,
               pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
           pa_msg += 8;
 

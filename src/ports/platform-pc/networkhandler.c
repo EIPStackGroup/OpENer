@@ -42,8 +42,21 @@ int g_nCurrentActiveTCPSocket;
 static struct timeval tv;
 static MILLISECONDS actualtime, lasttime;
 
+/*!\brief handle any connection request coming in the TCP server socket.
+ *
+ */
+void
+handleTCPConnectionRequest();
+
+
+/*!
+ *
+ */
 EIP_STATUS
 handleDataOnTCPSocket(int pa_nSocket);
+
+
+
 
 static MILLISECONDS
 getmilliseconds(void)
@@ -206,15 +219,13 @@ NetworkHandler_ProcessOnce(void)
   int nRemainingBytes;
   int replylen;
   S_CIP_ConnectionObject *pstConnection;
-  struct sockaddr_in remote_addr;
 
 #ifndef WIN32
-  socklen_t addrlen;
   socklen_t fromlen;
 #else
   unsigned long fromlen;
-  unsigned long addrlen
 #endif
+
   read_fds = master;
   fromlen = sizeof(from);
 
@@ -255,23 +266,7 @@ NetworkHandler_ProcessOnce(void)
             /* see if this is a connection request to the TCP listener*/
             if (fd == TheNetworkStatus.nTCPListener) /* handle new TCP connection */
               {
-                OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
-                addrlen = sizeof(remote_addr);
-                newfd = accept(TheNetworkStatus.nTCPListener,
-                    (struct sockaddr *) &remote_addr, &addrlen); /* remote_addr does not seem to be used*/
-                if (newfd == -1)
-                  {
-                    OPENER_TRACE_ERR("networkhandler: error on accept: %s\n", strerror(errno));
-                    continue;
-                  }
-
-                FD_SET(newfd, &master);
-                /* add newfd to master set */
-                if (newfd > fdmax)
-                  fdmax = newfd;
-                OPENER_TRACE_STATE(
-                    "networkhandler: opened new TCP connection on fd %d\n",
-                    newfd);
+                handleTCPConnectionRequest();
                 continue;
               }
 
@@ -354,6 +349,7 @@ NetworkHandler_ProcessOnce(void)
             /* if not registered UDP, handle as a TCP receive */
             if (EIP_ERROR == handleDataOnTCPSocket(fd)) /* if error */
               {
+                IApp_CloseSocket(fd);
                 closeSession(fd); /* clean up session and close the socket */
               }
           }
@@ -609,4 +605,28 @@ IApp_CloseSocket(int pa_nSockFd)
       close(pa_nSockFd);
 #endif
     }
+}
+
+void
+handleTCPConnectionRequest()
+{
+  OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
+
+  newfd = accept(TheNetworkStatus.nTCPListener, NULL, NULL);
+  if (newfd == -1)
+    {
+      OPENER_TRACE_ERR("networkhandler: error on accept: %s\n", strerror(errno));
+      return;
+    }
+
+  FD_SET(newfd, &master);
+  /* add newfd to master set */
+  if (newfd > fdmax)
+    {
+      fdmax = newfd;
+    }
+
+  OPENER_TRACE_STATE(
+      "networkhandler: opened new TCP connection on fd %d\n",
+      newfd);
 }

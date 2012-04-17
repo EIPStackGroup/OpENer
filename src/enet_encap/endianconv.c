@@ -105,7 +105,37 @@ void
 encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     EIP_BYTE *pa_acCommBuf)
 {
+  if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
+    {
+      htols(htons(AF_INET), &pa_acCommBuf);
+      htols(htons(pa_unPort), &pa_acCommBuf);
+      htoll(pa_unAddr, &pa_acCommBuf);
 
+    }
+  else
+    {
+      if (OPENER_BIG_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
+        {
+          pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
+          pa_acCommBuf[1] = (unsigned char) AF_INET;
+          pa_acCommBuf += 2;
+
+          pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
+          pa_acCommBuf[1] = (unsigned char) pa_unPort;
+          pa_acCommBuf += 2;
+
+          pa_acCommBuf[3] = (unsigned char) pa_unAddr;
+          pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
+          pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
+          pa_acCommBuf[0] = (unsigned char) (pa_unAddr >> 24);
+        }
+    }
+}
+
+void
+encapsulateIPAdressCPF(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
+    EIP_BYTE *pa_acCommBuf)
+{
   if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
     {
       htols(htons(AF_INET), &pa_acCommBuf);
