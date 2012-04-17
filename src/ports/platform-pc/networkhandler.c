@@ -21,8 +21,7 @@
 /* values needed from the connection manager */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
-/* communication buffer */EIP_UINT8
-    g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
+/* communication buffer */EIP_UINT8 g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -39,8 +38,6 @@ int newfd;
  * address.
  */
 int g_nCurrentActiveTCPSocket;
-
-int end = 0;
 
 static struct timeval tv;
 static MILLISECONDS actualtime, lasttime;
@@ -84,14 +81,6 @@ isConnectedFd(int pa_nFD)
   return pstRunner;
 }
 
-void
-leave(int sig)
-{
-  sig = sig; /* kill unused parameter warning */
-  fprintf(stderr, "got sig hup\n");
-  end = 1;
-}
-
 /* INT8 Start_NetworkHandler()
  * 	start a TCP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  * 	return status
@@ -100,22 +89,12 @@ leave(int sig)
 
 struct sockaddr_in from;
 
-struct NetworkStatus{
-  struct sockaddr_in remote_addr;
+struct NetworkStatus
+{
   int nTCPListener;
   int nUDPListener;
-
   MILLISECONDS elapsedtime;
-
-#ifdef WIN32
-  unsigned long addrlen;
-  unsigned long fromlen;
-  WORD wVersionRequested;
-  WSADATA wsaData;
-#else
-  socklen_t fromlen;
-#endif
-} PACKED ;
+} PACKED;
 
 struct NetworkStatus TheNetworkStatus;
 
@@ -125,19 +104,16 @@ NetworkHandler_Init(void)
   struct sockaddr_in my_addr;
   int y;
   int nOptVal;
+
 #ifdef WIN32
+  WORD wVersionRequested;
+  WSADATA wsaData;
   wVersionRequested = MAKEWORD(2, 2);
   WSAStartup(wVersionRequested, &wsaData);
-#else
-  signal(SIGHUP, leave);
 #endif
-
-  TheNetworkStatus.fromlen = sizeof(from);
 
   /* clear the master an temp sets */FD_ZERO(&master);
   FD_ZERO(&read_fds);
-
-  end = 0;
 
   /* create a new TCP socket */
   if ((TheNetworkStatus.nTCPListener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
@@ -147,8 +123,8 @@ NetworkHandler_Init(void)
     }
 
   nOptVal = 1;
-  if (setsockopt(TheNetworkStatus.nTCPListener, SOL_SOCKET, SO_REUSEADDR, &nOptVal,
-      sizeof(nOptVal)) == -1)
+  if (setsockopt(TheNetworkStatus.nTCPListener, SOL_SOCKET, SO_REUSEADDR,
+      &nOptVal, sizeof(nOptVal)) == -1)
     {
       OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nTCPListener\n");
       return EIP_ERROR;
@@ -161,8 +137,8 @@ NetworkHandler_Init(void)
       return EIP_ERROR;
     }
 
-  if (setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_REUSEADDR, &nOptVal,
-      sizeof(nOptVal)) == -1)
+  if (setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_REUSEADDR,
+      &nOptVal, sizeof(nOptVal)) == -1)
     {
       OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nUDPListener\n");
       return EIP_ERROR;
@@ -174,8 +150,8 @@ NetworkHandler_Init(void)
   memset(&my_addr.sin_zero, 0, sizeof(my_addr.sin_zero));
 
   /* bind the new socket to port 0xAF12 (CIP) */
-  if ((bind(TheNetworkStatus.nTCPListener, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)))
-      == -1)
+  if ((bind(TheNetworkStatus.nTCPListener, (struct sockaddr *) &my_addr,
+      sizeof(struct sockaddr))) == -1)
     {
       OPENER_TRACE_ERR("error with bind: %s\n", strerror(errno));
       return EIP_ERROR;
@@ -183,14 +159,16 @@ NetworkHandler_Init(void)
 
   /* enable the udp socket to receive broadcast messages*/
   y = 1;
-  if (0 > setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_BROADCAST, &y, sizeof(int)))
+  if (0
+      > setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_BROADCAST, &y,
+          sizeof(int)))
     {
       OPENER_TRACE_ERR("error with setting broadcast receive for udp socket: %s\n", strerror(errno));
       return EIP_ERROR;
     }
 
-  if ((bind(TheNetworkStatus.nUDPListener, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)))
-      == -1)
+  if ((bind(TheNetworkStatus.nUDPListener, (struct sockaddr *) &my_addr,
+      sizeof(struct sockaddr))) == -1)
     {
       OPENER_TRACE_ERR("error with udp bind: %s\n", strerror(errno));
       return EIP_ERROR;
@@ -203,12 +181,14 @@ NetworkHandler_Init(void)
       return EIP_ERROR;
     }
 
-  /* add the listener socket to the master set */FD_SET(TheNetworkStatus.nTCPListener, &master);
+  /* add the listener socket to the master set */FD_SET(
+      TheNetworkStatus.nTCPListener, &master);
   FD_SET(TheNetworkStatus.nUDPListener, &master);
 
   /* keep track of the biggest file descriptor */
-  fdmax = (TheNetworkStatus.nTCPListener > TheNetworkStatus.nUDPListener)
-          ? TheNetworkStatus.nTCPListener : TheNetworkStatus.nUDPListener;
+  fdmax =
+      (TheNetworkStatus.nTCPListener > TheNetworkStatus.nUDPListener) ? TheNetworkStatus.nTCPListener :
+          TheNetworkStatus.nUDPListener;
 
   lasttime = getmilliseconds(); /* initialize time keeping */
   TheNetworkStatus.elapsedtime = 0;
@@ -226,14 +206,23 @@ NetworkHandler_ProcessOnce(void)
   int nRemainingBytes;
   int replylen;
   S_CIP_ConnectionObject *pstConnection;
+  struct sockaddr_in remote_addr;
+
 #ifndef WIN32
   socklen_t addrlen;
+  socklen_t fromlen;
+#else
+  unsigned long fromlen;
+  unsigned long addrlen
 #endif
   read_fds = master;
+  fromlen = sizeof(from);
 
   tv.tv_sec = 0;
-  tv.tv_usec = (TheNetworkStatus.elapsedtime < OPENER_TIMER_TICK ?
-      OPENER_TIMER_TICK - TheNetworkStatus.elapsedtime : 0) * 1000; /* 10 ms */
+  tv.tv_usec = (
+      TheNetworkStatus.elapsedtime < OPENER_TIMER_TICK ? OPENER_TIMER_TICK
+          - TheNetworkStatus.elapsedtime :
+          0) * 1000; /* 10 ms */
 
   res = select(fdmax + 1, &read_fds, 0, 0, &tv);
   if (res == -1)
@@ -267,10 +256,9 @@ NetworkHandler_ProcessOnce(void)
             if (fd == TheNetworkStatus.nTCPListener) /* handle new TCP connection */
               {
                 OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
-                addrlen = sizeof(TheNetworkStatus.remote_addr);
+                addrlen = sizeof(remote_addr);
                 newfd = accept(TheNetworkStatus.nTCPListener,
-                    (struct sockaddr *) &TheNetworkStatus.remote_addr,
-                    &addrlen); /* remote_addr does not seem to be used*/
+                    (struct sockaddr *) &remote_addr, &addrlen); /* remote_addr does not seem to be used*/
                 if (newfd == -1)
                   {
                     OPENER_TRACE_ERR("networkhandler: error on accept: %s\n", strerror(errno));
@@ -297,7 +285,7 @@ NetworkHandler_ProcessOnce(void)
                 /*Handle udp broadcast messages */
                 nReceived_size = recvfrom(fd, g_acPCEthernetCommBuffer,
                     PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
-                    (struct sockaddr *) &from, &TheNetworkStatus.fromlen);
+                    (struct sockaddr *) &from, &fromlen);
 
                 if (nReceived_size <= 0)
                   { /* got error */
@@ -312,9 +300,8 @@ NetworkHandler_ProcessOnce(void)
                 rxp = &g_acPCEthernetCommBuffer[0];
                 do
                   {
-                    replylen = handleReceivedExplictData(fd,
-                        rxp, nReceived_size,
-                        &nRemainingBytes);
+                    replylen = handleReceivedExplictData(fd, rxp,
+                        nReceived_size, &nRemainingBytes);
 
                     rxp += nReceived_size - nRemainingBytes;
                     nReceived_size = nRemainingBytes;
@@ -342,10 +329,10 @@ NetworkHandler_ProcessOnce(void)
             pstConnection = isConnectedFd(fd);
             if (NULL != pstConnection)
               {
-                TheNetworkStatus.fromlen = sizeof(from);
+                fromlen = sizeof(from);
                 nReceived_size = recvfrom(fd, g_acPCEthernetCommBuffer,
                     PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
-                    (struct sockaddr *) &from, &TheNetworkStatus.fromlen);
+                    (struct sockaddr *) &from, &fromlen);
                 if (nReceived_size == 0)
                   {
                     OPENER_TRACE_STATE("connection closed by client\n");
@@ -591,8 +578,8 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
   if ((pa_nDirection == CONSUMING) || (0 == pa_pstAddr->sin_addr.s_addr))
     {
       /* we have a peer to peer producer or a consuming connection*/
-      if (getpeername(g_nCurrentActiveTCPSocket,
-          (struct sockaddr *) &stPeerAdr, &nPeerAddrLen) < 0)
+      if (getpeername(g_nCurrentActiveTCPSocket, (struct sockaddr *) &stPeerAdr,
+          &nPeerAddrLen) < 0)
         {
           OPENER_TRACE_ERR("networkhandler: could not get peername: %s\n", strerror(errno));
           return EIP_INVALID_SOCKET;

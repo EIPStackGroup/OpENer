@@ -19,14 +19,27 @@
 #define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 0x305
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              0x306
 
-/* global variables for demo application (4 assembly data fields) */
-EIP_UINT8 g_assemblydata301[32]; /* Input */
+/* global variables for demo application (4 assembly data fields) */EIP_UINT8 g_assemblydata301[32]; /* Input */
 EIP_UINT8 g_assemblydata302[32]; /* Output */
 EIP_UINT8 g_assemblydata303[10]; /* Config */
 EIP_UINT8 g_assemblydata306[32]; /* Explicit */
 
 extern int newfd;
 
+/******************************************************************************/
+/*!\brief Signal handler function for ending stack execution
+ *
+ * @param pa_nSig the signal we received
+ */
+void
+leaveStack(int pa_nSig);
+
+/*****************************************************************************/
+/*! \brief Flag indicating if the stack should end its execution
+ */
+int g_nEndStack = 0;
+
+/******************************************************************************/
 int
 main(int argc, char *arg[])
 {
@@ -73,8 +86,14 @@ main(int argc, char *arg[])
   /* Setup Network Handles */
   NetworkHandler_Init();
 
+  g_nEndStack = 0;
+#ifndef WIN32
+  /* register for closing signals so that we can trigger the stack to end */
+  signal(SIGHUP, leaveStack);
+#endif
+
   /* The event loop. Put other processing you need done continually in here */
-  while(true)
+  while (1 != g_nEndStack)
     {
       NetworkHandler_ProcessOnce();
     }
@@ -126,7 +145,9 @@ IApp_Init(void)
   return EIP_OK;
 }
 
-void IApp_HandleApplication(void){
+void
+IApp_HandleApplication(void)
+{
   /* check if application needs to trigger an connection */
 }
 
@@ -221,5 +242,13 @@ void
 IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue)
 {
   (void) pa_nRunIdleValue;
+}
+
+void
+leaveStack(int pa_nSig)
+{
+  (void)pa_nSig; /* kill unused parameter warning */
+  OPENER_TRACE_STATE("got signal HUP\n");
+  g_nEndStack = 1;
 }
 
