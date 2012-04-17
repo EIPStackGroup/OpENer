@@ -354,8 +354,6 @@ NetworkHandler_ProcessOnce(void)
             /* if not registered UDP, handle as a TCP receive */
             if (EIP_ERROR == handleDataOnTCPSocket(fd)) /* if error */
               {
-                FD_CLR(fd, &master);
-                /* remove connection from master set */
                 closeSession(fd); /* clean up session and close the socket */
               }
           }

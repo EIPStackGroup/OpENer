@@ -67,9 +67,8 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
   int nRetVal;
   S_CIP_ConnectionObject *pstConnectionObject;
 
-  nRetVal = createCPFstructure(
-        pa_stReceiveData->m_acCurrentCommBufferPos,
-        pa_stReceiveData->nData_length, &g_stCPFDataItem);
+  nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
+      pa_stReceiveData->nData_length, &g_stCPFDataItem);
 
   if (EIP_ERROR == nRetVal)
     {
@@ -85,23 +84,24 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
           if (NULL != pstConnectionObject)
             {
               /* reset the watchdog timer */
-              pstConnectionObject->InnacitvityWatchdogTimer
-                  = (pstConnectionObject->O_to_T_RPI / 1000) << (2
-                      + pstConnectionObject->ConnectionTimeoutMultiplier);
+              pstConnectionObject->InnacitvityWatchdogTimer =
+                  (pstConnectionObject->O_to_T_RPI / 1000)
+                      << (2 + pstConnectionObject->ConnectionTimeoutMultiplier);
 
               /*TODO check connection id  and sequence count    */
               if (g_stCPFDataItem.stDataI_Item.TypeID
                   == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
                 { /* connected data item received*/
                   EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
-                  g_stCPFDataItem.stAddr_Item.Data.SequenceNumber
-                      = (EIP_UINT32) ltohs(&pnBuf);
-                  nRetVal = notifyMR(pnBuf, g_stCPFDataItem.stDataI_Item.Length
-                      - 2);
+                  g_stCPFDataItem.stAddr_Item.Data.SequenceNumber =
+                      (EIP_UINT32) ltohs(&pnBuf);
+                  nRetVal = notifyMR(pnBuf,
+                      g_stCPFDataItem.stDataI_Item.Length - 2);
 
                   if (nRetVal != EIP_ERROR)
                     {
-                      g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier = pstConnectionObject->CIPProducedConnectionID;
+                      g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier =
+                          pstConnectionObject->CIPProducedConnectionID;
                       nRetVal = assembleLinearMsg(&gMRResponse,
                           &g_stCPFDataItem, pa_acReplyBuf);
                     }
@@ -176,8 +176,7 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
       pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
       len_count += 2;
       if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
-          || (pa_CPF_data->AddrInfo[j].TypeID
-              == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
+          || (pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
         {
           pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
           pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
@@ -285,22 +284,24 @@ assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
           if (pa_CPFDataItem->stDataI_Item.TypeID
               == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
             {
-              htols((EIP_UINT16) (pa_MRResponse->DataLength + 4 + 2 + (2
-                  * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
+              htols(
+                  (EIP_UINT16) (pa_MRResponse->DataLength + 4 + 2
+                      + (2 * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
 
               htols(
                   (EIP_UINT16) g_stCPFDataItem.stAddr_Item.Data.SequenceNumber,
                   &pa_msg);
 
-              size += (4 + pa_MRResponse->DataLength + 4 + 2 + (2
-                  * pa_MRResponse->SizeofAdditionalStatus));
+              size += (4 + pa_MRResponse->DataLength + 4 + 2
+                  + (2 * pa_MRResponse->SizeofAdditionalStatus));
             }
           else
             {
-              htols((EIP_UINT16) (pa_MRResponse->DataLength + 4 + (2
-                  * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
-              size += (4 + pa_MRResponse->DataLength + 4 + (2
-                  * pa_MRResponse->SizeofAdditionalStatus));
+              htols(
+                  (EIP_UINT16) (pa_MRResponse->DataLength + 4
+                      + (2 * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
+              size += (4 + pa_MRResponse->DataLength + 4
+                  + (2 * pa_MRResponse->SizeofAdditionalStatus));
             }
 
           /* write MR Response into linear memory */
@@ -336,19 +337,20 @@ assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
   /* process SockAddr Info Items */
   for (j = 0; j < 2; j++)
     {
-      if ((pa_CPFDataItem->AddrInfo[j].TypeID
-          == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
+      if ((pa_CPFDataItem->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
           || (pa_CPFDataItem->AddrInfo[j].TypeID
               == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
         {
           htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
           htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
-					
-					encapsulateIPAdress(pa_CPFDataItem->AddrInfo[j].nsin_port, pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
-					pa_msg += 8;
-	
-					memset(pa_msg, 0, 8);
-					size += 20;
+
+          encapsulateIPAdress(pa_CPFDataItem->AddrInfo[j].nsin_port,
+              pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
+          pa_msg += 8;
+
+          memset(pa_msg, 0, 8);
+          pa_msg += 8;
+          size += 20;
         }
     }
   return size;
