@@ -12,17 +12,19 @@
 #include "cipcommon.h"
 #include "trace.h"
 
-#define DEMO_APP_INPUT_ASSEMBLY_NUM                0x301
-#define DEMO_APP_OUTPUT_ASSEMBLY_NUM               0x302
-#define DEMO_APP_CONFIG_ASSEMBLY_NUM               0x303
-#define DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM  0x304
-#define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 0x305
-#define DEMO_APP_EXPLICT_ASSEMBLY_NUM              0x306
+#define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
+#define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM               151 //0x097
+#define DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM  152 //0x098
+#define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153 //0x099
+#define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
 
-/* global variables for demo application (4 assembly data fields) */EIP_UINT8 g_assemblydata301[32]; /* Input */
-EIP_UINT8 g_assemblydata302[32]; /* Output */
-EIP_UINT8 g_assemblydata303[10]; /* Config */
-EIP_UINT8 g_assemblydata306[32]; /* Explicit */
+
+/* global variables for demo application (4 assembly data fields)  ************/
+EIP_UINT8 g_assemblydata064[32]; /* Input */
+EIP_UINT8 g_assemblydata096[32]; /* Output */
+EIP_UINT8 g_assemblydata097[10]; /* Config */
+EIP_UINT8 g_assemblydata09A[32]; /* Explicit */
 
 extern int newfd;
 
@@ -112,16 +114,16 @@ IApp_Init(void)
 {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata301[0],
-      sizeof(g_assemblydata301));
+  createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata064[0],
+      sizeof(g_assemblydata064));
 
   /*OUTPUT*/
-  createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata302[0],
-      sizeof(g_assemblydata302));
+  createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata096[0],
+      sizeof(g_assemblydata096));
 
   /*CONFIG*/
-  createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata303[0],
-      sizeof(g_assemblydata303));
+  createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata097[0],
+      sizeof(g_assemblydata097));
 
   /*Heart-beat output assembly for Input only connections */
   createAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -130,8 +132,8 @@ IApp_Init(void)
   createAssemblyObject(DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata306[0],
-      sizeof(g_assemblydata306));
+  createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata09A[0],
+      sizeof(g_assemblydata09A));
 
   configureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
       DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
@@ -173,8 +175,8 @@ IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
   case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
     /* Data for the output assembly has been received.
      * Mirror it to the inputs */
-    memcpy(&g_assemblydata301[0], &g_assemblydata302[0],
-        sizeof(g_assemblydata301));
+    memcpy(&g_assemblydata064[0], &g_assemblydata096[0],
+        sizeof(g_assemblydata064));
     break;
   case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
     /* do something interesting with the new data from

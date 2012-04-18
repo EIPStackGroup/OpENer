@@ -67,7 +67,7 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                 ,,                      $ config #2 size, format
                 "Exlusive Owner",       $ Connection Name
                 "",                     $ help string
-                "20 04 25 00 03 03 2D 00 02 03 2D 00 01 03";    $ Path
+                "20 04 24 97 2C 96 2C 64";    $ Path
         Connection2 =
                 0x02000002,             $ 0-15    = supported transport classes
                                         $ 16      = trigger: cyclic
@@ -112,7 +112,7 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                 ,,                      $ config #2 size, format
                 "Input Only",           $ Connection Name
                 "",                     $ help string
-                "20 04 25 00 03 03 2D 00 04 03 2D 00 01 03";    $ Path
+                "20 04 24 97 2C 98 2C 64";    $ Path
         Connection3 =
                 0x01000002,             $ 0-15    = supported transport classes
                                         $ 16      = trigger: cyclic
@@ -157,5 +157,5 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                 ,,                      $ config #2 size, format
                 "Listen Only",          $ Connection Name
                 "",                     $ help string
-                "20 04 25 00 03 03 2D 00 05 03 2D 00 01 03";    $ Path
+                "20 04 24 97 2C 99 2C 64";    $ Path
 
