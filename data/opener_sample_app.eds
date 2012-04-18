@@ -1,11 +1,11 @@
-$ EZ-EDS Version 3.9 Generated Electronic Data Sheet
+$ EZ-EDS Version 3.11 (Beta, March-29, 2012) Generated Electronic Data Sheet
 
 [File]
         DescText = "EDS file for the sample application of OpENer";
         CreateDate = 11-03-2009;
         CreateTime = 13:15:23;
-        ModDate = 04-05-2012;
-        ModTime = 19:01:44;
+        ModDate = 04-18-2012;
+        ModTime = 13:10:38;
         Revision = 1.0;
         HomeURL = "opener.sf.net";
 
@@ -18,9 +18,159 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
         MajRev = 1;
         MinRev = 2;
         ProdName = "OpENer PC";
+        Catalog = "OpENer-1.x";
 
 [Device Classification]
         Class1 = EtherNetIP;
+
+[Params]
+        Param1 =
+                0,                      $ reserved, shall equal 0
+                ,,                      $ Link Path Size, Link Path
+                0x0000,                 $ Descriptor
+                0xD1,                   $ Data Type
+                1,                      $ Data Size in bytes
+                "Input Data",           $ name
+                "",                     $ units
+                "New Help String",      $ help string
+                ,,0,                    $ min, max, default data values
+                ,,,,                    $ mult, div, base, offset scaling
+                ,,,,                    $ mult, div, base, offset links
+                ;                       $ decimal places
+        Param2 =
+                0,                      $ reserved, shall equal 0
+                ,,                      $ Link Path Size, Link Path
+                0x0000,                 $ Descriptor
+                0xD1,                   $ Data Type
+                1,                      $ Data Size in bytes
+                "Output Data",          $ name
+                "",                     $ units
+                "New Help String",      $ help string
+                ,,0,                    $ min, max, default data values
+                ,,,,                    $ mult, div, base, offset scaling
+                ,,,,                    $ mult, div, base, offset links
+                ;                       $ decimal places
+        Param3 =
+                0,                      $ reserved, shall equal 0
+                ,,                      $ Link Path Size, Link Path
+                0x0000,                 $ Descriptor
+                0xD1,                   $ Data Type
+                1,                      $ Data Size in bytes
+                "Config Data",          $ name
+                "",                     $ units
+                "New Help String",      $ help string
+                ,,0,                    $ min, max, default data values
+                ,,,,                    $ mult, div, base, offset scaling
+                ,,,,                    $ mult, div, base, offset links
+                ;                       $ decimal places
+        Param4 =
+                0,                      $ reserved, shall equal 0
+                ,,                      $ Link Path Size, Link Path
+                0x0000,                 $ Descriptor
+                0xC8,                   $ Data Type
+                4,                      $ Data Size in bytes
+                "RPI",                  $ name
+                "",                     $ units
+                "New Help String",      $ help string
+                20000,,30000,           $ min, max, default data values
+                ,,,,                    $ mult, div, base, offset scaling
+                ,,,,                    $ mult, div, base, offset links
+                ;                       $ decimal places
+
+[Assembly]
+        Number_Of_Static_Instances = 6;
+        Assem100 =
+                "Input Assembly",
+                "",
+                32,
+                0x0000,
+                ,,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1,
+                8,Param1;
+        Assem150 =
+                "Output Assembly",
+                "",
+                32,
+                0x0001,
+                ,,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2,
+                8,Param2;
+        Assem151 =
+                "Config Assembly",
+                "",
+                10,
+                0x0001,
+                ,,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3,
+                8,Param3;
 
 [Connection Manager]
         Connection1 =
@@ -35,7 +185,7 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 27      = transport type: redundant-owner
                                         $ 28-30   = reserved
                                         $ 31      = Client = 0 / Server = 1
-                0x00240405,             $ 0       = O->T fixed size supported
+                0x44640405,             $ 0       = O->T fixed size supported
                                         $ 1       = O->T variable size supported
                                         $ 2       = T->O fixed size supported
                                         $ 3       = T->O variable size supported
@@ -61,15 +211,15 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 29      = T->O priority: HIGH
                                         $ 30      = T->O priority: SCHEDULED
                                         $ 31      = T->O priority: reserved
-                ,32,,                   $ O->T RPI, size, format
-                ,32,,                   $ T->O RPI, size, format
+                Param4,,Assem150,       $ O->T RPI, size, format
+                Param4,,Assem100,       $ T->O RPI, size, format
                 ,,                      $ config #1 size, format
-                ,,                      $ config #2 size, format
+                ,Assem151,              $ config #2 size, format
                 "Exlusive Owner",       $ Connection Name
                 "",                     $ help string
                 "20 04 24 97 2C 96 2C 64";    $ Path
         Connection2 =
-                0x02000002,             $ 0-15    = supported transport classes
+                0x02010002,             $ 0-15    = supported transport classes
                                         $ 16      = trigger: cyclic
                                         $ 17      = trigger: change of state
                                         $ 18      = trigger: application
@@ -80,7 +230,7 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 27      = transport type: redundant-owner
                                         $ 28-30   = reserved
                                         $ 31      = Client = 0 / Server = 1
-                0x00240000,             $ 0       = O->T fixed size supported
+                0x44640005,             $ 0       = O->T fixed size supported
                                         $ 1       = O->T variable size supported
                                         $ 2       = T->O fixed size supported
                                         $ 3       = T->O variable size supported
@@ -106,15 +256,15 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 29      = T->O priority: HIGH
                                         $ 30      = T->O priority: SCHEDULED
                                         $ 31      = T->O priority: reserved
-                ,32,,                   $ O->T RPI, size, format
-                ,32,,                   $ T->O RPI, size, format
+                Param4,0,,              $ O->T RPI, size, format
+                Param4,32,Assem100,     $ T->O RPI, size, format
                 ,,                      $ config #1 size, format
-                ,,                      $ config #2 size, format
+                0,,                     $ config #2 size, format
                 "Input Only",           $ Connection Name
                 "",                     $ help string
                 "20 04 24 97 2C 98 2C 64";    $ Path
         Connection3 =
-                0x01000002,             $ 0-15    = supported transport classes
+                0x01010002,             $ 0-15    = supported transport classes
                                         $ 16      = trigger: cyclic
                                         $ 17      = trigger: change of state
                                         $ 18      = trigger: application
@@ -125,7 +275,7 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 27      = transport type: redundant-owner
                                         $ 28-30   = reserved
                                         $ 31      = Client = 0 / Server = 1
-                0x00240000,             $ 0       = O->T fixed size supported
+                0x44240005,             $ 0       = O->T fixed size supported
                                         $ 1       = O->T variable size supported
                                         $ 2       = T->O fixed size supported
                                         $ 3       = T->O variable size supported
@@ -151,11 +301,19 @@ $ EZ-EDS Version 3.9 Generated Electronic Data Sheet
                                         $ 29      = T->O priority: HIGH
                                         $ 30      = T->O priority: SCHEDULED
                                         $ 31      = T->O priority: reserved
-                ,0,,                    $ O->T RPI, size, format
-                ,32,,                   $ T->O RPI, size, format
+                Param4,0,,              $ O->T RPI, size, format
+                Param4,,Assem100,       $ T->O RPI, size, format
                 ,,                      $ config #1 size, format
                 ,,                      $ config #2 size, format
                 "Listen Only",          $ Connection Name
                 "",                     $ help string
                 "20 04 24 97 2C 99 2C 64";    $ Path
+
+[Capacity]
+        MaxMsgConnections = 6;
+        MaxIOProduceConsume = 2;
+        MaxIOMcastProducers = 1;
+        MaxIOMcastConsumers = 1;
+        MaxConsumersPerMcast = 6;
+        TSpec1 = TxRx, 32, 100;
 
