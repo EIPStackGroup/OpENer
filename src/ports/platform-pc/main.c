@@ -19,9 +19,7 @@
 #define DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153 //0x099
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
 
-
-/* global variables for demo application (4 assembly data fields)  ************/
-EIP_UINT8 g_assemblydata064[32]; /* Input */
+/* global variables for demo application (4 assembly data fields)  ************/EIP_UINT8 g_assemblydata064[32]; /* Input */
 EIP_UINT8 g_assemblydata096[32]; /* Output */
 EIP_UINT8 g_assemblydata097[10]; /* Config */
 EIP_UINT8 g_assemblydata09A[32]; /* Explicit */
@@ -86,23 +84,26 @@ main(int argc, char *arg[])
   CIP_Init(nUniqueConnectionID);
 
   /* Setup Network Handles */
-  NetworkHandler_Init();
-
-  g_nEndStack = 0;
+  if (EIP_OK == NetworkHandler_Init())
+    {
+      g_nEndStack = 0;
 #ifndef WIN32
-  /* register for closing signals so that we can trigger the stack to end */
-  signal(SIGHUP, leaveStack);
+      /* register for closing signals so that we can trigger the stack to end */
+      signal(SIGHUP, leaveStack);
 #endif
 
-  /* The event loop. Put other processing you need done continually in here */
-  while (1 != g_nEndStack)
-    {
-      NetworkHandler_ProcessOnce();
+      /* The event loop. Put other processing you need done continually in here */
+      while (1 != g_nEndStack)
+        {
+          if( EIP_OK != NetworkHandler_ProcessOnce())
+            {
+              break;
+            }
+        }
+
+      /* clean up network state */
+      NetworkHandler_Finish();
     }
-
-  /* clean up network state */
-  NetworkHandler_Finish();
-
   /* close remaining sessions and connections, cleanup used data */
   shutdownCIP();
 
@@ -249,7 +250,7 @@ IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue)
 void
 leaveStack(int pa_nSig)
 {
-  (void)pa_nSig; /* kill unused parameter warning */
+  (void) pa_nSig; /* kill unused parameter warning */
   OPENER_TRACE_STATE("got signal HUP\n");
   g_nEndStack = 1;
 }

@@ -33,7 +33,7 @@ typedef unsigned short in_port_t;
 /*! Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
 #define OPENER_DEVICE_TYPE               12
-#define OPENER_DEVICE_PRODUCT_CODE      200
+#define OPENER_DEVICE_PRODUCT_CODE      65001
 #define OPENER_DEVICE_MAJOR_REVISION      1
 #define OPENER_DEVICE_MINOR_REVISION      2
 #define OPENER_DEVICE_NAME      "OpENer PC"
@@ -91,7 +91,7 @@ typedef unsigned short in_port_t;
 
 /*! Number of sessions that can be handled at the same time
  */ 
-#define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 4
+#define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 20
 
 /*! The time in ms of the timer used in this implementations
  */ 

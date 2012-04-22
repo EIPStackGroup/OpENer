@@ -23,10 +23,6 @@ extern EIP_UINT16 ID_Status;
 extern EIP_UINT32 SerialNumber;
 extern S_CIP_Short_String ProductName;
 
-/* FIXME Quick fix for getting the last upd originator
- */
-extern struct sockaddr_in from;
-
 /*ip address data taken from TCPIPInterfaceObject*/
 extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 
@@ -84,9 +80,15 @@ void
 handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
 void
 handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+
 void
-handleReceivedListIdentityCmd(int pa_nSocket,
+handleReceivedListIdentityCmdTCP(struct S_Encapsulation_Data *pa_stReceiveData);
+
+void
+handleReceivedListIdentityCmdUDP(int pa_nSocket,
+    struct sockaddr_in *pa_pstFromAddr,
     struct S_Encapsulation_Data *pa_stReceiveData);
+
 void
 handleReceivedRegisterSessionCmd(int pa_nSockfd,
     struct S_Encapsulation_Data *pa_stReceiveData);
@@ -111,6 +113,9 @@ encapsulate_data(struct S_Encapsulation_Data *pa_S_SendData);
 void
 determineDelayTime(EIP_BYTE *pa_acBufferStart,
     struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer);
+
+int
+encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf);
 
 /*   void encapInit(void)
  *   initialize sessionlist and interfaceinformation.
@@ -148,18 +153,9 @@ encapInit(void)
   strcpy((char *) g_stInterfaceInformation.NameofService, "communications");
 }
 
-/*   int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length. int *pa_nRemainingBytes)
- *   Read received bytes, copy to struct S_Encapsulation_data and handles the command.
- *      pa_socket	socket handle from which data is received.
- *      pa_buf		buffer to be read.
- *      pa_length	length of the data in pa_buf.
- *  return length of reply
- */
 int
-handleReceivedExplictData(int pa_socket, /* socket from which data was received*/
-EIP_UINT8 * pa_buf, /* input buffer*/
-unsigned int pa_length, /* length of input*/
-int *pa_nRemainingBytes) /* return how many bytes of the input are left over after we're done here*/
+handleReceivedExplictTCPData(int pa_socket, EIP_UINT8 * pa_buf,
+    unsigned int pa_length, int *pa_nRemainingBytes)
 {
   int nRetVal = 0;
   struct S_Encapsulation_Data sEncapData;
@@ -189,8 +185,7 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
             break;
 
           case (COMMAND_LISTIDENTITY):
-            handleReceivedListIdentityCmd(pa_socket, &sEncapData);
-            nRetVal = EIP_OK; /* as the response has to be delayed do not send it now */
+            handleReceivedListIdentityCmdTCP(&sEncapData);
             break;
 
           case (COMMAND_LISTINTERFACES):
@@ -229,11 +224,64 @@ int *pa_nRemainingBytes) /* return how many bytes of the input are left over aft
   return nRetVal;
 }
 
-/*   INT8 encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
- *   add encapsulation header and sender_context to data.
- *      pa_stSendData pointer to structure with header and datapointer.
- *  return size of reply
- */
+int
+handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr,
+    EIP_UINT8* pa_buf, unsigned int pa_length, int *pa_nRemainingBytes)
+{
+  int nRetVal = 0;
+  struct S_Encapsulation_Data sEncapData;
+  /* eat the encapsulation header*/
+  /* the structure contains a pointer to the encapsulated data*/
+  /* returns how many bytes are left after the encapsulated data*/
+  *pa_nRemainingBytes = createEncapsulationStructure(pa_buf, pa_length,
+      &sEncapData);
+
+  if (SUPPORTED_OPTIONS_MASK == sEncapData.nOptions) /*TODO generate appropriate error response*/
+    {
+      if (*pa_nRemainingBytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
+        {
+          /* full package or more received */
+          sEncapData.nStatus = OPENER_ENCAP_STATUS_SUCCESS;
+          nRetVal = 1;
+          /* most of these functions need a reply to be send */
+          switch (sEncapData.nCommand_code)
+            {
+          case (COMMAND_LISTSERVICES):
+            handleReceivedListServicesCmd(&sEncapData);
+            break;
+
+          case (COMMAND_LISTIDENTITY):
+            handleReceivedListIdentityCmdUDP(pa_socket, pa_pstFromAddr,
+                &sEncapData);
+            nRetVal = EIP_OK; /* as the response has to be delayed do not send it now */
+            break;
+
+          case (COMMAND_LISTINTERFACES):
+            handleReceivedListInterfacesCmd(&sEncapData);
+            break;
+
+            /* Fhe following commands are not to be sent via UDP */
+          case (COMMAND_NOP):
+          case (COMMAND_REGISTERSESSION):
+          case (COMMAND_UNREGISTERSESSION):
+          case (COMMAND_SENDRRDATA):
+          case (COMMAND_SENDUNITDATA):
+          default:
+            sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
+            sEncapData.nData_length = 0;
+            break;
+            }
+          /* if nRetVal is greater then 0 data has to be sent */
+          if (0 < nRetVal)
+            {
+              nRetVal = encapsulate_data(&sEncapData);
+            }
+        }
+    }
+
+  return nRetVal;
+}
+
 int
 encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
 {
@@ -282,15 +330,17 @@ handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
   htols(0x0000, &pacCommBuf); /* copy Interface data to nmsg for sending */
 }
 
-/*   INT8 ListIdentity(struct S_Encapsulation_Data *pa_S_ReceiveData)
- *   send Get_Attribute_All to Identity Object and send data + sender_context back.
- *      pa_S_ReceiveData pointer to structure with received data
- *  return status
- * 			0 .. success
- */
 void
-handleReceivedListIdentityCmd(int pa_nSocket,
-    struct S_Encapsulation_Data * pa_stReceiveData)
+handleReceivedListIdentityCmdTCP(struct S_Encapsulation_Data * pa_stReceiveData)
+{
+  pa_stReceiveData->nData_length = encapsulateListIdentyResponseMessage(
+      pa_stReceiveData->m_acCurrentCommBufferPos);
+}
+
+void
+handleReceivedListIdentityCmdUDP(int pa_nSocket,
+    struct sockaddr_in *pa_pstFromAddr,
+    struct S_Encapsulation_Data *pa_stReceiveData)
 {
   struct SDelayedEncapsulationMessage *pstDelayedMessageBuffer = NULL;
   unsigned int i;
@@ -307,7 +357,8 @@ handleReceivedListIdentityCmd(int pa_nSocket,
   if (NULL != pstDelayedMessageBuffer)
     {
       pstDelayedMessageBuffer->m_nSocket = pa_nSocket;
-      memcpy((&pstDelayedMessageBuffer->m_stSendToAddr), &from, sizeof(from));
+      memcpy((&pstDelayedMessageBuffer->m_stSendToAddr), pa_pstFromAddr,
+          sizeof(struct sockaddr_in));
 
       determineDelayTime(pa_stReceiveData->m_acCommBufferStart,
           pstDelayedMessageBuffer);
@@ -315,45 +366,52 @@ handleReceivedListIdentityCmd(int pa_nSocket,
       memcpy(&(pstDelayedMessageBuffer->m_anMsg[0]),
           pa_stReceiveData->m_acCommBufferStart, ENCAPSULATION_HEADER_LENGTH);
 
-      EIP_UINT8 *pacCommBuf =
-          &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]);
-      EIP_BYTE *acIdLenBuf;
+      pstDelayedMessageBuffer->m_unMessageSize =
+          encapsulateListIdentyResponseMessage(
+              &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]));
 
-      htols(1, &pacCommBuf); /* one item */
-      htols(ITEM_ID_LISTIDENTITY, &pacCommBuf);
-
-      acIdLenBuf = pacCommBuf;
-      pacCommBuf += 2; /*at this place the real length will be inserted below*/
-
-      htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBuf);
-
-      encapsulateIPAdress(OPENER_ETHERNET_PORT,
-          Interface_Configuration.IPAddress, pacCommBuf);
-      pacCommBuf += 8;
-
-      memset(pacCommBuf, 0, 8);
-      pacCommBuf += 8;
-
-      htols(VendorID, &pacCommBuf);
-      htols(DeviceType, &pacCommBuf);
-      htols(ProductCode, &pacCommBuf);
-      *(pacCommBuf)++ = Revison.MajorRevision;
-      *(pacCommBuf)++ = Revison.MinorRevision;
-      htols(ID_Status, &pacCommBuf);
-      htoll(SerialNumber, &pacCommBuf);
-      *pacCommBuf++ = (unsigned char) ProductName.Length;
-      memcpy(pacCommBuf, ProductName.String, ProductName.Length);
-      pacCommBuf += ProductName.Length;
-      *pacCommBuf++ = 0xFF;
-
-      pstDelayedMessageBuffer->m_unMessageSize = pacCommBuf
-          - &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]);
-      htols(pacCommBuf - acIdLenBuf - 2, &acIdLenBuf); /* the -2 is for not counting the length field*/
-
-      pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
+      EIP_UINT8 *pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
       htols(pstDelayedMessageBuffer->m_unMessageSize, &pacCommBuf);
       pstDelayedMessageBuffer->m_unMessageSize += ENCAPSULATION_HEADER_LENGTH;
     }
+}
+
+int
+encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf)
+{
+  EIP_UINT8 *pacCommBufRunner = pa_pacCommBuf;
+  EIP_BYTE *acIdLenBuf;
+
+  htols(1, &pacCommBufRunner); /* one item */
+  htols(ITEM_ID_LISTIDENTITY, &pacCommBufRunner);
+
+  acIdLenBuf = pacCommBufRunner;
+  pacCommBufRunner += 2; /*at this place the real length will be inserted below*/
+
+  htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBufRunner);
+
+  encapsulateIPAdress(OPENER_ETHERNET_PORT, Interface_Configuration.IPAddress,
+      pacCommBufRunner);
+  pacCommBufRunner += 8;
+
+  memset(pacCommBufRunner, 0, 8);
+  pacCommBufRunner += 8;
+
+  htols(VendorID, &pacCommBufRunner);
+  htols(DeviceType, &pacCommBufRunner);
+  htols(ProductCode, &pacCommBufRunner);
+  *(pacCommBufRunner)++ = Revison.MajorRevision;
+  *(pacCommBufRunner)++ = Revison.MinorRevision;
+  htols(ID_Status, &pacCommBufRunner);
+  htoll(SerialNumber, &pacCommBufRunner);
+  *pacCommBufRunner++ = (unsigned char) ProductName.Length;
+  memcpy(pacCommBufRunner, ProductName.String, ProductName.Length);
+  pacCommBufRunner += ProductName.Length;
+  *pacCommBufRunner++ = 0xFF;
+
+  htols(pacCommBufRunner - acIdLenBuf - 2, &acIdLenBuf); /* the -2 is for not counting the length field*/
+
+  return pacCommBufRunner - pa_pacCommBuf;
 }
 
 void
@@ -371,8 +429,8 @@ determineDelayTime(EIP_BYTE *pa_acBufferStart,
       unMaxDelayTime = 500;
     }
 
-  pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand())
-      / RAND_MAX + 1;
+  pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand()) / RAND_MAX
+      + 1;
 }
 
 /*   void RegisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)

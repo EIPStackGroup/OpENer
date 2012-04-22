@@ -333,7 +333,7 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
     unsigned int pa_unConfigAssembly);
 
 /** \ingroup CIP_API 
- * \brief Notify the encapsulation layer that an explicit message has been received via TCP or UDP.
+ * \brief Notify the encapsulation layer that an explicit message has been received via TCP.
  * 
  * @param pa_socket socket handle from which data is received.
  * @param pa_buf buffer that contains the received data. This buffer will also contain the
@@ -343,7 +343,22 @@ configureListenOnlyConnectionPoint(unsigned int pa_unConnNum,
  * @return length of reply that need to be sent back
  */
 int
-handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf,
+handleReceivedExplictTCPData(int pa_socket, EIP_UINT8* pa_buf,
+    unsigned int pa_length, int *pa_nRemainingBytes);
+
+/** \ingroup CIP_API
+ * \brief Notify the encapsulation layer that an explicit message has been received via UDP.
+ *
+ * @param pa_socket socket handle from which data is received.
+ * @param pa_pstFromAddr remote address from which the data is received.
+ * @param pa_buf buffer that contains the received data. This buffer will also contain the
+ *       response if one is to be sent.
+ * @param pa_length length of the data in pa_buf.
+ * @param pa_nRemainingBytes return how many bytes of the input are left over after we're done here
+ * @return length of reply that need to be sent back
+ */
+int
+handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr, EIP_UINT8* pa_buf,
     unsigned int pa_length, int *pa_nRemainingBytes);
 
 /*! \ingroup CIP_API
@@ -669,7 +684,10 @@ IApp_CloseSocket(int pa_nSockFd);
  *   - Establish connections requested on TCP port AF12hex
  *   - Receive explicit message data on connected TCP sockets and the UPD socket
  *     for port AF12hex. The received data has to be hand over to Ethernet
- *     encapsulation layer with the function int handleReceivedExplictData(int pa_socket, EIP_UINT8* pa_buf, int pa_length, int *pa_nRemainingBytes).\n
+ *     encapsulation layer with the functions: \n
+ *      int handleReceivedExplictTCPData(int pa_socket, EIP_UINT8* pa_buf, int pa_length, int *pa_nRemainingBytes),\n
+ *      int handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr, EIP_UINT8* pa_buf, unsigned int pa_length, int *pa_nRemainingBytes).\n
+ *     Depending if the data has been received from a TCP or from a UDP socket.
  *     As a result of this function a response may have to be sent. The data to
  *     be sent is in the given buffer pa_buf.
  *   - Create UDP sending and receiving sockets for implicit connected messages\n
