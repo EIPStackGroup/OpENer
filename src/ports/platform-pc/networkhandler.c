@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <signal.h>
 
 #include <opener_api.h>
 #include "networkhandler.h"
