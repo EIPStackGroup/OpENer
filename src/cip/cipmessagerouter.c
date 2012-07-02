@@ -44,8 +44,7 @@ registerClass(S_CIP_Class * pa_pt2Class);
  * @param pa_pstMRReqdata   pointer to structure of MRRequest data item.
  * @return status  0 .. success
  *                 -1 .. error
- */
-EIP_BYTE
+ */EIP_BYTE
 createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
     S_CIP_MR_Request * pa_pstMRReqdata);
 
@@ -150,8 +149,9 @@ notifyMR(EIP_UINT8 * pa_pnData, int pa_nDataLength)
   gMRResponse.Data = g_acMessageDataReplyBuffer; /* set reply buffer, using a fixed buffer (about 100 bytes) */
 
   OPENER_TRACE_INFO("notifyMR: routing unconnected message\n");
-  if (CIP_ERROR_SUCCESS != (nStatus = createMRRequeststructure(pa_pnData,
-      pa_nDataLength, &gMRRequest)))
+  if (CIP_ERROR_SUCCESS
+      != (nStatus = createMRRequeststructure(pa_pnData, pa_nDataLength,
+          &gMRRequest)))
     { /* error from create MR structure*/
       OPENER_TRACE_ERR("notifyMR: error from createMRRequeststructure\n");
       gMRResponse.GeneralStatus = nStatus;
@@ -222,6 +222,8 @@ createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
 
   pa_pstMRReqdata->Service = *pa_pnData;
   pa_pnData++;
+
+  /* TODO move to an own decode EPath function */
   pa_pstMRReqdata->RequestPath.PathSize = *pa_pnData;
   pa_pnData++;
   /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribute, need to be replaced with function */
@@ -244,31 +246,46 @@ createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
         break;
 
       case 0x21: /*classID 16Bit */
-        pa_pnData += 2;
+        ++pa_pnData;
+        if (0 == *pa_pnData)
+          {
+            /*we have a padded path */
+            ++pa_pnData;
+          }
         pa_pstMRReqdata->RequestPath.ClassID = ltohs(&(pa_pnData));
         i++;
         break;
 
       case 0x24: /* InstanceNr */
-        pa_pstMRReqdata->RequestPath.InstanceNr
-            = *(EIP_UINT8 *) (pa_pnData + 1);
+        pa_pstMRReqdata->RequestPath.InstanceNr =
+            *(EIP_UINT8 *) (pa_pnData + 1);
         pa_pnData += 2;
         break;
 
       case 0x25: /* InstanceNr 16Bit */
-        pa_pnData += 2;
+        ++pa_pnData;
+        if (0 == *pa_pnData)
+          {
+            /*we have a padded path */
+            ++pa_pnData;
+          }
         pa_pstMRReqdata->RequestPath.InstanceNr = ltohs(&(pa_pnData));
         i++;
         break;
 
       case 0x30: /* AttributeNr */
-        pa_pstMRReqdata->RequestPath.AttributNr
-            = *(EIP_UINT8 *) (pa_pnData + 1);
+        pa_pstMRReqdata->RequestPath.AttributNr =
+            *(EIP_UINT8 *) (pa_pnData + 1);
         pa_pnData += 2;
         break;
 
       case 0x31: /* AttributeNr 16Bit */
-        pa_pnData += 2;
+        ++pa_pnData;
+        if (0 == *pa_pnData)
+          {
+            /*we have a padded path */
+            ++pa_pnData;
+          }
         pa_pstMRReqdata->RequestPath.AttributNr = ltohs(&(pa_pnData));
         i++;
         break;
@@ -289,7 +306,8 @@ createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
     return CIP_ERROR_SUCCESS;
 }
 
-void deleteAllClasses(void)
+void
+deleteAllClasses(void)
 {
   S_CIP_MR_Object *pstRunner = g_pt2firstObject; /* get pointer to head of class registration list */
   S_CIP_MR_Object *pstToDelete;
@@ -299,7 +317,6 @@ void deleteAllClasses(void)
     {
       pstToDelete = pstRunner;
       pstRunner = pstRunner->next;
-
 
       pstInstRunner = pstToDelete->pt2Class->pstInstances;
       while (NULL != pstInstRunner)
