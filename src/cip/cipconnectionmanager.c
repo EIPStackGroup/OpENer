@@ -458,7 +458,7 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj)
           (EIP_UINT16) ((pa_pstConnObj->O_to_T_RPI) / 1000);
     }
 
-  pa_pstConnObj->m_unProductionInhibitTime =
+  pa_pstConnObj->m_nProductionInhibitTimer =
       pa_pstConnObj->m_unProductionInhibitTime = 0;
 
   /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * EpectetedPacketRate, 10s) */
