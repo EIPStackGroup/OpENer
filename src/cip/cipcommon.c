@@ -21,8 +21,7 @@
 #include "trace.h"
 #include "appcontype.h"
 
-/* global public variables */EIP_UINT8
-    g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
+/* global public variables */EIP_UINT8 g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
 
 /* private functions*/
 int
@@ -154,10 +153,9 @@ addCIPInstances(S_CIP_Class * pa_pstCIPClass, int pa_nNr_of_Instances)
 
       if (pa_pstCIPClass->nNr_of_Attributes) /* if the class calls for instance attributes */
         { /* then allocate storage for the attribute array */
-          p->pstAttributes
-              = (S_CIP_attribute_struct*) IApp_CipCalloc(
-                  pa_pstCIPClass->nNr_of_Attributes,
-                  sizeof(S_CIP_attribute_struct));
+          p->pstAttributes = (S_CIP_attribute_struct*) IApp_CipCalloc(
+              pa_pstCIPClass->nNr_of_Attributes,
+              sizeof(S_CIP_attribute_struct));
         }
 
       pp = &p->pstNext; /* update pp to point to the next link of the current node */
@@ -213,8 +211,8 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   pt2Class->pstInstances = 0;
   pt2Class->nNr_of_Attributes = pa_nNr_of_InstanceAttributes; /* the class remembers the number of instances of that class */
   pt2Class->nGetAttrAllMask = pa_nInstGetAttrAllMask; /* indicate which attributes are included in instance getAttributeAll */
-  pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices + ((0
-      == pa_nInstGetAttrAllMask) ? 1 : 2); /* the class manages the behavior of the instances */
+  pt2Class->nNr_of_Services = pa_nNr_of_InstanceServices
+      + ((0 == pa_nInstGetAttrAllMask) ? 1 : 2); /* the class manages the behavior of the instances */
   pt2Class->pstServices = 0;
   pt2Class->acName = pa_acName; /* initialize the class-specific fields of the metaClass struct */
   pt2MetaClass->nClassID = 0xffffffff; /* set metaclass ID (this should never be referenced) */
@@ -222,8 +220,8 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   pt2MetaClass->pstInstances = (S_CIP_Instance *) pt2Class;
   pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes + 5; /* the metaclass remembers how many class attributes exist*/
   pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; /* indicate which attributes are included in class getAttributeAll*/
-  pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices + ((0
-      == pa_nClassGetAttrAllMask) ? 1 : 2); /* the metaclass manages the behavior of the class itself */
+  pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices
+      + ((0 == pa_nClassGetAttrAllMask) ? 1 : 2); /* the metaclass manages the behavior of the class itself */
   pt2Class->pstServices = 0;
   pt2MetaClass->acName = (char *) IApp_CipCalloc(1, strlen(pa_acName) + 6); /* fabricate the name "meta<classname>"*/
   strcpy(pt2MetaClass->acName, "meta-");
@@ -393,8 +391,8 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
        * getAssemblyAttributeSingle functions which will call get attribute
        * single.
        */
-      if (p->CIP_Type == CIP_BYTE_ARRAY && pa_pstInstance->pstClass->nClassID
-          == CIP_ASSEMBLY_CLASS_CODE)
+      if (p->CIP_Type == CIP_BYTE_ARRAY
+          && pa_pstInstance->pstClass->nClassID == CIP_ASSEMBLY_CLASS_CODE)
         {
           /* we are getting a byte array of a assembly object, kick out to the app callback */
           OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
@@ -689,12 +687,13 @@ getAttributeAll(S_CIP_Instance * pa_pstInstance,
                 {
                   int attrNum = p_attr->CIP_AttributNr;
                   if (attrNum < 32
-                      && (pa_pstInstance->pstClass->nGetAttrAllMask & 1
-                          << attrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
+                      && (pa_pstInstance->pstClass->nGetAttrAllMask
+                          & 1 << attrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
                     {
                       pa_stMRRequest->RequestPath.AttributNr = attrNum;
-                      if (EIP_OK_SEND != p_service->m_ptfuncService(
-                          pa_pstInstance, pa_stMRRequest, pa_stMRResponse))
+                      if (EIP_OK_SEND
+                          != p_service->m_ptfuncService(pa_pstInstance,
+                              pa_stMRRequest, pa_stMRResponse))
                         {
                           pa_stMRResponse->Data = ptmp;
                           return EIP_ERROR;
@@ -784,3 +783,69 @@ encodeEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 **pa_pnMsg)
   return 2 + pa_pstEPath->PathSize * 2; /*path size is in 16 bit chunks according to the spec */
 }
 
+int
+decodePaddedEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 ** pa_pnMsg)
+{
+  int i;
+  EIP_UINT8 *pnRunner = *pa_pnMsg;
+
+  pa_pstEPath->PathSize = *pnRunner;
+  pnRunner++;
+  /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribute, need to be replaced with function */
+  pa_pstEPath->ClassID = 0;
+  pa_pstEPath->InstanceNr = 0;
+  pa_pstEPath->AttributNr = 0;
+
+  for (i = 0; i < pa_pstEPath->PathSize; i++)
+    {
+      if (0xE0 == ((*pnRunner) & 0xE0))
+        {
+          /*Invalid segment type*/
+          return EIP_ERROR;
+        }
+
+      switch (*pnRunner)
+        {
+      case 0x20: /* classID */
+        pa_pstEPath->ClassID = *(EIP_UINT8 *) (pnRunner + 1);
+        pnRunner += 2;
+        break;
+
+      case 0x21: /*classID 16Bit */
+        pnRunner += 2;
+        pa_pstEPath->ClassID = ltohs(&(pnRunner));
+        i++;
+        break;
+
+      case 0x24: /* InstanceNr */
+        pa_pstEPath->InstanceNr = *(EIP_UINT8 *) (pnRunner + 1);
+        pnRunner += 2;
+        break;
+
+      case 0x25: /* InstanceNr 16Bit */
+        pnRunner += 2;
+        pa_pstEPath->InstanceNr = ltohs(&(pnRunner));
+        i++;
+        break;
+
+      case 0x30: /* AttributeNr */
+        pa_pstEPath->AttributNr = *(EIP_UINT8 *) (pnRunner + 1);
+        pnRunner += 2;
+        break;
+
+      case 0x31: /* AttributeNr 16Bit */
+        pnRunner += 2;
+        pa_pstEPath->AttributNr = ltohs(&(pnRunner));
+        i++;
+        break;
+
+      default:
+        OPENER_TRACE_ERR("wrong path requested\n");
+        return EIP_ERROR;
+        break;
+        }
+    }
+
+  *pa_pnMsg = pnRunner;
+  return i * 2 + 1;
+}

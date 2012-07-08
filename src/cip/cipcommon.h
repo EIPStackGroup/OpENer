@@ -53,4 +53,6 @@ EIP_STATUS getAttributeSingle(S_CIP_Instance *pa_pstInstance,
 EIP_STATUS getAttributeAll(S_CIP_Instance *pa_pstObjectInstance,
     S_CIP_MR_Request *pa_stMRRequest, S_CIP_MR_Response *pa_stMRResponse);
 
+int decodePaddedEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 ** pa_pnData);
+
 #endif /*CIPCOMMON_H_*/

@@ -218,88 +218,22 @@ EIP_BYTE
 createMRRequeststructure(EIP_UINT8 * pa_pnData, EIP_INT16 pa_nLength,
     S_CIP_MR_Request * pa_pstMRReqdata)
 {
-  int i;
+  int nRetVal;
 
   pa_pstMRReqdata->Service = *pa_pnData;
   pa_pnData++;
+  pa_nLength--;
 
-  /* TODO move to an own decode EPath function */
-  pa_pstMRReqdata->RequestPath.PathSize = *pa_pnData;
-  pa_pnData++;
-  /* copy path to structure, in version 0.1 only 8 bit for Class,Instance and Attribute, need to be replaced with function */
-  pa_pstMRReqdata->RequestPath.ClassID = 0;
-  pa_pstMRReqdata->RequestPath.InstanceNr = 0;
-  pa_pstMRReqdata->RequestPath.AttributNr = 0;
 
-  for (i = 0; i < pa_pstMRReqdata->RequestPath.PathSize; i++)
+  nRetVal = decodePaddedEPath(&(pa_pstMRReqdata->RequestPath), &pa_pnData);
+  if(nRetVal < 0)
     {
-      if (0xE0 == ((*pa_pnData) & 0xE0))
-        {
-          /*Invalid segment type*/
-          return CIP_ERROR_PATH_SEGMENT_ERROR;
-        }
-      switch (*pa_pnData)
-        {
-      case 0x20: /* classID */
-        pa_pstMRReqdata->RequestPath.ClassID = *(EIP_UINT8 *) (pa_pnData + 1);
-        pa_pnData += 2;
-        break;
-
-      case 0x21: /*classID 16Bit */
-        ++pa_pnData;
-        if (0 == *pa_pnData)
-          {
-            /*we have a padded path */
-            ++pa_pnData;
-          }
-        pa_pstMRReqdata->RequestPath.ClassID = ltohs(&(pa_pnData));
-        i++;
-        break;
-
-      case 0x24: /* InstanceNr */
-        pa_pstMRReqdata->RequestPath.InstanceNr =
-            *(EIP_UINT8 *) (pa_pnData + 1);
-        pa_pnData += 2;
-        break;
-
-      case 0x25: /* InstanceNr 16Bit */
-        ++pa_pnData;
-        if (0 == *pa_pnData)
-          {
-            /*we have a padded path */
-            ++pa_pnData;
-          }
-        pa_pstMRReqdata->RequestPath.InstanceNr = ltohs(&(pa_pnData));
-        i++;
-        break;
-
-      case 0x30: /* AttributeNr */
-        pa_pstMRReqdata->RequestPath.AttributNr =
-            *(EIP_UINT8 *) (pa_pnData + 1);
-        pa_pnData += 2;
-        break;
-
-      case 0x31: /* AttributeNr 16Bit */
-        ++pa_pnData;
-        if (0 == *pa_pnData)
-          {
-            /*we have a padded path */
-            ++pa_pnData;
-          }
-        pa_pstMRReqdata->RequestPath.AttributNr = ltohs(&(pa_pnData));
-        i++;
-        break;
-
-      default:
-        OPENER_TRACE_ERR("wrong path requested\n");
-        return CIP_ERROR_PATH_SEGMENT_ERROR;
-        break;
-        }
+      return CIP_ERROR_PATH_SEGMENT_ERROR;
     }
 
   pa_pstMRReqdata->Data = pa_pnData;
-  pa_pstMRReqdata->DataLength = pa_nLength
-      - ((pa_pstMRReqdata->RequestPath.PathSize) * 2 + 2);
+  pa_pstMRReqdata->DataLength = pa_nLength - nRetVal;
+
   if (pa_pstMRReqdata->DataLength < 0)
     return CIP_ERROR_PATH_SIZE_INVALID;
   else
