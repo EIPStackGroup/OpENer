@@ -7,6 +7,7 @@
 #define TYPEDEFS_H_
 
 #include <opener_user_conf.h>
+#include <inttypes.h>
 #include <stddef.h>
 
 /*
@@ -22,20 +23,20 @@
  for data buffers can occasionally blow up in your face rather nastily.
  */
 
-#define EIP_BYTE 	unsigned char
-#define EIP_INT8 	char
-#define EIP_INT16	short
-#define EIP_INT32	long
-#define EIP_UINT8	unsigned char
-#define EIP_UINT16	unsigned short
-#define EIP_UINT32	unsigned long
+#define EIP_BYTE 	uint8_t
+#define EIP_INT8 	int8_t
+#define EIP_INT16	int16_t
+#define EIP_INT32	int32_t
+#define EIP_UINT8	uint8_t
+#define EIP_UINT16	uint16_t
+#define EIP_UINT32	uint32_t
 #define EIP_FLOAT	float
 #define EIP_DFLOAT	double
 #define EIP_BOOL8	bool
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
-#define EIP_INT64       long long
-#define EIP_UINT64       unsigned long long
+#define EIP_INT64       int64_t
+#define EIP_UINT64      uint64_t
 #endif
 
 /*! Constant identifying if a socket descriptor is invalid

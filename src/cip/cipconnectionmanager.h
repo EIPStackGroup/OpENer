@@ -202,14 +202,23 @@ EIP_STATUS
 Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID);
 
 /*!  Get a connected object dependent on requested ConnectionID.
- *   The returned connection may not be in established state. The user has to check
- *   this!   
+ *
  *   @param ConnectionID  requested ConnectionID of opened connection
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
 S_CIP_ConnectionObject *
 getConnectedObject(EIP_UINT32 ConnectionID);
+
+/*!  Get a connection object for a given output assembly.
+ *
+ *   @param pa_unOutputAssemblyId requested output assembly of requested connection
+ *   @return pointer to connected Object
+ *           0 .. connection not present in device
+ */
+S_CIP_ConnectionObject *
+getConnectedOutputAssembly(EIP_UINT32 pa_unOutputAssemblyId);
+
 
 /*! Copy the given connection data from pa_pstSrc to pa_pstDst
  */

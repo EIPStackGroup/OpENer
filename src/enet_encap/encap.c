@@ -150,7 +150,7 @@ encapInit(void)
   g_stInterfaceInformation.EncapsulationProtocolVersion = 1;
   g_stInterfaceInformation.CapabilityFlags = SUPPORT_CIP_TCP
       | SUPPORT_CIP_UDP_CLASS_0_OR_1;
-  strcpy((char *) g_stInterfaceInformation.NameofService, "communications");
+  strcpy((char *) g_stInterfaceInformation.NameofService, "Communications");
 }
 
 int

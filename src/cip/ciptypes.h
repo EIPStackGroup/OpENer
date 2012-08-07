@@ -95,13 +95,13 @@ typedef struct
 typedef struct
 {
   EIP_UINT8 Length;
-  EIP_INT8 *String;
+  EIP_BYTE *String;
 } S_CIP_Short_String;
 
 typedef struct
 {
   EIP_INT16 Length;
-  EIP_INT8 *String;
+  EIP_BYTE *String;
 } S_CIP_String;
 
 typedef struct

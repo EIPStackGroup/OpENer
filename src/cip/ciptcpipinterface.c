@@ -74,7 +74,7 @@ configureDomainName(const char *pa_acDomainName)
   Interface_Configuration.DomainName.Length = strlen(pa_acDomainName);
   if (Interface_Configuration.DomainName.Length)
     {
-      Interface_Configuration.DomainName.String = (EIP_INT8 *) IApp_CipCalloc(
+      Interface_Configuration.DomainName.String = (EIP_BYTE *) IApp_CipCalloc(
           Interface_Configuration.DomainName.Length + 1, sizeof(EIP_INT8));
       strcpy(Interface_Configuration.DomainName.String, pa_acDomainName);
     }
@@ -97,8 +97,8 @@ configureHostName(const char *pa_acHostName)
   Hostname.Length = strlen(pa_acHostName);
   if (Hostname.Length)
     {
-      Hostname.String = (EIP_INT8 *) IApp_CipCalloc(Hostname.Length + 1,
-          sizeof(EIP_INT8));
+      Hostname.String = (EIP_BYTE *) IApp_CipCalloc(Hostname.Length + 1,
+          sizeof(EIP_BYTE));
       strcpy(Hostname.String, pa_acHostName);
     }
   else

@@ -189,7 +189,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   S_CIP_Class *pt2Class; /* pointer to the class struct */
   S_CIP_Class *pt2MetaClass; /* pointer to the metaclass struct */
 
-  OPENER_TRACE_INFO("creating class '%s' with id: 0x%lx\n", pa_acName, pa_nClassID);
+  OPENER_TRACE_INFO("creating class '%s' with id: 0x%"PRIX32"\n", pa_acName, pa_nClassID);
 
   pt2Class = getCIPClass(pa_nClassID); /* check if an class with the ClassID already exists */
   OPENER_ASSERT(NULL == pt2Class);
@@ -320,7 +320,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr,
       p++;
     }
 
-  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %lu, instance %lu\n", pa_pInstance->pstClass->m_stSuper.nInstanceNr, pa_pInstance->nInstanceNr );
+  OPENER_TRACE_ERR("Tried to insert to many attributes into class: %"PRIu32", instance %"PRIu32"\n", pa_pInstance->pstClass->m_stSuper.nInstanceNr, pa_pInstance->nInstanceNr );
   OPENER_ASSERT(0);
   /* trying to insert too many attributes*/
 }

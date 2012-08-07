@@ -328,7 +328,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   g_stDummyConnectionObject.ConnectionTimeoutMultiplier = *pa_MRRequest->Data++;
   pa_MRRequest->Data += 3; /* reserved */
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
-  OPENER_TRACE_INFO("ForwardOpen: ConConnID %lu, ProdConnID %lu, ConnSerNo %u\n",
+  OPENER_TRACE_INFO("ForwardOpen: ConConnID %"PRIu32", ProdConnID %"PRIu32", ConnSerNo %u\n",
       g_stDummyConnectionObject.CIPConsumedConnectionID,
       g_stDummyConnectionObject.CIPProducedConnectionID,
       g_stDummyConnectionObject.ConnectionSerialNumber);
@@ -767,6 +767,23 @@ getConnectedObject(EIP_UINT32 ConnectionID)
 }
 
 S_CIP_ConnectionObject *
+getConnectedOutputAssembly(EIP_UINT32 pa_unOutputAssemblyId)
+{
+  S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
+
+  while (NULL != pstRunner)
+    {
+      if (pstRunner->State == CONN_STATE_ESTABLISHED)
+        {
+          if (pstRunner->ConnectionPath.ConnectionPoint[0] == pa_unOutputAssemblyId)
+            return pstRunner;
+        }
+      pstRunner = pstRunner->m_pstNext;
+    }
+    return NULL;
+}
+
+S_CIP_ConnectionObject *
 checkForExistingConnection(S_CIP_ConnectionObject *pa_pstConnObj)
 {
   S_CIP_ConnectionObject *pstRunner = g_pstActiveConnectionList;
@@ -944,7 +961,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
           pstClass = getCIPClass(pa_pstConnObj->ConnectionPath.ClassID);
           if (0 == pstClass)
             {
-              OPENER_TRACE_ERR("classid %lx not found\n",
+              OPENER_TRACE_ERR("classid %"PRIx32" not found\n",
                   pa_pstConnObj->ConnectionPath.ClassID);
               if (pa_pstConnObj->ConnectionPath.ClassID >= 0xC8) /*reserved range of class ids */
 
@@ -958,7 +975,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                       CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
                 }
               return CIP_ERROR_CONNECTION_FAILURE;
-            }OPENER_TRACE_INFO("classid %lx (%s)\n",
+            }OPENER_TRACE_INFO("classid %"PRIx32" (%s)\n",
               pa_pstConnObj->ConnectionPath.ClassID, pstClass->acName);
         }
       else
@@ -972,7 +989,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
         { /* store the configuration ID for later checking in the application connection types */
           pa_pstConnObj->ConnectionPath.ConnectionPoint[2] =
               GETPADDEDLOGICALPATH(&pnMsg);
-          OPENER_TRACE_INFO("Configuration instance id %ld\n", pa_pstConnObj->ConnectionPath.ConnectionPoint[2]);
+          OPENER_TRACE_INFO("Configuration instance id %"PRId32"\n", pa_pstConnObj->ConnectionPath.ConnectionPoint[2]);
           if (NULL
               == getCIPInstance(pstClass,
                   pa_pstConnObj->ConnectionPath.ConnectionPoint[2]))
@@ -1056,7 +1073,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                 { /* InstanceNR */
                   pa_pstConnObj->ConnectionPath.ConnectionPoint[i] =
                       GETPADDEDLOGICALPATH(&pnMsg);
-                  OPENER_TRACE_INFO("connection point %lu\n",
+                  OPENER_TRACE_INFO("connection point %"PRIu32"\n",
                       pa_pstConnObj->ConnectionPath.ConnectionPoint[i]);
                   if (0
                       == getCIPInstance(pstClass,
@@ -1218,11 +1235,12 @@ addConnectableObject(EIP_UINT32 pa_nClassId, TConnOpenFunc pa_pfOpenFunc)
         {
           g_astConnMgmList[i].m_nClassID = pa_nClassId;
           g_astConnMgmList[i].m_pfOpenFunc = pa_pfOpenFunc;
-          return EIP_OK;
+          nRetVal = EIP_OK;
+          break;
         }
     }
 
-  return EIP_ERROR;
+  return nRetVal;
 }
 
 TConnMgmHandling *
