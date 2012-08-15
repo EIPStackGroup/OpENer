@@ -392,7 +392,7 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
   else
     {
       tmp = EIP_ERROR;
-      nConnectionStatus = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+      nConnectionStatus = CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
     }
 
   if (EIP_OK != tmp)
@@ -972,7 +972,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               else
                 {
                   *pa_pnExtendedError =
-                      CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+                      CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
                 }
               return CIP_ERROR_CONNECTION_FAILURE;
             }OPENER_TRACE_INFO("classid %"PRIx32" (%s)\n",
@@ -1025,7 +1025,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               != CIP_MESSAGE_ROUTER_CLASS_CODE)
               || (pa_pstConnObj->ConnectionPath.ConnectionPoint[2] != 1))
             {
-              *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+              *pa_pnExtendedError = CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
           pa_pstConnObj->ConnectionPath.ConnectionPoint[0] =
@@ -1080,7 +1080,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
                           pa_pstConnObj->ConnectionPath.ConnectionPoint[i]))
                     {
                       *pa_pnExtendedError =
-                          CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+                          CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
                       return CIP_ERROR_CONNECTION_FAILURE;
                     }
                   /* 1 or 2 16Bit word for the connection point part of the path */

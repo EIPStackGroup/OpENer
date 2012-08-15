@@ -192,7 +192,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
             }
           else
             {
-              *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+              *pa_pnExtendedError = CIP_CON_MGR_INVALID_CONSUMING_APPLICATION_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
@@ -234,7 +234,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
             }
           else
             {
-              *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_CONNECTION_POINT;
+              *pa_pnExtendedError = CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
@@ -511,7 +511,7 @@ handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
                   g_pnConfigDataBuffer, g_unConfigDataLen))
             {
               OPENER_TRACE_WARN("Configuration data was invalid\n");
-              unRetVal = CIP_CON_MGR_ERROR_INVALID_CONFIGURATION_FORMAT;
+              unRetVal = CIP_CON_MGR_INVALID_CONFIGURATION_APP_PATH;
             }
         }
     }

@@ -126,7 +126,7 @@ getIOConnectionForConnectionData(S_CIP_ConnectionObject *pa_pstConnData,
                       /* no application connection type was found that suits the given data */
                       /* TODO check error code VS */
                       *pa_pnExtendedError =
-                          CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH;
+                          CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
                     }
                   else
                     {
@@ -201,14 +201,14 @@ getInputOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
               != pa_pstConnData->ConnectionPath.ConnectionPoint[1])
             {
               *pa_pnExtendedError =
-                  CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH;
+                  CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH;
               break;
             }
           if (g_astInputOnlyConnections[i].m_unConfigAssembly
               != pa_pstConnData->ConnectionPath.ConnectionPoint[2])
             {
               *pa_pnExtendedError =
-                  CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH;
+                  CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
               break;
             }
 
@@ -252,14 +252,14 @@ getListenOnlyConnection(S_CIP_ConnectionObject * pa_pstConnData,
               != pa_pstConnData->ConnectionPath.ConnectionPoint[1])
             {
               *pa_pnExtendedError =
-                  CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH;
+                  CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH;
               break;
             }
           if (g_astListenOnlyConnections[i].m_unConfigAssembly
               != pa_pstConnData->ConnectionPath.ConnectionPoint[2])
             {
               *pa_pnExtendedError =
-                  CIP_CON_MGR_INVALID_PRODUCED_OR_CONSUMED_APPLICATION_PATH;
+                  CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO;
               break;
             }
 
