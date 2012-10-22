@@ -37,7 +37,6 @@ OpenConsumingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
 int
 OpenProducingPointToPointConnection(S_CIP_ConnectionObject *pa_pstConnObj,
     S_CIP_CPF_Data *pa_CPF_data);
-
 EIP_UINT16
 handleConfigData(S_CIP_Class *pa_pstAssemblyClass,
     S_CIP_ConnectionObject *pa_pstIOConnObj);
@@ -63,16 +62,11 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection);
 EIP_STATUS
 handleReceivedIOConnData(struct CIP_ConnectionObject *pa_pstConnection,
     EIP_UINT8 * pa_pnData, EIP_UINT16 pa_nDataLength);
-
 /**** Global variables ****/
-
 /* buffers for the config data coming with a forward open request.
  */EIP_UINT8 *g_pnConfigDataBuffer = NULL;
 unsigned int g_unConfigDataLen = 0;
-
-/*! buffer for holding the run idle information.                             */
-
-EIP_UINT32 g_nRunIdleState;
+/*! buffer for holding the run idle information.                             */EIP_UINT32 g_nRunIdleState;
 
 /**** Implementation ****/
 
@@ -104,14 +98,14 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
       if (256 == pstIOConnObj->m_unProductionInhibitTime)
         {
           /* there was no PIT segment in the connection path set PIT to one fourth of RPI */
-          pstIOConnObj->m_unProductionInhibitTime =
-              ((EIP_UINT16) (pstIOConnObj->T_to_O_RPI) / 4000);
+          pstIOConnObj->m_unProductionInhibitTime = ((EIP_UINT16)(
+              pstIOConnObj->T_to_O_RPI) / 4000);
         }
       else
         {
           /* if production inhibit time has been provided it needs to be smaller than the RPI */
           if (pstIOConnObj->m_unProductionInhibitTime
-              > ((EIP_UINT16) ((pstIOConnObj->T_to_O_RPI) / 1000)))
+              > ((EIP_UINT16)((pstIOConnObj->T_to_O_RPI) / 1000)))
             {
               /* see section C-1.4.3.3 */
               *pa_pnExtendedError = 0x111;
@@ -192,7 +186,8 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
             }
           else
             {
-              *pa_pnExtendedError = CIP_CON_MGR_INVALID_CONSUMING_APPLICATION_PATH;
+              *pa_pnExtendedError =
+                  CIP_CON_MGR_INVALID_CONSUMING_APPLICATION_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
@@ -234,7 +229,8 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
             }
           else
             {
-              *pa_pnExtendedError = CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH;
+              *pa_pnExtendedError =
+                  CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH;
               return CIP_ERROR_CONNECTION_FAILURE;
             }
         }
@@ -432,18 +428,47 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
   int newfd;
 
   j = 0; /* allocate an unused sockaddr struct to use */
-  if (g_stCPFDataItem.AddrInfo[0].TypeID == 0)
-    { /* it is not used yet */
-      j = 0;
-    }
-  else if (g_stCPFDataItem.AddrInfo[1].TypeID == 0)
+  if (0 != g_stCPFDataItem.AddrInfo[0].TypeID)
     {
-      j = 1;
+      if ((CONSUMING == pa_direction)
+          && (CIP_ITEM_ID_SOCKADDRINFO_O_TO_T == pa_CPF_data->AddrInfo[0].TypeID))
+        {
+          /* for consuming connection points the originator can choos the multicast address to use
+           * we have a given address type so use it */
+        }
+      else
+        {
+          j = 1;
+          /* if the type is not zero (not used) or if a given tpye it has to be the correct one */
+          if ((0 != g_stCPFDataItem.AddrInfo[1].TypeID)
+              && (!((CONSUMING == pa_direction)
+                  && (CIP_ITEM_ID_SOCKADDRINFO_O_TO_T
+                      == pa_CPF_data->AddrInfo[0].TypeID))))
+            {
+              OPENER_TRACE_ERR("no suitable addr info item available\n");
+              return EIP_ERROR;
+            }
+        }
     }
 
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = g_nMultiCastAddress;
-  addr.sin_port = htons(OPENER_EIP_IO_UDP_PORT);
+  if (0 == pa_CPF_data->AddrInfo[j].TypeID)
+    { /* we are using an unused item initialize it with the default multicast address */
+      pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
+      pa_CPF_data->AddrInfo[j].nsin_port = htons(OPENER_EIP_IO_UDP_PORT);
+      pa_CPF_data->AddrInfo[j].nsin_addr = g_nMultiCastAddress;
+      memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
+      pa_CPF_data->AddrInfo[j].Length = 16;
+    }
+
+  if(htons(AF_INET) != pa_CPF_data->AddrInfo[j].nsin_family)
+    {
+      OPENER_TRACE_ERR("Sockaddr Info Item with wrong sin family value recieved\n");
+      return EIP_ERROR;
+    }
+
+  addr.sin_family = ntohs(pa_CPF_data->AddrInfo[j].nsin_family);
+  addr.sin_addr.s_addr = pa_CPF_data->AddrInfo[j].nsin_addr;
+  addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port;
 
   newfd = IApp_CreateUDPSocket(pa_direction, &addr); /* the address is only needed for bind used if consuming */
   if (newfd == EIP_INVALID_SOCKET)
@@ -453,22 +478,17 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
     }
   pa_pstConnObj->sockfd[pa_direction] = newfd;
 
-  pa_CPF_data->AddrInfo[j].Length = 16;
+
   if (pa_direction == CONSUMING)
     {
       pa_CPF_data->AddrInfo[j].TypeID = CIP_ITEM_ID_SOCKADDRINFO_O_TO_T;
       pa_pstConnObj->m_stOriginatorAddr = addr;
-      addr.sin_addr.s_addr = g_nMultiCastAddress; /* restore the multicast address */
     }
   else
     {
       pa_CPF_data->AddrInfo[j].TypeID = CIP_ITEM_ID_SOCKADDRINFO_T_TO_O;
       pa_pstConnObj->remote_addr = addr;
     }
-  pa_CPF_data->AddrInfo[j].nsin_port = addr.sin_port;
-  pa_CPF_data->AddrInfo[j].nsin_addr = addr.sin_addr.s_addr;
-  memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
-  pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
 
   return EIP_OK;
 }
@@ -682,7 +702,7 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
 
   for (i = 0; i < p->len; i++)
     {
-      *pnBuf = (EIP_UINT8) *(p->Data + i);
+      *pnBuf = (EIP_UINT8) * (p->Data + i);
       pnBuf++;
     }
 
