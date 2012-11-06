@@ -12,6 +12,10 @@
 #define CIP_TCPIPINTERFACE_CLASS_CODE 0xF5
 
 /* global public variables */
+extern EIP_UINT8 g_unTTLValue;
+
+extern EIP_UINT32 g_unMultiCastAddress;
+
 
 /* public functions */
 /*!Initializing the data structures of the TCPIP interface object 

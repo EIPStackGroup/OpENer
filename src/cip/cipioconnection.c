@@ -6,6 +6,7 @@
 #include "cipioconnection.h"
 #include "cipconnectionmanager.h"
 #include "cipassembly.h"
+#include "ciptcpipinterface.h"
 #include "cipcommon.h"
 #include "appcontype.h"
 #include "cpf.h"
@@ -15,9 +16,6 @@
 
 /*The port to be used per default for I/O messages on UDP.*/
 #define OPENER_EIP_IO_UDP_PORT   0x08AE
-
-/* values needed from tcp/ip interface */
-extern EIP_UINT32 g_nMultiCastAddress;
 
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.
@@ -402,7 +400,7 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   pa_pstConnObj->remote_addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port =
       htons(OPENER_EIP_IO_UDP_PORT);
   pa_pstConnObj->remote_addr.sin_addr.s_addr =
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_nMultiCastAddress;
+      pa_CPF_data->AddrInfo[j].nsin_addr = g_unMultiCastAddress;
   memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
   pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
 
@@ -455,7 +453,7 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
     { /* we are using an unused item initialize it with the default multicast address */
       pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
       pa_CPF_data->AddrInfo[j].nsin_port = htons(OPENER_EIP_IO_UDP_PORT);
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_nMultiCastAddress;
+      pa_CPF_data->AddrInfo[j].nsin_addr = g_unMultiCastAddress;
       memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
       pa_CPF_data->AddrInfo[j].Length = 16;
     }

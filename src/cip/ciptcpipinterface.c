@@ -36,8 +36,14 @@ S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration = /* #5 */
 S_CIP_String Hostname = /* #6 */
   { 0, NULL};
 
+/*! #8 the time to live value to be used for multi-cast connections
+ *
+ * Currently we implement it non setable and with the default value of 1.
+ */
+EIP_UINT8 g_unTTLValue = 1;
+
 /*!Multicast address to be used for I/O connections*/
-EIP_UINT32 g_nMultiCastAddress;
+EIP_UINT32 g_unMultiCastAddress;
 
 EIP_STATUS
 configureNetworkInterface(const char *pa_acIpAdress,
@@ -54,7 +60,7 @@ configureNetworkInterface(const char *pa_acIpAdress,
       Interface_Configuration.NetworkMask); /* see CIP spec 3-5.3 for multicast address algorithm*/
   nHostId -= 1;
   nHostId &= 0x3ff;
-  g_nMultiCastAddress = htonl(ntohl(inet_addr("239.192.1.0")) + (nHostId << 5));
+  g_unMultiCastAddress = htonl(ntohl(inet_addr("239.192.1.0")) + (nHostId << 5));
 
   return EIP_OK;
 }
@@ -142,7 +148,7 @@ CIP_TCPIP_Interface_Init()
   if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, /* # class attributes*/
   0xffffffff, /* class getAttributeAll mask*/
   0, /* # class services*/
-  6, /* # instance attributes*/
+  7, /* # instance attributes*/
   0xffffffff, /* instance getAttributeAll mask*/
   1, /* # instance services*/
   1, /* # instances*/
@@ -159,6 +165,8 @@ CIP_TCPIP_Interface_Init()
   insertAttribute(pstInstance, 5, CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING,
       &Interface_Configuration);
   insertAttribute(pstInstance, 6, CIP_STRING, (void *) &Hostname);
+
+  insertAttribute(pstInstance, 8, CIP_USINT, (void *) &g_unTTLValue);
 
   insertService(p_stTCPIPClass, CIP_SET_ATTRIBUTE_SINGLE,
       &setAttributeSingleTCP, "SetAttributeSingle");

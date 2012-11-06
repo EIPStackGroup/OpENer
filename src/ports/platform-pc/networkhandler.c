@@ -16,10 +16,10 @@
 #include <cipconnectionmanager.h>
 #include <endianconv.h>
 #include <trace.h>
+#include <ciptcpipinterface.h>
 
 /* values needed from the connection manager */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
-
 /* communication buffer */EIP_UINT8 g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
@@ -187,8 +187,8 @@ NetworkHandler_Init(void)
 
   /* keep track of the biggest file descriptor */
   fdmax =
-      (TheNetworkStatus.nTCPListener > TheNetworkStatus.nUDPListener) ?
-          TheNetworkStatus.nTCPListener : TheNetworkStatus.nUDPListener;
+      (TheNetworkStatus.nTCPListener > TheNetworkStatus.nUDPListener) ? TheNetworkStatus.nTCPListener :
+          TheNetworkStatus.nUDPListener;
 
   lasttime = getmilliseconds(); /* initialize time keeping */
   TheNetworkStatus.elapsedtime = 0;
@@ -206,8 +206,9 @@ NetworkHandler_ProcessOnce(void)
 
   tv.tv_sec = 0;
   tv.tv_usec = (
-      TheNetworkStatus.elapsedtime < OPENER_TIMER_TICK ?
-          OPENER_TIMER_TICK - TheNetworkStatus.elapsedtime : 0) * 1000; /* 10 ms */
+      TheNetworkStatus.elapsedtime < OPENER_TIMER_TICK ? OPENER_TIMER_TICK
+          - TheNetworkStatus.elapsedtime :
+          0) * 1000; /* 10 ms */
 
   res = select(fdmax + 1, &read_fds, 0, 0, &tv);
   if (res == -1)
@@ -232,7 +233,7 @@ NetworkHandler_ProcessOnce(void)
 
       for (fd = 0; fd <= fdmax; fd++)
         {
-          if(true == checkSocketSet(fd))
+          if (true == checkSocketSet(fd))
             {
               /* if it is still checked it is a TCP receive */
               if (EIP_ERROR == handleDataOnTCPSocket(fd)) /* if error */
@@ -282,7 +283,8 @@ checkSocketSet(int pa_nSocket)
         {
           OPENER_TRACE_INFO("socket: %d closed with pending message\n", pa_nSocket);
         }
-      FD_CLR(pa_nSocket, &read_fds); /* remove it from the read set so that later checks will not find it */
+      FD_CLR(pa_nSocket, &read_fds);
+      /* remove it from the read set so that later checks will not find it */
     }
 
   return nRetVal;
@@ -477,6 +479,22 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 
       OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", newfd);
     }
+  else
+    { /* we have a producing udp socket */
+
+      if (pa_pstAddr->sin_addr.s_addr == g_unMultiCastAddress)
+        {
+          if (1 != g_unTTLValue)
+            { /* we need to set a TTL value for the socket */
+              if (setsockopt(newfd, IPPROTO_IP, IP_MULTICAST_TTL,
+                  &g_unMultiCastAddress, sizeof(g_unMultiCastAddress) < 0))
+                {
+                  OPENER_TRACE_ERR("networkhandler: could not set the TTL to: %d, error: %s\n", g_unMultiCastAddress, strerror(errno));
+                  return EIP_INVALID_SOCKET;
+                }
+            }
+        }
+    }
 
   if ((pa_nDirection == CONSUMING) || (0 == pa_pstAddr->sin_addr.s_addr))
     {
@@ -632,12 +650,13 @@ checkAndHandleConsumingUDPSockets()
       pstCurrent = pstRunner;
       pstRunner = pstRunner->m_pstNext; /* do this at the beginning as the close function may can make the entry invalid */
 
-      if ((-1 != pstCurrent->sockfd[CONSUMING]) && (true == checkSocketSet(pstCurrent->sockfd[CONSUMING])))
+      if ((-1 != pstCurrent->sockfd[CONSUMING])
+          && (true == checkSocketSet(pstCurrent->sockfd[CONSUMING])))
         {
           nFromLen = sizeof(stFrom);
-          nReceived_size = recvfrom(pstCurrent->sockfd[CONSUMING], g_acPCEthernetCommBuffer,
-              PC_OPENER_ETHERNET_BUFFER_SIZE, 0, (struct sockaddr *) &stFrom,
-              &nFromLen);
+          nReceived_size = recvfrom(pstCurrent->sockfd[CONSUMING],
+              g_acPCEthernetCommBuffer, PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
+              (struct sockaddr *) &stFrom, &nFromLen);
           if (0 == nReceived_size)
             {
               OPENER_TRACE_STATE("connection closed by client\n");
