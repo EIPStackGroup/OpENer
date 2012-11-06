@@ -11,10 +11,18 @@
 
 #define CIP_TCPIPINTERFACE_CLASS_CODE 0xF5
 
+typedef struct
+{
+  EIP_UINT8  m_unAllocControl;
+  EIP_UINT8  m_unReserved; /*!< shall be zereo */
+  EIP_UINT16 m_unNumMcast;
+  EIP_UINT32 m_unMcastStartAddr;
+}SMcastConfig;
+
 /* global public variables */
 extern EIP_UINT8 g_unTTLValue;
 
-extern EIP_UINT32 g_unMultiCastAddress;
+extern SMcastConfig g_stMultiCastconfig;
 
 
 /* public functions */

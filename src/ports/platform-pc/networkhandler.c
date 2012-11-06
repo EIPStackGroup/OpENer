@@ -482,14 +482,14 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
   else
     { /* we have a producing udp socket */
 
-      if (pa_pstAddr->sin_addr.s_addr == g_unMultiCastAddress)
+      if (pa_pstAddr->sin_addr.s_addr == g_stMultiCastconfig.m_unMcastStartAddr)
         {
           if (1 != g_unTTLValue)
             { /* we need to set a TTL value for the socket */
               if (setsockopt(newfd, IPPROTO_IP, IP_MULTICAST_TTL,
-                  &g_unMultiCastAddress, sizeof(g_unMultiCastAddress) < 0))
+                  &g_unTTLValue, sizeof(g_unTTLValue) < 0))
                 {
-                  OPENER_TRACE_ERR("networkhandler: could not set the TTL to: %d, error: %s\n", g_unMultiCastAddress, strerror(errno));
+                  OPENER_TRACE_ERR("networkhandler: could not set the TTL to: %d, error: %s\n", g_unTTLValue, strerror(errno));
                   return EIP_INVALID_SOCKET;
                 }
             }

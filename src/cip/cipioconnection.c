@@ -400,7 +400,7 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   pa_pstConnObj->remote_addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port =
       htons(OPENER_EIP_IO_UDP_PORT);
   pa_pstConnObj->remote_addr.sin_addr.s_addr =
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_unMultiCastAddress;
+      pa_CPF_data->AddrInfo[j].nsin_addr = g_stMultiCastconfig.m_unMcastStartAddr;
   memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
   pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
 
@@ -453,7 +453,7 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
     { /* we are using an unused item initialize it with the default multicast address */
       pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
       pa_CPF_data->AddrInfo[j].nsin_port = htons(OPENER_EIP_IO_UDP_PORT);
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_unMultiCastAddress;
+      pa_CPF_data->AddrInfo[j].nsin_addr = g_stMultiCastconfig.m_unMcastStartAddr;
       memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
       pa_CPF_data->AddrInfo[j].Length = 16;
     }
