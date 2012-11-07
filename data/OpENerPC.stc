@@ -1,10 +1,10 @@
- StcRev Data |1.21|A-8|OpENer_AZRAEL|1335117429| DevData |255|0|500|500|500,500|X||ENet|
+ StcRev Data |1.21|A-8|OpENer|1352323903| DevData |255|0|500|500|500,500|X||ENet|
 [<00>]-------|OpENer PC||
   General    |3.8|EtherNet/IP Vol 2, Ed 1.9||1.2|Rockwell Automation/Allen-Bradley|1|65001|
   DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72|
   PhysConf   ||X| |X| | | | |0|X| | |
   LEDs       | | | | |
-  IP MAC Set | |X| |192.168.0.2| | ||00:00:00:00:00:00| |
+  IP MAC Set | |X| |192.168.0.1| | ||00:00:00:00:00:00| |
   CRate Set  |X| | |X| | ||
   CRate Sup  | |X| | |X|
   Net Behavi | | ||| | | | | | | |
@@ -120,7 +120,7 @@
   CAL        | | | | | | | |
   CS         |X|X|
   CSP        |||
-  IAG        |X|X|X|X|X|X| | |
+  IAG        |X|X|X|X|X|X|X|X|
   IAS        | | | | | | | | |
   IAL        | =(1,17)| =(4)| | | | | =(1..255)| |
   IS         |X| |X|X|
@@ -135,7 +135,7 @@
   CSP        ||||
   IAG        |X|X|X| | | | | | | |
   IAS        | | | | | | | | | | |
-  IAL        | =(0,100)| |MAC address (00:15:C5:BF:D0:87)| | | | | | | |
+  IAL        | =(0,100)| |MAC address (00:00:00:00:00:00)| | | | | | | |
   IS         |X|X| | |
   ISP        |||||
   VSA        | |

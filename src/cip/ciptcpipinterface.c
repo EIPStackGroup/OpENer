@@ -56,6 +56,10 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
     S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse);
 
 EIP_STATUS
+getAttributeAllTCPIPInterface(S_CIP_Instance * pa_pstInstance,
+    S_CIP_MR_Request * pa_stMRRequest, S_CIP_MR_Response * pa_stMRResponse);
+
+EIP_STATUS
 configureNetworkInterface(const char *pa_acIpAdress,
     const char *pa_acSubNetMask, const char *pa_acGateway)
 {
@@ -186,7 +190,8 @@ CIP_TCPIP_Interface_Init()
   insertService(p_stTCPIPClass, CIP_GET_ATTRIBUTE_SINGLE,
       &getAttributeSingleTCPIPInterface, "GetAttributeSingleTCPIPInterface");
 
-  /*FIXME fix get attribute all issues */
+  insertService(p_stTCPIPClass, CIP_GET_ATTRIBUTE_ALL,
+      &getAttributeAllTCPIPInterface, "SetAttributeSingleTCPIPInterface");
 
   insertService(p_stTCPIPClass, CIP_SET_ATTRIBUTE_SINGLE,
       &setAttributeSingleTCP, "SetAttributeSingle");
@@ -232,10 +237,11 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
       pa_pstMRResponse->DataLength += encodeData(CIP_UINT,
           &(g_stMultiCastconfig.m_unNumMcast), &paMsg);
 
-      EIP_UINT32 unMultiCastAddr = ntohl(g_stMultiCastconfig.m_unMcastStartAddr);
+      EIP_UINT32 unMultiCastAddr = ntohl(
+          g_stMultiCastconfig.m_unMcastStartAddr);
 
-      pa_pstMRResponse->DataLength += encodeData(CIP_UDINT,
-          &unMultiCastAddr, &paMsg);
+      pa_pstMRResponse->DataLength += encodeData(CIP_UDINT, &unMultiCastAddr,
+          &paMsg);
     }
   else
     {
@@ -245,3 +251,46 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
   return nRetVal;
 }
 
+EIP_STATUS
+getAttributeAllTCPIPInterface(S_CIP_Instance * pa_pstInstance,
+    S_CIP_MR_Request * pa_stMRRequest, S_CIP_MR_Response * pa_stMRResponse)
+{
+
+  int j;
+  EIP_UINT8 *ptmp;
+  int nAttrNum;
+  S_CIP_attribute_struct *pstAttribute;
+
+  ptmp = pa_stMRResponse->Data; /* pointer into the reply */
+  pstAttribute = pa_pstInstance->pstAttributes;
+
+  for (j = 0; j < pa_pstInstance->pstClass->nNr_of_Attributes; j++) /* for each instance attribute of this class */
+    {
+      nAttrNum = pstAttribute->CIP_AttributNr;
+      if (nAttrNum < 32
+          && (pa_pstInstance->pstClass->nGetAttrAllMask & 1 << nAttrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
+        {
+          pa_stMRRequest->RequestPath.AttributNr = nAttrNum;
+
+          if (8 == nAttrNum)
+            { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
+              memset(pa_stMRResponse->Data, 0, 6);
+              pa_stMRResponse->Data += 6;
+            }
+
+          if (EIP_OK_SEND
+              != getAttributeSingleTCPIPInterface(pa_pstInstance,
+                  pa_stMRRequest, pa_stMRResponse))
+            {
+              pa_stMRResponse->Data = ptmp;
+              return EIP_ERROR;
+            }
+          pa_stMRResponse->Data += pa_stMRResponse->DataLength;
+        }
+      pstAttribute++;
+    }
+  pa_stMRResponse->DataLength = pa_stMRResponse->Data - ptmp;
+  pa_stMRResponse->Data = ptmp;
+
+  return EIP_OK_SEND;
+}
