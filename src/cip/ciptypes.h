@@ -30,6 +30,7 @@ typedef enum
 #endif
 
 /* definition of CIP basic data types */
+#define CIP_ANY                         0x00  /*data type that can not be directly encoded */
 #define CIP_BOOL 			0xC1
 #define CIP_SINT 			0xC2
 #define CIP_INT 			0xC3

@@ -126,14 +126,15 @@ configureHostName(const char *pa_acHostName)
 }
 
 EIP_STATUS
-setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance, /* pointer to instance*/
-S_CIP_MR_Request *pa_pstMRRequest, /* pointer to message router request */
-S_CIP_MR_Response *pa_pstMRResponse) /* pointer to message router response*/
+setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance,
+    S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse)
 {
   (void) pa_pstObjectInstance; /*Suppress compiler warning */
 
-  if ((1 <= pa_pstMRRequest->RequestPath.AttributNr)
-      && (pa_pstMRRequest->RequestPath.AttributNr <= 6))
+  S_CIP_attribute_struct *pAttribute = getAttribute(pa_pstObjectInstance,
+      pa_pstMRRequest->RequestPath.AttributNr);
+
+  if (0 != pAttribute)
     {
       /* it is an attribute we currently support, however no attribute is setable */
       /*TODO if you like to have a device that can be configured via this CIP object add your code here */
@@ -160,7 +161,7 @@ CIP_TCPIP_Interface_Init()
   if ((p_stTCPIPClass = createCIPClass(CIP_TCPIPINTERFACE_CLASS_CODE, 0, /* # class attributes*/
   0xffffffff, /* class getAttributeAll mask*/
   0, /* # class services*/
-  7, /* # instance attributes*/
+  8, /* # instance attributes*/
   0xffffffff, /* instance getAttributeAll mask*/
   1, /* # instance services*/
   1, /* # instances*/
@@ -180,6 +181,7 @@ CIP_TCPIP_Interface_Init()
   insertAttribute(pstInstance, 6, CIP_STRING, (void *) &Hostname);
 
   insertAttribute(pstInstance, 8, CIP_USINT, (void *) &g_unTTLValue);
+  insertAttribute(pstInstance, 9, CIP_ANY, (void *) &g_stMultiCastconfig);
 
   insertService(p_stTCPIPClass, CIP_GET_ATTRIBUTE_SINGLE,
       &getAttributeSingleTCPIPInterface, "GetAttributeSingleTCPIPInterface");
@@ -220,13 +222,20 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
     { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
       pa_pstMRResponse->DataLength = 0;
       pa_pstMRResponse->ReplyService = (0x80 | pa_pstMRRequest->Service);
-      pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
+      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
       pa_pstMRResponse->SizeofAdditionalStatus = 0;
 
-      pa_pstMRResponse->DataLength += encodeData(CIP_USINT, &(g_stMultiCastconfig.m_unAllocControl), &paMsg);
-      pa_pstMRResponse->DataLength += encodeData(CIP_USINT, &(g_stMultiCastconfig.m_unReserved), &paMsg);
-      pa_pstMRResponse->DataLength += encodeData(CIP_UINT, &(g_stMultiCastconfig.m_unNumMcast), &paMsg);
-      pa_pstMRResponse->DataLength += encodeData(CIP_UDINT, &(g_stMultiCastconfig.m_unMcastStartAddr), &paMsg);
+      pa_pstMRResponse->DataLength += encodeData(CIP_USINT,
+          &(g_stMultiCastconfig.m_unAllocControl), &paMsg);
+      pa_pstMRResponse->DataLength += encodeData(CIP_USINT,
+          &(g_stMultiCastconfig.m_unReserved), &paMsg);
+      pa_pstMRResponse->DataLength += encodeData(CIP_UINT,
+          &(g_stMultiCastconfig.m_unNumMcast), &paMsg);
+
+      EIP_UINT32 unMultiCastAddr = ntohl(g_stMultiCastconfig.m_unMcastStartAddr);
+
+      pa_pstMRResponse->DataLength += encodeData(CIP_UDINT,
+          &unMultiCastAddr, &paMsg);
     }
   else
     {
