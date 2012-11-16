@@ -81,8 +81,6 @@ configureNetworkInterface(const char *pa_acIpAdress,
   return EIP_OK;
 }
 
-//FIXME check on NULL
-
 void
 configureDomainName(const char *pa_acDomainName)
 {
@@ -191,7 +189,7 @@ CIP_TCPIP_Interface_Init()
       &getAttributeSingleTCPIPInterface, "GetAttributeSingleTCPIPInterface");
 
   insertService(p_stTCPIPClass, CIP_GET_ATTRIBUTE_ALL,
-      &getAttributeAllTCPIPInterface, "SetAttributeSingleTCPIPInterface");
+      &getAttributeAllTCPIPInterface, "GetAttributeAllTCPIPInterface");
 
   insertService(p_stTCPIPClass, CIP_SET_ATTRIBUTE_SINGLE,
       &setAttributeSingleTCP, "SetAttributeSingle");
