@@ -6,9 +6,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
-#include <sys/time.h>
+
+#ifdef WIN32
+	#include <winsock2.h>
+	#include <windows.h>
+	#include <Ws2tcpip.h>
+#else
+	#include <unistd.h>
+	#include <sys/time.h>
+#endif
 
 #include <opener_api.h>
 #include "networkhandler.h"
@@ -124,7 +131,7 @@ NetworkHandler_Init(void)
 
   nOptVal = 1;
   if (setsockopt(TheNetworkStatus.nTCPListener, SOL_SOCKET, SO_REUSEADDR,
-      &nOptVal, sizeof(nOptVal)) == -1)
+      (char *)&nOptVal, sizeof(nOptVal)) == -1)
     {
       OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nTCPListener\n");
       return EIP_ERROR;
@@ -138,7 +145,7 @@ NetworkHandler_Init(void)
     }
 
   if (setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_REUSEADDR,
-      &nOptVal, sizeof(nOptVal)) == -1)
+      (char *)&nOptVal, sizeof(nOptVal)) == -1)
     {
       OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on nUDPListener\n");
       return EIP_ERROR;
@@ -160,7 +167,7 @@ NetworkHandler_Init(void)
   /* enable the udp socket to receive broadcast messages*/
   y = 1;
   if (0
-      > setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_BROADCAST, &y,
+      > setsockopt(TheNetworkStatus.nUDPListener, SOL_SOCKET, SO_BROADCAST, (char *)&y,
           sizeof(int)))
     {
       OPENER_TRACE_ERR("error with setting broadcast receive for udp socket: %s\n", strerror(errno));
@@ -462,7 +469,7 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
   if (pa_nDirection == CONSUMING)
     {
       int nOptVal = 1;
-      if (setsockopt(newfd, SOL_SOCKET, SO_REUSEADDR, &nOptVal, sizeof(nOptVal))
+      if (setsockopt(newfd, SOL_SOCKET, SO_REUSEADDR, (char *)&nOptVal, sizeof(nOptVal))
           == -1)
         {
           OPENER_TRACE_ERR("error setting socket option SO_REUSEADDR on consuming udp socket\n");

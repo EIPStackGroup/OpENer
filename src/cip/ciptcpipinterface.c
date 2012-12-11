@@ -131,10 +131,9 @@ EIP_STATUS
 setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance,
     S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse)
 {
-  (void) pa_pstObjectInstance; /*Suppress compiler warning */
-
   S_CIP_attribute_struct *pAttribute = getAttribute(pa_pstObjectInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
+  (void) pa_pstObjectInstance; /*Suppress compiler warning */
 
   if (0 != pAttribute)
     {
@@ -220,6 +219,7 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
 {
   EIP_STATUS nRetVal = EIP_OK_SEND;
   EIP_BYTE *paMsg = pa_pstMRResponse->Data;
+  EIP_UINT32 unMultiCastAddr;
 
   if (9 == pa_pstMRRequest->RequestPath.AttributNr)
     { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
@@ -235,7 +235,7 @@ getAttributeSingleTCPIPInterface(S_CIP_Instance *pa_pstInstance,
       pa_pstMRResponse->DataLength += encodeData(CIP_UINT,
           &(g_stMultiCastconfig.m_unNumMcast), &paMsg);
 
-      EIP_UINT32 unMultiCastAddr = ntohl(
+      unMultiCastAddr = ntohl(
           g_stMultiCastconfig.m_unMcastStartAddr);
 
       pa_pstMRResponse->DataLength += encodeData(CIP_UDINT, &unMultiCastAddr,

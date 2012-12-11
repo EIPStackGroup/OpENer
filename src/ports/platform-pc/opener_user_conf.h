@@ -106,7 +106,7 @@ typedef unsigned short in_port_t;
 /* If we have tracing enabled provide print tracing macro */
 #include <stdio.h>
 
-#define LOG_TRACE(args...)  fprintf(stderr,args)
+#define LOG_TRACE(...)  fprintf(stderr,__VA_ARGS__)
 
 /*#define PRINT_TRACE(args...)  fprintf(stderr,args);*/
 

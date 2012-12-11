@@ -609,7 +609,7 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_ULINT):
   case (CIP_LWORD):
     {
-      (*(EIP_UINT32 *) (pa_pt2data)) = ltoh64(pa_pnMsg);
+      (*(EIP_UINT64 *) (pa_pt2data)) = ltoh64(pa_pnMsg);
       nRetVal = 8;
     }
     break;

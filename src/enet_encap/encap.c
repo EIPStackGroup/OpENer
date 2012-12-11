@@ -341,9 +341,10 @@ void
 handleReceivedListIdentityCmdUDP(int pa_nSocket,
     struct sockaddr_in *pa_pstFromAddr,
     struct S_Encapsulation_Data *pa_stReceiveData)
-{
+{  
   struct SDelayedEncapsulationMessage *pstDelayedMessageBuffer = NULL;
   unsigned int i;
+  EIP_UINT8 *pacCommBuf;
 
   for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
     {
@@ -370,7 +371,7 @@ handleReceivedListIdentityCmdUDP(int pa_nSocket,
           encapsulateListIdentyResponseMessage(
               &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]));
 
-      EIP_UINT8 *pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
+      pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
       htols(pstDelayedMessageBuffer->m_unMessageSize, &pacCommBuf);
       pstDelayedMessageBuffer->m_unMessageSize += ENCAPSULATION_HEADER_LENGTH;
     }
@@ -418,8 +419,10 @@ void
 determineDelayTime(EIP_BYTE *pa_acBufferStart,
     struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer)
 {
+  EIP_UINT16 unMaxDelayTime;
+
   pa_acBufferStart += 12; /* start of the sender context */
-  EIP_UINT16 unMaxDelayTime = ltohs(&pa_acBufferStart);
+  unMaxDelayTime = ltohs(&pa_acBufferStart);
   if (0 == unMaxDelayTime)
     {
       unMaxDelayTime = 2000;
