@@ -8,13 +8,19 @@
 
 #CC=g++
 
+ROOT=../..
+
+ENCAP=$(ROOT)/src/enet_encap
+CIP=$(ROOT)/src/cip
+PORT=$(ROOT)/src/ports/platform-pc
+
 CFLAGS= \
 	-g \
 	-I . \
-	-I ../../src \
-	-I ../../src/enet_encap \
-	-I ../../src/cip \
-	-I ../../src/ports/platform-pc \
+	-I$(ROOT) \
+	-I$(ENCAP) \
+	-I$(CIP) \
+	-I$(PORT) \
 	-DOPENER_WITH_TRACES \
 	-DOPENER_TRACE_LEVEL=0xFF \
 	-W -Wall -ansi -std=c99
@@ -22,44 +28,44 @@ CFLAGS= \
 LDFLAGS=
 
 SOURCES= \
-	../../src/ports/platform-pc/main.c \
-	../../src/cip/cipconnectionmanager.c	\
-	../../src/cip/cipcommon.c \
-	../../src/cip/cipmessagerouter.c \
-	../../src/cip/cipassembly.c \
-	../../src/cip/ciptcpipinterface.c \
-	../../src/cip/cipidentity.c \
-	../../src/cip/cipethernetlink.c \
-	../../src/cip/appcontype.c \
-	../../src/cip/cipclass3connection.c \
-	../../src/cip/cipioconnection.c \
-	../../src/enet_encap/cpf.c \
-	../../src/enet_encap/endianconv.c \
-	../../src/enet_encap/encap.c \
-	../../src/ports/platform-pc/networkhandler.c
+	$(CIP)/appcontype.c \
+	$(CIP)/cipassembly.c \
+	$(CIP)/cipclass3connection.c \
+	$(CIP)/cipcommon.c \
+	$(CIP)/cipconnectionmanager.c	\
+	$(CIP)/cipethernetlink.c \
+	$(CIP)/cipidentity.c \
+	$(CIP)/cipioconnection.c \
+	$(CIP)/cipmessagerouter.c \
+	$(CIP)/ciptcpipinterface.c \
+	$(ENCAP)/cpf.c \
+	$(ENCAP)/encap.c \
+	$(ENCAP)/endianconv.c \
+	$(PORT)/main.c \
+	$(PORT)/networkhandler.c
 
 
 OBJECTS= \
-	../../src/ports/platform-pc/main.o \
-	../../src/ports/platform-pc/networkhandler.o \
-	../../src/cip/cipconnectionmanager.o \
-	../../src/cip/cipcommon.o \
-	../../src/cip/cipmessagerouter.o \
-	../../src/cip/cipassembly.o \
-	../../src/cip/ciptcpipinterface.o \
-	../../src/cip/cipidentity.o \
-	../../src/cip/cipethernetlink.o \
-	../../src/cip/appcontype.o \
-	../../src/cip/cipclass3connection.o \
-	../../src/cip/cipioconnection.o \
-	../../src/enet_encap/cpf.o \
-	../../src/enet_encap/endianconv.o \
-	../../src/enet_encap/encap.o
+	$(CIP)/appcontype.o \
+	$(CIP)/cipassembly.o \
+	$(CIP)/cipclass3connection.o \
+	$(CIP)/cipcommon.o \
+	$(CIP)/cipconnectionmanager.o \
+	$(CIP)/cipethernetlink.o \
+	$(CIP)/cipioconnection.o \
+	$(CIP)/cipidentity.o \
+	$(CIP)/cipmessagerouter.o \
+	$(CIP)/ciptcpipinterface.o \
+	$(ENCAP)/cpf.o \
+	$(ENCAP)/encap.o \
+	$(ENCAP)/endianconv.o \
+	$(PORT)/main.o \
+	$(PORT)/networkhandler.o 
 	
 SPLINTFLAGS = -I../../src \
-	-I../../src/enet_encap \
-	-I../../src/cip \
-	-I../../src/ports/platform-pc \
+	-I$(ENCAP) \
+	-I$(CIP) \
+	-I$(PORT) \
 	+posixlib -skipposixheaders
 
 
