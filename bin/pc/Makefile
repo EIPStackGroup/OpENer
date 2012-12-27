@@ -18,9 +18,10 @@ CFLAGS= \
 	-g \
 	-I . \
 	-I$(ROOT) \
+	-I$(ROOT)/src \
 	-I$(ENCAP) \
 	-I$(CIP) \
-	-I$(PORT) \
+	-I$(PORT)/sample_application \
 	-DOPENER_WITH_TRACES \
 	-DOPENER_TRACE_LEVEL=0xFF \
 	-W -Wall -ansi -std=c99
@@ -42,7 +43,8 @@ SOURCES= \
 	$(ENCAP)/encap.c \
 	$(ENCAP)/endianconv.c \
 	$(PORT)/main.c \
-	$(PORT)/networkhandler.c
+	$(PORT)/networkhandler.c \
+	$(PORT)/sample_application/sampleapplication.c
 
 
 OBJECTS= \
@@ -60,7 +62,8 @@ OBJECTS= \
 	$(ENCAP)/encap.o \
 	$(ENCAP)/endianconv.o \
 	$(PORT)/main.o \
-	$(PORT)/networkhandler.o 
+	$(PORT)/networkhandler.o \
+	$(PORT)/sample_application/sampleapplication.o
 	
 SPLINTFLAGS = -I../../src \
 	-I$(ENCAP) \
