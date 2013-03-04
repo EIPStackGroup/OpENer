@@ -102,6 +102,14 @@ typedef unsigned short in_port_t;
  */ 
 #define OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER 1
 
+/*! Define if RUN IDLE data is to be sent with produced data
+ *
+ * Per default we don't send run idle headers with produced data
+ */
+#define OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER 0
+
+
+
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide print tracing macro */
 #include <stdio.h>

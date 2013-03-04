@@ -215,6 +215,10 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
                 }
+              if ((OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0))
+                { /* we only have an run idle header if it is not an hearbeat connection */
+                  nDataSize -= 4; /* remove the 4 bytes needed for run/idle header */
+                }
               if (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len
                   != nDataSize)
                 {
@@ -400,7 +404,8 @@ openProducingMulticastConnection(S_CIP_ConnectionObject *pa_pstConnObj,
   pa_pstConnObj->remote_addr.sin_port = pa_CPF_data->AddrInfo[j].nsin_port =
       htons(OPENER_EIP_IO_UDP_PORT);
   pa_pstConnObj->remote_addr.sin_addr.s_addr =
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_stMultiCastconfig.m_unMcastStartAddr;
+      pa_CPF_data->AddrInfo[j].nsin_addr =
+          g_stMultiCastconfig.m_unMcastStartAddr;
   memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
   pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
 
@@ -453,12 +458,13 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
     { /* we are using an unused item initialize it with the default multicast address */
       pa_CPF_data->AddrInfo[j].nsin_family = htons(AF_INET);
       pa_CPF_data->AddrInfo[j].nsin_port = htons(OPENER_EIP_IO_UDP_PORT);
-      pa_CPF_data->AddrInfo[j].nsin_addr = g_stMultiCastconfig.m_unMcastStartAddr;
+      pa_CPF_data->AddrInfo[j].nsin_addr =
+          g_stMultiCastconfig.m_unMcastStartAddr;
       memset(pa_CPF_data->AddrInfo[j].nasin_zero, 0, 8);
       pa_CPF_data->AddrInfo[j].Length = 16;
     }
 
-  if(htons(AF_INET) != pa_CPF_data->AddrInfo[j].nsin_family)
+  if (htons(AF_INET) != pa_CPF_data->AddrInfo[j].nsin_family)
     {
       OPENER_TRACE_ERR("Sockaddr Info Item with wrong sin family value recieved\n");
       return EIP_ERROR;
@@ -475,7 +481,6 @@ OpenMulticastConnection(int pa_direction, S_CIP_ConnectionObject *pa_pstConnObj,
       return EIP_ERROR;
     }
   pa_pstConnObj->sockfd[pa_direction] = newfd;
-
 
   if (pa_direction == CONSUMING)
     {
@@ -639,7 +644,6 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
   S_CIP_Byte_Array *p;
   EIP_UINT16 replylength;
   EIP_UINT8 *pnBuf;
-  int i;
 
   /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
@@ -687,6 +691,11 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
 
   pnBuf = &g_acMessageDataReplyBuffer[replylength - 2];
   pCPFDataItem->stDataI_Item.Length = p->len;
+  if (OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
+    {
+      pCPFDataItem->stDataI_Item.Length += 4;
+    }
+
   if ((pa_pstConnection->TransportTypeClassTrigger & 0x0F) == 1)
     {
       pCPFDataItem->stDataI_Item.Length += 2;
@@ -698,11 +707,12 @@ sendConnectedData(S_CIP_ConnectionObject *pa_pstConnection)
       htols(pCPFDataItem->stDataI_Item.Length, &pnBuf);
     }
 
-  for (i = 0; i < p->len; i++)
+  if (OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
     {
-      *pnBuf = (EIP_UINT8) * (p->Data + i);
-      pnBuf++;
+      htoll(g_nRunIdleState, &(pnBuf));
     }
+
+  memcpy(pnBuf, p->Data, p->len);
 
   replylength += pCPFDataItem->stDataI_Item.Length;
 
