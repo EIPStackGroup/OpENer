@@ -23,6 +23,8 @@
 
 /* global public variables */EIP_UINT8 g_acMessageDataReplyBuffer[OPENER_MESSAGE_DATA_REPLY_BUFFER];
 
+const EIP_UINT16 cg_unCIPUINTZERO = 0;
+
 /* private functions*/
 int
 encodeEPath(S_CIP_EPATH *pa_pstEPath, EIP_UINT8 **pa_pnMsg);
@@ -218,7 +220,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   pt2MetaClass->nClassID = 0xffffffff; /* set metaclass ID (this should never be referenced) */
   pt2MetaClass->nNr_of_Instances = 1; /* the class object is the only instance of the metaclass */
   pt2MetaClass->pstInstances = (S_CIP_Instance *) pt2Class;
-  pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes + 5; /* the metaclass remembers how many class attributes exist*/
+  pt2MetaClass->nNr_of_Attributes = pa_nNr_of_ClassAttributes + 7; /* the metaclass remembers how many class attributes exist*/
   pt2MetaClass->nGetAttrAllMask = pa_nClassGetAttrAllMask; /* indicate which attributes are included in class getAttributeAll*/
   pt2MetaClass->nNr_of_Services = pa_nNr_of_ClassServices
       + ((0 == pa_nClassGetAttrAllMask) ? 1 : 2); /* the metaclass manages the behavior of the class itself */
@@ -241,7 +243,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
   /* further initialization of the class object*/
 
   pt2Class->m_stSuper.pstAttributes = (S_CIP_attribute_struct *) IApp_CipCalloc(
-      pa_nNr_of_ClassAttributes + 5, sizeof(S_CIP_attribute_struct));
+      pt2MetaClass->nNr_of_Attributes, sizeof(S_CIP_attribute_struct));
   /* TODO -- check that we didn't run out of memory?*/
 
   pt2MetaClass->pstServices = (S_CIP_service_struct *) IApp_CipCalloc(
@@ -262,15 +264,19 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
 
   /* create the standard class attributes*/
   insertAttribute((S_CIP_Instance *) pt2Class, 1, CIP_UINT,
-      (void *) &pt2Class->nRevision); /* revision */
+      (void *) &pt2Class->nRevision, CIP_ATTRIB_GETABLE); /* revision */
   insertAttribute((S_CIP_Instance *) pt2Class, 2, CIP_UINT,
-      (void *) &pt2Class->nNr_of_Instances); /*  largest instance number */
+      (void *) &pt2Class->nNr_of_Instances, CIP_ATTRIB_GETABLE); /*  largest instance number */
   insertAttribute((S_CIP_Instance *) pt2Class, 3, CIP_UINT,
-      (void *) &pt2Class->nNr_of_Instances); /* number of instances currently existing*/
+      (void *) &pt2Class->nNr_of_Instances, CIP_ATTRIB_GETABLE); /* number of instances currently existing*/
+  insertAttribute((S_CIP_Instance *) pt2Class, 4, CIP_UINT,
+      (void *) &cg_unCIPUINTZERO, CIP_ATTRIB_GETABLEALL); /* optional attribute list - default = 0 */
+  insertAttribute((S_CIP_Instance *) pt2Class, 5, CIP_UINT,
+      (void *) &cg_unCIPUINTZERO, CIP_ATTRIB_GETABLEALL); /* optional service list - default = 0 */
   insertAttribute((S_CIP_Instance *) pt2Class, 6, CIP_UINT,
-      (void *) &pt2MetaClass->nMaxAttribute); /* max class attribute number*/
+      (void *) &pt2MetaClass->nMaxAttribute, CIP_ATTRIB_GETABLE); /* max class attribute number*/
   insertAttribute((S_CIP_Instance *) pt2Class, 7, CIP_UINT,
-      (void *) &pt2Class->nMaxAttribute); /* max instance attribute number*/
+      (void *) &pt2Class->nMaxAttribute, CIP_ATTRIB_GETABLE); /* max instance attribute number*/
 
   /* create the standard class services*/
   if (0 != pa_nClassGetAttrAllMask)
@@ -295,7 +301,7 @@ createCIPClass(EIP_UINT32 pa_nClassID, int pa_nNr_of_ClassAttributes,
 
 void
 insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr,
-    EIP_UINT8 pa_nCIP_Type, void *pa_pt2data)
+    EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_BYTE pa_bCIP_Flags)
 {
   int i;
   S_CIP_attribute_struct *p;
@@ -309,6 +315,7 @@ insertAttribute(S_CIP_Instance * pa_pInstance, EIP_UINT16 pa_nAttributeNr,
         { /* found non set attribute */
           p->CIP_AttributNr = pa_nAttributeNr;
           p->CIP_Type = pa_nCIP_Type;
+          p->CIP_AttributeFlags = pa_bCIP_Flags;
           p->pt2data = pa_pt2data;
 
           if (pa_nAttributeNr > pa_pInstance->pstClass->nMaxAttribute) /* remember the max attribute number that was defined*/
@@ -373,6 +380,9 @@ EIP_STATUS
 getAttributeSingle(S_CIP_Instance *pa_pstInstance,
     S_CIP_MR_Request *pa_pstMRRequest, S_CIP_MR_Response *pa_pstMRResponse)
 {
+  /* Mask for filtering get-ability */
+  EIP_BYTE nMask;
+
   S_CIP_attribute_struct *p = getAttribute(pa_pstInstance,
       pa_pstMRRequest->RequestPath.AttributNr);
   EIP_BYTE *paMsg = pa_pstMRResponse->Data;
@@ -382,26 +392,37 @@ getAttributeSingle(S_CIP_Instance *pa_pstInstance,
   pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SUPPORTED;
   pa_pstMRResponse->SizeofAdditionalStatus = 0;
 
+  /* set filter according to service: get_attribute_all or get_attribute_single */
+  if (CIP_GET_ATTRIBUTE_ALL == pa_pstMRRequest->Service) {
+      nMask = CIP_ATTRIB_GETABLEALL;
+      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+  } else {
+      nMask = CIP_ATTRIB_GETABLESINGLE;
+  }
+
   if ((p != 0) && (p->pt2data != 0))
     {
-      OPENER_TRACE_INFO("getAttribute %d\n",
-          pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
+      if (p->CIP_AttributeFlags & nMask) {
+         OPENER_TRACE_INFO("getAttribute %d\n",
+         pa_pstMRRequest->RequestPath.AttributNr); /* create a reply message containing the data*/
 
-      /*TODO think if it is better to put this code in an own
-       * getAssemblyAttributeSingle functions which will call get attribute
-       * single.
-       */
-      if (p->CIP_Type == CIP_BYTE_ARRAY
-          && pa_pstInstance->pstClass->nClassID == CIP_ASSEMBLY_CLASS_CODE)
-        {
-          /* we are getting a byte array of a assembly object, kick out to the app callback */
-          OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
-          IApp_BeforeAssemblyDataSend(pa_pstInstance);
-        }
+         /*TODO think if it is better to put this code in an own
+          * getAssemblyAttributeSingle functions which will call get attribute
+          * single.
+          */
 
-      pa_pstMRResponse->DataLength = encodeData(p->CIP_Type, p->pt2data,
-          &paMsg);
-      pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+         if(p->CIP_Type == CIP_BYTE_ARRAY
+            && pa_pstInstance->pstClass->nClassID == CIP_ASSEMBLY_CLASS_CODE)
+           {
+              /* we are getting a byte array of a assembly object, kick out to the app callback */
+              OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
+              IApp_BeforeAssemblyDataSend(pa_pstInstance);
+            }
+
+         pa_pstMRResponse->DataLength = encodeData(p->CIP_Type, p->pt2data,
+           &paMsg);
+         pa_pstMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+      }
     }
 
   return EIP_OK_SEND;
@@ -435,6 +456,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_DINT):
   case (CIP_UDINT):
   case (CIP_DWORD):
+  case (CIP_REAL):
     htoll(*(EIP_UINT32 *) (pa_pt2data), pa_pnMsg);
     counter = 4;
     break;
@@ -443,13 +465,12 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
   case (CIP_LINT):
   case (CIP_ULINT):
   case (CIP_LWORD):
+  case (CIP_LREAL):
     htol64(*(EIP_UINT64 *) (pa_pt2data), pa_pnMsg);
     counter = 8;
     break;
 #endif
 
-  case (CIP_REAL):
-  case (CIP_LREAL):
   case (CIP_STIME):
   case (CIP_DATE):
   case (CIP_TIME_OF_DAY):

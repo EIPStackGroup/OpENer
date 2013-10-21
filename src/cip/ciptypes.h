@@ -82,6 +82,15 @@ typedef enum
 #define CIP_UNCONNECTED_SEND		0x52
 #define CIP_GET_CONNECTION_OWNER	0x5A
 
+/* definition of Flags for CIP Attributes */
+#define CIP_ATTRIB_NONE                 0x00
+#define CIP_ATTRIB_GETABLEALL           0x01
+#define CIP_ATTRIB_GETABLESINGLE        0x02
+#define CIP_ATTRIB_SETABLE              0x04
+/*combined for conveniance */
+#define CIP_ATTRIB_SETGETABLE           0x07   /* both set and getable */
+#define CIP_ATTRIB_GETABLE              0x03   /* both single and all */
+
 typedef enum
 {
   enOpened, enTimedOut, enClosed
@@ -169,6 +178,7 @@ typedef struct
 {
   EIP_UINT16 CIP_AttributNr;
   EIP_UINT8 CIP_Type;
+  EIP_BYTE CIP_AttributeFlags; //bit 0: getable_all; bit 1: getable_single; bit 2: setable_single; bits 3-7 reserved
   void *pt2data;
 } S_CIP_attribute_struct;
 

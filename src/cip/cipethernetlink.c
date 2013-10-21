@@ -50,11 +50,11 @@ EIP_STATUS CIP_Ethernet_Link_Init()
 
         pstEthernetLinkInstance = getCIPInstance(pstEthernetLinkClass, 1);
         insertAttribute(pstEthernetLinkInstance, 1, CIP_UDINT,
-            &stEthernetLink.InterfaceSpeed); /* bind attributes to the instance*/
+            &stEthernetLink.InterfaceSpeed, CIP_ATTRIB_GETABLE); /* bind attributes to the instance*/
         insertAttribute(pstEthernetLinkInstance, 2, CIP_DWORD,
-            &stEthernetLink.InterfaceFlags);
+            &stEthernetLink.InterfaceFlags, CIP_ATTRIB_GETABLE);
         insertAttribute(pstEthernetLinkInstance, 3, CIP_6USINT,
-            &stEthernetLink.PhysicalAddress);
+            &stEthernetLink.PhysicalAddress, CIP_ATTRIB_GETABLE);
       }
     else
       {

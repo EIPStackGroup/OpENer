@@ -138,7 +138,8 @@ setAttributeSingleTCP(S_CIP_Instance *pa_pstObjectInstance,
   if (0 != pAttribute)
     {
       /* it is an attribute we currently support, however no attribute is setable */
-      /*TODO if you like to have a device that can be configured via this CIP object add your code here */
+      /* TODO: if you like to have a device that can be configured via this CIP object add your code here */
+      /* TODO: check for flags associated with attributes */
       pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SETTABLE;
     }
   else
@@ -172,17 +173,17 @@ CIP_TCPIP_Interface_Init()
     }
   pstInstance = getCIPInstance(p_stTCPIPClass, 1); /* bind attributes to the instance #1 that was created above*/
 
-  insertAttribute(pstInstance, 1, CIP_DWORD, (void *) &TCP_Status);
+  insertAttribute(pstInstance, 1, CIP_DWORD, (void *) &TCP_Status, CIP_ATTRIB_GETABLE);
   insertAttribute(pstInstance, 2, CIP_DWORD,
-      (void *) &Configuration_Capability);
-  insertAttribute(pstInstance, 3, CIP_DWORD, (void *) &Configuration_Control);
-  insertAttribute(pstInstance, 4, CIP_EPATH, &Physical_Link_Object);
+      (void *) &Configuration_Capability, CIP_ATTRIB_GETABLE);
+  insertAttribute(pstInstance, 3, CIP_DWORD, (void *) &Configuration_Control, CIP_ATTRIB_GETABLE);
+  insertAttribute(pstInstance, 4, CIP_EPATH, &Physical_Link_Object, CIP_ATTRIB_GETABLE);
   insertAttribute(pstInstance, 5, CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING,
-      &Interface_Configuration);
-  insertAttribute(pstInstance, 6, CIP_STRING, (void *) &Hostname);
+      &Interface_Configuration, CIP_ATTRIB_GETABLE);
+  insertAttribute(pstInstance, 6, CIP_STRING, (void *) &Hostname, CIP_ATTRIB_GETABLE);
 
-  insertAttribute(pstInstance, 8, CIP_USINT, (void *) &g_unTTLValue);
-  insertAttribute(pstInstance, 9, CIP_ANY, (void *) &g_stMultiCastconfig);
+  insertAttribute(pstInstance, 8, CIP_USINT, (void *) &g_unTTLValue, CIP_ATTRIB_GETABLE);
+  insertAttribute(pstInstance, 9, CIP_ANY, (void *) &g_stMultiCastconfig, CIP_ATTRIB_GETABLE);
 
   insertService(p_stTCPIPClass, CIP_GET_ATTRIBUTE_SINGLE,
       &getAttributeSingleTCPIPInterface, "GetAttributeSingleTCPIPInterface");

@@ -108,13 +108,13 @@ EIP_STATUS CIP_Identity_Init()
 
     pInstance = getCIPInstance(pClass, 1);
 
-    insertAttribute(pInstance, 1, CIP_UINT, &VendorID);
-    insertAttribute(pInstance, 2, CIP_UINT, &DeviceType);
-    insertAttribute(pInstance, 3, CIP_UINT, &ProductCode);
-    insertAttribute(pInstance, 4, CIP_USINT_USINT, &Revison);
-    insertAttribute(pInstance, 5, CIP_WORD, &ID_Status);
-    insertAttribute(pInstance, 6, CIP_UDINT, &SerialNumber);
-    insertAttribute(pInstance, 7, CIP_SHORT_STRING, &ProductName);
+    insertAttribute(pInstance, 1, CIP_UINT, &VendorID, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 2, CIP_UINT, &DeviceType, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 3, CIP_UINT, &ProductCode, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 4, CIP_USINT_USINT, &Revison, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 5, CIP_WORD, &ID_Status, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 6, CIP_UDINT, &SerialNumber, CIP_ATTRIB_GETABLE);
+    insertAttribute(pInstance, 7, CIP_SHORT_STRING, &ProductName, CIP_ATTRIB_GETABLE);
 
     insertService(pClass, CIP_RESET, &Reset, "Reset");
 

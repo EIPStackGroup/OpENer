@@ -197,10 +197,11 @@ addCIPInstance(S_CIP_Class * pa_pstCIPClass, EIP_UINT32 pa_nInstanceId);
  *  @param pa_nAttributeNr number of attribute to be inserted.
  *  @param pa_nCIP_Type type of attribute to be inserted.
  *  @param pa_pt2data pointer to data of attribute.
+ *  @param pa_bCIP_Flags flags to indicate set-ability and get-ability of attribute.
  */
 void
 insertAttribute(S_CIP_Instance *pa_pInstance, EIP_UINT16 pa_nAttributeNr,
-    EIP_UINT8 pa_nCIP_Type, void* pa_pt2data);
+    EIP_UINT8 pa_nCIP_Type, void* pa_pt2data, EIP_BYTE pa_bCIP_Flags);
 
 /** \ingroup CIP_API 
  * \brief Insert a service in an instance of a CIP object

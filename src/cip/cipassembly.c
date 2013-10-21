@@ -95,7 +95,7 @@ createAssemblyObject(EIP_UINT32 pa_nInstanceID, EIP_BYTE * pa_data,
 
   stAssemblyByteArray->len = pa_datalength;
   stAssemblyByteArray->Data = pa_data;
-  insertAttribute(pstAssemblyInstance, 3, CIP_BYTE_ARRAY, stAssemblyByteArray);
+  insertAttribute(pstAssemblyInstance, 3, CIP_BYTE_ARRAY, stAssemblyByteArray, CIP_ATTRIB_SETGETABLE);
 
   return pstAssemblyInstance;
 }
@@ -150,6 +150,7 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
         {
           S_CIP_Byte_Array * pacData = (S_CIP_Byte_Array *) p->pt2data;
 
+          //TODO: check for ATTRIBUTE_SET/GETABLE MASK
           if (true == isConnectedOutputAssembly(pa_pstInstance->nInstanceNr))
             {
               OPENER_TRACE_WARN("Assembly AssemblyAttributeSingle: received data for connected output assembly\n\r");
