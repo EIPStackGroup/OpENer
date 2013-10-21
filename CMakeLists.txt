@@ -11,7 +11,8 @@ project(OpENer)
 #######################################
 # Project-wide switches               #
 #######################################
-set( PLATFORM_PC ON CACHE BOOL "Platform for OpENer is PC" )
+set( PLATFORM_POSIX OFF CACHE BOOL "Platform for OpENer is POSIX" )
+set( PLATFORM_WIN32 OFF CACHE BOOL "Platform for OpENer is WIN32" )
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENER_WITH_TRACES -DOPENER_TRACE_LEVEL=0xFF -W -Wall -ansi -std=c99" )
 
@@ -27,8 +28,11 @@ set( PORTS_SRC_DIR "${PROJECT_SOURCE_DIR}/src/ports")
 
 include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} )
 
-if(PLATFORM_PC)
+if(PLATFORM_POSIX)
   include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
-else(PLATFORM_PC)
+elseif(PLATFORM_WIN32)
+  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32" )
+else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
-endif(PLATFORM_PC)
+endif(PLATFORM_POSIX)

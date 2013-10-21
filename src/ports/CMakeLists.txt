@@ -1,10 +1,11 @@
 #######################################
-# OpENer ports					      #
+# OpENer ports			      #
 #######################################
 
-if(PLATFORM_PC)
+if(PLATFORM_POSIX)
   add_subdirectory(platform-pc)
-  include_directories(platform-pc)
-else(PLATFORM_PC)
+else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
-endif(PLATFORM_PC)
+endif(PLATFORM_POSIX)
+
+
