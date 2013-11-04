@@ -19,8 +19,8 @@ else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
 endif(PLATFORM_POSIX)
 
-add_library( PCPLATFORM_LIB ${PLATFORM_SPEC_SRC}) 
+add_library( PCPLATFORM ${PLATFORM_SPEC_SRC}) 
 
 add_executable(OpENer main.c)
 
-target_link_libraries( OpENer PCPLATFORM_LIB CIP_LIB SAMPLE_LIB ENET_ENCAP_LIB ${PLATFORM_SPEC_LIBS} )
+target_link_libraries( OpENer PCPLATFORM CIP SAMPLE_APP ENET_ENCAP ${PLATFORM_SPEC_LIBS} )

@@ -20,4 +20,4 @@ endif(PLATFORM_POSIX)
 
 set( CIP_SRC appcontype.c cipassembly.c cipclass3connection.c cipcommon.c cipconnectionmanager.c ciperror.h cipethernetlink.c cipidentity.c cipioconnection.c cipmessagerouter.c ciptcpipinterface.c ciptypes.h )
 
-add_library( CIP_LIB ${CIP_SRC} )
+add_library( CIP ${CIP_SRC} )

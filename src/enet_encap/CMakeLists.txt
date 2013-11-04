@@ -20,4 +20,4 @@ else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
 endif(PLATFORM_POSIX)
 
-add_library( ENET_ENCAP_LIB ${ENET_ENCAP_SRC} )
+add_library( ENET_ENCAP ${ENET_ENCAP_SRC} )
