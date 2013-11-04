@@ -20,7 +20,7 @@ set( OpENer_VERSION_MINOR 2 )
 set( PLATFORM_POSIX OFF CACHE BOOL "Platform for OpENer is POSIX" )
 set( PLATFORM_WIN32 OFF CACHE BOOL "Platform for OpENer is WIN32" )
 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENER_WITH_TRACES -DOPENER_TRACE_LEVEL=0xFF -w -Wall -ansi -std=c99" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENER_WITH_TRACES -DOPENER_TRACE_LEVEL=0xFF -w -Wall" )
 
 #######################################
 # Add subdirectories                  #
@@ -36,10 +36,11 @@ include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCA
 
 if(PLATFORM_POSIX)
   include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -std=c99" )
 elseif(PLATFORM_WIN32)
-  set( MSINTTYPES_DIR CACHE PATH "Location if inttypes for WIN32 platform needed" )
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_DIR})
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32" )
+  find_path( MSINTTYPES_INCLUDES inttypes.h ${PROJECT_SOURCE_DIR}/contrib/msinttypes) 
+  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_INCLUDES})
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32 -Za" )
 else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
 endif(PLATFORM_POSIX)

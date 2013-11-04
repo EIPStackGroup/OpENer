@@ -8,7 +8,7 @@ include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCA
 if(PLATFORM_POSIX)
   include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
 elseif(PLATFORM_WIN32)
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_DIR})
+  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_INCLUDES})
   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32" )
 else(PLATFORM_POSIX)
   message(FATAL_ERROR "No platform selected!")
