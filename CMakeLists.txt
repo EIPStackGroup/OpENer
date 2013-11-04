@@ -9,6 +9,12 @@ cmake_minimum_required(VERSION 2.8.9)
 project(OpENer)
 
 #######################################
+# Project version                     #
+#######################################
+set( OpENer_VERSION_MAJOR 1 )
+set( OpENer_VERSION_MINOR 2 )
+
+#######################################
 # Project-wide switches               #
 #######################################
 set( PLATFORM_POSIX OFF CACHE BOOL "Platform for OpENer is POSIX" )
