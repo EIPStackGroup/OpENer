@@ -1153,9 +1153,9 @@ closeConnection(S_CIP_ConnectionObject *pa_pstConnObj)
   if (0x03 != (pa_pstConnObj->TransportTypeClassTrigger & 0x03))
     {
       /* only close the udp connection for not class 3 connections */
-      IApp_CloseSocket(pa_pstConnObj->sockfd[CONSUMING]);
+      IApp_CloseSocket_udp(pa_pstConnObj->sockfd[CONSUMING]);
       pa_pstConnObj->sockfd[CONSUMING] = EIP_INVALID_SOCKET;
-      IApp_CloseSocket(pa_pstConnObj->sockfd[PRODUCING]);
+      IApp_CloseSocket_udp(pa_pstConnObj->sockfd[PRODUCING]);
       pa_pstConnObj->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
     }
   removeFromActiveConnections(pa_pstConnObj);

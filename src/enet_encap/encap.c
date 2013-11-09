@@ -516,7 +516,7 @@ handleReceivedUnregisterSessionCmd(
       i = pa_stReceiveData->nSession_handle - 1;
       if (EIP_INVALID_SOCKET != anRegisteredSessions[i])
         {
-          IApp_CloseSocket(anRegisteredSessions[i]);
+          IApp_CloseSocket_tcp(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
           return EIP_OK;
         }
@@ -691,7 +691,7 @@ closeSession(int pa_nSocket)
     {
       if (anRegisteredSessions[i] == pa_nSocket)
         {
-          IApp_CloseSocket(pa_nSocket);
+          IApp_CloseSocket_tcp(pa_nSocket);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
           break;
         }
@@ -706,7 +706,7 @@ encapShutDown(void)
     {
       if (EIP_INVALID_SOCKET != anRegisteredSessions[i])
         {
-          IApp_CloseSocket(anRegisteredSessions[i]);
+          IApp_CloseSocket_tcp(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
         }
     }

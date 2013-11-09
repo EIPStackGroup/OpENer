@@ -526,6 +526,18 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
 }
 
 void
+IApp_CloseSocket_udp(int pa_nSockFd)
+{
+	IApp_CloseSocket(pa_nSockFd);
+}
+
+void
+IApp_CloseSocket_tcp(int pa_nSockFd)
+{
+	IApp_CloseSocket(pa_nSockFd);
+}
+
+void
 IApp_CloseSocket(int pa_nSockFd)
 {
 

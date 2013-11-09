@@ -8,14 +8,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#ifdef WIN32
-#include <winsock2.h>
-#include <windows.h>
-#include <Ws2tcpip.h>
-#else
 #include <unistd.h>
 #include <sys/time.h>
-#endif
 
 #include <opener_api.h>
 #include "networkhandler.h"
@@ -523,6 +517,18 @@ IApp_CreateUDPSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr)
       fdmax = newfd;
     }
   return newfd;
+}
+
+void
+IApp_CloseSocket_udp(int pa_nSockFd)
+{
+	IApp_CloseSocket(pa_nSockFd);
+}
+
+void
+IApp_CloseSocket_tcp(int pa_nSockFd)
+{
+	IApp_CloseSocket(pa_nSockFd);
 }
 
 void

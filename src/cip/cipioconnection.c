@@ -822,9 +822,9 @@ void
 closeCommChannelsAndRemoveFromActiveConnsList(
     struct CIP_ConnectionObject *pa_pstConnObjData)
 {
-  IApp_CloseSocket(pa_pstConnObjData->sockfd[CONSUMING]);
+  IApp_CloseSocket_udp(pa_pstConnObjData->sockfd[CONSUMING]);
   pa_pstConnObjData->sockfd[CONSUMING] = EIP_INVALID_SOCKET;
-  IApp_CloseSocket(pa_pstConnObjData->sockfd[PRODUCING]);
+  IApp_CloseSocket_udp(pa_pstConnObjData->sockfd[PRODUCING]);
   pa_pstConnObjData->sockfd[PRODUCING] = EIP_INVALID_SOCKET;
 
   removeFromActiveConnections(pa_pstConnObjData);
