@@ -32,7 +32,7 @@
 #define EIP_UINT32	uint32_t
 #define EIP_FLOAT	float
 #define EIP_DFLOAT	double
-#define EIP_BOOL8	bool
+#define EIP_BOOL8	int
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 #define EIP_INT64       int64_t
@@ -68,11 +68,9 @@ typedef enum
 } EIP_STATUS;
 
 #ifndef __cplusplus
-/*! If we don't have C++ define a C++ -like "bool"*/
-typedef enum
-{
-  false = 0, true = 1
-} bool;
+/*! If we don't have C++ define a C++ -like "bool" keyword defines*/
+#define false 0
+#define true 1
 
 #endif
 
@@ -85,7 +83,6 @@ typedef enum
  typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;		 this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
  the definition FOO_PACKED_SIZE is a dummy, but it forces the minimum size
  */
-
 /* TODO -- find some portable way of dealing with packed structs and typed enums */
 #ifdef __GNUC__
 #define PACKED __attribute__((packed))
