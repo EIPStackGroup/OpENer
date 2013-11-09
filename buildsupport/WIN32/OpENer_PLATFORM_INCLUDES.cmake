@@ -1,5 +1,6 @@
 macro(opener_platform_spec)
-  include_directories(${PORTS_SRC_DIR}/${OpENer_PLATFORM} ${PORTS_SRC_DIR}/${OpENer_PLATFORM}/sample_application)
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32 -Za" )
-endmacro(opener_platform_includes)
+  find_path( MSINTTYPES_DIR inttypes.h ${PROJECT_SOURCE_DIR}/../contrib/msinttypes)
+  include_directories(${PORTS_SRC_DIR}/${OpENer_PLATFORM} ${PORTS_SRC_DIR}/${OpENer_PLATFORM}/sample_application ${MSINTTYPES_DIR} )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
+endmacro(opener_platform_spec)
 

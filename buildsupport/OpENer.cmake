@@ -6,7 +6,7 @@ ENDFUNCTION(opener_add_definition)
 
 macro(opener_platform_support ARGS)
 
-  if(OpENer_PLATFORM STREQUAL "") #Hier Fehler korrigieren!
+  if(OpENer_PLATFORM STREQUAL "")
     message(FATAL_ERROR "No platform selected!")  
   endif(OpENer_PLATFORM STREQUAL "")
 

@@ -14,8 +14,7 @@ project( OpENer C )
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-set ( OpENer_BUILDSUPPORT_DIR "${PROJECT_SOURCE_DIR}/../buildsupport"
- CACHE PATH "OpENer build support directory.")
+find_path( OpENer_BUILDSUPPORT_DIR opENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport)
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
 
@@ -75,5 +74,3 @@ opener_common_includes()
 #######################################
 
 opener_platform_support("INCLUDES")
-
-
