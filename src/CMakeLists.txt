@@ -14,7 +14,7 @@ project( OpENer C )
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-find_path( OpENer_BUILDSUPPORT_DIR opENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport)
+find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport)
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
 
