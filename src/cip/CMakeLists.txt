@@ -9,14 +9,7 @@ set( PORTS_SRC_DIR "${PROJECT_SOURCE_DIR}/src/ports")
 
 include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} )
 
-if(PLATFORM_POSIX)
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
-elseif(PLATFORM_WIN32)
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_INCLUDES})
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32" )
-else(PLATFORM_POSIX)
-  message(FATAL_ERROR "No platform selected!")
-endif(PLATFORM_POSIX)
+opener_platform_support("INCLUDES")
 
 set( CIP_SRC appcontype.c cipassembly.c cipclass3connection.c cipcommon.c cipconnectionmanager.c ciperror.h cipethernetlink.c cipidentity.c cipioconnection.c cipmessagerouter.c ciptcpipinterface.c ciptypes.h )
 

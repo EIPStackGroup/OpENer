@@ -1,9 +1,3 @@
-#######################################
-# Ethernet encapsulation library      #
-#######################################
-
-set( ENET_ENCAP_SRC cpf.c encap.c endianconv.c )
-
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src" )
 set( CIP_SRC_DIR "${PROJECT_SOURCE_DIR}/src/cip" )
 set( ENET_ENCAP_SRC_DIR "${PROJECT_SOURCE_DIR}/src/enet_encap" )
@@ -13,4 +7,4 @@ include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCA
 
 opener_platform_support("INCLUDES")
 
-add_library( ENET_ENCAP ${ENET_ENCAP_SRC} )
+add_library(SAMPLE_APP sampleapplication.c)

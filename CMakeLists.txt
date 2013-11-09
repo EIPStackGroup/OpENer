@@ -1,12 +1,12 @@
 #######################################
 # Required CMake version              #
 #######################################
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required( VERSION 2.8.9 )
 
 #######################################
 # Project name                        #
 #######################################
-project(OpENer)
+project( OpENer C )
 
 #######################################
 # Project version                     #
@@ -14,33 +14,73 @@ project(OpENer)
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-#######################################
-# Project-wide switches               #
-#######################################
-set( PLATFORM_POSIX OFF CACHE BOOL "Platform for OpENer is POSIX" )
-set( PLATFORM_WIN32 OFF CACHE BOOL "Platform for OpENer is WIN32" )
+set ( OpENer_BUILDSUPPORT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/buildsupport"
+ CACHE PATH "OpENer build support directory.")
+ 
+INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENER_WITH_TRACES -DOPENER_TRACE_LEVEL=0xFF -w -Wall" )
+#######################################
+# Platform switches                   #
+#######################################
+set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" )
+
+set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
+set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
+
+#######################################
+# OpENer tracer switches              #
+#######################################
+set( OpENer_TRACES OFF CACHE BOOL "Activate OpENer traces" )
+if(OpENer_TRACES)
+  add_definitions( -DOPENER_WITH_TRACES )
+  set( TRACE_LEVEL 0 )
+  set( OpENer_TRACE_LEVEL_ERROR ON CACHE BOOL "Error trace level" )
+  set( OpENer_TRACE_LEVEL_WARNING ON CACHE BOOL "Warning trace level" )
+  set( OpENer_TRACE_LEVEL_STATE ON CACHE BOOL "State trace level" )
+  set( OpENer_TRACE_LEVEL_INFO ON CACHE BOOL "Info trace level" )
+  
+  if(OpENer_TRACE_LEVEL_ERROR)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 1" )
+  endif(OpENer_TRACE_LEVEL_ERROR)
+  if(OpENer_TRACE_LEVEL_WARNING)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 2" )
+  endif(OpENer_TRACE_LEVEL_WARNING)
+  if(OpENer_TRACE_LEVEL_STATE)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 4" )
+  endif(OpENer_TRACE_LEVEL_STATE)
+  if(OpENer_TRACE_LEVEL_INFO)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 8" )
+  endif(OpENer_TRACE_LEVEL_INFO)
+  
+  add_definitions(-DOPENER_TRACE_LEVEL=${TRACE_LEVEL})
+  
+endif(OpENer_TRACES)
+
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall" )
 
 #######################################
 # Add subdirectories                  #
 #######################################
 add_subdirectory(src)
 
+#######################################
+# Set source directories              #
+#######################################
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src" )
 set( CIP_SRC_DIR "${PROJECT_SOURCE_DIR}/src/cip" )
 set( ENET_ENCAP_SRC_DIR "${PROJECT_SOURCE_DIR}/src/enet_encap" )
 set( PORTS_SRC_DIR "${PROJECT_SOURCE_DIR}/src/ports")
 
+#######################################
+# Include directories                 #
+#######################################
+
 include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} )
 
-if(PLATFORM_POSIX)
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application)
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -std=c99" )
-elseif(PLATFORM_WIN32)
-  find_path( MSINTTYPES_INCLUDES inttypes.h ${PROJECT_SOURCE_DIR}/contrib/msinttypes) 
-  include_directories(${PORTS_SRC_DIR}/platform-pc ${PORTS_SRC_DIR}/platform-pc/sample_application ${MSINTTYPES_INCLUDES})
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32 -Za" )
-else(PLATFORM_POSIX)
-  message(FATAL_ERROR "No platform selected!")
-endif(PLATFORM_POSIX)
+#######################################
+# Add platfrom specific things        #
+#######################################
+
+opener_platform_support("INCLUDES")
+
+
