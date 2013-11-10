@@ -58,9 +58,16 @@ endif(OpENer_TRACES)
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall" )
 
 #######################################
+# Add custom CIP objects              #
+#######################################
+set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/cip_objects )
+include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
+
+#######################################
 # Add subdirectories                  #
 #######################################
 add_subdirectory(cip)
+add_subdirectory(cip_objects)
 add_subdirectory(enet_encap)
 add_subdirectory(ports)
 
