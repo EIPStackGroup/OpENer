@@ -57,6 +57,8 @@ endif(OpENer_TRACES)
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall" )
 
+set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
+
 #######################################
 # Add custom CIP objects              #
 #######################################
