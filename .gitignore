@@ -1,5 +1,7 @@
 bin/
 doc/
+src/cip_objects/*
+!src/cip_objects/CMakeLists.txt
 .project
 .cproject
 *.*~
