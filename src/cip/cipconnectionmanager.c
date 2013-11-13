@@ -138,7 +138,7 @@ void
 initializeConnectionManagerData();
 
 unsigned int
-GETPADDEDLOGICALPATH(unsigned char **x)
+getPaddedLogicalPath(unsigned char **x)
 {
   unsigned int tmp;
 
@@ -957,7 +957,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
 
       if (EQLOGICALPATH(*pnMsg,0x20))
         { /* classID */
-          pa_pstConnObj->ConnectionPath.ClassID = GETPADDEDLOGICALPATH(&pnMsg);
+          pa_pstConnObj->ConnectionPath.ClassID = getPaddedLogicalPath(&pnMsg);
           pstClass = getCIPClass(pa_pstConnObj->ConnectionPath.ClassID);
           if (0 == pstClass)
             {
@@ -988,7 +988,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
       if (EQLOGICALPATH(*pnMsg,0x24))
         { /* store the configuration ID for later checking in the application connection types */
           pa_pstConnObj->ConnectionPath.ConnectionPoint[2] =
-              GETPADDEDLOGICALPATH(&pnMsg);
+              getPaddedLogicalPath(&pnMsg);
           OPENER_TRACE_INFO("Configuration instance id %"PRId32"\n", pa_pstConnObj->ConnectionPath.ConnectionPoint[2]);
           if (NULL
               == getCIPInstance(pstClass,
@@ -1072,7 +1072,7 @@ parseConnectionPath(S_CIP_ConnectionObject *pa_pstConnObj,
               if (EQLOGICALPATH(*pnMsg,0x24) || EQLOGICALPATH(*pnMsg,0x2C)) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
                 { /* InstanceNR */
                   pa_pstConnObj->ConnectionPath.ConnectionPoint[i] =
-                      GETPADDEDLOGICALPATH(&pnMsg);
+                      getPaddedLogicalPath(&pnMsg);
                   OPENER_TRACE_INFO("connection point %"PRIu32"\n",
                       pa_pstConnObj->ConnectionPath.ConnectionPoint[i]);
                   if (0
