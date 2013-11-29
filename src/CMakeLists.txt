@@ -55,8 +55,25 @@ if(OpENer_TRACES)
   
 endif(OpENer_TRACES)
 
+#######################################
+# Test switch                         #
+#######################################
+set( OpENer_TESTS OFF CACHE BOOL "Enable tests to be built" )
+if( OpENer_TESTS )
+  enable_language( CXX )
+  set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
+  INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
+  add_subdirectory(tests)
+endif( OpENer_TESTS )
+
+#######################################
+# OpENer C flags                      #
+#######################################
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall" )
 
+####################################################
+# Internal cache holding the available CIP objects #
+####################################################
 set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
 
 #######################################
