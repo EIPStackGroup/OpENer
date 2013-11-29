@@ -6,6 +6,6 @@ TEST_GROUP(MTRandomTests)
 
 TEST(MTRandomTests, SeedTest)
 {
-  FAIL("Fail me!");
+  mtsrand(0);
 }
 
