@@ -1,6 +1,7 @@
 #include "CppUTest/CommandLineTestRunner.h"
 
 IMPORT_TEST_GROUP(MTRandomTests);
+IMPORT_TEST_GROUP(XorShiftRandom);
 
 int main(int argc, char** argv)
 {
