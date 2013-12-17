@@ -14,9 +14,9 @@ project( OpENer C )
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport)
+find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport )
  
-INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
+INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
 #######################################
 # Platform switches                   #
@@ -25,6 +25,11 @@ set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "LM3S8962" )
 
 set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
+
+#######################################
+# Platform-dependent functions check  #
+#######################################
+INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_function_checks.cmake )
 
 #######################################
 # OpENer tracer switches              #
