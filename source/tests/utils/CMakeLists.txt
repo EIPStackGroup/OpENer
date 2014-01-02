@@ -1,8 +1,8 @@
 
 opener_common_includes()
 
-set( UtilsTestSrc randomTests.cpp MTRandomTests.cpp xorshiftrandomtests.cpp)
+set( UtilsTestSrc randomTests.cpp xorshiftrandomtests.cpp)
 
-include_directories( ${PROJECT_SOURCE_DIR}/utils )
+include_directories( ${SRC_DIR}/utils )
 
 add_library( UtilsTest ${UtilsTestSrc} )
