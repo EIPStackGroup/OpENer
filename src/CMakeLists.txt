@@ -21,7 +21,7 @@ INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
 #######################################
 # Platform switches                   #
 #######################################
-set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" )
+set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "LM3S8962" )
 
 set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
