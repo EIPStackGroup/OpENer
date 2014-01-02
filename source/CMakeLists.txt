@@ -65,6 +65,7 @@ endif(OpENer_TRACES)
 #######################################
 set( OpENer_TESTS OFF CACHE BOOL "Enable tests to be built" )
 if( OpENer_TESTS )
+  enable_testing()
   enable_language( CXX )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
