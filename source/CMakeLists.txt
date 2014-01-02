@@ -14,7 +14,7 @@ project( OpENer C )
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport )
+find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsupport )
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
@@ -68,7 +68,7 @@ if( OpENer_TESTS )
   enable_language( CXX )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
-  add_subdirectory(tests)
+  add_subdirectory( tests )
 endif( OpENer_TESTS )
 
 #######################################
@@ -90,19 +90,4 @@ include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
 #######################################
 # Add subdirectories                  #
 #######################################
-add_subdirectory(cip)
-add_subdirectory(cip_objects)
-add_subdirectory(enet_encap)
-add_subdirectory(ports)
-add_subdirectory(utils)
-
-#######################################
-# Add common includes                 #
-#######################################
-opener_common_includes()
-
-#######################################
-# Add platfrom specific things        #
-#######################################
-
-opener_platform_support("INCLUDES")
+add_subdirectory( src )
