@@ -39,16 +39,16 @@ if(OpENer_TRACES)
   set( OpENer_TRACE_LEVEL_INFO ON CACHE BOOL "Info trace level" )
   
   if(OpENer_TRACE_LEVEL_ERROR)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 1" )
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 1" ) #First (LS) bit in the trace level selection code
   endif(OpENer_TRACE_LEVEL_ERROR)
   if(OpENer_TRACE_LEVEL_WARNING)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 2" )
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 2" ) #Second bit in the trace level selection code
   endif(OpENer_TRACE_LEVEL_WARNING)
   if(OpENer_TRACE_LEVEL_STATE)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 4" )
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 4" ) #Third bit in the trace level selection code
   endif(OpENer_TRACE_LEVEL_STATE)
   if(OpENer_TRACE_LEVEL_INFO)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 8" )
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 8" ) #Forth (MS) bit in the trace level selection code
   endif(OpENer_TRACE_LEVEL_INFO)
   
   add_definitions(-DOPENER_TRACE_LEVEL=${TRACE_LEVEL})
@@ -63,7 +63,7 @@ if( OpENer_TESTS )
   enable_language( CXX )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
-  add_subdirectory(tests)
+  add_subdirectory( tests )
 endif( OpENer_TESTS )
 
 #######################################
@@ -80,15 +80,15 @@ set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
 # Add custom CIP objects              #
 #######################################
 set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/cip_objects )
-include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
+include( ${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake )
 
 #######################################
 # Add subdirectories                  #
 #######################################
-add_subdirectory(cip)
-add_subdirectory(cip_objects)
-add_subdirectory(enet_encap)
-add_subdirectory(ports)
+add_subdirectory( cip )
+add_subdirectory( cip_objects )
+add_subdirectory( enet_encap )
+add_subdirectory( ports )
 
 #######################################
 # Add common includes                 #
@@ -99,4 +99,4 @@ opener_common_includes()
 # Add platfrom specific things        #
 #######################################
 
-opener_platform_support("INCLUDES")
+opener_platform_support( "INCLUDES" )
