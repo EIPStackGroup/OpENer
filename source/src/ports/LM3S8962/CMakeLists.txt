@@ -1,4 +1,4 @@
-add_subdirectory(sample_application)
+#add_subdirectory(sample_application)
 
 set( PLATFORM_SPEC_SRC networkhandler.c basiccip.c)
 
