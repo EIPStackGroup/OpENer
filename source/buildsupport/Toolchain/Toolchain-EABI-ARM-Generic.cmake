@@ -16,14 +16,17 @@ execute_process(
   OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Strip the filename off
 get_filename_component(CMAKE_INSTALL_PREFIX
   "${CMAKE_INSTALL_PREFIX}" PATH
 )
+
 # Then find the canonical path to the directory one up from there
 get_filename_component(CMAKE_INSTALL_PREFIX
   "${CMAKE_INSTALL_PREFIX}/.." REALPATH
 )
+
 set(CMAKE_INSTALL_PREFIX  ${CMAKE_INSTALL_PREFIX} CACHE FILEPATH
     "Install path prefix, prepended onto install directories.")
 
@@ -42,16 +45,7 @@ set(CMAKE_C_FLAGS
   "-Wstrict-prototypes -ffunction-sections -fdata-sections"
 )
 
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "cortex-m4")
-
-  set(CMAKE_C_FLAGS
-    "${CMAKE_C_FLAGS}"
-    "-mcpu=cortex-m4 -march=armv7e-m -mthumb"
-    "-mfloat-abi=hard -mfpu=fpv4-sp-d16"
-    "-ffunction-sections -fdata-sections"
-  )
-
-elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "cortex-m3")
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "cortex-m3")
 
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS}"
@@ -59,8 +53,9 @@ elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "cortex-m3")
     "-msoft-float"
     "-ffunction-sections -fdata-sections"
   )
+endif()
 
-else ()
+if (NOT DEFINED CMAKE_SYSTEM_PROCESSOR)
   message(WARNING
     "Processor not recognised in toolchain file, "
     "compiler flags not configured."
