@@ -85,7 +85,7 @@ set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
 #######################################
 # Add custom CIP objects              #
 #######################################
-set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/cip_objects )
+set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/src/cip_objects )
 include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
 
 #######################################
