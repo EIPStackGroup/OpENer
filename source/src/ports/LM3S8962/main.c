@@ -52,8 +52,8 @@
 #include "cipcommon.h"
 #include "random.h"
 #include <trace.h>
-#include "../../cip_energy/ElEnergyData.h"
-#include "eminterface.h"
+#include <ElectricalEnergy/ElEnergyData.h>
+#include "measurement_extension/eminterface.h"
 
 int callocsize = CALLOCSIZE;
 char callocmem[CALLOCSIZE];
@@ -346,13 +346,12 @@ main(void)
 /* implement missing functions rand and srand */
 int _EXFUN(rand,(_VOID))
 {
-  return RandomNumber();
+  return nextXorShiftUInt32();
 }
 
 _VOID   _EXFUN(srand,(unsigned __seed))
 {
-  RandomAddEntropy(__seed);
-  RandomSeed();
+  setXorShiftSeed(__seed);
 }
 
 
