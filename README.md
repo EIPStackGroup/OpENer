@@ -36,7 +36,7 @@ cmake-gui oackage on Linux)
 Compile for POSIX:
 ----------------
 1. Directly in the shell:
-	1. Go into the bin/pc directory
+	1. Go into the bin/posix directory
 	2. For a standard configuration invoke setup_posix.sh, otherwise start
  cmake (GUI or shell application) and configure your project
 	3. Invoke make
@@ -50,7 +50,7 @@ Compile for POSIX:
 	1. For a standard configuration invoke setup_posix.sh, otherwise start
  cmake (GUI or shell application) and configure your project
 	2. Import the project
-	3. Go to the bin/pc folder in the make targets view
+	3. Go to the bin/win32 folder in the make targets view
 	4. Choose all from the make targets
 	5. The resulting executable will be in the directory /bin/posix or the
 directoy you have choosen via CMake
