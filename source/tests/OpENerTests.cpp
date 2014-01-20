@@ -1,6 +1,4 @@
-#include "CppUTest/CommandLineTestRunner.h"
-
-IMPORT_TEST_GROUP(MTRandomTests);
+#include "OpENerTests.h"
 
 int main(int argc, char** argv)
 {
