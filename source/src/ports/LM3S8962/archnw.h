@@ -9,8 +9,6 @@
 
 #include "lwiplib.h"
 
-#include "local.h"
-
 extern void *mycalloc(unsigned);
 #define cip_calloc(x,y) mycalloc((unsigned)((x)*(y)))
 

@@ -1,8 +1,9 @@
 bin/
 doc/
 contrib/
-src/cip_objects/*
-!src/cip_objects/CMakeLists.txt
+source/src/cip_objects/
+!source/src/cip_objects/CMakeLists.txt
 .project
 .cproject
 *.*~
+*~

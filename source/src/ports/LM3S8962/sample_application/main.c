@@ -8,7 +8,7 @@
 // Software License Agreement
 //
 // Luminary Micro, Inc. (LMI) is supplying this software for use solely and
-// exclusively on LMI's microcontroller products.
+// exclusively on LMI's micro controller products.
 //
 // The software is owned by LMI and/or its suppliers, and is protected under
 // applicable copyright laws.  All rights are reserved.  You may not combine
@@ -45,27 +45,25 @@
 #include "driverlib/systick.h"
 #include "lwiplib.h"
 
-#include "local.h"
 #include "flashmgr.h"
 #include "networkhandler.h"
 #include <opener_api.h>
 #include "cipcommon.h"
 #include "random.h"
 #include <trace.h>
-#include "../../cip_energy/ElEnergyData.h"
-#include "eminterface.h"
-
-int callocsize = CALLOCSIZE;
-char callocmem[CALLOCSIZE];
 
 //define here instead of ptpd.h
-volatile unsigned long g_ulSystemTimeSeconds;
+volatile unsigned long g_ulSystemTimeSecfunctiononds;
 volatile unsigned long g_ulSystemTimeNanoSeconds;
 
 // cast an int as a struct_inaddr (check the "inet_ntoa" man page -- it wants a struct_inaddr passed by value, not an int)
 // static IP-Address?
 //#define useStaticIP 1
 #define useStaticIP 0
+
+#ifndef useStaticIP
+#error "useStaticIP undefined"
+#endif
 
 struct parm
 {
@@ -108,14 +106,6 @@ __error__(char *pcFilename, unsigned long ulLine)
   }
 #endif
 
-void DisplayIPAddress(unsigned long ipaddr, unsigned long ulCol,
-                 unsigned long ulRow);
-void DisplayOdo(EIP_INT64 pa_nValue, unsigned long pa_nRow);
-
-
-void DisplayRealVal(double pa_fValue, const char *pcPrefix, const char *pcPostfix, unsigned long pa_nRow, unsigned long pa_nCol);
-
-
 // change my IP address etc.
 void
 setCIPaddress(unsigned long addr, // my IP address, in network order
@@ -155,7 +145,6 @@ lwIPHostTimerHandler(void)
       ulNetmask = lwIPLocalNetMaskGet();
       ulGateway = lwIPLocalGWAddrGet();
       setCIPaddress(ulIPAddress, ulNetmask, ulGateway);
-      DisplayIPAddress((ulIPAddress), 36, 8);
     }
 }
 
@@ -219,15 +208,9 @@ main(void)
   SysTickIntEnable();
 
   //
-  // Initialize ADC
-  //
-  EMInterfaceInit();
-  //
   // Enable processor interrupts.
   //
   IntMasterEnable();
-
-
 
   //
   // Configure the hardware MAC address for Ethernet Controller filtering of
@@ -273,7 +256,7 @@ main(void)
   //
 
 
-  pl = parmFind();
+  pl = findNextEmptyParameterBlock();
   p = (struct parm *) (pl + 1);
 
   if (useStaticIP)
@@ -281,7 +264,6 @@ main(void)
       OPENER_TRACE_INFO("using static IP address\n");
 
       ip = 0x8083BAC9; //128.130.200.201
-//      ip = 0x8083BACB; //128.130.200.203
       nm = 0xFFFFFF00;
       gw = 0x8083BA01;
       valid = 7;
@@ -297,26 +279,6 @@ main(void)
       lwIPInit(pucMACArray, 0, 0, 0, IPADDR_USE_DHCP);
     }
 
-
-  // Set the interrupt priorities.  We set the SysTick interrupt to a higher
-    // priority than the Ethernet interrupt to ensure that the file system
-    // tick is processed if SysTick occurs while the Ethernet handler is being
-    // processed.  This is very likely since all the TCP/IP and HTTP work is
-    // done in the context of the Ethernet interrupt.
-    //
-    //
-    // Initialize the OLED display.
-    //
-    RIT128x96x4Init(1000000);
-    RIT128x96x4StringDraw("OpENer w/ CIP-Energy", 4, 0, 15);
-    RIT128x96x4StringDraw("-----------------------", 0, 14, 15);
-    RIT128x96x4StringDraw("IP:   ", 0, 8, 15);
-    DisplayIPAddress(htonl(ip), 36, 8);
-
-    RIT128x96x4StringDraw("  TWh GWh MWh kWh  Wh  ", 0, 20, 15);
-
-    RIT128x96x4StringDraw("factor 1000 applies    ", 0, 54, 10);
-    RIT128x96x4StringDraw("to metered values     ", 0, 62, 10);
     //change time-interval value for call of updateElMeasuringAndMeteringData
     //in SysTickIntHandler-method to show/provide correct values (see line 370)
 
@@ -329,8 +291,6 @@ main(void)
   /* Setup the CIP Layer */
   CIP_Init(365);
   IntMasterDisable();
-  CIP_BaseEnergy_Init();
-  CIP_ElEnergy_Init();
 
   IntMasterEnable();
   Start_NetworkHandler();
@@ -346,13 +306,12 @@ main(void)
 /* implement missing functions rand and srand */
 int _EXFUN(rand,(_VOID))
 {
-  return RandomNumber();
+  return nextXorShiftUInt32();
 }
 
 _VOID   _EXFUN(srand,(unsigned __seed))
 {
-  RandomAddEntropy(__seed);
-  RandomSeed();
+  setXorShiftSeed(__seed);
 }
 
 
@@ -369,138 +328,10 @@ void SysTickIntHandler(void) {
   // Update internal time and set PPS output, if needed.
   //
   g_ulSystemTimeNanoSeconds += SYSTICKNS;
-  if(g_ulSystemTimeNanoSeconds >= 1000000000) //1 second interval
-      {
-          //GPIOPinWrite(PPS_GPIO_BASE, PPS_GPIO_PIN, PPS_GPIO_PIN); ???
-          g_ulSystemTimeNanoSeconds -= 1000000000;
-          g_ulSystemTimeSeconds += 1;
-
-          //TODO: set interval back to 1 second
-          updateElMeasuringAndMeteringData(1000.0, EMInterfaceGetVoltage(), EMInterfaceGetCurrent());
-
-          RIT128x96x4StringDraw("N", 0, 28, 15);
-          DisplayOdo(g_nBE_TotalEnergyValue, 28);
-
-          RIT128x96x4StringDraw("C", 0, 36, 15);
-          DisplayOdo(g_nBE_ConsumedEnergyValue, 36);
-
-          RIT128x96x4StringDraw("P", 0, 44, 15);
-          DisplayOdo(g_nBE_ProducedEnergyValue, 44);
-
-          DisplayRealVal(g_astEE_ObjInstanceAttribs[eELEL1Current].m_nAttribValue.m_fReal, "I:", "A", 74, 0);
-          DisplayRealVal(g_astEE_ObjInstanceAttribs[eELEL1toNVoltage].m_nAttribValue.m_fReal, "U:", "V", 74, 66);
-
-          DisplayRealVal(g_astEE_ObjInstanceAttribs[eELELineFrequency].m_nAttribValue.m_fReal, "f:", "Hz", 82, 0);
-          DisplayRealVal(g_astEE_ObjInstanceAttribs[eELEL1RealPower].m_nAttribValue.m_fReal, "P:", "W", 82, 66);
-
-      }
-
 
   //
   // Call the lwIP timer handler.
   //
   lwIPTimer(SYSTICKMS);
-}
-
-
-//*****************************************************************************
-//
-// Display an lwIP type IP Address.
-//
-//*****************************************************************************
-void
-DisplayIPAddress(unsigned long ipaddr, unsigned long ulCol,
-                 unsigned long ulRow)
-{
-    char pucBuf[16];
-    unsigned char *pucTemp = (unsigned char *)&ipaddr;
-
-    //
-    // Convert the IP Address into a string.
-    //
-    sprintf(pucBuf, "%d.%d.%d.%d", pucTemp[0], pucTemp[1], pucTemp[2],
-             pucTemp[3]);
-
-    //
-    // Display the string.
-    //
-    RIT128x96x4StringDraw(pucBuf, ulCol, ulRow, 15);
-}
-
-
-//*****************************************************************************
-//
-// Display a 5 digit odometer
-//
-//*****************************************************************************
-void
-DisplayOdo(EIP_INT64 pa_nValue, unsigned long pa_nRow) {
-  char pucBuf[23];
-  char pucSign[2];
-  UINT16 odoMeter[5] = {0,0,0,0,0};
-  int i = 0;
-
-
-  if (0 > pa_nValue) {
-    pa_nValue = pa_nValue * (-1);
-    sprintf(pucSign,"-");
-  } else {
-    sprintf(pucSign," ");
-  }
-  RIT128x96x4StringDraw(pucSign, 6, pa_nRow, 15);
-
-
-  for (i=0; i<5;++i) {
-      odoMeter[i] = pa_nValue % 1000;
-      pa_nValue /= 1000;
-  }
-
-  sprintf(pucBuf, "%03d,%03d,%03d,%03d,%03d", odoMeter[4], odoMeter[3],
-      odoMeter[2], odoMeter[1], odoMeter[0]);
-
-  RIT128x96x4StringDraw(pucBuf, 12, pa_nRow, 15);
-
-}
-
-
-//*****************************************************************************
-//
-// Split double value at decimal-point and provide integer values
-// for both values. the value after the decimal point is limited to 3 digits
-//
-//*****************************************************************************
-void
-splitDecimal(double pa_fValue, char* pa_pSign, int* pa_pFull, int* pa_pMilli){
-  if (0 <= pa_fValue) {
-      *pa_pSign = ' ';
-      *pa_pFull = floor(pa_fValue);
-      *pa_pMilli = floor(fmod(pa_fValue, 1.0)*1000);
-  } else {
-      *pa_pSign = '-';
-      *pa_pFull = floor(-1.0 * pa_fValue);
-      *pa_pMilli = floor(fmod(pa_fValue * (-1.0), 1.0)*1000);
-  }
-}
-
-
-
-//*****************************************************************************
-//
-// Print the given double-value, preceeded by pre-fix and followed by post-fix
-// at given position of OLED-display
-//
-//*****************************************************************************
-void
-DisplayRealVal(double pa_fValue, const char *pcPrefix, const char *pcPostfix, unsigned long pa_nRow, unsigned long pa_nCol) {
-  char pucBuf[23];
-
-  int Val;
-  int milliVal;
-  char sign;
-
-  splitDecimal(pa_fValue, &sign, &Val, &milliVal);
-//TODO: minor bug: values between -1 and 0 have incorrect sign at output (there is no integer value with -0)
-  sprintf(pucBuf, "%s%c%2d.%03d%s", pcPrefix, sign, Val, milliVal, pcPostfix);
-  RIT128x96x4StringDraw(pucBuf, pa_nCol, pa_nRow, 15);
 }
 

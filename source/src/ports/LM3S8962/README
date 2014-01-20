@@ -1,0 +1,69 @@
+README for the usage of OpENer with a LM3S8962 kit:
+
+Depending on which eval kit you may have please install the kit
+
+For example the eval kits for the Luminary/Texas Instruments(R)
+LM3S8962 eval kit (display board or brushless DC boards) can 
+be found here:
+	http://www.ti.com/tool/sw-ek-lm3s8962
+	http://www.ti.com/tool/sw-rdk-bldc
+
+This port uses the MentorGraphics(R) Code Sourcery Lite ARM-NONE-EABI toolchain
+ which can be found here: 
+http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/overview
+
+On Debian 7+ you need to install ia32-libs before you can install the
+MentorGraphics(R) Code Sourcery Lite ARM-NONE-EABI toolchain. This manual can 
+also be found at the MentorGraphics(R) website:
+
+To install the ia32-libs enter the following commands, which must be executed
+as root:
+
+  dpkg --add-architecture i386
+  apt-get update
+  apt-get install ia32-libs ia32-libs-gtk
+
+This part was also stated in the manual at MentorGraphics(R) but didn't work
+for me, but I was able to install the toolchain anyhow
+
+  wget https://sourcery.mentor.com/GNUToolchain/kbattach150/getlibs-all.deb
+  sudo dpkg -i getlibs-all.deb
+  sudo getlibs -p xulrunner-1.9.2
+  export MOZILLA_FIVE_HOME=/usr/lib32/xulrunner-1.9.2.X
+
+In addition the _sbrk function must be provided. An _sbrk implementation can
+be found in newlib/libgloss/libnosys. The CMake script allows to enter the path
+to the newlib source. The newlib source can be found at:
+  https://sourceware.org/newlib/
+
+If you are using newlib you have to add a user heap section to your linker 
+script like the one provided here:
+
+	/* User_heap_stack section, used to check that there is enough RAM 
+	left */
+	  ._user_heap_stack :
+	  {
+	    . = ALIGN(4);
+	    PROVIDE ( end = . );
+	    PROVIDE ( _end = . );
+	    _heap_start_ = .;
+	    . = . + _Min_Heap_Size;
+	    _heap_end_ = .;
+	    _stack_start_ = .;
+	    . = . + _Min_Stack_Size;
+	    _stack_end_ = .;
+	    . = ALIGN(4);
+	  } > SRAM 
+
+Alternatively, the myLib provided on the CD of the board can be used 
+instead of the newLib and the add-on to the linker script.
+
+Unfortunatly, the myLib isn't provided in the offical download (at the time I 
+was looking it up it was SW-EK-LM3S8962-10636) of the evaluation kit at the 
+Texas Instruments(R) homepage.
+
+Last, but not least, you place the your startup_gcc.c and linker script in the 
+opener/source/src/ports/LM3S8962 directory.
+
+If something in this README isn't clear please put your question here:
+  https://github.com/EIPStackGroup/OpENer

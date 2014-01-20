@@ -42,3 +42,30 @@ MACRO(opener_add_cip_object NAME DESCRIPTION)
     return()
   endif(NOT OpENer_CIP_OBJECT_${NAME})
 ENDMACRO(opener_add_cip_object)
+
+#######################################
+# Creates options for trace level     #
+####################################### 
+macro(createTraceLevelOptions)
+  add_definitions( -DOPENER_WITH_TRACES )
+  set( TRACE_LEVEL 0 )
+  set( OpENer_TRACE_LEVEL_ERROR ON CACHE BOOL "Error trace level" )
+  set( OpENer_TRACE_LEVEL_WARNING ON CACHE BOOL "Warning trace level" )
+  set( OpENer_TRACE_LEVEL_STATE ON CACHE BOOL "State trace level" )
+  set( OpENer_TRACE_LEVEL_INFO ON CACHE BOOL "Info trace level" )
+  
+  if(OpENer_TRACE_LEVEL_ERROR)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 1" )
+  endif(OpENer_TRACE_LEVEL_ERROR)
+  if(OpENer_TRACE_LEVEL_WARNING)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 2" )
+  endif(OpENer_TRACE_LEVEL_WARNING)
+  if(OpENer_TRACE_LEVEL_STATE)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 4" )
+  endif(OpENer_TRACE_LEVEL_STATE)
+  if(OpENer_TRACE_LEVEL_INFO)
+    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 8" )
+  endif(OpENer_TRACE_LEVEL_INFO)
+  
+  add_definitions(-DOPENER_TRACE_LEVEL=${TRACE_LEVEL})
+endmacro(createTraceLevelOptions)

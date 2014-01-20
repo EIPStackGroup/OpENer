@@ -36,28 +36,7 @@ INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_function_checks.cmake )
 #######################################
 set( OpENer_TRACES OFF CACHE BOOL "Activate OpENer traces" )
 if(OpENer_TRACES)
-  add_definitions( -DOPENER_WITH_TRACES )
-  set( TRACE_LEVEL 0 )
-  set( OpENer_TRACE_LEVEL_ERROR ON CACHE BOOL "Error trace level" )
-  set( OpENer_TRACE_LEVEL_WARNING ON CACHE BOOL "Warning trace level" )
-  set( OpENer_TRACE_LEVEL_STATE ON CACHE BOOL "State trace level" )
-  set( OpENer_TRACE_LEVEL_INFO ON CACHE BOOL "Info trace level" )
-  
-  if(OpENer_TRACE_LEVEL_ERROR)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 1" )
-  endif(OpENer_TRACE_LEVEL_ERROR)
-  if(OpENer_TRACE_LEVEL_WARNING)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 2" )
-  endif(OpENer_TRACE_LEVEL_WARNING)
-  if(OpENer_TRACE_LEVEL_STATE)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 4" )
-  endif(OpENer_TRACE_LEVEL_STATE)
-  if(OpENer_TRACE_LEVEL_INFO)
-    math( EXPR TRACE_LEVEL "${TRACE_LEVEL} + 8" )
-  endif(OpENer_TRACE_LEVEL_INFO)
-  
-  add_definitions(-DOPENER_TRACE_LEVEL=${TRACE_LEVEL})
-  
+  createTraceLevelOptions()
 endif(OpENer_TRACES)
 
 #######################################
