@@ -55,6 +55,8 @@ CIP_Init(EIP_UINT16 pa_nUniqueConnID)
 void
 shutdownCIP(void)
 {
+  /* Memory deallocation */
+  IApp_Shutdown();
   /* First close all connections */
   closeAllConnections();
   /* Than free the sockets of currently active encapsulation sessions */
@@ -66,6 +68,7 @@ shutdownCIP(void)
 
   /*no clear all the instances and classes */
   deleteAllClasses();
+
 }
 
 EIP_STATUS
@@ -587,6 +590,7 @@ encodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
       break;
     }
   default:
+      counter += IApp_EncodeData(pa_nCIP_Type, pa_pt2data, pa_pnMsg);
     break;
 
     }
@@ -667,6 +671,7 @@ decodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
     }
 
   default:
+      nRetVal += IApp_DecodeData(pa_nCIP_Type, pa_pt2data, pa_pnMsg);
     break;
     }
 
