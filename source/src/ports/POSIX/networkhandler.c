@@ -25,7 +25,8 @@ extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
-typedef long MILLISECONDS;
+typedef unsigned long MILLISECONDS;
+typedef unsigned long long MICROSECONDS;
 fd_set master;
 fd_set read_fds;
 /* temporary file descriptor for select() */
@@ -69,18 +70,28 @@ checkSocketSet(int pa_nSocket);
 EIP_STATUS
 handleDataOnTCPSocket(int pa_nSocket);
 
-static MILLISECONDS
-getmilliseconds(void)
+static MICROSECONDS
+getMicroseconds()
 {
 #ifdef WIN32
-  SYSTEMTIME tt;
-  GetSystemTime(&tt);
-  return (MILLISECONDS) tt.wSecond * 1000 + (MILLISECONDS) tt.wMilliseconds;
+    LARGE_INTEGER lPerformanceCouner;
+    LARGE_INTEGER lPerformanceFrequency;
+
+    QueryPerformanceCounter(&lPerformanceCouner);
+    QueryPerformanceFrequency(&lPerformanceFrequency);
+
+    return (MICROSECONDS) (lPerformanceCouner.QuadPart * 1000000LL / lPerformanceFrequency.QuadPart);
 #else
   struct timeval tv;
   gettimeofday(&tv, 0);
-  return (MILLISECONDS) tv.tv_sec * 1000 + (MILLISECONDS) tv.tv_usec / 1000;
+  return (MICROSECONDS) tv.tv_sec * 1000000ULL + (MICROSECONDS) tv.tv_usec;
 #endif
+}
+
+static MILLISECONDS
+getmilliseconds(void)
+{
+    return (MILLISECONDS) ( getMicroseconds() / 1000ULL );
 }
 
 /* INT8 Start_NetworkHandler()
@@ -212,6 +223,7 @@ NetworkHandler_ProcessOnce(void)
           0) * 1000; /* 10 ms */
 
   res = select(fdmax + 1, &read_fds, 0, 0, &tv);
+
   if (res == -1)
     {
       if (EINTR == errno) /* we have somehow been interrupted. The default behavior is to go back into the select loop. */
