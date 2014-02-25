@@ -146,3 +146,20 @@ IApp_HandleApplication(void)
   /* check if application needs to trigger an connection */
 }
 
+void
+IApp_Shutdown()
+{
+
+}
+
+int
+IApp_EncodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
+{
+    return 0;
+}
+
+int
+IApp_DecodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
+{
+    return 0;
+}

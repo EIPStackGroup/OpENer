@@ -160,3 +160,21 @@ IApp_RunIdleChanged(EIP_UINT32 pa_nRunIdleValue)
   (void) pa_nRunIdleValue;
 }
 
+void
+IApp_Shutdown()
+{
+
+}
+
+int
+IApp_EncodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
+{
+    return 0;
+}
+
+
+int
+IApp_DecodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg)
+{
+    return 0;
+}

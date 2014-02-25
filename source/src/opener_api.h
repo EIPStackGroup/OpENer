@@ -583,6 +583,40 @@ IApp_SendUDPData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
 void
 IApp_CloseSocket(int pa_nSockFd);
 
+/**\ingroup CIP_CALLBACK_API
+ * \brief Clean up application data
+ *
+ */
+void
+IApp_Shutdown();
+
+/**\ingroup CIP_CALLBACK_API
+ * \brief Encode data of not implemented or non-standard/custom type.
+ *        This function cannot override standard types encoding.
+ *
+ * @param pa_nCIP_Type the cip type to encode
+ * @param pa_pt2data pointer to data value.
+ * @param pa_pnMsg pointer to memory where response should be written
+ * @return length of attribute in bytes
+ *         -1 .. error
+ */
+int
+IApp_EncodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
+
+/**\ingroup CIP_CALLBACK_API
+ * \brief Decode data of not implemented or non-standard/custom type.
+ *        This function cannot override standard types decoding.
+ *
+ * @param pa_nCIP_Type the cip type to decode
+ * @param pa_pt2data pointer to data value to written.
+ * @param pa_pnMsg pointer to memory where the data should be taken from
+ * @return length of taken bytes
+ *          -1 .. error
+ */
+int
+IApp_DecodeData(EIP_UINT8 pa_nCIP_Type, void *pa_pt2data, EIP_UINT8 **pa_pnMsg);
+
+
 /*! \mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack Documentation
  *
  * EtherNet/IP stack for adapter devices (connection target); supports multiple
