@@ -8,3 +8,4 @@ source/src/cip_objects/
 .settings/
 *.*~
 *~
+CMakeCache.txt
