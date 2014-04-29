@@ -228,7 +228,7 @@ NetworkHandler_ProcessOnce(void)
           - TheNetworkStatus.elapsedtime :
           0) * 1000; /* 10 ms */
 
-  printf("elapsed: %d\n", TheNetworkStatus.elapsedtime);
+  res = select(fdmax + 1, &read_fds, 0, 0, &tv);
 
   if (res == -1)
     {
