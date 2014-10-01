@@ -73,9 +73,6 @@ Directory structure:
 		- ports ... the platform specific code
 		- utils ... utility functions
 	- tests ... the test source code
-		- cip ... tests for the CIP layer of the stack
-		- enet_encap ... tests for the Ethernet encapsulation layer
-		- ports ... tests for the platform specific code
 		- utils ... tests for utility functions
 
 Documentation:
