@@ -239,7 +239,7 @@ handleReceivedConnectedData(EIP_UINT8 * pa_pnData, int pa_nDataLength,
                   == pa_pstFromAddr->sin_addr.s_addr)
                 {
 
-                  if (SEQ_GEQ32(g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming))
+                  if (SEQ_GT32(g_stCPFDataItem.stAddr_Item.Data.SequenceNumber, pstConnectionObject->EIPSequenceCountConsuming))
                     {
                       /* reset the watchdog timer */
                       pstConnectionObject->InnacitvityWatchdogTimer =

@@ -51,7 +51,7 @@
 /* similar macros for comparing 16 bit sequence numbers */
 #define SEQ_LEQ16(a, b) ((short)((a) - (b)) <= 0)
 #define SEQ_GEQ16(a, b) ((short)((a) - (b)) >= 0)
-
+#define SEQ_GT32(a,b)   ((int)((a) - (b)) > 0)
 
 /*! States of a connection */
 typedef enum
