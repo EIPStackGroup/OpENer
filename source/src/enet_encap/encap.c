@@ -432,6 +432,12 @@ determineDelayTime(EIP_BYTE *pa_acBufferStart,
       unMaxDelayTime = 500;
     }
 
+  /* Limits mayDelayTime to 2000 milliseconds */
+  if (unMaxDelayTime > 2000)
+  {
+     unMaxDelayTime = 2000;
+  }
+
   pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand()) / RAND_MAX
       + 1;
 }
