@@ -9,3 +9,4 @@ source/src/cip_objects/
 *.*~
 *~
 CMakeCache.txt
+*.patch
