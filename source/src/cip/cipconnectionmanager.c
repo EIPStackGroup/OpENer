@@ -183,7 +183,7 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
 
   pstConnectionManager = createCIPClass(CIP_CONNECTION_MANAGER_CLASS_CODE, /* class ID*/
   0, /* # of class attributes */
-  0xffffffff, /* class getAttributeAll mask */
+  0xC6, /* class getAttributeAll mask */
   0, /* # of class services */
   0, /* # of instance attributes */
   0xffffffff, /* instance getAttributeAll mask */
