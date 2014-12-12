@@ -464,7 +464,7 @@ handleReceivedRegisterSessionCmd(int pa_nSockfd,
               /* the socket has already registered a session this is not allowed*/
               pa_stReceiveData->nSession_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
               pa_stReceiveData->nStatus =
-                  OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL;
+                  OPENER_ENCAP_STATUS_INVALID_COMMAND;
               nSessionIndex = INVALID_SESSION;
               pacBuf =
                   &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
