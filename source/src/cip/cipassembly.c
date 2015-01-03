@@ -26,7 +26,7 @@ createAssemblyClass()
   pstAssemblyClass = createCIPClass(CIP_ASSEMBLY_CLASS_CODE, 0, /* # class attributes*/
   0, /* 0 as the assembly object should not have a get_attribute_all service*/
   0, /* # class services*/
-  1, /* # instance attributes*/
+  2, /* # instance attributes*/
   0, /* 0 as the assembly object should not have a get_attribute_all service*/
   1, /* # instance services*/
   0, /* # instances*/
@@ -96,6 +96,8 @@ createAssemblyObject(EIP_UINT32 pa_nInstanceID, EIP_BYTE * pa_data,
   stAssemblyByteArray->len = pa_datalength;
   stAssemblyByteArray->Data = pa_data;
   insertAttribute(pstAssemblyInstance, 3, CIP_BYTE_ARRAY, stAssemblyByteArray, CIP_ATTRIB_SETGETABLE);
+    //Attribut 4 Number of bytes in Attribut 3 
+  insertAttribute(pstAssemblyInstance, 4, CIP_UINT, &(stAssemblyByteArray->len), CIP_ATTRIB_GETABLESINGLE);
 
   return pstAssemblyInstance;
 }
