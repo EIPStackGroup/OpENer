@@ -25,7 +25,7 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
   if ((nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
       pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
     {
-      OPENER_TRACE_ERR("notifyMR: error from createCPFstructure\n");
+      OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
     }
   else
     {
@@ -47,13 +47,13 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
             {
               /* wrong data item detected*/
               OPENER_TRACE_ERR(
-                  "notifyMR: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+                  "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
               pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
             }
         }
       else
         {
-          OPENER_TRACE_ERR("notifyMR: got something besides the expected CIP_ITEM_ID_NULL\n");
+          OPENER_TRACE_ERR("notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
           pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
         }
     }
