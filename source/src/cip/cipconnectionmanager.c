@@ -77,10 +77,6 @@ EIP_STATUS
 ForwardClose(S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
     S_CIP_MR_Response * pa_MRResponse);
 
-EIP_STATUS 
-UnconnectedSend (S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
-    S_CIP_MR_Response * pa_MRResponse);
-
 EIP_STATUS
 GetConnectionOwner(S_CIP_Instance * pa_pstInstance,
     S_CIP_MR_Request * pa_MRRequest, S_CIP_MR_Response * pa_MRResponse);
@@ -191,7 +187,7 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
   0, /* # of class services */
   0, /* # of instance attributes */
   0xffffffff, /* instance getAttributeAll mask */
-  4, /* # of instance services */
+  3, /* # of instance services */
   1, /* # of instances */
   "connection manager", /* class name */
   1); /* revision */
@@ -204,8 +200,6 @@ Connection_Manager_Init(EIP_UINT16 pa_nUniqueConnID)
       "ForwardClose");
   insertService(pstConnectionManager, CIP_GET_CONNECTION_OWNER,
       &GetConnectionOwner, "GetConnectionOwner");
-  insertService(pstConnectionManager, CIP_UNCONNECTED_SEND,
-      &UnconnectedSend, "UnconnectedSend");
 
   g_nIncarnationID = ((EIP_UINT32) pa_nUniqueConnID) << 16;
 
@@ -620,29 +614,6 @@ manageConnections(void)
     }
   return EIP_OK;
 }
-
-/*   EIP_STATUS UnconnectedSend (S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,S_CIP_MR_Response * pa_MRResponse)
- *   Process CIP_UNCONNECTED_SEND (0x52) request .
- *      pa_pstInstance	pointer to CIP object instance
- *      pa_MRRequest		pointer to Message Router Request.
- *      pa_MRResponse		pointer to Message Router Response.
-  * @return general status 
- *    - EIP_OK ... on success */
-EIP_STATUS UnconnectedSend (S_CIP_Instance * pa_pstInstance, S_CIP_MR_Request * pa_MRRequest,
-    S_CIP_MR_Response * pa_MRResponse)
-{
-	EIP_UINT8 *pnBuf;
-	EIP_STATUS nRetVal;
-	EIP_UINT16 MRServiceSize;
-	pa_MRRequest->Data +=2; //ignore Prio/TimeTic and timeout
-	MRServiceSize=ltohs(&pa_MRRequest->Data);
-	pnBuf=pa_MRRequest->Data;
-	//pass it back to the router
-	nRetVal = notifyMR(pnBuf, MRServiceSize);
-
-	return nRetVal;
-}
-
 
 /*   INT8 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus, EIP_UINT16 pa_nExtendedStatus,
  void * deleteMeSomeday, EIP_UINT8 * pa_msg)
