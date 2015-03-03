@@ -352,16 +352,18 @@ ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest,
       &pa_MRRequest->Data);
 
   /*check if Network connection paramters are ok */
-  if ((CIP_CONN_TYPE_MASK
-      == (g_stDummyConnectionObject.O_to_T_NetworkConnectionParameter
-          & CIP_CONN_TYPE_MASK))
-      || (CIP_CONN_TYPE_MASK
-          == (g_stDummyConnectionObject.T_to_O_NetworkConnectionParameter
-              & CIP_CONN_TYPE_MASK)))
+  if (CIP_CONN_TYPE_MASK == (g_stDummyConnectionObject.O_to_T_NetworkConnectionParameter & CIP_CONN_TYPE_MASK))
     {
       return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
           CIP_ERROR_CONNECTION_FAILURE,
-          CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE);
+          CIP_CON_MGR_ERROR_INVALID_O_TO_T_CONNECTION_TYPE);
+    }
+
+  if (CIP_CONN_TYPE_MASK == (g_stDummyConnectionObject.T_to_O_NetworkConnectionParameter & CIP_CONN_TYPE_MASK))
+    {
+      return assembleFWDOpenResponse(&g_stDummyConnectionObject, pa_MRResponse,
+          CIP_ERROR_CONNECTION_FAILURE,
+          CIP_CON_MGR_ERROR_INVALID_T_TO_O_CONNECTION_TYPE);
     }
 
   g_stDummyConnectionObject.TransportTypeClassTrigger = *pa_MRRequest->Data++;
@@ -669,8 +671,46 @@ assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj,
       OPENER_TRACE_INFO("assembleFWDOpenResponse: sending error response\n");
       pa_pstConnObj->State = CONN_STATE_NONEXISTENT;
       pa_MRResponse->DataLength = 10;
+
+      switch(pa_nGeneralStatus)
+      {
+         case CIP_ERROR_NOT_ENOUGH_DATA:
+         case CIP_ERROR_TOO_MUCH_DATA:
+         {
+            pa_MRResponse->SizeofAdditionalStatus = 0;
+            break;
+         }
+
+         default:
+         {
+            switch(pa_nExtendedStatus)
+            {
+               case CIP_CON_MGR_ERROR_INVALID_O_TO_T_CONNECTION_SIZE:
+               {
+                  pa_MRResponse->SizeofAdditionalStatus = 2;
+                  pa_MRResponse->AdditionalStatus[0] = pa_nExtendedStatus;
+                  pa_MRResponse->AdditionalStatus[1] = pa_pstConnObj->CorrectOTSize;
+                  break;
+               }
+
+               case CIP_CON_MGR_ERROR_INVALID_T_TO_O_CONNECTION_SIZE:
+               {
+                  pa_MRResponse->SizeofAdditionalStatus = 2;
+                  pa_MRResponse->AdditionalStatus[0] = pa_nExtendedStatus;
+                  pa_MRResponse->AdditionalStatus[1] = pa_pstConnObj->CorrectTOSize;
+                  break;
+               }
+
+               default:
+               {
       pa_MRResponse->SizeofAdditionalStatus = 1;
       pa_MRResponse->AdditionalStatus[0] = pa_nExtendedStatus;
+                  break;
+               }
+            }
+            break;
+         }
+      }
     }
 
   htols(pa_pstConnObj->ConnectionSerialNumber, &paMsg);
@@ -813,61 +853,76 @@ checkElectronicKeyData(EIP_UINT8 pa_nKeyFormat, S_CIP_KeyData *pa_pstKeyData,
 {
   EIP_BYTE nCompatiblityMode = pa_pstKeyData->MajorRevision & 0x80;
 
+   /* Remove compatibility bit */
   pa_pstKeyData->MajorRevision &= 0x7F;
+
+   /* Default return value */
   *pa_pnExtStatus = CIP_CON_MGR_SUCCESS;
+
+   /* Check key format */
   if (4 != pa_nKeyFormat)
     {
       *pa_pnExtStatus = CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH;
       return EIP_ERROR;
     }
 
-  if (((pa_pstKeyData->VendorID != VendorID) && (pa_pstKeyData->VendorID != 0))
-      || ((pa_pstKeyData->ProductCode != ProductCode)
-          && (pa_pstKeyData->ProductCode != 0)))
+   /* Check VendorID and ProductCode, must match, or 0 */
+   if (((pa_pstKeyData->VendorID    != VendorID)    && (pa_pstKeyData->VendorID    != 0)) ||
+       ((pa_pstKeyData->ProductCode != ProductCode) && (pa_pstKeyData->ProductCode != 0)))
     {
       *pa_pnExtStatus = CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCTCODE_ERROR;
+      return EIP_ERROR;
     }
   else
     {
-      if ((pa_pstKeyData->DeviceType != DeviceType)
-          && (pa_pstKeyData->DeviceType != 0))
+      /* VendorID and ProductCode are correct */
+
+      /* Check DeviceType, must match or 0 */
+      if ((pa_pstKeyData->DeviceType != DeviceType) && (pa_pstKeyData->DeviceType != 0))
         {
-          *pa_pnExtStatus = CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCT_TYPE_ERROR;
+         *pa_pnExtStatus = CIP_CON_MGR_ERROR_DEVICE_TYPE_ERROR;
+         return EIP_ERROR;
         }
       else
         {
-          if (pa_pstKeyData->MajorRevision != 0)
-            { /* 0 means accept any revision combination */
-              if (pa_pstKeyData->MinorRevision == 0)
+         /* VendorID, ProductCode and DeviceType are correct */
+
+         if (!nCompatiblityMode)
                 {
-                  pa_pstKeyData->MinorRevision = Revison.MinorRevision;
+            /* Major = 0 is valid */
+            if (0 == pa_pstKeyData->MajorRevision)
+            {
+               return(EIP_OK);
                 }
 
-              if (!((pa_pstKeyData->MajorRevision == Revison.MajorRevision)
-                  && (pa_pstKeyData->MinorRevision == Revison.MinorRevision)))
-                {
-                  /* we have no exact match */
-                  if (!nCompatiblityMode)
+            /* Check Major / Minor Revision, Major must match, Minor match or 0 */
+            if ((pa_pstKeyData->MajorRevision  != Revison.MajorRevision) ||
+                ((pa_pstKeyData->MinorRevision != Revison.MinorRevision) && (pa_pstKeyData->MinorRevision != 0)))
                     {
                       *pa_pnExtStatus = CIP_CON_MGR_ERROR_REVISION_MISMATCH;
+               return EIP_ERROR;
+            }
                     }
                   else
                     {
-                      if ((pa_pstKeyData->MajorRevision != Revison.MajorRevision)
-                          || ((pa_pstKeyData->MajorRevision
-                              == Revison.MajorRevision)
-                              && (pa_pstKeyData->MinorRevision
-                                  > Revison.MinorRevision)))
+            /* Compatiblitiy mode is set */
+
+            /* Major must macth, Minor != 0 and <= MinorRevision */
+            if ((pa_pstKeyData->MajorRevision == Revison.MajorRevision) &&
+                (pa_pstKeyData->MinorRevision > 0) &&
+                (pa_pstKeyData->MinorRevision <= Revison.MinorRevision))
+            {
+               return(EIP_OK);
+            }
+            else
                         {
-                          /*TODO check if we accept also greater minor revision depends on the product. Maybe should be configurable */
                           *pa_pnExtStatus = CIP_CON_MGR_ERROR_REVISION_MISMATCH;
+               return EIP_ERROR;
                         }
+         } /* end if CompatiblityMode handling */
                     }
                 }
 
-            }
-        }
-    }
   return (*pa_pnExtStatus == CIP_CON_MGR_SUCCESS) ? EIP_OK : EIP_ERROR;
 }
 

@@ -205,5 +205,10 @@ setAssemblyAttributeSingle(S_CIP_Instance *pa_pstInstance,
         }
     }
 
+  if ((p != 0) && (4 == pa_pstMRRequest->RequestPath.AttributNr))
+    {
+      pa_pstMRResponse->GeneralStatus = CIP_ERROR_ATTRIBUTE_NOT_SETTABLE;
+    }
+
   return EIP_OK_SEND;
 }
