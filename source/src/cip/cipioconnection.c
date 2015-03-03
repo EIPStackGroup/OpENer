@@ -132,6 +132,9 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
     {
       int nProducingIndex = 0;
       int nDataSize;
+      int nDiffSize;
+      int nIsHeartbeat;
+
       if ((O2TConnectionType != 0) && (T2OConnectionType != 0))
         { /* we have a producing and consuming connection*/
           nProducingIndex = 1;
@@ -162,23 +165,26 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
               OPENER_ASSERT(pstAttribute != NULL);
               /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ConsumedConnectionSize;
+              nDiffSize = 0;
+              nIsHeartbeat = (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len == 0);
 
               if ((pstIOConnObj->TransportTypeClassTrigger & 0x0F) == 1)
                 {
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
+                  nDiffSize += 2;
                 }
-              if ((OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0))
-                { /* we only have an run idle header if it is not an hearbeat connection */
+              if ((OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0) && (!nIsHeartbeat))
+                { /* we only have an run idle header if it is not an heartbeat connection */
                   nDataSize -= 4; /* remove the 4 bytes needed for run/idle header */
+                  nDiffSize += 4;
                 }
-
               if (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len
                   != nDataSize)
                 {
                   /*wrong connection size */
-                  *pa_pnExtendedError =
-                      CIP_CON_MGR_ERROR_INVALID_CONNECTION_SIZE;
+                  pa_pstConnObjData->CorrectOTSize = ((S_CIP_Byte_Array *) pstAttribute->pt2data)->len + nDiffSize;
+                  *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_O_TO_T_CONNECTION_SIZE;
                   return CIP_ERROR_CONNECTION_FAILURE;
                 }
             }
@@ -210,21 +216,26 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
               OPENER_ASSERT(pstAttribute != NULL);
               /* an assembly object should always have an attribute 3 */
               nDataSize = pstIOConnObj->ProducedConnectionSize;
+              nDiffSize = 0;
+              nIsHeartbeat = (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len == 0);
+
               if ((pstIOConnObj->TransportTypeClassTrigger & 0x0F) == 1)
                 {
                   /* class 1 connection */
                   nDataSize -= 2; /* remove 16-bit sequence count length */
+                  nDiffSize += 2;
                 }
-              if ((OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0))
-                { /* we only have an run idle header if it is not an hearbeat connection */
+              if ((OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER) && (nDataSize > 0) && (!nIsHeartbeat))
+                { /* we only have an run idle header if it is not an heartbeat connection */
                   nDataSize -= 4; /* remove the 4 bytes needed for run/idle header */
+                  nDiffSize += 4;
                 }
               if (((S_CIP_Byte_Array *) pstAttribute->pt2data)->len
                   != nDataSize)
                 {
                   /*wrong connection size*/
-                  *pa_pnExtendedError =
-                      CIP_CON_MGR_ERROR_INVALID_CONNECTION_SIZE;
+                  pa_pstConnObjData->CorrectTOSize = ((S_CIP_Byte_Array *) pstAttribute->pt2data)->len + nDiffSize;
+                  *pa_pnExtendedError = CIP_CON_MGR_ERROR_INVALID_T_TO_O_CONNECTION_SIZE;
                   return CIP_ERROR_CONNECTION_FAILURE;
                 }
 
