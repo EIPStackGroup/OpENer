@@ -235,7 +235,7 @@ int
 assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
     S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg)
 {
-  int i, j, size;
+  int i, j, size, type;
 
   size = 0;
   if (pa_MRResponse)
@@ -335,22 +335,28 @@ assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
         }
     }
   /* process SockAddr Info Items */
-  for (j = 0; j < 2; j++)
+  /* make sure first the O->T and then T->O appears on the wire.
+   * EtherNet/IP specification doesn't demand it, but there are EIP
+   * devices which depend on CPF items to appear in the order of their
+   * ID number */
+  for (type = CIP_ITEM_ID_SOCKADDRINFO_O_TO_T; type <= CIP_ITEM_ID_SOCKADDRINFO_T_TO_O; type++)
     {
-      if ((pa_CPFDataItem->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
-          || (pa_CPFDataItem->AddrInfo[j].TypeID
-              == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
+      for (j = 0; j < 2; j++)
         {
-          htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
-          htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
+          if (pa_CPFDataItem->AddrInfo[j].TypeID == type)
+            {
+              htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
+              htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
 
-          encapsulateIPAdressCPF(pa_CPFDataItem->AddrInfo[j].nsin_port,
-              pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
-          pa_msg += 8;
+              encapsulateIPAdressCPF(pa_CPFDataItem->AddrInfo[j].nsin_port,
+                  pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
+              pa_msg += 8;
 
-          memset(pa_msg, 0, 8);
-          pa_msg += 8;
-          size += 20;
+              memset(pa_msg, 0, 8);
+              pa_msg += 8;
+              size += 20;
+              break;
+           }
         }
     }
   return size;
