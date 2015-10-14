@@ -53,7 +53,7 @@ void
 encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     EIP_BYTE *pa_acCommBuf);
 
-/*!\brief Encapsulate the sockaddr information as necessary for the CPF data items
+/*! \brief Encapsulate the sockaddr information as necessary for the CPF data items
  */
 void
 encapsulateIPAdressCPF(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,

@@ -22,8 +22,8 @@
  *  This function setup the data of the network interface needed by OpENer.
  *  The multicast address is automatically calculated from he given data.
  * 
- *  @param pa_acIpAdress    the current ip address of the device
- *  @param pa_acSubNetMask  the subnetmask to be used
+ *  @param pa_acIpAdress    the current IP address of the device
+ *  @param pa_acSubNetMask  the subnet mask to be used
  *  @param pa_acGateway     the gateway address 
  *  @return EIP_OK if the configuring worked otherwise EIP_ERROR
  */

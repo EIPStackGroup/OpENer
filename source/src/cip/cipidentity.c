@@ -3,6 +3,27 @@
  * All rights reserved. 
  *
  ******************************************************************************/
+
+/**
+ * @file cipidentity.c
+ *
+ * CIP Identity Object
+ * ===================
+ *
+ * Implemented Attributes
+ * ----------------------
+ * - Attribute 1: VendorID
+ * - Attribute 2: Device Type
+ * - Attribute 3: Product Code
+ * - Attribute 4: Revision
+ * - Attribute 5: Status
+ * - Attribute 6: Serial Number
+ * - Attribute 7: Product Name
+ *
+ * Implemented Services
+ * --------------------
+ */
+
 #include <string.h>
 #include "opener_user_conf.h"
 #include "cipidentity.h"
@@ -14,27 +35,40 @@
 
 /* attributes in CIP Identity Object */
 
-EIP_UINT16 VendorID = OPENER_DEVICE_VENDOR_ID; /* #1 */
-EIP_UINT16 DeviceType = OPENER_DEVICE_TYPE; /* #2 */
-EIP_UINT16 ProductCode = OPENER_DEVICE_PRODUCT_CODE; /* #3 */
+EIP_UINT16 VendorID = OPENER_DEVICE_VENDOR_ID; /**< Attribute 1: Vendor ID */
+EIP_UINT16 DeviceType = OPENER_DEVICE_TYPE; /**< Attribute 2: Device Type */
+EIP_UINT16 ProductCode = OPENER_DEVICE_PRODUCT_CODE; /**< Attribute 3: Product Code */
 S_CIP_Revision Revison =
-  { OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION }; /* #4 */
-EIP_UINT16 ID_Status = 0; /* #5 status of the device */
-EIP_UINT32 SerialNumber = 0; /* #6  Has to be set prior to OpENer initialization */
+  { OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION }; /**< Attribute 4: Revision / USINT Major, USINT Minor */
+EIP_UINT16 ID_Status = 0; /**< Attribute 5: Status */
+EIP_UINT32 SerialNumber = 0; /**< Attribute 6: Serial Number, has to be set prior to OpENer initialization */
 S_CIP_Short_String ProductName =
-  { sizeof(OPENER_DEVICE_NAME) - 1, OPENER_DEVICE_NAME }; /* #7 */
+  { sizeof(OPENER_DEVICE_NAME) - 1, OPENER_DEVICE_NAME }; /**< Attribute 7: Product Name */
 
 
-void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber)
+/** Private functions, sets the devices serial number
+ * @param pa_unSerialNumber The serial number of the deivce
+ */
+void setDeviceSerialNumber(EIP_UINT32 pa_unSerialNumber)
   {
-    SerialNumber = pa_nSerialNumber;
+    SerialNumber = pa_unSerialNumber;
   }
 
+/** Private functions, sets the devices status
+ * @param pa_unStatus The serial number of the deivce
+ */
 void setDeviceStatus(EIP_UINT16 pa_unStatus)
 {
   ID_Status = pa_unStatus;
 }
 
+/** Reset service
+ *
+ * @param pa_pstInstance
+ * @param pa_stMRRequest
+ * @param pa_stMRResponse
+ * @returns Currently always EIP_OK_SEND is returned
+ */
 static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
     S_CIP_MR_Request *pa_stMRRequest, /* pointer to message router request*/
     S_CIP_MR_Response *pa_stMRResponse) /* pointer to message router response*/
@@ -52,29 +86,32 @@ static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
       {
         switch (pa_stMRRequest->Data[0])
           {
-        case 0: /*emulate device reset*/
+        case 0: /* Reset type 0 -> emulate device reset / Power cycle */
           if (EIP_ERROR == IApp_ResetDevice())
             {
               pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
             }
           break;
 
-        case 1: /*reset to device settings*/
+        case 1: /* Reset type 1 -> reset to device settings */
           if (EIP_ERROR == IApp_ResetDeviceToInitialConfiguration())
             {
               pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
             }
           break;
 
+        // case 2: Not supported /* Reset type 2 -> Return to factory defaults except communications parameters */
+
         default:
           pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
           break;
           }
       }
-    else
+    else //TODO: Should be if (pa_stMRRequest->DataLength == 0)
       {
-        /*The same behavior as if the data value given would be 0
-          emulate device reset*/
+        /* The same behavior as if the data value given would be 0
+          emulate device reset */
+
         if (EIP_ERROR == IApp_ResetDevice())
           {
             pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
@@ -88,16 +125,20 @@ static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
     return nRetVal;
   }
 
+/** CIP Identity object constructor
+ *
+ * @returns EIP_ERROR if the class could not be created, otherwise EIP_OK
+ */
 EIP_STATUS CIP_Identity_Init()
   {
     S_CIP_Class *pClass;
     S_CIP_Instance *pInstance;
 
-    pClass = createCIPClass(CIP_IDENTITY_CLASS_CODE, 0, /* # of non-default class attributes*/
-        MASK4(1, 2, 6, 7), /* class getAttributeAll mask		CIP spec 5-2.3.2*/
+    pClass = createCIPClass(CIP_IDENTITY_CLASS_CODE, 0, /* # of non-default class attributes */
+        MASK4(1, 2, 6, 7), /* class getAttributeAll mask		CIP spec 5-2.3.2 */
         0, /* # of class services*/
         7, /* # of instance attributes*/
-        MASK7(1, 2, 3, 4, 5, 6, 7), /* instance getAttributeAll mask	CIP spec 5-2.3.2*/
+        MASK7(1, 2, 3, 4, 5, 6, 7), /* instance getAttributeAll mask	CIP spec 5-2.3.2 */
         1, /* # of instance services*/
         1, /* # of instances*/
         "identity", /* class name (for debug)*/

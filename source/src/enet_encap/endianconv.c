@@ -11,8 +11,13 @@ int g_nOpENerPlatformEndianess = -1;
 
 /* little-endian-to-host unsigned 16 bit*/
 
+/**
+ *   \brief Reads EIP_UINT16 from *pa_buf and converts little endian to host.
+ *   \param pa_buf pointer where data should be reed.
+ *   \return EIP_UINT16 value
+ */
 EIP_UINT16
-ltohs(EIP_UINT8 ** pa_buf)
+ltohs(EIP_UINT8** pa_buf)
 {
   unsigned char *p = (unsigned char *) *pa_buf;
   EIP_UINT16 data = p[0] | p[1] << 8;
@@ -20,12 +25,13 @@ ltohs(EIP_UINT8 ** pa_buf)
   return data;
 }
 
-/*   UINT32 ltohl(INT8 **pa_buf)
- *   reeds UINT32 from *pa_buf and converts little endian to host.
- *      *pa_buf pointer where data should be reed. 
- *  return value
- */EIP_UINT32
-ltohl(EIP_UINT8 ** pa_buf)
+/**
+ *   \brief Reads EIP_UINT32 from *pa_buf and converts little endian to host.
+ *   \param pa_buf pointer where data should be reed.
+ *   \return EIP_UNÍT32 value
+ */
+EIP_UINT32
+ltohl(EIP_UINT8** pa_buf)
 {
   unsigned char *p = (unsigned char *) *pa_buf;
   EIP_UINT32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
@@ -33,13 +39,13 @@ ltohl(EIP_UINT8 ** pa_buf)
   return data;
 }
 
-/*   void htols(UINT16 data, UINT8 **pa_buf)
- *   converts UINT16 data from host to little endian an writes it to pa_buf.
- *      data value to be written
- *      *pa_buf pointer where data should be written.
+/**
+ * \brief converts UINT16 data from host to little endian an writes it to pa_buf.
+ * \param data value to be written
+ * \param pa_buf pointer where data should be written.
  */
 void
-htols(EIP_UINT16 data, EIP_UINT8 ** pa_buf)
+htols(EIP_UINT16 data, EIP_UINT8 **pa_buf)
 {
   unsigned char *p = (unsigned char *) *pa_buf;
 
@@ -48,13 +54,13 @@ htols(EIP_UINT16 data, EIP_UINT8 ** pa_buf)
   *pa_buf += 2;
 }
 
-/*   void htoll(UINT32 data, INT8 **pa_buf)
- *   converts UINT32 data from host to little endian an writes it to pa_buf.
- *      data value to be written
- *      *pa_buf pointer where data should be written.
+/**
+ * \brief Converts UINT32 data from host to little endian and writes it to pa_buf.
+ * \param data value to be written
+ * \param pa_buf pointer where data should be written.
  */
 void
-htoll(EIP_UINT32 data, EIP_UINT8 ** pa_buf)
+htoll(EIP_UINT32 data, EIP_UINT8** pa_buf)
 {
   unsigned char *p = (unsigned char *) *pa_buf;
 
@@ -67,6 +73,12 @@ htoll(EIP_UINT32 data, EIP_UINT8 ** pa_buf)
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
+
+/**
+ *   \brief Reads EIP_UINT64 from *pa_buf and converts little endian to host.
+ *   \param pa_buf pointer where data should be reed.
+ *   \return EIP_UNÍT64 value
+ */
 EIP_UINT64
 ltoh64(EIP_UINT8 ** pa_pnBuf)
 {
@@ -84,6 +96,11 @@ ltoh64(EIP_UINT8 ** pa_pnBuf)
   return unData;
 }
 
+/**
+ * \brief Converts UINT64 data from host to little endian and writes it to pa_buf.
+ * \param data value to be written
+ * \param pa_buf pointer where data should be written.
+ */
 void
 htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf)
 {
@@ -101,6 +118,13 @@ htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf)
 
 #endif
 
+/**
+ * \brief Encapsulates the IP address and port into the package
+ *
+ * \param pa_unPort IP Port
+ * \param pa_unAddr IP Address
+ * \param pa_acCommBuf Buffer for constructing the message
+ */
 void
 encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     EIP_BYTE *pa_acCommBuf)
@@ -110,7 +134,6 @@ encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
       htols(htons(AF_INET), &pa_acCommBuf);
       htols(htons(pa_unPort), &pa_acCommBuf);
       htoll(pa_unAddr, &pa_acCommBuf);
-
     }
   else
     {
@@ -132,6 +155,13 @@ encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     }
 }
 
+/**
+ * \brief encapsulates the ip address and port into the package (Common Paket Format variant)
+ *
+ * \param pa_unPort IP port
+ * \param pa_unAddr IP address
+ * \param pa_acCommBuf buffer for constructing the message
+ */
 void
 encapsulateIPAdressCPF(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     EIP_BYTE *pa_acCommBuf)
@@ -163,6 +193,12 @@ encapsulateIPAdressCPF(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
     }
 }
 
+/**
+ * \brief Detects Endianess of the platform and sets global g_nOpENerPlatformEndianess variable accordingly
+ *
+ * Detects Endianess of the platform and sets global variable g_nOpENerPlatformEndianess accordingly,
+ * whereas 0 equals little endian and 1 equals big endian
+ */
 void
 determineEndianess()
 {
@@ -178,6 +214,9 @@ determineEndianess()
     }
 }
 
+/**
+ * \brief Returns global variable g_nOpENerPlatformEndianess, whereas 0 equals little endian and 1 equals big endian
+ */
 int
 getEndianess()
 {

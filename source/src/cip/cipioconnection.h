@@ -4,12 +4,45 @@
  *
  ******************************************************************************/
 
+/**
+ * @file cipioconnection.h
+ * CIP I/O Connection implementation
+ * =================================
+ *
+ *
+ * I/O Connection Object State Transition Diagram
+ * ----------------------------------------------
+ * @dot
+ *   digraph IOConnectionObjectStateTransition {
+ *     A[label="Any State"]
+ *     N[label="Non-existent"]
+ *     C[label="Configuring"]
+ *     E[label="Established"]
+ *     W[label="Waiting for Connection ID"]
+ *     T[label="Timed Out"]
+ *
+ *     A->N [label="Delete"]
+ *     N->C [label="Create"]
+ *     C->C [label="Get/Set/Apply Attribute"]
+ *     C->W [label="Apply Attribute"]
+ *     W->W [label="Get/Set Attribute"]
+ *     C->E [label="Apply Attribute"]
+ *     E->E [label="Get/Set/Apply Attribute, Reset, Message Produced/Consumed"]
+ *     W->E [label="Apply Attribute"]
+ *     E->T [label="Inactivity/Watchdog"]
+ *     T->E [label="Reset"]
+ *     T->N [label="Delete"]
+ *   }
+ * @enddot
+ *
+ */
+
 #ifndef CIPIOCONNECTION_H_
 #define CIPIOCONNECTION_H_
 
 #include <opener_api.h>
 
-/** \brief Setup all data in order to establish an IO connection
+/** @brief Setup all data in order to establish an IO connection
  *
  * This function can be called after all data has been parsed from the forward open request
  * @param pa_pstConnObjData pointer to the connection object structure holding the parsed data from the forward open request
@@ -22,7 +55,7 @@ int
 establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
     EIP_UINT16 *pa_pnExtendedError);
 
-/** \brief Take the data given in the connection object structure and open the necessary communication channels
+/** @brief Take the data given in the connection object structure and open the necessary communication channels
  *
  * This function will use the g_stCPFDataItem!
  * @param pa_pstIOConnObj pointer to the connection object data

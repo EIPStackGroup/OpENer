@@ -31,6 +31,10 @@
 /* global public variables */
 
 /* public functions */
+/** CIP Identity object contructor
+ *
+ * @returns EIP_ERROR if the class could not be created, otherwise EIP_OK
+ */
 EIP_STATUS
 CIP_Identity_Init(void);
 

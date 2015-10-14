@@ -8,7 +8,7 @@
 #include "opener_api.h"
 #include <string.h>
 
-/* external globals neeeded from connectionmanager.c */
+/* external globals needed from connectionmanager.c */
 extern S_CIP_ConnectionObject *g_pstActiveConnectionList;
 
 typedef struct

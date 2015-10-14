@@ -54,7 +54,7 @@ extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
 #define SUPPORT_CIP_TCP                 0x0020
 #define SUPPORT_CIP_UDP_CLASS_0_OR_1    0x0100
 
-#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /*According to EIP spec at least 2 delayed message requests schould be supporte */
+#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /*According to EIP spec at least 2 delayed message requests should be supported */
 
 #define ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE  (ENCAPSULATION_HEADER_LENGTH + 39 + sizeof(OPENER_DEVICE_NAME)) /* currently we only have the size of an encapsulation message */
 
@@ -118,7 +118,7 @@ int
 encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf);
 
 /*   void encapInit(void)
- *   initialize sessionlist and interfaceinformation.
+ *   initialize session list and interface information.
  */
 
 void
@@ -176,7 +176,7 @@ handleReceivedExplictTCPData(int pa_socket, EIP_UINT8 * pa_buf,
           switch (sEncapData.nCommand_code)
             {
           case (COMMAND_NOP):
-            /* Nop needs no reply and does nothing */
+            /* NOP needs no reply and does nothing */
             nRetVal = 0;
             break;
 
@@ -260,7 +260,7 @@ handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr,
             handleReceivedListInterfacesCmd(&sEncapData);
             break;
 
-            /* Fhe following commands are not to be sent via UDP */
+            /* The following commands are not to be sent via UDP */
           case (COMMAND_NOP):
           case (COMMAND_REGISTERSESSION):
           case (COMMAND_UNREGISTERSESSION):

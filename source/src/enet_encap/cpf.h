@@ -19,16 +19,16 @@
  <data> := <the number of bytes specified by Length>
  */
 
-/* define Item ID numbers used for address and data items in CPF structures */
-#define CIP_ITEM_ID_NULL                                0x0000  /* Null Address Item */
+/* Definition of Item ID numbers used for address and data items in CPF structures */
+#define CIP_ITEM_ID_NULL                                0x0000  /**< Null Address Item */
 #define CIP_ITEM_ID_LISTIDENTITY_RESPONSE               0x000C
-#define CIP_ITEM_ID_CONNECTIONBASED                     0x00A1  /* Connected Address Item */
-#define CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET           0x00B1  /* Connected Data Item */
-#define CIP_ITEM_ID_UNCONNECTEDMESSAGE                  0x00B2  /* Unconnected Data Item */
+#define CIP_ITEM_ID_CONNECTIONBASED                     0x00A1  /**< Connected Address Item */
+#define CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET           0x00B1  /**< Connected Data Item */
+#define CIP_ITEM_ID_UNCONNECTEDMESSAGE                  0x00B2  /**< Unconnected Data Item */
 #define CIP_ITEM_ID_LISTSERVICE_RESPONSE                0x0100
-#define CIP_ITEM_ID_SOCKADDRINFO_O_TO_T                 0x8000  /* Sockaddr info item originator to target (data) */
-#define CIP_ITEM_ID_SOCKADDRINFO_T_TO_O                 0x8001  /* Sockaddr info item target to originator (data) */
-#define CIP_ITEM_ID_SEQUENCEDADDRESS                    0x8002  /* Sequenced Address item */
+#define CIP_ITEM_ID_SOCKADDRINFO_O_TO_T                 0x8000  /**< Sockaddr info item originator to target (data) */
+#define CIP_ITEM_ID_SOCKADDRINFO_T_TO_O                 0x8001  /**< Sockaddr info item target to originator (data) */
+#define CIP_ITEM_ID_SEQUENCEDADDRESS                    0x8002  /**< Sequenced Address item */
 
 typedef struct
 {
