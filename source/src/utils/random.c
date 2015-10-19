@@ -7,9 +7,8 @@
 
 #include "random.h"
 
-Random* random_new(setSeedfn pa_fnpSetSeed, getNextUInt32fn pa_fnGetNextUInt32)
-{
-	Random* out = malloc(sizeof(Random));
-	*out = (Random){.setSeed = pa_fnpSetSeed, .getNextUInt32 = pa_fnGetNextUInt32};
-	return out;
+Random *RandomNew(SetSeed set_seed, GetNextUInt32 get_next_uint32) {
+  Random *out = malloc(sizeof(Random));
+  *out = (Random ) { .set_seed = set_seed, .get_next_uint32 = get_next_uint32 };
+  return out;
 }

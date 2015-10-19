@@ -1,5 +1,6 @@
 \documentclass[final,a4paper,10pt, oneside]{article}
 \usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
 
 \usepackage{a4wide} 
 
@@ -8,9 +9,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\title{Coding Rules for\\ \emph{OpENer} --- Open Source EtherNet/IP$^{TM}$ Adapter Stack\\\large Version 1.0}
-\author{Alois Zoitl\thanks{zoitl\@@acin.tuwien.ac.at}}
-\date{2009-10-29}
+\title{Coding Rules for\\ \emph{OpENer} --- Open Source EtherNet/IP$^{TM}$ Adapter Stack\\\large Version 2.0}
+\author{Martin Melik Merkumians\thanks{melik-merkumians\@@acin.tuwien.ac.at}}
+\date{2015-11-15}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,6 +43,9 @@
 \lstset{linewidth=\textwidth}
 \lstset{basicstyle=\scriptsize}
 
+\usepackage{fancyref}
+\usepackage{hyperref}
+
 
 
 \begin{document}
@@ -50,13 +54,30 @@
 
 \tableofcontents
 
-\section{Comments}
-A sufficient amount of comments has to be written. There are never too many comments, whereas invalid comments are worse than none --- thus
-invalid comments have to be removed from the source code. Comments have to be written in English. 
+\section{Introduction}
+This document describes the coding rules, which has to be used in the OpENer project. These rules are mainly the Google C++ style rules, with some extensions specific to C and the OpENer project. If something is not covered by the rules given in this document, please check the official Google C++ style guide, available at \url{http://google.github.io/styleguide/cppguide.html}. Additional code style examples can be found at \url{https://gist.github.com/davidzchen/9187878}.
 
-\begin{quote}
-Comments for function, structure, \ldots~ definitions have to follow the conventions of \emph{Doxygen} to allow the automated generation of documentation for the sourcecode. 
-\end{quote}
+As the OpENer code style aims to be as close as possible to the established Google C++ code style, please file an issue if anything in this guide contradicts the Google C++ code style.
+
+\section{Comments}
+A sufficient amount of comments has to be written. There are never too many comments, whereas invalid comments are worse than none --- thus invalid comments have to be removed from the source code. Comments have to be written in English. 
+
+
+Comments for function, structure, \ldots~ definitions have to follow the conventions of \emph{Doxygen} to allow the automated generation of documentation for the source code. Hereby Java-style Doxygen comments shall be used. Doxygen comments shall therefore start with slash and two starts, and use the @ symbol to indicate Doxygen keywords. For enums, variables, and strucutres inline documentation with \emph{/**<} shall be used. Autobrief behavior shall not be assumed for Doxygen comments. See the example below.
+\begin{lstlisting}[frame=trbl]{}
+/** @brief function, structure, enum, etc. to comment
+ *
+ *  Detailed explanation, spanning multiple lines if needed.
+ *  @param parameter1 Parameter1 description
+ *  @return Return value description
+ */
+int foo(char bar) {
+    ...
+}
+
+const int g_kFooBar = 1; /**< Global constant which needs documentation */
+
+\end{lstlisting}
 
 Comments have to be meaningful, to describe to program and to be up to date.
 
@@ -74,7 +95,7 @@ Every source-file must contain a fileheader as follows:
 \end{lstlisting}
 Each author needs to explain his changes in the code. 
 \subsection{Revision History}
-%To track changes in the source files every new file version must contain it's version information in the followoing form:
+%To track changes in the source files every new file version must contain it's version information in the following form:
 %\begin{center}
 %  @version: $<$date$>$/$<$author$>$: $<$description$>$
 %\end{center}
@@ -89,89 +110,140 @@ The following Keywords should be used in the source code to mark special comment
 \end{itemize}
 
 \section{Datatypes}
-The following table contains the definitions of important standard datatypes. This is done to ensure a machine independant defintion of the bit-width of the standard data types. For \emph{OpENer}-development these definitions are in the file: \verb|src/typedefs.h|
+\Fref{tab:datatypes} contains the definitions of important standard datatypes. This is done to ensure a machine independant defintion of the bit-width of the standard data types. For \emph{OpENer}-development these definitions are in the file: \verb|src/typedefs.h|
 
-\begin{table}[h]
-	\centering
+\begin{table}[h] 
+\caption{Data types used in OpENer} \label{tab:datatypes}
+	\centering 
 		\begin{tabular}{lll}
 			defined data type	& bit-width / description & used C-datatype \\
 			\hline
-			EIP\_BYTE	&	8 bit unsigned	&   char\\
-			EIP\_INT8	&	8 bit signed	&	signed char	 \\
-			EIP\_INT16	&	16 bit signed	&	short	 \\
-			EIP\_INT32	&	32 bit signed	&	long	 \\
-			EIP\_UINT8	&	8 bit unsigned	&	char	 \\
-			EIP\_UINT16	&	16 bit unsigned	&	unsigned short	 \\
-			EIP\_UINT32	&	32 bit unsigned	&	unsigned long	 \\
-			EIP\_FLOAT	&	single precission IEEE float (32 bit)&	float	 \\
-			EIP\_DFLOAT	&	double precission IEEE float (64 bit) &	double	\\
-			EIP\_BOOL8	&	byte variable as boolean value	&	bool	 \\
-		\end{tabular}
-\end{table}
+			EipByte	&	8 bit unsigned	&   uint8\_t\\
+			EipInt8	&	8 bit signed	&	int8\_t	 \\
+			EipInt16	&	16 bit signed	&	int16\_t	 \\
+			EipInt32	&	32 bit signed	&	int32\_t	 \\
+			EipInt64 & 64 bit signed & int64\_t \\
+			EipUint8	&	8 bit unsigned	&	uint8\_t	 \\
+			EipUint16	&	16 bit unsigned	&	uint16\_t	 \\
+			EipUint32	&	32 bit unsigned	&	uint32\_t	 \\
+			EipUint64 & 64 bit unsigned & uint64\_t \\
+			EipFloat	&	single precission IEEE float (32 bit) &	float	 \\
+			EipDfloat	&	double precission IEEE float (64 bit) &	double	\\
+			EipBool8	&	byte variable as boolean value	&	unit8\_t	 \\
+			
+			CipOctet & unspecified type & uint8\_t \\
+			CipBool & byte variable as boolean value & uint8\_t \\
+			CipByte & 8 bit unsigned & uint8\_t \\
+			CipWord & 16 bit unsigned & uint16\_t \\
+			CipDword & 32 bit unsigned & uint32\_t \\
+			CipUsint & 8 bit unsigned & uint8\_t \\
+			CipUint & 16 bit unsigned & uint16\_t \\
+			CipUdint & 32 bit unsigned & uint32\_t \\
+			CipSint & 8 bit signed & int8\_t \\
+			CipInt & 16 bit signed & int16\_t \\
+			CipDint & 32 bit signed & int32\_t \\
+			CipReal & single precission IEEE float (32 bit) & float \\
+			CipLreal & double precission IEEE float (64 bit) & double \\
 
-These data types shall only be used when the bit size is important for the correct operation of the code. If not we advice to use the type \verb|int| or \verb|unsigned int| for most variables, as this is the most efficent data type and can lead on some platforms (e.g., ARM) even to smaller code size.
+			CipLint & 64 bit signed & int64\_t \\
+			CipUlint & 64 bit unsigned & uint64\_t \\
+			CipLword & 64 bit unsigned & uint64\_t
+		\end{tabular}
+\end{table} 
+
+These data types shall only be used when the bit size is important for the correct operation of the code, whereby Eip-prefixed data types shall be used for communication functions, and Cip-prefixed data types shall be used for CIP related functions and objects. If not we advice to use the type \verb|int| or \verb|unsigned int| for most variables, as this is the most efficient data type and can lead on some platforms (e.g., ARM) even to smaller code size.
 
 \section{Naming of Identifiers}
 Every identifier has to be named in English. The first character of an identifier must not contain underscores (there are some compiler directives which start with underscores and this could lead to conflicts). Mixed case letters has to be used and the appropriate prefixes have to be inserted where necessary.
 
+\subsection{Pre- \& Postfixes}
+The following prefixes have to be applied to identifiers:\\
+\begin{itemize}
+	\item \emph{"g\_"} shall be prefixed for global variables.
+	\item \emph{"\_"} shall be postfixed for member variables. These are usually CIP object variables with file-global scope.
+\end{itemize}
 
 \subsection{Variables}
-Variables have to be named self explanatory. The names have to be provided with the appropriate prefixes and they have to start with an uppercase letter. In case of combining prefixes, the use of ranges, arrays, pointer, enumerations, or structures is at first, followed by basic data types or object prefixes. The only exception are loop variables (thereby the use of i, j, k is allowed). Only one variable declaration per line is allowed. Pointer operators at the declaration have to be located in front of the variable (not after the type identifier). If possible initializations have to be done directly at the declaration.
-
-\subsection{Prefixes}
-The following prefixes have to be applied to identifiers:\\
-\begin{tabular}{ll}
-&\\
-\textbf{Type Definitions} & \textbf{Ranges} \\
-\begin{tabular}{ll}
-S& for structures \\
-E& for enum\\
-T\_& for types (e.g. typedef in C++)\\ 
-\end{tabular} &
-
-\begin{tabular}{ll}
-m\_ & for member variables of classes\\	
-g\_ & for global variables\\
-s\_ & for static variables\\
-pa\_ & for function parameters\\
-\end{tabular}	\vspace{1mm}\\
-\textbf{Variable Types} & \textbf{Basic Data Types} \\
-\begin{tabular}{ll}
-a & for arrays\\
-p & for pointers\\ 	
-e & for enumerations\\
-st & for structures\\
-\end{tabular}	&
-
-\begin{tabular}{ll}
-c & for characters \\
-b & for booleans\\
-n & for integers\\	
-f & for all floating point numbers
-\end{tabular} \vspace{1mm}\\
-\end{tabular}
+Variables have to be named self explanatory. The names have to be provided with the appropriate pre- or postfix and shall be all lowercase letters, and if a name consists of more than one word underscores shall be used for separating these words. The only exception are loop variables (thereby the use of i, j, k is allowed). Only one variable declaration per line is allowed. Pointer operators at the declaration have to be located in front of the variable (not after the type identifier). If possible initializations have to be done directly at the declaration.
 
 \paragraph{Examples}
 \begin{quote}
-\verb|struct SCIPObject;|\\
-\verb|int nNumber;|\\
-\verb|int *pnNumber = &nNumber;|\\
-\verb|char cKey;|\\
-\verb|bool g_bIsInitialized;|\\
-\verb|float m_fPi = 3.1415;|\\
-\verb|int anNumbers[10];|\\
+\begin{lstlisting}
+int i;
+int local_variable;
+CipBool boolean_flag_in_cip_object_;
+\end{lstlisting}
 \end{quote}
 
-
 \subsection{Constants}
-Constants have to be named with block letters (only upper case letters). If a name consists of more words, underscores for separation are
-allowed.  Avoid the using ``magic numbers'' 
-(e.g. \verb|if (x == 3){...}|). Instead use constants.
+The preferred way to declare constants is to define them as\emph{const} data types, if this is not possible constants shall be defined as pre-processor statements, via \emph{\#define}.
+If constants are defined as C constants the name of the constant shall start with \emph{k}, followed by the constant name in Pascal case.
+If a constant is defined as a pre-processor statement the constant name shall be all upper case, separating multiple words with underscored.
+Avoid the using ``magic numbers'' (e.g. \verb|if (x == 3){...}|). Instead use constants.
+
+\paragraph{Examples}
+\begin{quote}
+\begin{lstlisting}
+static int g_global_variable;
+static const int g_kAGlobalConstant = 73:
+const int kAnImportantConstant = 42;
+#define DO_NOT_DO_THIS_IF_IT_IS_NOT_NECESSARY bad
+\end{lstlisting}
+\end{quote}
+
+\subsection{Functions}
+Functions names shall be Pascal cased, function parameters shall be named like variables. The parameter list shall adhere to the following rules:
+\begin{itemize}
+	\item Input parameters shall come first
+	\item Input parameters shall be const
+	\item Output parameters shall be last
+\end{itemize}
+
+\paragraph{Examples}
+\begin{quote}
+\begin{lstlisting}
+int FooBar(const int foo, const char* const bar, double* additional_return_value)
+\end{lstlisting}
+\end{quote}
+
+\subsection{Structs}
+The default case for structs shall be, that they are defined as anonymous structs, giving them a type name via the \emph{typedef} keyword.  Struct names shall be pascal cased. If a struct type is needed, before a typedef alias can be created (usually inside the same struct), the struct name shall be repeated in the struct type name, following the conventions for variable names, with all lowercase and words separated with underscores.
+
+The element names inside the struct are following the normal conventions for their types.
+
+\paragraph{Examples}
+\begin{quote}
+\begin{lstlisting}
+typedef struct {
+    int foo;
+    char bar;
+} TheDefaultCase;
+
+typedef the_excpetion {
+    struct the_exection *needed_the_struct_definition_already_here;
+    char other_elements;
+} TheException;
+\end{lstlisting}
+\end{quote}
+
+\subsection{Enums}
+Enums shall be defined anonymous and typedef'ed to a type name. As the values inside an enum are constant, the naming scheme of constants apply for enum members. As Enums do not define their own namespace, the enum type name shall be added between the initial \emph{k} and the constant name.
+
+\paragraph{Examples}
+\begin{quote}
+\begin{lstlisting}
+typedef enum {
+    kImportantEnumConstant1 = 0,
+    kImportantEnumConstant2 = 1
+} ImportantEnum;
+\end{lstlisting}
+\end{quote}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Code Formatting}
-In order to have consitent code formating the rules of GNU shall apply. When using Eclipse as development environment this format is alread set as preset. By pressing \verb|<ctrl><shift>f| the formater will format the code according to these rules.
+In order to have consistent code formating the Google C++ coding style rules shall apply. When using Eclipse as development environment the coding format xml file is available at \url{https://github.com/google/styleguide}. By pressing \verb|<ctrl><shift>f| the formatter will format the code according to these rules.
 
 
 \end{document}

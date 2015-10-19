@@ -3,8 +3,8 @@
  * All rights reserved. 
  *
  ******************************************************************************/
-#ifndef _CPF_H
-#define _CPF_H
+#ifndef OPENER_CPF_H_
+#define OPENER_CPF_H_
 
 #include "typedefs.h"
 #include "ciptypes.h"
@@ -19,58 +19,55 @@
  <data> := <the number of bytes specified by Length>
  */
 
-/* Definition of Item ID numbers used for address and data items in CPF structures */
-#define CIP_ITEM_ID_NULL                                0x0000  /**< Null Address Item */
-#define CIP_ITEM_ID_LISTIDENTITY_RESPONSE               0x000C
-#define CIP_ITEM_ID_CONNECTIONBASED                     0x00A1  /**< Connected Address Item */
-#define CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET           0x00B1  /**< Connected Data Item */
-#define CIP_ITEM_ID_UNCONNECTEDMESSAGE                  0x00B2  /**< Unconnected Data Item */
-#define CIP_ITEM_ID_LISTSERVICE_RESPONSE                0x0100
-#define CIP_ITEM_ID_SOCKADDRINFO_O_TO_T                 0x8000  /**< Sockaddr info item originator to target (data) */
-#define CIP_ITEM_ID_SOCKADDRINFO_T_TO_O                 0x8001  /**< Sockaddr info item target to originator (data) */
-#define CIP_ITEM_ID_SEQUENCEDADDRESS                    0x8002  /**< Sequenced Address item */
+/** @brief Definition of Item ID numbers used for address and data items in CPF structures */
+typedef enum {
+  kNullAddressId = 0x0000, /**< Type: Address; Indicates that encapsulation routing is not needed. */
+  kListIdentityResponse = 0x000C,
+  kConnectionBasedId = 0x00A1, /**< Type: Address; Connection-based, used for connected messages */
+  kConnectedTransportPacketId = 0x00B1, /**< Type: Data; Connected Transport packet */
+  kUnconnectedMessageId = 0x00B2, /**< Type: Data; Unconnected message */
+  kListServiceResponseId = 0x0100,
+  kSocketAddressInfoOriginatorToTargetId = 0x8000, /**< Type: Data; Sockaddr info item originator to target */
+  kSocketAddressInfoTargetToOriginatorId = 0x8001, /**< Type: Data; Sockaddr info item target to originator */
+  kSequencedAddressItemId = 0x8002 /**< Sequenced Address item */
+} CipItemIds;
 
-typedef struct
-{
-  EIP_UINT32 ConnectionIdentifier;
-  EIP_UINT32 SequenceNumber;
-} S_Address_Data;
+typedef struct {
+  EipUint32 connection_identifier;
+  EipUint32 sequence_number;
+} AddressData;
 
-typedef struct
-{
-  EIP_UINT16 TypeID;
-  EIP_UINT16 Length;
-  S_Address_Data Data;
-} S_Address_Item;
+typedef struct {
+  EipUint16 type_id;
+  EipUint16 length;
+  AddressData data;
+} AddressItem;
 
-typedef struct
-{
-  EIP_UINT16 TypeID;
-  EIP_UINT16 Length;
-  EIP_UINT8 *Data;
+typedef struct {
+  EipUint16 type_id;
+  EipUint16 length;
+  EipUint8 *data;
 } S_Data_Item;
 
-typedef struct
-{
-  EIP_UINT16 TypeID;
-  EIP_UINT16 Length;
-  EIP_INT16 nsin_family;
-  EIP_UINT16 nsin_port;
-  EIP_UINT32 nsin_addr;
-  EIP_UINT8 nasin_zero[8];
-} S_SockAddrInfo_Item;
+typedef struct {
+  EipUint16 type_id;
+  EipUint16 length;
+  EipInt16 nsin_family;
+  EipUint16 nsin_port;
+  EipUint32 nsin_addr;
+  EipUint8 nasin_zero[8];
+} SocketAddrressInfoItem;
 
 /* this one case of a CPF packet is supported:*/
 
-typedef struct
-{
-  EIP_UINT16 ItemCount;
-  S_Address_Item stAddr_Item;
-  S_Data_Item stDataI_Item;
-  S_SockAddrInfo_Item AddrInfo[2];
-} S_CIP_CPF_Data;
+typedef struct {
+  EipUint16 item_count;
+  AddressItem address_item;
+  S_Data_Item data_item;
+  SocketAddrressInfoItem address_info_item[2];
+} CipCommonPacketFormatData;
 
-/*! \ingroup ENCAP
+/** @ingroup ENCAP
  * Parse the CPF data from a received unconnected explicit message and
  * hand the data on to the message router 
  *
@@ -78,10 +75,10 @@ typedef struct
  * @param  pa_acReplyBuf reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData,
-    EIP_UINT8 * pa_acReplyBuf);
+int NotifyCommonPacketFormat(EncapsulationData *received_data,
+                             EipUint8 *reply_buffer);
 
-/*! \ingroup ENCAP
+/** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
  * the connection status, update any timers, and hand the data on to 
  * the message router 
@@ -90,8 +87,8 @@ int notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData,
  * @param  pa_acReplyBuf reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData,
-    EIP_UINT8 * pa_acReplyBuf);
+int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
+                                      EipUint8 *reply_buffer);
 
 /*! \ingroup ENCAP
  *  Create CPF structure out of the received data.
@@ -102,8 +99,9 @@ int notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData,
  * 	       EIP_OK .. success
  * 	       EIP_ERROR .. error
  */
-EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
-    S_CIP_CPF_Data * pa_CPF_data);
+EipStatus CreateCommonPacketFormatStructure(
+    EipUint8 *data, int data_length,
+    CipCommonPacketFormatData *common_packet_format_data);
 
 /*! \ingroup ENCAP
  * Copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
@@ -113,14 +111,16 @@ EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
  * @return length of reply in pa_msg in bytes
  * 	   EIP_ERROR .. error
  */
-int assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
-    S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg);
+int AssembleLinearMessage(
+    CipMessageRouterResponse *message_router_response,
+    CipCommonPacketFormatData *common_packet_format_data_item,
+    EipUint8 *message);
 
 /*!\ingroup ENCAP 
- * \brief Data storage for the any cpf data
- * Currently we are single threaded and need only one cpf at the time.
- * For future extensions towards multithreading maybe more cpf data items may be necessary
+ * \brief Data storage for the any CPF data
+ * Currently we are single threaded and need only one CPF at the time.
+ * For future extensions towards multithreading maybe more CPF data items may be necessary
  */
-extern S_CIP_CPF_Data g_stCPFDataItem;
+extern CipCommonPacketFormatData g_common_packet_format_data_item;
 
-#endif
+#endif /* OPENER_CPF_H_ */

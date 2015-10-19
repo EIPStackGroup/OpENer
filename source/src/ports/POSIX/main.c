@@ -12,8 +12,6 @@
 #include "cipcommon.h"
 #include "trace.h"
 
-
-
 extern int newfd;
 
 /******************************************************************************/
@@ -30,40 +28,35 @@ leaveStack(int pa_nSig);
 int g_nEndStack = 0;
 
 /******************************************************************************/
-int
-main(int argc, char *arg[])
-{
-  EIP_UINT8 acMyMACAddress[6];
-  EIP_UINT16 nUniqueConnectionID;
+int main(int argc, char *arg[]) {
+  EipUint8 acMyMACAddress[6];
+  EipUint16 nUniqueConnectionID;
 
-  if (argc != 12)
-    {
-      printf("Wrong number of command line parameters!\n");
-      printf("The correct command line parameters are:\n");
-      printf(
-          "./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress\n");
-      printf(
-          "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
-      exit(0);
-    }
-  else
-    {
-      /* fetch Internet address info from the platform */
-      configureNetworkInterface(arg[1], arg[2], arg[3]);
-      configureDomainName(arg[4]);
-      configureHostName(arg[5]);
+  if (argc != 12) {
+    printf("Wrong number of command line parameters!\n");
+    printf("The correct command line parameters are:\n");
+    printf(
+        "./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress\n");
+    printf(
+        "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
+    exit(0);
+  } else {
+    /* fetch Internet address info from the platform */
+    ConfigureNetworkInterface(arg[1], arg[2], arg[3]);
+    ConfigureDomainName(arg[4]);
+    ConfigureHostName(arg[5]);
 
-      acMyMACAddress[0] = (EIP_UINT8) strtoul(arg[6], NULL, 16);
-      acMyMACAddress[1] = (EIP_UINT8) strtoul(arg[7], NULL, 16);
-      acMyMACAddress[2] = (EIP_UINT8) strtoul(arg[8], NULL, 16);
-      acMyMACAddress[3] = (EIP_UINT8) strtoul(arg[9], NULL, 16);
-      acMyMACAddress[4] = (EIP_UINT8) strtoul(arg[10], NULL, 16);
-      acMyMACAddress[5] = (EIP_UINT8) strtoul(arg[11], NULL, 16);
-      configureMACAddress(acMyMACAddress);
-    }
+    acMyMACAddress[0] = (EipUint8) strtoul(arg[6], NULL, 16);
+    acMyMACAddress[1] = (EipUint8) strtoul(arg[7], NULL, 16);
+    acMyMACAddress[2] = (EipUint8) strtoul(arg[8], NULL, 16);
+    acMyMACAddress[3] = (EipUint8) strtoul(arg[9], NULL, 16);
+    acMyMACAddress[4] = (EipUint8) strtoul(arg[10], NULL, 16);
+    acMyMACAddress[5] = (EipUint8) strtoul(arg[11], NULL, 16);
+    ConfigureMacAddress(acMyMACAddress);
+  }
 
   /*for a real device the serial number should be unique per device */
-  setDeviceSerialNumber(123456789);
+  SetDeviceSerialNumber(123456789);
 
   /* nUniqueConnectionID should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots.
@@ -71,38 +64,33 @@ main(int argc, char *arg[])
   nUniqueConnectionID = rand();
 
   /* Setup the CIP Layer */
-  CIP_Init(nUniqueConnectionID);
+  CipStackInit(nUniqueConnectionID);
 
   /* Setup Network Handles */
-  if (EIP_OK == NetworkHandler_Init())
-    {
-      g_nEndStack = 0;
+  if (kEipStatusOk == NetworkHandler_Init()) {
+    g_nEndStack = 0;
 #ifndef WIN32
-      /* register for closing signals so that we can trigger the stack to end */
-      signal(SIGHUP, leaveStack);
+    /* register for closing signals so that we can trigger the stack to end */
+    signal(SIGHUP, leaveStack);
 #endif
 
-      /* The event loop. Put other processing you need done continually in here */
-      while (1 != g_nEndStack)
-        {
-          if( EIP_OK != NetworkHandler_ProcessOnce())
-            {
-              break;
-            }
-        }
-
-      /* clean up network state */
-      NetworkHandler_Finish();
+    /* The event loop. Put other processing you need done continually in here */
+    while (1 != g_nEndStack) {
+      if (kEipStatusOk != NetworkHandler_ProcessOnce()) {
+        break;
+      }
     }
+
+    /* clean up network state */
+    NetworkHandler_Finish();
+  }
   /* close remaining sessions and connections, cleanup used data */
-  shutdownCIP();
+  ShutdownCipStack();
 
   return -1;
 }
 
-void
-leaveStack(int pa_nSig)
-{
+void leaveStack(int pa_nSig) {
   (void) pa_nSig; /* kill unused parameter warning */
   OPENER_TRACE_STATE("got signal HUP\n");
   g_nEndStack = 1;

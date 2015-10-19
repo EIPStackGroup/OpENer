@@ -65,14 +65,12 @@ volatile unsigned long g_ulSystemTimeNanoSeconds;
 #error "useStaticIP undefined"
 #endif
 
-struct parm
-{
-  int useStatic; // 1 use static IP address, 0 use DHCP
-  unsigned long ip; // my ip address
-  unsigned long nm; // net mask
-  unsigned long gw; // gateway ip address
+struct parm {
+  int useStatic;  // 1 use static IP address, 0 use DHCP
+  unsigned long ip;  // my ip address
+  unsigned long nm;  // net mask
+  unsigned long gw;  // gateway ip address
 };
-
 
 //*****************************************************************************
 //
@@ -83,7 +81,6 @@ struct parm
 #define SYSTICKMS               (1000 / SYSTICKHZ)
 #define SYSTICKUS               (1000000 / SYSTICKHZ)
 #define SYSTICKNS               (1000000000 / SYSTICKHZ)
-
 
 //*****************************************************************************
 //
@@ -102,15 +99,14 @@ struct parm
 #ifdef DEBUG
 void
 __error__(char *pcFilename, unsigned long ulLine)
-  {
-  }
+{
+}
 #endif
 
 // change my IP address etc.
-void
-setCIPaddress(unsigned long addr, // my IP address, in network order
-    unsigned long mask, // netmask, in network order
-    unsigned long gw) // gateway, in network order
+void setCIPaddress(unsigned long addr,  // my IP address, in network order
+    unsigned long mask,  // netmask, in network order
+    unsigned long gw)  // gateway, in network order
 {
   struct in_addr inAddr;
   inAddr.s_addr = addr;
@@ -123,15 +119,13 @@ setCIPaddress(unsigned long addr, // my IP address, in network order
   char acGW[16];
   strncpy(acGW, inet_ntoa(inAddr), 16);
 
-  configureNetworkInterface(acIPAddr, acNetMask, acGW);
-  configureDomainName("test");
-  configureHostName("karl");
+  ConfigureNetworkInterface(acIPAddr, acNetMask, acGW);
+  ConfigureDomainName("test");
+  ConfigureHostName("karl");
 }
 
 // this gets called every 100 usec by the lwip timer handler
-void
-lwIPHostTimerHandler(void)
-{
+void lwIPHostTimerHandler(void) {
   static unsigned long ulLastIPAddress = 0;
   unsigned long ulIPAddress;
   unsigned long ulNetmask;
@@ -139,18 +133,15 @@ lwIPHostTimerHandler(void)
 
   ulIPAddress = lwIPLocalIPAddrGet();
 
-  if (ulLastIPAddress != ulIPAddress)
-    {
-      ulLastIPAddress = ulIPAddress;
-      ulNetmask = lwIPLocalNetMaskGet();
-      ulGateway = lwIPLocalGWAddrGet();
-      setCIPaddress(ulIPAddress, ulNetmask, ulGateway);
-    }
+  if (ulLastIPAddress != ulIPAddress) {
+    ulLastIPAddress = ulIPAddress;
+    ulNetmask = lwIPLocalNetMaskGet();
+    ulGateway = lwIPLocalGWAddrGet();
+    setCIPaddress(ulIPAddress, ulNetmask, ulGateway);
+  }
 }
 
-int
-main(void)
-{
+int main(void) {
   int i;
   unsigned long ulUser0, ulUser1;
   unsigned char pucMACArray[8];
@@ -167,8 +158,8 @@ main(void)
   //
   // Set the clocking to run directly from the crystal.
   //
-  SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN
-                  | SYSCTL_XTAL_8MHZ);
+  SysCtlClockSet(
+      SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
   SysCtlPeripheralEnable(SYSCTL_PERIPH_ETH);
   SysCtlPeripheralReset(SYSCTL_PERIPH_ETH);
@@ -180,25 +171,24 @@ main(void)
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
   GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_HW);
-  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_3,
-                  GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA,
+                   GPIO_PIN_TYPE_STD);
 
   //
   // Configure the GPIOs used to read the state of the on-board push buttons.
   //
-  GPIOPinTypeGPIOInput(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2
-                  | GPIO_PIN_3);
-  GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2
-                  | GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+  GPIOPinTypeGPIOInput(GPIO_PORTE_BASE,
+                       GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+  GPIOPadConfigSet(GPIO_PORTE_BASE,
+                   GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3,
+                   GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
   GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_1);
   GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA,
-                  GPIO_PIN_TYPE_STD_WPU);
+                   GPIO_PIN_TYPE_STD_WPU);
 
   // configure the user LED output
   GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_0);
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-
-
 
   //
   // Configure SysTick for a 100 Hz (10 ms) interrupt.
@@ -221,17 +211,15 @@ main(void)
   // using the FlashUserGet function, as illustrated below.
   //
   FlashUserGet(&ulUser0, &ulUser1);
-  if ((ulUser0 == 0xffffffff) || (ulUser1 == 0xffffffff))
-    {
-      //
-      // We should never get here.  This is an error if the MAC address has
-      // not been programmed into the device.  Exit the program.
-      //
+  if ((ulUser0 == 0xffffffff) || (ulUser1 == 0xffffffff)) {
+    //
+    // We should never get here.  This is an error if the MAC address has
+    // not been programmed into the device.  Exit the program.
+    //
 
-      while (1)
-        {
-        }
+    while (1) {
     }
+  }
 
   //
   // Convert the 24/24 split MAC address from NV ram into a 32/16 split MAC
@@ -249,47 +237,43 @@ main(void)
   //////////////////////////////////////////////////////////
   // YOU MUST SET THESE TO VALID VALUES FOR YOUR LOCATION //
   //////////////////////////////////////////////////////////
-  configureMACAddress(pucMACArray);
+  ConfigureMacAddress(pucMACArray);
 
   //
   // Initialze the lwIP library
   //
 
-
   pl = findNextEmptyParameterBlock();
   p = (struct parm *) (pl + 1);
 
-  if (useStaticIP)
-    {
-      OPENER_TRACE_INFO("using static IP address\n");
+  if (useStaticIP) {
+    OPENER_TRACE_INFO("using static IP address\n");
 
-      ip = 0x8083BAC9; //128.130.200.201
-      nm = 0xFFFFFF00;
-      gw = 0x8083BA01;
-      valid = 7;
-      lwIPInit(pucMACArray, ip, nm, gw, IPADDR_USE_STATIC);
-    }
-  else
-    {
-      //
-      // Initialze the lwIP library, using DHCP.
-      //
-      OPENER_TRACE_INFO("using DHCP\n");
-      valid = 0; //0
-      lwIPInit(pucMACArray, 0, 0, 0, IPADDR_USE_DHCP);
-    }
+    ip = 0x8083BAC9;  //128.130.200.201
+    nm = 0xFFFFFF00;
+    gw = 0x8083BA01;
+    valid = 7;
+    lwIPInit(pucMACArray, ip, nm, gw, IPADDR_USE_STATIC);
+  } else {
+    //
+    // Initialze the lwIP library, using DHCP.
+    //
+    OPENER_TRACE_INFO("using DHCP\n");
+    valid = 0;  //0
+    lwIPInit(pucMACArray, 0, 0, 0, IPADDR_USE_DHCP);
+  }
 
-    //change time-interval value for call of updateElMeasuringAndMeteringData
-    //in SysTickIntHandler-method to show/provide correct values (see line 370)
+  //change time-interval value for call of updateElMeasuringAndMeteringData
+  //in SysTickIntHandler-method to show/provide correct values (see line 370)
 
   IntPrioritySet(INT_ETH, ETHERNET_INT_PRIORITY);
   IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
   /*for a real device the serial number should be unique per device */
-  setDeviceSerialNumber(123456789);
+  SetDeviceSerialNumber(123456789);
 
   /* Setup the CIP Layer */
-  CIP_Init(365);
+  CipStackInit(365);
   IntMasterDisable();
 
   IntMasterEnable();
@@ -297,24 +281,19 @@ main(void)
 
   // this is a simple command interpreter which reads from serial port 0
   // it is used to set a static IP address
-  while (1)
-    {
+  while (1) {
 
-    }
+  }
 }
 
 /* implement missing functions rand and srand */
-int _EXFUN(rand,(_VOID))
-{
-  return nextXorShiftUInt32();
+int _EXFUN( rand, (_VOID)) {
+  return NextXorShiftUInt32();
 }
 
-_VOID   _EXFUN(srand,(unsigned __seed))
-{
-  setXorShiftSeed(__seed);
+_VOID _EXFUN( srand, (unsigned __seed)) {
+  SetXorShiftSeed(__seed);
 }
-
-
 
 //*****************************************************************************
 //

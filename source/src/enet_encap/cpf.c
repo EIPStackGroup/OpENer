@@ -14,116 +14,103 @@
 #include <string.h>
 
 /* CPF global data items */
-S_CIP_CPF_Data g_stCPFDataItem;
+CipCommonPacketFormatData g_common_packet_format_data_item;
 
-int
-notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
-EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
-{
-  int nRetVal;
+int NotifyCommonPacketFormat(EncapsulationData *receive_data,
+                             EipUint8 *reply_buffer) {
+  int return_value;
 
-  if ((nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
-      pa_stReceiveData->nData_length, &g_stCPFDataItem)) == EIP_ERROR)
-    {
-      OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
-    }
-  else
-    {
-      nRetVal = EIP_OK; /* In cases of errors we normaly need to send an error response */
-      if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_NULL) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
-        { /* found null address item*/
-          if (g_stCPFDataItem.stDataI_Item.TypeID
-              == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-            { /* unconnected data item received*/
-              nRetVal = notifyMR(g_stCPFDataItem.stDataI_Item.Data,
-                  g_stCPFDataItem.stDataI_Item.Length);
-              if (nRetVal != EIP_ERROR)
-                {
-                  nRetVal = assembleLinearMsg(&gMRResponse, &g_stCPFDataItem,
-                      pa_acReplyBuf);
-                }
-            }
-          else
-            {
-              /* wrong data item detected*/
-              OPENER_TRACE_ERR(
-                  "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-              pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
-            }
+  if ((return_value = CreateCommonPacketFormatStructure(
+      receive_data->current_communication_buffer_position,
+      receive_data->data_length, &g_common_packet_format_data_item))
+      == kEipStatusError) {
+    OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
+  } else {
+    return_value = kEipStatusOk; /* In cases of errors we normally need to send an error response */
+    if (g_common_packet_format_data_item.address_item.type_id == kNullAddressId) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
+    { /* found null address item*/
+      if (g_common_packet_format_data_item.data_item.type_id
+          == kUnconnectedMessageId) { /* unconnected data item received*/
+        return_value = NotifyMR(
+            g_common_packet_format_data_item.data_item.data,
+            g_common_packet_format_data_item.data_item.length);
+        if (return_value != kEipStatusError) {
+          return_value = AssembleLinearMessage(
+              &g_message_router_response, &g_common_packet_format_data_item,
+              reply_buffer);
         }
-      else
-        {
-          OPENER_TRACE_ERR("notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
-          pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INCORRECT_DATA;
-        }
+      } else {
+        /* wrong data item detected*/
+        OPENER_TRACE_ERR(
+            "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+        receive_data->status = kEncapsulationProtocolIncorrectData;
+      }
+    } else {
+      OPENER_TRACE_ERR(
+          "notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
+      receive_data->status = kEncapsulationProtocolIncorrectData;
     }
-  return nRetVal;
+  }
+  return return_value;
 }
 
-int
-notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData, /* recieved encap data*/
-EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
-{
-  int nRetVal;
-  S_CIP_ConnectionObject *pstConnectionObject;
+int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
+                                      EipUint8 *reply_buffer) {
+  int return_value;
+  ConnectionObject *connection_object;
 
-  nRetVal = createCPFstructure(pa_stReceiveData->m_acCurrentCommBufferPos,
-      pa_stReceiveData->nData_length, &g_stCPFDataItem);
+  return_value = CreateCommonPacketFormatStructure(
+      received_data->current_communication_buffer_position,
+      received_data->data_length, &g_common_packet_format_data_item);
 
-  if (EIP_ERROR == nRetVal)
-    {
-      OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
-    }
-  else
-    {
-      nRetVal = EIP_ERROR; /* For connected explicit messages status always has to be 0*/
-      if (g_stCPFDataItem.stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
+  if (kEipStatusError == return_value) {
+    OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
+  } else {
+    return_value = kEipStatusError; /* For connected explicit messages status always has to be 0*/
+    if (g_common_packet_format_data_item.address_item.type_id
+        == kConnectionBasedId) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
         { /* ConnectedAddressItem item */
-          pstConnectionObject = getConnectedObject(
-              g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier);
-          if (NULL != pstConnectionObject)
-            {
-              /* reset the watchdog timer */
-              pstConnectionObject->InnacitvityWatchdogTimer =
-                  (pstConnectionObject->O_to_T_RPI / 1000)
-                      << (2 + pstConnectionObject->ConnectionTimeoutMultiplier);
+      connection_object = GetConnectedObject(
+          g_common_packet_format_data_item.address_item.data
+              .connection_identifier);
+      if (NULL != connection_object) {
+        /* reset the watchdog timer */
+        connection_object->inactivity_watchdog_timer = (connection_object
+            ->o_to_t_requested_packet_interval / 1000)
+            << (2 + connection_object->connection_timeout_multiplier);
 
-              /*TODO check connection id  and sequence count    */
-              if (g_stCPFDataItem.stDataI_Item.TypeID
-                  == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-                { /* connected data item received*/
-                  EIP_UINT8 *pnBuf = g_stCPFDataItem.stDataI_Item.Data;
-                  g_stCPFDataItem.stAddr_Item.Data.SequenceNumber =
-                      (EIP_UINT32) ltohs(&pnBuf);
-                  nRetVal = notifyMR(pnBuf,
-                      g_stCPFDataItem.stDataI_Item.Length - 2);
+        /*TODO check connection id  and sequence count    */
+        if (g_common_packet_format_data_item.data_item.type_id
+            == kConnectedTransportPacketId) { /* connected data item received*/
+          EipUint8 *pnBuf = g_common_packet_format_data_item.data_item.data;
+          g_common_packet_format_data_item.address_item.data.sequence_number =
+              (EipUint32) GetIntFromMessage(&pnBuf);
+          return_value = NotifyMR(
+              pnBuf, g_common_packet_format_data_item.data_item.length - 2);
 
-                  if (nRetVal != EIP_ERROR)
-                    {
-                      g_stCPFDataItem.stAddr_Item.Data.ConnectionIdentifier =
-                          pstConnectionObject->CIPProducedConnectionID;
-                      nRetVal = assembleLinearMsg(&gMRResponse,
-                          &g_stCPFDataItem, pa_acReplyBuf);
-                    }
-                }
-              else
-                {
-                  /* wrong data item detected*/
-                  OPENER_TRACE_ERR(
-                      "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-                }
-            }
-          else
-            {
-              OPENER_TRACE_ERR("notifyConnectedCPF: connection with given ID could not be found\n");
-            }
+          if (return_value != kEipStatusError) {
+            g_common_packet_format_data_item.address_item.data
+                .connection_identifier = connection_object
+                ->produced_connection_id;
+            return_value = AssembleLinearMessage(
+                &g_message_router_response, &g_common_packet_format_data_item,
+                reply_buffer);
+          }
+        } else {
+          /* wrong data item detected*/
+          OPENER_TRACE_ERR(
+              "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         }
-      else
-        {
-          OPENER_TRACE_ERR("notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
-        }
+      } else {
+        OPENER_TRACE_ERR(
+            "notifyConnectedCPF: connection with given ID could not be found\n");
+      }
+    } else {
+      OPENER_TRACE_ERR(
+          "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
     }
-  return nRetVal;
+  }
+  return return_value;
 }
 
 /*   INT16 createCPFstructure(INT8 *pa_Data, INT16 pa_DataLength, S_CIP_CPF_Data *pa_CPF_data)
@@ -135,92 +122,85 @@ EIP_UINT8 * pa_acReplyBuf) /* reply buffer*/
  * 		0 .. success
  * 	       -1 .. error
  */
-EIP_STATUS
-createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
-    S_CIP_CPF_Data * pa_CPF_data)
-{
+EipStatus CreateCommonPacketFormatStructure(
+    EipUint8 *data, int data_length,
+    CipCommonPacketFormatData *common_packet_format_data) {
   int len_count, i, j;
 
-  pa_CPF_data->AddrInfo[0].TypeID = 0;
-  pa_CPF_data->AddrInfo[1].TypeID = 0;
+  common_packet_format_data->address_info_item[0].type_id = 0;
+  common_packet_format_data->address_info_item[1].type_id = 0;
 
   len_count = 0;
-  pa_CPF_data->ItemCount = ltohs(&pa_Data);
+  common_packet_format_data->item_count = GetIntFromMessage(&data);
   len_count += 2;
-  if (pa_CPF_data->ItemCount >= 1)
-    {
-      pa_CPF_data->stAddr_Item.TypeID = ltohs(&pa_Data);
-      pa_CPF_data->stAddr_Item.Length = ltohs(&pa_Data);
+  if (common_packet_format_data->item_count >= 1) {
+    common_packet_format_data->address_item.type_id = GetIntFromMessage(&data);
+    common_packet_format_data->address_item.length = GetIntFromMessage(&data);
+    len_count += 4;
+    if (common_packet_format_data->address_item.length >= 4) {
+      common_packet_format_data->address_item.data.connection_identifier =
+          GetDintFromMessage(&data);
       len_count += 4;
-      if (pa_CPF_data->stAddr_Item.Length >= 4)
-        {
-          pa_CPF_data->stAddr_Item.Data.ConnectionIdentifier = ltohl(&pa_Data);
-          len_count += 4;
-        }
-      if (pa_CPF_data->stAddr_Item.Length == 8)
-        {
-          pa_CPF_data->stAddr_Item.Data.SequenceNumber = ltohl(&pa_Data);
-          len_count += 4;
-        }
     }
-  if (pa_CPF_data->ItemCount >= 2)
-    {
-      pa_CPF_data->stDataI_Item.TypeID = ltohs(&pa_Data);
-      pa_CPF_data->stDataI_Item.Length = ltohs(&pa_Data);
-      pa_CPF_data->stDataI_Item.Data = pa_Data;
-      pa_Data += pa_CPF_data->stDataI_Item.Length;
-      len_count += (4 + pa_CPF_data->stDataI_Item.Length);
+    if (common_packet_format_data->address_item.length == 8) {
+      common_packet_format_data->address_item.data.sequence_number =
+          GetDintFromMessage(&data);
+      len_count += 4;
     }
-  for (j = 0; j < (pa_CPF_data->ItemCount - 2); j++) /* TODO there needs to be a limit check here???*/
-    {
-      pa_CPF_data->AddrInfo[j].TypeID = ltohs(&pa_Data);
-      len_count += 2;
-      if ((pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_O_TO_T)
-          || (pa_CPF_data->AddrInfo[j].TypeID == CIP_ITEM_ID_SOCKADDRINFO_T_TO_O))
-        {
-          pa_CPF_data->AddrInfo[j].Length = ltohs(&pa_Data);
-          pa_CPF_data->AddrInfo[j].nsin_family = ltohs(&pa_Data);
-          pa_CPF_data->AddrInfo[j].nsin_port = ltohs(&pa_Data);
-          pa_CPF_data->AddrInfo[j].nsin_addr = ltohl(&pa_Data);
-          for (i = 0; i < 8; i++)
-            {
-              pa_CPF_data->AddrInfo[j].nasin_zero[i] = *pa_Data;
-              pa_Data++;
-            }
-          len_count += 18;
-        }
-      else
-        { /* no sockaddr item found */
-          pa_CPF_data->AddrInfo[j].TypeID = 0; /* mark as not set */
-          pa_Data -= 2;
-        }
+  }
+  if (common_packet_format_data->item_count >= 2) {
+    common_packet_format_data->data_item.type_id = GetIntFromMessage(&data);
+    common_packet_format_data->data_item.length = GetIntFromMessage(&data);
+    common_packet_format_data->data_item.data = data;
+    data += common_packet_format_data->data_item.length;
+    len_count += (4 + common_packet_format_data->data_item.length);
+  }
+  for (j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
+  {
+    common_packet_format_data->address_info_item[j].type_id = GetIntFromMessage(
+        &data);
+    len_count += 2;
+    if ((common_packet_format_data->address_info_item[j].type_id
+        == kSocketAddressInfoOriginatorToTargetId)
+        || (common_packet_format_data->address_info_item[j].type_id
+            == kSocketAddressInfoTargetToOriginatorId)) {
+      common_packet_format_data->address_info_item[j].length =
+          GetIntFromMessage(&data);
+      common_packet_format_data->address_info_item[j].nsin_family =
+          GetIntFromMessage(&data);
+      common_packet_format_data->address_info_item[j].nsin_port =
+          GetIntFromMessage(&data);
+      common_packet_format_data->address_info_item[j].nsin_addr =
+          GetDintFromMessage(&data);
+      for (i = 0; i < 8; i++) {
+        common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
+        data++;
+      }
+      len_count += 18;
+    } else { /* no sockaddr item found */
+      common_packet_format_data->address_info_item[j].type_id = 0; /* mark as not set */
+      data -= 2;
     }
-  /* set the addressInfoItems to not set if they werent received */
-  if (pa_CPF_data->ItemCount < 4)
-    {
-      pa_CPF_data->AddrInfo[1].TypeID = 0;
-      if (pa_CPF_data->ItemCount < 3)
-        {
-          pa_CPF_data->AddrInfo[0].TypeID = 0;
-        }
+  }
+  /* set the addressInfoItems to not set if they were not received */
+  if (common_packet_format_data->item_count < 4) {
+    common_packet_format_data->address_info_item[1].type_id = 0;
+    if (common_packet_format_data->item_count < 3) {
+      common_packet_format_data->address_info_item[0].type_id = 0;
     }
-  if (len_count == pa_DataLength)
-    { /* length of data is equal to length of Addr and length of Data */
-      return EIP_OK;
+  }
+  if (len_count == data_length) { /* length of data is equal to length of Addr and length of Data */
+    return kEipStatusOk;
+  } else {
+    OPENER_TRACE_WARN(
+        "something is wrong with the length in MR @ createCPFstructure\n");
+    if (common_packet_format_data->item_count > 2) {
+      /* there is an optional packet in data stream which is not sockaddr item */
+      return kEipStatusOk;
+    } else { /* something with the length was wrong */
+      return kEipStatusError;
     }
-  else
-    {
-      OPENER_TRACE_WARN("something is wrong with the length in MR @ createCPFstructure\n");
-      if (pa_CPF_data->ItemCount > 2)
-        {
-          /* there is an optional packet in data stream which is not sockaddr item */
-          return EIP_OK;
-        }
-      else
-        { /* something with the length was wrong */
-          return EIP_ERROR;
-        }
-    }
+  }
 }
 
 /*   INT8 assembleLinearMsg(S_CIP_MR_Response *pa_MRResponse, S_CIP_CPF_Data *pa_CPFDataItem, INT8 *pa_msg)
@@ -231,134 +211,143 @@ createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
  *  return length of reply in pa_msg in bytes
  * 			-1 .. error
  */
-int
-assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
-    S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg)
-{
-  int i, j, size, type;
+int AssembleLinearMessage(
+    CipMessageRouterResponse *message_router_response,
+    CipCommonPacketFormatData * common_packet_format_data_item,
+    EipUint8 *message) {
+  int i, j, type;
 
-  size = 0;
-  if (pa_MRResponse)
-    {
-      /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
-      htoll(0, &pa_msg);
-      htols(0, &pa_msg);
-      size += 6;
-    }
+  int size = 0;
+  if (message_router_response) {
+    /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
+    AddDintToMessage(0, &message);
+    AddIntToMessage(0, &message);
+    size += 6;
+  }
 
-  htols(pa_CPFDataItem->ItemCount, &pa_msg); /* item count */
+  AddIntToMessage(common_packet_format_data_item->item_count, &message); /* item count */
   size += 2;
   /* process Address Item */
-  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_NULL)
-    { /* null address item -> address length set to 0 */
-      htols(CIP_ITEM_ID_NULL, &pa_msg);
-      htols(0, &pa_msg);
-      size += 4;
-    }
-  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_CONNECTIONBASED)
-    { /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
-      htols(CIP_ITEM_ID_CONNECTIONBASED, &pa_msg);
-      htols(4, &pa_msg);
-      htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
-      size += 8;
-    }
-  /* sequencenumber????? */
-  if (pa_CPFDataItem->stAddr_Item.TypeID == CIP_ITEM_ID_SEQUENCEDADDRESS)
-    { /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
-      htols(CIP_ITEM_ID_SEQUENCEDADDRESS, &pa_msg);
-      htols(8, &pa_msg);
-      htoll(pa_CPFDataItem->stAddr_Item.Data.ConnectionIdentifier, &pa_msg);
-      htoll(pa_CPFDataItem->stAddr_Item.Data.SequenceNumber, &pa_msg);
-      size += 12;
-    }
+  if (common_packet_format_data_item->address_item.type_id == kNullAddressId) { /* null address item -> address length set to 0 */
+    AddIntToMessage(kNullAddressId, &message);
+    AddIntToMessage(0, &message);
+    size += 4;
+  }
+  if (common_packet_format_data_item->address_item.type_id
+      == kConnectionBasedId) { /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
+    AddIntToMessage(kConnectionBasedId, &message);
+    AddIntToMessage(4, &message);
+    AddDintToMessage(
+        common_packet_format_data_item->address_item.data.connection_identifier,
+        &message);
+    size += 8;
+  }
+  /* sequence number????? */
+  if (common_packet_format_data_item->address_item.type_id
+      == kSequencedAddressItemId) { /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
+    AddIntToMessage(kSequencedAddressItemId, &message);
+    AddIntToMessage(8, &message);
+    AddDintToMessage(
+        common_packet_format_data_item->address_item.data.connection_identifier,
+        &message);
+    AddDintToMessage(
+        common_packet_format_data_item->address_item.data.sequence_number,
+        &message);
+    size += 12;
+  }
 
   /* process Data Item */
-  if ((pa_CPFDataItem->stDataI_Item.TypeID == CIP_ITEM_ID_UNCONNECTEDMESSAGE)
-      || (pa_CPFDataItem->stDataI_Item.TypeID
-          == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET))
-    {
-      if (pa_MRResponse)
-        {
-          htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
+  if ((common_packet_format_data_item->data_item.type_id
+      == kUnconnectedMessageId)
+      || (common_packet_format_data_item->data_item.type_id
+          == kConnectedTransportPacketId)) {
+    if (message_router_response) {
+      AddIntToMessage(common_packet_format_data_item->data_item.type_id,
+                      &message);
 
-          if (pa_CPFDataItem->stDataI_Item.TypeID
-              == CIP_ITEM_ID_CONNECTIONTRANSPORTPACKET)
-            {
-              htols(
-                  (EIP_UINT16) (pa_MRResponse->DataLength + 4 + 2
-                      + (2 * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
+      if (common_packet_format_data_item->data_item.type_id
+          == kConnectedTransportPacketId) {
+        AddIntToMessage(
+            (EipUint16) (message_router_response->data_length + 4 + 2
+                + (2 * message_router_response->size_of_additional_status)),
+            &message);
 
-              htols(
-                  (EIP_UINT16) g_stCPFDataItem.stAddr_Item.Data.SequenceNumber,
-                  &pa_msg);
+        AddIntToMessage(
+            (EipUint16) g_common_packet_format_data_item.address_item.data
+                .sequence_number,
+            &message);
 
-              size += (4 + pa_MRResponse->DataLength + 4 + 2
-                  + (2 * pa_MRResponse->SizeofAdditionalStatus));
-            }
-          else
-            {
-              htols(
-                  (EIP_UINT16) (pa_MRResponse->DataLength + 4
-                      + (2 * pa_MRResponse->SizeofAdditionalStatus)), &pa_msg);
-              size += (4 + pa_MRResponse->DataLength + 4
-                  + (2 * pa_MRResponse->SizeofAdditionalStatus));
-            }
+        size += (4 + message_router_response->data_length + 4 + 2
+            + (2 * message_router_response->size_of_additional_status));
+      } else {
+        AddIntToMessage(
+            (EipUint16) (message_router_response->data_length + 4
+                + (2 * message_router_response->size_of_additional_status)),
+            &message);
+        size += (4 + message_router_response->data_length + 4
+            + (2 * message_router_response->size_of_additional_status));
+      }
 
-          /* write MR Response into linear memory */
-          *pa_msg = pa_MRResponse->ReplyService;
-          pa_msg++;
-          *pa_msg = pa_MRResponse->Reserved; /* reserved = 0 */
-          pa_msg++;
-          *pa_msg = pa_MRResponse->GeneralStatus;
-          pa_msg++;
-          *pa_msg = pa_MRResponse->SizeofAdditionalStatus;
-          pa_msg++;
-          for (i = 0; i < pa_MRResponse->SizeofAdditionalStatus; i++)
-            htols(pa_MRResponse->AdditionalStatus[i], &pa_msg);
+      /* write message router response into linear memory */
+      *message = message_router_response->reply_service;
+      message++;
+      *message = message_router_response->reserved; /* reserved = 0 */
+      message++;
+      *message = message_router_response->general_status;
+      message++;
+      *message = message_router_response->size_of_additional_status;
+      message++;
+      for (i = 0; i < message_router_response->size_of_additional_status; i++)
+        AddIntToMessage(message_router_response->additional_status[i],
+                        &message);
 
-          for (i = 0; i < pa_MRResponse->DataLength; i++)
-            {
-              *pa_msg = (EIP_UINT8) *(pa_MRResponse->Data + i);
-              pa_msg++;
-            }
-        }
-      else
-        { /* connected IO Message to send */
-          htols(pa_CPFDataItem->stDataI_Item.TypeID, &pa_msg);
-          htols(pa_CPFDataItem->stDataI_Item.Length, &pa_msg);
-          for (i = 0; i < pa_CPFDataItem->stDataI_Item.Length; i++)
-            {
-              *pa_msg = (EIP_UINT8) *(pa_CPFDataItem->stDataI_Item.Data + i);
-              pa_msg++;
-            }
-          size += (pa_CPFDataItem->stDataI_Item.Length + 4);
-        }
+      for (i = 0; i < message_router_response->data_length; i++) {
+        *message = (EipUint8) *(message_router_response->data + i);
+        message++;
+      }
+    } else { /* connected IO Message to send */
+      AddIntToMessage(common_packet_format_data_item->data_item.type_id,
+                      &message);
+      AddIntToMessage(common_packet_format_data_item->data_item.length,
+                      &message);
+      for (i = 0; i < common_packet_format_data_item->data_item.length; i++) {
+        *message = (EipUint8) *(common_packet_format_data_item->data_item.data
+            + i);
+        message++;
+      }
+      size += (common_packet_format_data_item->data_item.length + 4);
     }
+  }
   /* process SockAddr Info Items */
   /* make sure first the O->T and then T->O appears on the wire.
    * EtherNet/IP specification doesn't demand it, but there are EIP
    * devices which depend on CPF items to appear in the order of their
    * ID number */
-  for (type = CIP_ITEM_ID_SOCKADDRINFO_O_TO_T; type <= CIP_ITEM_ID_SOCKADDRINFO_T_TO_O; type++)
-    {
-      for (j = 0; j < 2; j++)
-        {
-          if (pa_CPFDataItem->AddrInfo[j].TypeID == type)
-            {
-              htols(pa_CPFDataItem->AddrInfo[j].TypeID, &pa_msg);
-              htols(pa_CPFDataItem->AddrInfo[j].Length, &pa_msg);
+  for (type = kSocketAddressInfoOriginatorToTargetId;
+      type <= kSocketAddressInfoTargetToOriginatorId; type++) {
+    for (j = 0; j < 2; j++) {
+      if (common_packet_format_data_item->address_info_item[j].type_id
+          == type) {
+        AddIntToMessage(
+            common_packet_format_data_item->address_info_item[j].type_id,
+            &message);
+        AddIntToMessage(
+            common_packet_format_data_item->address_info_item[j].length,
+            &message);
 
-              encapsulateIPAdressCPF(pa_CPFDataItem->AddrInfo[j].nsin_port,
-                  pa_CPFDataItem->AddrInfo[j].nsin_addr, pa_msg);
-              pa_msg += 8;
+        EncapsulateIpAddressCommonPaketFormat(
+            common_packet_format_data_item->address_info_item[j].nsin_port,
+            common_packet_format_data_item->address_info_item[j].nsin_addr,
+            message);
+        message += 8;
 
-              memset(pa_msg, 0, 8);
-              pa_msg += 8;
-              size += 20;
-              break;
-           }
-        }
+        memset(message, 0, 8);
+        message += 8;
+        size += 20;
+        break;
+      }
     }
+  }
   return size;
 }
 

@@ -6,35 +6,41 @@
 #ifndef CIPTCPIPINTERFACE_H_
 #define CIPTCPIPINTERFACE_H_
 
+/** @file ciptcpipinterface.h
+ * @brief Public interface of the TCP/IP Interface Object
+ *
+ */
+
 #include "typedefs.h"
 #include "ciptypes.h"
 
-#define CIP_TCPIPINTERFACE_CLASS_CODE 0xF5
+static const EipUint16 kCipTcpIpInterfaceClassCode = 0xF5; /**< TCP/IP Interface Object class code */
 
-typedef struct
-{
-  EIP_UINT8  m_unAllocControl;
-  EIP_UINT8  m_unReserved; /*!< shall be zereo */
-  EIP_UINT16 m_unNumMcast;
-  EIP_UINT32 m_unMcastStartAddr;
-}SMcastConfig;
+/** @brief Multicast Configuration struct, called Mcast config
+ *
+ */
+typedef struct multicast_address_configuration {
+  CipUsint alloc_control; /**< 0 for default multicast address generation algorithm; 1 for multicast addresses according to Num MCast and MCast Start Addr */
+  CipUsint reserved_shall_be_zero; /**< shall be zero */
+  CipUint number_of_allocated_multicast_addresses; /**< Number of IP multicast addresses allocated */
+  CipUdint starting_multicast_address; /**< Starting multicast address from which Num Mcast addresses are allocated */
+} MulticastAddressConfiguration;
 
 /* global public variables */
-extern EIP_UINT8 g_unTTLValue;
+extern CipUsint g_time_to_live_value; /**< Time-to-live value for IP multicast packets. Default is 1; Minimum is 1; Maximum is 255 */
 
-extern SMcastConfig g_stMultiCastconfig;
-
+extern MulticastAddressConfiguration g_multicast_configuration; /**< Multicast configuration */
 
 /* public functions */
-/*!Initializing the data structures of the TCPIP interface object 
- */ 
-EIP_STATUS CIP_TCPIP_Interface_Init(void);
-/*!\brief Clean up the allocated data of the TCPIP interface object.
+/** @brief Initializing the data structures of the TCP/IP interface object
+ */
+EipStatus CipTcpIpInterfaceInit(void);
+
+/** @brief Clean up the allocated data of the TCP/IP interface object.
  *
  * Currently this is the host name string and the domain name string.
  *
  */
-void shutdownTCPIP_Interface(void);
-
+void ShutdownTcpIpInterface(void);
 
 #endif /*CIPTCPIPINTERFACE_H_*/

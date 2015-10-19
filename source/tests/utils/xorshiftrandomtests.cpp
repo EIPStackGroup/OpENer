@@ -22,8 +22,8 @@ TEST(XorShiftRandom, SeedZeroInitResult)
 {
 	uint32_t nResult;
 	nResult = 1;
-	setXorShiftSeed(0);
-	nResult = nextXorShiftUInt32();
+	SetXorShiftSeed(0);
+	nResult = NextXorShiftUint32();
 	LONGS_EQUAL(0, nResult);
 }
 
@@ -31,13 +31,13 @@ TEST(XorShiftRandom, SeedZeroInitResult)
 TEST(XorShiftRandom, SeedOneCharacterization)
 {
 	uint32_t nResult;
-	setXorShiftSeed(1);
-	nResult = nextXorShiftUInt32();
+	SetXorShiftSeed(1);
+	nResult = NextXorShiftUint32();
 	LONGS_EQUAL(270369, nResult);
-	nResult = nextXorShiftUInt32();
+	nResult = NextXorShiftUint32();
 	LONGS_EQUAL(67634689, nResult);
-	nResult = nextXorShiftUInt32();
+	nResult = NextXorShiftUint32();
 	LONGS_EQUAL(2647435461, nResult);
-	nResult = nextXorShiftUInt32();
+	nResult = NextXorShiftUint32();
 	LONGS_EQUAL(307599695, nResult);
 }

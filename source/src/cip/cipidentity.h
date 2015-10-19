@@ -3,39 +3,51 @@
  * All rights reserved. 
  *
  ******************************************************************************/
-#ifndef CIPIDENTITY_H_
-#define CIPIDENTITY_H_
+#ifndef OPENER_CIPIDENTITY_H_
+#define OPENER_CIPIDENTITY_H_
 
 #include "typedefs.h"
 #include "ciptypes.h"
 
-#define CIP_IDENTITY_CLASS_CODE 0x01
+static const int kIdentityClassCode = 0x01;
 
-#define CIP_IDENTITY_STATUS_OWNED 0x0001
-#define CIP_IDENTITY_STATUS_CONFIGURED 0x0004
-#define CIP_IDENTITY_STATUS_MINOR_RECOV_FLT 0x0100
-#define CIP_IDENTITY_STATUS_MINOR_UNRECOV_FLT 0x0200
-#define CIP_IDENTITY_STATUS_MAJOR_RECOV_FLT 0x0400
-#define CIP_IDENTITY_STATUS_MAJOR_UNRECOV_FLT 0x0800
+/** @brief Status of the CIP Identity object */
+typedef enum {
+  kOwned = 0x0001, /**< Indicates that the device has an owner */
+  kConfigured = 0x0004, /**< Indicates that the device is configured to do
+   something different, than the out-of-the-box default. */
+  kMinorRecoverableFault = 0x0100, /**< Indicates that the device detected a
+   fault with itself, which was thought to be recoverable. The device did not
+   switch to a faulted state. */
+  kMinorUncoverableFault = 0x0200, /**< Indicates that the device detected a
+   fault with itself, which was thought to be recoverable. The device did not
+   switch to a faulted state. */
+  kMajorRecoveralbeFault = 0x0400, /**< Indicates that the device detected a
+   fault with itself,which was thought to be recoverable. The device changed
+   to the "Major Recoverable Fault" state */
+  kMajorUnrecoverableFault = 0x0800 /**< Indicates that the device detected a
+   fault with itself,which was thought to be recoverable. The device changed
+   to the "Major Unrecoverable Fault" state */
+} CipIdentityStatus;
 
-#define CIP_IDENTITY_EXTENDED_STATUS_SELFTESTING_UNKNOWN                                     0x0000
-#define CIP_IDENTITY_EXTENDED_STATUS_FIRMEWARE_UPDATE_IN_PROGRESS                            0x0010
-#define CIP_IDENTITY_EXTENDED_STATUS_AT_LEAST_ONE_FAULTED_IO_CONNECTION                      0x0020
-#define CIP_IDENTITY_EXTENDED_STATUS_NO_IO_CONNECTIONS_ESTABLISHED                           0x0030
-#define CIP_IDENTITY_EXTENDED_STATUS_NON_VOLATILE_CONFIGURATION_BAD                          0x0040
-#define CIP_IDENTITY_EXTENDED_STATUS_MAJOR_FAULT                                             0x0050
-#define CIP_IDENTITY_EXTENDED_STATUS_AT_LEAST_ONE_IO_CONNECTION_IN_RUN_MODE                  0x0060
-#define CIP_IDENTITY_EXTENDED_STATUS_AT_LEAST_ONE_IO_CONNECTION_ESTABLISHED_ALL_IN_IDLE_MODE 0x0070
-
+typedef enum {
+  kSelftestingUnknown = 0x0000,
+  FirmwareUpdateInProgress = 0x0010,
+  kStatusAtLeastOneFaultedIoConnection = 0x0020,
+  kNoIoConnectionsEstablished = 0x0030,
+  kNonVolatileConfigurationBad = 0x0040,
+  kMajorFault = 0x0050,
+  kAtLeastOneIoConnectionInRuneMode = 0x0060,
+  kAtLeastOneIoConnectionEstablishedAllInIdleMode = 0x0070
+} CipIdentityExtendedStatus;
 
 /* global public variables */
 
 /* public functions */
-/** CIP Identity object contructor
+/** @brief CIP Identity object constructor
  *
- * @returns EIP_ERROR if the class could not be created, otherwise EIP_OK
+ * @returns EipError if the class could not be created, otherwise EipOk
  */
-EIP_STATUS
-CIP_Identity_Init(void);
+EipStatus CipIdentityInit(void);
 
-#endif /*CIPIDENTITY_H_*/
+#endif /* OPENER_CIPIDENTITY_H_ */

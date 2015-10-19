@@ -8,13 +8,12 @@
 
 #include "typedefs.h"
 
-
 /*! Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  *  @return status
  *          EIP_ERROR .. error
  */
-EIP_STATUS NetworkHandler_Init(void);
-EIP_STATUS NetworkHandler_ProcessOnce(void);
-EIP_STATUS NetworkHandler_Finish(void);
+EipStatus NetworkHandler_Init(void);
+EipStatus NetworkHandler_ProcessOnce(void);
+EipStatus NetworkHandler_Finish(void);
 
 #endif /*NETWORKHANDLER_H_*/

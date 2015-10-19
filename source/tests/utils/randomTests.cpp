@@ -22,7 +22,7 @@ TEST(RandomClass, CreateXOrShiftObject)
 {
 	Random* pRandom;
 	uint32_t nResult = 0;
-	pRandom = random_new(setXorShiftSeed, nextXorShiftUInt32);
-	POINTERS_EQUAL(setXorShiftSeed, pRandom->setSeed);
-	POINTERS_EQUAL(nextXorShiftUInt32, pRandom->getNextUInt32);
+	pRandom = random_new(SetXorShiftSeed, NextXorShiftUint32);
+	POINTERS_EQUAL(SetXorShiftSeed, pRandom->setSeed);
+	POINTERS_EQUAL(NextXorShiftUint32, pRandom->getNextUInt32);
 }

@@ -4,67 +4,63 @@
  *
  ******************************************************************************/
 
-#include "cipclass3connection.h"
-#include "cipconnectionmanager.h"
 #include <string.h>
 
-S_CIP_ConnectionObject *
-getFreeExplicitConnection(void);
+#include "cipclass3connection.h"
+
+ConnectionObject *GetFreeExplicitConnection(void);
 
 /**** Global variables ****/
 
-/*! Array of the available explicit connections */
-S_CIP_ConnectionObject g_astExplicitConnections[OPENER_CIP_NUM_EXPLICIT_CONNS];
+/** @brief Array of the available explicit connections */
+ConnectionObject g_explicit_connections[OPENER_CIP_NUM_EXPLICIT_CONNS];
 
 /**** Implementation ****/
-int
-establishClass3Connection(struct CIP_ConnectionObject *pa_pstConnObj,
-    EIP_UINT16 *pa_pnExtendedError)
-{
-  int nRetVal = EIP_OK;
-  EIP_UINT32 nTmp;
+int EstablishClass3Connection(ConnectionObject *connection_object,
+                              EipUint16 *extended_error) {
+  int eip_status = kEipStatusOk;
+  EipUint32 produced_connection_id_buffer;
 
-  //TODO add check for transport type trigger
-  //if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03))
+  /*TODO add check for transport type trigger */
+  /* if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03)) */
 
-  S_CIP_ConnectionObject *pstExplConn = getFreeExplicitConnection();
+  ConnectionObject *explicit_connection = GetFreeExplicitConnection();
 
-  if (NULL == pstExplConn)
-    {
-      nRetVal = CIP_ERROR_CONNECTION_FAILURE;
-      *pa_pnExtendedError = CIP_CON_MGR_ERROR_NO_MORE_CONNECTIONS_AVAILABLE;
-    }
-  else
-    {
-      copyConnectionData(pstExplConn, pa_pstConnObj);
+  if (NULL == explicit_connection) {
+    eip_status = kCipErrorConnectionFailure;
+    *extended_error =
+        kConnectionManagerStatusCodeErrorNoMoreConnectionsAvailable;
+  } else {
+    CopyConnectionData(explicit_connection, connection_object);
 
-      nTmp = pstExplConn->CIPProducedConnectionID;
-      generalConnectionConfiguration(pstExplConn);
-      pstExplConn->CIPProducedConnectionID = nTmp;
-      pstExplConn->m_eInstanceType = enConnTypeExplicit;
-      pstExplConn->sockfd[0] = pstExplConn->sockfd[1] = EIP_INVALID_SOCKET;
-      /* set the connection call backs */
-      pstExplConn->m_pfCloseFunc = removeFromActiveConnections;
-      /* explicit connection have to be closed on time out*/
-      pstExplConn->m_pfTimeOutFunc = removeFromActiveConnections;
+    produced_connection_id_buffer = explicit_connection->produced_connection_id;
+    GeneralConnectionConfiguration(explicit_connection);
+    explicit_connection->produced_connection_id = produced_connection_id_buffer;
+    explicit_connection->instance_type = kConnectionTypeExplicit;
+    explicit_connection->socket[0] = explicit_connection->socket[1] =
+        kEipInvalidSocket;
+    /* set the connection call backs */
+    explicit_connection->connection_close_function =
+        RemoveFromActiveConnections;
+    /* explicit connection have to be closed on time out*/
+    explicit_connection->connection_timeout_function =
+        RemoveFromActiveConnections;
 
-      addNewActiveConnection(pstExplConn);
-    }
-  return nRetVal;
+    AddNewActiveConnection(explicit_connection);
+  }
+  return eip_status;
 }
 
-S_CIP_ConnectionObject *
-getFreeExplicitConnection(void)
-{
+ConnectionObject *GetFreeExplicitConnection(void) {
   int i;
-  for (i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; i++)
-    {
-      if (g_astExplicitConnections[i].State == CONN_STATE_NONEXISTENT)
-        return &(g_astExplicitConnections[i]);
-    }
+  for (i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; i++) {
+    if (g_explicit_connections[i].state == kConnectionStateNonExistent)
+      return &(g_explicit_connections[i]);
+  }
   return NULL;
 }
 
-void initializeClass3ConnectionData(){
-  memset(g_astExplicitConnections, 0, OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(S_CIP_ConnectionObject));
+void InitializeClass3ConnectionData(void) {
+  memset(g_explicit_connections, 0,
+  OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(ConnectionObject));
 }

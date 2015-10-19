@@ -3,8 +3,8 @@
  * All rights reserved. 
  *
  ******************************************************************************/
-#ifndef CIPETHERNETLINK_H_
-#define CIPETHERNETLINK_H_
+#ifndef OPENER_CIPETHERNETLINK_H_
+#define OPENER_CIPETHERNETLINK_H_
 
 #include "typedefs.h"
 #include "ciptypes.h"
@@ -12,9 +12,8 @@
 #define CIP_ETHERNETLINK_CLASS_CODE 0xF6
 
 /* public functions */
-/*!Initialize the Ethernet Link Objects data
+/** @brief Initialize the Ethernet Link Objects data
  */
-EIP_STATUS CIP_Ethernet_Link_Init(void);
+EipStatus CipEthernetLinkInit(void);
 
-
-#endif /*CIPETHERNETLINK_H_*/
+#endif /* OPENER_CIPETHERNETLINK_H_*/

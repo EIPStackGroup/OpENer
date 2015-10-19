@@ -3,77 +3,77 @@
  * All rights reserved. 
  *
  ******************************************************************************/
-#ifndef ENCAP_H_
-#define ENCAP_H_
+#ifndef OPENER_ENCAP_H_
+#define OPENER_ENCAP_H_
 
 #include "typedefs.h"
 
+/** @file encap.h
+ * @brief This file contains the public interface of the encapsulation layer
+ */
 
-/**  \defgroup ENCAP OpENer Ethernet encapsulation layer
+/**  @defgroup ENCAP OpENer Ethernet encapsulation layer
  * The Ethernet encapsulation layer handles provides the abstraction between the Ethernet and the CIP layer.
  */
 
 /*** defines ***/
 
-#define ENCAPSULATION_HEADER_LENGTH 24
-#define OPENER_ETHERNET_PORT 0xAF12
+#define ENCAPSULATION_HEADER_LENGTH	24
+
+static const int OPENER_ETHERNET_PORT = 0xAF12;
 
 /* definition of status codes in encapsulation protocol */
-#define OPENER_ENCAP_STATUS_SUCCESS                     0x0000
-#define OPENER_ENCAP_STATUS_INVALID_COMMAND             0x0001
-#define OPENER_ENCAP_STATUS_INSUFFICIENT_MEM            0x0002
-#define OPENER_ENCAP_STATUS_INCORRECT_DATA              0x0003
-#define OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE      0x0064
-#define OPENER_ENCAP_STATUS_INVALID_LENGTH              0x0065
-#define OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL        0x0069
-
+typedef enum {
+  kEncapsulationProtocolSuccess = 0x0000,
+  kEncapsulationProtocolInvalidCommand = 0x0001,
+  kEncapsulationProtocolInsufficientMemory = 0x0002,
+  kEncapsulationProtocolIncorrectData = 0x0003,
+  kEncapsulationProtocolInvalidSessionHandle = 0x0064,
+  kEncapsulationProtocolInvalidLength = 0x0065,
+  kEncapsulationProtocolUnsupportedProtocol = 0x0069
+} EncapsulationProtocolStatus;
 
 /*** structs ***/
-struct S_Encapsulation_Data
-  {
-    EIP_UINT16 nCommand_code;
-    EIP_UINT16 nData_length;
-    EIP_UINT32 nSession_handle;
-    EIP_UINT32 nStatus;
-    /* The sender context is not needed any more with the new minimum data copy design */
-    /* EIP_UINT8 anSender_context[SENDER_CONTEXT_SIZE];  */
-    EIP_UINT32 nOptions;
-    EIP_UINT8 *m_acCommBufferStart;       /*Pointer to the communication buffer used for this message */
-    EIP_UINT8 *m_acCurrentCommBufferPos;  /*The current position in the communication buffer during the decoding process */
-  };
+typedef struct encapsulation_data {
+  EipUint16 command_code;
+  EipUint16 data_length;
+  EipUint32 session_handle;
+  EipUint32 status;
+  EipUint32 options;
+  EipUint8 *communication_buffer_start; /**< Pointer to the communication buffer used for this message */
+  EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
+} EncapsulationData;
 
-struct S_Encapsulation_Interface_Information
-  {
-    EIP_UINT16 TypeCode;
-    EIP_UINT16 Length;
-    EIP_UINT16 EncapsulationProtocolVersion;
-    EIP_UINT16 CapabilityFlags;
-    EIP_INT8 NameofService[16];
-  };
+typedef struct encapsulation_interface_information {
+  EipUint16 type_code;
+  EipUint16 length;
+  EipUint16 encapsulation_protocol_version;
+  EipUint16 capability_flags;
+  EipInt8 name_of_service[16];
+} EncapsulationInterfaceInformation;
 
 /*** global variables (public) ***/
 
 /*** public functions ***/
-/*! \ingroup ENCAP 
- * \brief Initialize the encapsulation layer.
+/** @ingroup ENCAP
+ * @brief Initialize the encapsulation layer.
  */
-void encapInit(void);
+void EncapsulationInit(void);
 
-/*! \ingroup ENCAP
- * \brief Shutdown the encapsulation layer.
+/** @ingroup ENCAP
+ * @brief Shutdown the encapsulation layer.
  *
  * This means that all open sessions including their sockets are closed.
  */
-void encapShutDown(void);
+void EncapsulationShutDown(void);
 
-
-/*! \ingroup ENCAP
- * \brief Handle delayed encapsulation message responses
+/** @ingroup ENCAP
+ * @brief Handle delayed encapsulation message responses
  *
  * Certain encapsulation message requests require a delayed sending of the response
  * message. This functions checks if messages need to be sent and performs the
  * sending.
  */
-void manageEncapsulationMessages();
+void ManageEncapsulationMessages(void);
 
-#endif /*ENCAP_H_*/
+#endif /* OPENER_ENCAP_H_ */

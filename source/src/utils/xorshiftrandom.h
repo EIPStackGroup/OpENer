@@ -5,26 +5,26 @@
  *      Author: mmm
  */
 
-/*!
- * \file xorshiftrandom.h
+/**
+ * @file xorshiftrandom.h
  *
  * The public interface of the XOR shift pseudo-random number generator
  */
 #include <stdint.h>
 
-#ifndef XORSHIFTRANDOM_H_
-#define XORSHIFTRANDOM_H_
+#ifndef OPENER_XORSHIFTRANDOM_H_
+#define OPENER_XORSHIFTRANDOM_H_
 
-/*!
- * Sets the initial seed for the XOR shift pseudo-random algorithm
- * \param pa_nSeed The initial seed value
+/**
+ * @brief Sets the initial seed for the XOR shift pseudo-random algorithm
+ * @param pa_nSeed The initial seed value
  */
-void setXorShiftSeed(uint32_t pa_nSeed);
+void SetXorShiftSeed(uint32_t seed);
 
-/*!
- * Returns the next generated pseudo-random number
- * \return The next pseudo-random number
+/**
+ * @brief Returns the next generated pseudo-random number
+ * @return The next pseudo-random number
  */
-uint32_t nextXorShiftUInt32(void);
+uint32_t NextXorShiftUint32(void);
 
-#endif /* XORSHIFTRANDOM_H_ */
+#endif /* OPENER__XORSHIFTRANDOM_H_ */

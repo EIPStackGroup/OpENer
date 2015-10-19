@@ -5,220 +5,188 @@
  ******************************************************************************/
 #include "endianconv.h"
 
-int g_nOpENerPlatformEndianess = -1;
+OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 
 /* THESE ROUTINES MODIFY THE BUFFER POINTER*/
 
 /* little-endian-to-host unsigned 16 bit*/
 
 /**
- *   \brief Reads EIP_UINT16 from *pa_buf and converts little endian to host.
- *   \param pa_buf pointer where data should be reed.
- *   \return EIP_UINT16 value
+ *   @brief Reads EIP_UINT16 from *pa_buf and converts little endian to host.
+ *   @param pa_buf pointer where data should be reed.
+ *   @return EIP_UINT16 data value
  */
-EIP_UINT16
-ltohs(EIP_UINT8** pa_buf)
-{
-  unsigned char *p = (unsigned char *) *pa_buf;
-  EIP_UINT16 data = p[0] | p[1] << 8;
-  *pa_buf += 2;
+EipUint16 GetIntFromMessage(EipUint8** buffer) {
+  unsigned char *buffer_address = (unsigned char *) *buffer;
+  EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
+  *buffer += 2;
   return data;
 }
 
 /**
- *   \brief Reads EIP_UINT32 from *pa_buf and converts little endian to host.
- *   \param pa_buf pointer where data should be reed.
- *   \return EIP_UNÍT32 value
+ *   @brief Reads EIP_UINT32 from *pa_buf and converts little endian to host.
+ *   @param pa_buf pointer where data should be reed.
+ *   @return EIP_UNÍT32 value
  */
-EIP_UINT32
-ltohl(EIP_UINT8** pa_buf)
-{
-  unsigned char *p = (unsigned char *) *pa_buf;
-  EIP_UINT32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
-  *pa_buf += 4;
+EipUint32 GetDintFromMessage(EipUint8** buffer) {
+  unsigned char *p = (unsigned char *) *buffer;
+  EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
+  *buffer += 4;
   return data;
 }
 
 /**
- * \brief converts UINT16 data from host to little endian an writes it to pa_buf.
- * \param data value to be written
- * \param pa_buf pointer where data should be written.
+ * @brief converts UINT16 data from host to little endian an writes it to pa_buf.
+ * @param data value to be written
+ * @param pa_buf pointer where data should be written.
  */
-void
-htols(EIP_UINT16 data, EIP_UINT8 **pa_buf)
-{
-  unsigned char *p = (unsigned char *) *pa_buf;
+void AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
+  unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
   p[1] = (unsigned char) (data >> 8);
-  *pa_buf += 2;
+  *buffer += 2;
 }
 
 /**
- * \brief Converts UINT32 data from host to little endian and writes it to pa_buf.
- * \param data value to be written
- * \param pa_buf pointer where data should be written.
+ * @brief Converts UINT32 data from host to little endian and writes it to pa_buf.
+ * @param data value to be written
+ * @param pa_buf pointer where data should be written.
  */
-void
-htoll(EIP_UINT32 data, EIP_UINT8** pa_buf)
-{
-  unsigned char *p = (unsigned char *) *pa_buf;
+void AddDintToMessage(EipUint32 data, EipUint8** buffer) {
+  unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
   p[1] = (unsigned char) (data >> 8);
   p[2] = (unsigned char) (data >> 16);
   p[3] = (unsigned char) (data >> 24);
-  *pa_buf += 4;
+  *buffer += 4;
 }
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
-
 /**
- *   \brief Reads EIP_UINT64 from *pa_buf and converts little endian to host.
- *   \param pa_buf pointer where data should be reed.
- *   \return EIP_UNÍT64 value
+ *   @brief Reads EIP_UINT64 from *pa_buf and converts little endian to host.
+ *   @param pa_buf pointer where data should be reed.
+ *   @return EIP_UNÍT64 value
  */
-EIP_UINT64
-ltoh64(EIP_UINT8 ** pa_pnBuf)
-{
-  EIP_UINT8 *pnBuffer = *pa_pnBuf;
-  EIP_UINT64 unData =
-      ((((EIP_UINT64) pnBuffer[0]) << 56) & 0xFF00000000000000LL)
-          + ((((EIP_UINT64) pnBuffer[1]) << 48) & 0x00FF000000000000LL)
-          + ((((EIP_UINT64) pnBuffer[2]) << 40) & 0x0000FF0000000000LL)
-          + ((((EIP_UINT64) pnBuffer[3]) << 32) & 0x000000FF00000000LL)
-          + ((((EIP_UINT64) pnBuffer[4]) << 24) & 0x00000000FF000000)
-          + ((((EIP_UINT64) pnBuffer[5]) << 16) & 0x0000000000FF0000)
-          + ((((EIP_UINT64) pnBuffer[6]) << 8) & 0x000000000000FF00)
-          + (((EIP_UINT64) pnBuffer[7]) & 0x00000000000000FF);
-  (*pa_pnBuf) += 8;
-  return unData;
+EipUint64 GetLintFromMessage(EipUint8 **buffer) {
+  EipUint8 *buffer_address = *buffer;
+  EipUint64 data = ((((EipUint64) buffer_address[0]) << 56)
+      & 0xFF00000000000000LL)
+      + ((((EipUint64) buffer_address[1]) << 48) & 0x00FF000000000000LL)
+      + ((((EipUint64) buffer_address[2]) << 40) & 0x0000FF0000000000LL)
+      + ((((EipUint64) buffer_address[3]) << 32) & 0x000000FF00000000LL)
+      + ((((EipUint64) buffer_address[4]) << 24) & 0x00000000FF000000)
+      + ((((EipUint64) buffer_address[5]) << 16) & 0x0000000000FF0000)
+      + ((((EipUint64) buffer_address[6]) << 8) & 0x000000000000FF00)
+      + (((EipUint64) buffer_address[7]) & 0x00000000000000FF);
+  (*buffer) += 8;
+  return data;
 }
 
 /**
- * \brief Converts UINT64 data from host to little endian and writes it to pa_buf.
- * \param data value to be written
- * \param pa_buf pointer where data should be written.
+ * @brief Converts UINT64 data from host to little endian and writes it to pa_buf.
+ * @param data value to be written
+ * @param pa_buf pointer where data should be written.
  */
-void
-htol64(EIP_UINT64 pa_unData, EIP_UINT8 ** pa_pnBuf)
-{
-  EIP_UINT8 *pnBuffer = *pa_pnBuf;
-  pnBuffer[0] = (EIP_UINT8) (pa_unData >> 56) & 0xFF;
-  pnBuffer[1] = (EIP_UINT8) (pa_unData >> 48) & 0xFF;
-  pnBuffer[2] = (EIP_UINT8) (pa_unData >> 40) & 0xFF;
-  pnBuffer[3] = (EIP_UINT8) (pa_unData >> 32) & 0xFF;
-  pnBuffer[4] = (EIP_UINT8) (pa_unData >> 24) & 0xFF;
-  pnBuffer[5] = (EIP_UINT8) (pa_unData >> 16) & 0xFF;
-  pnBuffer[6] = (EIP_UINT8) (pa_unData >> 8) & 0xFF;
-  pnBuffer[7] = (EIP_UINT8) (pa_unData) & 0xFF;
-  (*pa_pnBuf) += 8;
+void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
+  EipUint8 *buffer_address = *buffer;
+  buffer_address[0] = (EipUint8) (data >> 56) & 0xFF;
+  buffer_address[1] = (EipUint8) (data >> 48) & 0xFF;
+  buffer_address[2] = (EipUint8) (data >> 40) & 0xFF;
+  buffer_address[3] = (EipUint8) (data >> 32) & 0xFF;
+  buffer_address[4] = (EipUint8) (data >> 24) & 0xFF;
+  buffer_address[5] = (EipUint8) (data >> 16) & 0xFF;
+  buffer_address[6] = (EipUint8) (data >> 8) & 0xFF;
+  buffer_address[7] = (EipUint8) (data) & 0xFF;
+  (*buffer) += 8;
 }
 
 #endif
 
 /**
- * \brief Encapsulates the IP address and port into the package
+ * @brief Encapsulates the IP address and port into the package
  *
- * \param pa_unPort IP Port
- * \param pa_unAddr IP Address
- * \param pa_acCommBuf Buffer for constructing the message
+ * @param pa_unPort IP Port
+ * @param pa_unAddr IP Address
+ * @param pa_acCommBuf Buffer for constructing the message
  */
-void
-encapsulateIPAdress(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
-    EIP_BYTE *pa_acCommBuf)
-{
-  if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
-    {
-      htols(htons(AF_INET), &pa_acCommBuf);
-      htols(htons(pa_unPort), &pa_acCommBuf);
-      htoll(pa_unAddr, &pa_acCommBuf);
-    }
-  else
-    {
-      if (OPENER_BIG_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
-        {
-          pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
-          pa_acCommBuf[1] = (unsigned char) AF_INET;
-          pa_acCommBuf += 2;
+void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
+                          EipByte *communication_buffer) {
+  if (kOpENerEndianessLittle == g_opener_platform_endianess) {
+    AddIntToMessage(htons(AF_INET), &communication_buffer);
+    AddIntToMessage(htons(port), &communication_buffer);
+    AddDintToMessage(address, &communication_buffer);
+  } else {
+    if (kOpENerEndianessBig == g_opener_platform_endianess) {
+      communication_buffer[0] = (unsigned char) (AF_INET >> 8);
+      communication_buffer[1] = (unsigned char) AF_INET;
+      communication_buffer += 2;
 
-          pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
-          pa_acCommBuf[1] = (unsigned char) pa_unPort;
-          pa_acCommBuf += 2;
+      communication_buffer[0] = (unsigned char) (port >> 8);
+      communication_buffer[1] = (unsigned char) port;
+      communication_buffer += 2;
 
-          pa_acCommBuf[3] = (unsigned char) pa_unAddr;
-          pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
-          pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
-          pa_acCommBuf[0] = (unsigned char) (pa_unAddr >> 24);
-        }
+      communication_buffer[3] = (unsigned char) address;
+      communication_buffer[2] = (unsigned char) (address >> 8);
+      communication_buffer[1] = (unsigned char) (address >> 16);
+      communication_buffer[0] = (unsigned char) (address >> 24);
     }
+  }
 }
 
 /**
- * \brief encapsulates the ip address and port into the package (Common Paket Format variant)
+ * @brief encapsulates the IP address and port into the package (Common Paket Format variant)
  *
- * \param pa_unPort IP port
- * \param pa_unAddr IP address
- * \param pa_acCommBuf buffer for constructing the message
+ * @param port IP port
+ * @param address IP address
+ * @param communication_buffer buffer for constructing the message
  */
-void
-encapsulateIPAdressCPF(EIP_UINT16 pa_unPort, EIP_UINT32 pa_unAddr,
-    EIP_BYTE *pa_acCommBuf)
-{
-  if (OPENER_LITTLE_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
-    {
-      htols(htons(AF_INET), &pa_acCommBuf);
-      htols(pa_unPort, &pa_acCommBuf);
-      htoll(pa_unAddr, &pa_acCommBuf);
+void EncapsulateIpAddressCommonPaketFormat(EipUint16 port, EipUint32 address,
+                                           EipByte *communication_buffer) {
+  if (kOpENerEndianessLittle == g_opener_platform_endianess) {
+    AddIntToMessage(htons(AF_INET), &communication_buffer);
+    AddIntToMessage(port, &communication_buffer);
+    AddDintToMessage(address, &communication_buffer);
 
+  } else {
+    if (kOpENerEndianessBig == g_opener_platform_endianess) {
+      communication_buffer[0] = (unsigned char) (AF_INET >> 8);
+      communication_buffer[1] = (unsigned char) AF_INET;
+      communication_buffer += 2;
+
+      communication_buffer[0] = (unsigned char) (port >> 8);
+      communication_buffer[1] = (unsigned char) port;
+      communication_buffer += 2;
+
+      communication_buffer[3] = (unsigned char) address;
+      communication_buffer[2] = (unsigned char) (address >> 8);
+      communication_buffer[1] = (unsigned char) (address >> 16);
+      communication_buffer[0] = (unsigned char) (address >> 24);
     }
-  else
-    {
-      if (OPENER_BIG_ENDIAN_PLATFORM == g_nOpENerPlatformEndianess)
-        {
-          pa_acCommBuf[0] = (unsigned char) (AF_INET >> 8);
-          pa_acCommBuf[1] = (unsigned char) AF_INET;
-          pa_acCommBuf += 2;
-
-          pa_acCommBuf[0] = (unsigned char) (pa_unPort >> 8);
-          pa_acCommBuf[1] = (unsigned char) pa_unPort;
-          pa_acCommBuf += 2;
-
-          pa_acCommBuf[3] = (unsigned char) pa_unAddr;
-          pa_acCommBuf[2] = (unsigned char) (pa_unAddr >> 8);
-          pa_acCommBuf[1] = (unsigned char) (pa_unAddr >> 16);
-          pa_acCommBuf[0] = (unsigned char) (pa_unAddr >> 24);
-        }
-    }
+  }
 }
 
 /**
- * \brief Detects Endianess of the platform and sets global g_nOpENerPlatformEndianess variable accordingly
+ * @brief Detects Endianess of the platform and sets global g_nOpENerPlatformEndianess variable accordingly
  *
  * Detects Endianess of the platform and sets global variable g_nOpENerPlatformEndianess accordingly,
  * whereas 0 equals little endian and 1 equals big endian
  */
-void
-determineEndianess()
-{
+void DetermineEndianess() {
   int i = 1;
   char *p = (char *) &i;
-  if (p[0] == 1)
-    {
-      g_nOpENerPlatformEndianess = OPENER_LITTLE_ENDIAN_PLATFORM;
-    }
-  else
-    {
-      g_nOpENerPlatformEndianess = OPENER_BIG_ENDIAN_PLATFORM;
-    }
+  if (p[0] == 1) {
+    g_opener_platform_endianess = kOpENerEndianessLittle;
+  } else {
+    g_opener_platform_endianess = kOpENerEndianessBig;
+  }
 }
 
 /**
- * \brief Returns global variable g_nOpENerPlatformEndianess, whereas 0 equals little endian and 1 equals big endian
+ * @brief Returns global variable g_nOpENerPlatformEndianess, whereas 0 equals little endian and 1 equals big endian
  */
-int
-getEndianess()
-{
-  return g_nOpENerPlatformEndianess;
+int GetEndianess() {
+  return g_opener_platform_endianess;
 }

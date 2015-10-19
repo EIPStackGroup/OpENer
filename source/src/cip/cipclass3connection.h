@@ -4,13 +4,17 @@
  *
  ******************************************************************************/
 
-#ifndef CIPCLASS3CONNECTION_H_
-#define CIPCLASS3CONNECTION_H_
+#ifndef OPENER_CIPCLASS3CONNECTION_H_
+#define OPENER_CIPCLASS3CONNECTION_H_
 
+/** @file cipclass3connection.h
+ *  @brief CIP Class 3 connection
+ */
 
-#include <opener_api.h>
+#include "opener_api.h"
+#include "cipconnectionmanager.h"
 
-/** \brief Check if Class3 connection is available and if yes setup all data.
+/** @brief Check if Class3 connection is available and if yes setup all data.
  *
  * This function can be called after all data has been parsed from the forward open request
  * @param pa_pstConnObj pointer to the connection object structure holding the parsed data from the forward open request
@@ -19,9 +23,9 @@
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-int
-establishClass3Connection(struct CIP_ConnectionObject *pa_pstConnObj, EIP_UINT16 *pa_pnExtendedError);
+int EstablishClass3Connection(ConnectionObject *connection_object,
+                              EipUint16 *extended_error);
 
-void initializeClass3ConnectionData();
+void InitializeClass3ConnectionData(void);
 
-#endif /* CIPCLASS3CONNECTION_H_ */
+#endif /* OPENER_CIPCLASS3CONNECTION_H_ */
