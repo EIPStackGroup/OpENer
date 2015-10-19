@@ -10,7 +10,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-/*
+/**
  Do not use interface types for internal variables, such as "int i;", which is
  commonly used for loop counters or counting things.
 
@@ -38,12 +38,13 @@
 #define EIP_INT64       int64_t
 #define EIP_UINT64      uint64_t
 #endif
+#endif
 
 /*! Constant identifying if a socket descriptor is invalid
  */
 #define EIP_INVALID_SOCKET      -1
 
-/*
+/**
 
  The following are generally true regarding return status:
  -1 ... an error occurred
@@ -64,32 +65,15 @@
 
 typedef enum
 {
-  EIP_OK = 0, EIP_OK_SEND = 1, EIP_ERROR = -1
+  EIP_OK = 0,
+  EIP_OK_SEND = 1,
+  EIP_ERROR = -1
 } EIP_STATUS;
 
 #ifndef __cplusplus
 /*! If we don't have C++ define a C++ -like "bool" keyword defines*/
 #define false 0
 #define true 1
-
-#endif
-
-/* by default an enum is 32 bits
- __attribute((packed)) allows the compiler to use a shorter data type
- the following forces an enum to a specified minimum length, it also documents the size of the enum
-
- example:
-
- typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;		 this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
- the definition FOO_PACKED_SIZE is a dummy, but it forces the minimum size
- */
-/* TODO -- find some portable way of dealing with packed structs and typed enums */
-#ifdef __GNUC__
-#define PACKED __attribute__((packed))
-
-#define ENUM_INT8 0x7f
-#define ENUM_INT16  0x7fff
-#define ENUM_INT32  0x7fffffff
 
 #endif
 

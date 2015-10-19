@@ -8,28 +8,94 @@
 
 #include "typedefs.h"
 
-/* TODO -- find some portable way of defining all these with enums rather than #defines so that the names rather than hex number are displayed in the debugger*/
+/* TODO -- find some portable way of defining all these with Enums rather than #defines so that the names rather than hex number are displayed in the debugger*/
 #ifdef __GNUC__
-typedef enum
-  {
-    SEG_PORT = 0x00,
-    SEG_EXTPORT = 0x10,
-    SEG_CLASS = 0x20,
-    SEG_INSTANCE = 0x24,
-    SEG_ATTRIBUTE = 0x30,
-    SEG_NETWORK = 0x40,
-    SEG_PACKED_SIZE = ENUM_INT8
-  }PACKED SEG_TYPE;
+/** @brief Segment type Enum
+ *
+ * Bits 7-5 in the Segment Type/Format byte
+ *
+ */
+typedef enum SegmentType {
+	/* Segments */
+	SEG_PORT = 0x00, /**< Port segment */
+	SEG_LOGICAL = 0x20, /**< Logical segment */
+	SEG_NETWORK = 0x40, /**< Network segment */
+	SEG_SYMBOLIC = 0x60, /**< Symbolic segment */
+	SEG_DATA_SEGMENT = 0x80, /**< Data segment */
+	SEG_DATA_TYPE_CONSTRUCTED = 0xA0, /**< Data type constructed */
+	SEG_DATA_TYPE_ELEMENTARY = 0xC0, /**< Data type elementary */
+
+	/* Port segments */
+	SEG_EXTPORT = 0x10, /**< Extended Link Address Size flag, Port segment */
+
+	/* Logical Segments Segments */
+	SEG_CLASS = 0x20, /**< Class ID, Logical Segment */
+	SEG_INSTANCE = 0x25, /**< Instance ID, Logical Segment */
+	SEG_MEMBER = 0x2A, /**< Member ID, Logical Segment */
+	SEG_ATTRIBUTE = 0x30,  /**< Attribute ID, Logical Segment */
+	SEG_SPECIAL = 0x34, /**< Special, Logical Segment */
+	SEG_SERVICE = 0x38, /**< Service ID, Logical Segment */
+	SEG_EXTENDED_LOGICAL = 0x3C /**< Extended Logical, Logical Segment */
+
+} ESegmentType;
+
 #else
+
 #define SEG_PORT  0x00
 #define SEG_EXTPORT 0x10
 #define SEG_CLASS 0x20
 #define SEG_INSTANCE  0x24
 #define SEG_ATTRIBUTE 0x30
 #define SEG_NETWORK 0x40
+
 #endif
 
-/* definition of CIP basic data types */
+#ifdef __GNUC__
+/** definition of CIP basic data types */
+typedef enum CIPDataTypes {
+	CIP_ANY = 0x00, /**< data type that can not be directly encoded */
+	CIP_BOOL = 0xC1, /**< boolean data type */
+	CIP_SINT = 0xC2, /**< 8-bit signed integer */
+	CIP_INT = 0xC3, /**< 16-bit signed integer */
+	CIP_DINT = 0xC4, /**< 32-bit signed integer */
+	CIP_LINT = 0xC5, /**< 64-bit signed integer */
+	CIP_USINT = 0xC6, /**< 8-bit unsigned integer */
+	CIP_UINT = 0xC7, /**< 16-bit unsigned integer */
+	CIP_UDINT = 0xC8, /**< 32-bit unsigned integer */
+	CIP_ULINT = 0xC9, /**< 64-bit unsigned integer */
+	CIP_REAL = 0xCA, /**< Single precision floating point */
+	CIP_LREAL = 0xCB, /**< Double precision floating point*/
+	CIP_STIME = 0xCC, /**< Synchronous time information*, type of DINT */
+	CIP_DATE = 0xCD, /**< Date only*/
+	CIP_TIME_OF_DAY = 0xCE, /**< Time of day */
+	CIP_DATE_AND_TIME = 0xCF, /**< Date and time of day */
+	CIP_STRING = 0xD0, /**< Character string, 1 byte per character */
+	CIP_BYTE = 0xD1, /**< 8-bit bit string */
+	CIP_WORD = 0xD2, /**< 16-bit bit string */
+	CIP_DWORD = 0xD3, /**< 32-bit bit string */
+	CIP_LWORD = 0xD4, /**< 64-bit bit string */
+	CIP_STRING2 = 0xD5, /**< Character string, 2 byte per character */
+	CIP_FTIME = 0xD6, /**< Duration in micro-seconds, high resolution; range of DINT */
+	CIP_LTIME = 0xD7, /**< Duration in micro-seconds, high resolution, range of LINT */
+	CIP_ITIME = 0xD8, /**< Duration in milli-seconds, short; range of INT*/
+	CIP_STRINGN = 0xD9, /**< Character string, N byte per character */
+	CIP_SHORT_STRING = 0xDA, /**< Character string, 1 byte per character, 1 byte length indicator */
+	CIP_TIME = 0xDB, /**< Duration in milli-seconds; range of DINT */
+	CIP_EPATH = 0xDC, /**< CIP path segments*/
+	CIP_ENGUNIT = 0xDD, /**< Engineering Units*/
+	/* definition of some CIP structs */
+	/* need to be validated in IEC 61131-3 subclause 2.3.3 */
+	CIP_USINT_USINT = 0xA0, /**< */
+	CIP_UDINT_UDINT_UDINT_UDINT_UDINT_STRING = 0xA1, /**< TCP/IP attribute 5 - IP address, subnet mask, gateway, IP name server 1, IP name server 2, domain name*/
+	CIP_6USINT = 0xA2, /**< Struct for MAC Address (six USINTs)*/
+	CIP_MEMBER_LIST = 0xA3, /**< */
+	CIP_BYTE_ARRAY = 0xA4, /**< */
+	INTERNAL_UINT16_6 = 0xF0 /**< bogus hack, for port class attribute 9, TODO figure out the right way to handle it */
+
+} ECIPDataTypes;
+
+#else
+
 #define CIP_ANY                         0x00  /*data type that can not be directly encoded */
 #define CIP_BOOL 			0xC1
 #define CIP_SINT 			0xC2
@@ -69,9 +135,51 @@ typedef enum
 #define CIP_MEMBER_LIST			0xA3
 #define CIP_BYTE_ARRAY			0xA4
 
-#define INTERNAL_UINT16_6		0xf0				/* bogus hack, for port class attribute 9, TODO figure out the right way to handle it */
+#define INTERNAL_UINT16_6		0xF0				/* bogus hack, for port class attribute 9, TODO figure out the right way to handle it */
 
-/* definition of CIP service codes */
+#endif
+
+
+#ifdef __GNUC__
+/** @brief Definition of CIP service codes
+ *
+ * An Enum with all CIP service codes. Common services codes range from 0x01 to 0x1C
+ * */
+typedef enum CIPServiceCodes {
+	/* Start CIP common services */
+	CIP_GET_ATTRIBUTE_ALL = 0x01,
+	CIP_SET_ATTRIUBTE_ALL = 0x02,
+	CIP_GET_ATTRIBUTE_LIST = 0x03,
+	CIP_SET_ATTRIBUTE_LIST = 0x04,
+	CIP_RESET = 0x05,
+	CIP_START = 0x06,
+	CIP_STOP = 0x07,
+	CIP_CREATE = 0x08,
+	CIP_DELETE = 0x09,
+	CIP_MULTIPLE_SERVICE_PACKET = 0x0A,
+	CIP_APPLY_ATTRIBUTES = 0x0D,
+	CIP_GET_ATTRIBUTE_SINGLE = 0x0E,
+	CIP_SET_ATTRIBUTE_SINGLE = 0x10,
+	CIP_FIND_NEXT_OBJECT_INSTANCE = 0x11,
+	CIP_RESTORE = 0x15,
+	CIP_SAVE = 0x16,
+	CIP_NO_OPERATION = 0x17,
+	CIP_GET_MEMBER = 0x18,
+	CIP_SET_MEMBER = 0x19,
+	CIP_INSERT_MEMBER = 0x1A,
+	CIP_REMOVE_MEMBER = 0x1B,
+	CIP_GROUP_SYNC = 0x1C,
+	/* End CIP common services */
+
+	/* Start CIP object-specific services */
+	CIP_FORWARD_OPEN = 0x54,
+	CIP_FORWARD_CLOSE = 0x4E,
+	CIP_UNCONNECTED_SEND = 0x52,
+	CIP_GET_CONNECTION_OWNER = 0x5A
+	/* End CIP object-specific services */
+} ECIPServiceCodes;
+
+#else
 #define CIP_GET_ATTRIBUTE_SINGLE	0x0E
 #define CIP_SET_ATTRIBUTE_SINGLE	0x10
 #define CIP_RESET			0x05
@@ -81,138 +189,140 @@ typedef enum
 #define CIP_FORWARD_CLOSE		0x4E
 #define CIP_UNCONNECTED_SEND		0x52
 #define CIP_GET_CONNECTION_OWNER	0x5A
+#endif
 
-/* definition of Flags for CIP Attributes */
+
+#ifdef __GNUC__
+/** Definition of Get and Set Flags for CIP Attributes */
+typedef enum ECIPAttributeFlags { //TODO: Rework
+	CIP_ATTRIB_NONE = 0x00, /**< Neither set-able nor get-able */
+	CIP_ATTRIB_GETABLEALL = 0x01, /**< Get-able, also part of Get Attribute All service */
+	CIP_ATTRIB_GETABLESINGLE = 0x02, /**< Get-able via Get Attribute */
+	CIP_ATTRIB_SETABLE = 0x04, /**< Set-able via Set Attribute */
+	/* combined for convenience */
+	CIP_ATTRIB_SETGETABLE = 0x07, /**< both set and get-able */
+	CIP_ATTRIB_GETABLE = 0x03 /* both single and all */
+
+} CIPAttributeFlags;
+#else
 #define CIP_ATTRIB_NONE                 0x00
 #define CIP_ATTRIB_GETABLEALL           0x01
 #define CIP_ATTRIB_GETABLESINGLE        0x02
 #define CIP_ATTRIB_SETABLE              0x04
-/*combined for conveniance */
-#define CIP_ATTRIB_SETGETABLE           0x07   /* both set and getable */
+/*combined for convenience */
+#define CIP_ATTRIB_SETGETABLE           0x07   /* both set- and get-able */
 #define CIP_ATTRIB_GETABLE              0x03   /* both single and all */
+#endif
 
-typedef enum
-{
-  enOpened, enTimedOut, enClosed
+typedef enum IOConnectionEvent {
+	enOpened, enTimedOut, enClosed
 } EIOConnectionEvent;
 
-typedef struct
-{
-  EIP_UINT16 len;
-  EIP_BYTE *Data;
+typedef struct CIPByteArray {
+	EIP_UINT16 Length;
+	EIP_BYTE *Data;
 } S_CIP_Byte_Array;
 
-typedef struct
-{
-  EIP_UINT8 Length;
-  EIP_BYTE *String;
+typedef struct CIPShortString {
+	EIP_UINT8 Length;
+	EIP_BYTE *String;
 } S_CIP_Short_String;
 
-typedef struct
-{
-  EIP_INT16 Length;
-  EIP_BYTE *String;
+typedef struct CIPString {
+	EIP_UINT16 Length;
+	EIP_BYTE *String;
 } S_CIP_String;
 
-typedef struct
-{
-  EIP_UINT8 PathSize;
-  EIP_UINT16 ClassID;
-  EIP_UINT16 InstanceNr;
-  EIP_UINT16 AttributNr;
+typedef struct CIPEPath {
+	EIP_UINT8 PathSize;
+	EIP_UINT16 ClassID;
+	EIP_UINT16 InstanceNr;
+	EIP_UINT16 AttributNr;
 } S_CIP_EPATH;
 
-typedef struct
-{
-  EIP_UINT8 PathSize;
-  EIP_UINT32 ClassID;
-  EIP_UINT32 ConnectionPoint[3];
-  EIP_UINT8 DataSegment;
-  EIP_UINT8 *SegmentData;
+typedef struct CIPConnectionPath {
+	EIP_UINT8 PathSize;
+	EIP_UINT32 ClassID;
+	EIP_UINT32 ConnectionPoint[3];
+	EIP_UINT8 DataSegment;
+	EIP_UINT8 *SegmentData;
 } S_CIP_ConnectionPath;
 
-typedef struct
-{
-  EIP_UINT16 VendorID;
-  EIP_UINT16 DeviceType;
-  EIP_UINT16 ProductCode;
-  EIP_BYTE MajorRevision;
-  EIP_UINT8 MinorRevision;
+typedef struct CIPKeyData {
+	EIP_UINT16 VendorID;
+	EIP_UINT16 DeviceType;
+	EIP_UINT16 ProductCode;
+	EIP_BYTE MajorRevision;
+	EIP_UINT8 MinorRevision;
 } S_CIP_KeyData;
 
-typedef struct
-{
-  EIP_UINT8 MajorRevision;
-  EIP_UINT8 MinorRevision;
+typedef struct CIPRevision {
+	EIP_UINT8 MajorRevision;
+	EIP_UINT8 MinorRevision;
 } S_CIP_Revision;
 
-typedef struct
-{
-  EIP_UINT8 SegmentType;
-  EIP_UINT8 KeyFormat;
-  S_CIP_KeyData KeyData;
+typedef struct CIPElectronicKey {
+	EIP_UINT8 SegmentType;
+	EIP_UINT8 KeyFormat;
+	S_CIP_KeyData KeyData;
 } S_CIP_ElectronicKey;
 
-typedef struct
-{
-  EIP_UINT8 Service;
-  S_CIP_EPATH RequestPath;
-  EIP_INT16 DataLength;
-  EIP_UINT8 *Data;
+typedef struct {
+	EIP_UINT8 Service;
+	S_CIP_EPATH RequestPath;
+	EIP_INT16 DataLength;
+	EIP_UINT8 *Data;
 } S_CIP_MR_Request;
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values 
 									there is mostly only one 16bit value used */
-typedef struct
-{
-  EIP_UINT8 ReplyService;
-  EIP_UINT8 Reserved;
-  EIP_UINT8 GeneralStatus;
-  EIP_UINT8 SizeofAdditionalStatus;
-  EIP_UINT16 AdditionalStatus[MAX_SIZE_OF_ADD_STATUS];
-  EIP_INT16 DataLength;
-  EIP_UINT8 *Data;
+typedef struct {
+	EIP_UINT8 ReplyService;
+	EIP_UINT8 Reserved;
+	EIP_UINT8 GeneralStatus;
+	EIP_UINT8 SizeofAdditionalStatus;
+	EIP_UINT16 AdditionalStatus[MAX_SIZE_OF_ADD_STATUS];
+	EIP_INT16 DataLength;
+	EIP_UINT8 *Data;
 } S_CIP_MR_Response;
 
-typedef struct
-{
-  EIP_UINT16 CIP_AttributNr;
-  EIP_UINT8 CIP_Type;
-  EIP_BYTE CIP_AttributeFlags; //bit 0: getable_all; bit 1: getable_single; bit 2: setable_single; bits 3-7 reserved
-  void *pt2data;
+typedef struct CIPAttributeStruct {
+	EIP_UINT16 CIP_AttributNr;
+	EIP_UINT8 CIP_Type;
+	EIP_BYTE CIP_AttributeFlags; /*< 0 => getable_all, 1 => getable_single; 2 => setable_single; 3 => get and setable; all other values reserved */
+	void *pt2data;
 } S_CIP_attribute_struct;
 
-/* type definition of CIP service sructure */
+/* type definition of CIP service structure */
 
 /* instances are stored in a linked list*/
-typedef struct CIP_Instance
-{
-  EIP_UINT32 nInstanceNr; /*!> this instance's number (unique within the class) */
-  S_CIP_attribute_struct *pstAttributes; /* pointer to an array of attributes which is unique to this instance */
-  struct CIP_Class *pstClass; /*!> class the instance belongs to */
-  struct CIP_Instance *pstNext; /*!> next instance, all instances of a class live in a linked list */
+typedef struct CIP_Instance {
+	EIP_UINT32 nInstanceNr; /**< this instance's number (unique within the class) */
+	S_CIP_attribute_struct *pstAttributes; /**< pointer to an array of attributes which is unique to this instance */
+	struct CIP_Class *pstClass; /**< class the instance belongs to */
+	struct CIP_Instance *pstNext; /**< next instance, all instances of a class live in a linked list */
 } S_CIP_Instance;
 
-typedef struct CIP_Class
-{ /* Class is a subclass of Instance*/
-  struct CIP_Instance m_stSuper;
+/** @brief Class is a subclass of Instance */
+typedef struct CIP_Class {
+	S_CIP_Instance m_stSuper;
 
-  /* the rest of theswe are specific to the Class class only. */
-  EIP_UINT32 nClassID; /*!> class ID */
-  EIP_UINT16 nRevision; /*!> class revision*/
-  EIP_UINT16 nNr_of_Instances; /*!> number of instances in the class (not including instance 0)*/
-  EIP_UINT16 nNr_of_Attributes; /*!> number of attributes of each instance*/
-  EIP_UINT16 nMaxAttribute; /*!> highest defined attribute number (attribute numbers are not necessarily consecutive)*/
-  EIP_UINT32 nGetAttrAllMask; /*!> mask indicating which attributes are returned by getAttributeAll*/
-  EIP_UINT16 nNr_of_Services; /*!> number of services supported*/
-  S_CIP_Instance *pstInstances; /*!> pointer to the list of instances*/
-  struct CIP_service_struct *pstServices; /*!> pointer to the array of services*/
-  char *acName; /*!> class name */
+	/* the rest of these are specific to the Class class only. */
+	EIP_UINT32 nClassID; /**< class ID */
+	EIP_UINT16 nRevision; /**< class revision*/
+	EIP_UINT16 nNr_of_Instances; /**< number of instances in the class (not including instance 0)*/
+	EIP_UINT16 nNr_of_Attributes; /**< number of attributes of each instance*/
+	EIP_UINT16 nMaxAttribute; /**< highest defined attribute number (attribute numbers are not necessarily consecutive)*/
+	EIP_UINT32 nGetAttrAllMask; /**< mask indicating which attributes are returned by getAttributeAll*/
+	EIP_UINT16 nNr_of_Services; /**< number of services supported*/
+	S_CIP_Instance *pstInstances; /**< pointer to the list of instances*/
+	struct CIP_service_struct *pstServices; /**< pointer to the array of services*/
+	char *acName; /**< class name */
 } S_CIP_Class;
 
-/*! \ingroup CIP_API
- *  \typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
- *  \brief Signature definition for the implementation of CIP services.
+/** @ingroup CIP_API
+ *  @typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
+ *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly by the stack.
  *  @param pa_pstInstance the instance which was referenced in the service request
@@ -222,44 +332,39 @@ typedef struct CIP_Class
  */
 typedef EIP_STATUS
 (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
-    S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse);
+		S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse);
 
-
-/* service descriptor. These are stored in an array*/
-typedef struct CIP_service_struct
-{
-  EIP_UINT8 CIP_ServiceNr; /*!> service number*/
-  TCIPServiceFunc m_ptfuncService; /*!> pointer to a function call*/
-  char *name; /*!> name of the service */
+/** @brief service descriptor. These are stored in an array*/
+typedef struct CIP_service_struct {
+	EIP_UINT8 CIP_ServiceNr; /**< service number*/
+	TCIPServiceFunc m_ptfuncService; /**< pointer to a function call*/
+	char *name; /**< name of the service */
 } S_CIP_service_struct;
 
-typedef struct
-{
-  EIP_UINT32 IPAddress;
-  EIP_UINT32 NetworkMask;
-  EIP_UINT32 Gateway;
-  EIP_UINT32 NameServer;
-  EIP_UINT32 NameServer2;
-  S_CIP_String DomainName;
+typedef struct CIPTCPIPNetworkInterfaceConfiguration {
+	EIP_UINT32 IPAddress;
+	EIP_UINT32 NetworkMask;
+	EIP_UINT32 Gateway;
+	EIP_UINT32 NameServer;
+	EIP_UINT32 NameServer2;
+	S_CIP_String DomainName;
 } S_CIP_TCPIPNetworkInterfaceConfiguration;
 
-typedef struct
-{
-  EIP_UINT8 PathSize;
-  EIP_UINT32 Port; /* support up to 32 bit path*/
-  EIP_UINT32 Address;
+typedef struct CIPRPath {
+	EIP_UINT8 PathSize;
+	EIP_UINT32 Port; /* support up to 32 bit path*/
+	EIP_UINT32 Address;
 } S_CIP_RPATH;
 
-typedef struct CIP_UnconnectedSend_Param_Struct
-{
-  EIP_BYTE Priority;
-  EIP_UINT8 Timeout_Ticks;
-  EIP_UINT16 Message_Request_Size;
-  S_CIP_MR_Request Message_Request;
-  S_CIP_MR_Response *Message_Response;
-  EIP_UINT8 Reserved;
-  S_CIP_RPATH Route_Path;
-  void *CPFdata;
+typedef struct CIPUnconnectedSendParam {
+	EIP_BYTE Priority;
+	EIP_UINT8 Timeout_Ticks;
+	EIP_UINT16 Message_Request_Size;
+	S_CIP_MR_Request Message_Request;
+	S_CIP_MR_Response *Message_Response;
+	EIP_UINT8 Reserved;
+	S_CIP_RPATH Route_Path;
+	void *CPFdata;
 } S_CIP_UnconnectedSend_Param_Struct;
 
 /* these are used for creating the getAttributeAll masks
