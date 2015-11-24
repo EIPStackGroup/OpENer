@@ -12,8 +12,8 @@
  *  @return status
  *          EIP_ERROR .. error
  */
-EipStatus NetworkHandler_Init(void);
-EipStatus NetworkHandler_ProcessOnce(void);
-EipStatus NetworkHandler_Finish(void);
+EipStatus NetworkHandlerInitialize(void);
+EipStatus NetworkHandlerProcessOnce(void);
+EipStatus NetworkHandlerFinish(void);
 
 #endif /*NETWORKHANDLER_H_*/

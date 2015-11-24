@@ -65,14 +65,13 @@ EipStatus GetAttributeAllTcpIpInterface(
 EipStatus ConfigureNetworkInterface(const char *ip_address,
                                     const char *subnet_mask,
                                     const char *gateway) {
-  EipUint32 host_id;
 
   interface_configuration_.ip_address = inet_addr(ip_address);
   interface_configuration_.network_mask = inet_addr(subnet_mask);
   interface_configuration_.gateway = inet_addr(gateway);
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  host_id = ntohl(interface_configuration_.ip_address)
+  EipUint32 host_id = ntohl(interface_configuration_.ip_address)
       & ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
   host_id -= 1;
   host_id &= 0x3ff;
@@ -117,7 +116,7 @@ void ConfigureHostName(const char *hostname) {
   }
 }
 
-EipStatus setAttributeSingleTcp(
+EipStatus SetAttributeSingleTcp(
     CipInstance *instance, CipMessageRouterRequest *message_router_request,
     CipMessageRouterResponse *message_router_response) {
   CipAttributeStruct *attribute = GetCipAttribute(
@@ -142,10 +141,9 @@ EipStatus setAttributeSingleTcp(
 }
 
 EipStatus CipTcpIpInterfaceInit() {
-  CipClass *p_stTCPIPClass;
-  CipInstance *pstInstance;
+  CipClass *tcp_ip_class = NULL;
 
-  if ((p_stTCPIPClass = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
+  if ((tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
                                        0xffffffff, /* class getAttributeAll mask*/
                                        0, /* # class services*/
                                        8, /* # instance attributes*/
@@ -155,35 +153,35 @@ EipStatus CipTcpIpInterfaceInit() {
                                        "TCP/IP interface", 3)) == 0) {
     return kEipStatusError;
   }
-  pstInstance = GetCipInstance(p_stTCPIPClass, 1); /* bind attributes to the instance #1 that was created above*/
+  CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above*/
 
-  InsertAttribute(pstInstance, 1, kCipDword, (void *) &tcp_status_,
+  InsertAttribute(instance, 1, kCipDword, (void *) &tcp_status_,
                   kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 2, kCipDword,
+  InsertAttribute(instance, 2, kCipDword,
                   (void *) &configuration_capability_, kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 3, kCipDword, (void *) &configuration_control_,
+  InsertAttribute(instance, 3, kCipDword, (void *) &configuration_control_,
                   kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 4, kCipEpath, &physical_link_object_,
+  InsertAttribute(instance, 4, kCipEpath, &physical_link_object_,
                   kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 5, kCipUdintUdintUdintUdintUdintString,
+  InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
                   &interface_configuration_, kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 6, kCipString, (void *) &hostname_,
+  InsertAttribute(instance, 6, kCipString, (void *) &hostname_,
                   kGetableSingleAndAll);
 
-  InsertAttribute(pstInstance, 8, kCipUsint, (void *) &g_time_to_live_value,
+  InsertAttribute(instance, 8, kCipUsint, (void *) &g_time_to_live_value,
                   kGetableSingleAndAll);
-  InsertAttribute(pstInstance, 9, kCipAny, (void *) &g_multicast_configuration,
+  InsertAttribute(instance, 9, kCipAny, (void *) &g_multicast_configuration,
                   kGetableSingleAndAll);
 
-  InsertService(p_stTCPIPClass, kGetAttributeSingle,
+  InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,
                 "GetAttributeSingleTCPIPInterface");
 
-  InsertService(p_stTCPIPClass, kGetAttributeAll,
+  InsertService(tcp_ip_class, kGetAttributeAll,
                 &GetAttributeAllTcpIpInterface,
                 "GetAttributeAllTCPIPInterface");
 
-  InsertService(p_stTCPIPClass, kSetAttributeSingle, &setAttributeSingleTcp,
+  InsertService(tcp_ip_class, kSetAttributeSingle, &SetAttributeSingleTcp,
                 "SetAttributeSingle");
 
   return kEipStatusOk;
@@ -205,9 +203,9 @@ void ShutdownTcpIpInterface(void) {
 EipStatus GetAttributeSingleTcpIpInterface(
     CipInstance *instance, CipMessageRouterRequest *message_router_request,
     CipMessageRouterResponse *message_router_response) {
-  EipStatus nRetVal = kEipStatusOkSend;
-  EipByte *paMsg = message_router_response->data;
-  EipUint32 unMultiCastAddr;
+
+  EipStatus status = kEipStatusOkSend;
+  EipByte *message = message_router_response->data;
 
   if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     message_router_response->data_length = 0;
@@ -217,40 +215,37 @@ EipStatus GetAttributeSingleTcpIpInterface(
     message_router_response->size_of_additional_status = 0;
 
     message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.alloc_control), &paMsg);
+        kCipUsint, &(g_multicast_configuration.alloc_control), &message);
     message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero), &paMsg);
+        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero), &message);
     message_router_response->data_length += EncodeData(
         kCipUint,
         &(g_multicast_configuration.number_of_allocated_multicast_addresses),
-        &paMsg);
+        &message);
 
-    unMultiCastAddr = ntohl(
+    EipUint32 multicast_address = ntohl(
         g_multicast_configuration.starting_multicast_address);
 
     message_router_response->data_length += EncodeData(kCipUdint,
-                                                       &unMultiCastAddr,
-                                                       &paMsg);
+                                                       &multicast_address,
+                                                       &message);
   } else {
-    nRetVal = GetAttributeSingle(instance, message_router_request,
+    status = GetAttributeSingle(instance, message_router_request,
                                  message_router_response);
   }
-  return nRetVal;
+  return status;
 }
 
 EipStatus GetAttributeAllTcpIpInterface(
     CipInstance *instance, CipMessageRouterRequest *message_router_request,
     CipMessageRouterResponse *message_router_response) {
 
-  int j;
-  int attribute_number;
-
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
 
-  for (j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
+  for (int j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
   {
-    attribute_number = attribute->attribute_number;
+    int attribute_number = attribute->attribute_number;
     if (attribute_number < 32
         && (instance->cip_class->get_attribute_all_mask & 1 << attribute_number)) /* only return attributes that are flagged as being part of GetAttributeALl */
         {

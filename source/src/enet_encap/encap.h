@@ -20,7 +20,7 @@
 
 #define ENCAPSULATION_HEADER_LENGTH	24
 
-static const int OPENER_ETHERNET_PORT = 0xAF12;
+static const int kOpenerEthernetPort = 0xAF12;
 
 /* definition of status codes in encapsulation protocol */
 typedef enum {

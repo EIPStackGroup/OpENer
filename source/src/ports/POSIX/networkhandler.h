@@ -3,17 +3,17 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef NETWORKHANDLER_H_
-#define NETWORKHANDLER_H_
+#ifndef OPENER_NETWORKHANDLER_H_
+#define OPENER_NETWORKHANDLER_H_
 
 #include "typedefs.h"
 
-/*! Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
+/** @brief Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
  *  @return status
  *          EIP_ERROR .. error
  */
-EipStatus NetworkHandler_Init(void);
-EipStatus NetworkHandler_ProcessOnce(void);
-EipStatus NetworkHandler_Finish(void);
+EipStatus NetworkHandlerInitialize(void);
+EipStatus NetworkHandlerProcessOnce(void);
+EipStatus NetworkHandlerFinish(void);
 
-#endif /*NETWORKHANDLER_H_*/
+#endif /* OPENER_NETWORKHANDLER_H_ */

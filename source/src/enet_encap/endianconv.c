@@ -12,8 +12,8 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 /* little-endian-to-host unsigned 16 bit*/
 
 /**
- *   @brief Reads EIP_UINT16 from *pa_buf and converts little endian to host.
- *   @param pa_buf pointer where data should be reed.
+ *   @brief Reads EIP_UINT16 from *buffer and converts little endian to host.
+ *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
 EipUint16 GetIntFromMessage(EipUint8** buffer) {
@@ -24,8 +24,8 @@ EipUint16 GetIntFromMessage(EipUint8** buffer) {
 }
 
 /**
- *   @brief Reads EIP_UINT32 from *pa_buf and converts little endian to host.
- *   @param pa_buf pointer where data should be reed.
+ *   @brief Reads EIP_UINT32 from *buffer and converts little endian to host.
+ *   @param buffer pointer where data should be reed.
  *   @return EIP_UNÍT32 value
  */
 EipUint32 GetDintFromMessage(EipUint8** buffer) {
@@ -36,9 +36,9 @@ EipUint32 GetDintFromMessage(EipUint8** buffer) {
 }
 
 /**
- * @brief converts UINT16 data from host to little endian an writes it to pa_buf.
+ * @brief converts UINT16 data from host to little endian an writes it to buffer.
  * @param data value to be written
- * @param pa_buf pointer where data should be written.
+ * @param buffer pointer where data should be written.
  */
 void AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
   unsigned char *p = (unsigned char *) *buffer;
@@ -49,9 +49,9 @@ void AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
 }
 
 /**
- * @brief Converts UINT32 data from host to little endian and writes it to pa_buf.
+ * @brief Converts UINT32 data from host to little endian and writes it to buffer.
  * @param data value to be written
- * @param pa_buf pointer where data should be written.
+ * @param buffer pointer where data should be written.
  */
 void AddDintToMessage(EipUint32 data, EipUint8** buffer) {
   unsigned char *p = (unsigned char *) *buffer;
@@ -66,9 +66,9 @@ void AddDintToMessage(EipUint32 data, EipUint8** buffer) {
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
 /**
- *   @brief Reads EIP_UINT64 from *pa_buf and converts little endian to host.
+ *   @brief Reads EipUint64 from *pa_buf and converts little endian to host.
  *   @param pa_buf pointer where data should be reed.
- *   @return EIP_UNÍT64 value
+ *   @return EipUint64 value
  */
 EipUint64 GetLintFromMessage(EipUint8 **buffer) {
   EipUint8 *buffer_address = *buffer;
@@ -86,9 +86,9 @@ EipUint64 GetLintFromMessage(EipUint8 **buffer) {
 }
 
 /**
- * @brief Converts UINT64 data from host to little endian and writes it to pa_buf.
+ * @brief Converts EipUint64 data from host to little endian and writes it to buffer.
  * @param data value to be written
- * @param pa_buf pointer where data should be written.
+ * @param buffer pointer where data should be written.
  */
 void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
   EipUint8 *buffer_address = *buffer;
@@ -108,9 +108,9 @@ void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
 /**
  * @brief Encapsulates the IP address and port into the package
  *
- * @param pa_unPort IP Port
- * @param pa_unAddr IP Address
- * @param pa_acCommBuf Buffer for constructing the message
+ * @param port IP Port
+ * @param address IP Address
+ * @param communication_buffer Buffer for constructing the message
  */
 void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
                           EipByte *communication_buffer) {
@@ -186,6 +186,8 @@ void DetermineEndianess() {
 
 /**
  * @brief Returns global variable g_nOpENerPlatformEndianess, whereas 0 equals little endian and 1 equals big endian
+ *
+ * @return 0 equals little endian and 1 equals big endian
  */
 int GetEndianess() {
   return g_opener_platform_endianess;

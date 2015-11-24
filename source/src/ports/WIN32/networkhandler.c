@@ -27,23 +27,23 @@
 
 /* values needed from the connection manager */
 extern ConnectionObject *g_active_connection_list;
-/* communication buffer */EipUint8 g_acPCEthernetCommBuffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
+/* communication buffer */EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
 typedef long MILLISECONDS;
 typedef unsigned long long MICROSECONDS;
-fd_set master;
-fd_set read_fds;
+fd_set master_socket;
+fd_set read_socket;
 /* temporary file descriptor for select() */
 
-int fdmax;
+int highest_socket_handle;
 
 /*!< This var holds the TCP socket the received to last explicit message.
  * It is needed for opening point to point connection to determine the peer's
  * address.
  */
-int g_nCurrentActiveTCPSocket;
+int g_current_active_tcp_socket;
 
 static struct timeval tv;
 static MILLISECONDS actualtime, lasttime;
@@ -52,29 +52,29 @@ static MILLISECONDS actualtime, lasttime;
  *
  */
 void
-checkAndHandleTCPListenerSocket();
+CheckAndHandleTcpListenerSocket();
 
 /*! \brief check if data has been received on the udp broadcast socket and if yes handle it correctly
  *
  */
 void
-checkAndHandleUDPBroadCastSocket();
+CheckAndHandleUdpBroadcastSocket();
 
 /*! \brief check if on one of the udp consuming sockets data has been received and if yes handle it correctly
  *
  */
 void
-checkAndHandleConsumingUDPSockets();
+CheckAndHandleConsumingUdpSockets();
 /*! \brief check if the given socket is set in the read set
  *
  */EipBool8
-checkSocketSet(int pa_nSocket);
+CheckSocketSet(int pa_nSocket);
 
 /*!
  *
  */
 EipStatus
-handleDataOnTCPSocket(int pa_nSocket);
+HandleDataOnTcpSocket(int pa_nSocket);
 
 static MICROSECONDS getMicroseconds() {
 #ifdef WIN32
@@ -110,7 +110,7 @@ struct NetworkStatus {
 
 struct NetworkStatus g_network_status;
 
-EipStatus NetworkHandler_Init(void) {
+EipStatus NetworkHandlerInitialize(void) {
   struct sockaddr_in my_addr;
   int y;
   int nOptVal;
@@ -123,8 +123,8 @@ EipStatus NetworkHandler_Init(void) {
 #endif
 
   /* clear the master an temp sets                                            */
-  FD_ZERO(&master);
-  FD_ZERO(&read_fds);
+  FD_ZERO(&master_socket);
+  FD_ZERO(&read_socket);
 
   /* create a new TCP socket */
   if ((g_network_status.nTCPListener = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
@@ -154,7 +154,7 @@ EipStatus NetworkHandler_Init(void) {
   }
 
   my_addr.sin_family = AF_INET;
-  my_addr.sin_port = htons(OPENER_ETHERNET_PORT);
+  my_addr.sin_port = htons(kOpenerEthernetPort);
   my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   memset(&my_addr.sin_zero, 0, sizeof(my_addr.sin_zero));
 
@@ -190,11 +190,11 @@ EipStatus NetworkHandler_Init(void) {
   }
 
   /* add the listener socket to the master set */FD_SET(
-      g_network_status.nTCPListener, &master);
-  FD_SET(g_network_status.nUDPListener, &master);
+      g_network_status.nTCPListener, &master_socket);
+  FD_SET(g_network_status.nUDPListener, &master_socket);
 
   /* keep track of the biggest file descriptor */
-  fdmax =
+  highest_socket_handle =
       (g_network_status.nTCPListener > g_network_status.nUDPListener) ?
           g_network_status.nTCPListener : g_network_status.nUDPListener;
 
@@ -204,18 +204,18 @@ EipStatus NetworkHandler_Init(void) {
   return EIP_OK;
 }
 
-EipStatus NetworkHandler_ProcessOnce(void) {
+EipStatus NetworkHandlerProcessOnce(void) {
   int fd;
   int res;
 
-  read_fds = master;
+  read_socket = master_socket;
 
   tv.tv_sec = 0;
   tv.tv_usec = (
       g_network_status.elapsedtime < OPENER_TIMER_TICK ?
           OPENER_TIMER_TICK - g_network_status.elapsedtime : 0) * 1000; /* 10 ms */
 
-  res = select(fdmax + 1, &read_fds, 0, 0, &tv);
+  res = select(highest_socket_handle + 1, &read_socket, 0, 0, &tv);
 
   if (res == -1) {
     if (EINTR == errno) /* we have somehow been interrupted. The default behavior is to go back into the select loop. */
@@ -230,14 +230,14 @@ EipStatus NetworkHandler_ProcessOnce(void) {
 
   if (res > 0) {
 
-    checkAndHandleTCPListenerSocket();
-    checkAndHandleUDPBroadCastSocket();
-    checkAndHandleConsumingUDPSockets();
+    CheckAndHandleTcpListenerSocket();
+    CheckAndHandleUdpBroadcastSocket();
+    CheckAndHandleConsumingUdpSockets();
 
-    for (fd = 0; fd <= fdmax; fd++) {
-      if (true == checkSocketSet(fd)) {
+    for (fd = 0; fd <= highest_socket_handle; fd++) {
+      if (true == CheckSocketSet(fd)) {
         /* if it is still checked it is a TCP receive */
-        if (EIP_ERROR == handleDataOnTCPSocket(fd)) /* if error */
+        if (EIP_ERROR == HandleDataOnTcpSocket(fd)) /* if error */
         {
           CloseSocket(fd);
           CloseSession(fd); /* clean up session and close the socket */
@@ -261,21 +261,21 @@ EipStatus NetworkHandler_ProcessOnce(void) {
   return EIP_OK;
 }
 
-EipStatus NetworkHandler_Finish(void) {
+EipStatus NetworkHandlerFinish(void) {
   CloseSocket(g_network_status.nTCPListener);
   CloseSocket(g_network_status.nUDPListener);
   return EIP_OK;
 }
 
-EipBool8 checkSocketSet(int pa_nSocket) {
+EipBool8 CheckSocketSet(int pa_nSocket) {
   EipBool8 nRetVal = false;
-  if (FD_ISSET(pa_nSocket, &read_fds)) {
-    if (FD_ISSET(pa_nSocket, &master)) {
+  if (FD_ISSET(pa_nSocket, &read_socket)) {
+    if (FD_ISSET(pa_nSocket, &master_socket)) {
       nRetVal = true;
     } else {
       OPENER_TRACE_INFO("socket: %d closed with pending message\n", pa_nSocket);
     }
-    FD_CLR(pa_nSocket, &read_fds);
+    FD_CLR(pa_nSocket, &read_socket);
     /* remove it from the read set so that later checks will not find it */
   }
 
@@ -300,7 +300,7 @@ EipStatus SendUdpData(struct sockaddr_in *pa_pstAddr, int pa_nSockFd,
     return EIP_OK;
 }
 
-EipStatus handleDataOnTCPSocket(int pa_nSocket) {
+EipStatus HandleDataOnTcpSocket(int pa_nSocket) {
   EipUint8 *rxp;
   long nCheckVal;
   size_t unDataSize;
@@ -314,7 +314,7 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
    fit*/
 
   /*Check how many data is here -- read the first four bytes from the connection */
-  nCheckVal = recv(pa_nSocket, g_acPCEthernetCommBuffer, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
+  nCheckVal = recv(pa_nSocket, g_ethernet_communication_buffer, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
 
   if (nCheckVal == 0) {
     OPENER_TRACE_ERR("networkhandler: connection closed by client: %s\n",
@@ -326,7 +326,7 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
     return EIP_ERROR;
   }
 
-  rxp = &g_acPCEthernetCommBuffer[2]; /* at this place EIP stores the data length */
+  rxp = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
   unDataSize = GetIntFromMessage(&rxp) + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
   /* (NOTE this advances the buffer pointer) */
   if (PC_OPENER_ETHERNET_BUFFER_SIZE - 4 < unDataSize) { /*TODO can this be handled in a better way?*/
@@ -336,7 +336,7 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
     nDataSent = PC_OPENER_ETHERNET_BUFFER_SIZE;
 
     do {
-      nCheckVal = recv(pa_nSocket, g_acPCEthernetCommBuffer, nDataSent, 0);
+      nCheckVal = recv(pa_nSocket, g_ethernet_communication_buffer, nDataSent, 0);
 
       if (nCheckVal == 0) /* got error or connection closed by client */
       {
@@ -357,7 +357,7 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
     return EIP_OK;
   }
 
-  nCheckVal = recv(pa_nSocket, &g_acPCEthernetCommBuffer[4], unDataSize, 0);
+  nCheckVal = recv(pa_nSocket, &g_ethernet_communication_buffer[4], unDataSize, 0);
 
   if (nCheckVal == 0) /* got error or connection closed by client */
   {
@@ -376,13 +376,13 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
     /*TODO handle partial packets*/
     OPENER_TRACE_INFO("Data received on tcp:\n");
 
-    g_nCurrentActiveTCPSocket = pa_nSocket;
+    g_current_active_tcp_socket = pa_nSocket;
 
     nCheckVal = HandleReceivedExplictTcpData(pa_nSocket,
-                                             g_acPCEthernetCommBuffer,
+                                             g_ethernet_communication_buffer,
                                              unDataSize, &nRemainingBytes);
 
-    g_nCurrentActiveTCPSocket = -1;
+    g_current_active_tcp_socket = -1;
 
     if (nRemainingBytes != 0) {
       OPENER_TRACE_WARN(
@@ -393,7 +393,7 @@ EipStatus handleDataOnTCPSocket(int pa_nSocket) {
     if (nCheckVal > 0) {
       OPENER_TRACE_INFO("reply sent:\n");
 
-      nDataSent = send(pa_nSocket, (char *) g_acPCEthernetCommBuffer, nCheckVal,
+      nDataSent = send(pa_nSocket, (char *) g_ethernet_communication_buffer, nCheckVal,
                        0);
       if (nDataSent != nCheckVal) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
@@ -470,7 +470,7 @@ int CreateUdpSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr) {
 
   if ((pa_nDirection == CONSUMING) || (0 == pa_pstAddr->sin_addr.s_addr)) {
     /* we have a peer to peer producer or a consuming connection*/
-    if (getpeername(g_nCurrentActiveTCPSocket, (struct sockaddr *) &stPeerAdr,
+    if (getpeername(g_current_active_tcp_socket, (struct sockaddr *) &stPeerAdr,
                     &nPeerAddrLen) < 0) {
       OPENER_TRACE_ERR("networkhandler: could not get peername: %s\n",
                        strerror(errno));
@@ -481,9 +481,9 @@ int CreateUdpSocket(int pa_nDirection, struct sockaddr_in *pa_pstAddr) {
   }
 
   /* add new fd to the master list                                             */
-  FD_SET(newfd, &master);
-  if (newfd > fdmax) {
-    fdmax = newfd;
+  FD_SET(newfd, &master_socket);
+  if (newfd > highest_socket_handle) {
+    highest_socket_handle = newfd;
   }
   return newfd;
 }
@@ -500,7 +500,7 @@ void CloseSocket(int pa_nSockFd) {
 
   OPENER_TRACE_INFO("networkhandler: closing socket %d\n", pa_nSockFd);
   if (EIP_INVALID_SOCKET != pa_nSockFd) {
-    FD_CLR(pa_nSockFd, &master);
+    FD_CLR(pa_nSockFd, &master_socket);
 #ifdef WIN32
     closesocket(pa_nSockFd);
 #else
@@ -510,10 +510,10 @@ void CloseSocket(int pa_nSockFd) {
   }
 }
 
-void checkAndHandleTCPListenerSocket() {
+void CheckAndHandleTcpListenerSocket() {
   int newfd;
   /* see if this is a connection request to the TCP listener*/
-  if (true == checkSocketSet(g_network_status.nTCPListener)) {
+  if (true == CheckSocketSet(g_network_status.nTCPListener)) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
 
     newfd = accept(g_network_status.nTCPListener, NULL, NULL);
@@ -523,10 +523,10 @@ void checkAndHandleTCPListenerSocket() {
       return;
     }
 
-    FD_SET(newfd, &master);
+    FD_SET(newfd, &master_socket);
     /* add newfd to master set */
-    if (newfd > fdmax) {
-      fdmax = newfd;
+    if (newfd > highest_socket_handle) {
+      highest_socket_handle = newfd;
     }
 
     OPENER_TRACE_STATE("networkhandler: opened new TCP connection on fd %d\n",
@@ -534,7 +534,7 @@ void checkAndHandleTCPListenerSocket() {
   }
 }
 
-void checkAndHandleUDPBroadCastSocket() {
+void CheckAndHandleUdpBroadcastSocket() {
   int nReceived_size;
   int nRemainingBytes;
   int nReplyLen;
@@ -547,7 +547,7 @@ void checkAndHandleUDPBroadCastSocket() {
 #endif
 
   /* see if this is an unsolicited inbound UDP message */
-  if (true == checkSocketSet(g_network_status.nUDPListener)) {
+  if (true == CheckSocketSet(g_network_status.nUDPListener)) {
 
     nFromLen = sizeof(stFrom);
 
@@ -556,7 +556,7 @@ void checkAndHandleUDPBroadCastSocket() {
 
     /*Handle udp broadcast messages */
     nReceived_size = recvfrom(g_network_status.nUDPListener,
-                              g_acPCEthernetCommBuffer,
+                              g_ethernet_communication_buffer,
                               PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
                               (struct sockaddr *) &stFrom, &nFromLen);
 
@@ -569,7 +569,7 @@ void checkAndHandleUDPBroadCastSocket() {
 
     OPENER_TRACE_INFO("Data received on udp:\n");
 
-    rxp = &g_acPCEthernetCommBuffer[0];
+    rxp = &g_ethernet_communication_buffer[0];
     do {
       nReplyLen = HandleReceivedExplictUdpData(g_network_status.nUDPListener,
                                                &stFrom, rxp, nReceived_size,
@@ -583,7 +583,7 @@ void checkAndHandleUDPBroadCastSocket() {
 
         /* if the active fd matches a registered UDP callback, handle a UDP packet */
         if (sendto(g_network_status.nUDPListener,
-                   (char *) g_acPCEthernetCommBuffer, nReplyLen, 0,
+                   (char *) g_ethernet_communication_buffer, nReplyLen, 0,
                    (struct sockaddr *) &stFrom, sizeof(stFrom)) != nReplyLen) {
           OPENER_TRACE_INFO(
               "networkhandler: UDP response was not fully sent\n");
@@ -593,7 +593,7 @@ void checkAndHandleUDPBroadCastSocket() {
   }
 }
 
-void checkAndHandleConsumingUDPSockets() {
+void CheckAndHandleConsumingUdpSockets() {
   int nReceived_size;
   struct sockaddr_in stFrom;
 #ifndef WIN32
@@ -611,10 +611,10 @@ void checkAndHandleConsumingUDPSockets() {
     pstRunner = pstRunner->next_connection_object; /* do this at the beginning as the close function may can make the entry invalid */
 
     if ((-1 != pstCurrent->socket[CONSUMING])
-        && (true == checkSocketSet(pstCurrent->socket[CONSUMING]))) {
+        && (true == CheckSocketSet(pstCurrent->socket[CONSUMING]))) {
       nFromLen = sizeof(stFrom);
       nReceived_size = recvfrom(pstCurrent->socket[CONSUMING],
-                                g_acPCEthernetCommBuffer,
+                                g_ethernet_communication_buffer,
                                 PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
                                 (struct sockaddr *) &stFrom, &nFromLen);
       if (0 == nReceived_size) {
@@ -630,7 +630,7 @@ void checkAndHandleConsumingUDPSockets() {
         continue;
       }
 
-      HandleReceivedConnectedData(g_acPCEthernetCommBuffer, nReceived_size,
+      HandleReceivedConnectedData(g_ethernet_communication_buffer, nReceived_size,
                                   &stFrom);
 
     }

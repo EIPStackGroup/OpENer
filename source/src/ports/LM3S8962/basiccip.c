@@ -68,7 +68,7 @@ EipStatus ApplicationInitialization(void) {
   return EIP_OK;
 }
 
-void IoConnectionEvent(unsigned int pa_unOutputAssembly,
+void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
                        unsigned int pa_unInputAssembly,
                        EIOConnectionEvent pa_eIOConnectionEvent) {
   /* maintain a correct output state according to the connection state*/

@@ -17,24 +17,24 @@
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
-EipUint8 g_assemblydata064[32]; /* Input */
-EipUint8 g_assemblydata096[32]; /* Output */
-EipUint8 g_assemblydata097[10]; /* Config */
-EipUint8 g_assemblydata09A[32]; /* Explicit */
+EipUint8 g_assembly_data064[32]; /* Input */
+EipUint8 g_assembly_data096[32]; /* Output */
+EipUint8 g_assembly_data097[10]; /* Config */
+EipUint8 g_assembly_data09A[32]; /* Explicit */
 
 EipStatus ApplicationInitialization(void) {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata064[0],
-                       sizeof(g_assemblydata064));
+  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assembly_data064[0],
+                       sizeof(g_assembly_data064));
 
   /*OUTPUT*/
-  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata096[0],
-                       sizeof(g_assemblydata096));
+  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assembly_data096[0],
+                       sizeof(g_assembly_data096));
 
   /*CONFIG*/
-  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata097[0],
-                       sizeof(g_assemblydata097));
+  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assembly_data097[0],
+                       sizeof(g_assembly_data097));
 
   /*Heart-beat output assembly for Input only connections */
   CreateAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -43,8 +43,8 @@ EipStatus ApplicationInitialization(void) {
   CreateAssemblyObject(DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata09A[0],
-                       sizeof(g_assemblydata09A));
+  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assembly_data09A[0],
+                       sizeof(g_assembly_data09A));
 
   ConfigureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
   DEMO_APP_INPUT_ASSEMBLY_NUM,
@@ -65,9 +65,9 @@ void HandleApplication(void) {
   /* check if application needs to trigger an connection */
 }
 
-void IoConnectionEvent(unsigned int output_assembly_id,
+void CheckIoConnectionEvent(unsigned int output_assembly_id,
                        unsigned int input_assembly_id,
-                       IoConnectionEvents io_connection_event) {
+                       IoConnectionEvent io_connection_event) {
   /* maintain a correct output state according to the connection state*/
 
   (void) output_assembly_id; /* suppress compiler warning */
@@ -75,16 +75,16 @@ void IoConnectionEvent(unsigned int output_assembly_id,
   (void) io_connection_event; /* suppress compiler warning */
 }
 
-EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
-  EipStatus nRetVal = kEipStatusOk;
+EipStatus AfterAssemblyDataReceived(CipInstance *instance) {
+  EipStatus status = kEipStatusOk;
 
   /*handle the data received e.g., update outputs of the device */
-  switch (pa_pstInstance->instance_number) {
+  switch (instance->instance_number) {
     case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
       /* Data for the output assembly has been received.
        * Mirror it to the inputs */
-      memcpy(&g_assemblydata064[0], &g_assemblydata096[0],
-             sizeof(g_assemblydata064));
+      memcpy(&g_assembly_data064[0], &g_assembly_data096[0],
+             sizeof(g_assembly_data064));
       break;
     case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
       /* do something interesting with the new data from
@@ -96,10 +96,10 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
        * However in order to pass the test we accept any data given.
        * EIP_ERROR
        */
-      nRetVal = kEipStatusOk;
+      status = kEipStatusOk;
       break;
   }
-  return nRetVal;
+  return status;
 }
 
 EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
@@ -130,15 +130,15 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
 }
 
 void *
-CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement) {
-  return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
+CipCalloc(unsigned int number_of_elements, unsigned size_of_element) {
+  return calloc(number_of_elements, size_of_element);
 }
 
-void CipFree(void *pa_poData) {
-  free(pa_poData);
+void CipFree(void *data) {
+  free(data);
 }
 
-void RunIdleChanged(EipUint32 pa_nRunIdleValue) {
-  (void) pa_nRunIdleValue;
+void RunIdleChanged(EipUint32 run_idle_value) {
+  (void) run_idle_value;
 }
 

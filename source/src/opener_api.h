@@ -522,9 +522,9 @@ void HandleApplication(void);
  * connection
  * @param io_connection_event information on the change occurred
  */
-void IoConnectionEvent(unsigned int output_assembly_id,
+void CheckIoConnectionEvent(unsigned int output_assembly_id,
                        unsigned int input_assembly_id,
-                       IoConnectionEvents io_connection_event);
+                       IoConnectionEvent io_connection_event);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Call back function to inform application on received data for an

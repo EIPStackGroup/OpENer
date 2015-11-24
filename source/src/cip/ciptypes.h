@@ -15,44 +15,49 @@
  */
 typedef enum {
   /* Segments */
-  kPortSegment = 0x00, /**< Port segment */
-  kLogicalSegment = 0x20, /**< Logical segment */
-  kNetworkSegment = 0x40, /**< Network segment */
-  kSymbolicSegment = 0x60, /**< Symbolic segment */
-  kDataSegment = 0x80, /**< Data segment */
-  kDataTypeConstructed = 0xA0, /**< Data type constructed */
-  kDataTypeElementary = 0xC0, /**< Data type elementary */
-  kSegmentTypeReserved = 0xE0
+  kSegmentTypePortSegment = 0x00, /**< Port segment */
+  kSegmentTypeLogicalSegment = 0x20, /**< Logical segment */
+  kSegmentTypeNetworkSegment = 0x40, /**< Network segment */
+  kSegmentTypeSymbolicSegment = 0x60, /**< Symbolic segment */
+  kSegmentTypeDataSegment = 0x80, /**< Data segment */
+  kSegmentTypeDataTypeConstructed = 0xA0, /**< Data type constructed */
+  kSegmentTypeDataTypeElementary = 0xC0, /**< Data type elementary */
+  kSegmentTypeSegmentTypeReserved = 0xE0
 } SegmentType;
 
 /** @brief Port Segment flags */
 typedef enum {
-  kExtendedLinkAddressSize = 0x10 /**< Extended Link Address Size flag, Port segment */
-} PortSegmentFlags;
+  kPortSegmentFlagExtendedLinkAddressSize = 0x10 /**< Extended Link Address Size flag, Port segment */
+} PortSegmentFlag;
 
 /** @brief Enum containing values which kind of logical segment is encoded */
 typedef enum {
-  kClassId = 0x00, /**< Class ID */
-  kInstanceId = 0x04, /**< Instance ID */
-  kMemberId = 0x08, /**< Member ID */
-  kConnectionPoint = 0x0C, /**< Connection Point */
-  kAttributeId = 0x10, /**< Attribute ID */
-  kSpecial = 0x14, /**< Special */
-  kService = 0x18, /**< Service ID */
-  kExtendedLogical = 0x1C /**< Extended Logical */
+  kLogicalSegmentLogicalTypeClassId = 0x00, /**< Class ID */
+  kLogicalSegmentLogicalTypeInstanceId = 0x04, /**< Instance ID */
+  kLogicalSegmentLogicalTypeMemberId = 0x08, /**< Member ID */
+  kLogicalSegmentLogicalTypeConnectionPoint = 0x0C, /**< Connection Point */
+  kLogicalSegmentLogicalTypeAttributeId = 0x10, /**< Attribute ID */
+  kLogicalSegmentLogicalTypeSpecial = 0x14, /**< Special */
+  kLogicalSegmentLogicalTypeService = 0x18, /**< Service ID */
+  kLogicalSegmentLogicalTypeExtendedLogical = 0x1C /**< Extended Logical */
 } LogicalSegmentLogicalType;
 
 /** @brief Enum containing values how long the encoded value will be (8, 16, or
  * 32 bit) */
 typedef enum {
-  kEightBitValue = 0x00,
-  kSixteenBitValue = 0x01,
-  kThirtyTwoBitValue = 0x02
+  kLogicalSegmentLogicalFormatEightBitValue = 0x00,
+  kLogicalSegmentLogicalFormatSixteenBitValue = 0x01,
+  kLogicalSegmentLogicalFormatThirtyTwoBitValue = 0x02
 } LogicalSegmentLogicalFormat;
 
 typedef enum {
   kProductionTimeInhibitTimeNetworkSegment = 0x43 /**< identifier indicating a production inhibit time network segment */
 } NetworkSegmentSubType;
+
+typedef enum {
+  kDataSegmentTypeSimpleDataMessage = kSegmentTypeDataSegment + 0x00,
+  kDataSegmentTypeAnsiExtendedSymbolMessage = kSegmentTypeDataSegment + 0x11
+} DataSegmentType;
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */
@@ -99,7 +104,7 @@ typedef enum cip_data_types {
   kCipByteArray = 0xA4, /**< */
   kInternalUint6 = 0xF0 /**< bogus hack, for port class attribute 9, TODO
    figure out the right way to handle it */
-} CipDataTypes;
+} CipDataType;
 
 /** @brief Definition of CIP service codes
  *
@@ -107,7 +112,7 @@ typedef enum cip_data_types {
  *0x1C
  *
  */
-typedef enum CIPServiceCodes {
+typedef enum {
   /* Start CIP common services */
   kGetAttributeAll = 0x01,
   kSetAttributeAll = 0x02,
@@ -139,29 +144,29 @@ typedef enum CIPServiceCodes {
   kUnconnectedSend = 0x52,
   kGetConnectionOwner = 0x5A
 /* End CIP object-specific services */
-} ECIPServiceCodes;
+} CIPServiceCode;
 
 /** @brief Definition of Get and Set Flags for CIP Attributes */
-typedef enum ECIPAttributeFlags {  /* TODO: Rework */
-  KNotSetOrGetable = 0x00, /**< Neither set-able nor get-able */
+typedef enum { /* TODO: Rework */
+  kNotSetOrGetable = 0x00, /**< Neither set-able nor get-able */
   kGetableAll = 0x01, /**< Get-able, also part of Get Attribute All service */
   kGetableSingle = 0x02, /**< Get-able via Get Attribute */
   kSetable = 0x04, /**< Set-able via Set Attribute */
   /* combined for convenience */
   kSetAndGetAble = 0x07, /**< both set and get-able */
   kGetableSingleAndAll = 0x03 /**< both single and all */
-} CIPAttributeFlags;
+} CIPAttributeFlag;
 
 typedef enum {
-  kOpenedEvent,
-  kTimedOutEvent,
-  kClosedEvent
-} IoConnectionEvents;
+  kIoConnectionEventOpened,
+  kIoConnectionEventTimedOut,
+  kIoConnectionEventClosed
+} IoConnectionEvent;
 
 /** @brief CIP Byte Array
  *
  */
-typedef struct cip_byte_array {
+typedef struct {
   EipUint16 length; /**< Length of the Byte Array */
   EipByte *data; /**< Pointer to the data */
 } CipByteArray;
@@ -169,7 +174,7 @@ typedef struct cip_byte_array {
 /** @brief CIP Short String
  *
  */
-typedef struct cip_short_string {
+typedef struct {
   EipUint8 length; /**< Length of the String (8 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipShortString;
@@ -177,7 +182,7 @@ typedef struct cip_short_string {
 /** @brief CIP String
  *
  */
-typedef struct cip_string {
+typedef struct {
   EipUint16 length; /**< Length of the String (16 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipString;
@@ -185,10 +190,10 @@ typedef struct cip_string {
 /** @brief Struct for padded EPATHs
  *
  */
-typedef struct cip_epath {
+typedef struct {
   EipUint8 path_size;
-  /**< Size of the Path in 16-bit words */  /* TODO: Fix, should be UINT
-                                             (EIP_UINT16) */
+  /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
+   (EIP_UINT16) */
   EipUint16 class_id; /**< Class ID of the linked object */
   EipUint16 instance_number; /**< Requested Instance Number of the linked object */
   EipUint16 attribute_number; /**< Requested Attribute Number of the linked object */
@@ -197,12 +202,12 @@ typedef struct cip_epath {
 /** @brief CIP Connection Path
  *
  */
-typedef struct cip_connection_path {
+typedef struct {
   EipUint8 path_size;
-  /**< Size of the Path in 16-bit words */  /* TODO: Fix, should be UINT
-                                             (EIP_UINT16) */
+  /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
+   (EIP_UINT16) */
   EipUint32 class_id; /**< Class ID of the linked object */
-  EipUint32 connection_point[3];  /* TODO:  Why array length 3? */
+  EipUint32 connection_point[3]; /* TODO:  Why array length 3? */
   EipUint8 data_segment;
   EipUint8 *segment_data;
 } CipConnectionPath;
@@ -210,7 +215,7 @@ typedef struct cip_connection_path {
 /** @brief Struct representing the key data format of the electronic key segment
  *
  */
-typedef struct cip_key_data {
+typedef struct {
   CipUint vendor_id; /**< Vendor ID */
   CipUint device_type; /**< Device Type */
   CipUint product_code; /**< Product Code */
@@ -219,7 +224,7 @@ typedef struct cip_key_data {
   CipUsint minor_revision; /**< Minor Revision */
 } CipKeyData;
 
-typedef struct cip_revision {
+typedef struct {
   EipUint8 major_revision;
   EipUint8 minor_revision;
 } CipRevision;
@@ -227,7 +232,7 @@ typedef struct cip_revision {
 /** @brief CIP Electronic Key Segment struct
  *
  */
-typedef struct cip_electronic_key {
+typedef struct {
   CipUsint segment_type; /**< Specifies the Segment Type */
   CipUsint key_format; /**< Key Format 0-3 reserved, 4 = see Key Format Table,
    5-255 = Reserved */
@@ -238,22 +243,19 @@ typedef struct cip_electronic_key {
 /** @brief CIP Message Router Request
  *
  */
-typedef struct cip_message_router_request {
+typedef struct {
   EipUint8 service;
   CipEpath request_path;
   EipInt16 data_length;
   EipUint8 *data;
 } CipMessageRouterRequest;
 
-#define MAX_SIZE_OF_ADD_STATUS                                            \
-  2 /* for now we support extended status codes up to 2 16bit values      \
-                                           there is mostly only one 16bit \
-       value used */
+#define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */
 
 /** @brief CIP Message Router Response
  *
  */
-typedef struct cip_message_router_response {
+typedef struct {
   CipUsint reply_service; /**< Reply service code, the requested service code +
    0x80 */
   CipOctet reserved; /**< Reserved; Shall be zero */
@@ -264,15 +266,15 @@ typedef struct cip_message_router_response {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
    If SizeOfAdditionalStatus is 0. there is no
    Additional Status */
-  EipInt16 data_length;  /* TODO: Check if this is correct */
+  EipInt16 data_length; /* TODO: Check if this is correct */
   CipOctet *data; /**< Array of octet; Response data per object definition from
    request */
 } CipMessageRouterResponse;
 
-typedef struct cip_attribute_struct {
+typedef struct {
   EipUint16 attribute_number;
   EipUint8 type;
-  EipByte attribute_flags; /*< 0 => getable_all, 1 => getable_single; 2 =>
+  CIPAttributeFlag attribute_flags; /*< 0 => getable_all, 1 => getable_single; 2 =>
    setable_single; 3 => get and setable; all other
    values reserved */
   void *data;
@@ -340,7 +342,7 @@ typedef struct cip_service_struct {
 /**
  * @brief Struct for saving TCP/IP interface information
  */
-typedef struct cip_tcp_ip_network_interface_configuration {
+typedef struct {
   CipUdint ip_address;
   CipUdint network_mask;
   CipUdint gateway;
@@ -349,13 +351,13 @@ typedef struct cip_tcp_ip_network_interface_configuration {
   CipString domain_name;
 } CipTcpIpNetworkInterfaceConfiguration;
 
-typedef struct cip_route_path {
+typedef struct {
   EipUint8 path_size;
   EipUint32 port; /* support up to 32 bit path*/
   EipUint32 address;
 } CipRoutePath;
 
-typedef struct cip_unconnected_send_parameter {
+typedef struct {
   EipByte priority;
   EipUint8 timeout_ticks;
   EipUint16 message_request_size;

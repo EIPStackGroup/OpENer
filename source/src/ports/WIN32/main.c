@@ -20,12 +20,12 @@ extern int newfd;
  * @param pa_nSig the signal we received
  */
 void
-leaveStack(int pa_nSig);
+LeaveStack(int pa_nSig);
 
 /*****************************************************************************/
 /*! \brief Flag indicating if the stack should end its execution
  */
-int g_nEndStack = 0;
+int g_end_stack = 0;
 
 /******************************************************************************/
 int main(int argc, char *arg[]) {
@@ -67,22 +67,22 @@ int main(int argc, char *arg[]) {
   CipStackInit(nUniqueConnectionID);
 
   /* Setup Network Handles */
-  if (EIP_OK == NetworkHandler_Init()) {
-    g_nEndStack = 0;
+  if (EIP_OK == NetworkHandlerInitialize()) {
+    g_end_stack = 0;
 #ifndef WIN32
     /* register for closing signals so that we can trigger the stack to end */
-    signal(SIGHUP, leaveStack);
+    signal(SIGHUP, LeaveStack);
 #endif
 
     /* The event loop. Put other processing you need done continually in here */
-    while (1 != g_nEndStack) {
-      if (EIP_OK != NetworkHandler_ProcessOnce()) {
+    while (1 != g_end_stack) {
+      if (EIP_OK != NetworkHandlerProcessOnce()) {
         break;
       }
     }
 
     /* clean up network state */
-    NetworkHandler_Finish();
+    NetworkHandlerFinish();
   }
   /* close remaining sessions and connections, cleanup used data */
   ShutdownCipStack();
@@ -90,8 +90,8 @@ int main(int argc, char *arg[]) {
   return -1;
 }
 
-void leaveStack(int pa_nSig) {
+void LeaveStack(int pa_nSig) {
   (void) pa_nSig; /* kill unused parameter warning */
   OPENER_TRACE_STATE("got signal HUP\n");
-  g_nEndStack = 1;
+  g_end_stack = 1;
 }

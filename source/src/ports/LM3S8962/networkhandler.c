@@ -245,14 +245,14 @@ EipStatus Start_NetworkHandler() {
   err_t status;
 
   my_addr.sin_family = AF_INET;
-  my_addr.sin_port = htons(OPENER_ETHERNET_PORT);
+  my_addr.sin_port = htons(kOpenerEthernetPort);
   my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   memset(&my_addr.sin_zero, 0, sizeof(my_addr.sin_zero));
 
   /* create a new TCP listener socket */
   TCPlistener = tcp_new();
   assert(TCPlistener != 0);
-  status = tcp_bind(TCPlistener, INADDR_ANY, OPENER_ETHERNET_PORT);
+  status = tcp_bind(TCPlistener, INADDR_ANY, kOpenerEthernetPort);
   assert(status == 0);
   TCPlistener = tcp_listen(TCPlistener);
   assert(TCPlistener != 0);
@@ -261,7 +261,7 @@ EipStatus Start_NetworkHandler() {
   /* create a new UDP listener socket */
   UDPlistener = udp_new();
   assert(UDPlistener != 0);
-  udp_bind(UDPlistener, INADDR_ANY, OPENER_ETHERNET_PORT);
+  udp_bind(UDPlistener, INADDR_ANY, kOpenerEthernetPort);
   udp_recv(UDPlistener, udp_unsolicited_receive_callback, 0);  // set the callback
 
   return EIP_OK;

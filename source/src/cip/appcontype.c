@@ -311,10 +311,10 @@ void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,
         && (input_point == connection->connection_path.connection_point[1])) {
       connection_to_delete = connection;
       connection = connection->next_connection_object;
-      IoConnectionEvent(
+      CheckIoConnectionEvent(
           connection_to_delete->connection_path.connection_point[0],
           connection_to_delete->connection_path.connection_point[1],
-          kClosedEvent);
+          kIoConnectionEventClosed);
 
       /* FIXME check if this is ok */
       connection_to_delete->connection_close_function(connection_to_delete);

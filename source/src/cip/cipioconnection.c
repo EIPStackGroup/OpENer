@@ -249,9 +249,9 @@ int EstablishIoConnction(ConnectionObject *connection_object,
   }
 
   AddNewActiveConnection(io_connection_object);
-  IoConnectionEvent(io_connection_object->connection_path.connection_point[0],
+  CheckIoConnectionEvent(io_connection_object->connection_path.connection_point[0],
                     io_connection_object->connection_path.connection_point[1],
-                    kOpenedEvent);
+                    kIoConnectionEventOpened);
   return eip_status;
 }
 
@@ -294,7 +294,7 @@ EipStatus OpenConsumingPointToPointConnection(
 
   common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].type_id =
-      kSocketAddressInfoOriginatorToTargetId;
+      kCipItemIdSocketAddressInfoOriginatorToTarget;
 
   common_packet_format_data->address_info_item[j].nsin_port = addr.sin_port;
   /*TODO should we add our own address here? */
@@ -312,11 +312,11 @@ EipStatus OpenProducingPointToPointConnection(
   int socket;
   in_port_t port = htons(kOpenerEipIoUdpPort); /* the default port to be used if no port information is part of the forward open request */
 
-  if (kSocketAddressInfoTargetToOriginatorId
+  if (kCipItemIdSocketAddressInfoTargetToOriginator
       == common_packet_format_data->address_info_item[0].type_id) {
     port = common_packet_format_data->address_info_item[0].nsin_port;
   } else {
-    if (kSocketAddressInfoTargetToOriginatorId
+    if (kCipItemIdSocketAddressInfoTargetToOriginator
         == common_packet_format_data->address_info_item[1].type_id) {
       port = common_packet_format_data->address_info_item[1].nsin_port;
     }
@@ -381,7 +381,7 @@ EipStatus OpenProducingMulticastConnection(
 
   common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].type_id =
-      kSocketAddressInfoTargetToOriginatorId;
+      kCipItemIdSocketAddressInfoTargetToOriginator;
   connection_object->remote_address.sin_family = AF_INET;
   connection_object->remote_address.sin_port = common_packet_format_data
       ->address_info_item[j].nsin_port = htons(kOpenerEipIoUdpPort);
@@ -413,7 +413,7 @@ EipStatus OpenMulticastConnection(
   j = 0; /* allocate an unused sockaddr struct to use */
   if (0 != g_common_packet_format_data_item.address_info_item[0].type_id) {
     if ((kUdpCommuncationDirectionConsuming == direction)
-        && (kSocketAddressInfoOriginatorToTargetId
+        && (kCipItemIdSocketAddressInfoOriginatorToTarget
             == common_packet_format_data->address_info_item[0].type_id)) {
       /* for consuming connection points the originator can choos the multicast address to use
        * we have a given address type so use it */
@@ -422,7 +422,7 @@ EipStatus OpenMulticastConnection(
       /* if the type is not zero (not used) or if a given tpye it has to be the correct one */
       if ((0 != g_common_packet_format_data_item.address_info_item[1].type_id)
           && (!((kUdpCommuncationDirectionConsuming == direction)
-              && (kSocketAddressInfoOriginatorToTargetId
+              && (kCipItemIdSocketAddressInfoOriginatorToTarget
                   == common_packet_format_data->address_info_item[0].type_id)))) {
         OPENER_TRACE_ERR("no suitable addr info item available\n");
         return kEipStatusError;
@@ -464,11 +464,11 @@ EipStatus OpenMulticastConnection(
 
   if (direction == kUdpCommuncationDirectionConsuming) {
     common_packet_format_data->address_info_item[j].type_id =
-        kSocketAddressInfoOriginatorToTargetId;
+        kCipItemIdSocketAddressInfoOriginatorToTarget;
     connection_object->originator_address = socket_address;
   } else {
     common_packet_format_data->address_info_item[j].type_id =
-        kSocketAddressInfoTargetToOriginatorId;
+        kCipItemIdSocketAddressInfoTargetToOriginator;
     connection_object->remote_address = socket_address;
   }
 
@@ -516,9 +516,9 @@ EipUint16 HandleConfigData(CipClass *assembly_class,
 void CloseIoConnection(ConnectionObject *connection_object) {
   ConnectionObject *next_non_control_master_connection;
 
-  IoConnectionEvent(connection_object->connection_path.connection_point[0],
+  CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
                     connection_object->connection_path.connection_point[1],
-                    kClosedEvent);
+                    kIoConnectionEventClosed);
 
   if ((kConnectionTypeIoExclusiveOwner == connection_object->instance_type)
       || (kConnectionTypeIoInputOnly == connection_object->instance_type)) {
@@ -557,9 +557,9 @@ void CloseIoConnection(ConnectionObject *connection_object) {
 
 void HandleIoConnectionTimeOut(ConnectionObject *connection_object) {
   ConnectionObject *next_non_control_master_connection;
-  IoConnectionEvent(connection_object->connection_path.connection_point[0],
+  CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
                     connection_object->connection_path.connection_point[1],
-                    kTimedOutEvent);
+                    kIoConnectionEventTimedOut);
 
   if (kRoutingTypeMulticastConnection
       == (connection_object->t_to_o_network_connection_parameter
@@ -616,19 +616,19 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
   /* assembleCPFData */
   common_packet_format_data->item_count = 2;
   if ((connection_object->transport_type_class_trigger & 0x0F) != 0) { /* use Sequenced Address Items if not Connection Class 0 */
-    common_packet_format_data->address_item.type_id = kSequencedAddressItemId;
+    common_packet_format_data->address_item.type_id = kCipItemIdSequencedAddressItem;
     common_packet_format_data->address_item.length = 8;
     common_packet_format_data->address_item.data.sequence_number =
         connection_object->eip_level_sequence_count_producing;
   } else {
-    common_packet_format_data->address_item.type_id = kConnectionBasedId;
+    common_packet_format_data->address_item.type_id = kCipItemIdConnectionBased;
     common_packet_format_data->address_item.length = 4;
 
   }
   common_packet_format_data->address_item.data.connection_identifier =
       connection_object->produced_connection_id;
 
-  common_packet_format_data->data_item.type_id = kConnectedTransportPacketId;
+  common_packet_format_data->data_item.type_id = kCipItemIdConnectedTransportPacket;
 
   CipByteArray *producing_instance_attributes =
       (CipByteArray *) connection_object->producing_instance->attributes->data;

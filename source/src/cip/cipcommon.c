@@ -295,7 +295,7 @@ void InsertAttribute(CipInstance *instance, EipUint16 attribute_number,
   OPENER_ASSERT(NULL != attribute);
   /* adding a attribute to a class that was not declared to have any attributes is not allowed */
   for (i = 0; i < instance->cip_class->number_of_attributes; i++) {
-    if (attribute->data == 0) { /* found non set attribute */
+    if (attribute->data == NULL) { /* found non set attribute */
       attribute->attribute_number = attribute_number;
       attribute->type = cip_type;
       attribute->attribute_flags = cip_flags;
@@ -328,7 +328,7 @@ void InsertService(CipClass * class, EipUint8 service_number,
   /* adding a service to a class that was not declared to have services is not allowed*/
   for (i = 0; i < class->number_of_services; i++) /* Iterate over all service slots attached to the class */
   {
-    if (p->service_number == service_number || p->service_function == 0) /* found undefined service slot*/
+    if (p->service_number == service_number || p->service_function == NULL) /* found undefined service slot*/
     {
       p->service_number = service_number; /* fill in service number*/
       p->service_function = service_function; /* fill in function address*/
@@ -773,40 +773,40 @@ int DecodePaddedEPath(CipEpath *epath, EipUint8 **message) {
   for (number_of_decoded_elements = 0;
       number_of_decoded_elements < epath->path_size;
       number_of_decoded_elements++) {
-    if (kSegmentTypeReserved == ((*message_runner) & kSegmentTypeReserved)) {
+    if (kSegmentTypeSegmentTypeReserved == ((*message_runner) & kSegmentTypeSegmentTypeReserved)) {
       /* If invalid/reserved segment type, segment type greater than 0xE0 */
       return kEipStatusError;
     }
 
     switch (*message_runner) {
-      case kLogicalSegment + kClassId + kEightBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeClassId + kLogicalSegmentLogicalFormatEightBitValue:
         epath->class_id = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kLogicalSegment + kClassId + kSixteenBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeClassId + kLogicalSegmentLogicalFormatSixteenBitValue:
         message_runner += 2;
         epath->class_id = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;
         break;
 
-      case kLogicalSegment + kInstanceId + kEightBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeInstanceId + kLogicalSegmentLogicalFormatEightBitValue:
         epath->instance_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kLogicalSegment + kInstanceId + kSixteenBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeInstanceId + kLogicalSegmentLogicalFormatSixteenBitValue:
         message_runner += 2;
         epath->instance_number = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;
         break;
 
-      case kLogicalSegment + kAttributeId + kEightBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeAttributeId + kLogicalSegmentLogicalFormatEightBitValue:
         epath->attribute_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kLogicalSegment + kAttributeId + kSixteenBitValue:
+      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeAttributeId + kLogicalSegmentLogicalFormatSixteenBitValue:
         message_runner += 2;
         epath->attribute_number = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;

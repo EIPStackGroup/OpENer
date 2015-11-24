@@ -15,22 +15,21 @@
 extern int newfd;
 
 /******************************************************************************/
-/*!\brief Signal handler function for ending stack execution
+/** @brief Signal handler function for ending stack execution
  *
- * @param pa_nSig the signal we received
+ * @param signal the signal we received
  */
-void
-leaveStack(int pa_nSig);
+void LeaveStack(int signal);
 
 /*****************************************************************************/
-/*! \brief Flag indicating if the stack should end its execution
+/** @brief Flag indicating if the stack should end its execution
  */
-int g_nEndStack = 0;
+int g_end_stack = 0;
 
 /******************************************************************************/
 int main(int argc, char *arg[]) {
-  EipUint8 acMyMACAddress[6];
-  EipUint16 nUniqueConnectionID;
+  EipUint8 my_mac_address[6];
+  EipUint16 unique_connection_id;
 
   if (argc != 12) {
     printf("Wrong number of command line parameters!\n");
@@ -46,13 +45,13 @@ int main(int argc, char *arg[]) {
     ConfigureDomainName(arg[4]);
     ConfigureHostName(arg[5]);
 
-    acMyMACAddress[0] = (EipUint8) strtoul(arg[6], NULL, 16);
-    acMyMACAddress[1] = (EipUint8) strtoul(arg[7], NULL, 16);
-    acMyMACAddress[2] = (EipUint8) strtoul(arg[8], NULL, 16);
-    acMyMACAddress[3] = (EipUint8) strtoul(arg[9], NULL, 16);
-    acMyMACAddress[4] = (EipUint8) strtoul(arg[10], NULL, 16);
-    acMyMACAddress[5] = (EipUint8) strtoul(arg[11], NULL, 16);
-    ConfigureMacAddress(acMyMACAddress);
+    my_mac_address[0] = (EipUint8) strtoul(arg[6], NULL, 16);
+    my_mac_address[1] = (EipUint8) strtoul(arg[7], NULL, 16);
+    my_mac_address[2] = (EipUint8) strtoul(arg[8], NULL, 16);
+    my_mac_address[3] = (EipUint8) strtoul(arg[9], NULL, 16);
+    my_mac_address[4] = (EipUint8) strtoul(arg[10], NULL, 16);
+    my_mac_address[5] = (EipUint8) strtoul(arg[11], NULL, 16);
+    ConfigureMacAddress(my_mac_address);
   }
 
   /*for a real device the serial number should be unique per device */
@@ -61,28 +60,28 @@ int main(int argc, char *arg[]) {
   /* nUniqueConnectionID should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots.
    */
-  nUniqueConnectionID = rand();
+  unique_connection_id = rand();
 
   /* Setup the CIP Layer */
-  CipStackInit(nUniqueConnectionID);
+  CipStackInit(unique_connection_id);
 
   /* Setup Network Handles */
-  if (kEipStatusOk == NetworkHandler_Init()) {
-    g_nEndStack = 0;
+  if (kEipStatusOk == NetworkHandlerInitialize()) {
+    g_end_stack = 0;
 #ifndef WIN32
     /* register for closing signals so that we can trigger the stack to end */
-    signal(SIGHUP, leaveStack);
+    signal(SIGHUP, LeaveStack);
 #endif
 
     /* The event loop. Put other processing you need done continually in here */
-    while (1 != g_nEndStack) {
-      if (kEipStatusOk != NetworkHandler_ProcessOnce()) {
+    while (1 != g_end_stack) {
+      if (kEipStatusOk != NetworkHandlerProcessOnce()) {
         break;
       }
     }
 
     /* clean up network state */
-    NetworkHandler_Finish();
+    NetworkHandlerFinish();
   }
   /* close remaining sessions and connections, cleanup used data */
   ShutdownCipStack();
@@ -90,8 +89,8 @@ int main(int argc, char *arg[]) {
   return -1;
 }
 
-void leaveStack(int pa_nSig) {
-  (void) pa_nSig; /* kill unused parameter warning */
+void LeaveStack(int signal) {
+  (void) signal; /* kill unused parameter warning */
   OPENER_TRACE_STATE("got signal HUP\n");
-  g_nEndStack = 1;
+  g_end_stack = 1;
 }

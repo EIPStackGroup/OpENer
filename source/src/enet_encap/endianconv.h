@@ -3,8 +3,8 @@
  * All rights reserved. 
  *
  ******************************************************************************/
-#ifndef OpENer_ENDIANCONV_H_
-#define OpENer_ENDIANCONV_H_
+#ifndef OPENER_ENDIANCONV_H_
+#define OPENER_ENDIANCONV_H_
 
 #include "typedefs.h"
 
@@ -79,4 +79,4 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-#endif /*OpENer_ENDIANCONV_H_*/
+#endif /* OPENER_ENDIANCONV_H_ */

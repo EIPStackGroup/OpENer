@@ -39,7 +39,7 @@ extern CipRevision revision_;
  * #define CIP_CONN_PATH_CONSUMTION_AND_PRODUCTION 7
  * #define CIP_CONN_PATH_CONFIGURATION_AND_CONSUMPTION_AND_PRODUCTION 8
  */
-#define CIP_CONN_TYPE_MASK 0x6000   /*Bit 13&14 true*/
+#define CIP_CONN_TYPE_MASK 0x6000   /**< Bit mask filter on bit 13 & 14 */
 
 const int g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 
@@ -167,11 +167,9 @@ EipUint32 GetConnectionId(void) {
 }
 
 EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
-  CipClass *connection_manager;
-
   InitializeConnectionManagerData();
 
-  connection_manager = CreateCipClass(g_kCipConnectionManagerClassCode, /* class ID */
+  CipClass *connection_manager = CreateCipClass(g_kCipConnectionManagerClassCode, /* class ID */
                                       0, /* # of class attributes */
                                       0xC6, /* class getAttributeAll mask */
                                       0, /* # of class services */
@@ -181,7 +179,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                                       1, /* # of instances */
                                       "connection manager", /* class name */
                                       1); /* revision */
-  if (connection_manager == 0)
+  if (connection_manager == NULL)
     return kEipStatusError;
 
   InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
@@ -200,24 +198,24 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
 
 EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
                                       struct sockaddr_in *from_address) {
-  ConnectionObject *connection_object;
 
   if ((CreateCommonPacketFormatStructure(data, data_length,
                                          &g_common_packet_format_data_item))
-      == -1) { /* error from createCPFstructure */
+      == kEipStatusError) {
     return kEipStatusError;
   } else {
     /* check if connected address item or sequenced address item  received, otherwise it is no connected message and should not be here */
     if ((g_common_packet_format_data_item.address_item.type_id
-        == kConnectionBasedId)
+        == kCipItemIdConnectionBased)
         || (g_common_packet_format_data_item.address_item.type_id
-            == kSequencedAddressItemId)) { /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
+            == kCipItemIdSequencedAddressItem)) { /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
       if (g_common_packet_format_data_item.data_item.type_id
-          == kConnectedTransportPacketId) { /* connected data item received */
-        connection_object = GetConnectedObject(
+          == kCipItemIdConnectedTransportPacket) { /* connected data item received */
+
+        ConnectionObject *connection_object = GetConnectedObject(
             g_common_packet_format_data_item.address_item.data
                 .connection_identifier);
-        if (connection_object == 0)
+        if (connection_object == NULL)
           return kEipStatusError;
 
         /* only handle the data if it is coming from the originator */
@@ -254,16 +252,11 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
   return kEipStatusOk;
 }
 
-/* TODO: Rework documentation!
- *    EIP_STATUS ForwardOpen(S_CIP_Instance *pa_pstInstance, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse, S_CIP_CPF_Data *pa_CPF_data, INT8 *pa_msg)
- *   check if resources for new connection available, generate ForwardOpen Reply message.
- *      pa_pstInstance	pointer to CIP object instance
- *      pa_MRRequest		pointer to Message Router Request.
- *      pa_MRResponse		pointer to Message Router Response.
- *      pa_CPF_data		received CPF Data Item
- *      pa_msg			pointer to memory where reply will be stored
- *  return length of reply
- * 		>0 .. success, 0 .. no reply to send back
+/*   @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *      instance	pointer to CIP object instance
+ *      message_router_request		pointer to Message Router Request.
+ *      message_router_response		pointer to Message Router Response.
+ * 		@return >0 .. success, 0 .. no reply to send back
  *      	-1 .. error
  */
 EipStatus ForwardOpen(CipInstance *instance,
@@ -603,7 +596,7 @@ EipStatus ManageConnections(void) {
   return kEipStatusOk;
 }
 
-/*   INT8 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus, EIP_UINT16 pa_nExtendedStatus,
+/* TODO: Update Documentation  INT8 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus, EIP_UINT16 pa_nExtendedStatus,
  void * deleteMeSomeday, EIP_UINT8 * pa_msg)
  *   create FWDOpen response dependent on status.
  *      pa_pstConnObj pointer to connection Object
@@ -626,8 +619,8 @@ EipStatus AssembleForwardOpenResponse(
       &g_common_packet_format_data_item;
   EipByte *message = message_router_response->data;
   cip_common_packet_format_data->item_count = 2;
-  cip_common_packet_format_data->data_item.type_id = kUnconnectedMessageId;
-  cip_common_packet_format_data->address_item.type_id = kNullAddressId;
+  cip_common_packet_format_data->data_item.type_id = kCipItemIdUnconnectedMessage;
+  cip_common_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
   cip_common_packet_format_data->address_item.length = 0;
 
   message_router_response->reply_service = (0x80 | kForwardOpen);
@@ -735,8 +728,8 @@ EipStatus AssembleForwardCloseResponse(
       &g_common_packet_format_data_item;
   EipByte *message = message_router_response->data;
   common_data_packet_format_data->item_count = 2;
-  common_data_packet_format_data->data_item.type_id = kUnconnectedMessageId;
-  common_data_packet_format_data->address_item.type_id = kNullAddressId;
+  common_data_packet_format_data->data_item.type_id = kCipItemIdUnconnectedMessage;
+  common_data_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
   common_data_packet_format_data->address_item.length = 0;
 
   AddIntToMessage(connection_serial_number, &message);
@@ -893,12 +886,13 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
 EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                              CipMessageRouterRequest *message_router_request,
                              EipUint16 *extended_error) {
-  int i;
   EipUint8 *message = message_router_request->data;
   int remaining_path_size = connection_object->connection_path_size =
       *message++; /* length in words */
   CipClass *class = NULL;
-  int O2TConnectionType, T2OConnectionType, imax;
+
+  int originator_to_target_connection_type;
+  int target_to_originator_connection_type;
 
   /* with 256 we mark that we haven't got a PIT segment */
   connection_object->production_inhibit_time = 256;
@@ -1037,32 +1031,33 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
       connection_object->connection_path.connection_point[0] = connection_object
           ->connection_path.connection_point[2];
     } else { /* we have an IO connection */
-      O2TConnectionType = (connection_object
+      originator_to_target_connection_type = (connection_object
           ->o_to_t_network_connection_parameter & 0x6000) >> 13;
-      T2OConnectionType = (connection_object
+      target_to_originator_connection_type = (connection_object
           ->t_to_o_network_connection_parameter & 0x6000) >> 13;
 
       connection_object->connection_path.connection_point[1] = 0; /* set not available path to Invalid */
 
-      if (O2TConnectionType == 0) {
-        if (T2OConnectionType == 0) { /* configuration only connection */
-          imax = 0;
+      int number_of_encoded_paths = 0;
+      if (originator_to_target_connection_type == 0) {
+        if (target_to_originator_connection_type == 0) { /* configuration only connection */
+          number_of_encoded_paths = 0;
           OPENER_TRACE_WARN("assembly: type invalid\n");
         } else { /* 1 path -> path is for production */
           OPENER_TRACE_INFO("assembly: type produce\n");
-          imax = 1;
+          number_of_encoded_paths = 1;
         }
       } else {
-        if (T2OConnectionType == 0) { /* 1 path -> path is for consumption */
+        if (target_to_originator_connection_type == 0) { /* 1 path -> path is for consumption */
           OPENER_TRACE_INFO("assembly: type consume\n");
-          imax = 1;
+          number_of_encoded_paths = 1;
         } else { /* 2 paths -> 1st for production 2nd for consumption */
           OPENER_TRACE_INFO("assembly: type bidirectional\n");
-          imax = 2;
+          number_of_encoded_paths = 2;
         }
       }
 
-      for (i = 0; i < imax; i++) /* process up to 2 encoded paths */
+      for (int i = 0; i < number_of_encoded_paths; i++) /* process up to 2 encoded paths */
       {
         if (EQLOGICALPATH(*message,0x24) || EQLOGICALPATH(*message, 0x2C)) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         { /* InstanceNR */
@@ -1096,7 +1091,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
       while (remaining_path_size > 0) { /* have something left in the path should be configuration data */
 
         switch (*message) {
-          case 0x80:
+          case kDataSegmentTypeSimpleDataMessage:
             /* we have a simple data segment */
             g_config_data_length = message[1] * 2; /*data segments store length 16-bit word wise */
             g_config_data_buffer = &(message[2]);

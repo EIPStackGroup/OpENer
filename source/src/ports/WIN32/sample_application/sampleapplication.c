@@ -17,24 +17,24 @@
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
-EipUint8 g_assemblydata064[32]; /* Input */
-EipUint8 g_assemblydata096[32]; /* Output */
-EipUint8 g_assemblydata097[10]; /* Config */
-EipUint8 g_assemblydata09A[32]; /* Explicit */
+EipUint8 g_assembly_data064[32]; /* Input */
+EipUint8 g_assembly_data096[32]; /* Output */
+EipUint8 g_assembly_data097[10]; /* Config */
+EipUint8 g_assembly_data09A[32]; /* Explicit */
 
 EipStatus ApplicationInitialization(void) {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata064[0],
-                       sizeof(g_assemblydata064));
+  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assembly_data064[0],
+                       sizeof(g_assembly_data064));
 
   /*OUTPUT*/
-  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata096[0],
-                       sizeof(g_assemblydata096));
+  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assembly_data096[0],
+                       sizeof(g_assembly_data096));
 
   /*CONFIG*/
-  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata097[0],
-                       sizeof(g_assemblydata097));
+  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assembly_data097[0],
+                       sizeof(g_assembly_data097));
 
   /*Heart-beat output assembly for Input only connections */
   CreateAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -43,8 +43,8 @@ EipStatus ApplicationInitialization(void) {
   CreateAssemblyObject(DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata09A[0],
-                       sizeof(g_assemblydata09A));
+  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assembly_data09A[0],
+                       sizeof(g_assembly_data09A));
 
   ConfigureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
   DEMO_APP_INPUT_ASSEMBLY_NUM,
@@ -65,7 +65,7 @@ void HandleApplication(void) {
   /* check if application needs to trigger an connection */
 }
 
-void IoConnectionEvent(unsigned int pa_unOutputAssembly,
+void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
                        unsigned int pa_unInputAssembly,
                        EIOConnectionEvent pa_eIOConnectionEvent) {
   /* maintain a correct output state according to the connection state*/
@@ -83,8 +83,8 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
     case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
       /* Data for the output assembly has been received.
        * Mirror it to the inputs */
-      memcpy(&g_assemblydata064[0], &g_assemblydata096[0],
-             sizeof(g_assemblydata064));
+      memcpy(&g_assembly_data064[0], &g_assembly_data096[0],
+             sizeof(g_assembly_data064));
       break;
     case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
       /* do something interesting with the new data from

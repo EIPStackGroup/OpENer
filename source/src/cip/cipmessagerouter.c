@@ -151,11 +151,11 @@ EipStatus NotifyMR(EipUint8 *data, int data_length) {
         | g_message_router_request.service);
   } else {
     /* forward request to appropriate Object if it is registered*/
-    CipMessageRouterObject *pt2regObject;
+    CipMessageRouterObject *registered_object;
 
-    pt2regObject = GetRegisteredObject(
+    registered_object = GetRegisteredObject(
         g_message_router_request.request_path.class_id);
-    if (pt2regObject == 0) {
+    if (registered_object == 0) {
       OPENER_TRACE_ERR(
           "notifyMR: sending CIP_ERROR_OBJECT_DOES_NOT_EXIST reply, class id 0x%x is not registered\n",
           (unsigned ) g_message_router_request.request_path.class_id);
@@ -170,10 +170,10 @@ EipStatus NotifyMR(EipUint8 *data, int data_length) {
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
        object will or will not make an reply into gMRResponse*/
       g_message_router_response.reserved = 0;
-      OPENER_ASSERT(NULL != pt2regObject->cip_class);
+      OPENER_ASSERT(NULL != registered_object->cip_class);
       OPENER_TRACE_INFO("notifyMR: calling notify function of class '%s'\n",
-                        pt2regObject->cip_class->class_name);
-      eip_status = NotifyClass(pt2regObject->cip_class,
+                        registered_object->cip_class->class_name);
+      eip_status = NotifyClass(registered_object->cip_class,
                                &g_message_router_request,
                                &g_message_router_response);
 
@@ -181,15 +181,15 @@ EipStatus NotifyMR(EipUint8 *data, int data_length) {
       if (eip_status == kEipStatusError) {
         OPENER_TRACE_ERR(
             "notifyMR: notify function of class '%s' returned an error\n",
-            pt2regObject->cip_class->class_name);
+            registered_object->cip_class->class_name);
       } else if (eip_status == kEipStatusOk) {
         OPENER_TRACE_INFO(
             "notifyMR: notify function of class '%s' returned no reply\n",
-            pt2regObject->cip_class->class_name);
+            registered_object->cip_class->class_name);
       } else {
         OPENER_TRACE_INFO(
             "notifyMR: notify function of class '%s' returned a reply\n",
-            pt2regObject->cip_class->class_name);
+            registered_object->cip_class->class_name);
       }
 #endif
     }
