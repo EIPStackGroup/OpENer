@@ -26,21 +26,23 @@ extern CipShortString product_name_;
 /*ip address data taken from TCPIPInterfaceObject*/
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
-/*** defines ***/
-
-#define ITEM_ID_LISTIDENTITY 0x000C
-
-const int kSupportedProtocolVersion = 1;
+const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
 const int kEncapsulationHeaderOptionsFlag = 0x00; /**< Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.*/
 
 const int kEncapsulationHeaderSessionHandlePosition = 4; /**< the position of the session handle within the encapsulation header*/
 
-const int kInvalidSession = -1;
+const int kListIdentityDefaultDelayTime = 2000; /**< Default delay time for List Identity response */
+const int kListIdentityMinimumDelayTime = 500; /**< Minimum delay time for List Identity response */
+
+typedef enum {
+  kSessionStatusInvalid = -1,
+  kSessionStatusValid = 0
+} SessionStatus;
 
 const int kSenderContextSize = 8; /**< size of sender context in encapsulation header*/
 
-/* definition of known encapsulation commands */
+/** @brief definition of known encapsulation commands */
 typedef enum {
   kEncapsulationCommandNoOperation = 0x0000,
   kEncapsulationCommandListServices = 0x0004,
@@ -52,22 +54,23 @@ typedef enum {
   kEncapsulationCommandSendUnitData = 0x0070
 } EncapsulationCommand;
 
-/* definition of capability flags */
+/** @brief definition of capability flags */
 typedef enum {
   kCapabilityFlagsCipTcp = 0x0020,
   kCapabilityFlagsCipUdpClass0or1 = 0x0100
 } CapabilityFlags;
 
-#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /*According to EIP spec at least 2 delayed message requests should be supported */
+#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /**< According to EIP spec at least 2 delayed message requests should be supported */
 
 #define ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE (ENCAPSULATION_HEADER_LENGTH + 39 + sizeof(OPENER_DEVICE_NAME)) /* currently we only have the size of an encapsulation message */
 
 /* Encapsulation layer data  */
 
-typedef struct delayed_encapsulation_message {
-  EipInt32 time_out;
-  int socket;
-  struct sockaddr_in m_stSendToAddr;
+/** @brief Delayed Encapsulation Message structure */
+typedef struct {
+  EipInt32 time_out; /**< time out in milli seconds */
+  int socket; /**< associated socket */
+  struct sockaddr_in receiver;
   EipByte message[ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE];
   unsigned int message_size;
 } DelayedEncapsulationMessage;
@@ -108,12 +111,12 @@ EipInt16 CreateEncapsulationStructure(EipUint8 *receive_buffer,
 
 EipStatus CheckRegisteredSessions(EncapsulationData *receive_data);
 
-int EncapsulateData(EncapsulationData *send_data);
+int EncapsulateData(const EncapsulationData *const send_data);
 
 void DetermineDelayTime(EipByte *buffer_start,
                         DelayedEncapsulationMessage *delayed_message_buffer);
 
-int EncapsulateListIdentyResponseMessage(EipByte *communication_buffer);
+int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buffer);
 
 /*   @brief Initializes session list and interface information. */
 void EncapsulationInit(void) {
@@ -266,7 +269,7 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
   return status;
 }
 
-int EncapsulateData(EncapsulationData *send_data) {
+int EncapsulateData(const EncapsulationData *const send_data) {
   EipUint8 *communcation_buffer = &(send_data->communication_buffer_start[2]);
   AddIntToMessage(send_data->data_length, &communcation_buffer);
   /*the CommBuf should already contain the correct session handle*/
@@ -304,7 +307,7 @@ void HandleReceivedListInterfacesCommand(EncapsulationData *receive_data) {
   EipUint8 *communication_buffer = receive_data
       ->current_communication_buffer_position;
   receive_data->data_length = 2;
-  AddIntToMessage(0x0000, &communication_buffer); /* copy Interface data to nmsg for sending */
+  AddIntToMessage(0x0000, &communication_buffer); /* copy Interface data to msg for sending */
 }
 
 void HandleReceivedListIdentityCommandTcp(EncapsulationData * receive_data) {
@@ -316,7 +319,6 @@ void HandleReceivedListIdentityCommandUdp(int socket,
                                           struct sockaddr_in *from_address,
                                           EncapsulationData *receive_data) {
   DelayedEncapsulationMessage *delayed_message_buffer = NULL;
-  EipUint8 *communication_buffer;
 
   for (unsigned int i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++) {
     if (kEipInvalidSocket == g_delayed_encapsulation_messages[i].socket) {
@@ -327,7 +329,7 @@ void HandleReceivedListIdentityCommandUdp(int socket,
 
   if (NULL != delayed_message_buffer) {
     delayed_message_buffer->socket = socket;
-    memcpy((&delayed_message_buffer->m_stSendToAddr), from_address,
+    memcpy((&delayed_message_buffer->receiver), from_address,
            sizeof(struct sockaddr_in));
 
     DetermineDelayTime(receive_data->communication_buffer_start,
@@ -340,18 +342,18 @@ void HandleReceivedListIdentityCommandUdp(int socket,
     delayed_message_buffer->message_size = EncapsulateListIdentyResponseMessage(
         &(delayed_message_buffer->message[ENCAPSULATION_HEADER_LENGTH]));
 
-    communication_buffer = delayed_message_buffer->message + 2;
+    EipUint8 *communication_buffer = delayed_message_buffer->message + 2;
     AddIntToMessage(delayed_message_buffer->message_size,
                     &communication_buffer);
     delayed_message_buffer->message_size += ENCAPSULATION_HEADER_LENGTH;
   }
 }
 
-int EncapsulateListIdentyResponseMessage(EipByte *communication_buffer) {
+int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buffer) {
   EipUint8 *communication_buffer_runner = communication_buffer;
 
   AddIntToMessage(1, &communication_buffer_runner); /* one item */
-  AddIntToMessage(ITEM_ID_LISTIDENTITY, &communication_buffer_runner);
+  AddIntToMessage(kCipItemIdListIdentityResponse, &communication_buffer_runner);
 
   EipByte *id_length_buffer = communication_buffer_runner;
   communication_buffer_runner += 2; /*at this place the real length will be inserted below*/
@@ -390,19 +392,13 @@ void DetermineDelayTime(EipByte *buffer_start,
 
   buffer_start += 12; /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(&buffer_start);
+
   if (0 == maximum_delay_time) {
-    maximum_delay_time = 2000;
-  } else if (500 > maximum_delay_time) {
-    maximum_delay_time = 500;
+    maximum_delay_time = kListIdentityDefaultDelayTime;
+  } else if (kListIdentityMinimumDelayTime > maximum_delay_time) { /* if maximum_delay_time is between 1 and 500ms set it to 500ms */
+    maximum_delay_time = kListIdentityMinimumDelayTime;
   }
-
-  /* Limits maximum_delay_time to 2000 milliseconds */
-  if (maximum_delay_time > 2000) {
-    maximum_delay_time = 2000;
-  }
-
-  delayed_message_buffer->time_out = (maximum_delay_time * rand()) / RAND_MAX
-      + 1;
+  delayed_message_buffer->time_out = (maximum_delay_time * rand()) / RAND_MAX; /* Sets delay time between 0 and maximum_delay_time */
 }
 
 /* @brief Check supported protocol, generate session handle, send replay back to originator.
@@ -427,7 +423,7 @@ void HandleReceivedRegisterSessionCommand(int socket,
         /* the socket has already registered a session this is not allowed*/
         receive_data->session_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
         receive_data->status = kEncapsulationProtocolInvalidCommand;
-        session_index = kInvalidSession;
+        session_index = kSessionStatusInvalid;
         receive_data_buffer =
             &receive_data->communication_buffer_start[kEncapsulationHeaderSessionHandlePosition];
         AddDintToMessage(receive_data->session_handle, &receive_data_buffer); /*EncapsulateData will not update the session handle so we have to do it here by hand*/
@@ -435,9 +431,9 @@ void HandleReceivedRegisterSessionCommand(int socket,
       }
     }
 
-    if (kInvalidSession != session_index) {
+    if (kSessionStatusInvalid != session_index) {
       session_index = GetFreeSessionIndex();
-      if (kInvalidSession == session_index) /* no more sessions available */
+      if (kSessionStatusInvalid == session_index) /* no more sessions available */
       {
         receive_data->status = kEncapsulationProtocolInsufficientMemory;
       } else { /* successful session registered */
@@ -561,7 +557,7 @@ int GetFreeSessionIndex(void) {
       return session_index;
     }
   }
-  return kInvalidSession;
+  return kSessionStatusInvalid;
 }
 
 /** @brief copy data from pa_buf in little endian to host in structure.
@@ -599,11 +595,10 @@ EipStatus CheckRegisteredSessions(EncapsulationData *receive_data) {
       && (receive_data->session_handle <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
     if (kEipInvalidSocket
         != g_registered_sessions[receive_data->session_handle - 1]) {
-      return kEipStatusOk;
+      return kSessionStatusValid;
     }
   }
-
-  return kEipStatusError;
+  return kSessionStatusInvalid;
 }
 
 void CloseSession(int socket) {
@@ -631,8 +626,9 @@ void ManageEncapsulationMessages(void) {
     if (kEipInvalidSocket != g_delayed_encapsulation_messages[i].socket) {
       g_delayed_encapsulation_messages[i].time_out -=
           kOpenerTimerTickInMilliSeconds;
-      if (0 >= g_delayed_encapsulation_messages[i].time_out) {
-        SendUdpData(&(g_delayed_encapsulation_messages[i].m_stSendToAddr),
+      if (0 > g_delayed_encapsulation_messages[i].time_out) {
+        /* If delay is reached or passed, send the UDP message */
+        SendUdpData(&(g_delayed_encapsulation_messages[i].receiver),
                     g_delayed_encapsulation_messages[i].socket,
                     &(g_delayed_encapsulation_messages[i].message[0]),
                     g_delayed_encapsulation_messages[i].message_size);
