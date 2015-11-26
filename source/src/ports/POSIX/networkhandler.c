@@ -577,7 +577,7 @@ void CheckAndHandleUdpBroadcastSocket(void) {
       if (reply_length > 0) {
         OPENER_TRACE_INFO("reply sent:\n");
 
-        /* if the active fd matches a registered UDP callback, handle a UDP packet */
+        /* if the active socket matches a registered UDP callback, handle a UDP packet */
         if (sendto(g_network_status.udp_listener,
                    (char *) g_ethernet_communication_buffer, reply_length, 0,
                    (struct sockaddr *) &from_address, sizeof(from_address)) != reply_length) {
