@@ -33,7 +33,7 @@ int EncodeEPath(CipEpath *epath, EipUint8 **message);
 void CipStackInit(EipUint16 unique_connection_id) {
   EipStatus eip_status;
   EncapsulationInit();
-  /* The message router is the first CIP object that has to be initialized first!!! */
+  /* The message router is the first CIP object be initialized!!! */
   eip_status = CipMessageRouterInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipIdentityInit();
