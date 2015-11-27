@@ -217,7 +217,7 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
 
 int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
                                  EipUint8 *buffer, unsigned int buffer_length,
-                                 int *number_of_remaining_bytes) {
+                                 int *number_of_remaining_bytes, int unicast) {
   EipStatus status = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
@@ -240,9 +240,14 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
           break;
 
         case (kEncapsulationCommandListIdentity):
-          HandleReceivedListIdentityCommandUdp(socket, from_address,
+            if(unicast == true) {
+              HandleReceivedListIdentityCommandTcp(&encapsulation_data);
+            }
+            else {
+              HandleReceivedListIdentityCommandUdp(socket, from_address,
                                                &encapsulation_data);
-          status = kEipStatusOk; /* as the response has to be delayed do not send it now */
+              status = kEipStatusOk;
+            }/* as the response has to be delayed do not send it now */
           break;
 
         case (kEncapsulationCommandListInterfaces):

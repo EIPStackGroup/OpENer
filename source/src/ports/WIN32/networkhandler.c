@@ -58,7 +58,7 @@ CheckAndHandleTcpListenerSocket();
  *
  */
 void
-CheckAndHandleUdpBroadcastSocket();
+CheckAndHandleUdpLocalBroadcastSocket();
 
 /*! \brief check if on one of the udp consuming sockets data has been received and if yes handle it correctly
  *
@@ -231,7 +231,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
   if (res > 0) {
 
     CheckAndHandleTcpListenerSocket();
-    CheckAndHandleUdpBroadcastSocket();
+    CheckAndHandleUdpLocalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
 
     for (fd = 0; fd <= highest_socket_handle; fd++) {
@@ -534,7 +534,7 @@ void CheckAndHandleTcpListenerSocket() {
   }
 }
 
-void CheckAndHandleUdpBroadcastSocket() {
+void CheckAndHandleUdpLocalBroadcastSocket() {
   int nReceived_size;
   int nRemainingBytes;
   int nReplyLen;

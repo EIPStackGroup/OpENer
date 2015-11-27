@@ -416,7 +416,7 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
  */
 int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
                                  EipUint8 *buffer, unsigned int buffer_length,
-                                 int *number_of_remaining_bytes);
+                                 int *number_of_remaining_bytes, int unicast);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been

@@ -14,6 +14,8 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
+extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
+
 static const EipUint16 kCipTcpIpInterfaceClassCode = 0xF5; /**< TCP/IP Interface Object class code */
 
 /** @brief Multicast Configuration struct, called Mcast config

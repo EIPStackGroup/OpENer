@@ -144,21 +144,21 @@ EipStatus CipTcpIpInterfaceInit() {
   CipClass *tcp_ip_class = NULL;
 
   if ((tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
-                                       0xffffffff, /* class getAttributeAll mask*/
-                                       0, /* # class services*/
-                                       8, /* # instance attributes*/
-                                       0xffffffff, /* instance getAttributeAll mask*/
-                                       1, /* # instance services*/
-                                       1, /* # instances*/
-                                       "TCP/IP interface", 3)) == 0) {
+                                     0xffffffff, /* class getAttributeAll mask*/
+                                     0, /* # class services*/
+                                     8, /* # instance attributes*/
+                                     0xffffffff, /* instance getAttributeAll mask*/
+                                     1, /* # instance services*/
+                                     1, /* # instances*/
+                                     "TCP/IP interface", 3)) == 0) {
     return kEipStatusError;
   }
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above*/
 
   InsertAttribute(instance, 1, kCipDword, (void *) &tcp_status_,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 2, kCipDword,
-                  (void *) &configuration_capability_, kGetableSingleAndAll);
+  InsertAttribute(instance, 2, kCipDword, (void *) &configuration_capability_,
+                  kGetableSingleAndAll);
   InsertAttribute(instance, 3, kCipDword, (void *) &configuration_control_,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 4, kCipEpath, &physical_link_object_,
@@ -177,8 +177,7 @@ EipStatus CipTcpIpInterfaceInit() {
                 &GetAttributeSingleTcpIpInterface,
                 "GetAttributeSingleTCPIPInterface");
 
-  InsertService(tcp_ip_class, kGetAttributeAll,
-                &GetAttributeAllTcpIpInterface,
+  InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAllTcpIpInterface,
                 "GetAttributeAllTCPIPInterface");
 
   InsertService(tcp_ip_class, kSetAttributeSingle, &SetAttributeSingleTcp,
@@ -217,7 +216,8 @@ EipStatus GetAttributeSingleTcpIpInterface(
     message_router_response->data_length += EncodeData(
         kCipUsint, &(g_multicast_configuration.alloc_control), &message);
     message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero), &message);
+        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
+        &message);
     message_router_response->data_length += EncodeData(
         kCipUint,
         &(g_multicast_configuration.number_of_allocated_multicast_addresses),
@@ -231,7 +231,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &message);
   } else {
     status = GetAttributeSingle(instance, message_router_request,
-                                 message_router_response);
+                                message_router_response);
   }
   return status;
 }
