@@ -1,12 +1,12 @@
- StcRev Data |1.21|A-8|OpENer|1352323903| DevData |255|0|500|500|500,500|X||ENet|
+ StcRev Data |1.23|CT-12|OPENER|1448878251| DevData |255|0|500|500|500,500|X||ENet|
 [<00>]-------|OpENer PC||
-  General    |3.8|EtherNet/IP Vol 2, Ed 1.9||1.2|Rockwell Automation/Allen-Bradley|1|65001|
-  DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72|
-  PhysConf   ||X| |X| | | | |0|X| | |
-  LEDs       | | | | |
-  IP MAC Set | |X| |192.168.0.1| | ||00:00:00:00:00:00| |
+  General    |3.16|EtherNet/IP Vol 2, Ed 1.17||1.2|Rockwell Automation/Allen-Bradley|1|65001|
+  DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72,78,79,80|
+  PhysConf   ||X| |X| | | | | |0|X| | |
+  LEDs       | | | | | |
+  IP MAC Set | |X| |192.168.56.102| | ||b8:27:eb:83:e0:f5| | | |
   CRate Set  |X| | |X| | ||
-  CRate Sup  | |X| | |X|
+  CRate Sup  |X|X| |X|X|
   Net Behavi | | ||| | | | | | | |
   Cxn Behavi | | | |X| | | | | | ||| | |-1|1000|1000| |
   FO Path    ||||||||||||| |
@@ -24,9 +24,9 @@
   CAL        | | | | | | | |
   CS         |X| |X| | |
   CSP        ||||||
-  IAG        |X|X|X|X|X|X|X| | | | | | | | | | |
-  IAS        | | | | | | | | | | | | | | | | | |
-  IAL        | =(1)| =(12)| =(65001)| =(1.2)| | | =(OpENer PC)| | | | | | | | | | |
+  IAG        |X|X|X|X|X|X|X| | | | | | | | | | | |
+  IAS        | | | | | | | | | | | | | | | | | | |
+  IAL        | =(1)| =(12)| =(65001)| =(1.2)| | | =(OpENer PC)| | | | | | | | | | | |
   IS         |X|X|X| | |
   ISP        ||0,1||||
   VSA        | |
@@ -50,7 +50,7 @@
   CAL        | | | | | | | |
   CS         | | |X|
   CSP        ||||
-  IAG        | | |X| |
+  IAG        | | |X|X|
   IAS        | | |X| |
   IAL        | | | | |
   IS         | |X|X| | | | |
@@ -64,7 +64,7 @@
   CAL        | | | | | | | |
   CS         | | |X|
   CSP        ||||
-  IAG        | | |X| |
+  IAG        | | |X|X|
   IAS        | | |X| |
   IAL        | | | | |
   IS         | |X|X| | | | |
@@ -78,7 +78,7 @@
   CAL        | | | | | | | |
   CS         | | |X|
   CSP        ||||
-  IAG        | | |X| |
+  IAG        | | |X|X|
   IAS        | | |X| |
   IAL        | | | | |
   IS         | |X|X| | | | |
@@ -92,7 +92,7 @@
   CAL        | | | | | | | |
   CS         | | |X|
   CSP        ||||
-  IAG        | | |X| |
+  IAG        | | |X|X|
   IAS        | | |X| |
   IAL        | | | | |
   IS         | |X|X| | | | |
@@ -120,9 +120,9 @@
   CAL        | | | | | | | |
   CS         |X|X|
   CSP        |||
-  IAG        |X|X|X|X|X|X|X|X|
-  IAS        | | | | | | | | |
-  IAL        | =(1,17)| =(4)| | | | | =(1..255)| |
+  IAG        |X|X|X|X|X|X|X|X| | | |X|
+  IAS        | | | | | | | | | | | | |
+  IAL        | =(1,17)| =(4)| | | | | =(1..255)| | | | | =(0..3600)|
   IS         |X| |X|X|
   ISP        |||||
   VSA        | |
@@ -135,7 +135,7 @@
   CSP        ||||
   IAG        |X|X|X| | | | | | | |
   IAS        | | | | | | | | | | |
-  IAL        | =(0,100)| |MAC address (00:00:00:00:00:00)| | | | | | | |
+  IAL        | =(0,10,100)| |MAC address (b8:27:eb:83:e0:f5)| | | | | | | |
   IS         |X|X| | |
   ISP        |||||
   VSA        | |
