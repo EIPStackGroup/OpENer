@@ -86,9 +86,6 @@ CipInstance *CreateAssemblyObject(EipUint32 instance_id, EipByte *data,
   assembly_byte_array->data = data;
   InsertAttribute(instance, 3, kCipByteArray, assembly_byte_array,
                   kSetAndGetAble);
-  /* Attribute 4 Number of bytes in Attribute 3 */
-  InsertAttribute(instance, 4, kCipUint, &(assembly_byte_array->length),
-                  kGetableSingle);
 
   return instance;
 }
