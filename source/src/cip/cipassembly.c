@@ -179,7 +179,7 @@ EipStatus SetAssemblyAttributeSingle(
 
   if ((attribute != NULL)
       && (4 == message_router_request->request_path.attribute_number)) {
-    message_router_response->general_status = kCipErrorAttributeNotSetable;
+    message_router_response->general_status = kCipErrorAttributeNotSupported;
   }
 
   return kEipStatusOkSend;
