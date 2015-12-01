@@ -164,11 +164,11 @@ EipStatus CreateCommonPacketFormatStructure(
             == kCipItemIdSocketAddressInfoTargetToOriginator)) {
       common_packet_format_data->address_info_item[j].length =
           GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].nsin_family =
+      common_packet_format_data->address_info_item[j].sin_family =
           GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].nsin_port =
+      common_packet_format_data->address_info_item[j].sin_port =
           GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].nsin_addr =
+      common_packet_format_data->address_info_item[j].sin_addr =
           GetDintFromMessage(&data);
       for (int i = 0; i < 8; i++) {
         common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
@@ -332,8 +332,8 @@ int AssembleLinearMessage(
             &message);
 
         EncapsulateIpAddressCommonPaketFormat(
-            common_packet_format_data_item->address_info_item[j].nsin_port,
-            common_packet_format_data_item->address_info_item[j].nsin_addr,
+            common_packet_format_data_item->address_info_item[j].sin_port,
+            common_packet_format_data_item->address_info_item[j].sin_addr,
             message);
         message += 8;
 

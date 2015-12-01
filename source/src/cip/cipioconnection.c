@@ -296,12 +296,12 @@ EipStatus OpenConsumingPointToPointConnection(
   common_packet_format_data->address_info_item[j].type_id =
       kCipItemIdSocketAddressInfoOriginatorToTarget;
 
-  common_packet_format_data->address_info_item[j].nsin_port = addr.sin_port;
+  common_packet_format_data->address_info_item[j].sin_port = addr.sin_port;
   /*TODO should we add our own address here? */
-  common_packet_format_data->address_info_item[j].nsin_addr = addr.sin_addr
+  common_packet_format_data->address_info_item[j].sin_addr = addr.sin_addr
       .s_addr;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
-  common_packet_format_data->address_info_item[j].nsin_family = htons(AF_INET);
+  common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
   return kEipStatusOk;
 }
@@ -314,11 +314,11 @@ EipStatus OpenProducingPointToPointConnection(
 
   if (kCipItemIdSocketAddressInfoTargetToOriginator
       == common_packet_format_data->address_info_item[0].type_id) {
-    port = common_packet_format_data->address_info_item[0].nsin_port;
+    port = common_packet_format_data->address_info_item[0].sin_port;
   } else {
     if (kCipItemIdSocketAddressInfoTargetToOriginator
         == common_packet_format_data->address_info_item[1].type_id) {
-      port = common_packet_format_data->address_info_item[1].nsin_port;
+      port = common_packet_format_data->address_info_item[1].sin_port;
     }
   }
 
@@ -351,7 +351,7 @@ EipStatus OpenProducingMulticastConnection(
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
                                    connection_object, common_packet_format_data);
   } else {
-    /* we need to infrom our originator on the correct connection id */
+    /* we need to inform our originator on the correct connection id */
     connection_object->produced_connection_id = existing_connection_object
         ->produced_connection_id;
   }
@@ -384,12 +384,12 @@ EipStatus OpenProducingMulticastConnection(
       kCipItemIdSocketAddressInfoTargetToOriginator;
   connection_object->remote_address.sin_family = AF_INET;
   connection_object->remote_address.sin_port = common_packet_format_data
-      ->address_info_item[j].nsin_port = htons(kOpenerEipIoUdpPort);
+      ->address_info_item[j].sin_port = htons(kOpenerEipIoUdpPort);
   connection_object->remote_address.sin_addr.s_addr = common_packet_format_data
-      ->address_info_item[j].nsin_addr = g_multicast_configuration
+      ->address_info_item[j].sin_addr = g_multicast_configuration
       .starting_multicast_address;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
-  common_packet_format_data->address_info_item[j].nsin_family = htons(AF_INET);
+  common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
   return kEipStatusOk;
 }
@@ -406,20 +406,19 @@ EipStatus OpenProducingMulticastConnection(
 EipStatus OpenMulticastConnection(
     UdpCommuncationDirection direction, ConnectionObject *connection_object,
     CipCommonPacketFormatData *common_packet_format_data) {
-  int j;
-  struct sockaddr_in socket_address;
+  int j = 0;
   int socket;
 
-  j = 0; /* allocate an unused sockaddr struct to use */
+
   if (0 != g_common_packet_format_data_item.address_info_item[0].type_id) {
     if ((kUdpCommuncationDirectionConsuming == direction)
         && (kCipItemIdSocketAddressInfoOriginatorToTarget
             == common_packet_format_data->address_info_item[0].type_id)) {
-      /* for consuming connection points the originator can choos the multicast address to use
+      /* for consuming connection points the originator can choose the multicast address to use
        * we have a given address type so use it */
     } else {
       j = 1;
-      /* if the type is not zero (not used) or if a given tpye it has to be the correct one */
+      /* if the type is not zero (not used) or if a given type it has to be the correct one */
       if ((0 != g_common_packet_format_data_item.address_info_item[1].type_id)
           && (!((kUdpCommuncationDirectionConsuming == direction)
               && (kCipItemIdSocketAddressInfoOriginatorToTarget
@@ -431,29 +430,31 @@ EipStatus OpenMulticastConnection(
   }
 
   if (0 == common_packet_format_data->address_info_item[j].type_id) { /* we are using an unused item initialize it with the default multicast address */
-    common_packet_format_data->address_info_item[j].nsin_family = htons(
+    common_packet_format_data->address_info_item[j].sin_family = htons(
         AF_INET);
-    common_packet_format_data->address_info_item[j].nsin_port = htons(
+    common_packet_format_data->address_info_item[j].sin_port = htons(
         kOpenerEipIoUdpPort);
-    common_packet_format_data->address_info_item[j].nsin_addr =
+    common_packet_format_data->address_info_item[j].sin_addr =
         g_multicast_configuration.starting_multicast_address;
     memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
     common_packet_format_data->address_info_item[j].length = 16;
   }
 
   if (htons(AF_INET)
-      != common_packet_format_data->address_info_item[j].nsin_family) {
+      != common_packet_format_data->address_info_item[j].sin_family) {
     OPENER_TRACE_ERR(
         "Sockaddr Info Item with wrong sin family value recieved\n");
     return kEipStatusError;
   }
 
+  /* allocate an unused sockaddr struct to use */
+  struct sockaddr_in socket_address;
   socket_address.sin_family = ntohs(
-      common_packet_format_data->address_info_item[j].nsin_family);
+      common_packet_format_data->address_info_item[j].sin_family);
   socket_address.sin_addr.s_addr =
-      common_packet_format_data->address_info_item[j].nsin_addr;
+      common_packet_format_data->address_info_item[j].sin_addr;
   socket_address.sin_port = common_packet_format_data->address_info_item[j]
-      .nsin_port;
+      .sin_port;
 
   socket = CreateUdpSocket(direction, &socket_address); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
@@ -514,7 +515,6 @@ EipUint16 HandleConfigData(CipClass *assembly_class,
 }
 
 void CloseIoConnection(ConnectionObject *connection_object) {
-  ConnectionObject *next_non_control_master_connection;
 
   CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
                     connection_object->connection_path.connection_point[1],
@@ -527,7 +527,7 @@ void CloseIoConnection(ConnectionObject *connection_object) {
             & kRoutingTypeMulticastConnection))
         && (kEipInvalidSocket
             != connection_object->socket[kUdpCommuncationDirectionProducing])) {
-      next_non_control_master_connection = GetNextNonControlMasterConnection(
+      ConnectionObject *next_non_control_master_connection = GetNextNonControlMasterConnection(
           connection_object->connection_path.connection_point[1]);
       if (NULL != next_non_control_master_connection) {
         next_non_control_master_connection->socket[kUdpCommuncationDirectionProducing] =
@@ -714,16 +714,16 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
 }
 
 EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
-  int originator_to_target_connection_type,
-      target_to_originator_connection_type;
+
   int eip_status = kEipStatusOk;
   /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
   CipCommonPacketFormatData *common_packet_format_data =
       &g_common_packet_format_data_item;
 
-  originator_to_target_connection_type = (connection_object
+  int originator_to_target_connection_type = (connection_object
       ->o_to_t_network_connection_parameter & 0x6000) >> 13;
-  target_to_originator_connection_type = (connection_object
+
+  int target_to_originator_connection_type = (connection_object
       ->t_to_o_network_connection_parameter & 0x6000) >> 13;
 
   /* open a connection "point to point" or "multicast" based on the ConnectionParameter */

@@ -263,7 +263,6 @@ EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response) {
   EipUint16 connection_status = kConnectionManagerStatusCodeSuccess;
-  EipUint32 temp;
   ConnectionManagementHandling *connection_management_entry;
 
   (void) instance; /*suppress compiler warning */
@@ -324,7 +323,7 @@ EipStatus ForwardOpen(CipInstance *instance,
   g_dummy_connection_object.t_to_o_requested_packet_interval =
       GetDintFromMessage(&message_router_request->data);
 
-  temp = g_dummy_connection_object.t_to_o_requested_packet_interval
+  EipUint32 temp = g_dummy_connection_object.t_to_o_requested_packet_interval
       % (kOpenerTimerTickInMilliSeconds * 1000);
   if (temp > 0) {
     g_dummy_connection_object.t_to_o_requested_packet_interval =
@@ -463,28 +462,23 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest * message_router_request,
                        CipMessageRouterResponse * message_router_response) {
-  EipUint16 connection_serial_number;
-  EipUint16 originator_vendor_id;
-  EipUint32 originator_serial_number;
-  ConnectionObject *connection_object;
-  ConnectionManagerStatusCode connection_status;
-
   /*Suppress compiler warning*/
   (void) instance;
 
   /* check connection_serial_number && originator_vendor_id && originator_serial_number if connection is established */
-  connection_status =
+  ConnectionManagerStatusCode connection_status =
       kConnectionManagerStatusCodeErrorConnectionNotFoundAtTargetApplication;
-  connection_object = g_active_connection_list;
+  ConnectionObject *connection_object = g_active_connection_list;
 
   /* set AddressInfo Items to invalid TypeID to prevent assembleLinearMsg to read them */
   g_common_packet_format_data_item.address_info_item[0].type_id = 0;
   g_common_packet_format_data_item.address_info_item[1].type_id = 0;
 
   message_router_request->data += 2; /* ignore Priority/Time_tick and Time-out_ticks */
-  connection_serial_number = GetIntFromMessage(&message_router_request->data);
-  originator_vendor_id = GetIntFromMessage(&message_router_request->data);
-  originator_serial_number = GetDintFromMessage(&message_router_request->data);
+
+  EipUint16 connection_serial_number = GetIntFromMessage(&message_router_request->data);
+  EipUint16 originator_vendor_id = GetIntFromMessage(&message_router_request->data);
+  EipUint32 originator_serial_number = GetDintFromMessage(&message_router_request->data);
 
   OPENER_TRACE_INFO("ForwardClose: ConnSerNo %d\n", connection_serial_number);
 
@@ -497,7 +491,8 @@ EipStatus ForwardClose(CipInstance *instance,
           && (connection_object->originator_vendor_id == originator_vendor_id)
           && (connection_object->originator_serial_number
               == originator_serial_number)) {
-        /* found the corresponding connection object -> close it */OPENER_ASSERT(
+        /* found the corresponding connection object -> close it */
+        OPENER_ASSERT(
             NULL != connection_object->connection_close_function);
         connection_object->connection_close_function(connection_object);
         connection_status = kConnectionManagerStatusCodeSuccess;
@@ -969,9 +964,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
       if (0 == class) {
         OPENER_TRACE_ERR("classid %"PRIx32" not found\n",
                          connection_object->connection_path.class_id);
-        if (connection_object->connection_path.class_id >= 0xC8) /*reserved range of class ids */
-
-        {
+        if (connection_object->connection_path.class_id >= 0xC8) { /*reserved range of class ids */
           *extended_error =
               kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
         } else {
@@ -979,7 +972,9 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
               kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
         }
         return kCipErrorConnectionFailure;
-      }OPENER_TRACE_INFO("classid %"PRIx32" (%s)\n",
+      }
+
+      OPENER_TRACE_INFO("classid %"PRIx32" (%s)\n",
                          connection_object->connection_path.class_id,
                          class->class_name);
     } else {
@@ -1110,7 +1105,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
             } else {
               *extended_error = connection_object->connection_path_size
                   - remaining_path_size; /*offset in 16Bit words where within the connection path the error happend*/
-              return 0x04; /*status code for invalid segment type*/
+              return kCipErrorPathSegmentError; /*status code for invalid segment type*/
             }
             break;
           default:

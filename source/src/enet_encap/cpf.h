@@ -39,8 +39,8 @@ typedef struct {
 } AddressData;
 
 typedef struct {
-  EipUint16 type_id;
-  EipUint16 length;
+  CipUint type_id;
+  CipUint length;
   AddressData data;
 } AddressItem;
 
@@ -48,24 +48,24 @@ typedef struct {
   EipUint16 type_id;
   EipUint16 length;
   EipUint8 *data;
-} S_Data_Item;
+} DataItem;
 
 typedef struct {
-  EipUint16 type_id;
-  EipUint16 length;
-  EipInt16 nsin_family;
-  EipUint16 nsin_port;
-  EipUint32 nsin_addr;
-  EipUint8 nasin_zero[8];
-} SocketAddrressInfoItem;
+  CipUint type_id;
+  CipUint length;
+  CipInt sin_family;
+  CipUint sin_port;
+  CipUdint sin_addr;
+  CipUsint nasin_zero[8];
+} SocketAddressInfoItem;
 
 /* this one case of a CPF packet is supported:*/
 
 typedef struct {
   EipUint16 item_count;
   AddressItem address_item;
-  S_Data_Item data_item;
-  SocketAddrressInfoItem address_info_item[2];
+  DataItem data_item;
+  SocketAddressInfoItem address_info_item[2];
 } CipCommonPacketFormatData;
 
 /** @ingroup ENCAP
