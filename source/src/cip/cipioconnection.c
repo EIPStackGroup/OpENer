@@ -394,7 +394,7 @@ EipStatus OpenProducingMulticastConnection(
   return kEipStatusOk;
 }
 
-/*   @brief Open a Multicast connection dependent on @var direction.
+/**  @brief Open a Multicast connection dependent on @var direction.
  *
  *   @param direction Flag to indicate if consuming or producing.
  *   @param connection_object  pointer to registered Object in ConnectionManager.
