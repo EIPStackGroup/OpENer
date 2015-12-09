@@ -16,10 +16,11 @@ configure_file( CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake )
 add_subdirectory( utils )
 add_executable( OpENer_Tests OpENerTests.cpp )
 
-set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${CPPUTEST_HOME}/lib )
+find_library ( CPPUTEST_LIBRARY CppUTest ${CPPUTEST_HOME}/cpputest_build/lib )
+find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/lib )
 
-target_link_libraries( OpENer_Tests CppUTest CppUTestExt )
-target_link_libraries( OpENer_Tests UtilsTest Utils )
+target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )
+target_link_libraries( OpENer_Tests UtilsTest Utils ) 
 
 ########################################
 # Adds test to CTest environment       #

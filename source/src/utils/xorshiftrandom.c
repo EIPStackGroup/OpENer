@@ -23,7 +23,7 @@ void CalculateNextSeed(void) {
   xor_shift_seed ^= xor_shift_seed << 5;
 }
 
-uint32_t NextXorShiftUInt32(void) {
+uint32_t NextXorShiftUint32(void) {
   CalculateNextSeed();
   return xor_shift_seed;
 }
