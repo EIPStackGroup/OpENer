@@ -44,14 +44,14 @@ const int kSenderContextSize = 8; /**< size of sender context in encapsulation h
 
 /** @brief definition of known encapsulation commands */
 typedef enum {
-  kEncapsulationCommandNoOperation = 0x0000,
-  kEncapsulationCommandListServices = 0x0004,
-  kEncapsulationCommandListIdentity = 0x0063,
-  kEncapsulationCommandListInterfaces = 0x0064,
-  kEncapsulationCommandRegisterSession = 0x0065,
-  kEncapsulationCommandUnregisterSession = 0x0066,
-  kEncapsulationCommandSendRequestReplyData = 0x006F,
-  kEncapsulationCommandSendUnitData = 0x0070
+  kEncapsulationCommandNoOperation = 0x0000, /**< only allowed for TCP */
+  kEncapsulationCommandListServices = 0x0004, /**< allowed for both UDP and TCP */
+  kEncapsulationCommandListIdentity = 0x0063, /**< allowed for both UDP and TCP */
+  kEncapsulationCommandListInterfaces = 0x0064, /**< optional, allowed for both UDP and TCP */
+  kEncapsulationCommandRegisterSession = 0x0065, /**< only allowed for TCP */
+  kEncapsulationCommandUnregisterSession = 0x0066, /**< only allowed for TCP */
+  kEncapsulationCommandSendRequestReplyData = 0x006F, /**< only allowed for TCP */
+  kEncapsulationCommandSendUnitData = 0x0070 /**< only allowed for TCP */
 } EncapsulationCommand;
 
 /** @brief definition of capability flags */
@@ -357,7 +357,7 @@ void HandleReceivedListIdentityCommandUdp(int socket,
 int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buffer) {
   EipUint8 *communication_buffer_runner = communication_buffer;
 
-  AddIntToMessage(1, &communication_buffer_runner); /* one item */
+  AddIntToMessage(1, &communication_buffer_runner); /* Item count: one item */
   AddIntToMessage(kCipItemIdListIdentityResponse, &communication_buffer_runner);
 
   EipByte *id_length_buffer = communication_buffer_runner;
