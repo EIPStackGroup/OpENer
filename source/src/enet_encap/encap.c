@@ -365,7 +365,7 @@ int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buff
 
   AddIntToMessage(kSupportedProtocolVersion, &communication_buffer_runner);
 
-  EncapsulateIpAddress(kOpenerEthernetPort,
+  EncapsulateIpAddress(htons(kOpenerEthernetPort),
                        interface_configuration_.ip_address,
                        communication_buffer_runner);
   communication_buffer_runner += 8;

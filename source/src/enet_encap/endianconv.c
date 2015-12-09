@@ -3,6 +3,8 @@
  * All rights reserved. 
  *
  ******************************************************************************/
+#include <sys/socket.h>
+
 #include "endianconv.h"
 
 OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
@@ -105,45 +107,7 @@ void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
 
 #endif
 
-/**
- * @brief Encapsulates the IP address and port into the package
- *
- * @param port IP Port
- * @param address IP Address
- * @param communication_buffer Buffer for constructing the message
- */
 void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
-                          EipByte *communication_buffer) {
-  if (kOpENerEndianessLittle == g_opener_platform_endianess) {
-    AddIntToMessage(htons(AF_INET), &communication_buffer);
-    AddIntToMessage(htons(port), &communication_buffer);
-    AddDintToMessage(address, &communication_buffer);
-  } else {
-    if (kOpENerEndianessBig == g_opener_platform_endianess) {
-      communication_buffer[0] = (unsigned char) (AF_INET >> 8);
-      communication_buffer[1] = (unsigned char) AF_INET;
-      communication_buffer += 2;
-
-      communication_buffer[0] = (unsigned char) (port >> 8);
-      communication_buffer[1] = (unsigned char) port;
-      communication_buffer += 2;
-
-      communication_buffer[3] = (unsigned char) address;
-      communication_buffer[2] = (unsigned char) (address >> 8);
-      communication_buffer[1] = (unsigned char) (address >> 16);
-      communication_buffer[0] = (unsigned char) (address >> 24);
-    }
-  }
-}
-
-/**
- * @brief encapsulates the IP address and port into the package (Common Paket Format variant)
- *
- * @param port IP port
- * @param address IP address
- * @param communication_buffer buffer for constructing the message
- */
-void EncapsulateIpAddressCommonPaketFormat(EipUint16 port, EipUint32 address,
                                            EipByte *communication_buffer) {
   if (kOpENerEndianessLittle == g_opener_platform_endianess) {
     AddIntToMessage(htons(AF_INET), &communication_buffer);

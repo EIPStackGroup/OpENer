@@ -96,13 +96,13 @@ TEST(EndianConversion, AddLintToMessage) {
   POINTERS_EQUAL(message + 8, message_pointer)
 }
 
-TEST(EndianConversion, EncapsulateIpAddressCommonPaketFormat) {
+TEST(EndianConversion, EncapsulateIpAddress) {
   CipOctet ip_message[8];
   CipOctet *ip_message_ponter = ip_message;
 
   DetermineEndianess();
 
-  EncapsulateIpAddressCommonPaketFormat(0xAF12, 0x25E0C459, ip_message_ponter);
+  EncapsulateIpAddress(0xAF12, 0x25E0C459, ip_message_ponter);
 
   BYTES_EQUAL(AF_INET >> 8, ip_message[0]);
   BYTES_EQUAL(AF_INET, ip_message[1]);

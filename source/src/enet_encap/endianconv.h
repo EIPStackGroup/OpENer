@@ -58,12 +58,15 @@ void AddLintToMessage(EipUint64 pa_unData, EipUint8 **buffer);
 
 #endif
 
-void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
-                          EipByte *communication_buffer);
-
-/** @brief Encapsulate the sockaddr information as necessary for the Common Paket Format data items
+/** @brief Encapsulate the sockaddr information as necessary for the Common Packet Format data items
+ *
+ * Converts and adds the provided port and IP address into an common packet format message
+ *
+ * @param port Port of the socket, has to be provided in big-endian
+ * @param address IP address of the socket, has to be provided in big-endian
+ * @param communcation_buffer The message buffer for sending the message
  */
-void EncapsulateIpAddressCommonPaketFormat(EipUint16 port, EipUint32 address,
+void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
                                            EipByte *communication_buffer);
 
 /** Identify if we are running on a big or little endian system and set

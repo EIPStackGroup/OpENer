@@ -15,7 +15,6 @@
 #include "cipconnectionmanager.h"
 #include "trace.h"
 
-
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
 int NotifyCommonPacketFormat(EncapsulationData *receive_data,
@@ -29,8 +28,9 @@ int NotifyCommonPacketFormat(EncapsulationData *receive_data,
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
     return_value = kEipStatusOk; /* In cases of errors we normally need to send an error response */
-    if (g_common_packet_format_data_item.address_item.type_id == kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
-    { /* found null address item*/
+    if (g_common_packet_format_data_item.address_item.type_id
+        == kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
+        { /* found null address item*/
       if (g_common_packet_format_data_item.data_item.type_id
           == kCipItemIdUnconnectedMessage) { /* unconnected data item received*/
         return_value = NotifyMR(
@@ -224,7 +224,8 @@ int AssembleLinearMessage(
   AddIntToMessage(common_packet_format_data_item->item_count, &message); /* item count */
   size += 2;
   /* process Address Item */
-  if (common_packet_format_data_item->address_item.type_id == kCipItemIdNullAddress) { /* null address item -> address length set to 0 */
+  if (common_packet_format_data_item->address_item.type_id
+      == kCipItemIdNullAddress) { /* null address item -> address length set to 0 */
     AddIntToMessage(kCipItemIdNullAddress, &message);
     AddIntToMessage(0, &message);
     size += 4;
@@ -293,7 +294,8 @@ int AssembleLinearMessage(
       message++;
       *message = message_router_response->size_of_additional_status;
       message++;
-      for (int i = 0; i < message_router_response->size_of_additional_status; i++)
+      for (int i = 0; i < message_router_response->size_of_additional_status;
+          i++)
         AddIntToMessage(message_router_response->additional_status[i],
                         &message);
 
@@ -306,7 +308,8 @@ int AssembleLinearMessage(
                       &message);
       AddIntToMessage(common_packet_format_data_item->data_item.length,
                       &message);
-      for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
+      for (int i = 0; i < common_packet_format_data_item->data_item.length;
+          i++) {
         *message = (EipUint8) *(common_packet_format_data_item->data_item.data
             + i);
         message++;
@@ -331,7 +334,7 @@ int AssembleLinearMessage(
             common_packet_format_data_item->address_info_item[j].length,
             &message);
 
-        EncapsulateIpAddressCommonPaketFormat(
+        EncapsulateIpAddress(
             common_packet_format_data_item->address_info_item[j].sin_port,
             common_packet_format_data_item->address_info_item[j].sin_addr,
             message);
