@@ -29,16 +29,6 @@ extern EipUint16 device_type_;
 extern EipUint16 product_code_;
 extern CipRevision revision_;
 
-/* TODO: Check if these defines are needed!
- * #define CIP_CONN_PATH_INVALID 1
- * #define CIP_CONN_PATH_CONFIGURATION 2
- * #define CIP_CONN_PATH_CONSUMPTION 3
- * #define CIP_CONN_PATH_CONFIGURATION_AND_CONSUMPTION 4
- * #define CIP_CONN_PATH_PRODUCTION 5
- * #define CIP_CONN_PATH_CONFIGURATION_AND_PRODUCTION 6
- * #define CIP_CONN_PATH_CONSUMTION_AND_PRODUCTION 7
- * #define CIP_CONN_PATH_CONFIGURATION_AND_CONSUMPTION_AND_PRODUCTION 8
- */
 #define CIP_CONN_TYPE_MASK 0x6000   /**< Bit mask filter on bit 13 & 14 */
 
 const int g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
@@ -138,6 +128,10 @@ ConnectionManagementHandling* GetConnMgmEntry(EipUint32 class_id);
 
 void InitializeConnectionManagerData(void);
 
+/** @brief gets the padded logical path TODO: enhance documentation
+ * @param logical_path_segment TheLogical Path Segment
+ *
+ */
 unsigned int GetPaddedLogicalPath(unsigned char **logical_path_segment) {
   unsigned int padded_logical_path = *(*logical_path_segment)++;
 
@@ -169,16 +163,17 @@ EipUint32 GetConnectionId(void) {
 EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InitializeConnectionManagerData();
 
-  CipClass *connection_manager = CreateCipClass(g_kCipConnectionManagerClassCode, /* class ID */
-                                      0, /* # of class attributes */
-                                      0xC6, /* class getAttributeAll mask */
-                                      0, /* # of class services */
-                                      0, /* # of instance attributes */
-                                      0xffffffff, /* instance getAttributeAll mask */
-                                      3, /* # of instance services */
-                                      1, /* # of instances */
-                                      "connection manager", /* class name */
-                                      1); /* revision */
+  CipClass *connection_manager = CreateCipClass(
+      g_kCipConnectionManagerClassCode, /* class ID */
+      0, /* # of class attributes */
+      0xC6, /* class getAttributeAll mask */
+      0, /* # of class services */
+      0, /* # of instance attributes */
+      0xffffffff, /* instance getAttributeAll mask */
+      3, /* # of instance services */
+      1, /* # of instances */
+      "connection manager", /* class name */
+      1); /* revision */
   if (connection_manager == NULL)
     return kEipStatusError;
 
@@ -476,9 +471,12 @@ EipStatus ForwardClose(CipInstance *instance,
 
   message_router_request->data += 2; /* ignore Priority/Time_tick and Time-out_ticks */
 
-  EipUint16 connection_serial_number = GetIntFromMessage(&message_router_request->data);
-  EipUint16 originator_vendor_id = GetIntFromMessage(&message_router_request->data);
-  EipUint32 originator_serial_number = GetDintFromMessage(&message_router_request->data);
+  EipUint16 connection_serial_number = GetIntFromMessage(
+      &message_router_request->data);
+  EipUint16 originator_vendor_id = GetIntFromMessage(
+      &message_router_request->data);
+  EipUint32 originator_serial_number = GetDintFromMessage(
+      &message_router_request->data);
 
   OPENER_TRACE_INFO("ForwardClose: ConnSerNo %d\n", connection_serial_number);
 
@@ -492,8 +490,7 @@ EipStatus ForwardClose(CipInstance *instance,
           && (connection_object->originator_serial_number
               == originator_serial_number)) {
         /* found the corresponding connection object -> close it */
-        OPENER_ASSERT(
-            NULL != connection_object->connection_close_function);
+        OPENER_ASSERT(NULL != connection_object->connection_close_function);
         connection_object->connection_close_function(connection_object);
         connection_status = kConnectionManagerStatusCodeSuccess;
         break;
@@ -614,7 +611,8 @@ EipStatus AssembleForwardOpenResponse(
       &g_common_packet_format_data_item;
   EipByte *message = message_router_response->data;
   cip_common_packet_format_data->item_count = 2;
-  cip_common_packet_format_data->data_item.type_id = kCipItemIdUnconnectedMessage;
+  cip_common_packet_format_data->data_item.type_id =
+      kCipItemIdUnconnectedMessage;
   cip_common_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
   cip_common_packet_format_data->address_item.length = 0;
 
@@ -723,7 +721,8 @@ EipStatus AssembleForwardCloseResponse(
       &g_common_packet_format_data_item;
   EipByte *message = message_router_response->data;
   common_data_packet_format_data->item_count = 2;
-  common_data_packet_format_data->data_item.type_id = kCipItemIdUnconnectedMessage;
+  common_data_packet_format_data->data_item.type_id =
+      kCipItemIdUnconnectedMessage;
   common_data_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
   common_data_packet_format_data->address_item.length = 0;
 
@@ -975,8 +974,8 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
       }
 
       OPENER_TRACE_INFO("classid %"PRIx32" (%s)\n",
-                         connection_object->connection_path.class_id,
-                         class->class_name);
+                        connection_object->connection_path.class_id,
+                        class->class_name);
     } else {
       *extended_error =
           kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
