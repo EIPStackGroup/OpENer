@@ -9,8 +9,6 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#include "opener_user_conf.h"
-
 /** @file typedefs.h
  Do not use interface types for internal variables, such as "int i;", which is
  commonly used for loop counters or counting things.

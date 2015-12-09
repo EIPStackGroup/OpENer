@@ -32,6 +32,14 @@ set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_function_checks.cmake )
 
 #######################################
+# OpENer 64-bit data types            #
+#######################################
+set( OpENer_64_BIT_DATA_TYPES_ENABLED CACHE BOOL "Enable 64-bit data type support" )
+if( OpENer_64_BIT_DATA_TYPES_ENABLED )
+  add_definitions( -DOPENER_SUPPORT_64BIT_DATATYPES )
+endif( OpENer_64_BIT_DATA_TYPES_ENABLED )
+
+#######################################
 # OpENer tracer switches              #
 #######################################
 set( OpENer_TRACES OFF CACHE BOOL "Activate OpENer traces" )

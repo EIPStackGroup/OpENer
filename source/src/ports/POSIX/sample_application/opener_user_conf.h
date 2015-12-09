@@ -21,14 +21,9 @@
  *    - ntohl
  *    - inet_addr
  */
-#ifdef WIN32
-#include <windows.h>
-typedef unsigned short in_port_t;
-#else
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#endif
 
 /** @brief Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
@@ -155,10 +150,5 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
  *  The same buffer is used for the replied explicit message.
  */
 #define PC_OPENER_ETHERNET_BUFFER_SIZE 512
-
-/** @brief If this define is here opener will enable 64Bit data type support.
- *
- */
-#define OPENER_SUPPORT_64BIT_DATATYPES 1
 
 #endif /*OPENER_USER_CONF_H_*/
