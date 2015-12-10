@@ -4,6 +4,8 @@
  *
  ******************************************************************************/
 #include <sys/socket.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "endianconv.h"
 
@@ -128,6 +130,9 @@ void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
       communication_buffer[2] = (unsigned char) (address >> 8);
       communication_buffer[1] = (unsigned char) (address >> 16);
       communication_buffer[0] = (unsigned char) (address >> 24);
+    } else {
+      fprintf(stderr, "No endianess detected! Probably DetermineEndianess was not executed!");
+      exit (EXIT_FAILURE);
     }
   }
 }
