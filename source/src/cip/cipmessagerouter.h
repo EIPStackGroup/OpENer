@@ -48,6 +48,6 @@ EipStatus NotifyMR(EipUint8 *data, int data_length);
  *  @param object CIP class to be registered
  *  @return EIP_OK on success
  */
-EipStatus RegisterClass(CipClass *object);
+EipStatus RegisterCipClass(CipClass *object);
 
 #endif /* OPENER_CIPMESSAGEROUTER_H_ */

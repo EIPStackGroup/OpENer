@@ -33,7 +33,7 @@ CipMessageRouterObject *g_first_object = 0;
  *  @return status      0 .. success
  *                     -1 .. error no memory available to register more objects
  */
-EipStatus RegisterClass(CipClass *cip_class);
+EipStatus RegisterCipClass(CipClass *cip_class);
 
 /** @brief Create Message Router Request structure out of the received data.
  * 
@@ -115,7 +115,7 @@ CipInstance *GetCipInstance(CipClass *cip_class, EipUint32 instance_number) {
   return NULL;
 }
 
-EipStatus RegisterClass(CipClass *cip_class) {
+EipStatus RegisterCipClass(CipClass *cip_class) {
   CipMessageRouterObject **message_router_object = &g_first_object;
 
   while (*message_router_object)

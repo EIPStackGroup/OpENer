@@ -64,7 +64,7 @@ void SetDeviceStatus(EipUint16 status) {
  * @param instance
  * @param message_router_request
  * @param message_router_response
- * @returns Currently always kEipOkDend is returned
+ * @returns Currently always kEipOkSend is returned
  */
 static EipStatus Reset(CipInstance *instance, /* pointer to instance*/
                        CipMessageRouterRequest *message_router_request, /* pointer to message router request*/
