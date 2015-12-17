@@ -67,7 +67,7 @@ int main(int argc, char *arg[]) {
   CipStackInit(nUniqueConnectionID);
 
   /* Setup Network Handles */
-  if (EIP_OK == NetworkHandlerInitialize()) {
+  if (kEipStatusOk == NetworkHandlerInitialize()) {
     g_end_stack = 0;
 #ifndef WIN32
     /* register for closing signals so that we can trigger the stack to end */
@@ -76,7 +76,7 @@ int main(int argc, char *arg[]) {
 
     /* The event loop. Put other processing you need done continually in here */
     while (1 != g_end_stack) {
-      if (EIP_OK != NetworkHandlerProcessOnce()) {
+      if (kEipStatusOk != NetworkHandlerProcessOnce()) {
         break;
       }
     }
