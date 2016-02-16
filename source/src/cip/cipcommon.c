@@ -246,7 +246,7 @@ CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
     AddCipInstances(class, number_of_instances); /*TODO handle return value and clean up if necessary*/
   }
 
-  if ((RegisterClass(class)) == kEipStatusError) { /* no memory to register class in Message Router */
+  if ((RegisterCipClass(class)) == kEipStatusError) { /* no memory to register class in Message Router */
     return 0; /*TODO handle return value and clean up if necessary*/
   }
 

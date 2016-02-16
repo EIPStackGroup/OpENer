@@ -58,7 +58,7 @@ EipStatus ApplicationInitialization(void) {
                                      DEMO_APP_INPUT_ASSEMBLY_NUM,
                                      DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
-  return EIP_OK;
+  return kEipStatusOk;
 }
 
 void HandleApplication(void) {
@@ -67,7 +67,7 @@ void HandleApplication(void) {
 
 void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
                        unsigned int pa_unInputAssembly,
-                       EIOConnectionEvent pa_eIOConnectionEvent) {
+                       IoConnectionEvent pa_eIOConnectionEvent) {
   /* maintain a correct output state according to the connection state*/
 
   (void) pa_unOutputAssembly; /* suppress compiler warning */
@@ -76,7 +76,7 @@ void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
 }
 
 EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
-  EipStatus nRetVal = EIP_OK;
+  EipStatus nRetVal = kEipStatusOk;
 
   /*handle the data received e.g., update outputs of the device */
   switch (pa_pstInstance->instance_number) {
@@ -96,7 +96,7 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
        * However in order to pass the test we accept any data given.
        * EIP_ERROR
        */
-      nRetVal = EIP_OK;
+      nRetVal = kEipStatusOk;
       break;
   }
   return nRetVal;
@@ -118,7 +118,7 @@ EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
 
 EipStatus ResetDevice(void) {
   /* add reset code here*/
-  return EIP_OK;
+  return kEipStatusOk;
 }
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
@@ -126,7 +126,7 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
 
   /*than perform device reset*/
   ResetDevice();
-  return EIP_OK;
+  return kEipStatusOk;
 }
 
 void *

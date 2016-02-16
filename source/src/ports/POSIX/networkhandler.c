@@ -106,13 +106,6 @@ NetworkStatus g_network_status;
 
 EipStatus NetworkHandlerInitialize(void) {
 
-#ifdef WIN32
-  WORD wVersionRequested;
-  WSADATA wsaData;
-  wVersionRequested = MAKEWORD(2, 2);
-  WSAStartup(wVersionRequested, &wsaData);
-#endif
-
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
   FD_ZERO(&read_socket);
@@ -325,7 +318,9 @@ EipStatus NetworkHandlerProcessOnce(void) {
 
 EipStatus NetworkHandlerFinish(void) {
   CloseSocket(g_network_status.tcp_listener);
+  CloseSocket(g_network_status.udp_unicast_listener);
   CloseSocket(g_network_status.udp_local_broadcast_listener);
+  CloseSocket(g_network_status.udp_global_broadcast_listener);
   return kEipStatusOk;
 }
 
@@ -487,11 +482,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   struct sockaddr_in peer_address;
   int new_socket;
 
-#ifdef WIN32
-  unsigned long peer_address_length;
-#else
   socklen_t peer_address_length;
-#endif
 
   peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */

@@ -3,7 +3,13 @@
  * All rights reserved. 
  *
  ******************************************************************************/
+
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/socket.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 
