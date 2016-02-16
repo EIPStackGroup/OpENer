@@ -24,9 +24,9 @@
 typedef enum {
   kCipItemIdNullAddress = 0x0000, /**< Type: Address; Indicates that encapsulation routing is not needed. */
   kCipItemIdListIdentityResponse = 0x000C,
-  kCipItemIdConnectionBased = 0x00A1, /**< Type: Address; Connection-based, used for connected messages */
-  kCipItemIdConnectedTransportPacket = 0x00B1, /**< Type: Data; Connected Transport packet */
-  kCipItemIdUnconnectedMessage = 0x00B2, /**< Type: Data; Unconnected message */
+  kCipItemIdConnectionAddress = 0x00A1, /**< Type: Address; Connection-based, used for connected messages, see Vol.2, p.42 */
+  kCipItemIdConnectedDataItem = 0x00B1, /**< Type: Data; Connected data item, see Vol.2, p.43 */
+  kCipItemIdUnconnectedDataItem = 0x00B2, /**< Type: Data; Unconnected message */
   kCipItemIdListServiceResponse = 0x0100,
   kCipItemIdSocketAddressInfoOriginatorToTarget = 0x8000, /**< Type: Data; Sockaddr info item originator to target */
   kCipItemIdSocketAddressInfoTargetToOriginator = 0x8001, /**< Type: Data; Sockaddr info item target to originator */

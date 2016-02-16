@@ -44,12 +44,13 @@ EipUint32 GetDintFromMessage(EipUint8** buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
+int AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
   p[1] = (unsigned char) (data >> 8);
   *buffer += 2;
+  return 2;
 }
 
 /**
@@ -57,7 +58,7 @@ void AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddDintToMessage(EipUint32 data, EipUint8** buffer) {
+int AddDintToMessage(EipUint32 data, EipUint8** buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -65,6 +66,8 @@ void AddDintToMessage(EipUint32 data, EipUint8** buffer) {
   p[2] = (unsigned char) (data >> 16);
   p[3] = (unsigned char) (data >> 24);
   *buffer += 4;
+
+  return 4;
 }
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
@@ -94,7 +97,7 @@ EipUint64 GetLintFromMessage(EipUint8 **buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
+int AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
   EipUint8 *buffer_address = *buffer;
   buffer_address[0] = (EipUint8) (data >> 56) & 0xFF;
   buffer_address[1] = (EipUint8) (data >> 48) & 0xFF;
@@ -105,33 +108,40 @@ void AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
   buffer_address[6] = (EipUint8) (data >> 8) & 0xFF;
   buffer_address[7] = (EipUint8) (data) & 0xFF;
   (*buffer) += 8;
+
+  return 8;
 }
 
 #endif
 
-void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
+
+int EncapsulateIpAddress(EipUint16 port, EipUint32 address,
                                            EipByte *communication_buffer) {
+  int size = 0;
   if (kOpENerEndianessLittle == g_opener_platform_endianess) {
-    AddIntToMessage(htons(AF_INET), &communication_buffer);
-    AddIntToMessage(port, &communication_buffer);
-    AddDintToMessage(address, &communication_buffer);
+    size += AddIntToMessage(htons(AF_INET), &communication_buffer);
+    size += AddIntToMessage(port, &communication_buffer);
+    size += AddDintToMessage(address, &communication_buffer);
 
   } else {
     if (kOpENerEndianessBig == g_opener_platform_endianess) {
       communication_buffer[0] = (unsigned char) (AF_INET >> 8);
       communication_buffer[1] = (unsigned char) AF_INET;
       communication_buffer += 2;
+      size += 2;
 
       communication_buffer[0] = (unsigned char) (port >> 8);
       communication_buffer[1] = (unsigned char) port;
       communication_buffer += 2;
+      size += 2;
 
       communication_buffer[3] = (unsigned char) address;
       communication_buffer[2] = (unsigned char) (address >> 8);
       communication_buffer[1] = (unsigned char) (address >> 16);
       communication_buffer[0] = (unsigned char) (address >> 24);
+      size += 4;
     } else {
-      fprintf(stderr, "No endianess detected! Probably DetermineEndianess was not executed!");
+      fprintf(stderr, "No endianess detected! Probably the DetermineEndianess function was not executed!");
       exit (EXIT_FAILURE);
     }
   }

@@ -32,7 +32,7 @@ int NotifyCommonPacketFormat(EncapsulationData *receive_data,
         == kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
         { /* found null address item*/
       if (g_common_packet_format_data_item.data_item.type_id
-          == kCipItemIdUnconnectedMessage) { /* unconnected data item received*/
+          == kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
         return_value = NotifyMR(
             g_common_packet_format_data_item.data_item.data,
             g_common_packet_format_data_item.data_item.length);
@@ -68,7 +68,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
   } else {
     return_value = kEipStatusError; /* For connected explicit messages status always has to be 0*/
     if (g_common_packet_format_data_item.address_item.type_id
-        == kCipItemIdConnectionBased) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
+        == kCipItemIdConnectionAddress) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
         { /* ConnectedAddressItem item */
       ConnectionObject *connection_object = GetConnectedObject(
           g_common_packet_format_data_item.address_item.data
@@ -81,7 +81,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
 
         /*TODO check connection id  and sequence count    */
         if (g_common_packet_format_data_item.data_item.type_id
-            == kCipItemIdConnectedTransportPacket) { /* connected data item received*/
+            == kCipItemIdConnectedDataItem) { /* connected data item received*/
           EipUint8 *pnBuf = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
               (EipUint32) GetIntFromMessage(&pnBuf);
@@ -201,9 +201,134 @@ EipStatus CreateCommonPacketFormatStructure(
   }
 }
 
-/** @brief Copy data from message_router_response struct and common_packet_format_data_item into linear memory in pa_msg for transmission over in encapsulation.
+/* null address item -> address length set to 0 */
+/**
+ * Encodes a Null Address Item into the message frame
+ * @param message The message frame
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeNullAddressItem(EipUint8** message, int size) {
+  /* null address item -> address length set to 0 */
+  size += AddIntToMessage(kCipItemIdNullAddress, message);
+  size += AddIntToMessage(0, message);
+  return size;
+}
+
+/* connected data item -> address length set to 4 and copy ConnectionIdentifier */
+/**
+ * Encodes a Connected Address Item into the message frame
+ * @param message The message frame
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeConnectedAddressItem(
+    EipUint8** message,
+    CipCommonPacketFormatData* common_packet_format_data_item, int size) {
+  /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
+  size += AddIntToMessage(kCipItemIdConnectionAddress, message);
+  size += AddIntToMessage(4, message);
+  size += AddDintToMessage(
+      common_packet_format_data_item->address_item.data.connection_identifier,
+      message);
+  return size;
+}
+
+/* TODO: Add doxygen documentation */
+/* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
+/* sequence number????? */
+int EncodeSequencedAddressItem(
+    EipUint8** message,
+    CipCommonPacketFormatData* common_packet_format_data_item, int size) {
+  /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
+  size += AddIntToMessage(kCipItemIdSequencedAddressItem, message);
+  size += AddIntToMessage(8, message);
+  size += AddDintToMessage(
+      common_packet_format_data_item->address_item.data.connection_identifier,
+      message);
+  size += AddDintToMessage(
+      common_packet_format_data_item->address_item.data.sequence_number,
+      message);
+  return size;
+}
+
+/**
+ * Adds the item count to the message frame
+ *
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message The message frame
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeItemCount(CipCommonPacketFormatData* common_packet_format_data_item,
+                    EipUint8** message, int size) {
+  size += AddIntToMessage(common_packet_format_data_item->item_count, message); /* item count */
+  return size;
+}
+
+/**
+ * Adds the data item type to the message frame
+ *
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message The message frame
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeDataItemType(
+    CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8** message, int size) {
+  size += AddIntToMessage(common_packet_format_data_item->data_item.type_id,
+                          message);
+  return size;
+}
+
+/**
+ * Adds the data item section length to the message frame
+ *
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message The message frame
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeDataItemLength(
+    CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8** message, int size) {
+  size += AddIntToMessage(common_packet_format_data_item->data_item.length,
+                          message);
+  return size;
+}
+
+/**
+ * Adds the data items to the message frame
+ *
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message The message frame
+ * @param size The actual size of the message frame
+ *
+ * @return The new size of the message frame after encoding
+ */
+int EncodeDataItemData(
+    CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8* message, int size) {
+  for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
+    *message = (EipUint8) *(common_packet_format_data_item->data_item.data + i);
+    message++;
+  }
+  size += (common_packet_format_data_item->data_item.length);
+  return size;
+}
+
+/** @brief Copy data from message_router_response struct and common_packet_format_data_item into linear memory in
+ * pa_msg for transmission over in encapsulation.
+ *
  * @param message_router_response	pointer to message router response which has to be aligned into linear memory.
- * @param common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
+ * @param common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
  * @param message		pointer to linear memory.
  *  @return length of reply in message in bytes
  * 			-1 .. error
@@ -221,62 +346,56 @@ int AssembleLinearMessage(
     size += 6;
   }
 
-  AddIntToMessage(common_packet_format_data_item->item_count, &message); /* item count */
-  size += 2;
+  size = EncodeItemCount(common_packet_format_data_item, &message, size);
+
   /* process Address Item */
-  if (common_packet_format_data_item->address_item.type_id
-      == kCipItemIdNullAddress) { /* null address item -> address length set to 0 */
-    AddIntToMessage(kCipItemIdNullAddress, &message);
-    AddIntToMessage(0, &message);
-    size += 4;
-  }
-  if (common_packet_format_data_item->address_item.type_id
-      == kCipItemIdConnectionBased) { /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
-    AddIntToMessage(kCipItemIdConnectionBased, &message);
-    AddIntToMessage(4, &message);
-    AddDintToMessage(
-        common_packet_format_data_item->address_item.data.connection_identifier,
-        &message);
-    size += 8;
-  }
-  /* sequence number????? */
-  if (common_packet_format_data_item->address_item.type_id
-      == kCipItemIdSequencedAddressItem) { /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
-    AddIntToMessage(kCipItemIdSequencedAddressItem, &message);
-    AddIntToMessage(8, &message);
-    AddDintToMessage(
-        common_packet_format_data_item->address_item.data.connection_identifier,
-        &message);
-    AddDintToMessage(
-        common_packet_format_data_item->address_item.data.sequence_number,
-        &message);
-    size += 12;
+  switch (common_packet_format_data_item->address_item.type_id) {
+    case kCipItemIdNullAddress: {
+      size = EncodeNullAddressItem(&message, size);
+      break;
+    }
+    case kCipItemIdConnectionAddress: {
+      size = EncodeConnectedAddressItem(&message,
+                                        common_packet_format_data_item, size);
+      break;
+    }
+    case kCipItemIdSequencedAddressItem: {
+      size = EncodeSequencedAddressItem(&message,
+                                        common_packet_format_data_item, size);
+      break;
+    }
   }
 
   /* process Data Item */
   if ((common_packet_format_data_item->data_item.type_id
-      == kCipItemIdUnconnectedMessage)
+      == kCipItemIdUnconnectedDataItem)
       || (common_packet_format_data_item->data_item.type_id
-          == kCipItemIdConnectedTransportPacket)) {
+          == kCipItemIdConnectedDataItem)) {
+
     if (message_router_response) {
-      AddIntToMessage(common_packet_format_data_item->data_item.type_id,
-                      &message);
+      size += EncodeDataItemType(common_packet_format_data_item, &message,
+                                 size);
 
       if (common_packet_format_data_item->data_item.type_id
-          == kCipItemIdConnectedTransportPacket) {
+          == kCipItemIdConnectedDataItem) { /* Connected Item */
+        /* 2 bytes*/
         AddIntToMessage(
-            (EipUint16) (message_router_response->data_length + 4 + 2
+            (EipUint16) (message_router_response->data_length + 4 + 2 /* data length bytes + reply service (1 byte) +
+        reserved (1 byte) + general status (1 byte) + size of additional status (1 byte)*/
                 + (2 * message_router_response->size_of_additional_status)),
             &message);
+        size += 2;
 
+        /* 2 bytes*/
         AddIntToMessage(
             (EipUint16) g_common_packet_format_data_item.address_item.data
                 .sequence_number,
             &message);
+        size += 2;
 
-        size += (4 + message_router_response->data_length + 4 + 2
-            + (2 * message_router_response->size_of_additional_status));
-      } else {
+        size += (message_router_response->data_length + 4
+            + (2 * message_router_response->size_of_additional_status)); /* Two bytes per additional status*/
+      } else { /* Unconnected Item */
         AddIntToMessage(
             (EipUint16) (message_router_response->data_length + 4
                 + (2 * message_router_response->size_of_additional_status)),
@@ -286,13 +405,14 @@ int AssembleLinearMessage(
       }
 
       /* write message router response into linear memory */
-      *message = message_router_response->reply_service;
+      *message = message_router_response->reply_service;  // 1 byte
       message++;
-      *message = message_router_response->reserved; /* reserved = 0 */
+      *message = message_router_response->reserved; /* reserved = 0 -- 1 byte*/
       message++;
-      *message = message_router_response->general_status;
+      *message = message_router_response->general_status;  // 1 byte
       message++;
-      *message = message_router_response->size_of_additional_status;
+
+      *message = message_router_response->size_of_additional_status;  // 1 byte
       message++;
       for (int i = 0; i < message_router_response->size_of_additional_status;
           i++)
@@ -304,19 +424,16 @@ int AssembleLinearMessage(
         message++;
       }
     } else { /* connected IO Message to send */
-      AddIntToMessage(common_packet_format_data_item->data_item.type_id,
-                      &message);
-      AddIntToMessage(common_packet_format_data_item->data_item.length,
-                      &message);
-      for (int i = 0; i < common_packet_format_data_item->data_item.length;
-          i++) {
-        *message = (EipUint8) *(common_packet_format_data_item->data_item.data
-            + i);
-        message++;
-      }
-      size += (common_packet_format_data_item->data_item.length + 4);
+      size += EncodeDataItemType(common_packet_format_data_item, &message,
+                                 size);
+
+      size += EncodeDataItemLength(common_packet_format_data_item, &message,
+                                   size);
+
+      size += EncodeDataItemData(common_packet_format_data_item, message, size);
     }
   }
+
   /* process SockAddr Info Items */
   /* make sure first the O->T and then T->O appears on the wire.
    * EtherNet/IP specification doesn't demand it, but there are EIP

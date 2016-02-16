@@ -84,6 +84,7 @@ TEST(EndianConversion, AddLintToMessage) {
 
   AddLintToMessage(value_to_add_to_message, &message_pointer);
 
+  /* Expected message from highest to lowest byte [30][52][09][84][0B][EF][2A][2D] */
   BYTES_EQUAL(0x2D, message[0]);
   BYTES_EQUAL(0x2A, message[1]);
   BYTES_EQUAL(0xEF, message[2]);

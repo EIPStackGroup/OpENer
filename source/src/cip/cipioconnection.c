@@ -621,14 +621,14 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
     common_packet_format_data->address_item.data.sequence_number =
         connection_object->eip_level_sequence_count_producing;
   } else {
-    common_packet_format_data->address_item.type_id = kCipItemIdConnectionBased;
+    common_packet_format_data->address_item.type_id = kCipItemIdConnectionAddress;
     common_packet_format_data->address_item.length = 4;
 
   }
   common_packet_format_data->address_item.data.connection_identifier =
       connection_object->produced_connection_id;
 
-  common_packet_format_data->data_item.type_id = kCipItemIdConnectedTransportPacket;
+  common_packet_format_data->data_item.type_id = kCipItemIdConnectedDataItem;
 
   CipByteArray *producing_instance_attributes =
       (CipByteArray *) connection_object->producing_instance->attributes->data;

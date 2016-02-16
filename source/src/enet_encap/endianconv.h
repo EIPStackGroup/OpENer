@@ -39,22 +39,34 @@ EipUint32 GetDintFromMessage(EipUint8 **buffer);
  * @brief Write an 16Bit integer to the network buffer.
  * @param data value to write
  * @param buffer pointer to the network buffer array. This pointer will be incremented by 2!
+ *
+ * @return Length in bytes of the encoded message
  */
-void AddIntToMessage(EipUint16 data, EipUint8 **buffer);
+int AddIntToMessage(EipUint16 data, EipUint8 **buffer);
 
 /** @ingroup ENCAP
  *
  * @brief Write an 32Bit integer to the network buffer.
  * @param data value to write
  * @param buffer pointer to the network buffer array. This pointer will be incremented by 4!
+ *
+ * @return Length in bytes of the encoded message
  */
-void AddDintToMessage(EipUint32 data, EipUint8 **buffer);
+int AddDintToMessage(EipUint32 data, EipUint8 **buffer);
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
 EipUint64 GetLintFromMessage(EipUint8 **buffer);
 
-void AddLintToMessage(EipUint64 pa_unData, EipUint8 **buffer);
+/** @ingroup ENCAP
+ *
+ * @brief Write an 64Bit integer to the network buffer.
+ * @param data value to write
+ * @param buffer pointer to the network buffer array. This pointer will be incremented by 8!
+ *
+ * @return Length in bytes of the encoded message
+ */
+int AddLintToMessage(EipUint64 pa_unData, EipUint8 **buffer);
 
 #endif
 
@@ -66,7 +78,7 @@ void AddLintToMessage(EipUint64 pa_unData, EipUint8 **buffer);
  * @param address IP address of the socket, has to be provided in big-endian
  * @param communcation_buffer The message buffer for sending the message
  */
-void EncapsulateIpAddress(EipUint16 port, EipUint32 address,
+int EncapsulateIpAddress(EipUint16 port, EipUint32 address,
                                            EipByte *communication_buffer);
 
 /** Identify if we are running on a big or little endian system and set

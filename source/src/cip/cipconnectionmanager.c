@@ -201,11 +201,11 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
   } else {
     /* check if connected address item or sequenced address item  received, otherwise it is no connected message and should not be here */
     if ((g_common_packet_format_data_item.address_item.type_id
-        == kCipItemIdConnectionBased)
+        == kCipItemIdConnectionAddress)
         || (g_common_packet_format_data_item.address_item.type_id
             == kCipItemIdSequencedAddressItem)) { /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
       if (g_common_packet_format_data_item.data_item.type_id
-          == kCipItemIdConnectedTransportPacket) { /* connected data item received */
+          == kCipItemIdConnectedDataItem) { /* connected data item received */
 
         ConnectionObject *connection_object = GetConnectedObject(
             g_common_packet_format_data_item.address_item.data
@@ -612,9 +612,9 @@ EipStatus AssembleForwardOpenResponse(
   EipByte *message = message_router_response->data;
   cip_common_packet_format_data->item_count = 2;
   cip_common_packet_format_data->data_item.type_id =
-      kCipItemIdUnconnectedMessage;
-  cip_common_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
-  cip_common_packet_format_data->address_item.length = 0;
+      kCipItemIdUnconnectedDataItem;
+
+  AddNullAddressItem(cip_common_packet_format_data);
 
   message_router_response->reply_service = (0x80 | kForwardOpen);
   message_router_response->general_status = general_status;
@@ -695,6 +695,19 @@ EipStatus AssembleForwardOpenResponse(
   return kEipStatusOkSend; /* send reply */
 }
 
+/**
+ * Adds a Null Address Item to the common data packet format data
+ * @param common_data_packet_format_data The CPF data packet where the Null Address Item shall be added
+ */
+void AddNullAddressItem(
+    CipCommonPacketFormatData* common_data_packet_format_data) {
+  /* Precondition: Null Address Item only valid in unconnected messages */
+  assert(common_data_packet_format_data->data_item.type_id == kCipItemIdUnconnectedDataItem);
+
+  common_data_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
+  common_data_packet_format_data->address_item.length = 0;
+}
+
 /*   INT8 assembleFWDCloseResponse(UINT16 pa_ConnectionSerialNr, UINT16 pa_OriginatorVendorID, UINT32 pa_OriginatorSerialNr, S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse, S_CIP_CPF_Data *pa_CPF_data, INT8 pa_status, INT8 *pa_msg)
  *   create FWDClose response dependent on status.
  *      pa_ConnectionSerialNr	requested ConnectionSerialNr
@@ -722,9 +735,9 @@ EipStatus AssembleForwardCloseResponse(
   EipByte *message = message_router_response->data;
   common_data_packet_format_data->item_count = 2;
   common_data_packet_format_data->data_item.type_id =
-      kCipItemIdUnconnectedMessage;
-  common_data_packet_format_data->address_item.type_id = kCipItemIdNullAddress;
-  common_data_packet_format_data->address_item.length = 0;
+      kCipItemIdUnconnectedDataItem;
+
+  AddNullAddressItem(common_data_packet_format_data);
 
   AddIntToMessage(connection_serial_number, &message);
   AddIntToMessage(originatior_vendor_id, &message);

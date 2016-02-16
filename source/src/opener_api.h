@@ -6,6 +6,8 @@
 #ifndef OPENER_OPENER_API_H_
 #define OPENER_OPENER_API_H_
 
+#include <assert.h>
+
 #include "typedefs.h"
 #include "ciptypes.h"
 #include "ciperror.h"
