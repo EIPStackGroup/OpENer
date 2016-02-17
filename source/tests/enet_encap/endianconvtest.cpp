@@ -7,7 +7,6 @@
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
 
-
 extern "C" {
 
 #include <sys/socket.h>
@@ -113,4 +112,13 @@ TEST(EndianConversion, EncapsulateIpAddress) {
   BYTES_EQUAL(0xC4, ip_message[5]);
   BYTES_EQUAL(0xE0, ip_message[6]);
   BYTES_EQUAL(0x25, ip_message[7]);
+}
+
+TEST(EndianConversion, MoveMessageNOctets) {
+  CipOctet message[8];
+  CipOctet *message_runner = message;
+
+  MoveMessageNOctetets(message_runner, 4);
+
+  POINTERS_EQUAL(message + 4, message_runner);
 }
