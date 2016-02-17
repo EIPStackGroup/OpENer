@@ -533,7 +533,6 @@ int AssembleLinearMessage(
             common_packet_format_data_item->address_info_item[j].sin_port,
             common_packet_format_data_item->address_info_item[j].sin_addr,
             &message);
-        /*message += 8;*/
 
         memset(message, 0, 8);
         message += 8;

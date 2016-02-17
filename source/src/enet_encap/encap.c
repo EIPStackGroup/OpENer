@@ -368,7 +368,6 @@ int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buff
   EncapsulateIpAddress(htons(kOpenerEthernetPort),
                        interface_configuration_.ip_address,
                        &communication_buffer_runner);
-  /*communication_buffer_runner += 8;*/
 
   memset(communication_buffer_runner, 0, 8);
   communication_buffer_runner += 8;
