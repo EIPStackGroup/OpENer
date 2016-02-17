@@ -317,11 +317,8 @@ int EncodeDataItemData(
     CipCommonPacketFormatData* common_packet_format_data_item,
     EipUint8** message, int size) {
   for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
-    **message =
-        (EipUint8) *(common_packet_format_data_item->data_item.data + i);
-    (*message)++;
+    size += AddSintToMessage(*(common_packet_format_data_item->data_item.data + i), message);
   }
-  size += (common_packet_format_data_item->data_item.length);
   return size;
 }
 
