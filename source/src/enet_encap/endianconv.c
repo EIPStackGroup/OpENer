@@ -205,6 +205,6 @@ int GetEndianess() {
   return g_opener_platform_endianess;
 }
 
-void MoveMessageNOctetets(CipOctet **message_runner, int n) {
+void MoveMessageNOctets(CipOctet **message_runner, int n) {
   *message_runner += n;
 }
