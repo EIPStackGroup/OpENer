@@ -94,7 +94,7 @@ int AddLintToMessage(EipUint64 pa_unData, EipUint8 **buffer);
  * @param communcation_buffer The message buffer for sending the message
  */
 int EncapsulateIpAddress(EipUint16 port, EipUint32 address,
-                                           EipByte *communication_buffer);
+                                           EipByte **communication_buffer);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.

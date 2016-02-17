@@ -315,10 +315,11 @@ int EncodeDataItemLength(
  */
 int EncodeDataItemData(
     CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8* message, int size) {
+    EipUint8** message, int size) {
   for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
-    *message = (EipUint8) *(common_packet_format_data_item->data_item.data + i);
-    message++;
+    **message =
+        (EipUint8) *(common_packet_format_data_item->data_item.data + i);
+    (*message)++;
   }
   size += (common_packet_format_data_item->data_item.length);
   return size;
@@ -401,6 +402,35 @@ int EncodeUnconnectedDataItemLength(
   return size;
 }
 
+int EncodeMessageRouterResponseData(
+    int size, CipMessageRouterResponse* message_router_response,
+    EipUint8** message) {
+  for (int i = 0; i < message_router_response->data_length; i++) {
+    size += AddSintToMessage((message_router_response->data)[i], &*message);
+  }
+  return size;
+}
+
+int EncodeSockaddrInfoItemTypeId(
+    int size, int item_type,
+    CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8** message) {
+  OPENER_ASSERT(item_type == 0 || item_type == 1);
+  size += AddIntToMessage(
+      common_packet_format_data_item->address_info_item[item_type].type_id,
+      message);
+
+  return size;
+}
+
+int EncodeSockaddrInfoLength(int size,
+    int j, CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8** message) {
+  size += AddIntToMessage(common_packet_format_data_item->address_info_item[j].length,
+                  message);
+  return size;
+}
+
 /** @brief Copy data from message_router_response struct and common_packet_format_data_item into linear memory in
  * pa_msg for transmission over in encapsulation.
  *
@@ -462,10 +492,8 @@ int AssembleLinearMessage(
 
       } else { /* Unconnected Item */
         size = EncodeUnconnectedDataItemLength(size, message_router_response,
-                                         &message);
+                                               &message);
       }
-
-      size += (message_router_response->data_length);
 
       /* write message router response into linear memory */
       size = EncodeReplyService(size, &message, message_router_response);
@@ -473,18 +501,15 @@ int AssembleLinearMessage(
                                              message_router_response);
       size = EncodeGeneralStatus(size, &message, message_router_response);
       size = EncodeExtendedStatus(size, &message, message_router_response);
-      for (int i = 0; i < message_router_response->data_length; i++) {
-        *message = (EipUint8) *(message_router_response->data + i);
-        message++;
-      }
+      size = EncodeMessageRouterResponseData(size, message_router_response,
+                                             &message);
     } else { /* connected IO Message to send */
-      size += EncodeDataItemType(common_packet_format_data_item, &message,
-                                 size);
+      size = EncodeDataItemType(common_packet_format_data_item, &message, size);
 
-      size += EncodeDataItemLength(common_packet_format_data_item, &message,
-                                   size);
+      size = EncodeDataItemLength(common_packet_format_data_item, &message,
+                                  size);
 
-      size += EncodeDataItemData(common_packet_format_data_item, message, size);
+      size = EncodeDataItemData(common_packet_format_data_item, &message, size);
     }
   }
 
@@ -498,26 +523,31 @@ int AssembleLinearMessage(
     for (int j = 0; j < 2; j++) {
       if (common_packet_format_data_item->address_info_item[j].type_id
           == type) {
-        AddIntToMessage(
-            common_packet_format_data_item->address_info_item[j].type_id,
-            &message);
-        AddIntToMessage(
-            common_packet_format_data_item->address_info_item[j].length,
-            &message);
+        size = EncodeSockaddrInfoItemTypeId(size, j,
+                                          common_packet_format_data_item,
+                                          &message);
+        size = EncodeSockaddrInfoLength(size, j, common_packet_format_data_item,
+                                           &message);
 
-        EncapsulateIpAddress(
+        size += EncapsulateIpAddress(
             common_packet_format_data_item->address_info_item[j].sin_port,
             common_packet_format_data_item->address_info_item[j].sin_addr,
-            message);
-        message += 8;
+            &message);
+        /*message += 8;*/
 
         memset(message, 0, 8);
         message += 8;
-        size += 20;
+        size += 8;
         break;
       }
     }
   }
   return size;
+}
+
+int AssembleIOMessage(CipCommonPacketFormatData *common_packet_format_data_item,
+                      EipUint8 *message) {
+  return AssembleLinearMessage(0, common_packet_format_data_item,
+                               &g_message_data_reply_buffer[0]);
 }
 

@@ -105,7 +105,20 @@ EipStatus CreateCommonPacketFormatStructure(
     CipCommonPacketFormatData *common_packet_format_data);
 
 /** @ingroup ENCAP
- * Copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
+ * Copy data from CPFDataItem into linear memory in message for transmission over in encapsulation.
+ * @param  message_router_response  pointer to message router response which has to be aligned into linear memory.
+ * @param  common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
+ * @param  message    pointer to linear memory.
+ * @return length of reply in pa_msg in bytes
+ *     EIP_ERROR .. error
+ */
+int AssembleIOMessage(
+    CipCommonPacketFormatData *common_packet_format_data_item,
+    EipUint8 *message);
+
+
+/** @ingroup ENCAP
+ * Copy data from MRResponse struct and CPFDataItem into linear memory in message for transmission over in encapsulation.
  * @param  message_router_response	pointer to message router response which has to be aligned into linear memory.
  * @param  common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
  * @param  message		pointer to linear memory.

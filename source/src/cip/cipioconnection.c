@@ -644,8 +644,8 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  reply_length = AssembleLinearMessage(0, common_packet_format_data,
-                                       &g_message_data_reply_buffer[0]);
+  reply_length = AssembleIOMessage(common_packet_format_data,
+                                   &g_message_data_reply_buffer[0]);
 
   message_data_reply_buffer = &g_message_data_reply_buffer[reply_length - 2];
   common_packet_format_data->data_item.length = producing_instance_attributes

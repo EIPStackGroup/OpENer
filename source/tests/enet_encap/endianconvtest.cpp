@@ -103,7 +103,7 @@ TEST(EndianConversion, EncapsulateIpAddress) {
 
   DetermineEndianess();
 
-  EncapsulateIpAddress(0xAF12, 0x25E0C459, ip_message_ponter);
+  EncapsulateIpAddress(0xAF12, 0x25E0C459, &ip_message_ponter);
 
   BYTES_EQUAL(AF_INET >> 8, ip_message[0]);
   BYTES_EQUAL(AF_INET, ip_message[1]);
