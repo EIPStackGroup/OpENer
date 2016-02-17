@@ -324,6 +324,83 @@ int EncodeDataItemData(
   return size;
 }
 
+int EncodeConnectedDataItemLength(
+    CipMessageRouterResponse* message_router_response, EipUint8** message,
+    int size) {
+  size += AddIntToMessage(
+      (EipUint16) (message_router_response->data_length + 4 + 2
+          + (2 * message_router_response->size_of_additional_status)),
+      message);
+  return size;
+}
+
+int EncodeSequenceNumber(
+    int size, const CipCommonPacketFormatData* common_packet_format_data_item,
+    EipUint8** message) {
+  /* 2 bytes*/
+  size += AddIntToMessage(
+      (EipUint16) common_packet_format_data_item->address_item.data
+          .sequence_number,
+      message);
+  return size;
+}
+
+int EncodeReplyService(int size, EipUint8** message,
+                       CipMessageRouterResponse* message_router_response) {
+  size += AddSintToMessage(message_router_response->reply_service, message);
+  return size;
+}
+
+int EnocdeReservedFieldOfLengthByte(
+    int size, EipUint8** message,
+    CipMessageRouterResponse* message_router_response) {
+  size += AddSintToMessage(message_router_response->reserved, message);
+  return size;
+}
+
+int EncodeGeneralStatus(int size, EipUint8** message,
+                        CipMessageRouterResponse* message_router_response) {
+  size += AddSintToMessage(message_router_response->general_status, message);
+  return size;
+}
+
+int EncodeExtendedStatusLength(
+    int size, EipUint8** message,
+    CipMessageRouterResponse* message_router_response) {
+  size += AddSintToMessage(message_router_response->size_of_additional_status,
+                           message);
+  return size;
+}
+
+int EncodeExtendedStatusDataItems(
+    int size, CipMessageRouterResponse* message_router_response,
+    EipUint8** message) {
+  for (int i = 0; i < message_router_response->size_of_additional_status; i++)
+    size += AddIntToMessage(message_router_response->additional_status[i],
+                            message);
+
+  return size;
+}
+
+int EncodeExtendedStatus(int size, EipUint8** message,
+                         CipMessageRouterResponse* message_router_response) {
+  size = EncodeExtendedStatusLength(size, message, message_router_response);
+  size = EncodeExtendedStatusDataItems(size, message_router_response, message);
+
+  return size;
+}
+
+int EncodeUnconnectedDataItemLength(
+    int size, CipMessageRouterResponse* message_router_response,
+    EipUint8** message) {
+  /* Unconnected Item */
+  size += AddIntToMessage(
+      (EipUint16) (message_router_response->data_length + 4
+          + (2 * message_router_response->size_of_additional_status)),
+      message);
+  return size;
+}
+
 /** @brief Copy data from message_router_response struct and common_packet_format_data_item into linear memory in
  * pa_msg for transmission over in encapsulation.
  *
@@ -378,47 +455,24 @@ int AssembleLinearMessage(
 
       if (common_packet_format_data_item->data_item.type_id
           == kCipItemIdConnectedDataItem) { /* Connected Item */
-        /* 2 bytes*/
-        AddIntToMessage(
-            (EipUint16) (message_router_response->data_length + 4 + 2 /* data length bytes + reply service (1 byte) +
-        reserved (1 byte) + general status (1 byte) + size of additional status (1 byte)*/
-                + (2 * message_router_response->size_of_additional_status)),
-            &message);
-        size += 2;
+        size = EncodeConnectedDataItemLength(message_router_response, &message,
+                                             size);
+        size = EncodeSequenceNumber(size, &g_common_packet_format_data_item,
+                                    &message);
 
-        /* 2 bytes*/
-        AddIntToMessage(
-            (EipUint16) g_common_packet_format_data_item.address_item.data
-                .sequence_number,
-            &message);
-        size += 2;
-
-        size += (message_router_response->data_length + 4
-            + (2 * message_router_response->size_of_additional_status)); /* Two bytes per additional status*/
       } else { /* Unconnected Item */
-        AddIntToMessage(
-            (EipUint16) (message_router_response->data_length + 4
-                + (2 * message_router_response->size_of_additional_status)),
-            &message);
-        size += (4 + message_router_response->data_length + 4
-            + (2 * message_router_response->size_of_additional_status));
+        size = EncodeUnconnectedDataItemLength(size, message_router_response,
+                                         &message);
       }
 
+      size += (message_router_response->data_length);
+
       /* write message router response into linear memory */
-      *message = message_router_response->reply_service;  // 1 byte
-      message++;
-      *message = message_router_response->reserved; /* reserved = 0 -- 1 byte*/
-      message++;
-      *message = message_router_response->general_status;  // 1 byte
-      message++;
-
-      *message = message_router_response->size_of_additional_status;  // 1 byte
-      message++;
-      for (int i = 0; i < message_router_response->size_of_additional_status;
-          i++)
-        AddIntToMessage(message_router_response->additional_status[i],
-                        &message);
-
+      size = EncodeReplyService(size, &message, message_router_response);
+      size = EnocdeReservedFieldOfLengthByte(size, &message,
+                                             message_router_response);
+      size = EncodeGeneralStatus(size, &message, message_router_response);
+      size = EncodeExtendedStatus(size, &message, message_router_response);
       for (int i = 0; i < message_router_response->data_length; i++) {
         *message = (EipUint8) *(message_router_response->data + i);
         message++;

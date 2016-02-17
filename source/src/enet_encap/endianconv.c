@@ -19,6 +19,18 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 
 /* THESE ROUTINES MODIFY THE BUFFER POINTER*/
 
+/**
+ *   @brief Reads EIP_UINT8 from *buffer and converts little endian to host.
+ *   @param buffer pointer where data should be reed.
+ *   @return EIP_UINT8 data value
+ */
+EipUint8 GetSintFromMessage(EipUint8** buffer) {
+  unsigned char *buffer_address = (unsigned char *) *buffer;
+  EipUint16 data = buffer_address[0];
+  *buffer += 1;
+  return data;
+}
+
 /* little-endian-to-host unsigned 16 bit*/
 
 /**
@@ -43,6 +55,19 @@ EipUint32 GetDintFromMessage(EipUint8** buffer) {
   EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
   *buffer += 4;
   return data;
+}
+
+/**
+ * @brief converts UINT8 data from host to little endian an writes it to buffer.
+ * @param data value to be written
+ * @param buffer pointer where data should be written.
+ */
+int AddSintToMessage(EipUint8 data, EipUint8 **buffer) {
+  unsigned char *p = (unsigned char *) *buffer;
+
+  p[0] = (unsigned char) data;
+  *buffer += 1;
+  return 1;
 }
 
 /**

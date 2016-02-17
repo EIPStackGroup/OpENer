@@ -19,6 +19,13 @@ typedef enum {
 } OpenerEndianess;
 
 /** @ingroup ENCAP
+ *   @brief Reads EIP_UINT8 from *buffer and converts little endian to host.
+ *   @param buffer pointer where data should be reed.
+ *   @return EIP_UINT8 data value
+ */
+EipUint8 GetSintFromMessage(EipUint8** buffer);
+
+/** @ingroup ENCAP
  *
  * @brief Get an 16Bit integer from the network buffer, and moves pointer beyond the 16 bit value
  * @param buffer Pointer to the network buffer array. This pointer will be incremented by 2!
@@ -33,6 +40,14 @@ EipUint16 GetIntFromMessage(EipUint8 **buffer);
  * @return Extracted 32 bit integer value
  */
 EipUint32 GetDintFromMessage(EipUint8 **buffer);
+
+/** @ingroup ENCAP
+ *
+ * @brief converts UINT8 data from host to little endian an writes it to buffer.
+ * @param data value to be written
+ * @param buffer pointer where data should be written.
+ */
+int AddSintToMessage(EipUint8 data, EipUint8 **buffer);
 
 /** @ingroup ENCAP
  *
