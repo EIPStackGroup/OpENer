@@ -118,7 +118,7 @@ TEST(EndianConversion, MoveMessageNOctets) {
   CipOctet message[8];
   CipOctet *message_runner = message;
 
-  MoveMessageNOctetets(message_runner, 4);
+  MoveMessageNOctetets(&message_runner, 4);
 
   POINTERS_EQUAL(message + 4, message_runner);
 }
