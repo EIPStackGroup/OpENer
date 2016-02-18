@@ -113,10 +113,11 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
   return return_value;
 }
 
-/*   @brief Creates Common Packet Format structure out of data.
- *   @param data		pointer to data which need to be structured.
- *   @param data_length	length of data in pa_Data.
- *   @param common_packet_format_data	pointer to structure of CPF data item.
+/**
+ * @brief Creates Common Packet Format structure out of data.
+ * @param data Pointer to data which need to be structured.
+ * @param data_length	Length of data in pa_Data.
+ * @param common_packet_format_data	Pointer to structure of CPF data item.
  *
  *   @return kEipStatusOk .. success
  * 	       kEipStatusError .. error
@@ -317,7 +318,8 @@ int EncodeDataItemData(
     CipCommonPacketFormatData* common_packet_format_data_item,
     EipUint8** message, int size) {
   for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
-    size += AddSintToMessage(*(common_packet_format_data_item->data_item.data + i), message);
+    size += AddSintToMessage(
+        *(common_packet_format_data_item->data_item.data + i), message);
   }
   return size;
 }
@@ -420,11 +422,11 @@ int EncodeSockaddrInfoItemTypeId(
   return size;
 }
 
-int EncodeSockaddrInfoLength(int size,
-    int j, CipCommonPacketFormatData* common_packet_format_data_item,
+int EncodeSockaddrInfoLength(
+    int size, int j, CipCommonPacketFormatData* common_packet_format_data_item,
     EipUint8** message) {
-  size += AddIntToMessage(common_packet_format_data_item->address_info_item[j].length,
-                  message);
+  size += AddIntToMessage(
+      common_packet_format_data_item->address_info_item[j].length, message);
   return size;
 }
 
@@ -442,30 +444,34 @@ int AssembleLinearMessage(
     CipCommonPacketFormatData *common_packet_format_data_item,
     EipUint8 *message) {
 
-  int size = 0;
+  int message_size = 0;
+
   if (message_router_response) {
     /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
     AddDintToMessage(0, &message);
     AddIntToMessage(0, &message);
-    size += 6;
+    message_size += 6;
   }
 
-  size = EncodeItemCount(common_packet_format_data_item, &message, size);
+  message_size = EncodeItemCount(common_packet_format_data_item, &message,
+                                 message_size);
 
   /* process Address Item */
   switch (common_packet_format_data_item->address_item.type_id) {
     case kCipItemIdNullAddress: {
-      size = EncodeNullAddressItem(&message, size);
+      message_size = EncodeNullAddressItem(&message, message_size);
       break;
     }
     case kCipItemIdConnectionAddress: {
-      size = EncodeConnectedAddressItem(&message,
-                                        common_packet_format_data_item, size);
+      message_size = EncodeConnectedAddressItem(&message,
+                                                common_packet_format_data_item,
+                                                message_size);
       break;
     }
     case kCipItemIdSequencedAddressItem: {
-      size = EncodeSequencedAddressItem(&message,
-                                        common_packet_format_data_item, size);
+      message_size = EncodeSequencedAddressItem(&message,
+                                                common_packet_format_data_item,
+                                                message_size);
       break;
     }
   }
@@ -477,36 +483,44 @@ int AssembleLinearMessage(
           == kCipItemIdConnectedDataItem)) {
 
     if (message_router_response) {
-      size += EncodeDataItemType(common_packet_format_data_item, &message,
-                                 size);
+      message_size += EncodeDataItemType(common_packet_format_data_item,
+                                         &message, message_size);
 
       if (common_packet_format_data_item->data_item.type_id
           == kCipItemIdConnectedDataItem) { /* Connected Item */
-        size = EncodeConnectedDataItemLength(message_router_response, &message,
-                                             size);
-        size = EncodeSequenceNumber(size, &g_common_packet_format_data_item,
-                                    &message);
+        message_size = EncodeConnectedDataItemLength(message_router_response,
+                                                     &message, message_size);
+        message_size = EncodeSequenceNumber(message_size,
+                                            &g_common_packet_format_data_item,
+                                            &message);
 
       } else { /* Unconnected Item */
-        size = EncodeUnconnectedDataItemLength(size, message_router_response,
-                                               &message);
+        message_size = EncodeUnconnectedDataItemLength(message_size,
+                                                       message_router_response,
+                                                       &message);
       }
 
       /* write message router response into linear memory */
-      size = EncodeReplyService(size, &message, message_router_response);
-      size = EnocdeReservedFieldOfLengthByte(size, &message,
-                                             message_router_response);
-      size = EncodeGeneralStatus(size, &message, message_router_response);
-      size = EncodeExtendedStatus(size, &message, message_router_response);
-      size = EncodeMessageRouterResponseData(size, message_router_response,
-                                             &message);
+      message_size = EncodeReplyService(message_size, &message,
+                                        message_router_response);
+      message_size = EnocdeReservedFieldOfLengthByte(message_size, &message,
+                                                     message_router_response);
+      message_size = EncodeGeneralStatus(message_size, &message,
+                                         message_router_response);
+      message_size = EncodeExtendedStatus(message_size, &message,
+                                          message_router_response);
+      message_size = EncodeMessageRouterResponseData(message_size,
+                                                     message_router_response,
+                                                     &message);
     } else { /* connected IO Message to send */
-      size = EncodeDataItemType(common_packet_format_data_item, &message, size);
+      message_size = EncodeDataItemType(common_packet_format_data_item,
+                                        &message, message_size);
 
-      size = EncodeDataItemLength(common_packet_format_data_item, &message,
-                                  size);
+      message_size = EncodeDataItemLength(common_packet_format_data_item,
+                                          &message, message_size);
 
-      size = EncodeDataItemData(common_packet_format_data_item, &message, size);
+      message_size = EncodeDataItemData(common_packet_format_data_item,
+                                        &message, message_size);
     }
   }
 
@@ -520,25 +534,25 @@ int AssembleLinearMessage(
     for (int j = 0; j < 2; j++) {
       if (common_packet_format_data_item->address_info_item[j].type_id
           == type) {
-        size = EncodeSockaddrInfoItemTypeId(size, j,
-                                          common_packet_format_data_item,
-                                          &message);
-        size = EncodeSockaddrInfoLength(size, j, common_packet_format_data_item,
-                                           &message);
+        message_size = EncodeSockaddrInfoItemTypeId(
+            message_size, j, common_packet_format_data_item, &message);
 
-        size += EncapsulateIpAddress(
+        message_size = EncodeSockaddrInfoLength(message_size, j,
+                                                common_packet_format_data_item,
+                                                &message);
+
+        message_size += EncapsulateIpAddress(
             common_packet_format_data_item->address_info_item[j].sin_port,
             common_packet_format_data_item->address_info_item[j].sin_addr,
             &message);
 
-        memset(message, 0, 8);
-        message += 8;
-        size += 8;
+        message_size += FillNextNMessageOctetsWithValueAndMoveToNextPosition(
+            0, 8, &message);
         break;
       }
     }
   }
-  return size;
+  return message_size;
 }
 
 int AssembleIOMessage(CipCommonPacketFormatData *common_packet_format_data_item,

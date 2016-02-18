@@ -6,6 +6,7 @@
 
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
+#include <string.h>
 
 extern "C" {
 
@@ -118,7 +119,24 @@ TEST(EndianConversion, MoveMessageNOctets) {
   CipOctet message[8];
   CipOctet *message_runner = message;
 
-  MoveMessageNOctets(&message_runner, 4);
+  MoveMessageNOctets(4, &message_runner);
 
   POINTERS_EQUAL(message + 4, message_runner);
+}
+
+TEST(EndianConversion, FillNextNMEssageOctetsWith) {
+  CipOctet message[8];
+  CipOctet *message_runner = message;
+  memset(message, 15, 8);
+
+  FillNextNMessageOctetsWith(0, 8, &message_runner);
+  BYTES_EQUAL(0, message_runner[0]);
+  BYTES_EQUAL(0, message_runner[1]);
+  BYTES_EQUAL(0, message_runner[2]);
+  BYTES_EQUAL(0, message_runner[3]);
+  BYTES_EQUAL(0, message_runner[4]);
+  BYTES_EQUAL(0, message_runner[5]);
+  BYTES_EQUAL(0, message_runner[6]);
+  BYTES_EQUAL(0, message_runner[7]);
+
 }
