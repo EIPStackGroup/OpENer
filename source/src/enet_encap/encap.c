@@ -278,7 +278,7 @@ int EncapsulateData(const EncapsulationData *const send_data) {
   EipUint8 *communcation_buffer = &(send_data->communication_buffer_start[2]);
   AddIntToMessage(send_data->data_length, &communcation_buffer);
   /*the CommBuf should already contain the correct session handle*/
-  communcation_buffer += 4;
+  MoveMessageNOctets(4, &communcation_buffer);
   AddDintToMessage(send_data->status, &communcation_buffer);
   /*the CommBuf should already contain the correct sender context*/
   /*the CommBuf should already contain the correct  options value*/

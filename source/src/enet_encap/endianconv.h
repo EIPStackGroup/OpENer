@@ -109,5 +109,9 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-void MoveMessageNOctets(CipOctet **message_runner, int n);
+void MoveMessageNOctets(int n, CipOctet **message_runner);
+
+int FillNextNMessageOctetsWith(CipOctet value, unsigned int n, CipOctet **message);
+
+int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int n, CipOctet **message);
 #endif /* OPENER_ENDIANCONV_H_ */
