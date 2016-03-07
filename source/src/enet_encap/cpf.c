@@ -483,7 +483,7 @@ int AssembleLinearMessage(
           == kCipItemIdConnectedDataItem)) {
 
     if (message_router_response) {
-      message_size += EncodeDataItemType(common_packet_format_data_item,
+      message_size = EncodeDataItemType(common_packet_format_data_item,
                                          &message, message_size);
 
       if (common_packet_format_data_item->data_item.type_id
