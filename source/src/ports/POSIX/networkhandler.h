@@ -16,4 +16,9 @@ EipStatus NetworkHandlerInitialize(void);
 EipStatus NetworkHandlerProcessOnce(void);
 EipStatus NetworkHandlerFinish(void);
 
+void IApp_CloseSocket_udp(int socket_handle);
+
+void IApp_CloseSocket_tcp(int socket_handle);
+
+
 #endif /* OPENER_NETWORKHANDLER_H_ */

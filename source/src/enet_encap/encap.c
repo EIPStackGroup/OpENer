@@ -5,6 +5,7 @@
  ******************************************************************************/
 #include <string.h>
 #include <stdlib.h>
+
 #include "opener_api.h"
 #include "cpf.h"
 #include "encap.h"
@@ -13,6 +14,7 @@
 #include "cipmessagerouter.h"
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
+#include "networkhandler.h"
 
 /*Identity data from cipidentity.c*/
 extern EipUint16 vendor_id_;
@@ -116,7 +118,7 @@ int EncapsulateData(const EncapsulationData *const send_data);
 void DetermineDelayTime(EipByte *buffer_start,
                         DelayedEncapsulationMessage *delayed_message_buffer);
 
-int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buffer);
+int EncapsulateListIdentyResponseMessage(EipByte *const communication_buffer);
 
 /*   @brief Initializes session list and interface information. */
 void EncapsulationInit(void) {
@@ -354,10 +356,10 @@ void HandleReceivedListIdentityCommandUdp(int socket,
   }
 }
 
-int EncapsulateListIdentyResponseMessage(const EipByte *const communication_buffer) {
+int EncapsulateListIdentyResponseMessage(EipByte *const communication_buffer) {
   EipUint8 *communication_buffer_runner = communication_buffer;
 
-  AddIntToMessage(1, &communication_buffer_runner); /* Item count: one item */
+  AddIntToMessage(1, &(communication_buffer_runner)); /* Item count: one item */
   AddIntToMessage(kCipItemIdListIdentityResponse, &communication_buffer_runner);
 
   EipByte *id_length_buffer = communication_buffer_runner;

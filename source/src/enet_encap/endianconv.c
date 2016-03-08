@@ -7,11 +7,13 @@
 #ifdef WIN32
 #include <winsock2.h>
 #else
+#include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "endianconv.h"
 

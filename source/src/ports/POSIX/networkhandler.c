@@ -55,6 +55,10 @@ void CheckAndHandleTcpListenerSocket(void);
  */
 void CheckAndHandleUdpLocalBroadcastSocket(void);
 
+void CheckAndHandleUdpUnicastSocket(void);
+
+void CheckAndHandleUdpGlobalBroadcastSocket(void);
+
 /** @brief check if on one of the UDP consuming sockets data has been received and if yes handle it correctly
  *
  */
@@ -212,7 +216,7 @@ EipStatus NetworkHandlerInitialize(void) {
   }
 
   struct sockaddr_in global_broadcast_address = { .sin_family = AF_INET,
-      .sin_port = htons(kOpenerEthernetPort), htonl(INADDR_BROADCAST) };
+      .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr= htonl(INADDR_BROADCAST) };
 
   /* enable the UDP socket to receive broadcast messages */
    if (0

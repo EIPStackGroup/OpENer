@@ -8,6 +8,7 @@
 
 #include "cipioconnection.h"
 
+#include "networkhandler.h"
 #include "cipconnectionmanager.h"
 #include "cipassembly.h"
 #include "ciptcpipinterface.h"

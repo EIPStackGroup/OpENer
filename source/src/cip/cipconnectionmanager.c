@@ -22,6 +22,7 @@
 #include "cpf.h"
 #include "appcontype.h"
 #include "encap.h"
+#include "networkhandler.h"
 
 /* values needed from the CIP identity object */
 extern EipUint16 vendor_id_;
@@ -127,6 +128,9 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
 ConnectionManagementHandling* GetConnMgmEntry(EipUint32 class_id);
 
 void InitializeConnectionManagerData(void);
+
+void AddNullAddressItem(
+    CipCommonPacketFormatData* common_data_packet_format_data);
 
 /** @brief gets the padded logical path TODO: enhance documentation
  * @param logical_path_segment TheLogical Path Segment

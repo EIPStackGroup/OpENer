@@ -62,7 +62,7 @@ endif( OpENer_TESTS )
 #######################################
 # OpENer C flags                      #
 #######################################
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror=implicit-function-declaration" )
 
 ####################################################
 # Internal cache holding the available CIP objects #
