@@ -62,7 +62,7 @@ endif( OpENer_TESTS )
 #######################################
 # OpENer C flags                      #
 #######################################
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall )
 
 ####################################################
 # Internal cache holding the available CIP objects #
