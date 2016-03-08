@@ -207,18 +207,23 @@ int GetEndianess() {
   return g_opener_platform_endianess;
 }
 
-void MoveMessageNOctets(int n, CipOctet **message_runner) {
-  (*message_runner) += n;
+void MoveMessageNOctets(int amount_of_bytes_moved, CipOctet **message_runner) {
+  (*message_runner) += amount_of_bytes_moved;
 }
 
-int FillNextNMessageOctetsWith(CipOctet value, unsigned int n, CipOctet **message) {
-  memset(*message, value, n);
-  return n;
+int FillNextNMessageOctetsWith(CipOctet value, unsigned int amount_of_bytes_written, CipOctet **message) {
+  memset(*message, value, amount_of_bytes_written);
+  return amount_of_bytes_written;
 }
 
-int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int n, CipOctet **message) {
-  n += FillNextNMessageOctetsWith(value, n, message);
-  MoveMessageNOctets(n, message);
-  return n;
+int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int amount_of_filled_bytes, CipOctet **message) {
+  FillNextNMessageOctetsWith(value, amount_of_filled_bytes, message);
+  MoveMessageNOctets(amount_of_filled_bytes, message);
+  return amount_of_filled_bytes;
+}
+}
+
+}
+
 }
 
