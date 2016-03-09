@@ -221,9 +221,4 @@ int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigne
   MoveMessageNOctets(amount_of_filled_bytes, message);
   return amount_of_filled_bytes;
 }
-}
-
-}
-
-}
 
