@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "networkhandler.h"
 
@@ -78,20 +79,11 @@ EipStatus HandleDataOnTcpSocket(int socket);
 int GetMaxSocket(int socket1, int socket2, int socket3, int socket4);
 
 static MicroSeconds GetMicroSeconds(void) {
-#ifdef WIN32
-  LARGE_INTEGER lPerformanceCouner;
-  LARGE_INTEGER lPerformanceFrequency;
+  struct timespec now;
 
-  QueryPerformanceCounter(&lPerformanceCouner);
-  QueryPerformanceFrequency(&lPerformanceFrequency);
-
-  return (MicroSeconds) (lPerformanceCouner.QuadPart * 1000000LL / lPerformanceFrequency.QuadPart);
-#else
-  struct timeval time_value;
-  gettimeofday(&time_value, 0);
-  return (MicroSeconds) time_value.tv_sec * 1000000ULL
-      + (MicroSeconds) time_value.tv_usec;
-#endif
+  clock_gettime( CLOCK_MONOTONIC, &now );
+  MicroSeconds micro_seconds =  (MicroSeconds)now.tv_nsec / 1000ULL + now.tv_sec * 1000000ULL;
+  return micro_seconds;
 }
 
 static MilliSeconds GetMilliSeconds(void) {
