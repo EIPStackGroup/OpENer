@@ -8,9 +8,8 @@ set( PLATFORM_SPEC_SRC networkhandler.c)
 opener_common_includes()
 
 #######################################
-# Add platfrom specific things        #
+# Add platform specific things        #
 #######################################
-
 opener_platform_support("INCLUDES")
 
 set (PLATFORMLIBNAME ${OpENer_PLATFORM}PLATFORM)

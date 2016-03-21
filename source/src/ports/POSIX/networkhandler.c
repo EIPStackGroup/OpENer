@@ -3,82 +3,20 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/time.h>
 #include <time.h>
 
 #include "networkhandler.h"
 
-#include "opener_api.h"
 #include "encap.h"
-#include "cipconnectionmanager.h"
+
 #include "endianconv.h"
 #include "trace.h"
 #include "ciptcpipinterface.h"
 
-/* values needed from the connection manager */
-extern ConnectionObject *g_active_connection_list;
+extern NetworkStatus g_network_status;
 
-EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
 
-#define MAX_NO_OF_TCP_SOCKETS 10
-
-typedef unsigned long MilliSeconds;
-typedef unsigned long long MicroSeconds;
-
-fd_set master_socket;
-fd_set read_socket;
-/* temporary file descriptor for select() */
-
-int highest_socket_handle;
-
-/** @brief This variable holds the TCP socket the received to last explicit message.
- * It is needed for opening point to point connection to determine the peer's
- * address.
- */
-int g_current_active_tcp_socket;
-
-static struct timeval g_time_value;
-static MilliSeconds g_actual_time;
-static MilliSeconds g_last_time;
-
-/** @brief handle any connection request coming in the TCP server socket.
- *
- */
-void CheckAndHandleTcpListenerSocket(void);
-
-/** @brief check if data has been received on the UDP broadcast socket and if yes handle it correctly
- *
- */
-void CheckAndHandleUdpLocalBroadcastSocket(void);
-
-void CheckAndHandleUdpUnicastSocket(void);
-
-void CheckAndHandleUdpGlobalBroadcastSocket(void);
-
-/** @brief check if on one of the UDP consuming sockets data has been received and if yes handle it correctly
- *
- */
-void CheckAndHandleConsumingUdpSockets(void);
-
-/** @brief check if the given socket is set in the read set
- * @param socket The socket to check
- * @return
- */
-EipBool8 CheckSocketSet(int socket);
-
-/** @brief
- *
- */
-EipStatus HandleDataOnTcpSocket(int socket);
-
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4);
-
-static MicroSeconds GetMicroSeconds(void) {
+MicroSeconds GetMicroSeconds(void) {
   struct timespec now;
 
   clock_gettime( CLOCK_MONOTONIC, &now );
@@ -86,19 +24,10 @@ static MicroSeconds GetMicroSeconds(void) {
   return micro_seconds;
 }
 
-static MilliSeconds GetMilliSeconds(void) {
+MilliSeconds GetMilliSeconds(void) {
   return (MilliSeconds) (GetMicroSeconds() / 1000ULL);
 }
 
-typedef struct {
-  int tcp_listener;
-  int udp_unicast_listener;
-  int udp_local_broadcast_listener;
-  int udp_global_broadcast_listener;
-  MilliSeconds elapsed_time;
-} NetworkStatus;
-
-NetworkStatus g_network_status;
 
 EipStatus NetworkHandlerInitialize(void) {
 
@@ -251,87 +180,6 @@ EipStatus NetworkHandlerInitialize(void) {
   g_network_status.elapsed_time = 0;
 
   return kEipStatusOk;
-}
-
-EipStatus NetworkHandlerProcessOnce(void) {
-
-  read_socket = master_socket;
-
-  g_time_value.tv_sec = 0;
-  g_time_value.tv_usec = (
-      g_network_status.elapsed_time < kOpenerTimerTickInMilliSeconds ?
-          kOpenerTimerTickInMilliSeconds - g_network_status.elapsed_time : 0)
-      * 1000; /* 10 ms */
-
-  int ready_socket = select(highest_socket_handle + 1, &read_socket, 0, 0,
-                            &g_time_value);
-
-  if (ready_socket == kEipInvalidSocket) {
-    if (EINTR == errno) /* we have somehow been interrupted. The default behavior is to go back into the select loop. */
-    {
-      return kEipStatusOk;
-    } else {
-      OPENER_TRACE_ERR("networkhandler: error with select: %s\n",
-                       strerror(errno));
-      return kEipStatusError;
-    }
-  }
-
-  if (ready_socket > 0) {
-
-    CheckAndHandleTcpListenerSocket();
-    CheckAndHandleUdpUnicastSocket();
-    CheckAndHandleUdpLocalBroadcastSocket();
-    CheckAndHandleUdpGlobalBroadcastSocket();
-    CheckAndHandleConsumingUdpSockets();
-
-    for (int socket = 0; socket <= highest_socket_handle; socket++) {
-      if (true == CheckSocketSet(socket)) {
-        /* if it is still checked it is a TCP receive */
-        if (kEipStatusError == HandleDataOnTcpSocket(socket)) /* if error */
-        {
-          CloseSocket(socket);
-          CloseSession(socket); /* clean up session and close the socket */
-        }
-      }
-    }
-  }
-
-  g_actual_time = GetMilliSeconds();
-  g_network_status.elapsed_time += g_actual_time - g_last_time;
-  g_last_time = g_actual_time;
-
-  /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
-   * This should compensate the jitter of the windows timer
-   */
-  while (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
-    /* call manage_connections() in connection manager every OPENER_TIMER_TICK ms */
-    ManageConnections();
-    g_network_status.elapsed_time -= kOpenerTimerTickInMilliSeconds;
-  }
-  return kEipStatusOk;
-}
-
-EipStatus NetworkHandlerFinish(void) {
-  CloseSocket(g_network_status.tcp_listener);
-  CloseSocket(g_network_status.udp_unicast_listener);
-  CloseSocket(g_network_status.udp_local_broadcast_listener);
-  CloseSocket(g_network_status.udp_global_broadcast_listener);
-  return kEipStatusOk;
-}
-
-EipBool8 CheckSocketSet(int socket) {
-  EipBool8 return_value = false;
-  if (FD_ISSET(socket, &read_socket)) {
-    if (FD_ISSET(socket, &master_socket)) {
-      return_value = true;
-    } else {
-      OPENER_TRACE_INFO("socket: %d closed with pending message\n", socket);
-    }
-    FD_CLR(socket, &read_socket);
-    /* remove it from the read set so that later checks will not find it */
-  }
-  return return_value;
 }
 
 EipStatus SendUdpData(struct sockaddr_in *address, int socket, EipUint8 *data,
@@ -569,38 +417,11 @@ void CloseSocket(int socket_handle) {
   }
 }
 
-void CheckAndHandleTcpListenerSocket() {
-  int new_socket;
-  /* see if this is a connection request to the TCP listener*/
-  if (true == CheckSocketSet(g_network_status.tcp_listener)) {
-    OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
-
-    new_socket = accept(g_network_status.tcp_listener, NULL, NULL);
-    if (new_socket == -1) {
-      OPENER_TRACE_ERR("networkhandler: error on accept: %s\n",
-                       strerror(errno));
-      return;
-    }
-
-    FD_SET(new_socket, &master_socket);
-    /* add newfd to master set */
-    if (new_socket > highest_socket_handle) {
-      highest_socket_handle = new_socket;
-    }
-
-    OPENER_TRACE_STATE("networkhandler: opened new TCP connection on fd %d\n",
-                       new_socket);
-  }
-}
 
 void CheckAndHandleUdpLocalBroadcastSocket(void) {
 
   struct sockaddr_in from_address;
-#ifndef WIN32
   socklen_t from_address_length;
-#else
-  unsigned long from_address_length;
-#endif
 
   /* see if this is an unsolicited inbound UDP message */
   if (true == CheckSocketSet(g_network_status.udp_local_broadcast_listener)) {
@@ -655,11 +476,7 @@ void CheckAndHandleUdpLocalBroadcastSocket(void) {
 void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
   struct sockaddr_in from_address;
-#ifndef WIN32
   socklen_t from_address_length;
-#else
-  unsigned long from_address_length;
-#endif
 
   /* see if this is an unsolicited inbound UDP message */
   if (true == CheckSocketSet(g_network_status.udp_global_broadcast_listener)) {
@@ -714,11 +531,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 void CheckAndHandleUdpUnicastSocket(void) {
 
   struct sockaddr_in from_address;
-#ifndef WIN32
   socklen_t from_address_length;
-#else
-  unsigned long from_address_length;
-#endif
 
   /* see if this is an unsolicited inbound UDP message */
   if (true == CheckSocketSet(g_network_status.udp_unicast_listener)) {
@@ -772,11 +585,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
 
 void CheckAndHandleConsumingUdpSockets(void) {
   struct sockaddr_in from_address;
-#ifndef WIN32
   socklen_t from_address_length;
-#else
-  unsigned long from_address_length;
-#endif
 
   ConnectionObject *connection_object_iterator = g_active_connection_list;
   ConnectionObject *current_connection_object = NULL;
@@ -817,17 +626,4 @@ void CheckAndHandleConsumingUdpSockets(void) {
 
     }
   }
-}
-
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
-  if ((socket1 > socket2) && (socket1 > socket3) && (socket1 > socket4))
-    return socket1;
-
-  if ((socket2 > socket1) && (socket2 > socket3) && (socket2 > socket4))
-    return socket2;
-
-  if ((socket3 > socket1) && (socket3 > socket2) && (socket3 > socket4))
-    return socket3;
-
-  return socket4;
 }
