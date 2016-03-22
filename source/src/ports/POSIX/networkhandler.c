@@ -3,12 +3,13 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#include <unistd.h>
+#include <sys/time.h>
 #include <time.h>
 
 #include "networkhandler.h"
 
 #include "encap.h"
-
 #include "endianconv.h"
 #include "trace.h"
 #include "ciptcpipinterface.h"

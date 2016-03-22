@@ -15,8 +15,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
-#include <sys/time.h>
 
 #include "opener_api.h"
 #include "cipconnectionmanager.h"
