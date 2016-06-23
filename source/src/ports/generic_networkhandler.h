@@ -8,7 +8,7 @@
  *  @author Martin Melik Merkumians
  *  @brief This file includes all platform-independent functions of the network handler to reduce code duplication
  *
- *  @attention This file should only be used for implementing port-specific networkhandlers and is not intended to grant other parts of the OpENer access to the network layer
+ *  @attention This file should only be used for implementing port-specific network handlers and is not intended to grant other parts of the OpENer access to the network layer
  */
 
 #include <stdio.h>
@@ -17,12 +17,12 @@
 #include <errno.h>
 
 #include "opener_api.h"
+#include "typedefs.h"
+#include "endianconv.h"
 #include "cipconnectionmanager.h"
+#include "networkhandler.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
-
-typedef unsigned long MilliSeconds;
-typedef unsigned long long MicroSeconds;
 
 /* values needed from the connection manager */
 extern ConnectionObject *g_active_connection_list;
@@ -57,17 +57,16 @@ typedef struct {
 
 NetworkStatus g_network_status; /**< Global variable holding the current network status */
 
-/** @brief This function shall return the current time in microseconds relative to epoch, and shall be implemented in a port specific networkhandler
+/** @brief The platform independent part of network handler initialization routine
  *
- *  @return Current time relative to epoch as MicroSeconds
+ *  @return Returns the OpENer status after the initialization routine
  */
-MicroSeconds GetMicroSeconds(void);
+EipStatus NetworkHandlerInitialize(void);
 
-/** @brief This function shall return the current time in milliseconds relative to epoch, and shall be implemented in a port specific networkhandler
- *
- *  @return Current time relative to epoch as MilliSeconds
- */
-MilliSeconds GetMilliSeconds(void);
+void IApp_CloseSocket_udp(int socket_handle);
+
+void IApp_CloseSocket_tcp(int socket_handle);
+
 
 /** @brief Initializes the network handler, shall be implemented by a port-specific networkhandler
  *

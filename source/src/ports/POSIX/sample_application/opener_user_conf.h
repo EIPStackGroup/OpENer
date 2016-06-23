@@ -24,6 +24,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
+
 
 /** @brief Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1

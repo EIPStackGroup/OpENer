@@ -14,7 +14,7 @@
 #include "cipmessagerouter.h"
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
-#include "networkhandler.h"
+#include "generic_networkhandler.h"
 
 /*Identity data from cipidentity.c*/
 extern EipUint16 vendor_id_;

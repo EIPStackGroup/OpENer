@@ -22,7 +22,7 @@
 #include "cpf.h"
 #include "appcontype.h"
 #include "encap.h"
-#include "networkhandler.h"
+#include "generic_networkhandler.h"
 
 /* values needed from the CIP identity object */
 extern EipUint16 vendor_id_;

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include "networkhandler.h"
+#include "generic_networkhandler.h"
 #include "opener_api.h"
 #include "cipcommon.h"
 #include "trace.h"

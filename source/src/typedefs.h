@@ -64,6 +64,9 @@ typedef uint64_t CipLword; /**< 64-bit bit string */
  */
 static const int kEipInvalidSocket = -1;
 
+typedef unsigned long MilliSeconds;
+typedef unsigned long long MicroSeconds;
+
 /**
 
  The following are generally true regarding return status:

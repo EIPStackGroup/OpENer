@@ -8,13 +8,22 @@
 
 #include "typedefs.h"
 
+typedef unsigned long socklen_t;
 
-/*! Start a TCP/UDP listening socket, accept connections, receive data in select loop, call manageConnections periodically.
- *  @return status
- *          EIP_ERROR .. error
+EipStatus NetworkHandlerInitializePlatform(void);
+
+void CloseSocketPlatform(int socket_handle);
+
+/** @brief This function shall return the current time in microseconds relative to epoch, and shall be implemented in a port specific networkhandler
+ *
+ *  @return Current time relative to epoch as MicroSeconds
  */
-EipStatus NetworkHandlerInitialize(void);
-EipStatus NetworkHandlerProcessOnce(void);
-EipStatus NetworkHandlerFinish(void);
+MicroSeconds GetMicroSeconds(void);
+
+/** @brief This function shall return the current time in milliseconds relative to epoch, and shall be implemented in a port specific networkhandler
+ *
+ *  @return Current time relative to epoch as MilliSeconds
+ */
+MilliSeconds GetMilliSeconds(void);
 
 #endif /*NETWORKHANDLER_H_*/
