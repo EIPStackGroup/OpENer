@@ -38,7 +38,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   wVersionRequested = MAKEWORD(2, 2);
   WSAStartup(wVersionRequested, &wsaData);
 
-  return EipStatusOk;
+  return kEipStatusOk;
 }
 
 void CloseSocketPlatform(int socket_handle) {

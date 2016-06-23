@@ -50,7 +50,6 @@ MilliSeconds g_last_time;
 typedef struct {
   int tcp_listener; /**< TCP listener socket */
   int udp_unicast_listener; /**< UDP unicast listener socket */
-  int udp_local_broadcast_listener; /**< UDP local network broadcast listener */
   int udp_global_broadcast_listener; /**< UDP global network broadcast listener */
   MilliSeconds elapsed_time;
 } NetworkStatus;

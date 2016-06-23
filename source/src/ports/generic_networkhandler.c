@@ -81,17 +81,7 @@ EipStatus NetworkHandlerInitialize(void) {
                                                                SOCK_DGRAM,
                                                                IPPROTO_UDP))
       == -1) {
-    OPENER_TRACE_ERR("error allocating UDP broadcast listener socket, %d\n",
-                     errno);
-    return kEipStatusError;
-  }
-
-  /* create a new UDP socket */
-  if ((g_network_status.udp_local_broadcast_listener = socket(AF_INET,
-                                                              SOCK_DGRAM,
-                                                              IPPROTO_UDP))
-      == -1) {
-    OPENER_TRACE_ERR("error allocating UDP broadcast listener socket, %d\n",
+    OPENER_TRACE_ERR("error allocating UDP global broadcast listener socket, %d\n",
                      errno);
     return kEipStatusError;
   }
@@ -106,15 +96,6 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* Activates address reuse */
   if (setsockopt(g_network_status.udp_global_broadcast_listener, SOL_SOCKET,
-                 SO_REUSEADDR, (char *) &set_socket_option_value,
-                 sizeof(set_socket_option_value)) == -1) {
-    OPENER_TRACE_ERR(
-        "error setting socket option SO_REUSEADDR on udp_broadcast_listener\n");
-    return kEipStatusError;
-  }
-
-  /* Activates address reuse */
-  if (setsockopt(g_network_status.udp_local_broadcast_listener, SOL_SOCKET,
                  SO_REUSEADDR, (char *) &set_socket_option_value,
                  sizeof(set_socket_option_value)) == -1) {
     OPENER_TRACE_ERR(
@@ -138,30 +119,22 @@ EipStatus NetworkHandlerInitialize(void) {
   /* bind the new socket to port 0xAF12 (CIP) */
   if ((bind(g_network_status.tcp_listener, (struct sockaddr *) &my_address,
             sizeof(struct sockaddr))) == -1) {
-    OPENER_TRACE_ERR("error with bind: %s\n", strerror(errno));
+    OPENER_TRACE_ERR("error with TCP bind: %s\n", strerror(errno));
     return kEipStatusError;
   }
 
   if ((bind(g_network_status.udp_unicast_listener,
             (struct sockaddr *) &my_address, sizeof(struct sockaddr))) == -1) {
-    OPENER_TRACE_ERR("error with UDP bind: %s\n", strerror(errno));
+    OPENER_TRACE_ERR("error with UDP unicast bind: %s\n", strerror(errno));
     return kEipStatusError;
   }
 
   struct sockaddr_in local_broadcast_address = { .sin_family = AF_INET,
       .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr =
-          interface_configuration_.ip_address
-              | ~interface_configuration_.network_mask };
-
-  if ((bind(g_network_status.udp_local_broadcast_listener,
-            (struct sockaddr *) &local_broadcast_address,
-            sizeof(struct sockaddr))) == -1) {
-    OPENER_TRACE_ERR("error with UDP bind: %s\n", strerror(errno));
-    return kEipStatusError;
-  }
+          INADDR_ANY };
 
   struct sockaddr_in global_broadcast_address = { .sin_family = AF_INET,
-      .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr= htonl(INADDR_BROADCAST) };
+      .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr= htonl(INADDR_ANY) };
 
   /* enable the UDP socket to receive broadcast messages */
    if (0
@@ -190,14 +163,13 @@ EipStatus NetworkHandlerInitialize(void) {
   /* add the listener socket to the master set */
   FD_SET(g_network_status.tcp_listener, &master_socket);
   FD_SET(g_network_status.udp_unicast_listener, &master_socket);
-  FD_SET(g_network_status.udp_local_broadcast_listener, &master_socket);
   FD_SET(g_network_status.udp_global_broadcast_listener, &master_socket);
 
   /* keep track of the biggest file descriptor */
   highest_socket_handle = GetMaxSocket(
       g_network_status.tcp_listener,
       g_network_status.udp_global_broadcast_listener,
-      g_network_status.udp_local_broadcast_listener,
+      0,
       g_network_status.udp_unicast_listener);
 
   g_last_time = GetMilliSeconds(); /* initialize time keeping */
@@ -280,7 +252,6 @@ EipStatus NetworkHandlerProcessOnce(void) {
 
     CheckAndHandleTcpListenerSocket();
     CheckAndHandleUdpUnicastSocket();
-    CheckAndHandleUdpLocalBroadcastSocket();
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
 
@@ -314,64 +285,8 @@ EipStatus NetworkHandlerProcessOnce(void) {
 EipStatus NetworkHandlerFinish(void) {
   CloseSocket(g_network_status.tcp_listener);
   CloseSocket(g_network_status.udp_unicast_listener);
-  CloseSocket(g_network_status.udp_local_broadcast_listener);
   CloseSocket(g_network_status.udp_global_broadcast_listener);
   return kEipStatusOk;
-}
-
-void CheckAndHandleUdpLocalBroadcastSocket(void) {
-
-  struct sockaddr_in from_address;
-  socklen_t from_address_length;
-
-  /* see if this is an unsolicited inbound UDP message */
-  if (true == CheckSocketSet(g_network_status.udp_local_broadcast_listener)) {
-
-    from_address_length = sizeof(from_address);
-
-    OPENER_TRACE_STATE(
-        "networkhandler: unsolicited UDP message on EIP broadcast socket\n");
-
-    /* Handle UDP broadcast messages */
-    int received_size = recvfrom(g_network_status.udp_local_broadcast_listener,
-                                 g_ethernet_communication_buffer,
-                                 PC_OPENER_ETHERNET_BUFFER_SIZE,
-                                 0, (struct sockaddr *) &from_address,
-                                 &from_address_length);
-
-    if (received_size <= 0) { /* got error */
-      OPENER_TRACE_ERR(
-          "networkhandler: error on recvfrom UDP broadcast port: %s\n",
-          strerror(errno));
-      return;
-    }
-
-    OPENER_TRACE_INFO("Data received on UDP:\n");
-
-    EipUint8 *receive_buffer = &g_ethernet_communication_buffer[0];
-    int remaining_bytes = 0;
-    do {
-      int reply_length = HandleReceivedExplictUdpData(
-          g_network_status.udp_local_broadcast_listener, &from_address,
-          receive_buffer, received_size, &remaining_bytes, false);
-
-      receive_buffer += received_size - remaining_bytes;
-      received_size = remaining_bytes;
-
-      if (reply_length > 0) {
-        OPENER_TRACE_INFO("reply sent:\n");
-
-        /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if (sendto(g_network_status.udp_local_broadcast_listener,
-                   (char *) g_ethernet_communication_buffer, reply_length, 0,
-                   (struct sockaddr *) &from_address, sizeof(from_address))
-            != reply_length) {
-          OPENER_TRACE_INFO(
-              "networkhandler: UDP response was not fully sent\n");
-        }
-      }
-    } while (remaining_bytes > 0);
-  }
 }
 
 void CheckAndHandleUdpGlobalBroadcastSocket(void) {
