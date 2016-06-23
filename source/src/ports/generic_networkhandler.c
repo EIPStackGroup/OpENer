@@ -29,11 +29,6 @@ void CheckAndHandleTcpListenerSocket(void);
  */
 void CheckAndHandleUdpUnicastSocket(void);
 
-/** @brief check if data has been received on the UDP broadcast socket and if yes handle it correctly, currently implemented port-specific
- *
- */
-void CheckAndHandleUdpLocalBroadcastSocket(void);
-
 /** @brief TODO: FILL IN!
  *
  */
@@ -128,10 +123,6 @@ EipStatus NetworkHandlerInitialize(void) {
     OPENER_TRACE_ERR("error with UDP unicast bind: %s\n", strerror(errno));
     return kEipStatusError;
   }
-
-  struct sockaddr_in local_broadcast_address = { .sin_family = AF_INET,
-      .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr =
-          INADDR_ANY };
 
   struct sockaddr_in global_broadcast_address = { .sin_family = AF_INET,
       .sin_port = htons(kOpenerEthernetPort), .sin_addr.s_addr= htonl(INADDR_ANY) };
