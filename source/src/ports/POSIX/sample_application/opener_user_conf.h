@@ -26,6 +26,8 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
+#include "typedefs.h"
+
 
 /** @brief Identity configuration of the device */
 #define OPENER_DEVICE_VENDOR_ID           1
@@ -88,9 +90,10 @@
  */
 #define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 20
 
-/** @brief  The time in ms of the timer used in this implementations
+/** @brief The time in ms of the timer used in this implementations, time base for time-outs and production timers
  */
-static const int kOpenerTimerTickInMilliSeconds = 10;
+static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
+
 
 /** @brief Define if RUN IDLE data is sent with consumed data
  */

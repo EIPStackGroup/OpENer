@@ -627,11 +627,11 @@ void EncapsulationShutDown(void) {
   }
 }
 
-void ManageEncapsulationMessages(void) {
+void ManageEncapsulationMessages(MilliSeconds elapsed_time) {
   for (unsigned int i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++) {
     if (kEipInvalidSocket != g_delayed_encapsulation_messages[i].socket) {
       g_delayed_encapsulation_messages[i].time_out -=
-          kOpenerTimerTickInMilliSeconds;
+          elapsed_time;
       if (0 > g_delayed_encapsulation_messages[i].time_out) {
         /* If delay is reached or passed, send the UDP message */
         SendUdpData(&(g_delayed_encapsulation_messages[i].receiver),

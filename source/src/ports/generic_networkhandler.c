@@ -265,10 +265,10 @@ EipStatus NetworkHandlerProcessOnce(void) {
   /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
    * This should compensate the jitter of the windows timer
    */
-  while (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
+  if (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
     /* call manage_connections() in connection manager every OPENER_TIMER_TICK ms */
-    ManageConnections();
-    g_network_status.elapsed_time -= kOpenerTimerTickInMilliSeconds;
+    ManageConnections(g_network_status.elapsed_time);
+    g_network_status.elapsed_time = 0;
   }
   return kEipStatusOk;
 }

@@ -78,6 +78,6 @@ void EncapsulationShutDown(void);
  * message. This functions checks if messages need to be sent and performs the
  * sending.
  */
-void ManageEncapsulationMessages(void);
+void ManageEncapsulationMessages(MilliSeconds elapsed_time);
 
 #endif /* OPENER_ENCAP_H_ */

@@ -447,7 +447,7 @@ HandleReceivedConnectedData(EipUint8 *received_data, int received_data_length,
  * @return EIP_OK on success
  */
 EipStatus
-ManageConnections(void);
+ManageConnections(MilliSeconds elapsed_time);
 
 /** @ingroup CIP_API
  * @brief Trigger the production of an application triggered connection.

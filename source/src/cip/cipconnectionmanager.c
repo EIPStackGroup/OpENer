@@ -523,13 +523,13 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   return kEipStatusOk;
 }
 
-EipStatus ManageConnections(void) {
+EipStatus ManageConnections(MilliSeconds elapsed_time) {
   EipStatus eip_status;
   ConnectionObject *connection_object;
 
   /*Inform application that it can execute */
   HandleApplication();
-  ManageEncapsulationMessages();
+  ManageEncapsulationMessages(elapsed_time);
 
   connection_object = g_active_connection_list;
   while (NULL != connection_object) {
@@ -538,7 +538,7 @@ EipStatus ManageConnections(void) {
       (connection_object->transport_type_class_trigger & 0x80)) /* all sever connections have to maintain an inactivity watchdog timer */
       {
         connection_object->inactivity_watchdog_timer -=
-            kOpenerTimerTickInMilliSeconds;
+            elapsed_time;
         if (connection_object->inactivity_watchdog_timer <= 0) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
@@ -559,11 +559,11 @@ EipStatus ManageConnections(void) {
             /* non cyclic connections have to decrement production inhibit timer */
             if (0 <= connection_object->production_inhibit_timer) {
               connection_object->production_inhibit_timer -=
-                  kOpenerTimerTickInMilliSeconds;
+                  elapsed_time;
             }
           }
           connection_object->transmission_trigger_timer -=
-              kOpenerTimerTickInMilliSeconds;
+              elapsed_time;
           if (connection_object->transmission_trigger_timer <= 0) { /* need to send package */
             OPENER_ASSERT(
                 NULL != connection_object->connection_send_data_function);
