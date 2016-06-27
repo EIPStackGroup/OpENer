@@ -277,7 +277,7 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
 }
 
 int EncapsulateData(const EncapsulationData *const send_data) {
-  EipUint8 *communcation_buffer = &(send_data->communication_buffer_start[2]);
+  EipUint8 *communcation_buffer = send_data->communication_buffer_start + 2;
   AddIntToMessage(send_data->data_length, &communcation_buffer);
   /*the CommBuf should already contain the correct session handle*/
   MoveMessageNOctets(4, &communcation_buffer);
