@@ -1,6 +1,6 @@
 add_subdirectory(sample_application)
 
-set( PLATFORM_SPEC_SRC networkhandler.c)
+set( PLATFORM_SPEC_SRC networkhandler.c opener_error.c)
 
 #######################################
 # Add common includes                 #

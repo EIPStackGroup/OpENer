@@ -120,7 +120,7 @@ EipStatus NetworkHandlerInitialize(void) {
 
   if ((bind(g_network_status.udp_unicast_listener,
             (struct sockaddr *) &my_address, sizeof(struct sockaddr))) == -1) {
-    OPENER_TRACE_ERR("error with UDP unicast bind: %s\n", strerror(errno));
+    OPENER_TRACE_ERR("error with UDP unicast bind: %s\n", GetErrorMessage(GetSocketErrorNumber()));
     return kEipStatusError;
   }
 
@@ -140,7 +140,7 @@ EipStatus NetworkHandlerInitialize(void) {
   if ((bind(g_network_status.udp_global_broadcast_listener,
             (struct sockaddr *) &global_broadcast_address,
             sizeof(struct sockaddr))) == -1) {
-    OPENER_TRACE_ERR("error with global broadcast UDP bind: %s\n", strerror(errno));
+    OPENER_TRACE_ERR("error with global broadcast UDP bind: %s\n", GetErrorMessage(GetSocketErrorNumber()));
     return kEipStatusError;
   }
 
