@@ -306,7 +306,7 @@ NetworkHandlerProcessOnce(void)
   while (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds)
     {
       /* call manage_connections() in connection manager every OPENER_TIMER_TICK ms */
-      ManageConnections();
+      ManageConnections(g_network_status.elapsed_time);
       g_network_status.elapsed_time -= kOpenerTimerTickInMilliSeconds;
     }
   return kEipStatusOk;

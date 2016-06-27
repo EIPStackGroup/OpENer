@@ -523,13 +523,13 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   return kEipStatusOk;
 }
 
-EipStatus ManageConnections(void) {
+EipStatus ManageConnections(MilliSeconds elapsed_time) {
   EipStatus eip_status;
   ConnectionObject *connection_object;
 
   /*Inform application that it can execute */
   HandleApplication();
-  ManageEncapsulationMessages();
+  ManageEncapsulationMessages(elapsed_time);
 
   connection_object = g_active_connection_list;
   while (NULL != connection_object) {
