@@ -191,19 +191,19 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint8 path_size;
-  /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
-   (EIP_UINT16) */
-  EipUint16 class_id; /**< Class ID of the linked object */
-  EipUint16 instance_number; /**< Requested Instance Number of the linked object */
-  EipUint16 attribute_number; /**< Requested Attribute Number of the linked object */
+	EipUint16 path_size;
+	/**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
+	(EIP_UINT16) */
+	EipUint16 class_id; /**< Class ID of the linked object */
+	EipUint16 instance_number; /**< Requested Instance Number of the linked object */
+	EipUint16 attribute_number; /**< Requested Attribute Number of the linked object */
 } CipEpath;
 
 /** @brief CIP Connection Path
  *
  */
 typedef struct {
-  EipUint8 path_size;
+	EipUint16 path_size;
   /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
    (EIP_UINT16) */
   EipUint32 class_id; /**< Class ID of the linked object */
