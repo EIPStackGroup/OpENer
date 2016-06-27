@@ -12,8 +12,6 @@
 #include "cipcommon.h"
 #include "trace.h"
 
-extern int newfd;
-
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
  *

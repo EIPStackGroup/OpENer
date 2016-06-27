@@ -111,7 +111,7 @@ EipInt16 CreateEncapsulationStructure(EipUint8 *receive_buffer,
                                       int receive_buffer_length,
                                       EncapsulationData *encapsulation_data);
 
-EipStatus CheckRegisteredSessions(EncapsulationData *receive_data);
+SessionStatus CheckRegisteredSessions(EncapsulationData *receive_data);
 
 int EncapsulateData(const EncapsulationData *const send_data);
 
@@ -207,7 +207,7 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
           encapsulation_data.data_length = 0;
           break;
       }
-      /* if nRetVal is greater then 0 data has to be sent */
+      /* if nRetVal is greater than 0 data has to be sent */
       if (kEipStatusOk < return_value) {
         return_value = EncapsulateData(&encapsulation_data);
       }
@@ -267,7 +267,7 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
           encapsulation_data.data_length = 0;
           break;
       }
-      /* if nRetVal is greater then 0 data has to be sent */
+      /* if nRetVal is greater than 0 data has to be sent */
       if (0 < status) {
         status = EncapsulateData(&encapsulation_data);
       }
@@ -533,7 +533,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     GetIntFromMessage(&receive_data->current_communication_buffer_position); /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
-    if (kEipStatusError != CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
+    if (kSessionStatusValid == CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
     {
       send_size =
           NotifyCommonPacketFormat(
@@ -596,7 +596,7 @@ EipInt16 CreateEncapsulationStructure(EipUint8 *receive_buffer,
  *  @return 0 .. Session registered
  *  		kInvalidSession .. invalid session -> return unsupported command received
  */
-EipStatus CheckRegisteredSessions(EncapsulationData *receive_data) {
+SessionStatus CheckRegisteredSessions(EncapsulationData *receive_data) {
   if ((0 < receive_data->session_handle)
       && (receive_data->session_handle <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
     if (kEipInvalidSocket
