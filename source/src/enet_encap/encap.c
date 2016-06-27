@@ -496,7 +496,7 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data) {
     GetIntFromMessage(&receive_data->current_communication_buffer_position); /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
-    if (kEipStatusError != CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
+    if (kSessionStatusValid == CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
     {
       send_size =
           NotifyConnectedCommonPacketFormat(
