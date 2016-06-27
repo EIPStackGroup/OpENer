@@ -32,7 +32,7 @@ typedef enum {
 
 typedef enum {
   kSelftestingUnknown = 0x0000,
-  FirmwareUpdateInProgress = 0x0010,
+  kFirmwareUpdateInProgress = 0x0010,
   kStatusAtLeastOneFaultedIoConnection = 0x0020,
   kNoIoConnectionsEstablished = 0x0030,
   kNonVolatileConfigurationBad = 0x0040,
