@@ -12,4 +12,4 @@
 
 int GetSocketErrorNumber();
 
- char *GetErrorMessage(int error_number);
+char *GetErrorMessage(int error_number);

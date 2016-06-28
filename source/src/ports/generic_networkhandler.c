@@ -15,7 +15,7 @@
 
 #include "typedefs.h"
 #include "trace.h"
-
+#include "opener_error.h"
 #include "encap.h"
 #include "ciptcpipinterface.h"
 
@@ -589,7 +589,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   if ((new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 	int error_code = GetSocketErrorNumber();
 	char* error_message = GetErrorMessage(error_code);
-	OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %s\n", error_code, error_message);
+	OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n", error_code, error_message);
 	free(error_message);
     return kEipInvalidSocket;
   }
