@@ -706,23 +706,10 @@ EipStatus GetAttributeAll(CipInstance *instance,
 int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   unsigned int length = epath->path_size;
   //AddIntToMessage(epath->path_size, message);
-  //**message = 0; /*8Bit path_size */
+  **message = 0; /*8Bit path_size */
+  ++(*message);
+  **message = (EipUint8)epath->path_size;
   //++(*message);
-  //**message = (EipUint8)epath->path_size;
-  //++(*message);
-  if (epath->class_id < 256) {
-	  **message = 0; /*16Bit path size */
-	  ++(*message);
-	  **message = (EipUint8)epath->path_size;
-	  //++(*message);
-  }
-  else {
-	  **message = 0; /*16Bit path size */
-	  ++(*message);
-	  **message = 0; /*pad byte */
-	  ++(*message);
-	  AddIntToMessage(epath->path_size, message);
-  }
 
   if (epath->class_id < 256) {
     **message = 0x20; /*8Bit Class Id */

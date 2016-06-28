@@ -203,6 +203,7 @@ CipError CreateMessageRouterRequestStructure(
   int number_of_decoded_bytes;
 
   message_router_request->service = *data;
+  //data++;  /*TODO: Fix for 16 bit path lengths (+1 */
   data_length--;
 
   number_of_decoded_bytes = DecodePaddedEPath(
