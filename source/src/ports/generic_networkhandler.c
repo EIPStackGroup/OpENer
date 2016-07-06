@@ -571,7 +571,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
         if (setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
                        &g_time_to_live_value,
-                       sizeof(g_time_to_live_value) < 0)) {
+                       sizeof(g_time_to_live_value)) < 0) {
           OPENER_TRACE_ERR(
               "networkhandler: could not set the TTL to: %d, error: %s\n",
               g_time_to_live_value, strerror(errno));
