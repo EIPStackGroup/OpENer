@@ -16,9 +16,9 @@ ConnectionObject *GetFreeExplicitConnection(void);
 ConnectionObject g_explicit_connections[OPENER_CIP_NUM_EXPLICIT_CONNS];
 
 /**** Implementation ****/
-int EstablishClass3Connection(ConnectionObject *connection_object,
+EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
                               EipUint16 *extended_error) {
-  int eip_status = kEipStatusOk;
+  EipStatus eip_status = kEipStatusOk;
   EipUint32 produced_connection_id_buffer;
 
   /*TODO add check for transport type trigger */

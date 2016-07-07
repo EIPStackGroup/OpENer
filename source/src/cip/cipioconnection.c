@@ -68,11 +68,11 @@ unsigned int g_config_data_length = 0;
 EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 
 /**** Implementation ****/
-int EstablishIoConnction(ConnectionObject *connection_object,
+EipStatus EstablishIoConnction(ConnectionObject *connection_object,
                          EipUint16 *extended_error) {
   int originator_to_target_connection_type,
       target_to_originator_connection_type;
-  int eip_status = kEipStatusOk;
+  EipStatus eip_status = kEipStatusOk;
   CipAttributeStruct *attribute;
   /* currently we allow I/O connections only to assembly objects */
   CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode); /* we don't need to check for zero as this is handled in the connection path parsing */
@@ -716,7 +716,7 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
 
 EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
 
-  int eip_status = kEipStatusOk;
+  EipStatus eip_status = kEipStatusOk;
   /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
   CipCommonPacketFormatData *common_packet_format_data =
       &g_common_packet_format_data_item;
