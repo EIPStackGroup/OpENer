@@ -277,7 +277,7 @@ struct connection_object;
  *
  * @return CIP error code
  */
-typedef int (*OpenConnectionFunction)(
+typedef EipStatus (*OpenConnectionFunction)(
     struct connection_object *connection_object, EipUint16 *extended_error_code);
 
 /** @ingroup CIP_API

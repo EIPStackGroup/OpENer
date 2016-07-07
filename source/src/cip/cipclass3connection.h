@@ -23,7 +23,7 @@
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-int EstablishClass3Connection(ConnectionObject *connection_object,
+EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
                               EipUint16 *extended_error);
 
 void InitializeClass3ConnectionData(void);

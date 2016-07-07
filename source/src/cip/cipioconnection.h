@@ -52,7 +52,7 @@
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-int EstablishIoConnction(ConnectionObject *connection_object,
+EipStatus EstablishIoConnction(ConnectionObject *connection_object,
                          EipUint16 *extended_error);
 
 /** @brief Take the data given in the connection object structure and open the necessary communication channels
@@ -63,7 +63,7 @@ int EstablishIoConnction(ConnectionObject *connection_object,
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-int OpenCommunicationChannels(ConnectionObject *connection_object);
+EipStatus OpenCommunicationChannels(ConnectionObject *connection_object);
 
 /** @brief close the communication channels of the given connection and remove it
  * from the active connections list.
