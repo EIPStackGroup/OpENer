@@ -18,6 +18,15 @@
 #include "trace.h"
 #include "endianconv.h"
 
+/** @brief Gives the cardinality of a connection endpoint,
+ *  either point to point or point to multipoint
+ *
+ */
+typedef enum {
+  PointToMultipoint = 1, /**< Connection is a point to multi-point connection */
+  PointToPoint = 2 /**< Connection is a point to point connection */
+} CommunicationEndpointCardinality;
+
 /*The port to be used per default for I/O messages on UDP.*/
 const int kOpenerEipIoUdpPort = 0x08AE;
 
@@ -721,14 +730,14 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
   CipCommonPacketFormatData *common_packet_format_data =
       &g_common_packet_format_data_item;
 
-  int originator_to_target_connection_type = (connection_object
+  CommunicationEndpointCardinality originator_to_target_connection_type = (connection_object
       ->o_to_t_network_connection_parameter & 0x6000) >> 13;
 
-  int target_to_originator_connection_type = (connection_object
+  CommunicationEndpointCardinality target_to_originator_connection_type = (connection_object
       ->t_to_o_network_connection_parameter & 0x6000) >> 13;
 
   /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
-  if (originator_to_target_connection_type == 1) /*TODO: Fix magic number; Multicast consuming */
+  if (originator_to_target_connection_type == PointToMultipoint) /* Multicast consuming */
   {
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object, common_packet_format_data)
@@ -736,7 +745,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (originator_to_target_connection_type == 2) /* TODO: Fix magic number; Point to Point consuming */
+  } else if (originator_to_target_connection_type == PointToPoint) /* Point to Point consuming */
   {
     if (OpenConsumingPointToPointConnection(connection_object,
                                             common_packet_format_data)
@@ -746,7 +755,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
     }
   }
 
-  if (target_to_originator_connection_type == 1) /* TODO: Fix magic number; Multicast producing */
+  if (target_to_originator_connection_type == PointToMultipoint) /* Multicast producing */
   {
     if (OpenProducingMulticastConnection(connection_object,
                                          common_packet_format_data)
@@ -754,7 +763,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (target_to_originator_connection_type == 2) /* TODO: Fix magic number; Point to Point producing */
+  } else if (target_to_originator_connection_type == PointToPoint) /* Point to Point producing */
   {
 
     if (OpenProducingPointToPointConnection(connection_object,
@@ -764,7 +773,6 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       return kCipErrorConnectionFailure;
     }
   }
-
   return eip_status;
 }
 

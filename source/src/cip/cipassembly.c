@@ -103,7 +103,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *instance,
   assembly_byte_array = (CipByteArray *) instance->attributes->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
-    return kEipStatusError; /*TODO question should we notify the application that wrong data has been recieved???*/
+    return kEipStatusError; /*TODO question should we notify the application that wrong data has been received???*/
   } else {
     memcpy(assembly_byte_array->data, data, data_length);
     /* call the application that new data arrived */
