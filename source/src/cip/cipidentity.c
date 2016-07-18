@@ -70,10 +70,9 @@ static EipStatus Reset(CipInstance *instance, /* pointer to instance*/
                        CipMessageRouterRequest *message_router_request, /* pointer to message router request*/
                        CipMessageRouterResponse *message_router_response) /* pointer to message router response*/
 {
-  EipStatus eip_status;
   (void) instance;
 
-  eip_status = kEipStatusOkSend;
+  EipStatus eip_status = kEipStatusOkSend;
 
   message_router_response->reply_service = (0x80
       | message_router_request->service);
