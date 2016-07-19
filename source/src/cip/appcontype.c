@@ -3,10 +3,15 @@
  * All rights reserved.
  *
  ******************************************************************************/
+
+#include <string.h>
+
 #include "appcontype.h"
+
 #include "cipconnectionmanager.h"
 #include "opener_api.h"
-#include <string.h>
+#include "assert.h"
+
 
 /** @brief External globals needed from connectionmanager.c */
 extern ConnectionObject *g_active_connection_list;
@@ -328,7 +333,8 @@ void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,
 void CloseAllConnections(void) {
   ConnectionObject *connection = g_active_connection_list;
   while (NULL != connection) {
-    /*FIXME check if m_pfCloseFunc would be suitable*/
+    assert(connection->connection_close_function != NULL);
+    connection->connection_close_function(connection);
     CloseConnection(connection);
     /* Close connection will remove the connection from the list therefore we
      * need to get again the start until there is no connection left

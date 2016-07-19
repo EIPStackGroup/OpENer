@@ -246,7 +246,7 @@ int EncodeSequencedAddressItem(
     CipCommonPacketFormatData* common_packet_format_data_item, int size) {
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
   size += AddIntToMessage(kCipItemIdSequencedAddressItem, message);
-  size += AddIntToMessage(8, message);
+  size += AddIntToMessage(8, message); /*TODO: Fix magic number */
   size += AddDintToMessage(
       common_packet_format_data_item->address_item.data.connection_identifier,
       message);
