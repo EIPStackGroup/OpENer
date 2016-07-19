@@ -515,18 +515,17 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
       /* TCP/IP attribute 5 */
       CipTcpIpNetworkInterfaceConfiguration *tcp_ip_network_interface_configuration =
           (CipTcpIpNetworkInterfaceConfiguration *) data;
-      AddDintToMessage(
+      counter += AddDintToMessage(
           ntohl(tcp_ip_network_interface_configuration->ip_address), message);
-      AddDintToMessage(
+      counter += AddDintToMessage(
           ntohl(tcp_ip_network_interface_configuration->network_mask), message);
-      AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway),
+      counter += AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway),
                        message);
-      AddDintToMessage(
+      counter += AddDintToMessage(
           ntohl(tcp_ip_network_interface_configuration->name_server), message);
-      AddDintToMessage(
+      counter += AddDintToMessage(
           ntohl(tcp_ip_network_interface_configuration->name_server_2),
           message);
-      counter = 20;
       counter += EncodeData(
           kCipString, &(tcp_ip_network_interface_configuration->domain_name),
           message);
