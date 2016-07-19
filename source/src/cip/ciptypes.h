@@ -266,7 +266,7 @@ typedef struct {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
    If SizeOfAdditionalStatus is 0. there is no
    Additional Status */
-  EipInt16 data_length; /* TODO: Check if this is correct */
+  EipInt16 data_length; /**< Supportative non-CIP variable, gives length of data segment */
   CipOctet *data; /**< Array of octet; Response data per object definition from
    request */
 } CipMessageRouterResponse;
