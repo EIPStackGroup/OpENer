@@ -11,6 +11,8 @@
  *  The generic network handler delegates platform-dependent tasks to the platform network handler
  */
 
+#include <assert.h>
+
 #include "generic_networkhandler.h"
 
 #include "typedefs.h"
@@ -29,7 +31,7 @@ void CheckAndHandleTcpListenerSocket(void);
  */
 void CheckAndHandleUdpUnicastSocket(void);
 
-/** @brief TODO: FILL IN!
+/** @brief Checks and handles incoming messages via UDP broadcast
  *
  */
 void CheckAndHandleUdpGlobalBroadcastSocket(void);
@@ -39,10 +41,16 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void);
  */
 void CheckAndHandleConsumingUdpSockets(void);
 
-/** @brief TODO: FILL IN!
+/** @brief Handles data on an established TCP connection, processed connection is given by socket
  *
+ *  @param socket The socket to be processed
+ *  @return kEipStatusOk on success, or kEipStatusError on failure
  */
 EipStatus HandleDataOnTcpSocket(int socket);
+
+/*************************************************
+ * Function implementations from now on
+ *************************************************/
 
 EipStatus NetworkHandlerInitialize(void) {
 
@@ -507,7 +515,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       if ((data_size < PC_OPENER_ETHERNET_BUFFER_SIZE) && (data_size != 0)) {
         data_sent = data_size;
       }
-    } while (0 != data_size); /* TODO: fragile end statement */
+    } while (0 < data_size);
+    assert(0 <= data_size);
     return kEipStatusOk;
   }
 
