@@ -321,9 +321,8 @@ void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,
           connection_to_delete->connection_path.connection_point[1],
           kIoConnectionEventClosed);
 
-      /* FIXME check if this is ok */
+      assert(connection_to_delete->connection_close_function != NULL);
       connection_to_delete->connection_close_function(connection_to_delete);
-      /*closeConnection(pstToDelete); will remove the connection from the active connection list */
     } else {
       connection = connection->next_connection_object;
     }
