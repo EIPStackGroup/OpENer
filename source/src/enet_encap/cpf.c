@@ -15,6 +15,9 @@
 #include "cipconnectionmanager.h"
 #include "trace.h"
 
+const size_t item_count_field_size = 2; /**< The size of the item count field in the message */
+const size_t item_data_type_id_field_length = 2; /**< The size of the item count field in the message */
+
 const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
@@ -204,22 +207,20 @@ EipStatus CreateCommonPacketFormatStructure(
   }
 }
 
-/* null address item -> address length set to 0 */
 /**
- * Encodes a Null Address Item into the message frame
+ * @brief Encodes a Null Address Item into the message frame
  * @param message The message frame
  * @param size The actual size of the message frame
  *
  * @return The new size of the message frame after encoding
  */
 int EncodeNullAddressItem(EipUint8** message, int size) {
-  /* null address item -> address length set to 0 */
   size += AddIntToMessage(kCipItemIdNullAddress, message);
+  /* null address item -> address length set to 0 */
   size += AddIntToMessage(0, message);
   return size;
 }
 
-/* connected data item -> address length set to 4 and copy ConnectionIdentifier */
 /**
  * Encodes a Connected Address Item into the message frame
  * @param message The message frame
@@ -265,7 +266,7 @@ int EncodeSequencedAddressItem(
 }
 
 /**
- * Adds the item count to the message frame
+ * @brief Adds the item count to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
  * @param message The message frame
@@ -317,7 +318,7 @@ int EncodeDataItemLength(
  * Adds the data items to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message The message frame
+ * @param message Message frame to which the data is added
  * @param size The actual size of the message frame
  *
  * @return The new size of the message frame after encoding
@@ -332,20 +333,39 @@ int EncodeDataItemData(
   return size;
 }
 
+/**
+ * @brief Encodes the Connected Data item length
+ *
+ * @param message_router_response The Router Response message which shall be answered
+ * @param message Message frame to which the data is added
+ * @param size Current size of the message buffer
+ *
+ * @return The new size of the message buffer
+ */
+
 int EncodeConnectedDataItemLength(
     CipMessageRouterResponse* message_router_response, EipUint8** message,
     int size) {
   size += AddIntToMessage(
-      (EipUint16) (message_router_response->data_length + 4 + 2
+      (EipUint16) (message_router_response->data_length + 4 + 2 /* TODO: Magic numbers */
           + (2 * message_router_response->size_of_additional_status)),
       message);
   return size;
 }
 
+/**
+ * @brief Encodes a sequence number into the message
+ *
+ * @param size The current size of the message buffer
+ * @param common_packet_format_data_item
+ * @param message Message frame to which the data is added
+ *
+ * @return The new size of the message buffer
+ *
+ */
 int EncodeSequenceNumber(
     int size, const CipCommonPacketFormatData* common_packet_format_data_item,
     EipUint8** message) {
-  /* 2 bytes*/
   size += AddIntToMessage(
       (EipUint16) common_packet_format_data_item->address_item.data
           .sequence_number,
@@ -353,12 +373,30 @@ int EncodeSequenceNumber(
   return size;
 }
 
+/**
+ * @brief Encodes the reply service code for the requested service
+ *
+ * @param size The current size of the message buffer
+ * @param message Message frame to which the data is added
+ * @param message_rounter_response The router response message data structure to be processed
+ *
+ * @return The new size of the message buffer
+ */
 int EncodeReplyService(int size, EipUint8** message,
                        CipMessageRouterResponse* message_router_response) {
   size += AddSintToMessage(message_router_response->reply_service, message);
   return size;
 }
 
+/**
+ * @brief Encodes the reserved byte in the message router response
+ *
+ * @param size Current size of the message buffer
+ * @param message Message frame to which the data is added
+ * @param message_router_response Router Response message to be processed
+ *
+ * @return New size of the message buffer
+ */
 int EnocdeReservedFieldOfLengthByte(
     int size, EipUint8** message,
     CipMessageRouterResponse* message_router_response) {
@@ -366,11 +404,30 @@ int EnocdeReservedFieldOfLengthByte(
   return size;
 }
 
+/**
+ * @brief Encodes the general status of a Router Response
+ *
+ * @param size Current size of the message buffer
+ * @param message Message frame to which the data is added
+ * @param message_router_response Router Response message to be processed
+ *
+ * @return New size of the message buffer
+ */
 int EncodeGeneralStatus(int size, EipUint8** message,
                         CipMessageRouterResponse* message_router_response) {
   size += AddSintToMessage(message_router_response->general_status, message);
   return size;
 }
+
+/**
+ * @brief Encodes the length of the extended status data part
+ *
+ * @param size Current size of the message buffer
+ * @param message Message frame to which the data is added
+ * @param message_router_response Router Response message to be processed
+ *
+ * @return New size of the message buffer
+ */
 
 int EncodeExtendedStatusLength(
     int size, EipUint8** message,
@@ -380,6 +437,15 @@ int EncodeExtendedStatusLength(
   return size;
 }
 
+/**
+ * @brief Encodes the extended status data items
+ *
+ * @param size Current size of the message buffer
+ * @param message_router_response Router Response message to be processed
+ * @param message Message frame to which the data is added
+ *
+ * @return New size of the message buffer
+ */
 int EncodeExtendedStatusDataItems(
     int size, CipMessageRouterResponse* message_router_response,
     EipUint8** message) {
@@ -390,6 +456,19 @@ int EncodeExtendedStatusDataItems(
   return size;
 }
 
+/**
+ * @brief Encodes the extended status (length and data) into the message
+ *
+ * This function uses EncodeExtendedStatusLength and EncodeExtendedStatusDataItems
+ * to encode the complete extended status information into the message
+ *
+ * @param size Current size of the message buffer
+ * @param message Message frame to which the data is added
+ * @param message_router_response Router Response message to be processed
+ *
+ * @return New size of the message buffer
+ */
+
 int EncodeExtendedStatus(int size, EipUint8** message,
                          CipMessageRouterResponse* message_router_response) {
   size = EncodeExtendedStatusLength(size, message, message_router_response);
@@ -398,17 +477,32 @@ int EncodeExtendedStatus(int size, EipUint8** message,
   return size;
 }
 
+/**
+ * @brief Encode the data item length of the unconnected data segment
+ *
+ * @param size Current size of the message buffer
+ * @param message_router_response Router Response message to be processed
+ * @param message Message frame to which the data is added
+ *
+ * @return New size of the message buffer
+ */
 int EncodeUnconnectedDataItemLength(
     int size, CipMessageRouterResponse* message_router_response,
     EipUint8** message) {
-  /* Unconnected Item */
   size += AddIntToMessage(
-      (EipUint16) (message_router_response->data_length + 4
+      (EipUint16) (message_router_response->data_length + 4 /* TODO: Magic number */
           + (2 * message_router_response->size_of_additional_status)),
       message);
   return size;
 }
 
+/**
+ * @brief Encodes the Message Router Response data
+ *
+ * @param size Current size of the message buffer
+ * @param message_router_response Router Response message to be processed
+ * @param message Message frame to which the data is added
+ */
 int EncodeMessageRouterResponseData(
     int size, CipMessageRouterResponse* message_router_response,
     EipUint8** message) {
@@ -418,6 +512,16 @@ int EncodeMessageRouterResponseData(
   return size;
 }
 
+/**
+ * @brief Encodes the sockaddr info type id into the message
+ *
+ * @param size Current size of the message buffer
+ * @param item_type
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message Message frame to which the encoded data is added
+ *
+ * @return New size of the message buffer
+ */
 int EncodeSockaddrInfoItemTypeId(
     int size, int item_type,
     CipCommonPacketFormatData* common_packet_format_data_item,
@@ -430,11 +534,21 @@ int EncodeSockaddrInfoItemTypeId(
   return size;
 }
 
+/**
+ * @brief Encodes the sockaddr info length into the message
+ *
+ * @param size Current size of the message buffer
+ * @param item_type
+ * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
+ * @param message Message frame to which the encoded data is added
+ *
+ * @return New size of the message buffer
+ */
 int EncodeSockaddrInfoLength(
-    int size, int j, CipCommonPacketFormatData* common_packet_format_data_item,
+    int size, int item_type, CipCommonPacketFormatData* common_packet_format_data_item,
     EipUint8** message) {
   size += AddIntToMessage(
-      common_packet_format_data_item->address_info_item[j].length, message);
+      common_packet_format_data_item->address_info_item[item_type].length, message);
   return size;
 }
 
