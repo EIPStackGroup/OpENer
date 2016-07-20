@@ -397,7 +397,7 @@ int EncodeReplyService(int size, EipUint8** message,
  *
  * @return New size of the message buffer
  */
-int EnocdeReservedFieldOfLengthByte(
+int EncodeReservedFieldOfLengthByte(
     int size, EipUint8** message,
     CipMessageRouterResponse* message_router_response) {
   size += AddSintToMessage(message_router_response->reserved, message);
@@ -566,7 +566,7 @@ int AssembleLinearMessage(
     CipCommonPacketFormatData *common_packet_format_data_item,
     EipUint8 *message) {
 
-  int message_size = 0;
+  size_t message_size = 0;
 
   if (message_router_response) {
     /* add Interface Handle and Timeout = 0 -> only for SendRRData and SendUnitData necessary */
@@ -625,7 +625,7 @@ int AssembleLinearMessage(
       /* write message router response into linear memory */
       message_size = EncodeReplyService(message_size, &message,
                                         message_router_response);
-      message_size = EnocdeReservedFieldOfLengthByte(message_size, &message,
+      message_size = EncodeReservedFieldOfLengthByte(message_size, &message,
                                                      message_router_response);
       message_size = EncodeGeneralStatus(message_size, &message,
                                          message_router_response);
