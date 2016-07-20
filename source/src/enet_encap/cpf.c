@@ -15,6 +15,8 @@
 #include "cipconnectionmanager.h"
 #include "trace.h"
 
+const size_t sequenced_address_item_length = 8;
+
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
 int NotifyCommonPacketFormat(EncapsulationData *receive_data,
@@ -238,15 +240,21 @@ int EncodeConnectedAddressItem(
   return size;
 }
 
-/* TODO: Add doxygen documentation */
-/* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
-/* sequence number????? */
+/**
+ * @brief Encodes a sequenced address item into the message
+ *
+ * @param message Pointer to the message memory start
+ * @param common_packet_format_data_item Common Packet Format item which is used in the encoding
+ * @param size Size of the message at the start of the function
+ *
+ * @return New message size after encoding
+ */
 int EncodeSequencedAddressItem(
     EipUint8** message,
     CipCommonPacketFormatData* common_packet_format_data_item, int size) {
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
   size += AddIntToMessage(kCipItemIdSequencedAddressItem, message);
-  size += AddIntToMessage(8, message); /*TODO: Fix magic number */
+  size += AddIntToMessage(sequenced_address_item_length, message);
   size += AddDintToMessage(
       common_packet_format_data_item->address_item.data.connection_identifier,
       message);
