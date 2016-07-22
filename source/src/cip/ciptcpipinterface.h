@@ -31,6 +31,8 @@ typedef struct multicast_address_configuration {
 /* global public variables */
 extern CipUsint g_time_to_live_value; /**< Time-to-live value for IP multicast packets. Default is 1; Minimum is 1; Maximum is 255 */
 
+extern CipUint g_encapsulation_inactivity_timeout; /**< Number of seconds of inactivity before TCP connection is closed, Default is 120 */
+
 extern MulticastAddressConfiguration g_multicast_configuration; /**< Multicast configuration */
 
 /* public functions */
@@ -44,5 +46,11 @@ EipStatus CipTcpIpInterfaceInit(void);
  *
  */
 void ShutdownTcpIpInterface(void);
+
+/** @brief Public Method to get Encapsulation Inactivity Timeout Value
+ *
+ *
+ */
+EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance);
 
 #endif /* OPENER_CIPTCPIPINTERFACE_H_ */

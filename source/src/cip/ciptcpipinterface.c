@@ -14,10 +14,11 @@
 #include "endianconv.h"
 #include "cipethernetlink.h"
 #include "opener_api.h"
+#include "trace.h"
 
 CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
-CipDword configuration_capability_ = 0x04 | 0x20; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification; 0x20 indicates "Hardware Configurable" */
-CipDword configuration_control_ = 0; /**< #3  This is a TCP/IP object attribute. For now it is always zero and is not used for anything. */
+CipDword configuration_capability_ = 0x04; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
+CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
 CipEpath physical_link_object_ = /**< #4 */
 { 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
 CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID*/
@@ -52,6 +53,12 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
 1, /* we currently use only one multicast address */
 0 /* the multicast address will be allocated on ip address configuration */
 };
+
+/** @brief #13 Number of seconds of inactivity before TCP connection is closed
+ *
+ * Currently we implemented with the default value of 120.
+ */
+EipUint16 g_encapsulation_inactivity_timeout = 120;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -122,16 +129,66 @@ EipStatus SetAttributeSingleTcp(
   CipAttributeStruct *attribute = GetCipAttribute(
       instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
+  EipUint16 attribute_number = message_router_request->request_path
+      .attribute_number;
 
   if (0 != attribute) {
-    /* it is an attribute we currently support, however no attribute is setable */
-    /* TODO: if you like to have a device that can be configured via this CIP object add your code here */
-    /* TODO: check for flags associated with attributes */
-    message_router_response->general_status = kCipErrorAttributeNotSetable;
+    switch (attribute_number) {
+      case 3:
+        if ((*(message_router_request->data) >= 0x03)
+             && (*(message_router_request->data) <= 0x0F)) {
+          message_router_response->general_status = kCipErrorInvalidParameter;
+        } else {
+
+          EipUint16 *router_request_data;
+
+          router_request_data = message_router_request->data;
+
+          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+
+          if (attribute->data != NULL) {
+            CipDword *data = (CipDword*) attribute->data;
+            memcpy(data, router_request_data, 4);
+
+          } else {
+            message_router_response->general_status = kCipErrorNotEnoughData;
+          }
+        }
+        break;
+
+      case 13:
+        if ((*(message_router_request->data) > 3600)
+            || (*(message_router_request->data) < 0)) {
+          message_router_response->general_status = kCipErrorInvalidParameterValue;
+        } else {
+
+          EipUint8 *router_request_data;
+
+          router_request_data = message_router_request->data;
+
+          OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
+
+          if (attribute->data != NULL) {
+
+            CipUint *data = (CipUint*) attribute->data;
+            memcpy(data, router_request_data, 2);
+            message_router_response->general_status = kCipErrorSuccess;
+          } else {
+            /* the attribute was zero we are a heartbeat assembly */
+            message_router_response->general_status = kCipErrorNotEnoughData;
+          }
+        }
+        break;
+
+      default:
+        message_router_response->general_status = kCipErrorAttributeNotSetable;
+        break;
+    }
   } else {
     /* we don't have this attribute */
     message_router_response->general_status = kCipErrorAttributeNotSupported;
   }
+
 
   message_router_response->size_of_additional_status = 0;
   message_router_response->data_length = 0;
@@ -146,11 +203,11 @@ EipStatus CipTcpIpInterfaceInit() {
   if ((tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
                                      0xffffffff, /* class getAttributeAll mask*/
                                      0, /* # class services*/
-                                     8, /* # instance attributes*/
+                                     9, /* # instance attributes*/
                                      0xffffffff, /* instance getAttributeAll mask*/
                                      1, /* # instance services*/
                                      1, /* # instances*/
-                                     "TCP/IP interface", 3)) == 0) {
+                                     "TCP/IP interface", 4)) == 0) {
     return kEipStatusError;
   }
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above*/
@@ -160,7 +217,7 @@ EipStatus CipTcpIpInterfaceInit() {
   InsertAttribute(instance, 2, kCipDword, (void *) &configuration_capability_,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 3, kCipDword, (void *) &configuration_control_,
-                  kGetableSingleAndAll);
+                  kSetAndGetAble);
   InsertAttribute(instance, 4, kCipEpath, &physical_link_object_,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
@@ -172,6 +229,8 @@ EipStatus CipTcpIpInterfaceInit() {
                   kGetableSingleAndAll);
   InsertAttribute(instance, 9, kCipAny, (void *) &g_multicast_configuration,
                   kGetableSingleAndAll);
+  InsertAttribute(instance, 13, kCipUint,
+                  (void *) &g_encapsulation_inactivity_timeout, kSetable|kGetableSingle);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,
@@ -205,7 +264,6 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
-
   if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     message_router_response->data_length = 0;
     message_router_response->reply_service = (0x80
@@ -272,3 +330,11 @@ EipStatus GetAttributeAllTcpIpInterface(
 
   return kEipStatusOkSend;
 }
+
+EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
+  CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
+  CipUint *data = (CipUint*) attribute->data;
+  EipUint16 encapsulation_inactivity_timeout = *data;
+  return encapsulation_inactivity_timeout;
+}
+
