@@ -705,21 +705,26 @@ EipStatus GetAttributeAll(CipInstance *instance,
 
 int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   unsigned int length = epath->path_size;
-  AddIntToMessage(epath->path_size, message);
 
+  AddIntToMessage(epath->path_size, message);
   if (epath->class_id < 256) {
     **message = 0x20; /*8Bit Class Id */
     ++(*message);
     **message = (EipUint8) epath->class_id;
     ++(*message);
     length -= 1;
-  } else {
+  } else if (epath->class_id < 65536) {
     **message = 0x21; /*16Bit Class Id */
     ++(*message);
     **message = 0; /*pad byte */
     ++(*message);
-    AddIntToMessage(epath->class_id, message);
-    length -= 2;
+    length -= AddIntToMessage(epath->class_id, message);
+  } else {
+    **message = 0x22; /*32Bit Class Id */
+    ++(*message);
+    **message = 0; /*pad byte */
+    ++(*message);
+    length -= AddIntToMessage(epath->class_id, message);
   }
 
   if (0 < length) {
@@ -729,13 +734,18 @@ int EncodeEPath(CipEpath *epath, EipUint8 **message) {
       **message = (EipUint8) epath->instance_number;
       ++(*message);
       length -= 1;
-    } else {
+    } else if (epath->instance_number < 65536) {
       **message = 0x25; /*16Bit Instance Id */
       ++(*message);
-      **message = 0; /*padd byte */
+      **message = 0; /*pad byte */
       ++(*message);
-      AddIntToMessage(epath->instance_number, message);
-      length -= 2;
+      length -= AddIntToMessage(epath->instance_number, message);
+    } else {
+      **message = 0x26; /*32Bit Class Id */
+      ++(*message);
+      **message = 0; /*pad byte */
+      ++(*message);
+      length -= AddIntToMessage(epath->class_id, message);
     }
 
     if (0 < length) {
