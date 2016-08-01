@@ -262,7 +262,7 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response) {
-  ConnectionManagerStatusCode connection_status = kConnectionManagerStatusCodeSuccess;
+  EipUint16 connection_status = kConnectionManagerStatusCodeSuccess;
 
   (void) instance; /*suppress compiler warning */
 

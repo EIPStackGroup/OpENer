@@ -224,6 +224,7 @@ typedef struct {
   CipUsint minor_revision; /**< Minor Revision */
 } CipKeyData;
 
+/** @brief Struct storing the CIP revision */
 typedef struct {
   EipUint8 major_revision;
   EipUint8 minor_revision;
@@ -294,8 +295,7 @@ typedef struct cip_instance {
 
 /** @brief Class is a subclass of Instance */
 typedef struct cip_class {
-  CipInstance m_stSuper;
-
+  CipInstance class_instance;
   /* the rest of these are specific to the Class class only. */
   EipUint32 class_id; /**< class ID */
   EipUint16 revision; /**< class revision*/

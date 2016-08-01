@@ -212,19 +212,19 @@ CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
   strcat(meta_class->class_name, name);
 
   /* initialize the instance-specific fields of the Class struct*/
-  class->m_stSuper.instance_number = 0; /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
-  class->m_stSuper.attributes = 0; /* this will later point to the class attibutes*/
-  class->m_stSuper.cip_class = meta_class; /* the class's class is the metaclass (like SmallTalk)*/
-  class->m_stSuper.next = 0; /* the next link will always be zero, sinc there is only one instance of any particular class object */
+  class->class_instance.instance_number = 0; /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
+  class->class_instance.attributes = 0; /* this will later point to the class attibutes*/
+  class->class_instance.cip_class = meta_class; /* the class's class is the metaclass (like SmallTalk)*/
+  class->class_instance.next = 0; /* the next link will always be zero, sinc there is only one instance of any particular class object */
 
-  meta_class->m_stSuper.instance_number = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
-  meta_class->m_stSuper.attributes = 0; /* the metaclass has no attributes*/
-  meta_class->m_stSuper.cip_class = 0; /* the metaclass has no class*/
-  meta_class->m_stSuper.next = 0; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
+  meta_class->class_instance.instance_number = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
+  meta_class->class_instance.attributes = 0; /* the metaclass has no attributes*/
+  meta_class->class_instance.cip_class = 0; /* the metaclass has no class*/
+  meta_class->class_instance.next = 0; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
 
   /* further initialization of the class object*/
 
-  class->m_stSuper.attributes = (CipAttributeStruct *) CipCalloc(
+  class->class_instance.attributes = (CipAttributeStruct *) CipCalloc(
       meta_class->number_of_attributes, sizeof(CipAttributeStruct));
   /* TODO -- check that we didn't run out of memory?*/
 
@@ -302,7 +302,7 @@ void InsertAttribute(CipInstance *instance, EipUint16 attribute_number,
 
   OPENER_TRACE_ERR(
       "Tried to insert to many attributes into class: %"PRIu32", instance %"PRIu32"\n",
-      instance->cip_class->m_stSuper.instance_number,
+      instance->cip_class->class_instance.instance_number,
       instance->instance_number);
   OPENER_ASSERT(0);
   /* trying to insert too many attributes*/

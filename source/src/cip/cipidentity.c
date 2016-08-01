@@ -25,8 +25,10 @@
  */
 
 #include <string.h>
-#include "opener_user_conf.h"
+
 #include "cipidentity.h"
+
+#include "opener_user_conf.h"
 #include "cipcommon.h"
 #include "cipmessagerouter.h"
 #include "ciperror.h"
@@ -52,14 +54,14 @@ void SetDeviceSerialNumber(EipUint32 serial_number) {
   serial_number_ = serial_number;
 }
 
-/** Private functions, sets the devices status
- * @param status The serial number of the deivce
+/** @brief Private function, sets the devices status
+ * @param status The serial number of the device
  */
 void SetDeviceStatus(EipUint16 status) {
   status_ = status;
 }
 
-/** Reset service
+/** @brief Reset service
  *
  * @param instance
  * @param message_router_request
@@ -114,15 +116,9 @@ static EipStatus Reset(CipInstance *instance, /* pointer to instance*/
   return eip_status;
 }
 
-/** @brief CIP Identity object constructor
- *
- * @returns EIP_ERROR if the class could not be created, otherwise EIP_OK
- */
 EipStatus CipIdentityInit() {
-  CipClass *class;
-  CipInstance *instance;
 
-  class = CreateCipClass(kIdentityClassCode, 0, /* # of non-default class attributes */
+  CipClass *class = CreateCipClass(kIdentityClassCode, 0, /* # of non-default class attributes */
                          MASK4(1, 2, 6, 7), /* class getAttributeAll mask		CIP spec 5-2.3.2 */
                          0, /* # of class services*/
                          7, /* # of instance attributes*/
@@ -135,7 +131,7 @@ EipStatus CipIdentityInit() {
   if (class == 0)
     return kEipStatusError;
 
-  instance = GetCipInstance(class, 1);
+  CipInstance *instance = GetCipInstance(class, 1);
 
   InsertAttribute(instance, 1, kCipUint, &vendor_id_, kGetableSingleAndAll);
   InsertAttribute(instance, 2, kCipUint, &device_type_, kGetableSingleAndAll);

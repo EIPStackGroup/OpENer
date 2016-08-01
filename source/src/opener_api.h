@@ -38,19 +38,19 @@ ConfigureNetworkInterface(const char *ip_address, const char *subnet_mask,
  *
  *  @param mac_address  the hardware MAC address of the network interface
  */
-void ConfigureMacAddress(const EipUint8 *mac_address);
+void ConfigureMacAddress(const EipUint8 *const mac_address);
 
 /** @ingroup CIP_API
  * @brief Configure the domain name of the device
  * @param domain_name the domain name to be used
  */
-void ConfigureDomainName(const char *domain_name);
+void ConfigureDomainName(const char *const domain_name);
 
 /** @ingroup CIP_API
  * @brief Configure the host name of the device
  * @param host_name the host name to be used
  */
-void ConfigureHostName(const char *host_name);
+void ConfigureHostName(const char *const host_name);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -266,7 +266,7 @@ int DecodeData(EipUint8 cip_data_type, void *cip_data, EipUint8 **cip_message);
 CipInstance *CreateAssemblyObject(EipUint32 instance_number, EipByte *data,
                                   EipUint16 data_length);
 
-struct connection_object;
+typedef struct connection_object ConnectionObject;
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the opening of connections
@@ -278,7 +278,7 @@ struct connection_object;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-    struct connection_object *connection_object, EipUint16 *extended_error_code);
+    ConnectionObject *connection_object, EipUint16 *extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections

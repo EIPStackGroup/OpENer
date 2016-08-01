@@ -13,6 +13,8 @@
 
 /* public functions */
 /** @brief Initialize the Ethernet Link Objects data
+ *
+ *  @return kEipStatusOk if initialization was successful, otherwise kEipStatusError
  */
 EipStatus CipEthernetLinkInit(void);
 

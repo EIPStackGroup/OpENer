@@ -38,7 +38,7 @@ int NotifyCommonPacketFormat(EncapsulationData *receive_data,
         { /* found null address item*/
       if (g_common_packet_format_data_item.data_item.type_id
           == kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
-        return_value = NotifyMR(
+        return_value = NotifyMessageRouter(
             g_common_packet_format_data_item.data_item.data,
             g_common_packet_format_data_item.data_item.length);
         if (return_value != kEipStatusError) {
@@ -90,7 +90,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           EipUint8 *pnBuf = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
               (EipUint32) GetIntFromMessage(&pnBuf);
-          return_value = NotifyMR(
+          return_value = NotifyMessageRouter(
               pnBuf, g_common_packet_format_data_item.data_item.length - 2);
 
           if (return_value != kEipStatusError) {

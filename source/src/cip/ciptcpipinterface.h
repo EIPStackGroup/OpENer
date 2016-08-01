@@ -35,6 +35,8 @@ extern MulticastAddressConfiguration g_multicast_configuration; /**< Multicast c
 
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object
+ *
+ * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus CipTcpIpInterfaceInit(void);
 

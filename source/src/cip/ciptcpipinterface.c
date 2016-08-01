@@ -19,10 +19,10 @@ CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a
 CipDword configuration_capability_ = 0x04 | 0x20; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification; 0x20 indicates "Hardware Configurable" */
 CipDword configuration_control_ = 0; /**< #3  This is a TCP/IP object attribute. For now it is always zero and is not used for anything. */
 CipEpath physical_link_object_ = /**< #4 */
-{ 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
-CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID*/
+{ 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks */
+CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID */
 1, /**< EIP_UINT16 InstanceNr*/
-0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object)*/
+0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object) */
 };
 
 CipTcpIpNetworkInterfaceConfiguration interface_configuration_ = /**< #5 IP, network mask, gateway, name server 1 & 2, domain name*/
@@ -32,7 +32,7 @@ CipTcpIpNetworkInterfaceConfiguration interface_configuration_ = /**< #5 IP, net
 0, /* NameServer */
 0, /* NameServer2 */
 { /* DomainName */
-0, NULL, } };
+0, NULL } };
 
 CipString hostname_ = /**< #6 Hostname*/
 { 0, NULL };
@@ -82,7 +82,7 @@ EipStatus ConfigureNetworkInterface(const char *ip_address,
   return kEipStatusOk;
 }
 
-void ConfigureDomainName(const char *domain_name) {
+void ConfigureDomainName(const char *const domain_name) {
   if (NULL != interface_configuration_.domain_name.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -99,7 +99,7 @@ void ConfigureDomainName(const char *domain_name) {
   }
 }
 
-void ConfigureHostName(const char *hostname) {
+void ConfigureHostName(const char *const hostname) {
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -141,16 +141,16 @@ EipStatus SetAttributeSingleTcp(
 }
 
 EipStatus CipTcpIpInterfaceInit() {
-  CipClass *tcp_ip_class = NULL;
+  CipClass *tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
+                                          0xffffffff, /* class getAttributeAll mask*/
+                                          0, /* # class services*/
+                                          8, /* # instance attributes*/
+                                          0xffffffff, /* instance getAttributeAll mask*/
+                                          1, /* # instance services*/
+                                          1, /* # instances*/
+                                          "TCP/IP interface", 3);
 
-  if ((tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
-                                     0xffffffff, /* class getAttributeAll mask*/
-                                     0, /* # class services*/
-                                     8, /* # instance attributes*/
-                                     0xffffffff, /* instance getAttributeAll mask*/
-                                     1, /* # instance services*/
-                                     1, /* # instances*/
-                                     "TCP/IP interface", 3)) == 0) {
+  if (NULL == tcp_ip_class) {
     return kEipStatusError;
   }
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above*/
