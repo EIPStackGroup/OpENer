@@ -27,9 +27,9 @@ extern EipUint8 g_message_data_reply_buffer[];
  * @param message_router_request request message
  * @param message_router_response reply message
  * @return
- *     - EIP_OK_SEND    ... success
- *     - EIP_OK  ... no reply to send back
- *     - EIP_ERROR ... error
+ *     - kEipStatusOkSend ... success
+ *     - kEipStatusOk ... no reply to send back
+ *     - kEipStatusError ... error
  */
 EipStatus NotifyClass(CipClass *class,
                       CipMessageRouterRequest *message_router_request,
@@ -37,8 +37,8 @@ EipStatus NotifyClass(CipClass *class,
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
- *  Check from classID which Object requests an attribute, search if object has
- *  the appropriate attribute implemented.
+ * Check from classID which Object requests an attribute, search if object has
+ * the appropriate attribute implemented.
  * @param instance pointer to instance.
  * @param message_router_request pointer to request.
  * @param message_router_response pointer to response.

@@ -16,6 +16,7 @@
 /** @brief External globals needed from connectionmanager.c */
 extern ConnectionObject *g_active_connection_list;
 
+/** @brief Exclusive Owner connection data */
 typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
@@ -23,6 +24,7 @@ typedef struct {
   ConnectionObject connection_data; /**< the connection data, only one connection is allowed per O-to-T point*/
 } ExclusiveOwnerConnection;
 
+/** @brief Input Only connection data */
 typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
@@ -30,6 +32,7 @@ typedef struct {
   ConnectionObject connection_data[OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH]; /*< the connection data */
 } InputOnlyConnection;
 
+/** @brief Listen Only connection data */
 typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
@@ -37,11 +40,11 @@ typedef struct {
   ConnectionObject connection_data[OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH]; /**< the connection data */
 } ListenOnlyConnection;
 
-ExclusiveOwnerConnection g_exlusive_owner_connections[OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
+ExclusiveOwnerConnection g_exlusive_owner_connections[OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS]; /**< Exclusive Owner connections */
 
-InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS];
+InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /**< Input Only connections */
 
-ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS];
+ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */
 
 ConnectionObject *GetExclusiveOwnerConnection(
     ConnectionObject *connection_object, EipUint16 *extended_error);
@@ -136,9 +139,8 @@ ConnectionObject *GetIoConnectionForConnectionData(
 ConnectionObject *GetExclusiveOwnerConnection(
     ConnectionObject *connection_object, EipUint16 *extended_error) {
   ConnectionObject *exclusive_owner_connection = NULL;
-  int i;
 
-  for (i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; i++) {
+  for (int i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; i++) {
     if ((g_exlusive_owner_connections[i].output_assembly
         == connection_object->connection_path.connection_point[0])
         && (g_exlusive_owner_connections[i].input_assembly
@@ -163,10 +165,9 @@ ConnectionObject *GetExclusiveOwnerConnection(
 
 ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
                                          EipUint16 *extended_error) {
-  ConnectionObject *input_only_connection = NULL;
-  int i, j;
+  ConnectionObject *input_only_connection = NULL; //TODO: This variable has no use
 
-  for (i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; i++) {
+  for (int i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; i++) {
     if (g_input_only_connections[i].output_assembly
         == connection_object->connection_path.connection_point[0]) { /* we have the same output assembly */
       if (g_input_only_connections[i].input_assembly
@@ -182,7 +183,7 @@ ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
         break;
       }
 
-      for (j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH; j++) {
+      for (int j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH; j++) {
         if (kConnectionStateNonExistent
             == g_input_only_connections[i].connection_data[j].state) {
           return &(g_input_only_connections[i].connection_data[j]);
@@ -198,8 +199,7 @@ ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
 
 ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
                                           EipUint16 *extended_error) {
-  ConnectionObject *listen_only_connection = NULL;
-  int i, j;
+  ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
   if (kRoutingTypeMulticastConnection
       != (connection_object->t_to_o_network_connection_parameter
@@ -210,7 +210,7 @@ ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
     return NULL;
   }
 
-  for (i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
+  for (int i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
         == connection_object->connection_path.connection_point[0]) { /* we have the same output assembly */
       if (g_listen_only_connections[i].input_assembly
@@ -234,7 +234,7 @@ ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
         break;
       }
 
-      for (j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH; j++) {
+      for (int j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH; j++) {
         if (kConnectionStateNonExistent
             == g_listen_only_connections[i].connection_data[j].state) {
           return &(g_listen_only_connections[i].connection_data[j]);
@@ -309,12 +309,11 @@ ConnectionObject *GetNextNonControlMasterConnection(EipUint32 input_point) {
 void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,
                                              ConnectionType instance_type) {
   ConnectionObject *connection = g_active_connection_list;
-  ConnectionObject *connection_to_delete;
 
   while (NULL != connection) {
     if ((instance_type == connection->instance_type)
         && (input_point == connection->connection_path.connection_point[1])) {
-      connection_to_delete = connection;
+      ConnectionObject *connection_to_delete = connection;
       connection = connection->next_connection_object;
       CheckIoConnectionEvent(
           connection_to_delete->connection_path.connection_point[0],
@@ -340,7 +339,6 @@ void CloseAllConnections(void) {
      */
     connection = g_active_connection_list;
   }
-
 }
 
 EipBool8 ConnectionWithSameConfigPointExists(EipUint32 config_point) {

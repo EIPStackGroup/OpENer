@@ -16,11 +16,11 @@ void InitializeIoConnectionData(void);
  *  If a suitable connection is found the connection data is transfered the
  *  application connection type is set (i.e., EConnType).
  *  @param connection_object connection data to be used
- *  @param extended_error if an error occurred this value has the according
+ *  @param extended_error pointer to the extended_error variable, if an error occurred this value has the according
  *     error code for the response
  *  @return
  *        - on success: A pointer to the connection object already containing the connection
- *          data given in pa_pstConnData.
+ *          data given in connection_object.
  *        - on error: NULL
  */
 ConnectionObject *GetIoConnectionForConnectionData(
@@ -47,7 +47,7 @@ ConnectionObject *GetNextNonControlMasterConnection(EipUint32 input_point);
 /** @brief Close all connection producing the same input and have the same type
  * (i.e., listen only or input only).
  *
- * @param input_point  the input point
+ * @param input_point the input point
  * @param instance_type the connection application type
  */
 void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,

@@ -19,7 +19,6 @@ ConnectionObject g_explicit_connections[OPENER_CIP_NUM_EXPLICIT_CONNS];
 EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
                               EipUint16 *extended_error) {
   EipStatus eip_status = kEipStatusOk;
-  EipUint32 produced_connection_id_buffer;
 
   /*TODO add check for transport type trigger */
   /* if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03)) */
@@ -33,7 +32,7 @@ EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
   } else {
     CopyConnectionData(explicit_connection, connection_object);
 
-    produced_connection_id_buffer = explicit_connection->produced_connection_id;
+    EipUint32 produced_connection_id_buffer = explicit_connection->produced_connection_id;
     GeneralConnectionConfiguration(explicit_connection);
     explicit_connection->produced_connection_id = produced_connection_id_buffer;
     explicit_connection->instance_type = kConnectionTypeExplicit;
@@ -51,9 +50,12 @@ EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
   return eip_status;
 }
 
+/** @brief Searches and returns a free explicit connection slot
+ *
+ * @return Free explicit connection slot, or NULL if no slot is free
+ */
 ConnectionObject *GetFreeExplicitConnection(void) {
-  int i;
-  for (i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; i++) {
+  for (int i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; i++) {
     if (g_explicit_connections[i].state == kConnectionStateNonExistent)
       return &(g_explicit_connections[i]);
   }
