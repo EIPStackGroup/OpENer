@@ -93,7 +93,7 @@ void ConfigureDomainName(const char *const restrict domain_name) {
   if (interface_configuration_.domain_name.length) {
     interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
         interface_configuration_.domain_name.length + 1, sizeof(EipInt8));
-    strcpy(interface_configuration_.domain_name.string, domain_name);
+    strcpy((char *)(interface_configuration_.domain_name.string), domain_name);
   } else {
     interface_configuration_.domain_name.string = NULL;
   }
@@ -110,7 +110,7 @@ void ConfigureHostName(const char *const restrict hostname) {
   if (hostname_.length) {
     hostname_.string = (EipByte *) CipCalloc(hostname_.length + 1,
                                              sizeof(EipByte));
-    strcpy(hostname_.string, hostname);
+    strcpy((char *)(hostname_.string), hostname);
   } else {
     hostname_.string = NULL;
   }
