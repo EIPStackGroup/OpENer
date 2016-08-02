@@ -31,9 +31,9 @@ extern EipUint8 g_message_data_reply_buffer[];
  *     - kEipStatusOk ... no reply to send back
  *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(CipClass *class,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response);
+EipStatus NotifyClass(const CipClass *restrict const class,
+                      CipMessageRouterRequest *const message_router_request,
+                      CipMessageRouterResponse *const message_router_response);
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
@@ -45,9 +45,9 @@ EipStatus NotifyClass(CipClass *class,
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */
-EipStatus GetAttributeSingle(CipInstance *instance,
-                             CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response);
+EipStatus GetAttributeSingle(CipInstance *restrict const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *

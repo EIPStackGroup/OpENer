@@ -62,9 +62,9 @@ EipStatus GetAttributeAllTcpIpInterface(
     CipInstance *instance, CipMessageRouterRequest *message_router_request,
     CipMessageRouterResponse *message_router_response);
 
-EipStatus ConfigureNetworkInterface(const char *ip_address,
-                                    const char *subnet_mask,
-                                    const char *gateway) {
+EipStatus ConfigureNetworkInterface(const char *const ip_address,
+                                    const char *const subnet_mask,
+                                    const char *const gateway) {
 
   interface_configuration_.ip_address = inet_addr(ip_address);
   interface_configuration_.network_mask = inet_addr(subnet_mask);
@@ -82,7 +82,7 @@ EipStatus ConfigureNetworkInterface(const char *ip_address,
   return kEipStatusOk;
 }
 
-void ConfigureDomainName(const char *const domain_name) {
+void ConfigureDomainName(const char *const restrict domain_name) {
   if (NULL != interface_configuration_.domain_name.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -99,7 +99,7 @@ void ConfigureDomainName(const char *const domain_name) {
   }
 }
 
-void ConfigureHostName(const char *const hostname) {
+void ConfigureHostName(const char *const restrict hostname) {
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -200,8 +200,8 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response) {
+    CipInstance *const restrict instance, CipMessageRouterRequest *restrict const message_router_request,
+    CipMessageRouterResponse *restrict const message_router_response) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;

@@ -1140,7 +1140,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
   return kEipStatusOk;
 }
 
-void CloseConnection(ConnectionObject *connection_object) {
+void CloseConnection(ConnectionObject *restrict connection_object) {
   connection_object->state = kConnectionStateNonExistent;
   if (0x03 != (connection_object->transport_type_class_trigger & 0x03)) {
     /* only close the UDP connection for not class 3 connections */
@@ -1156,8 +1156,8 @@ void CloseConnection(ConnectionObject *connection_object) {
   RemoveFromActiveConnections(connection_object);
 }
 
-void CopyConnectionData(ConnectionObject *destination,
-                        ConnectionObject *source) {
+void CopyConnectionData(ConnectionObject *restrict destination,
+                        const ConnectionObject *restrict const source) {
   memcpy(destination, source, sizeof(ConnectionObject));
 }
 
@@ -1187,7 +1187,7 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object) {
   connection_object->state = kConnectionStateNonExistent;
 }
 
-EipBool8 IsConnectedOutputAssembly(EipUint32 instance_number) {
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
   EipBool8 is_connected = false;
 
   ConnectionObject *iterator = g_active_connection_list;

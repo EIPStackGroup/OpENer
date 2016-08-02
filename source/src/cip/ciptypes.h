@@ -329,8 +329,8 @@ typedef struct cip_class {
  *should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+    CipInstance *const instance, CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {

@@ -254,7 +254,7 @@ ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
  * @param destination Destination of the copy operation
  * @param osurce Source of the copy operation
  */
-void CopyConnectionData(ConnectionObject *destination, ConnectionObject *source);
+void CopyConnectionData(ConnectionObject *restrict destination, const ConnectionObject *restrict const source);
 
 /** @brief Close the given connection
  *
@@ -263,10 +263,10 @@ void CopyConnectionData(ConnectionObject *destination, ConnectionObject *source)
  * @param connection_object pointer to the connection object structure to be
  *closed
  */
-void CloseConnection(ConnectionObject *connection_object);
+void CloseConnection(ConnectionObject *restrict connection_object);
 
 /* TODO: Missing documentation */
-EipBool8 IsConnectedOutputAssembly(EipUint32 instance_number);
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.

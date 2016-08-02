@@ -89,7 +89,7 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
   return NULL;
 }
 
-CipClass *GetCipClass(EipUint32 class_id) {
+CipClass *GetCipClass(const EipUint32 class_id) {
   CipMessageRouterObject *message_router_object = GetRegisteredObject(class_id);
 
   if (message_router_object)
@@ -98,7 +98,7 @@ CipClass *GetCipClass(EipUint32 class_id) {
     return NULL;
 }
 
-CipInstance *GetCipInstance(CipClass *cip_class, EipUint32 instance_number) {
+CipInstance *GetCipInstance(const CipClass *restrict const cip_class, EipUint32 instance_number) {
 
   if (instance_number == 0)
     return (CipInstance *) cip_class; /* if the instance number is zero, return the class object itself*/

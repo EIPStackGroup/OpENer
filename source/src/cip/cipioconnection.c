@@ -77,8 +77,8 @@ unsigned int g_config_data_length = 0;
 EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 
 /**** Implementation ****/
-EipStatus EstablishIoConnction(ConnectionObject *connection_object,
-                         EipUint16 *extended_error) {
+EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_object,
+                         EipUint16 *const extended_error) {
   int originator_to_target_connection_type,
       target_to_originator_connection_type;
   EipStatus eip_status = kEipStatusOk;

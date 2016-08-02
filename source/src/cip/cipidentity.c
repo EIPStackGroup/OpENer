@@ -50,14 +50,14 @@ CipShortString product_name_ = { sizeof(OPENER_DEVICE_NAME) - 1,
 /** Private functions, sets the devices serial number
  * @param serial_number The serial number of the device
  */
-void SetDeviceSerialNumber(EipUint32 serial_number) {
+void SetDeviceSerialNumber(const EipUint32 serial_number) {
   serial_number_ = serial_number;
 }
 
 /** @brief Private function, sets the devices status
  * @param status The serial number of the device
  */
-void SetDeviceStatus(EipUint16 status) {
+void SetDeviceStatus(const EipUint16 status) {
   status_ = status;
 }
 

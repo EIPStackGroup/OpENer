@@ -47,18 +47,18 @@ InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /
 ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */
 
 ConnectionObject *GetExclusiveOwnerConnection(
-    ConnectionObject *connection_object, EipUint16 *extended_error);
+    const ConnectionObject *restrict connection_object, EipUint16 *extended_error);
 
-ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
-                                         EipUint16 *extended_error);
+ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
+                                         EipUint16 *const extended_error);
 
-ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
-                                          EipUint16 *extended_error);
+ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
+                                          EipUint16 *const extended_error);
 
-void ConfigureExclusiveOwnerConnectionPoint(unsigned int connection_number,
-                                            unsigned int output_assembly,
-                                            unsigned int input_assembly,
-                                            unsigned int config_assembly) {
+void ConfigureExclusiveOwnerConnectionPoint(const unsigned int connection_number,
+                                            const unsigned int output_assembly,
+                                            const unsigned int input_assembly,
+                                            const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS > connection_number) {
     g_exlusive_owner_connections[connection_number].output_assembly =
         output_assembly;
@@ -69,10 +69,10 @@ void ConfigureExclusiveOwnerConnectionPoint(unsigned int connection_number,
   }
 }
 
-void ConfigureInputOnlyConnectionPoint(unsigned int connection_number,
-                                       unsigned int output_assembly,
-                                       unsigned int input_assembly,
-                                       unsigned int config_assembly) {
+void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
+                                       const unsigned int output_assembly,
+                                       const unsigned int input_assembly,
+                                       const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_INPUT_ONLY_CONNS > connection_number) {
     g_input_only_connections[connection_number].output_assembly =
         output_assembly;
@@ -82,10 +82,10 @@ void ConfigureInputOnlyConnectionPoint(unsigned int connection_number,
   }
 }
 
-void ConfigureListenOnlyConnectionPoint(unsigned int connection_number,
-                                        unsigned int output_assembly,
-                                        unsigned int input_assembly,
-                                        unsigned int config_assembly) {
+void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
+                                        const unsigned int output_assembly,
+                                        const unsigned int input_assembly,
+                                        const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_LISTEN_ONLY_CONNS > connection_number) {
     g_listen_only_connections[connection_number].output_assembly =
         output_assembly;
@@ -97,7 +97,7 @@ void ConfigureListenOnlyConnectionPoint(unsigned int connection_number,
 }
 
 ConnectionObject *GetIoConnectionForConnectionData(
-    ConnectionObject *connection_object, EipUint16 *extended_error) {
+    ConnectionObject *const restrict connection_object, EipUint16 *const extended_error) {
   ConnectionObject *io_connection = NULL;
   *extended_error = 0;
 
@@ -137,7 +137,7 @@ ConnectionObject *GetIoConnectionForConnectionData(
 }
 
 ConnectionObject *GetExclusiveOwnerConnection(
-    ConnectionObject *connection_object, EipUint16 *extended_error) {
+    const ConnectionObject *const restrict connection_object, EipUint16 *const extended_error) {
   ConnectionObject *exclusive_owner_connection = NULL;
 
   for (int i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; i++) {
@@ -163,8 +163,8 @@ ConnectionObject *GetExclusiveOwnerConnection(
   return exclusive_owner_connection;
 }
 
-ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
-                                         EipUint16 *extended_error) {
+ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
+                                         EipUint16 *const extended_error) {
   ConnectionObject *input_only_connection = NULL; //TODO: This variable has no use
 
   for (int i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; i++) {
@@ -197,8 +197,8 @@ ConnectionObject *GetInputOnlyConnection(ConnectionObject *connection_object,
   return input_only_connection;
 }
 
-ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
-                                          EipUint16 *extended_error) {
+ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
+                                          EipUint16 * const extended_error) {
   ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
   if (kRoutingTypeMulticastConnection
@@ -248,7 +248,7 @@ ConnectionObject *GetListenOnlyConnection(ConnectionObject *connection_object,
   return listen_only_connection;
 }
 
-ConnectionObject *GetExistingProducerMulticastConnection(EipUint32 input_point) {
+ConnectionObject *GetExistingProducerMulticastConnection(const EipUint32 input_point) {
   ConnectionObject *producer_multicast_connection = g_active_connection_list;
 
   while (NULL != producer_multicast_connection) {
@@ -276,7 +276,7 @@ ConnectionObject *GetExistingProducerMulticastConnection(EipUint32 input_point) 
   return producer_multicast_connection;
 }
 
-ConnectionObject *GetNextNonControlMasterConnection(EipUint32 input_point) {
+ConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point) {
   ConnectionObject *next_non_control_master_connection =
       g_active_connection_list;
 
@@ -306,8 +306,8 @@ ConnectionObject *GetNextNonControlMasterConnection(EipUint32 input_point) {
   return next_non_control_master_connection;
 }
 
-void CloseAllConnectionsForInputWithSameType(EipUint32 input_point,
-                                             ConnectionType instance_type) {
+void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
+                                             const ConnectionType instance_type) {
   ConnectionObject *connection = g_active_connection_list;
 
   while (NULL != connection) {
@@ -341,7 +341,7 @@ void CloseAllConnections(void) {
   }
 }
 
-EipBool8 ConnectionWithSameConfigPointExists(EipUint32 config_point) {
+EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
   ConnectionObject *connection = g_active_connection_list;
 
   while (NULL != connection) {

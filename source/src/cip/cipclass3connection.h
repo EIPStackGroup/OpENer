@@ -23,8 +23,8 @@
  *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
-                              EipUint16 *extended_error);
+EipStatus EstablishClass3Connection(ConnectionObject *restrict const connection_object,
+                              EipUint16 *const extended_error);
 
 /** @brief Initializes the explicit connections mechanism
  *

@@ -30,7 +30,7 @@ const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT standar
 /* private functions*/
 int EncodeEPath(CipEpath *epath, EipUint8 **message);
 
-void CipStackInit(EipUint16 unique_connection_id) {
+void CipStackInit(const EipUint16 unique_connection_id) {
   EncapsulationInit();
   /* The message router is the first CIP object be initialized!!! */
   EipStatus eip_status = CipMessageRouterInit();
@@ -64,9 +64,9 @@ void ShutdownCipStack(void) {
   DeleteAllClasses();
 }
 
-EipStatus NotifyClass(CipClass *cip_class,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response) {
+EipStatus NotifyClass(const CipClass *restrict const cip_class,
+                      CipMessageRouterRequest *const message_router_request,
+                      CipMessageRouterResponse *const message_router_response) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
   EipUint16 instance_number = message_router_request->request_path.instance_number; /* get the instance number */
@@ -111,8 +111,8 @@ EipStatus NotifyClass(CipClass *cip_class,
   return kEipStatusOkSend;
 }
 
-CipInstance *AddCipInstances(CipClass *cip_class, int number_of_instances) {
-  CipInstance *first_instance, *current_instance, **next_instance;
+CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int number_of_instances) {
+  CipInstance **next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n", number_of_instances,
@@ -125,8 +125,10 @@ CipInstance *AddCipInstances(CipClass *cip_class, int number_of_instances) {
     instance_number++; /*    keep track of what the first new instance number will be */
   }
 
-  first_instance = current_instance = (CipInstance *) CipCalloc(
-      number_of_instances, sizeof(CipInstance)); /* allocate a block of memory for all created instances*/
+  CipInstance *current_instance = current_instance = (CipInstance *) CipCalloc(
+        number_of_instances, sizeof(CipInstance)); /* allocate a block of memory for all created instances*/
+  CipInstance *first_instance = current_instance; /* allocate a block of memory for all created instances*/
+
   OPENER_ASSERT(NULL != current_instance);
   /* fail if run out of memory */
 
@@ -153,7 +155,7 @@ CipInstance *AddCipInstances(CipClass *cip_class, int number_of_instances) {
   return first_instance;
 }
 
-CipInstance *AddCIPInstance(CipClass *class, EipUint32 instance_id) {
+CipInstance *AddCIPInstance(CipClass *restrict const class, const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
   if (0 == instance) { /*we have no instance with given id*/
@@ -163,20 +165,19 @@ CipInstance *AddCIPInstance(CipClass *class, EipUint32 instance_id) {
   return instance;
 }
 
-CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
-                         EipUint32 get_all_class_attributes_mask,
-                         int number_of_class_services,
-                         int number_of_instance_attributes,
-                         EipUint32 get_all_instance_attributes_mask,
-                         int number_of_instance_services,
-                         int number_of_instances, char *name,
-                         EipUint16 revision) {
+CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_attributes,
+                         const EipUint32 get_all_class_attributes_mask,
+                         const int number_of_class_services,
+                         const int number_of_instance_attributes,
+                         const EipUint32 get_all_instance_attributes_mask,
+                         const int number_of_instance_services,
+                         const int number_of_instances, char *name,
+                         const EipUint16 revision) {
 
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%"PRIX32"\n", name,
                     class_id);
 
-  CipClass *class = GetCipClass(class_id); /* check if an class with the ClassID already exists */
-  OPENER_ASSERT(NULL == class);
+  OPENER_ASSERT(NULL == GetCipClass(class_id)); /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -185,8 +186,8 @@ CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
    and contains a pointer to a metaclass
    CIP never explicitly addresses a metaclass*/
 
-  class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the class object*/
-  CipClass *meta_class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the metaclass object*/
+  CipClass *const class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the class object*/
+  CipClass *const meta_class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
   class->class_id = class_id; /* the class remembers the class ID */
@@ -278,8 +279,8 @@ CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
   return class;
 }
 
-void InsertAttribute(CipInstance *instance, EipUint16 attribute_number,
-                     EipUint8 cip_type, void *data, EipByte cip_flags) {
+void InsertAttribute(CipInstance *const instance, const EipUint16 attribute_number,
+                     const EipUint8 cip_type, void *const data, const EipByte cip_flags) {
 
   CipAttributeStruct *attribute = instance->attributes;
   OPENER_ASSERT(NULL != attribute);
@@ -308,8 +309,8 @@ void InsertAttribute(CipInstance *instance, EipUint16 attribute_number,
   /* trying to insert too many attributes*/
 }
 
-void InsertService(CipClass * class, EipUint8 service_number,
-                   CipServiceFunction service_function, char *service_name) {
+void InsertService(const CipClass *const class, const EipUint8 service_number,
+                   const CipServiceFunction service_function, char *const service_name) {
 
   CipServiceStruct *service = class->services; /* get a pointer to the service array*/
   OPENER_ASSERT(service != 0);
@@ -323,21 +324,21 @@ void InsertService(CipClass * class, EipUint8 service_number,
       service->name = service_name;
       return;
     }
-    service++;
+    ++service;
   }
   OPENER_ASSERT(0);
   /* adding more services than were declared is a no-no*/
 }
 
-CipAttributeStruct *GetCipAttribute(CipInstance * instance,
-                                    EipUint16 attribute_number) {
+CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
+                                    const EipUint16 attribute_number) {
 
   CipAttributeStruct *attribute = instance->attributes; /* init pointer to array of attributes*/
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
     if (attribute_number == attribute->attribute_number)
       return attribute;
     else
-      attribute++;
+      ++attribute;
   }
 
   OPENER_TRACE_WARN("attribute %d not defined\n", attribute_number);
@@ -346,11 +347,11 @@ CipAttributeStruct *GetCipAttribute(CipInstance * instance,
 }
 
 /* TODO this needs to check for buffer overflow*/
-EipStatus GetAttributeSingle(CipInstance *instance,
-                             CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response) {
+EipStatus GetAttributeSingle(CipInstance *restrict const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response) {
   /* Mask for filtering get-ability */
-  EipByte get_mask;
+  EipByte get_mask = kNotSetOrGetable;
 
   CipAttributeStruct *attribute = GetCipAttribute(
       instance, message_router_request->request_path.attribute_number);
@@ -397,7 +398,7 @@ EipStatus GetAttributeSingle(CipInstance *instance,
   return kEipStatusOkSend;
 }
 
-int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
+int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **cip_message) {
   int counter = 0;
 
   switch (cip_type)
@@ -407,24 +408,22 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
     case (kCipSint):
     case (kCipUsint):
     case (kCipByte):
-      **message = *(EipUint8 *) (data);
-      ++(*message);
+      **cip_message = *(EipUint8 *) (cip_data);
+      ++(*cip_message);
       counter = 1;
       break;
 
     case (kCipInt):
     case (kCipUint):
     case (kCipWord):
-      AddIntToMessage(*(EipUint16 *) (data), message);
-      counter = 2;
+      counter = AddIntToMessage(*(EipUint16 *) (cip_data), cip_message);
       break;
 
     case (kCipDint):
     case (kCipUdint):
     case (kCipDword):
     case (kCipReal):
-      AddDintToMessage(*(EipUint32 *) (data), message);
-      counter = 4;
+      counter = AddDintToMessage(*(EipUint32 *) (cip_data), cip_message);
       break;
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
@@ -432,8 +431,7 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
     case (kCipUlint):
     case (kCipLword):
     case (kCipLreal):
-      AddLintToMessage(*(EipUint64 *) (data), message);
-      counter = 8;
+      counter = AddLintToMessage(*(EipUint64 *) (cip_data), cip_message);
       break;
 #endif
 
@@ -443,17 +441,17 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
     case (kCipDateAndTime):
       break;
     case (kCipString): {
-      CipString *string = (CipString *) data;
+      CipString *const string = (CipString *) cip_data;
 
-      AddIntToMessage(*(EipUint16 *) &(string->length), message);
-      memcpy(*message, string->string, string->length);
-      *message += string->length;
+      AddIntToMessage(*(EipUint16 *) &(string->length), cip_message);
+      memcpy(*cip_message, string->string, string->length);
+      *cip_message += string->length;
 
       counter = string->length + 2; /* we have a two byte length field */
       if (counter & 0x01) {
         /* we have an odd byte count */
-        **message = 0;
-        ++(*message);
+        **cip_message = 0;
+        ++(*cip_message);
         counter++;
       }
       break;
@@ -466,13 +464,13 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
       break;
 
     case (kCipShortString): {
-      CipShortString *short_string = (CipShortString *) data;
+      CipShortString *const short_string = (CipShortString *) cip_data;
 
-      **message = short_string->length;
-      ++(*message);
+      **cip_message = short_string->length;
+      ++(*cip_message);
 
-      memcpy(*message, short_string->string, short_string->length);
-      *message += short_string->length;
+      memcpy(*cip_message, short_string->string, short_string->length);
+      *cip_message += short_string->length;
 
       counter = short_string->length + 1;
       break;
@@ -482,19 +480,19 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
       break;
 
     case (kCipEpath):
-      counter = EncodeEPath((CipEpath *) data, message);
+      counter = EncodeEPath((CipEpath *) cip_data, cip_message);
       break;
 
     case (kCipEngUnit):
       break;
 
     case (kCipUsintUsint): {
-      CipRevision *revision = (CipRevision *) data;
+      CipRevision *revision = (CipRevision *) cip_data;
 
-      **message = revision->major_revision;
-      ++(*message);
-      **message = revision->minor_revision;
-      ++(*message);
+      **cip_message = revision->major_revision;
+      ++(*cip_message);
+      **cip_message = revision->minor_revision;
+      ++(*cip_message);
       counter = 2;
       break;
     }
@@ -502,27 +500,27 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
     case (kCipUdintUdintUdintUdintUdintString): {
       /* TCP/IP attribute 5 */
       CipTcpIpNetworkInterfaceConfiguration *tcp_ip_network_interface_configuration =
-          (CipTcpIpNetworkInterfaceConfiguration *) data;
+          (CipTcpIpNetworkInterfaceConfiguration *) cip_data;
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->ip_address), message);
+          ntohl(tcp_ip_network_interface_configuration->ip_address), cip_message);
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->network_mask), message);
+          ntohl(tcp_ip_network_interface_configuration->network_mask), cip_message);
       counter += AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway),
-                       message);
+                       cip_message);
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->name_server), message);
+          ntohl(tcp_ip_network_interface_configuration->name_server), cip_message);
       counter += AddDintToMessage(
           ntohl(tcp_ip_network_interface_configuration->name_server_2),
-          message);
+          cip_message);
       counter += EncodeData(
           kCipString, &(tcp_ip_network_interface_configuration->domain_name),
-          message);
+          cip_message);
       break;
     }
 
     case (kCip6Usint): {
-      EipUint8 *p = (EipUint8 *) data;
-      memcpy(*message, p, 6);
+      EipUint8 *p = (EipUint8 *) cip_data;
+      memcpy(*cip_message, p, 6);
       counter = 6;
       break;
     }
@@ -532,23 +530,23 @@ int EncodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
 
     case (kCipByteArray): {
       OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
-      CipByteArray *cip_byte_array = (CipByteArray *) data;
-      memcpy(*message, cip_byte_array->data, cip_byte_array->length);
-      *message += cip_byte_array->length;
+      CipByteArray *cip_byte_array = (CipByteArray *) cip_data;
+      memcpy(*cip_message, cip_byte_array->data, cip_byte_array->length);
+      *cip_message += cip_byte_array->length;
       counter = cip_byte_array->length;
     }
       break;
 
     case (kInternalUint6): /* TODO for port class attribute 9, hopefully we can find a better way to do this*/
     {
-      EipUint16 *internal_unit16_6 = (EipUint16 *) data;
+      EipUint16 *internal_unit16_6 = (EipUint16 *) cip_data;
 
-      AddIntToMessage(internal_unit16_6[0], message);
-      AddIntToMessage(internal_unit16_6[1], message);
-      AddIntToMessage(internal_unit16_6[2], message);
-      AddIntToMessage(internal_unit16_6[3], message);
-      AddIntToMessage(internal_unit16_6[4], message);
-      AddIntToMessage(internal_unit16_6[5], message);
+      AddIntToMessage(internal_unit16_6[0], cip_message);
+      AddIntToMessage(internal_unit16_6[1], cip_message);
+      AddIntToMessage(internal_unit16_6[2], cip_message);
+      AddIntToMessage(internal_unit16_6[3], cip_message);
+      AddIntToMessage(internal_unit16_6[4], cip_message);
+      AddIntToMessage(internal_unit16_6[5], cip_message);
       counter = 12;
       break;
     }

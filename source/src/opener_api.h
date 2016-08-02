@@ -30,8 +30,8 @@
  *  @return EIP_OK if the configuring worked otherwise EIP_ERROR
  */
 EipStatus
-ConfigureNetworkInterface(const char *ip_address, const char *subnet_mask,
-                          const char *gateway_address);
+ConfigureNetworkInterface(const char *const ip_address, const char *const subnet_mask,
+                          const char *const gateway_address);
 
 /** @ingroup CIP_API
  * @brief Configure the MAC address of the device
@@ -44,27 +44,27 @@ void ConfigureMacAddress(const EipUint8 *const mac_address);
  * @brief Configure the domain name of the device
  * @param domain_name the domain name to be used
  */
-void ConfigureDomainName(const char *const domain_name);
+void ConfigureDomainName(const char *const restrict domain_name);
 
 /** @ingroup CIP_API
  * @brief Configure the host name of the device
  * @param host_name the host name to be used
  */
-void ConfigureHostName(const char *const host_name);
+void ConfigureHostName(const char *const restrict host_name);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
  *
  * @param serial_number unique 32 bit number identifying the device
  */
-void SetDeviceSerialNumber(EipUint32 serial_number);
+void SetDeviceSerialNumber(const EipUint32 serial_number);
 
 /** @ingroup CIP_API
  * @brief Set the current status of the device.
  *
  * @param device_status the new status value
  */
-void SetDeviceStatus(EipUint16 device_status);
+void SetDeviceStatus(const EipUint16 device_status);
 
 /** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
@@ -72,7 +72,7 @@ void SetDeviceStatus(EipUint16 device_status);
  * @param unique_connection_id value passed to Connection_Manager_Init() to form
  * a "per boot" unique connection ID.
  */
-void CipStackInit(EipUint16 unique_connection_id);
+void CipStackInit(const EipUint16 unique_connection_id);
 
 /** @ingroup CIP_API
  * @brief Shutdown of the CIP stack
@@ -94,7 +94,7 @@ void ShutdownCipStack(void);
  * @return pointer to CIP Object
  *          0 if object is not present in the stack
  */
-CipClass *GetCipClass(EipUint32 class_id);
+CipClass *GetCipClass(const EipUint32 class_id);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance
@@ -104,7 +104,7 @@ CipClass *GetCipClass(EipUint32 class_id);
  * @return pointer to CIP Instance
  *          0 if instance is not in the object
  */
-CipInstance *GetCipInstance(CipClass *cip_object, EipUint32 instance_number);
+CipInstance *GetCipInstance(const CipClass *restrict const cip_object, const EipUint32 instance_number);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance's attribute
@@ -116,8 +116,8 @@ CipInstance *GetCipInstance(CipClass *cip_object, EipUint32 instance_number);
  * @return pointer to attribute
  *          0 if instance is not in the object
  */
-CipAttributeStruct *GetCipAttribute(CipInstance *cip_instance,
-                                    EipUint16 attribute_number);
+CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
+                                    const EipUint16 attribute_number);
 
 /** @ingroup CIP_API
  * @brief Allocate memory for new CIP Class and attributes
@@ -144,14 +144,14 @@ CipAttributeStruct *GetCipAttribute(CipInstance *cip_instance,
  *  @return pointer to new class object
  *      0 on error
  */
-CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
-                         EipUint32 class_attributes_get_attribute_all_mask,
-                         int number_of_class_services,
-                         int number_of_instance_attributes,
-                         EipUint32 instance_attributes_get_attributes_all_mask,
-                         int number_of_instance_services,
-                         int number_of_instances, char *class_name,
-                         EipUint16 class_revision);
+CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_attributes,
+                         const EipUint32 class_attributes_get_attribute_all_mask,
+                         const int number_of_class_services,
+                         const int number_of_instance_attributes,
+                         const EipUint32 instance_attributes_get_attributes_all_mask,
+                         const int number_of_instance_services,
+                         const int number_of_instances, char *class_name,
+                         const EipUint16 class_revision);
 
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
@@ -171,8 +171,8 @@ CipClass *CreateCipClass(EipUint32 class_id, int number_of_class_attributes,
  * @return pointer to the first of the new instances
  *              0 on error
  */
-CipInstance *AddCipInstances(CipClass *cip_object_to_add_instances,
-                             int number_of_instances);
+CipInstance *AddCipInstances(CipClass *restrict const cip_object_to_add_instances,
+                             const int number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -184,8 +184,8 @@ CipInstance *AddCipInstances(CipClass *cip_object_to_add_instances,
  *         already exists the existing is returned an no new instance is created
  *
  */
-CipInstance *AddCIPInstance(CipClass *cip_class_to_add_instance,
-                            EipUint32 pa_nInstanceId);
+CipInstance *AddCIPInstance(CipClass *restrict const cip_class_to_add_instance,
+                            const EipUint32 instance_id);
 
 /** @ingroup CIP_API
  * @brief Insert an attribute in an instance of a CIP class
@@ -200,8 +200,8 @@ CipInstance *AddCIPInstance(CipClass *cip_class_to_add_instance,
  *  @param cip_data pointer to data of attribute.
  *  @param cip_flags flags to indicate set-ability and get-ability of attribute.
  */
-void InsertAttribute(CipInstance *cip_instance, EipUint16 attribute_number,
-                     EipUint8 cip_data_type, void *cip_data, EipByte cip_flags);
+void InsertAttribute(CipInstance *const cip_instance, const EipUint16 attribute_number,
+                     const EipUint8 cip_data_type, void *const cip_data, const EipByte cip_flags);
 
 /** @ingroup CIP_API
  * @brief Insert a service in an instance of a CIP object
@@ -216,8 +216,8 @@ void InsertAttribute(CipInstance *cip_instance, EipUint16 attribute_number,
  * @param service_function pointer to function which represents the service.
  * @param service_name name of the service
  */
-void InsertService(CipClass *cip_class_to_add_service, EipUint8 service_code,
-                   CipServiceFunction service_function, char *service_name);
+void InsertService(const CipClass *const cip_class_to_add_service, const EipUint8 service_code,
+                   const CipServiceFunction service_function, char *const service_name);
 
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
@@ -230,7 +230,7 @@ void InsertService(CipClass *cip_class_to_add_service, EipUint8 service_code,
  *  @return length of attribute in bytes
  *          -1 .. error
  */
-int EncodeData(EipUint8 cip_data_type, void *cip_data, EipUint8 **cip_message);
+int EncodeData(const EipUint8 cip_data_type, const void *const cip_data, EipUint8 **cip_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
@@ -263,8 +263,8 @@ int DecodeData(EipUint8 cip_data_type, void *cip_data, EipUint8 **cip_message);
  * The notification on received configuration data is handled with the
  * IApp_after_receive function.
  */
-CipInstance *CreateAssemblyObject(EipUint32 instance_number, EipByte *data,
-                                  EipUint16 data_length);
+CipInstance *CreateAssemblyObject(const EipUint32 instance_number, EipByte *const data,
+                                  const EipUint16 data_length);
 
 typedef struct connection_object ConnectionObject;
 
@@ -278,7 +278,7 @@ typedef struct connection_object ConnectionObject;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-    ConnectionObject *connection_object, EipUint16 *extended_error_code);
+    ConnectionObject *restrict const connection_object, EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections
@@ -348,8 +348,8 @@ AddConnectableObject(EipUint32 class_id,
  * this connection
  */
 void ConfigureExclusiveOwnerConnectionPoint(
-    unsigned int connection_number, unsigned int output_assembly_id,
-    unsigned int input_assembly_id, unsigned int configuration_assembly_id);
+    const unsigned int connection_number, const unsigned int output_assembly_id,
+    const unsigned int input_assembly_id, const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Configures the connection point for an input only connection.
@@ -364,10 +364,10 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * @param configuration_assembly_id ID of the configuration point to be used for
  *this connection
  */
-void ConfigureInputOnlyConnectionPoint(unsigned int connection_number,
-                                       unsigned int output_assembly_id,
-                                       unsigned int input_assembly_id,
-                                       unsigned int configuration_assembly_id);
+void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
+                                       const unsigned int output_assembly_id,
+                                       const unsigned int input_assembly_id,
+                                       const unsigned int configuration_assembly_id);
 
 /** \ingroup CIP_API
  * \brief Configures the connection point for a listen only connection.
@@ -382,10 +382,10 @@ void ConfigureInputOnlyConnectionPoint(unsigned int connection_number,
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureListenOnlyConnectionPoint(unsigned int connection_number,
-                                        unsigned int output_assembly_id,
-                                        unsigned int input_assembly_id,
-                                        unsigned int configuration_assembly_id);
+void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
+                                        const unsigned int output_assembly_id,
+                                        const unsigned int input_assembly_id,
+                                        const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been

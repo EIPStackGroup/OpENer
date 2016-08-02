@@ -18,8 +18,8 @@
  *  Currently only supports Attribute 3 (CIP_BYTE_ARRAY) of an Assembly
  */
 EipStatus SetAssemblyAttributeSingle(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+    CipInstance *const instance, CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response);
 
 /** @brief Constructor for the assembly object class
  *
@@ -68,9 +68,9 @@ void ShutdownAssemblies(void) {
   }
 }
 
-CipInstance *CreateAssemblyObject(EipUint32 instance_id, EipByte *data,
-                                  EipUint16 data_length) {
-  CipClass *assembly_class= NULL;
+CipInstance *CreateAssemblyObject(const EipUint32 instance_id, EipByte *const data,
+                                  const EipUint16 data_length) {
+  CipClass *assembly_class = NULL;
   if (NULL == (assembly_class = GetCipClass(kCipAssemblyClassCode))) {
     if (NULL == (assembly_class = CreateAssemblyClass())) {
       return NULL;
@@ -96,9 +96,9 @@ CipInstance *CreateAssemblyObject(EipUint32 instance_id, EipByte *data,
   return instance;
 }
 
-EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *instance,
-                                              EipUint8 *data,
-                                              EipUint16 data_length) {
+EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
+                                              EipUint8 *const data,
+                                              const EipUint16 data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
   CipByteArray *assembly_byte_array = (CipByteArray *) instance->attributes->data;
@@ -114,8 +114,8 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *instance,
 }
 
 EipStatus SetAssemblyAttributeSingle(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response) {
+    CipInstance *const instance, CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response) {
   OPENER_TRACE_INFO(" setAttribute %d\n",
                     message_router_request->request_path.attribute_number);
 
