@@ -628,7 +628,7 @@ void EncapsulationShutDown(void) {
   }
 }
 
-void ManageEncapsulationMessages(MilliSeconds elapsed_time) {
+void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
   for (unsigned int i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++) {
     if (kEipInvalidSocket != g_delayed_encapsulation_messages[i].socket) {
       g_delayed_encapsulation_messages[i].time_out -=
