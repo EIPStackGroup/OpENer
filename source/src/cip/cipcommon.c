@@ -556,7 +556,7 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
   return counter;
 }
 
-int DecodeData(EipUint8 cip_type, void *data, EipUint8 **message) {
+int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const message) {
   int number_of_decoded_bytes = -1;
 
   switch (cip_type)
@@ -737,9 +737,9 @@ int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   return 2 + epath->path_size * 2; /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath, EipUint8 **message) {
+int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
   unsigned int number_of_decoded_elements = 0;
-  EipUint8 *message_runner = *message;
+  const EipUint8 *message_runner = *message;
 
   epath->path_size = *message_runner;
   message_runner++;

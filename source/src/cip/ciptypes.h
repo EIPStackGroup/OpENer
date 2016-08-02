@@ -248,7 +248,7 @@ typedef struct {
   CipUsint service;
   CipEpath request_path;
   EipInt16 data_length;
-  CipOctet *data;
+  const CipOctet *data;
 } CipMessageRouterRequest;
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */

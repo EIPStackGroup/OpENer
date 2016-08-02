@@ -68,7 +68,7 @@ void HandleIoConnectionTimeOut(ConnectionObject *connection_object);
 EipStatus SendConnectedData(ConnectionObject *connection_object);
 
 EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
-                                         EipUint8 *data, EipUint16 data_length);
+                                         const EipUint8 *data, EipUint16 data_length);
 
 /**** Global variables ****/
 EipUint8 *g_config_data_buffer = NULL; /**< buffers for the config data coming with a forward open request. */
@@ -676,7 +676,7 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
 }
 
 EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
-                                         EipUint8 *data, EipUint16 data_length) {
+                                         const EipUint8 *data, EipUint16 data_length) {
 
   /* check class 1 sequence number*/
   if ((connection_object->transport_type_class_trigger & 0x0F) == 1) {
@@ -701,7 +701,7 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
     }
 
     if (NotifyAssemblyConnectedDataReceived(
-        connection_object->consuming_instance, data, data_length) != 0) {
+        connection_object->consuming_instance, (EipUint8 *const)data, data_length) != 0) {
       return kEipStatusError;
     }
   }

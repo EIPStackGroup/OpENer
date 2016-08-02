@@ -44,7 +44,7 @@ void ShutdownAssemblies(void);
  *     - EIP_ERROR the received data was wrong
  */
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
-                                              EipUint8 *const data,
+                                              const EipUint8 *const data,
                                               const EipUint16 data_length);
 
 #endif /* OPENER_CIPASSEMBLY_H_ */

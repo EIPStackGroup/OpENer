@@ -483,7 +483,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusError;
   }
 
-  EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
+  const EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
   size_t data_size = GetIntFromMessage(&read_buffer)
       + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
   /* (NOTE this advances the buffer pointer) */

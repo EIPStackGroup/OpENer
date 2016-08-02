@@ -67,6 +67,6 @@ EipStatus GetAttributeAll(CipInstance *instance,
  *  @param message CIP Message to decode
  *  @return Number of decoded bytes
  */
-int DecodePaddedEPath(CipEpath *epath, EipUint8 **data);
+int DecodePaddedEPath(CipEpath *epath, const EipUint8 **data);
 
 #endif /* OPENER_CIPCOMMON_H_ */

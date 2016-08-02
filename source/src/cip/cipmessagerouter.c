@@ -44,7 +44,7 @@ EipStatus RegisterCipClass(CipClass *cip_class);
  * @return kEipStatusOk on success. otherwise kEipStatusError
  */
 CipError CreateMessageRouterRequestStructure(
-    EipUint8 *data, EipInt16 data_length,
+    const EipUint8 *data, EipInt16 data_length,
     CipMessageRouterRequest *message_router_request);
 
 EipStatus CipMessageRouterInit() {
@@ -194,7 +194,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data, int data_length) {
 }
 
 CipError CreateMessageRouterRequestStructure(
-    EipUint8 *data, EipInt16 data_length,
+    const EipUint8 *data, EipInt16 data_length,
     CipMessageRouterRequest *message_router_request) {
 
   message_router_request->service = *data;

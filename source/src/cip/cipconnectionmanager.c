@@ -137,7 +137,7 @@ void AddNullAddressItem(
  *
  * @return The padded logical path
  */
-unsigned int GetPaddedLogicalPath(unsigned char **logical_path_segment) {
+unsigned int GetPaddedLogicalPath(const EipUint8 **logical_path_segment) {
   unsigned int padded_logical_path = *(*logical_path_segment)++;
 
   if ((padded_logical_path & 3) == 0) {
@@ -896,7 +896,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
 EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                              CipMessageRouterRequest *message_router_request,
                              EipUint16 *extended_error) {
-  EipUint8 *message = message_router_request->data;
+  const EipUint8 *message = message_router_request->data;
   int remaining_path_size = connection_object->connection_path_size =
       *message++; /* length in words */
   CipClass *class = NULL;
@@ -1104,7 +1104,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
           case kDataSegmentTypeSimpleDataMessage:
             /* we have a simple data segment */
             g_config_data_length = message[1] * 2; /*data segments store length 16-bit word wise */
-            g_config_data_buffer = &(message[2]);
+            g_config_data_buffer = (EipUint8 *)message + 2;
             remaining_path_size -= (g_config_data_length + 2);
             message += (g_config_data_length + 2);
             break;

@@ -97,7 +97,7 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id, EipByte *const da
 }
 
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
-                                              EipUint8 *const data,
+                                              const EipUint8 *const data,
                                               const EipUint16 data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
@@ -119,7 +119,7 @@ EipStatus SetAssemblyAttributeSingle(
   OPENER_TRACE_INFO(" setAttribute %d\n",
                     message_router_request->request_path.attribute_number);
 
-  EipUint8 *router_request_data = message_router_request->data;
+  const EipUint8 *const router_request_data = message_router_request->data;
 
   message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80

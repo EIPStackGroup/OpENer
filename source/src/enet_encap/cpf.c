@@ -22,7 +22,7 @@ const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
-int NotifyCommonPacketFormat(EncapsulationData *receive_data,
+int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
                              EipUint8 *reply_buffer) {
   int return_value = kEipStatusError;
 
@@ -87,11 +87,11 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
         /*TODO check connection id  and sequence count    */
         if (g_common_packet_format_data_item.data_item.type_id
             == kCipItemIdConnectedDataItem) { /* connected data item received*/
-          EipUint8 *pnBuf = g_common_packet_format_data_item.data_item.data;
+          EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
-              (EipUint32) GetIntFromMessage(&pnBuf);
+              (EipUint32) GetIntFromMessage((const EipUint8 ** const)&buffer);
           return_value = NotifyMessageRouter(
-              pnBuf, g_common_packet_format_data_item.data_item.length - 2);
+              buffer, g_common_packet_format_data_item.data_item.length - 2);
 
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data
@@ -128,7 +128,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  * 	       kEipStatusError .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    EipUint8 *data, int data_length,
+    const EipUint8 *data, int data_length,
     CipCommonPacketFormatData *common_packet_format_data) {
 
   common_packet_format_data->address_info_item[0].type_id = 0;
@@ -155,7 +155,7 @@ EipStatus CreateCommonPacketFormatStructure(
   if (common_packet_format_data->item_count >= 2) {
     common_packet_format_data->data_item.type_id = GetIntFromMessage(&data);
     common_packet_format_data->data_item.length = GetIntFromMessage(&data);
-    common_packet_format_data->data_item.data = data;
+    common_packet_format_data->data_item.data = (EipUint8 *)data;
     data += common_packet_format_data->data_item.length;
     length_count += (4 + common_packet_format_data->data_item.length);
   }

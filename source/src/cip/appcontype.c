@@ -47,7 +47,7 @@ InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /
 ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */
 
 ConnectionObject *GetExclusiveOwnerConnection(
-    const ConnectionObject *restrict connection_object, EipUint16 *extended_error);
+    const ConnectionObject *restrict connection_object, EipUint16 *const extended_error);
 
 ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
                                          EipUint16 *const extended_error);
@@ -198,7 +198,7 @@ ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict 
 }
 
 ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
-                                          EipUint16 * const extended_error) {
+                                          EipUint16 *const extended_error) {
   ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
   if (kRoutingTypeMulticastConnection

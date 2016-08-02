@@ -244,7 +244,7 @@ int EncodeData(const EipUint8 cip_data_type, const void *const cip_data, EipUint
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeData(EipUint8 cip_data_type, void *cip_data, EipUint8 **cip_message);
+int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const message);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -317,8 +317,8 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-    struct connection_object *connection_object, EipUint8 *data,
-    EipUint16 data_length);
+    struct connection_object *connection_object, const EipUint8 *data,
+    const EipUint16 data_length);
 
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.
