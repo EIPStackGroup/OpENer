@@ -136,7 +136,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
     int producing_index = 0;
     int data_size;
     int diff_size;
-    int is_heartbeat;
+    int is_heartbeat = false;
 
     if ((originator_to_target_connection_type != 0)
         && (target_to_originator_connection_type != 0)) { /* we have a producing and consuming connection*/
