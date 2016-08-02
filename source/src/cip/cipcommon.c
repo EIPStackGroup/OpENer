@@ -408,9 +408,7 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
     case (kCipSint):
     case (kCipUsint):
     case (kCipByte):
-      **cip_message = *(EipUint8 *) (cip_data);
-      ++(*cip_message);
-      counter = 1;
+    counter =AddSintToMessage(*(EipUint8 *) (cip_data), cip_message);
       break;
 
     case (kCipInt):
