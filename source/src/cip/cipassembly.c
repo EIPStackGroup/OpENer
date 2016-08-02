@@ -77,11 +77,10 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id, EipByte *const da
     }
   }
 
-  CipInstance *instance = AddCIPInstance(assembly_class, instance_id); /* add instances (always succeeds (or asserts))*/
+  CipInstance *const instance = AddCIPInstance(assembly_class, instance_id); /* add instances (always succeeds (or asserts))*/
 
-  CipByteArray *assembly_byte_array = NULL;
-  if ((assembly_byte_array = (CipByteArray *) CipCalloc(1, sizeof(CipByteArray)))
-      == NULL) {
+  CipByteArray *const assembly_byte_array = (CipByteArray *) CipCalloc(1, sizeof(CipByteArray));
+  if (assembly_byte_array == NULL) {
     return NULL; /*TODO remove assembly instance in case of error*/
   }
 
