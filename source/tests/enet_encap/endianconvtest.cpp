@@ -22,6 +22,16 @@ TEST_GROUP(EndianConversion) {
 
 };
 
+TEST(EndianConversion, GetSintFromMessage) {
+  const EipUint8 test_message[] = { 8 };
+  const EipUint8 *message_pointer = test_message;
+  const EipUint8 **const message = &message_pointer;
+  EipUint16 returned_value = GetSintFromMessage(message);
+
+  LONGS_EQUAL(8, returned_value);
+  POINTERS_EQUAL(test_message + 1, *message);
+}
+
 TEST(EndianConversion, GetIntFromMessage) {
   const EipUint8 test_message[] = { 8, 60 };
   const EipUint8 *message_pointer = test_message;
