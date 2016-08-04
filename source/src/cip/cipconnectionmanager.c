@@ -252,7 +252,32 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
   return kEipStatusOk;
 }
 
+/**
+ * Forward Open four cases
+ * Non-Null/Not matching - open a connection
+ * Non-Null/Matching - error
+ * Null/Not matching - ping a device/configure
+ * Null/Matching - reconfigure
+ *
+ * Null connection - both O->T and T->O connection parameter field are null
+ * Non-Null connection - one or both O->T and T->O connection parameter field are not null
+ * Matching - Connection Triad matches an existing connection
+ * (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
+ */
+
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *
+ *  Forward Open four cases
+ *  Non-Null/Not matching - open a connection
+ *  Non-Null/Matching - error
+ *  Null/Not matching - ping a device/configure
+ *  Null/Matching - reconfigure
+ *
+ *  Null connection - both O->T and T->O connection parameter field are null
+ *  Non-Null connection - one or both O->T and T->O connection parameter field are not null
+ *  Matching - Connection Triad matches an existing connection
+ *  (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
+ *
  *  @param instance	pointer to CIP object instance
  *  @param message_router_request		pointer to Message Router Request.
  *  @param message_router_response		pointer to Message Router Response.
@@ -262,7 +287,7 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response) {
-  EipUint16 connection_status = kConnectionManagerStatusCodeSuccess;
+  EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
   (void) instance; /*suppress compiler warning */
 
@@ -296,7 +321,7 @@ EipStatus ForwardOpen(CipInstance *instance,
     return AssembleForwardOpenResponse(
         &g_dummy_connection_object, message_router_response,
         kCipErrorConnectionFailure,
-        kConnectionManagerStatusCodeErrorConnectionInUse);
+        kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen);
   }
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
@@ -342,7 +367,7 @@ EipStatus ForwardOpen(CipInstance *instance,
     return AssembleForwardOpenResponse(
         &g_dummy_connection_object, message_router_response,
         kCipErrorConnectionFailure,
-        kConnectionManagerStatusCodeErrorInvalidOToTConnectionType);
+        kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionType);
   }
 
   if (CIP_CONN_TYPE_MASK
@@ -351,7 +376,7 @@ EipStatus ForwardOpen(CipInstance *instance,
     return AssembleForwardOpenResponse(
         &g_dummy_connection_object, message_router_response,
         kCipErrorConnectionFailure,
-        kConnectionManagerStatusCodeErrorInvalidTToOConnectionType);
+        kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType);
   }
 
   g_dummy_connection_object.transport_type_class_trigger =
@@ -361,7 +386,7 @@ EipStatus ForwardOpen(CipInstance *instance,
     return AssembleForwardOpenResponse(
         &g_dummy_connection_object, message_router_response,
         kCipErrorConnectionFailure,
-        kConnectionManagerStatusCodeErrorTransportTriggerNotSupported);
+        kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported);
   }
 
   temp = ParseConnectionPath(&g_dummy_connection_object, message_router_request,
@@ -381,7 +406,7 @@ EipStatus ForwardOpen(CipInstance *instance,
   } else {
     temp = kEipStatusError;
     connection_status =
-        kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+        kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
   }
 
   if (kEipStatusOk != temp) {
@@ -465,8 +490,8 @@ EipStatus ForwardClose(CipInstance *instance,
   (void) instance;
 
   /* check connection_serial_number && originator_vendor_id && originator_serial_number if connection is established */
-  ConnectionManagerStatusCode connection_status =
-      kConnectionManagerStatusCodeErrorConnectionNotFoundAtTargetApplication;
+  ConnectionManagerExtendedStatusCode connection_status =
+      kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound;
   ConnectionObject *connection_object = g_active_connection_list;
 
   /* set AddressInfo Items to invalid TypeID to prevent assembleLinearMsg to read them */
@@ -496,7 +521,7 @@ EipStatus ForwardClose(CipInstance *instance,
         /* found the corresponding connection object -> close it */
         OPENER_ASSERT(NULL != connection_object->connection_close_function);
         connection_object->connection_close_function(connection_object);
-        connection_status = kConnectionManagerStatusCodeSuccess;
+        connection_status = kConnectionManagerExtendedStatusCodeSuccess;
         break;
       }
     }
@@ -651,7 +676,7 @@ EipStatus AssembleForwardOpenResponse(
 
       default: {
         switch (extended_status) {
-          case kConnectionManagerStatusCodeErrorInvalidOToTConnectionSize: {
+          case kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize: {
             message_router_response->size_of_additional_status = 2;
             message_router_response->additional_status[0] = extended_status;
             message_router_response->additional_status[1] = connection_object
@@ -659,7 +684,7 @@ EipStatus AssembleForwardOpenResponse(
             break;
           }
 
-          case kConnectionManagerStatusCodeErrorInvalidTToOConnectionSize: {
+          case kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize: {
             message_router_response->size_of_additional_status = 2;
             message_router_response->additional_status[0] = extended_status;
             message_router_response->additional_status[1] = connection_object
@@ -750,7 +775,7 @@ EipStatus AssembleForwardCloseResponse(
       | message_router_request->service);
   message_router_response->data_length = 10; /* if there is no application specific data */
 
-  if (kConnectionManagerStatusCodeSuccess == extended_error_code) {
+  if (kConnectionManagerExtendedStatusCodeSuccess == extended_error_code) {
     *message = 0; /* no application data */
     message_router_response->general_status = kCipErrorSuccess;
     message_router_response->size_of_additional_status = 0;
@@ -832,12 +857,12 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
   key_data->major_revision &= 0x7F;
 
   /* Default return value */
-  *extended_status = kConnectionManagerStatusCodeSuccess;
+  *extended_status = kConnectionManagerExtendedStatusCodeSuccess;
 
   /* Check key format */
   if (4 != key_format) {
     *extended_status =
-        kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+        kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
     return kEipStatusError;
   }
 
@@ -846,7 +871,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
       || ((key_data->product_code != product_code_)
           && (key_data->product_code != 0))) {
     *extended_status =
-        kConnectionManagerStatusCodeErrorVendorIdOrProductcodeError;
+        kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError;
     return kEipStatusError;
   } else {
     /* VendorID and ProductCode are correct */
@@ -854,7 +879,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
     /* Check DeviceType, must match or 0 */
     if ((key_data->device_type != device_type_)
         && (key_data->device_type != 0)) {
-      *extended_status = kConnectionManagerStatusCodeErrorDeviceTypeError;
+      *extended_status = kConnectionManagerExtendedStatusCodeErrorDeviceTypeError;
       return kEipStatusError;
     } else {
       /* VendorID, ProductCode and DeviceType are correct */
@@ -869,7 +894,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
         if ((key_data->major_revision != revision_.major_revision)
             || ((key_data->minor_revision != revision_.minor_revision)
                 && (key_data->minor_revision != 0))) {
-          *extended_status = kConnectionManagerStatusCodeErrorRevisionMismatch;
+          *extended_status = kConnectionManagerExtendedStatusCodeErrorRevisionMismatch;
           return kEipStatusError;
         }
       } else {
@@ -881,7 +906,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
             && (key_data->minor_revision <= revision_.minor_revision)) {
           return (kEipStatusOk);
         } else {
-          *extended_status = kConnectionManagerStatusCodeErrorRevisionMismatch;
+          *extended_status = kConnectionManagerExtendedStatusCodeErrorRevisionMismatch;
           return kEipStatusError;
         }
       } /* end if CompatiblityMode handling */
@@ -889,7 +914,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
   }
 
   return
-      (*extended_status == kConnectionManagerStatusCodeSuccess) ?
+      (*extended_status == kConnectionManagerExtendedStatusCodeSuccess) ?
           kEipStatusOk : kEipStatusError;
 }
 
@@ -981,10 +1006,10 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                          connection_object->connection_path.class_id);
         if (connection_object->connection_path.class_id >= 0xC8) { /*reserved range of class ids */
           *extended_error =
-              kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+              kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
         } else {
           *extended_error =
-              kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+              kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         }
         return kCipErrorConnectionFailure;
       }
@@ -994,7 +1019,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                         class->class_name);
     } else {
       *extended_error =
-          kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+          kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
       return kCipErrorConnectionFailure;
     }
     remaining_path_size -= 1; /* 1 16Bit word for the class part of the path */
@@ -1009,7 +1034,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
               class, connection_object->connection_path.connection_point[2])) {
         /*according to the test tool we should respond with this extended error code */
         *extended_error =
-            kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+            kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
         return kCipErrorConnectionFailure;
       }
       /* 1 or 2 16Bit words for the configuration instance part of the path  */
@@ -1026,7 +1051,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
         OPENER_TRACE_WARN(
             "Too much data in connection path for class 3 connection\n");
         *extended_error =
-            kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+            kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
         return kCipErrorConnectionFailure;
       }
 
@@ -1035,7 +1060,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
           != kCipMessageRouterClassCode)
           || (connection_object->connection_path.connection_point[2] != 1)) {
         *extended_error =
-            kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+            kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         return kCipErrorConnectionFailure;
       }
       connection_object->connection_path.connection_point[0] = connection_object
@@ -1081,7 +1106,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                   class,
                   connection_object->connection_path.connection_point[i])) {
             *extended_error =
-                kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+                kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
             return kCipErrorConnectionFailure;
           }
           /* 1 or 2 16Bit word for the connection point part of the path */
@@ -1090,7 +1115,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                   2 : 1;
         } else {
           *extended_error =
-              kConnectionManagerStatusCodeErrorInvalidSegmentTypeInPath;
+              kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
           return kCipErrorConnectionFailure;
         }
       }

@@ -116,7 +116,7 @@ ConnectionObject *GetIoConnectionForConnectionData(
             /* no application connection type was found that suits the given data */
             /* TODO check error code VS */
             *extended_error =
-                kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+                kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
           } else {
             connection_object->instance_type = kConnectionTypeIoListenOnly;
           }
@@ -152,7 +152,7 @@ ConnectionObject *GetExclusiveOwnerConnection(
       if (NULL
           != GetConnectedOutputAssembly(
               connection_object->connection_path.connection_point[0])) {
-        *extended_error = kConnectionManagerStatusCodeErrorOwnershipConflict;
+        *extended_error = kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
         break;
       }
       exclusive_owner_connection = &(g_exlusive_owner_connections[i]
@@ -173,13 +173,13 @@ ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict 
       if (g_input_only_connections[i].input_assembly
           != connection_object->connection_path.connection_point[1]) {
         *extended_error =
-            kConnectionManagerStatusCodeInvalidProducingApplicationPath;
+            kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_input_only_connections[i].config_assembly
           != connection_object->connection_path.connection_point[2]) {
         *extended_error =
-            kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+            kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
       }
 
@@ -190,7 +190,7 @@ ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict 
         }
       }
       *extended_error =
-          kConnectionManagerStatusCodeTargetObjectOutOfConnections;
+          kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
       break;
     }
   }
@@ -206,7 +206,7 @@ ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict
           & kRoutingTypeMulticastConnection)) {
     /* a listen only connection has to be a multicast connection. */
     *extended_error =
-        kConnectionManagerStatusCodeNonListenOnlyConnectionNotOpened; /* maybe not the best error message however there is no suitable definition in the cip spec */
+        kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened; /* maybe not the best error message however there is no suitable definition in the cip spec */
     return NULL;
   }
 
@@ -216,13 +216,13 @@ ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict
       if (g_listen_only_connections[i].input_assembly
           != connection_object->connection_path.connection_point[1]) {
         *extended_error =
-            kConnectionManagerStatusCodeInvalidProducingApplicationPath;
+            kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_listen_only_connections[i].config_assembly
           != connection_object->connection_path.connection_point[2]) {
         *extended_error =
-            kConnectionManagerStatusCodeInconsistentApplicationPathCombo;
+            kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
       }
 
@@ -230,7 +230,7 @@ ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict
           == GetExistingProducerMulticastConnection(
               connection_object->connection_path.connection_point[1])) {
         *extended_error =
-            kConnectionManagerStatusCodeNonListenOnlyConnectionNotOpened;
+            kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
       }
 
@@ -241,7 +241,7 @@ ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict
         }
       }
       *extended_error =
-          kConnectionManagerStatusCodeTargetObjectOutOfConnections;
+          kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
       break;
     }
   }

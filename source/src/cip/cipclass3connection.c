@@ -28,7 +28,7 @@ EipStatus EstablishClass3Connection(ConnectionObject *restrict const connection_
   if (NULL == explicit_connection) {
     eip_status = kCipErrorConnectionFailure;
     *extended_error =
-        kConnectionManagerStatusCodeErrorNoMoreConnectionsAvailable;
+        kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable;
   } else {
     CopyConnectionData(explicit_connection, connection_object);
 

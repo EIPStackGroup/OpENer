@@ -185,12 +185,12 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
           connection_object->correct_originator_to_target_size =
               ((CipByteArray *) attribute->data)->length + diff_size;
           *extended_error =
-              kConnectionManagerStatusCodeErrorInvalidOToTConnectionSize;
+              kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize;
           return kCipErrorConnectionFailure;
         }
       } else {
         *extended_error =
-            kConnectionManagerStatusCodeInvalidConsumingApllicationPath;
+            kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath;
         return kCipErrorConnectionFailure;
       }
     }
@@ -233,13 +233,13 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
           connection_object->correct_target_to_originator_size =
               ((CipByteArray *) attribute->data)->length + diff_size;
           *extended_error =
-              kConnectionManagerStatusCodeErrorInvalidTToOConnectionSize;
+              kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
           return kCipErrorConnectionFailure;
         }
 
       } else {
         *extended_error =
-            kConnectionManagerStatusCodeInvalidProducingApplicationPath;
+            kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         return kCipErrorConnectionFailure;
       }
     }
@@ -488,12 +488,12 @@ EipUint16 HandleConfigData(CipClass *assembly_class,
           ->data;
       if (attribute_three->length != g_config_data_length) {
         connection_manager_status =
-            kConnectionManagerStatusCodeErrorOwnershipConflict;
+            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
       } else {
         /*FIXME check if this is correct */
         if (memcmp(attribute_three->data, g_config_data_buffer, g_config_data_length)) {
           connection_manager_status =
-              kConnectionManagerStatusCodeErrorOwnershipConflict;
+              kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
         }
       }
     } else {
@@ -505,7 +505,7 @@ EipUint16 HandleConfigData(CipClass *assembly_class,
                                                  g_config_data_length)) {
         OPENER_TRACE_WARN("Configuration data was invalid\n");
         connection_manager_status =
-            kConnectionManagerStatusCodeInvalidConfigurationApplicationPath;
+            kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath;
       }
     }
   }
