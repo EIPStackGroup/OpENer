@@ -354,4 +354,9 @@ void AddNewActiveConnection(ConnectionObject *connection_object);
  */
 void RemoveFromActiveConnections(ConnectionObject *connection_object);
 
+/** @brief returns the connection type of the supplied network connection parameter
+ *
+ */
+ForwardOpenConnectionType GetConnectionType(EipUint16 network_connection_parameter);
+
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

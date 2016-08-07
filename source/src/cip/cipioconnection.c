@@ -79,10 +79,9 @@ EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 /**** Implementation ****/
 EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_object,
                          EipUint16 *const extended_error) {
-  int originator_to_target_connection_type,
-      target_to_originator_connection_type;
+  ForwardOpenConnectionType originator_to_target_connection_type = kForwardOpenConnectionTypeNull;
+  ForwardOpenConnectionType target_to_originator_connection_type = kForwardOpenConnectionTypeNull;
   EipStatus eip_status = kEipStatusOk;
-  CipAttributeStruct *attribute;
   /* currently we allow I/O connections only to assembly objects */
   CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode); /* we don't need to check for zero as this is handled in the connection path parsing */
   CipInstance *instance = NULL;
@@ -124,18 +123,19 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
 
   GeneralConnectionConfiguration(io_connection_object);
 
-  originator_to_target_connection_type = (io_connection_object
-      ->o_to_t_network_connection_parameter & 0x6000) >> 13;
-  target_to_originator_connection_type = (io_connection_object
-      ->t_to_o_network_connection_parameter & 0x6000) >> 13;
+  originator_to_target_connection_type = GetConnectionType(io_connection_object
+      ->o_to_t_network_connection_parameter);
+  target_to_originator_connection_type = GetConnectionType(io_connection_object
+      ->t_to_o_network_connection_parameter);
 
-  if ((originator_to_target_connection_type == 0)
-      && (target_to_originator_connection_type == 0)) { /* this indicates an re-configuration of the connection currently not supported and we should not come here as this is handled in the forwardopen function*/
+  if ((originator_to_target_connection_type == kForwardOpenConnectionTypeNull)
+      || (target_to_originator_connection_type == kForwardOpenConnectionTypeNull)) { /* this indicates an re-configuration of the connection currently not supported and we should not come here as this is handled in the forwardopen function*/
+    OPENER_ASSERT("Null request in cipioconnection! This is not allowed to happen!\n");
 
   } else {
     int producing_index = 0;
-    int data_size;
-    int diff_size;
+    int data_size = 0;
+    int diff_size = 0;
     int is_heartbeat = false;
 
     if ((originator_to_target_connection_type != 0)
@@ -163,7 +163,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
             io_connection_object->connection_path.connection_point[0];
         io_connection_object->consumed_connection_path.attribute_number = 3;
 
-        attribute = GetCipAttribute(instance, 3);
+        CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
         OPENER_ASSERT(attribute != NULL);
         /* an assembly object should always have an attribute 3 */
         data_size = io_connection_object->consumed_connection_size;
@@ -211,7 +211,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
             io_connection_object->connection_path.connection_point[producing_index];
         io_connection_object->produced_connection_path.attribute_number = 3;
 
-        attribute = GetCipAttribute(instance, 3);
+        CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
         OPENER_ASSERT(attribute != NULL);
         /* an assembly object should always have an attribute 3 */
         data_size = io_connection_object->produced_connection_size;
@@ -251,7 +251,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
       }
     }
 
-    eip_status = OpenCommunicationChannels(io_connection_object);
+    eip_status = OpenCommunicationChannels(io_connection_object); // Only use T->O Sockaddr Info Item in Forward_Open Request not working
     if (kEipStatusOk != eip_status) {
       *extended_error = 0; /*TODO find out the correct extended error code*/
       return eip_status;
@@ -715,14 +715,14 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
   CipCommonPacketFormatData *common_packet_format_data =
       &g_common_packet_format_data_item;
 
-  CommunicationEndpointCardinality originator_to_target_connection_type = (connection_object
-      ->o_to_t_network_connection_parameter & 0x6000) >> 13;
+  ForwardOpenConnectionType originator_to_target_connection_type = GetConnectionType(connection_object
+      ->o_to_t_network_connection_parameter);
 
-  CommunicationEndpointCardinality target_to_originator_connection_type = (connection_object
-      ->t_to_o_network_connection_parameter & 0x6000) >> 13;
+  ForwardOpenConnectionType target_to_originator_connection_type = GetConnectionType(connection_object
+      ->t_to_o_network_connection_parameter);
 
   /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
-  if (originator_to_target_connection_type == PointToMultipoint) /* Multicast consuming */
+  if (originator_to_target_connection_type == kForwardOpenConnectionTypeMulticastConnection) /* Multicast consuming */
   {
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object, common_packet_format_data)
@@ -730,7 +730,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (originator_to_target_connection_type == PointToPoint) /* Point to Point consuming */
+  } else if (originator_to_target_connection_type == kForwardOpenConnectionTypePointToPointConnection) /* Point to Point consuming */
   {
     if (OpenConsumingPointToPointConnection(connection_object,
                                             common_packet_format_data)
@@ -740,7 +740,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
     }
   }
 
-  if (target_to_originator_connection_type == PointToMultipoint) /* Multicast producing */
+  if (target_to_originator_connection_type == kForwardOpenConnectionTypeMulticastConnection) /* Multicast producing */
   {
     if (OpenProducingMulticastConnection(connection_object,
                                          common_packet_format_data)
@@ -748,7 +748,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (target_to_originator_connection_type == PointToPoint) /* Point to Point producing */
+  } else if (target_to_originator_connection_type == kForwardOpenConnectionTypePointToPointConnection) /* Point to Point producing */
   {
 
     if (OpenProducingPointToPointConnection(connection_object,
