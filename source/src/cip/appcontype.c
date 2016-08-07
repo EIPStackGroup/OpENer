@@ -201,9 +201,9 @@ ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict
                                           EipUint16 *const extended_error) {
   ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
-  if (kRoutingTypeMulticastConnection
+  if (kForwardOpenConnectionTypeMulticastConnection
       != (connection_object->t_to_o_network_connection_parameter
-          & kRoutingTypeMulticastConnection)) {
+          & kForwardOpenConnectionTypeMulticastConnection)) {
     /* a listen only connection has to be a multicast connection. */
     *extended_error =
         kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened; /* maybe not the best error message however there is no suitable definition in the cip spec */
@@ -258,10 +258,10 @@ ConnectionObject *GetExistingProducerMulticastConnection(const EipUint32 input_p
             == producer_multicast_connection->instance_type)) {
       if ((input_point
           == producer_multicast_connection->connection_path.connection_point[1])
-          && (kRoutingTypeMulticastConnection
+          && (kForwardOpenConnectionTypeMulticastConnection
               == (producer_multicast_connection
                   ->t_to_o_network_connection_parameter
-                  & kRoutingTypeMulticastConnection))
+                  & kForwardOpenConnectionTypeMulticastConnection))
           && (kEipInvalidSocket
               != producer_multicast_connection->socket[kUdpCommuncationDirectionProducing])) {
         /* we have a connection that produces the same input assembly,
@@ -288,10 +288,10 @@ ConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point)
       if ((input_point
           == next_non_control_master_connection->connection_path
               .connection_point[1])
-          && (kRoutingTypeMulticastConnection
+          && (kForwardOpenConnectionTypeMulticastConnection
               == (next_non_control_master_connection
                   ->t_to_o_network_connection_parameter
-                  & kRoutingTypeMulticastConnection))
+                  & kForwardOpenConnectionTypeMulticastConnection))
           && (kEipInvalidSocket
               == next_non_control_master_connection->socket[kUdpCommuncationDirectionProducing])) {
         /* we have a connection that produces the same input assembly,

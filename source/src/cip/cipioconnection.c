@@ -520,9 +520,9 @@ void CloseIoConnection(ConnectionObject *connection_object) {
 
   if ((kConnectionTypeIoExclusiveOwner == connection_object->instance_type)
       || (kConnectionTypeIoInputOnly == connection_object->instance_type)) {
-    if ((kRoutingTypeMulticastConnection
+    if ((kForwardOpenConnectionTypeMulticastConnection
         == (connection_object->t_to_o_network_connection_parameter
-            & kRoutingTypeMulticastConnection))
+            & kForwardOpenConnectionTypeMulticastConnection))
         && (kEipInvalidSocket
             != connection_object->socket[kUdpCommuncationDirectionProducing])) {
       ConnectionObject *next_non_control_master_connection = GetNextNonControlMasterConnection(
@@ -559,9 +559,9 @@ void HandleIoConnectionTimeOut(ConnectionObject *connection_object) {
                     connection_object->connection_path.connection_point[1],
                     kIoConnectionEventTimedOut);
 
-  if (kRoutingTypeMulticastConnection
+  if (kForwardOpenConnectionTypeMulticastConnection
       == (connection_object->t_to_o_network_connection_parameter
-          & kRoutingTypeMulticastConnection)) {
+          & kForwardOpenConnectionTypeMulticastConnection)) {
     switch (connection_object->instance_type) {
       case kConnectionTypeIoExclusiveOwner:
         CloseAllConnectionsForInputWithSameType(

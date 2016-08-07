@@ -798,5 +798,5 @@ int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
   }
 
   *message = message_runner;
-  return number_of_decoded_elements * 2 + 1; /* i times 2 as every encoding uses 2 bytes */
+  return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
 }

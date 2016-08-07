@@ -12,15 +12,17 @@
 #include "ciptypes.h"
 
 /**
- * @brief Sets the routing type of a connection, either
- * - Point-to-point connections (unicast)
- * - Multicast connection
+ * @brief Connection Type constants of the Forward Open service request
+ *   Indicates either a
+ * - Null Request
+ * - Point-to-point connection request (unicast)
+ * - Multicast connection request
  */
 typedef enum {
-  kRoutingTypePointToPointConnection = 0x4000,
-  kRoutingTypeMulticastConnection = 0x2000
-} RoutingType;
-
+  kForwardOpenConnectionTypeNull = 0x0000,
+  kForwardOpenConnectionTypePointToPointConnection = 0x4000,
+  kForwardOpenConnectionTypeMulticastConnection = 0x2000
+} ForwardOpenConnectionType;
 
 typedef enum {
   kConnectionManagerGeneralStatusSuccess = 0x00, /**< General Status - Everything is ok */
@@ -35,7 +37,7 @@ typedef enum {
 } ConnectionManagerGeneralStatus;
 /** @brief Connection Manager Error codes */
 typedef enum {
-  kConnectionManagerExtendedStatusCodeSuccess = 0x00, /**< General Status - Everything is ok */
+  kConnectionManagerExtendedStatusCodeSuccess = 0x00, /**< Obsolete code, should be General Status - Everything is ok */
   kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen = 0x0100, /**< General Status has to be 0x01, Connection is already in use, or a duplicate Forward Open was received */
   kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported = 0x0103, /**< General Status has to be 0x01, A Transport class and trigger combination has been specified, which is not supported by the target application */
   kConnectionManagerExtendedStatusCodeErrorOwnershipConflict = 0x0106, /**< General Status has to be 0x01, Another connection has already reserved some needed resources */

@@ -265,100 +265,155 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
  * (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
  */
 
-/** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
- *
- *  Forward Open four cases
- *  Non-Null/Not matching - open a connection
- *  Non-Null/Matching - error
- *  Null/Not matching - ping a device/configure
- *  Null/Matching - reconfigure
- *
- *  Null connection - both O->T and T->O connection parameter field are null
- *  Non-Null connection - one or both O->T and T->O connection parameter field are not null
- *  Matching - Connection Triad matches an existing connection
- *  (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
- *
- *  @param instance	pointer to CIP object instance
- *  @param message_router_request		pointer to Message Router Request.
- *  @param message_router_response		pointer to Message Router Response.
- * 	@return >0 .. success, 0 .. no reply to send back
- *      	-1 .. error
- */
-EipStatus ForwardOpen(CipInstance *instance,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response) {
-  EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
+void ReadOutConnectionObjectFromMessage(CipMessageRouterRequest *const message_router_request, ConnectionObject *connection_object);
 
-  (void) instance; /*suppress compiler warning */
-
-  /*first check if we have already a connection with the given params */
-  g_dummy_connection_object.priority_timetick = *message_router_request->data++;
-  g_dummy_connection_object.timeout_ticks = *message_router_request->data++;
+void ReadOutConnectionObjectFromMessage(CipMessageRouterRequest *const message_router_request, ConnectionObject *connection_object) {
+  connection_object->priority_timetick = *message_router_request->data++;
+  connection_object->timeout_ticks = *message_router_request->data++;
   /* O_to_T Conn ID */
-  g_dummy_connection_object.consumed_connection_id = GetDintFromMessage(
+  connection_object->consumed_connection_id = GetDintFromMessage(
       &message_router_request->data);
   /* T_to_O Conn ID */
-  g_dummy_connection_object.produced_connection_id = GetDintFromMessage(
+  connection_object->produced_connection_id = GetDintFromMessage(
       &message_router_request->data);
-  g_dummy_connection_object.connection_serial_number = GetIntFromMessage(
+  connection_object->connection_serial_number = GetIntFromMessage(
       &message_router_request->data);
-  g_dummy_connection_object.originator_vendor_id = GetIntFromMessage(
+  connection_object->originator_vendor_id = GetIntFromMessage(
       &message_router_request->data);
-  g_dummy_connection_object.originator_serial_number = GetDintFromMessage(
+  connection_object->originator_serial_number = GetDintFromMessage(
       &message_router_request->data);
 
-  if ((NULL != CheckForExistingConnection(&g_dummy_connection_object))) {
-    /* TODO this test is  incorrect, see CIP spec 3-5.5.2 re: duplicate forward open
-     it should probably be testing the connection type fields
-     TODO think on how a reconfiguration request could be handled correctly */
-    if ((0 == g_dummy_connection_object.consumed_connection_id)
-        && (0 == g_dummy_connection_object.produced_connection_id)) {
-      /*TODO implement reconfiguration of connection*/
-
-      OPENER_TRACE_ERR(
-          "this looks like a duplicate forward open -- I can't handle this yet, sending a CIP_CON_MGR_ERROR_CONNECTION_IN_USE response\n");
-    }
-    return AssembleForwardOpenResponse(
-        &g_dummy_connection_object, message_router_response,
-        kCipErrorConnectionFailure,
-        kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen);
-  }
   /* keep it to none existent till the setup is done this eases error handling and
-   * the state changes within the forward open request can not be detected from
-   * the application or from outside (reason we are single threaded)*/
-  g_dummy_connection_object.state = kConnectionStateNonExistent;
-  g_dummy_connection_object.sequence_count_producing = 0; /* set the sequence count to zero */
+     * the state changes within the forward open request can not be detected from
+     * the application or from outside (reason we are single threaded)*/
+    g_dummy_connection_object.state = kConnectionStateNonExistent;
+    g_dummy_connection_object.sequence_count_producing = 0; /* set the sequence count to zero */
 
-  g_dummy_connection_object.connection_timeout_multiplier =
-      *message_router_request->data++;
-  message_router_request->data += 3; /* reserved */
-  /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
-  OPENER_TRACE_INFO(
-      "ForwardOpen: ConConnID %"PRIu32", ProdConnID %"PRIu32", ConnSerNo %u\n",
-      g_dummy_connection_object.consumed_connection_id,
-      g_dummy_connection_object.produced_connection_id,
-      g_dummy_connection_object.connection_serial_number);
+    g_dummy_connection_object.connection_timeout_multiplier =
+        *message_router_request->data++;
+    message_router_request->data += 3; /* reserved */
+    /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
+    OPENER_TRACE_INFO(
+        "ForwardOpen: ConConnID %"PRIu32", ProdConnID %"PRIu32", ConnSerNo %u\n",
+        g_dummy_connection_object.consumed_connection_id,
+        g_dummy_connection_object.produced_connection_id,
+        g_dummy_connection_object.connection_serial_number);
 
-  g_dummy_connection_object.o_to_t_requested_packet_interval =
-      GetDintFromMessage(&message_router_request->data);
+    g_dummy_connection_object.o_to_t_requested_packet_interval =
+        GetDintFromMessage(&message_router_request->data);
 
-  g_dummy_connection_object.o_to_t_network_connection_parameter =
-      GetIntFromMessage(&message_router_request->data);
-  g_dummy_connection_object.t_to_o_requested_packet_interval =
-      GetDintFromMessage(&message_router_request->data);
-
-  EipUint32 temp = g_dummy_connection_object.t_to_o_requested_packet_interval
-      % (kOpenerTimerTickInMilliSeconds * 1000);
-  if (temp > 0) {
+    g_dummy_connection_object.o_to_t_network_connection_parameter =
+        GetIntFromMessage(&message_router_request->data);
     g_dummy_connection_object.t_to_o_requested_packet_interval =
-        (EipUint32) (g_dummy_connection_object.t_to_o_requested_packet_interval
-            / (kOpenerTimerTickInMilliSeconds * 1000))
-            * (kOpenerTimerTickInMilliSeconds * 1000)
-            + (kOpenerTimerTickInMilliSeconds * 1000);
-  }
+        GetDintFromMessage(&message_router_request->data);
 
-  g_dummy_connection_object.t_to_o_network_connection_parameter =
-      GetIntFromMessage(&message_router_request->data);
+    EipUint32 temp = g_dummy_connection_object.t_to_o_requested_packet_interval
+        % (kOpenerTimerTickInMilliSeconds * 1000);
+    if (temp > 0) {
+      g_dummy_connection_object.t_to_o_requested_packet_interval =
+          (EipUint32) (g_dummy_connection_object.t_to_o_requested_packet_interval
+              / (kOpenerTimerTickInMilliSeconds * 1000))
+              * (kOpenerTimerTickInMilliSeconds * 1000)
+              + (kOpenerTimerTickInMilliSeconds * 1000);
+    }
+
+    g_dummy_connection_object.t_to_o_network_connection_parameter =
+        GetIntFromMessage(&message_router_request->data);
+}
+
+ForwardOpenConnectionType GetConnectionType(EipUint16 network_connection_parameter) {
+  const uint16_t connection_parameter_mask = 0x6000;
+
+  ForwardOpenConnectionType connection_type = network_connection_parameter & connection_parameter_mask;
+  OPENER_TRACE_INFO("Connection type: %x / network connection parameter: %x\n", connection_type, network_connection_parameter);
+  return connection_type;
+}
+
+typedef int (*foo_ptr_t)( int );
+foo_ptr_t foo_ptr_array[2];
+
+typedef EipStatus (*HandleForwardOpenRequestFunction)(ConnectionObject *connection_object,
+    CipInstance *instance,
+    CipMessageRouterRequest *message_router_request,
+    CipMessageRouterResponse *message_router_response);
+
+/** @brief Handles a Null Non Matching Forward Open Request
+ *
+ * Null, Non-Matching - Either ping device, or configure a device’s application,
+ * or return  General Status kCipErrorConnectionFailure and
+ * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
+ */
+EipStatus HandleNullNonMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                  CipInstance *instance,
+                                                  CipMessageRouterRequest *message_router_request,
+                                                  CipMessageRouterResponse *message_router_response);
+
+EipStatus HandleNullNonMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                  CipInstance *instance,
+                                                  CipMessageRouterRequest *message_router_request,
+                                                  CipMessageRouterResponse *message_router_response) {
+  OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
+  return AssembleForwardOpenResponse(connection_object, message_router_response,
+                                     kCipErrorConnectionFailure,
+                                     kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
+}
+
+/** @brief Handles a Null Matching Forward Open request
+ *
+ * Either  reconfigure a target device’s application, or
+ * return General Status kCipErrorConnectionFailure and
+ * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
+ */
+EipStatus HandleNullMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                               CipInstance *instance,
+                                               CipMessageRouterRequest *message_router_request,
+                                               CipMessageRouterResponse *message_router_response);
+
+EipStatus HandleNullMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                  CipInstance *instance,
+                                                  CipMessageRouterRequest *message_router_request,
+                                                  CipMessageRouterResponse *message_router_response) {
+  OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
+  return AssembleForwardOpenResponse(connection_object, message_router_response,
+                                     kCipErrorConnectionFailure,
+                                     kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
+}
+
+/** @brief Handles a Non Null Matching Forward Open Request
+ *
+ * Non-Null, Matching request - Return General Status = kCipErrorConnectionFailure,
+ * Extended Status = kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen
+ */
+EipStatus HandleNonNullMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                  CipInstance *instance,
+                                                  CipMessageRouterRequest *message_router_request,
+                                                  CipMessageRouterResponse *message_router_response);
+
+EipStatus HandleNonNullMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                  CipInstance *instance,
+                                                  CipMessageRouterRequest *message_router_request,
+                                                  CipMessageRouterResponse *message_router_response) {
+  OPENER_TRACE_INFO("Right now we cannot handle reconfiguration requests\n");
+  return AssembleForwardOpenResponse(connection_object, message_router_response,
+                                       kCipErrorConnectionFailure,
+                                       kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen);
+}
+
+/** @brief Handles a Non Null Non Matching Forward Open Request
+ *
+ * Non-Null, Non-Matching request - Establish a new connection
+ */
+EipStatus HandleNonNullNonMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                     CipInstance *instance,
+                                                     CipMessageRouterRequest *message_router_request,
+                                                     CipMessageRouterResponse *message_router_response);
+
+EipStatus HandleNonNullNonMatchingForwardOpenRequest(ConnectionObject *connection_object,
+                                                     CipInstance *instance,
+                                                     CipMessageRouterRequest *message_router_request,
+                                                     CipMessageRouterResponse *message_router_response) {
+
+  EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
   /*check if Network connection parameters are ok */
   if (CIP_CONN_TYPE_MASK
@@ -389,7 +444,7 @@ EipStatus ForwardOpen(CipInstance *instance,
         kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported);
   }
 
-  temp = ParseConnectionPath(&g_dummy_connection_object, message_router_request,
+  EipUint32 temp = ParseConnectionPath(&g_dummy_connection_object, message_router_request,
                              &connection_status);
   if (kEipStatusOk != temp) {
     return AssembleForwardOpenResponse(&g_dummy_connection_object,
@@ -424,19 +479,94 @@ EipStatus ForwardOpen(CipInstance *instance,
   }
 }
 
+static const HandleForwardOpenRequestFunction handle_forward_open_request_functions[2][2] = {
+    {HandleNonNullNonMatchingForwardOpenRequest, HandleNonNullMatchingForwardOpenRequest},
+    {HandleNullNonMatchingForwardOpenRequest, HandleNullMatchingForwardOpenRequest}
+};
+
+/** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *
+ *  Forward Open four cases
+ *  Non-Null/Not matching - open a connection
+ *  Non-Null/Matching - error
+ *  Null/Not matching - ping a device/configure
+ *  Null/Matching - reconfigure
+ *
+ *  Null connection - both O->T and T->O connection parameter field are null
+ *  Non-Null connection - one or both O->T and T->O connection parameter field are not null
+ *  Matching - Connection Triad matches an existing connection
+ *  (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
+ *
+ *  @param instance	pointer to CIP object instance
+ *  @param message_router_request		pointer to Message Router Request.
+ *  @param message_router_response		pointer to Message Router Response.
+ * 	@return >0 .. success, 0 .. no reply to send back
+ *      	-1 .. error
+ */
+EipStatus ForwardOpen(CipInstance *instance,
+                      CipMessageRouterRequest *message_router_request,
+                      CipMessageRouterResponse *message_router_response) {
+  (void) instance; /*suppress compiler warning */
+
+  uint8_t is_null_request = 0; /* 1 = Null Request, 0 =  Non-Null Request  */
+  uint8_t is_matching_request = 0; /* 1 = Matching Request, 0 = Non-Matching Request  */
+
+  /*first check if we have already a connection with the given params */
+  ReadOutConnectionObjectFromMessage(message_router_request, &g_dummy_connection_object);
+
+  /* Check if request is a Null request or a Non-Null request */
+  if(kForwardOpenConnectionTypeNull == GetConnectionType(g_dummy_connection_object.o_to_t_network_connection_parameter)
+      || kForwardOpenConnectionTypeNull == GetConnectionType(g_dummy_connection_object.t_to_o_network_connection_parameter)) {
+    OPENER_TRACE_INFO("We have a Null request\n");
+    is_null_request = 1;
+  }
+  else {
+    OPENER_TRACE_INFO("We have a Non-Null request\n");
+    is_null_request = 0;
+  }
+
+  /* Check if we have a matching or non matching request */
+  if ((NULL != CheckForExistingConnection(&g_dummy_connection_object))) {
+    OPENER_TRACE_INFO("We have a Matching request\n");
+    is_matching_request = 1;
+
+  } else {
+    OPENER_TRACE_INFO("We have a Non-Matching request\n");
+    is_matching_request = 0;
+  }
+
+  HandleForwardOpenRequestFunction choosen_function = handle_forward_open_request_functions[is_null_request][is_matching_request];
+
+  return choosen_function(&g_dummy_connection_object, instance, message_router_request, message_router_response);
+
+  /* Case 1 - Non-Null, Non-Matching request - Establish a new connection */
+  /* Case 2 - Non-Null, Matching request - Return General Status = kCipErrorConnectionFailure,
+   * Extended Status = kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen
+   */
+  /* Case 3 - Null, Non-Matching - Either ping device, or configure a device’s application,
+   * or return  General Status kCipErrorConnectionFailure and
+   * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
+   */
+
+  /* Case 4 - Null, Matching - Either  reconfigure a target device’s application, or
+   * return General Status kCipErrorConnectionFailure and
+   * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
+   */
+}
+
 void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
-  if (kRoutingTypePointToPointConnection
+  if (kForwardOpenConnectionTypePointToPointConnection
       == (connection_object->o_to_t_network_connection_parameter
-          & kRoutingTypePointToPointConnection)) {
+          & kForwardOpenConnectionTypePointToPointConnection)) {
     /* if we have a point to point connection for the O to T direction
      * the target shall choose the connection ID.
      */
     connection_object->consumed_connection_id = GetConnectionId();
   }
 
-  if (kRoutingTypeMulticastConnection
+  if (kForwardOpenConnectionTypeMulticastConnection
       == (connection_object->t_to_o_network_connection_parameter
-          & kRoutingTypeMulticastConnection)) {
+          & kForwardOpenConnectionTypeMulticastConnection)) {
     /* if we have a multi-cast connection for the T to O direction the
      * target shall choose the connection ID.
      */
