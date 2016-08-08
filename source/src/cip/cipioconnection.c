@@ -138,8 +138,8 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
     int diff_size = 0;
     int is_heartbeat = false;
 
-    if ((originator_to_target_connection_type != 0)
-        && (target_to_originator_connection_type != 0)) { /* we have a producing and consuming connection*/
+    if ((originator_to_target_connection_type != kForwardOpenConnectionTypeNull)
+        && (target_to_originator_connection_type != kForwardOpenConnectionTypeNull)) { /* we have a producing and consuming connection*/
       producing_index = 1;
     }
 
@@ -148,7 +148,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
     io_connection_object->producing_instance = 0;
     io_connection_object->produced_connection_path_length = 0;
 
-    if (originator_to_target_connection_type != 0) { /*setup consumer side*/
+    if (originator_to_target_connection_type != kForwardOpenConnectionTypeNull) { /*setup consumer side*/
       if (0
           != (instance = GetCipInstance(
               assembly_class,
@@ -195,7 +195,7 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
       }
     }
 
-    if (target_to_originator_connection_type != 0) { /*setup producer side*/
+    if (target_to_originator_connection_type != kForwardOpenConnectionTypeNull) { /*setup producer side*/
       if (0
           != (instance =
               GetCipInstance(
@@ -406,25 +406,47 @@ EipStatus OpenProducingMulticastConnection(
 EipStatus OpenMulticastConnection(
     UdpCommuncationDirection direction, ConnectionObject *connection_object,
     CipCommonPacketFormatData *common_packet_format_data) {
-  int j = 0;
+  int j = -1;
 
-  if (0 != g_common_packet_format_data_item.address_info_item[0].type_id) {
-    if ((kUdpCommuncationDirectionConsuming == direction)
-        && (kCipItemIdSocketAddressInfoOriginatorToTarget
-            == common_packet_format_data->address_info_item[0].type_id)) {
-      /* for consuming connection points the originator can choose the multicast address to use
-       * we have a given address type so use it */
+  int address_info_item_which_contains_o_to_t = -1;
+  int address_info_item_which_contains_t_to_o = -1;
+
+  if(kCipItemIdSocketAddressInfoOriginatorToTarget
+            == common_packet_format_data->address_info_item[0].type_id) {
+	  address_info_item_which_contains_o_to_t = 0;
+  } else if(kCipItemIdSocketAddressInfoOriginatorToTarget
+              == common_packet_format_data->address_info_item[1].type_id) {
+	  address_info_item_which_contains_o_to_t = 1;
+  } else {
+	  OPENER_TRACE_INFO("No O->T Sockaddr info available");
+  }
+
+  if(kCipItemIdSocketAddressInfoTargetToOriginator
+              == common_packet_format_data->address_info_item[0].type_id) {
+  	  address_info_item_which_contains_o_to_t = 0;
+    } else if(kCipItemIdSocketAddressInfoTargetToOriginator
+                == common_packet_format_data->address_info_item[1].type_id) {
+  	  address_info_item_which_contains_o_to_t = 1;
     } else {
-      j = 1;
-      /* if the type is not zero (not used) or if a given type it has to be the correct one */
-      if ((0 != g_common_packet_format_data_item.address_info_item[1].type_id)
-          && (!((kUdpCommuncationDirectionConsuming == direction)
-              && (kCipItemIdSocketAddressInfoOriginatorToTarget
-                  == common_packet_format_data->address_info_item[0].type_id)))) {
-        OPENER_TRACE_ERR("no suitable addr info item available\n");
-        return kEipStatusError;
-      }
+    	OPENER_TRACE_INFO("No T->O Sockaddr info available");
     }
+
+  if(kUdpCommuncationDirectionConsuming == direction) {
+	  //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
+	  j = address_info_item_which_contains_o_to_t;
+  }
+
+  if(kUdpCommuncationDirectionProducing == direction) {
+  	  //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
+  	  j = address_info_item_which_contains_t_to_o;
+    }
+
+  /*****************/
+
+  if (-1 == j) {
+	  OPENER_TRACE_ERR("no suitable addr info item available / O->T: %d, T->O: %d, Selector: %d, direction: %d\n",
+			  address_info_item_which_contains_o_to_t,address_info_item_which_contains_t_to_o,j,direction);
+	          return kEipStatusError;
   }
 
   if (0 == common_packet_format_data->address_info_item[j].type_id) { /* we are using an unused item initialize it with the default multicast address */
@@ -441,12 +463,12 @@ EipStatus OpenMulticastConnection(
   if (htons(AF_INET)
       != common_packet_format_data->address_info_item[j].sin_family) {
     OPENER_TRACE_ERR(
-        "Sockaddr Info Item with wrong sin family value recieved\n");
+        "Sockaddr Info Item with wrong sin family value received\n");
     return kEipStatusError;
   }
 
   /* allocate an unused sockaddr struct to use */
-  struct sockaddr_in socket_address;
+  struct sockaddr_in socket_address = {0};
   socket_address.sin_family = ntohs(
       common_packet_format_data->address_info_item[j].sin_family);
   socket_address.sin_addr.s_addr =

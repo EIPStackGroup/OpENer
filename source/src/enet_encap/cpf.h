@@ -50,19 +50,22 @@ typedef struct {
   EipUint8 *data;
 } DataItem;
 
+/** @brief CPF Sockaddr Item
+ *
+ */
 typedef struct {
-  CipUint type_id;
-  CipUint length;
-  CipInt sin_family;
-  CipUint sin_port;
-  CipUdint sin_addr;
-  CipUsint nasin_zero[8];
+  CipUint type_id; /**< Either 0x8000 for O->T or 0x8001 for T->O */
+  CipUint length; /**< Length shall be 16 bytes */
+  CipInt sin_family; /**< Shall be AF_INET = 2 in big endian order */
+  CipUint sin_port; /**< For point-to-point connection this shall be set to the used UDP port (recommended port = 0x08AE). For multicast this shall be set to 0x08AE and treated by the receiver as don't care. Big endian order */
+  CipUdint sin_addr; /**< For multicast connections shall be set to the multicast address. For point-to-point shall be treated as don't care, recommended value 0. Big endian order. */
+  CipUsint nasin_zero[8]; /**< Length of 8, Recommended value zero */
 } SocketAddressInfoItem;
 
 /* this one case of a CPF packet is supported:*/
-
+/** @brief A variant of a CPF packet, including item count, one address item, one data item, and two Sockaddr Info items */
 typedef struct {
-  EipUint16 item_count;
+  EipUint16 item_count; /**< Up to four for this structure allowed */
   AddressItem address_item;
   DataItem data_item;
   SocketAddressInfoItem address_info_item[2];

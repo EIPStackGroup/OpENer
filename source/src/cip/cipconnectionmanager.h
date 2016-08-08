@@ -21,7 +21,8 @@
 typedef enum {
   kForwardOpenConnectionTypeNull = 0x0000,
   kForwardOpenConnectionTypePointToPointConnection = 0x4000,
-  kForwardOpenConnectionTypeMulticastConnection = 0x2000
+  kForwardOpenConnectionTypeMulticastConnection = 0x2000,
+  kForwardOpenConnectionTypeReserved = 0x6000 /**< Reserved and therefore invalid type*/
 } ForwardOpenConnectionType;
 
 typedef enum {
