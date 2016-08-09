@@ -252,19 +252,6 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
   return kEipStatusOk;
 }
 
-/**
- * Forward Open four cases
- * Non-Null/Not matching - open a connection
- * Non-Null/Matching - error
- * Null/Not matching - ping a device/configure
- * Null/Matching - reconfigure
- *
- * Null connection - both O->T and T->O connection parameter field are null
- * Non-Null connection - one or both O->T and T->O connection parameter field are not null
- * Matching - Connection Triad matches an existing connection
- * (Connection Serial Number, Originator Vendor ID and Originator Serial Number)
- */
-
 void ReadOutConnectionObjectFromMessage(
     CipMessageRouterRequest *const message_router_request,
     ConnectionObject *const connection_object);
