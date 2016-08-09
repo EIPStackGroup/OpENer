@@ -185,29 +185,35 @@ typedef struct {
  * data can not be accessed with CIP means.
  */
 typedef struct connection_object {
-  ConnectionState state;
-  ConnectionType instance_type;
-
+  ConnectionState state; /**< state of the object */
+  ConnectionType instance_type; /**< Indicates either I/O or Messaging connection */
+  EipByte transport_type_class_trigger;
   /* conditional
-   EipUint16 DeviceNetProductedConnectionID;
-   EipUint16 DeviceNetConsumedConnectionID;
-   */
+  EipUint16 device_net_produced_connection_id;
+  EipUint16 device_net_consumed_connection_id;
   EipByte device_net_initial_comm_characteristcs;
+  */
+
   EipUint16 produced_connection_size;
   EipUint16 consumed_connection_size;
   EipUint16 expected_packet_rate;
 
   /*conditional*/
-  EipUint32 produced_connection_id;
-  EipUint32 consumed_connection_id;
+  EipUint32 cip_produced_connection_id;
+  EipUint32 cip_consumed_connection_id;
   /**/
-  WatchdogTimeoutAction watchdog_timeout_action;
+  EipUint8 watchdog_timeout_action; /**< see enum WatchdogTimeoutAction */
   EipUint16 produced_connection_path_length;
-  CipEpath produced_connection_path;
+  CipEpath produced_connection_path; /**< Packed EPATH */
   EipUint16 consumed_connection_path_length;
-  CipEpath consumed_connection_path;
-  /* conditional
-   UINT16 ProductionInhibitTime;
+  CipEpath consumed_connection_path; /**< Packed EPATH */
+  /** @brief Minimal time between the production of two application triggered
+    * or change of state triggered I/O connection messages
+    */
+  EipUint16 production_inhibit_time;
+  EipUint16 connection_timeout_multiplier;
+  /* Conditional
+   * connection_binding_list < STRUCT OF UINT, Array of UINT
    */
   /* non CIP Attributes, only relevant for opened connections */
   EipByte priority_timetick;
@@ -215,12 +221,12 @@ typedef struct connection_object {
   EipUint16 connection_serial_number;
   EipUint16 originator_vendor_id;
   EipUint32 originator_serial_number;
-  EipUint16 connection_timeout_multiplier;
+
   EipUint32 o_to_t_requested_packet_interval;
   EipUint16 o_to_t_network_connection_parameter;
   EipUint32 t_to_o_requested_packet_interval;
   EipUint16 t_to_o_network_connection_parameter;
-  EipByte transport_type_class_trigger;
+
   EipUint8 connection_path_size;
   CipElectronicKey electronic_key;
   CipConnectionPath connection_path; /* padded EPATH*/
@@ -251,10 +257,7 @@ typedef struct connection_object {
   EipInt32 transmission_trigger_timer;
   EipInt32 inactivity_watchdog_timer;
 
-  /** @brief Minimal time between the production of two application triggered
-   * or change of state triggered I/O connection messages
-   */
-  EipUint16 production_inhibit_time;
+
 
   /** @brief Timer for the production inhibition of application triggered or
    * change-of-state I/O connections.

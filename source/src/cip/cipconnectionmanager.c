@@ -266,19 +266,19 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
  */
 
 void ReadOutConnectionObjectFromMessage(
-    CipMessageRouterRequest * const message_router_request,
+    CipMessageRouterRequest *const message_router_request,
     ConnectionObject *connection_object);
 
 void ReadOutConnectionObjectFromMessage(
-    CipMessageRouterRequest * const message_router_request,
+    CipMessageRouterRequest *const message_router_request,
     ConnectionObject *connection_object) {
   connection_object->priority_timetick = *message_router_request->data++;
   connection_object->timeout_ticks = *message_router_request->data++;
   /* O_to_T Conn ID */
-  connection_object->consumed_connection_id = GetDintFromMessage(
+  connection_object->cip_consumed_connection_id = GetDintFromMessage(
       &message_router_request->data);
   /* T_to_O Conn ID */
-  connection_object->produced_connection_id = GetDintFromMessage(
+  connection_object->cip_produced_connection_id = GetDintFromMessage(
       &message_router_request->data);
   connection_object->connection_serial_number = GetIntFromMessage(
       &message_router_request->data);
@@ -299,8 +299,8 @@ void ReadOutConnectionObjectFromMessage(
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
   OPENER_TRACE_INFO(
       "ForwardOpen: ConConnID %"PRIu32", ProdConnID %"PRIu32", ConnSerNo %u\n",
-      g_dummy_connection_object.consumed_connection_id,
-      g_dummy_connection_object.produced_connection_id,
+      g_dummy_connection_object.cip_consumed_connection_id,
+      g_dummy_connection_object.cip_produced_connection_id,
       g_dummy_connection_object.connection_serial_number);
 
   g_dummy_connection_object.o_to_t_requested_packet_interval =
@@ -323,6 +323,10 @@ void ReadOutConnectionObjectFromMessage(
 
   g_dummy_connection_object.t_to_o_network_connection_parameter =
       GetIntFromMessage(&message_router_request->data);
+
+  g_dummy_connection_object.transport_type_class_trigger =
+        *message_router_request->data++;
+
 }
 
 ForwardOpenConnectionType GetConnectionType(
@@ -337,9 +341,9 @@ ForwardOpenConnectionType GetConnectionType(
   return connection_type;
 }
 
-typedef int (*foo_ptr_t)(int);
-foo_ptr_t foo_ptr_array[2];
-
+/** @brief Function prototype for all Forward Open handle functions
+ *
+ */
 typedef EipStatus (*HandleForwardOpenRequestFunction)(
     ConnectionObject *connection_object, CipInstance *instance,
     CipMessageRouterRequest *message_router_request,
@@ -425,9 +429,6 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
 
   EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
-  g_dummy_connection_object.transport_type_class_trigger =
-      *message_router_request->data++;
-
   /*check if the trigger type value is ok */
   if (0x40 & g_dummy_connection_object.transport_type_class_trigger) {
     return AssembleForwardOpenResponse(
@@ -474,6 +475,12 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   }
 }
 
+/** @brief Array of Forward Open handle function pointers
+ *
+ * File scope variable
+ * The first dimension handles if the request was a non-null request (0) or a null request (1),
+ * the second dimension handles if the request was a non-matchin (0) or matching request (1)
+ */
 static const HandleForwardOpenRequestFunction handle_forward_open_request_functions[2][2] =
     { { HandleNonNullNonMatchingForwardOpenRequest,
         HandleNonNullMatchingForwardOpenRequest }, {
@@ -556,20 +563,6 @@ EipStatus ForwardOpen(CipInstance *instance,
 
   return choosen_function(&g_dummy_connection_object, instance,
                           message_router_request, message_router_response);
-
-  /* Case 1 - Non-Null, Non-Matching request - Establish a new connection */
-  /* Case 2 - Non-Null, Matching request - Return General Status = kCipErrorConnectionFailure,
-   * Extended Status = kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen
-   */
-  /* Case 3 - Null, Non-Matching - Either ping device, or configure a device’s application,
-   * or return  General Status kCipErrorConnectionFailure and
-   * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
-   */
-
-  /* Case 4 - Null, Matching - Either  reconfigure a target device’s application, or
-   * return General Status kCipErrorConnectionFailure and
-   * Extended Status kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported
-   */
 }
 
 void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
@@ -579,7 +572,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
     /* if we have a point to point connection for the O to T direction
      * the target shall choose the connection ID.
      */
-    connection_object->consumed_connection_id = GetConnectionId();
+    connection_object->cip_consumed_connection_id = GetConnectionId();
   }
 
   if (kForwardOpenConnectionTypeMulticastConnection
@@ -588,7 +581,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
     /* if we have a multi-cast connection for the T to O direction the
      * target shall choose the connection ID.
      */
-    connection_object->produced_connection_id = GetConnectionId();
+    connection_object->cip_produced_connection_id = GetConnectionId();
   }
 
   connection_object->eip_level_sequence_count_producing = 0;
@@ -804,8 +797,8 @@ EipStatus AssembleForwardOpenResponse(
       }
     }
 
-    AddDintToMessage(connection_object->consumed_connection_id, &message);
-    AddDintToMessage(connection_object->produced_connection_id, &message);
+    AddDintToMessage(connection_object->cip_consumed_connection_id, &message);
+    AddDintToMessage(connection_object->cip_produced_connection_id, &message);
   } else {
     /* we have an connection creation error */
     OPENER_TRACE_INFO("assembleFWDOpenResponse: sending error response\n");
@@ -946,7 +939,7 @@ ConnectionObject* GetConnectedObject(EipUint32 connection_id) {
   while (NULL != active_connection_object_list_item) {
     if (active_connection_object_list_item->state
         == kConnectionStateEstablished) {
-      if (active_connection_object_list_item->consumed_connection_id
+      if (active_connection_object_list_item->cip_consumed_connection_id
           == connection_id)
         return active_connection_object_list_item;
     }

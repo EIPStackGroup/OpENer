@@ -96,7 +96,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data
                 .connection_identifier = connection_object
-                ->produced_connection_id;
+                ->cip_produced_connection_id;
             return_value = AssembleLinearMessage(
                 &g_message_router_response, &g_common_packet_format_data_item,
                 reply_buffer);

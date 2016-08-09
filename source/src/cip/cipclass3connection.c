@@ -32,9 +32,9 @@ EipStatus EstablishClass3Connection(ConnectionObject *restrict const connection_
   } else {
     CopyConnectionData(explicit_connection, connection_object);
 
-    EipUint32 produced_connection_id_buffer = explicit_connection->produced_connection_id;
+    EipUint32 produced_connection_id_buffer = explicit_connection->cip_produced_connection_id;
     GeneralConnectionConfiguration(explicit_connection);
-    explicit_connection->produced_connection_id = produced_connection_id_buffer;
+    explicit_connection->cip_produced_connection_id = produced_connection_id_buffer;
     explicit_connection->instance_type = kConnectionTypeExplicit;
     explicit_connection->socket[0] = explicit_connection->socket[1] =
         kEipInvalidSocket;

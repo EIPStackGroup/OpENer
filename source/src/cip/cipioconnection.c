@@ -354,8 +354,8 @@ EipStatus OpenProducingMulticastConnection(
                                    connection_object, common_packet_format_data);
   } else {
     /* we need to inform our originator on the correct connection id */
-    connection_object->produced_connection_id = existing_connection_object
-        ->produced_connection_id;
+    connection_object->cip_produced_connection_id = existing_connection_object
+        ->cip_produced_connection_id;
   }
 
   /* we have a connection reuse the data and the socket */
@@ -643,7 +643,7 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
 
   }
   common_packet_format_data->address_item.data.connection_identifier =
-      connection_object->produced_connection_id;
+      connection_object->cip_produced_connection_id;
 
   common_packet_format_data->data_item.type_id = kCipItemIdConnectedDataItem;
 
