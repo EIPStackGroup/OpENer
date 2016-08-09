@@ -267,11 +267,11 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
 
 void ReadOutConnectionObjectFromMessage(
     CipMessageRouterRequest *const message_router_request,
-    ConnectionObject *connection_object);
+    ConnectionObject *const connection_object);
 
 void ReadOutConnectionObjectFromMessage(
     CipMessageRouterRequest *const message_router_request,
-    ConnectionObject *connection_object) {
+    ConnectionObject *const connection_object) {
   connection_object->priority_timetick = *message_router_request->data++;
   connection_object->timeout_ticks = *message_router_request->data++;
   /* O_to_T Conn ID */
@@ -290,43 +290,42 @@ void ReadOutConnectionObjectFromMessage(
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
    * the application or from outside (reason we are single threaded)*/
-  g_dummy_connection_object.state = kConnectionStateNonExistent;
-  g_dummy_connection_object.sequence_count_producing = 0; /* set the sequence count to zero */
+  connection_object->state = kConnectionStateNonExistent;
+  connection_object->sequence_count_producing = 0; /* set the sequence count to zero */
 
-  g_dummy_connection_object.connection_timeout_multiplier =
+  connection_object->connection_timeout_multiplier =
       *message_router_request->data++;
   message_router_request->data += 3; /* reserved */
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
   OPENER_TRACE_INFO(
       "ForwardOpen: ConConnID %"PRIu32", ProdConnID %"PRIu32", ConnSerNo %u\n",
-      g_dummy_connection_object.cip_consumed_connection_id,
-      g_dummy_connection_object.cip_produced_connection_id,
-      g_dummy_connection_object.connection_serial_number);
+      connection_object->cip_consumed_connection_id,
+      connection_object->cip_produced_connection_id,
+      connection_object->connection_serial_number);
 
-  g_dummy_connection_object.o_to_t_requested_packet_interval =
+  connection_object->o_to_t_requested_packet_interval =
       GetDintFromMessage(&message_router_request->data);
 
-  g_dummy_connection_object.o_to_t_network_connection_parameter =
+  connection_object->o_to_t_network_connection_parameter =
       GetIntFromMessage(&message_router_request->data);
-  g_dummy_connection_object.t_to_o_requested_packet_interval =
+  connection_object->t_to_o_requested_packet_interval =
       GetDintFromMessage(&message_router_request->data);
 
-  EipUint32 temp = g_dummy_connection_object.t_to_o_requested_packet_interval
+  EipUint32 temp = connection_object->t_to_o_requested_packet_interval
       % (kOpenerTimerTickInMilliSeconds * 1000);
   if (temp > 0) {
-    g_dummy_connection_object.t_to_o_requested_packet_interval =
-        (EipUint32) (g_dummy_connection_object.t_to_o_requested_packet_interval
+    connection_object->t_to_o_requested_packet_interval =
+        (EipUint32) (connection_object->t_to_o_requested_packet_interval
             / (kOpenerTimerTickInMilliSeconds * 1000))
             * (kOpenerTimerTickInMilliSeconds * 1000)
             + (kOpenerTimerTickInMilliSeconds * 1000);
   }
 
-  g_dummy_connection_object.t_to_o_network_connection_parameter =
+  connection_object->t_to_o_network_connection_parameter =
       GetIntFromMessage(&message_router_request->data);
 
-  g_dummy_connection_object.transport_type_class_trigger =
+  connection_object->transport_type_class_trigger =
         *message_router_request->data++;
-
 }
 
 ForwardOpenConnectionType GetConnectionType(
