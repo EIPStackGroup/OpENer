@@ -533,7 +533,7 @@ EipStatus ForwardOpen(CipInstance *instance,
 
   /* Check if request is a Null request or a Non-Null request */
   if (kForwardOpenConnectionTypeNull == o_to_t_connection_type
-      || kForwardOpenConnectionTypeNull == t_to_o_connection_type) {
+      && kForwardOpenConnectionTypeNull == t_to_o_connection_type) {
     OPENER_TRACE_INFO("We have a Null request\n");
     is_null_request = 1;
   } else {

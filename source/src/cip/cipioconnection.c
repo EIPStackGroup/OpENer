@@ -418,17 +418,17 @@ EipStatus OpenMulticastConnection(
               == common_packet_format_data->address_info_item[1].type_id) {
 	  address_info_item_which_contains_o_to_t = 1;
   } else {
-	  OPENER_TRACE_INFO("No O->T Sockaddr info available");
+	  OPENER_TRACE_INFO("No O->T Sockaddr info available\n");
   }
 
   if(kCipItemIdSocketAddressInfoTargetToOriginator
               == common_packet_format_data->address_info_item[0].type_id) {
-  	  address_info_item_which_contains_o_to_t = 0;
+  	  address_info_item_which_contains_t_to_o = 0;
     } else if(kCipItemIdSocketAddressInfoTargetToOriginator
                 == common_packet_format_data->address_info_item[1].type_id) {
-  	  address_info_item_which_contains_o_to_t = 1;
+  	  address_info_item_which_contains_t_to_o = 1;
     } else {
-    	OPENER_TRACE_INFO("No T->O Sockaddr info available");
+    	OPENER_TRACE_INFO("No T->O Sockaddr info available\n");
     }
 
   if(kUdpCommuncationDirectionConsuming == direction) {
@@ -449,7 +449,7 @@ EipStatus OpenMulticastConnection(
 	          return kEipStatusError;
   }
 
-  if (0 == common_packet_format_data->address_info_item[j].type_id) { /* we are using an unused item initialize it with the default multicast address */
+  if (kCipItemIdSocketAddressInfoTargetToOriginator == common_packet_format_data->address_info_item[j].type_id) { /* we are using an unused item initialize it with the default multicast address */
     common_packet_format_data->address_info_item[j].sin_family = htons(
         AF_INET);
     common_packet_format_data->address_info_item[j].sin_port = htons(

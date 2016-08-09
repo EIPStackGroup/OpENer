@@ -163,7 +163,7 @@ EipStatus CreateCommonPacketFormatStructure(
   {
     common_packet_format_data->address_info_item[j].type_id = GetIntFromMessage(
         &data);
-    OPENER_TRACE_INFO("Sockaddr type id: %x", common_packet_format_data->address_info_item[j].type_id);
+    OPENER_TRACE_INFO("Sockaddr type id: %x\n", common_packet_format_data->address_info_item[j].type_id);
     length_count += 2;
     if ((common_packet_format_data->address_info_item[j].type_id
         == kCipItemIdSocketAddressInfoOriginatorToTarget)
