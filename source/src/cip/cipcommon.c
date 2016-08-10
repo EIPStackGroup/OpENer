@@ -48,6 +48,9 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
   OPENER_ASSERT(kEipStatusOk == eip_status);
+  
+  /* Shut up compiler warning with traces disabled */
+  (void)eip_status;
 }
 
 void ShutdownCipStack(void) {
