@@ -106,12 +106,14 @@ typedef enum {
 } UdpCommuncationDirection;
 
 #ifndef __cplusplus
-/** @brief If we don't have C++ define a C++ -like "bool" keyword defines
+#if !defined(__bool_true_false_are_defined)
+/** @brief If not yet done (through C++ or stdbool.h (C99)), define "true" and "false" keywords
  */
 typedef enum {
   false = 0, /**< defines "false" as 0 */
   true = 1 /**< defines "true" as 1 */
 } BoolKeywords;
+#endif /* __bool_true_false_are_defined */
 #endif /* __cplusplus */
 
 #endif /* OPENER_TYPEDEFS_H_ */
