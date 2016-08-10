@@ -465,11 +465,10 @@ void HandleReceivedRegisterSessionCommand(int socket,
  */
 EipStatus HandleReceivedUnregisterSessionCommand(
     EncapsulationData *receive_data) {
-  int i;
 
   if ((0 < receive_data->session_handle)
       && (receive_data->session_handle <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
-    i = receive_data->session_handle - 1;
+    int i = receive_data->session_handle - 1;
     if (kEipInvalidSocket != g_registered_sessions[i]) {
       IApp_CloseSocket_tcp(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;

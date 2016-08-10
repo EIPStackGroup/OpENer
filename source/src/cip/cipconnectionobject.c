@@ -4,63 +4,22 @@
  *
  ******************************************************************************/
 
-/** @brief Valid values for the state attribute of the Connection Object */
-typedef enum {
-  kCipConnectionObjectStateNonExistent = 0, /**< Connection not yet instantiated */
-  kCipConnectionObjectStateConfiguring = 1, /**< Waiting to be configured or waiting to be told to apply configuration */
-  kCipConnectionObjectStateWaitingForConnectionId = 2, /**< Only used on DeviceNet */
-  kCipConnectionObjectStateEstablished = 3, /**< Fully configured and successfully applied */
-  kCipConnectionObjectStateTimedOut = 4, /**< Has been timed out (Inactivity/Watchdog) */
-  kCipConnectionObjectStateDeferredDelete = 5, /**< Only used on DeviceNet */
-  kCipConnectionObjectStateClosing = 6 /**< CIP bridge is waiting for successful Forward Close from target node */
-} CipConnectionObjectState;
+#include "cipconnectionobject.h"
 
-typedef enum {
-  kCipConnectionObjectInstanceTypeExplicitMessaging = 0,
-  kCipConnectionObjectInstanceTypeIo = 1,
-  kCipConnectionObjectInstanceTypeCipBridged = 2
-} CipConnectionObjectInstanceType;
-
-typedef enum {
-  kCipConnectionObjectTransportClassTriggerDirectionClient = 0,
-  kCipConnectionObjectTransportClassTriggerDirectionServer = 1
-} CipConnectionObjectTransportClassTriggerDirection;
-
-typedef enum {
-  kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic = 0,
-  kCipConnectionObjectTransportClassTriggerProductionTriggerChangeOfState = 1,
-  kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject = 2
-} CipConnectionObjectTransportClassTriggerProductionTrigger;
-
-typedef enum {
-  kCipConnectionObjectTransportClassTriggerTransportClass0 = 0,
-  kCipConnectionObjectTransportClassTriggerTransportClass1 = 1,
-  kCipConnectionObjectTransportClassTriggerTransportClass2 = 2,
-  kCipConnectionObjectTransportClassTriggerTransportClass3 = 3,
-  kCipConnectionObjectTransportClassTriggerTransportClass4 = 4,
-  kCipConnectionObjectTransportClassTriggerTransportClass5 = 5,
-  kCipConnectionObjectTransportClassTriggerTransportClass6 = 6
-} CipConnectionObjectTransportClassTriggerTransportClass;
-
-typedef enum {
-  kCipConnectionObjectWatchdogTimeoutActionTransitionToTimedOut = 0,
-  kCipConnectionObjectWatchdogTimeoutActionAutoDelete = 1,
-  kCipConnectionObjectWatchdogTimeoutActionAutoReset = 2,
-  kCipConnectionObjectWatchdogTimeoutActionDeferredDelete = 3
-} CipConnectionObjectWatchdogTimeoutAction;
+#include "typedefs.h"
 
 typedef struct {
   CipUint size;
   CipUint *array;
-} ConnectionBindingList;
+} CipConnectionBindingList;
 
 typedef struct {
   CipUsint state; /**< Attribute 1: State of the object, see enum CipConnectionObjectState */
-  CipUsint instance_type; /**< Attribute 2: I/O, explicit, or bridged, see enum CipConnectionObjectInstanceType */
+  CipUsint instance_type; /**< Attribute 2: Defines instance type I/O, explicit, or bridged, see enum CipConnectionObjectInstanceType */
   CipByte transport_class_trigger; /**< Attribute 3 */
-  CipUint device_net_produced_connection_id; /**< Attribute 4: Only used on DeviceNet */
-  CipUint device_net_consumed_connection_id; /**< Attribute 5: Only used on DeviceNet */
-  CipUsint device_net_initial_comm_characteristics; /**< Attribute 6: Only used on DeviceNet */
+  /* CipUint device_net_produced_connection_id;  **< Attribute 4: Only used on DeviceNet */
+  /* CipUint device_net_consumed_connection_id;  **< Attribute 5: Only used on DeviceNet */
+  /* CipUsint device_net_initial_comm_characteristics; **< Attribute 6: Only used on DeviceNet */
   CipUint produced_connection_size; /**< Attribute 7: See Vol.1 3-4.4.7 */
   CipUint consumed_connection_size; /**< Attribute 8: See Vol.1 3-4.4.8 */
   CipUint expected_packet_rate; /**< Attribute 9: Resolution in milliseconds*/
@@ -73,7 +32,87 @@ typedef struct {
   CipEpath consumed_connection_path; /**< Attribute 16: */
   CipUint production_inhibit_time; /**< Attribute 17: */
   CipUsint connection_timeout_multiplier; /**< Attribute 18: */
-  ConnectionBindingList connection_binding_list; /**< Attribute 19: */
-};
+  CipConnectionBindingList connection_binding_list; /**< Attribute 19: */
+} CipConnectionObject;
 
+CipConnectionObjectState ConnectionObjectGetState(const CipConnectionObject *restrict const connection_object) {
+	return (CipConnectionObjectState) connection_object->state;
+}
 
+CipConnectionObjectInstanceType ConnectionObjectGetInstanceType(const CipConnectionObject *restrict const connection_object) {
+	return (CipConnectionObjectInstanceType) connection_object->instance_type;
+}
+
+CipConnectionObjectTransportClassTriggerDirection GetTransportClassTriggerDirection(const CipConnectionObject *restrict const connection_object) {
+	const CipByte direction_mask = 0x80; /* Last bit of the byte is the direction flag */
+	CipByte direction = connection_object->transport_class_trigger & direction_mask;
+	return (CipConnectionObjectTransportClassTriggerDirection)direction >> 7; /* Move to match enum values 0 or 1 */
+}
+
+CipConnectionObjectTransportClassTriggerProductionTrigger GetTransportClassTriggerProductionTrigger(const CipConnectionObject *restrict const connection_object) {
+	const CipByte production_trigger_mask = 0x70; /* Bits 4-7 are representing the production trigger */
+	CipByte production_trigger = connection_object->transport_class_trigger & production_trigger_mask;
+	return (CipConnectionObjectTransportClassTriggerProductionTrigger) production_trigger >> 4;
+}
+
+CipConnectionObjectTransportClassTriggerTransportClass GetTransportClassTriggerTransportClass(const CipConnectionObject *restrict const connection_object) {
+	const CipByte transport_class_mask = 0x0F;
+	CipByte transport_class = connection_object->transport_class_trigger & transport_class_mask;
+	return (CipConnectionObjectTransportClassTriggerTransportClass) transport_class;
+}
+
+CipUint ConnectionObjectGetProducedConnectionSize(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->produced_connection_size;
+}
+
+CipUint ConnectionObjectGetConsumedConnectionSize(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->consumed_connection_size;
+}
+
+CipUint ConnectionObjectGetExpectedPacketRate(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->expected_packet_rate;
+}
+
+CipUdint ConnectionObjectGetCipProducedConnectionId(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->cip_produced_connection_id;
+}
+
+CipUdint ConnectionObjectGetCipConsumedConnectionId(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->cip_consumed_connection_id;
+}
+
+CipConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutActionValue(const CipConnectionObject *restrict const connection_object) {
+	return (CipConnectionObjectWatchdogTimeoutAction) connection_object->watchdog_timeout_action;
+}
+
+CipUint ConnectionObjectGetProducedConnectionPathLength(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->produced_connection_path_length;
+}
+
+CipEpath ConnectionObjectGetProducedConnectionPath(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->produced_connection_path;
+}
+
+CipUint ConnectionObjectGetConsumedConnectionPathLength(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->consumed_connection_path_length;
+}
+
+CipEpath ConnectionObjectGetConsumedConnectionPath(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->consumed_connection_path;
+}
+
+CipUint ConnectionObjectGetProductionInhibitTime(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->production_inhibit_time;
+}
+
+CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->connection_timeout_multiplier;
+}
+
+CipConnectionBindingList ConnectionObjectGetConnectionBindingList(const CipConnectionObject *restrict const connection_object) {
+	return connection_object->connection_binding_list;
+}
+
+EipStatus ConnectionObjectGetAttributeSingle() {
+
+}
