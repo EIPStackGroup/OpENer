@@ -151,7 +151,7 @@ void EncapsulationInit(void) {
 
 int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
                                  unsigned int length, int *remaining_bytes) {
-  EipStatus return_value = kEipStatusOk;
+  int return_value = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
@@ -221,7 +221,7 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
 int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
                                  EipUint8 *buffer, unsigned int buffer_length,
                                  int *number_of_remaining_bytes, int unicast) {
-  EipStatus status = kEipStatusOk;
+  int status = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
