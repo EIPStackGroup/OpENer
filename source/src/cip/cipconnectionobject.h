@@ -7,9 +7,9 @@
 #ifndef OPENER_SRC_CIP_CIPCONNECTIONOBJECT_H_
 #define OPENER_SRC_CIP_CIPCONNECTIONOBJECT_H_
 
-static const int kCipConnectionClassId = 0x05;
+static const int kConnectionObjectClassId = 0x05;
 
-typedef struct CipConnectionObject;
+typedef struct ConnectionObject;
 
 /** @brief Valid values for the state attribute of the Connection Object */
 typedef enum {
@@ -56,6 +56,6 @@ typedef enum {
   kCipConnectionObjectWatchdogTimeoutActionDeferredDelete = 3
 } CipConnectionObjectWatchdogTimeoutAction;
 
-CipConnectionObject *NewCipConnectionObject(CipConnectionObjectInstanceType type);
+ConnectionObject *NewCipConnectionObject(CipConnectionObjectInstanceType type);
 
 #endif /* OPENER_SRC_CIP_CIPCONNECTIONOBJECT_H_ */

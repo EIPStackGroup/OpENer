@@ -33,86 +33,102 @@ typedef struct {
   CipUint production_inhibit_time; /**< Attribute 17: */
   CipUsint connection_timeout_multiplier; /**< Attribute 18: */
   CipConnectionBindingList connection_binding_list; /**< Attribute 19: */
-} CipConnectionObject;
+} ConnectionObject;
 
-CipConnectionObjectState ConnectionObjectGetState(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectState ConnectionObjectGetState(const ConnectionObject *restrict const connection_object) {
 	return (CipConnectionObjectState) connection_object->state;
 }
 
-CipConnectionObjectInstanceType ConnectionObjectGetInstanceType(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectInstanceType ConnectionObjectGetInstanceType(const ConnectionObject *restrict const connection_object) {
 	return (CipConnectionObjectInstanceType) connection_object->instance_type;
 }
 
-CipConnectionObjectTransportClassTriggerDirection GetTransportClassTriggerDirection(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectTransportClassTriggerDirection GetTransportClassTriggerDirection(const ConnectionObject *restrict const connection_object) {
 	const CipByte direction_mask = 0x80; /* Last bit of the byte is the direction flag */
 	CipByte direction = connection_object->transport_class_trigger & direction_mask;
 	return (CipConnectionObjectTransportClassTriggerDirection)direction >> 7; /* Move to match enum values 0 or 1 */
 }
 
-CipConnectionObjectTransportClassTriggerProductionTrigger GetTransportClassTriggerProductionTrigger(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectTransportClassTriggerProductionTrigger GetTransportClassTriggerProductionTrigger(const ConnectionObject *restrict const connection_object) {
 	const CipByte production_trigger_mask = 0x70; /* Bits 4-7 are representing the production trigger */
 	CipByte production_trigger = connection_object->transport_class_trigger & production_trigger_mask;
 	return (CipConnectionObjectTransportClassTriggerProductionTrigger) production_trigger >> 4;
 }
 
-CipConnectionObjectTransportClassTriggerTransportClass GetTransportClassTriggerTransportClass(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectTransportClassTriggerTransportClass GetTransportClassTriggerTransportClass(const ConnectionObject *restrict const connection_object) {
 	const CipByte transport_class_mask = 0x0F;
 	CipByte transport_class = connection_object->transport_class_trigger & transport_class_mask;
 	return (CipConnectionObjectTransportClassTriggerTransportClass) transport_class;
 }
 
-CipUint ConnectionObjectGetProducedConnectionSize(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetProducedConnectionSize(const ConnectionObject *restrict const connection_object) {
 	return connection_object->produced_connection_size;
 }
 
-CipUint ConnectionObjectGetConsumedConnectionSize(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetConsumedConnectionSize(const ConnectionObject *restrict const connection_object) {
 	return connection_object->consumed_connection_size;
 }
 
-CipUint ConnectionObjectGetExpectedPacketRate(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetExpectedPacketRate(const ConnectionObject *restrict const connection_object) {
 	return connection_object->expected_packet_rate;
 }
 
-CipUdint ConnectionObjectGetCipProducedConnectionId(const CipConnectionObject *restrict const connection_object) {
+CipUdint ConnectionObjectGetCipProducedConnectionId(const ConnectionObject *restrict const connection_object) {
 	return connection_object->cip_produced_connection_id;
 }
 
-CipUdint ConnectionObjectGetCipConsumedConnectionId(const CipConnectionObject *restrict const connection_object) {
+CipUdint ConnectionObjectGetCipConsumedConnectionId(const ConnectionObject *restrict const connection_object) {
 	return connection_object->cip_consumed_connection_id;
 }
 
-CipConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutActionValue(const CipConnectionObject *restrict const connection_object) {
+CipConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutActionValue(const ConnectionObject *restrict const connection_object) {
 	return (CipConnectionObjectWatchdogTimeoutAction) connection_object->watchdog_timeout_action;
 }
 
-CipUint ConnectionObjectGetProducedConnectionPathLength(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetProducedConnectionPathLength(const ConnectionObject *restrict const connection_object) {
 	return connection_object->produced_connection_path_length;
 }
 
-CipEpath ConnectionObjectGetProducedConnectionPath(const CipConnectionObject *restrict const connection_object) {
+CipEpath ConnectionObjectGetProducedConnectionPath(const ConnectionObject *restrict const connection_object) {
 	return connection_object->produced_connection_path;
 }
 
-CipUint ConnectionObjectGetConsumedConnectionPathLength(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetConsumedConnectionPathLength(const ConnectionObject *restrict const connection_object) {
 	return connection_object->consumed_connection_path_length;
 }
 
-CipEpath ConnectionObjectGetConsumedConnectionPath(const CipConnectionObject *restrict const connection_object) {
+CipEpath ConnectionObjectGetConsumedConnectionPath(const ConnectionObject *restrict const connection_object) {
 	return connection_object->consumed_connection_path;
 }
 
-CipUint ConnectionObjectGetProductionInhibitTime(const CipConnectionObject *restrict const connection_object) {
+CipUint ConnectionObjectGetProductionInhibitTime(const ConnectionObject *restrict const connection_object) {
 	return connection_object->production_inhibit_time;
 }
 
-CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(const CipConnectionObject *restrict const connection_object) {
+CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(const ConnectionObject *restrict const connection_object) {
 	return connection_object->connection_timeout_multiplier;
 }
 
-CipConnectionBindingList ConnectionObjectGetConnectionBindingList(const CipConnectionObject *restrict const connection_object) {
+CipConnectionBindingList ConnectionObjectGetConnectionBindingList(const ConnectionObject *restrict const connection_object) {
 	return connection_object->connection_binding_list;
 }
 
-EipStatus ConnectionObjectGetAttributeSingle() {
+EipStatus ConnectionObjectGetAttributeSingle(CipInstance *const restrict instance, CipMessageRouterRequest *restrict const message_router_request,
+                                             CipMessageRouterResponse *restrict const message_router_response) {
 
+}
+
+CipClass *CreateCipConnectionClass(void) {
+  CipClass connection_object_class = CreateCipClass(kConnectionObjectClassId,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    16,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    "connection",
+                                                    1);
+
+  return connection_object_class;
 }
