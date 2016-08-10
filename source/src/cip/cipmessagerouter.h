@@ -38,7 +38,7 @@ void DeleteAllClasses(void);
  *  @return  EIP_ERROR on fault
  *           EIP_OK on success           
  */
-EipStatus NotifyMR(EipUint8 *data, int data_length);
+EipStatus NotifyMessageRouter(EipUint8 *data, int data_length);
 
 /*! Register a class at the message router.
  *  In order that the message router can deliver

@@ -224,6 +224,7 @@ typedef struct {
   CipUsint minor_revision; /**< Minor Revision */
 } CipKeyData;
 
+/** @brief Struct storing the CIP revision */
 typedef struct {
   EipUint8 major_revision;
   EipUint8 minor_revision;
@@ -247,7 +248,7 @@ typedef struct {
   CipUsint service;
   CipEpath request_path;
   EipInt16 data_length;
-  CipOctet *data;
+  const CipOctet *data;
 } CipMessageRouterRequest;
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */
@@ -266,7 +267,7 @@ typedef struct {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
    If SizeOfAdditionalStatus is 0. there is no
    Additional Status */
-  EipInt16 data_length; /* TODO: Check if this is correct */
+  EipInt16 data_length; /**< Supportative non-CIP variable, gives length of data segment */
   CipOctet *data; /**< Array of octet; Response data per object definition from
    request */
 } CipMessageRouterResponse;
@@ -294,8 +295,7 @@ typedef struct cip_instance {
 
 /** @brief Class is a subclass of Instance */
 typedef struct cip_class {
-  CipInstance m_stSuper;
-
+  CipInstance class_instance;
   /* the rest of these are specific to the Class class only. */
   EipUint32 class_id; /**< class ID */
   EipUint16 revision; /**< class revision*/
@@ -329,8 +329,8 @@ typedef struct cip_class {
  *should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+    CipInstance *const instance, CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {

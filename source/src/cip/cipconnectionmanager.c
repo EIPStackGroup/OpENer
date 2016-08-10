@@ -49,7 +49,7 @@ typedef struct {
 /** List holding information on the object classes and open/close function
  * pointers to which connections may be established.
  */
-ConnectionManagementHandling g_astConnMgmList[2
+ConnectionManagementHandling g_connection_management_list[2
     + OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS];
 
 /** List holding all currently active connections*/
@@ -125,7 +125,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                              CipMessageRouterRequest *message_router_request,
                              EipUint16 *extended_error);
 
-ConnectionManagementHandling* GetConnMgmEntry(EipUint32 class_id);
+ConnectionManagementHandling* GetConnectionManagementEntry(EipUint32 class_id);
 
 void InitializeConnectionManagerData(void);
 
@@ -135,8 +135,9 @@ void AddNullAddressItem(
 /** @brief gets the padded logical path TODO: enhance documentation
  * @param logical_path_segment TheLogical Path Segment
  *
+ * @return The padded logical path
  */
-unsigned int GetPaddedLogicalPath(unsigned char **logical_path_segment) {
+unsigned int GetPaddedLogicalPath(const EipUint8 **logical_path_segment) {
   unsigned int padded_logical_path = *(*logical_path_segment)++;
 
   if ((padded_logical_path & 3) == 0) {
@@ -251,18 +252,17 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data, int data_length,
   return kEipStatusOk;
 }
 
-/*   @brief Check if resources for new connection available, generate ForwardOpen Reply message.
- *      instance	pointer to CIP object instance
- *      message_router_request		pointer to Message Router Request.
- *      message_router_response		pointer to Message Router Response.
- * 		@return >0 .. success, 0 .. no reply to send back
+/** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *  @param instance	pointer to CIP object instance
+ *  @param message_router_request		pointer to Message Router Request.
+ *  @param message_router_response		pointer to Message Router Response.
+ * 	@return >0 .. success, 0 .. no reply to send back
  *      	-1 .. error
  */
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response) {
   EipUint16 connection_status = kConnectionManagerStatusCodeSuccess;
-  ConnectionManagementHandling *connection_management_entry;
 
   (void) instance; /*suppress compiler warning */
 
@@ -373,7 +373,7 @@ EipStatus ForwardOpen(CipInstance *instance,
   }
 
   /*parsing is now finished all data is available and check now establish the connection */
-  connection_management_entry = GetConnMgmEntry(
+  ConnectionManagementHandling *connection_management_entry = GetConnectionManagementEntry(
       g_dummy_connection_object.connection_path.class_id);
   if (NULL != connection_management_entry) {
     temp = connection_management_entry->open_connection_function(
@@ -524,7 +524,6 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 }
 
 EipStatus ManageConnections(MilliSeconds elapsed_time) {
-  EipStatus eip_status;
   ConnectionObject *connection_object;
 
   /*Inform application that it can execute */
@@ -567,7 +566,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
           if (connection_object->transmission_trigger_timer <= 0) { /* need to send package */
             OPENER_ASSERT(
                 NULL != connection_object->connection_send_data_function);
-            eip_status = connection_object->connection_send_data_function(
+            EipStatus eip_status = connection_object->connection_send_data_function(
                 connection_object);
             if (eip_status == kEipStatusError) {
               OPENER_TRACE_ERR(
@@ -700,7 +699,7 @@ EipStatus AssembleForwardOpenResponse(
 }
 
 /**
- * Adds a Null Address Item to the common data packet format data
+ * @brief Adds a Null Address Item to the common data packet format data
  * @param common_data_packet_format_data The CPF data packet where the Null Address Item shall be added
  */
 void AddNullAddressItem(
@@ -897,7 +896,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format, CipKeyData *key_data,
 EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                              CipMessageRouterRequest *message_router_request,
                              EipUint16 *extended_error) {
-  EipUint8 *message = message_router_request->data;
+  const EipUint8 *message = message_router_request->data;
   int remaining_path_size = connection_object->connection_path_size =
       *message++; /* length in words */
   CipClass *class = NULL;
@@ -1105,7 +1104,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
           case kDataSegmentTypeSimpleDataMessage:
             /* we have a simple data segment */
             g_config_data_length = message[1] * 2; /*data segments store length 16-bit word wise */
-            g_config_data_buffer = &(message[2]);
+            g_config_data_buffer = (EipUint8 *)message + 2;
             remaining_path_size -= (g_config_data_length + 2);
             message += (g_config_data_length + 2);
             break;
@@ -1141,128 +1140,124 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
   return kEipStatusOk;
 }
 
-void CloseConnection(ConnectionObject *pa_pstConnObj) {
-  pa_pstConnObj->state = kConnectionStateNonExistent;
-  if (0x03 != (pa_pstConnObj->transport_type_class_trigger & 0x03)) {
+void CloseConnection(ConnectionObject *restrict connection_object) {
+  connection_object->state = kConnectionStateNonExistent;
+  if (0x03 != (connection_object->transport_type_class_trigger & 0x03)) {
     /* only close the UDP connection for not class 3 connections */
     IApp_CloseSocket_udp(
-        pa_pstConnObj->socket[kUdpCommuncationDirectionConsuming]);
-    pa_pstConnObj->socket[kUdpCommuncationDirectionConsuming] =
+        connection_object->socket[kUdpCommuncationDirectionConsuming]);
+    connection_object->socket[kUdpCommuncationDirectionConsuming] =
         kEipInvalidSocket;
     IApp_CloseSocket_udp(
-        pa_pstConnObj->socket[kUdpCommuncationDirectionProducing]);
-    pa_pstConnObj->socket[kUdpCommuncationDirectionProducing] =
+        connection_object->socket[kUdpCommuncationDirectionProducing]);
+    connection_object->socket[kUdpCommuncationDirectionProducing] =
         kEipInvalidSocket;
   }
-  RemoveFromActiveConnections(pa_pstConnObj);
+  RemoveFromActiveConnections(connection_object);
 }
 
-void CopyConnectionData(ConnectionObject *pa_pstDst,
-                        ConnectionObject *pa_pstSrc) {
-  memcpy(pa_pstDst, pa_pstSrc, sizeof(ConnectionObject));
+void CopyConnectionData(ConnectionObject *restrict destination,
+                        const ConnectionObject *restrict const source) {
+  memcpy(destination, source, sizeof(ConnectionObject));
 }
 
-void AddNewActiveConnection(ConnectionObject *pa_pstConn) {
-  pa_pstConn->first_connection_object = NULL;
-  pa_pstConn->next_connection_object = g_active_connection_list;
+void AddNewActiveConnection(ConnectionObject *connection_object) {
+  connection_object->first_connection_object = NULL;
+  connection_object->next_connection_object = g_active_connection_list;
   if (NULL != g_active_connection_list) {
-    g_active_connection_list->first_connection_object = pa_pstConn;
+    g_active_connection_list->first_connection_object = connection_object;
   }
-  g_active_connection_list = pa_pstConn;
+  g_active_connection_list = connection_object;
   g_active_connection_list->state = kConnectionStateEstablished;
 }
 
-void RemoveFromActiveConnections(ConnectionObject *pa_pstConn) {
-  if (NULL != pa_pstConn->first_connection_object) {
-    pa_pstConn->first_connection_object->next_connection_object = pa_pstConn
+void RemoveFromActiveConnections(ConnectionObject *connection_object) {
+  if (NULL != connection_object->first_connection_object) {
+    connection_object->first_connection_object->next_connection_object = connection_object
         ->next_connection_object;
   } else {
-    g_active_connection_list = pa_pstConn->next_connection_object;
+    g_active_connection_list = connection_object->next_connection_object;
   }
-  if (NULL != pa_pstConn->next_connection_object) {
-    pa_pstConn->next_connection_object->first_connection_object = pa_pstConn
+  if (NULL != connection_object->next_connection_object) {
+    connection_object->next_connection_object->first_connection_object = connection_object
         ->first_connection_object;
   }
-  pa_pstConn->first_connection_object = NULL;
-  pa_pstConn->next_connection_object = NULL;
-  pa_pstConn->state = kConnectionStateNonExistent;
+  connection_object->first_connection_object = NULL;
+  connection_object->next_connection_object = NULL;
+  connection_object->state = kConnectionStateNonExistent;
 }
 
-EipBool8 IsConnectedOutputAssembly(EipUint32 pa_nInstanceNr) {
-  EipBool8 bRetVal = false;
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
+  EipBool8 is_connected = false;
 
-  ConnectionObject *pstRunner = g_active_connection_list;
+  ConnectionObject *iterator = g_active_connection_list;
 
-  while (NULL != pstRunner) {
-    if (pa_nInstanceNr == pstRunner->connection_path.connection_point[0]) {
-      bRetVal = true;
+  while (NULL != iterator) {
+    if (instance_number == iterator->connection_path.connection_point[0]) {
+      is_connected = true;
       break;
     }
-    pstRunner = pstRunner->next_connection_object;
+    iterator = iterator->next_connection_object;
   }
-  return bRetVal;
+  return is_connected;
 }
 
-EipStatus AddConnectableObject(EipUint32 pa_nClassId,
-                               OpenConnectionFunction pa_pfOpenFunc) {
-  int i;
-  EipStatus nRetVal;
-  nRetVal = kEipStatusError;
+EipStatus AddConnectableObject(EipUint32 class_id,
+                               OpenConnectionFunction open_connection_function) {
+  EipStatus status = kEipStatusError;
 
   /*parsing is now finished all data is available and check now establish the connection */
-  for (i = 0; i < g_kNumberOfConnectableObjects; ++i) {
-    if ((0 == g_astConnMgmList[i].class_id)
-        || (pa_nClassId == g_astConnMgmList[i].class_id)) {
-      g_astConnMgmList[i].class_id = pa_nClassId;
-      g_astConnMgmList[i].open_connection_function = pa_pfOpenFunc;
-      nRetVal = kEipStatusOk;
+  for (int i = 0; i < g_kNumberOfConnectableObjects; ++i) {
+    if ((0 == g_connection_management_list[i].class_id)
+        || (class_id == g_connection_management_list[i].class_id)) {
+      g_connection_management_list[i].class_id = class_id;
+      g_connection_management_list[i].open_connection_function = open_connection_function;
+      status = kEipStatusOk;
       break;
     }
   }
 
-  return nRetVal;
+  return status;
 }
 
 ConnectionManagementHandling *
-GetConnMgmEntry(EipUint32 class_id) {
-  int i;
-  ConnectionManagementHandling *pstRetVal;
+GetConnectionManagementEntry(EipUint32 class_id) {
 
-  pstRetVal = NULL;
+  ConnectionManagementHandling *connection_management_entry = NULL;
 
-  for (i = 0; i < g_kNumberOfConnectableObjects; ++i) {
-    if (class_id == g_astConnMgmList[i].class_id) {
-      pstRetVal = &(g_astConnMgmList[i]);
+  for (int i = 0; i < g_kNumberOfConnectableObjects; ++i) {
+    if (class_id == g_connection_management_list[i].class_id) {
+      connection_management_entry = &(g_connection_management_list[i]);
       break;
     }
   }
-  return pstRetVal;
+  return connection_management_entry;
 }
 
-EipStatus TriggerConnections(unsigned int pa_unOutputAssembly,
-                             unsigned int pa_unInputAssembly) {
-  EipStatus nRetVal = kEipStatusError;
+EipStatus TriggerConnections(unsigned int output_assembly,
+                             unsigned int input_assembly) {
+  EipStatus status = kEipStatusError;
 
   ConnectionObject *pstRunner = g_active_connection_list;
   while (NULL != pstRunner) {
-    if ((pa_unOutputAssembly == pstRunner->connection_path.connection_point[0])
-        && (pa_unInputAssembly == pstRunner->connection_path.connection_point[1])) {
+    if ((output_assembly == pstRunner->connection_path.connection_point[0])
+        && (input_assembly == pstRunner->connection_path.connection_point[1])) {
       if (kConnectionTriggerTypeApplicationTriggeredConnection
           == (pstRunner->transport_type_class_trigger
               & kConnectionTriggerTypeProductionTriggerMask)) {
         /* produce at the next allowed occurrence */
         pstRunner->transmission_trigger_timer = pstRunner
             ->production_inhibit_timer;
-        nRetVal = kEipStatusOk;
+        status = kEipStatusOk;
       }
       break;
     }
   }
-  return nRetVal;
+  return status;
 }
 
 void InitializeConnectionManagerData() {
-  memset(g_astConnMgmList, 0,
+  memset(g_connection_management_list, 0,
          g_kNumberOfConnectableObjects * sizeof(ConnectionManagementHandling));
   InitializeClass3ConnectionData();
   InitializeIoConnectionData();

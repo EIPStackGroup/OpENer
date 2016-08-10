@@ -226,6 +226,9 @@ static const int g_kCipConnectionManagerClassCode = 0x06;
 /* public functions */
 
 /** @brief Initialize the data of the connection manager object
+ *
+ *  @param A unique connection id
+ *  @return kEipStatusOk if successful, otherwise kEipStatusError
  */
 EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
 
@@ -240,15 +243,18 @@ ConnectionObject* GetConnectedObject(EipUint32 connection_id);
 /**  Get a connection object for a given output assembly.
  *
  *   @param output_assembly_id requested output assembly of requested
- *connection
+ *  connection
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
 ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
 
-/** Copy the given connection data from pa_pstSrc to pa_pstDst
+/** @brief Copy the given connection data from source to destination
+ *
+ * @param destination Destination of the copy operation
+ * @param osurce Source of the copy operation
  */
-void CopyConnectionData(ConnectionObject *destination, ConnectionObject *source);
+void CopyConnectionData(ConnectionObject *restrict destination, const ConnectionObject *restrict const source);
 
 /** @brief Close the given connection
  *
@@ -257,16 +263,16 @@ void CopyConnectionData(ConnectionObject *destination, ConnectionObject *source)
  * @param connection_object pointer to the connection object structure to be
  *closed
  */
-void CloseConnection(ConnectionObject *connection_object);
+void CloseConnection(ConnectionObject *restrict connection_object);
 
 /* TODO: Missing documentation */
-EipBool8 IsConnectedOutputAssembly(EipUint32 instance_number);
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.
  *
  * @param connection_object pointer to the connection object that should be set
- *up.
+ * up.
  */
 void GeneralConnectionConfiguration(ConnectionObject *connection_object);
 
@@ -281,7 +287,10 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object);
  */
 void AddNewActiveConnection(ConnectionObject *connection_object);
 
-/* TODO: Missing documentation */
+/** @brief Removes connection from the list of active connections
+ *
+ * @param connection_object Connection object to be removed from the active connection list
+ */
 void RemoveFromActiveConnections(ConnectionObject *connection_object);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

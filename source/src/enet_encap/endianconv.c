@@ -26,8 +26,8 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-EipUint8 GetSintFromMessage(EipUint8** buffer) {
-  unsigned char *buffer_address = (unsigned char *) *buffer;
+EipUint8 GetSintFromMessage(const EipUint8 **const  buffer) {
+  const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint16 data = buffer_address[0];
   *buffer += 1;
   return data;
@@ -40,8 +40,8 @@ EipUint8 GetSintFromMessage(EipUint8** buffer) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
-EipUint16 GetIntFromMessage(EipUint8** buffer) {
-  unsigned char *buffer_address = (unsigned char *) *buffer;
+EipUint16 GetIntFromMessage(const EipUint8 **const buffer) {
+  const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
   *buffer += 2;
   return data;
@@ -52,8 +52,8 @@ EipUint16 GetIntFromMessage(EipUint8** buffer) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UNÍT32 value
  */
-EipUint32 GetDintFromMessage(EipUint8** buffer) {
-  unsigned char *p = (unsigned char *) *buffer;
+EipUint32 GetDintFromMessage(const EipUint8 **const buffer) {
+  const unsigned char *p = (unsigned char *) *buffer;
   EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
   *buffer += 4;
   return data;
@@ -64,7 +64,7 @@ EipUint32 GetDintFromMessage(EipUint8** buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddSintToMessage(EipUint8 data, EipUint8 **buffer) {
+int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -77,7 +77,7 @@ int AddSintToMessage(EipUint8 data, EipUint8 **buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
+int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -91,7 +91,7 @@ int AddIntToMessage(EipUint16 data, EipUint8 **buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddDintToMessage(EipUint32 data, EipUint8** buffer) {
+int AddDintToMessage(const EipUint32 data, EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -110,8 +110,8 @@ int AddDintToMessage(EipUint32 data, EipUint8** buffer) {
  *   @param pa_buf pointer where data should be reed.
  *   @return EipUint64 value
  */
-EipUint64 GetLintFromMessage(EipUint8 **buffer) {
-  EipUint8 *buffer_address = *buffer;
+EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
+  const EipUint8 *buffer_address = *buffer;
   EipUint64 data = ((((EipUint64) buffer_address[0]) << 56)
       & 0xFF00000000000000LL)
       + ((((EipUint64) buffer_address[1]) << 48) & 0x00FF000000000000LL)
@@ -121,7 +121,7 @@ EipUint64 GetLintFromMessage(EipUint8 **buffer) {
       + ((((EipUint64) buffer_address[5]) << 16) & 0x0000000000FF0000)
       + ((((EipUint64) buffer_address[6]) << 8) & 0x000000000000FF00)
       + (((EipUint64) buffer_address[7]) & 0x00000000000000FF);
-  (*buffer) += 8;
+  *buffer += 8;
   return data;
 }
 
@@ -130,7 +130,7 @@ EipUint64 GetLintFromMessage(EipUint8 **buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddLintToMessage(EipUint64 data, EipUint8 **buffer) {
+int AddLintToMessage(const EipUint64 data, EipUint8 **const buffer) {
   EipUint8 *buffer_address = *buffer;
   buffer_address[0] = (EipUint8) (data >> 56) & 0xFF;
   buffer_address[1] = (EipUint8) (data >> 48) & 0xFF;

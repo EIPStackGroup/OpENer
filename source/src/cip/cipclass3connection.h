@@ -17,15 +17,19 @@
 /** @brief Check if Class3 connection is available and if yes setup all data.
  *
  * This function can be called after all data has been parsed from the forward open request
- * @param pa_pstConnObj pointer to the connection object structure holding the parsed data from the forward open request
- * @param pa_pnExtendedError the extended error code in case an error happened
+ * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
+ * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
- *    - EIP_OK ... on success
+ *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishClass3Connection(ConnectionObject *connection_object,
-                              EipUint16 *extended_error);
+EipStatus EstablishClass3Connection(ConnectionObject *restrict const connection_object,
+                              EipUint16 *const extended_error);
 
+/** @brief Initializes the explicit connections mechanism
+ *
+ *  Prepares the available explicit connection slots for use at the start of the OpENer
+ */
 void InitializeClass3ConnectionData(void);
 
 #endif /* OPENER_CIPCLASS3CONNECTION_H_ */

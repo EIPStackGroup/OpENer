@@ -76,8 +76,8 @@ typedef struct {
  * @param  reply_buffer reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int NotifyCommonPacketFormat(EncapsulationData *received_data,
-                             EipUint8 *reply_buffer);
+int NotifyCommonPacketFormat(EncapsulationData *const received_data,
+                             EipUint8 *const reply_buffer);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -101,7 +101,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  * 	       EIP_ERROR .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    EipUint8 *data, int data_length,
+    const EipUint8 *data, int data_length,
     CipCommonPacketFormatData *common_packet_format_data);
 
 /** @ingroup ENCAP

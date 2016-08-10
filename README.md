@@ -73,6 +73,7 @@ Directory structure:
 		- ports ... the platform specific code
 		- utils ... utility functions
 	- tests ... the test source code
+		- enet_encap ... tests for Ethernet encapsulation layer
 		- utils ... tests for utility functions
 
 Documentation:

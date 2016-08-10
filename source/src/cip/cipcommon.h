@@ -27,27 +27,27 @@ extern EipUint8 g_message_data_reply_buffer[];
  * @param message_router_request request message
  * @param message_router_response reply message
  * @return
- *     - EIP_OK_SEND    ... success
- *     - EIP_OK  ... no reply to send back
- *     - EIP_ERROR ... error
+ *     - kEipStatusOkSend ... success
+ *     - kEipStatusOk ... no reply to send back
+ *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(CipClass *class,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response);
+EipStatus NotifyClass(const CipClass *restrict const class,
+                      CipMessageRouterRequest *const message_router_request,
+                      CipMessageRouterResponse *const message_router_response);
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
- *  Check from classID which Object requests an attribute, search if object has
- *  the appropriate attribute implemented.
+ * Check from classID which Object requests an attribute, search if object has
+ * the appropriate attribute implemented.
  * @param instance pointer to instance.
  * @param message_router_request pointer to request.
  * @param message_router_response pointer to response.
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */
-EipStatus GetAttributeSingle(CipInstance *instance,
-                             CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response);
+EipStatus GetAttributeSingle(CipInstance *restrict const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *
@@ -67,6 +67,6 @@ EipStatus GetAttributeAll(CipInstance *instance,
  *  @param message CIP Message to decode
  *  @return Number of decoded bytes
  */
-int DecodePaddedEPath(CipEpath *epath, EipUint8 **data);
+int DecodePaddedEPath(CipEpath *epath, const EipUint8 **data);
 
 #endif /* OPENER_CIPCOMMON_H_ */

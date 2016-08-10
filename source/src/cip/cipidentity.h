@@ -46,7 +46,7 @@ typedef enum {
 /* public functions */
 /** @brief CIP Identity object constructor
  *
- * @returns EipError if the class could not be created, otherwise EipOk
+ * @returns kEipStatusError if the class could not be created, otherwise kEipStatusOk
  */
 EipStatus CipIdentityInit(void);
 
