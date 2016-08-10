@@ -151,7 +151,8 @@ void EncapsulationInit(void) {
 
 int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
                                  unsigned int length, int *remaining_bytes) {
-  int return_value = kEipStatusOk;
+  int return_value = 0;
+  EipStatus status = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
@@ -165,12 +166,12 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
     {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
-      return_value = kEipStatusOkSend;
+	  status = kEipStatusOkSend;
       /* most of these functions need a reply to be send */
       switch (encapsulation_data.command_code) {
         case (kEncapsulationCommandNoOperation):
           /* NOP needs no reply and does nothing */
-          return_value = kEipStatusOk;
+          status = kEipStatusOk;
           break;
 
         case (kEncapsulationCommandListServices):
@@ -190,17 +191,17 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
           break;
 
         case (kEncapsulationCommandUnregisterSession):
-          return_value = HandleReceivedUnregisterSessionCommand(
+          status = HandleReceivedUnregisterSessionCommand(
               &encapsulation_data);
           break;
 
         case (kEncapsulationCommandSendRequestReplyData):
-          return_value = HandleReceivedSendRequestResponseDataCommand(
+          status = HandleReceivedSendRequestResponseDataCommand(
               &encapsulation_data);
           break;
 
         case (kEncapsulationCommandSendUnitData):
-          return_value = HandleReceivedSendUnitDataCommand(&encapsulation_data);
+          status = HandleReceivedSendUnitDataCommand(&encapsulation_data);
           break;
 
         default:
@@ -208,9 +209,13 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
           encapsulation_data.data_length = 0;
           break;
       }
-      /* if nRetVal is greater than 0 data has to be sent */
-      if (kEipStatusOk < return_value) {
+      
+      if (kEipStatusOk < status) {
+        /* if status is greater than 0 data has to be sent */
         return_value = EncapsulateData(&encapsulation_data);
+      } else if (kEipStatusError == status) {
+        /* Report error state with negative return value */
+        return_value = -1;
       }
     }
   }
@@ -221,7 +226,8 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
 int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
                                  EipUint8 *buffer, unsigned int buffer_length,
                                  int *number_of_remaining_bytes, int unicast) {
-  int status = kEipStatusOk;
+  int return_value = 0;
+  EipStatus status = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
@@ -268,13 +274,17 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
           encapsulation_data.data_length = 0;
           break;
       }
-      /* if nRetVal is greater than 0 data has to be sent */
-      if (0 < status) {
-        status = EncapsulateData(&encapsulation_data);
+      
+      if (kEipStatusOk < status) {
+        /* if status is greater than 0 data has to be sent */
+        return_value = EncapsulateData(&encapsulation_data);
+      } else if (kEipStatusError == status) {
+        /* Report error state with negative return value */
+        return_value = -1;  
       }
     }
   }
-  return status;
+  return return_value;
 }
 
 int EncapsulateData(const EncapsulationData *const send_data) {
