@@ -632,8 +632,8 @@ void CloseSession(int socket) {
 void EncapsulationShutDown(void) {
   for (int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (kEipInvalidSocket != g_registered_sessions[i]) {
-      IApp_CloseSocket_tcp(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
+      IApp_CloseSocket_tcp(g_registered_sessions[i]);
     }
   }
 }
