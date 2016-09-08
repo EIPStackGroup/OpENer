@@ -12,7 +12,6 @@
 #include "opener_api.h"
 #include "assert.h"
 
-
 /** @brief External globals needed from connectionmanager.c */
 extern ConnectionObject *g_active_connection_list;
 
@@ -47,12 +46,12 @@ InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /
 ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */
 
 ConnectionObject *GetExclusiveOwnerConnection(
-    const ConnectionObject *restrict connection_object, EipUint16 *const extended_error);
+    const ConnectionObject *RESTRICT connection_object, EipUint16 *const extended_error);
 
-ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
+ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const RESTRICT connection_object,
                                          EipUint16 *const extended_error);
 
-ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
+ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const RESTRICT connection_object,
                                           EipUint16 *const extended_error);
 
 void ConfigureExclusiveOwnerConnectionPoint(const unsigned int connection_number,
@@ -97,7 +96,7 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
 }
 
 ConnectionObject *GetIoConnectionForConnectionData(
-    ConnectionObject *const restrict connection_object, EipUint16 *const extended_error) {
+    ConnectionObject *const RESTRICT connection_object, EipUint16 *const extended_error) {
   ConnectionObject *io_connection = NULL;
   *extended_error = 0;
 
@@ -137,7 +136,7 @@ ConnectionObject *GetIoConnectionForConnectionData(
 }
 
 ConnectionObject *GetExclusiveOwnerConnection(
-    const ConnectionObject *const restrict connection_object, EipUint16 *const extended_error) {
+    const ConnectionObject *const RESTRICT connection_object, EipUint16 *const extended_error) {
   ConnectionObject *exclusive_owner_connection = NULL;
 
   for (int i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; i++) {
@@ -163,7 +162,7 @@ ConnectionObject *GetExclusiveOwnerConnection(
   return exclusive_owner_connection;
 }
 
-ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
+ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const RESTRICT connection_object,
                                          EipUint16 *const extended_error) {
   ConnectionObject *input_only_connection = NULL; //TODO: This variable has no use
 
@@ -197,7 +196,7 @@ ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict 
   return input_only_connection;
 }
 
-ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
+ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const RESTRICT connection_object,
                                           EipUint16 *const extended_error) {
   ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 

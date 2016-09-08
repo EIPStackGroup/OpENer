@@ -16,7 +16,7 @@ ConnectionObject *GetFreeExplicitConnection(void);
 ConnectionObject g_explicit_connections[OPENER_CIP_NUM_EXPLICIT_CONNS];
 
 /**** Implementation ****/
-EipStatus EstablishClass3Connection(ConnectionObject *restrict const connection_object,
+EipStatus EstablishClass3Connection(ConnectionObject *RESTRICT const connection_object,
                               EipUint16 *const extended_error) {
   EipStatus eip_status = kEipStatusOk;
 

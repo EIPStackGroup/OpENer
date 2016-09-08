@@ -44,13 +44,13 @@ void ConfigureMacAddress(const EipUint8 *const mac_address);
  * @brief Configure the domain name of the device
  * @param domain_name the domain name to be used
  */
-void ConfigureDomainName(const char *const restrict domain_name);
+void ConfigureDomainName(const char *const RESTRICT domain_name);
 
 /** @ingroup CIP_API
  * @brief Configure the host name of the device
  * @param host_name the host name to be used
  */
-void ConfigureHostName(const char *const restrict host_name);
+void ConfigureHostName(const char *const RESTRICT host_name);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -104,7 +104,7 @@ CipClass *GetCipClass(const EipUint32 class_id);
  * @return pointer to CIP Instance
  *          0 if instance is not in the object
  */
-CipInstance *GetCipInstance(const CipClass *restrict const cip_object, const EipUint32 instance_number);
+CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_object, const EipUint32 instance_number);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance's attribute
@@ -171,7 +171,7 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
  * @return pointer to the first of the new instances
  *              0 on error
  */
-CipInstance *AddCipInstances(CipClass *restrict const cip_object_to_add_instances,
+CipInstance *AddCipInstances(CipClass *RESTRICT const cip_object_to_add_instances,
                              const int number_of_instances);
 
 /** @ingroup CIP_API
@@ -184,7 +184,7 @@ CipInstance *AddCipInstances(CipClass *restrict const cip_object_to_add_instance
  *         already exists the existing is returned an no new instance is created
  *
  */
-CipInstance *AddCIPInstance(CipClass *restrict const cip_class_to_add_instance,
+CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
                             const EipUint32 instance_id);
 
 /** @ingroup CIP_API
@@ -278,7 +278,7 @@ typedef struct connection_object ConnectionObject;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-    ConnectionObject *restrict const connection_object, EipUint16 *const extended_error_code);
+    ConnectionObject *RESTRICT const connection_object, EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections

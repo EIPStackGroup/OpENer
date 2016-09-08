@@ -82,7 +82,7 @@ EipStatus ConfigureNetworkInterface(const char *const ip_address,
   return kEipStatusOk;
 }
 
-void ConfigureDomainName(const char *const restrict domain_name) {
+void ConfigureDomainName(const char *RESTRICT const domain_name) {
   if (NULL != interface_configuration_.domain_name.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -99,7 +99,7 @@ void ConfigureDomainName(const char *const restrict domain_name) {
   }
 }
 
-void ConfigureHostName(const char *const restrict hostname) {
+void ConfigureHostName(const char *RESTRICT const hostname) {
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -200,8 +200,8 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-    CipInstance *const restrict instance, CipMessageRouterRequest *restrict const message_router_request,
-    CipMessageRouterResponse *restrict const message_router_response) {
+    CipInstance *RESTRICT const instance, CipMessageRouterRequest *RESTRICT const message_router_request,
+    CipMessageRouterResponse *RESTRICT const message_router_response) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;

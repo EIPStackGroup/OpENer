@@ -52,7 +52,7 @@
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_object,
+EipStatus EstablishIoConnction(ConnectionObject *RESTRICT const connection_object,
                          EipUint16 *const extended_error);
 
 /** @brief Take the data given in the connection object structure and open the necessary communication channels

@@ -24,7 +24,7 @@ void InitializeIoConnectionData(void);
  *        - on error: NULL
  */
 ConnectionObject *GetIoConnectionForConnectionData(
-    ConnectionObject *const restrict connection_object, EipUint16 *const extended_error);
+    ConnectionObject *const RESTRICT connection_object, EipUint16 *const extended_error);
 
 /** @brief Check if there exists already an exclusive owner or listen only connection
  *         which produces the input assembly.

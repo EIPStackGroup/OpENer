@@ -64,7 +64,7 @@ void ShutdownCipStack(void) {
   DeleteAllClasses();
 }
 
-EipStatus NotifyClass(const CipClass *restrict const cip_class,
+EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response) {
 
@@ -111,7 +111,7 @@ EipStatus NotifyClass(const CipClass *restrict const cip_class,
   return kEipStatusOkSend;
 }
 
-CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int number_of_instances) {
+CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class, const int number_of_instances) {
   CipInstance **next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
@@ -155,7 +155,7 @@ CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int numbe
   return first_instance;
 }
 
-CipInstance *AddCIPInstance(CipClass *restrict const class, const EipUint32 instance_id) {
+CipInstance *AddCIPInstance(CipClass *RESTRICT const class, const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
   if (0 == instance) { /*we have no instance with given id*/
@@ -347,7 +347,7 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
 }
 
 /* TODO this needs to check for buffer overflow*/
-EipStatus GetAttributeSingle(CipInstance *restrict const instance,
+EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response) {
   /* Mask for filtering get-ability */
