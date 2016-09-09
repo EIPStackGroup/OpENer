@@ -1,3 +1,5 @@
+[![Stories in Ready](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=ready&title=Ready)](http://waffle.io/EIPStackGroup/OpENer)
+
 OpENer Version 1.2.0
 ====================
 
