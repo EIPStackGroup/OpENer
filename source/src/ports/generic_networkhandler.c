@@ -14,7 +14,7 @@
 #include <assert.h>
 
 #include "generic_networkhandler.h"
-
+#include "ciptcpipinterface.h"
 #include "typedefs.h"
 #include "trace.h"
 #include "opener_error.h"
@@ -48,6 +48,8 @@ void CheckAndHandleConsumingUdpSockets(void);
  */
 EipStatus HandleDataOnTcpSocket(int socket);
 
+void CheckEncapsulationInactivity(int socket_handle);
+
 /*************************************************
  * Function implementations from now on
  *************************************************/
@@ -61,6 +63,7 @@ EipStatus NetworkHandlerInitialize(void) {
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
   FD_ZERO(&read_socket);
+
 
   /* create a new TCP socket */
   if ((g_network_status.tcp_listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP))
@@ -81,7 +84,6 @@ EipStatus NetworkHandlerInitialize(void) {
         "error setting socket option SO_REUSEADDR on tcp_listener\n");
     return kEipStatusError;
   }
-
   /* create a new UDP socket */
   if ((g_network_status.udp_global_broadcast_listener = socket(AF_INET,
                                                                SOCK_DGRAM,
@@ -197,6 +199,13 @@ EipStatus NetworkHandlerInitialize(void) {
   g_last_time = GetMilliSeconds(); /* initialize time keeping */
   g_network_status.elapsed_time = 0;
 
+  g_timestamps = calloc(MAX_NO_OF_TCP_SOCKETS,sizeof(MilliSeconds));
+
+  for(int i=0;i<highest_socket_handle;i++)
+  {
+    g_timestamps[i]=g_actual_time;
+  }
+
   return kEipStatusOk;
 }
 
@@ -237,6 +246,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 	  free(error_message);
       return;
     }
+    g_timestamps[new_socket]=g_actual_time;
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -246,6 +256,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 
     OPENER_TRACE_STATE("networkhandler: opened new TCP connection on fd %d\n",
                        new_socket);
+
   }
 }
 
@@ -281,7 +292,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckAndHandleUdpUnicastSocket();
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
-
+    CheckEncapsulationInactivity(socket);
     for (int socket = 0; socket <= highest_socket_handle; socket++) {
       if (true == CheckSocketSet(socket)) {
         /* if it is still checked it is a TCP receive */
@@ -290,6 +301,8 @@ EipStatus NetworkHandlerProcessOnce(void) {
           CloseSocket(socket);
           CloseSession(socket); /* clean up session and close the socket */
         }
+
+
       }
     }
   }
@@ -457,7 +470,6 @@ EipStatus SendUdpData(struct sockaddr_in *address, int socket, EipUint8 *data,
 EipStatus HandleDataOnTcpSocket(int socket) {
   int remaining_bytes = 0;
   long data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
-
   /* We will handle just one EIP packet here the rest is done by the select
    * method which will inform us if more data is available in the socket
    because of the current implementation of the main loop this may not be
@@ -465,9 +477,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
    fit*/
 
   /*Check how many data is here -- read the first four bytes from the connection */
+
   long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
+  g_timestamps[socket]=g_actual_time;
   if (number_of_read_bytes == 0) {
 	int error_code = GetSocketErrorNumber();
 	char* error_message = GetErrorMessage(error_code);
@@ -482,7 +496,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 	free(error_message);
     return kEipStatusError;
   }
-
+  //g_timestamps[socket]=g_actual_time;
   EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
   size_t data_size = GetIntFromMessage(&read_buffer)
       + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
@@ -495,7 +509,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     do {
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
-
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
       {
 		int error_code = GetSocketErrorNumber();
@@ -511,6 +524,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 		free(error_message);
         return kEipStatusError;
       }
+      //g_timestamps[socket]=g_actual_time;
       data_size -= number_of_read_bytes;
       if ((data_size < PC_OPENER_ETHERNET_BUFFER_SIZE) && (data_size != 0)) {
         data_sent = data_size;
@@ -540,18 +554,19 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   }
 
   if ((unsigned) number_of_read_bytes == data_size) {
+    //g_timestamps[socket]=g_actual_time;
     /*we got the right amount of data */
     data_size += 4;
     /*TODO handle partial packets*/
     OPENER_TRACE_INFO("Data received on tcp:\n");
 
     g_current_active_tcp_socket = socket;
-
     number_of_read_bytes = HandleReceivedExplictTcpData(
         socket, g_ethernet_communication_buffer, data_size, &remaining_bytes);
 
-    g_current_active_tcp_socket = -1;
 
+    g_current_active_tcp_socket = -1;
+    //g_timestamps[socket]=g_actual_time;
     if (remaining_bytes != 0) {
       OPENER_TRACE_WARN(
           "Warning: received packet was to long: %d Bytes left!\n",
@@ -566,7 +581,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       if (data_sent != number_of_read_bytes) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
       }
+
     }
+
 
     return kEipStatusOk;
   } else {
@@ -577,6 +594,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
      */
     /*TODO handle fragmented packets */
   }
+
   return kEipStatusError;
 }
 
@@ -738,4 +756,28 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
     return socket3;
 
   return socket4;
+}
+
+void CheckEncapsulationInactivity(int socket_handle) {
+  //MilliSeconds encapsulation_timeout =
+      //(MilliSeconds) g_encapsulation_inactivity_timeout;
+
+
+  if (g_encapsulation_inactivity_timeout > 0) {
+      MilliSeconds diffms = g_actual_time - g_timestamps[socket_handle];
+      /* unsigned long diff = (unsigned long)(g_actual_time - g_timestamps[socket_handle]);*/
+      if (diffms < 0) {
+        diffms = 0;
+      }
+
+      EipUint16 diff = (EipUint16) diffms;
+      OPENER_TRACE_INFO("diffms: %lu %d\n", diffms,
+                                socket_handle);
+      if (diff >= g_encapsulation_inactivity_timeout) {
+        OPENER_TRACE_INFO("closing--> diff: %d socket: %d\n", diff,
+                          socket_handle);
+        CloseSocket(socket_handle);
+        CloseSession(socket_handle);
+    }
+  }
 }

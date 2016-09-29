@@ -56,9 +56,9 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
 
 /** @brief #13 Number of seconds of inactivity before TCP connection is closed
  *
- * Currently we implemented with the default value of 120.
+ * Currently we implemented with the default value of 120 (0x78).
  */
-EipUint16 g_encapsulation_inactivity_timeout = 120;
+EipUint16 g_encapsulation_inactivity_timeout = 0x78;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -132,15 +132,17 @@ EipStatus SetAttributeSingleTcp(
   EipUint16 attribute_number = message_router_request->request_path
       .attribute_number;
 
+  EipByte *message = message_router_response->data;
+
   if (0 != attribute) {
     switch (attribute_number) {
       case 3:
         if ((*(message_router_request->data) >= 0x03)
-             && (*(message_router_request->data) <= 0x0F)) {
+            && (*(message_router_request->data) <= 0x0F)) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         } else {
 
-          EipUint16 *router_request_data;
+          EipUint8 *router_request_data;
 
           router_request_data = message_router_request->data;
 
@@ -148,7 +150,8 @@ EipStatus SetAttributeSingleTcp(
 
           if (attribute->data != NULL) {
             CipDword *data = (CipDword*) attribute->data;
-            memcpy(data, router_request_data, 4);
+            memcpy(data, router_request_data,
+                   EncodeData(attribute->type, attribute->data, &message));
 
           } else {
             message_router_response->general_status = kCipErrorNotEnoughData;
@@ -157,9 +160,10 @@ EipStatus SetAttributeSingleTcp(
         break;
 
       case 13:
+
         if ((*(message_router_request->data) > 3600)
             || (*(message_router_request->data) < 0)) {
-          message_router_response->general_status = kCipErrorInvalidParameterValue;
+          message_router_response->general_status = kCipErrorInvalidParameter;
         } else {
 
           EipUint8 *router_request_data;
@@ -171,10 +175,10 @@ EipStatus SetAttributeSingleTcp(
           if (attribute->data != NULL) {
 
             CipUint *data = (CipUint*) attribute->data;
-            memcpy(data, router_request_data, 2);
+            memcpy(data, router_request_data,
+                   EncodeData(attribute->type, attribute->data, &message));
             message_router_response->general_status = kCipErrorSuccess;
           } else {
-            /* the attribute was zero we are a heartbeat assembly */
             message_router_response->general_status = kCipErrorNotEnoughData;
           }
         }
@@ -188,7 +192,6 @@ EipStatus SetAttributeSingleTcp(
     /* we don't have this attribute */
     message_router_response->general_status = kCipErrorAttributeNotSupported;
   }
-
 
   message_router_response->size_of_additional_status = 0;
   message_router_response->data_length = 0;
@@ -230,7 +233,8 @@ EipStatus CipTcpIpInterfaceInit() {
   InsertAttribute(instance, 9, kCipAny, (void *) &g_multicast_configuration,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 13, kCipUint,
-                  (void *) &g_encapsulation_inactivity_timeout, kSetable|kGetableSingle);
+                  (void *) &g_encapsulation_inactivity_timeout,
+                  kSetable | kGetableSingle);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,
