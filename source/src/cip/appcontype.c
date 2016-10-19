@@ -11,6 +11,7 @@
 #include "cipconnectionmanager.h"
 #include "opener_api.h"
 #include "assert.h"
+#include "trace.h"
 
 
 /** @brief External globals needed from connectionmanager.c */
@@ -46,6 +47,12 @@ InputOnlyConnection g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /
 
 ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */
 
+/** @brief Takes an ConnectionObject and searches and returns an Exclusive Owner Connection based on the ConnectionObject,
+ * if there is non it returns NULL
+ *
+ * @param connection_object Connection Object which will be searched for in the Exclusive Owner Connections
+ * @return The corresponding Exclusive Owner Connection or NULL if there is non
+ */
 ConnectionObject *GetExclusiveOwnerConnection(
     const ConnectionObject *restrict connection_object, EipUint16 *const extended_error);
 
