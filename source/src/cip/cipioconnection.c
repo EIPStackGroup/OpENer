@@ -201,7 +201,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     CipAttributeStruct* attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
     int is_heartbeat = (((CipByteArray*) attribute->data)->length == 0);
-    if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
+    if (kCipConnectionObjectTransportClass1 == GetConnectionTransportClass(io_connection_object)) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
