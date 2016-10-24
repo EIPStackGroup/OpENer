@@ -51,14 +51,29 @@ ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]
  * if there is non it returns NULL
  *
  * @param connection_object Connection Object which will be searched for in the Exclusive Owner Connections
+ * @param extended_error Pointer to the extended error variable, will be written if an error occurs
  * @return The corresponding Exclusive Owner Connection or NULL if there is non
  */
 ConnectionObject *GetExclusiveOwnerConnection(
     const ConnectionObject *restrict connection_object, EipUint16 *const extended_error);
 
+/** @brief Takes an ConnectionObject and searches and returns an Input Only Connection based on the ConnectionObject,
+ * if there is non it returns NULL
+ *
+ * @param connection_object Connection Object which will be searched for in the Input Only Connections
+ * @param extended_error Pointer to the extended error variable, will be written if an error occurs
+ * @return The corresponding Exclusive Owner Connection or NULL if there is non
+ */
 ConnectionObject *GetInputOnlyConnection(const ConnectionObject *const restrict connection_object,
                                          EipUint16 *const extended_error);
 
+/** @brief Takes an ConnectionObject and searches and returns an Listen Only Connection based on the ConnectionObject,
+ * if there is non it returns NULL
+ *
+ * @param connection_object Connection Object which will be searched for in the Listen Only Connections
+ * @param extended_error Pointer to the extended error variable, will be written if an error occurs
+ * @return The corresponding Exclusive Owner Connection or NULL if there is non
+ */
 ConnectionObject *GetListenOnlyConnection(const ConnectionObject *const restrict connection_object,
                                           EipUint16 *const extended_error);
 
@@ -105,10 +120,10 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
 
 ConnectionObject *GetIoConnectionForConnectionData(
     ConnectionObject *const restrict connection_object, EipUint16 *const extended_error) {
-  ConnectionObject *io_connection = NULL;
+
   *extended_error = 0;
 
-  io_connection = GetExclusiveOwnerConnection(connection_object,
+  ConnectionObject *io_connection = GetExclusiveOwnerConnection(connection_object,
                                               extended_error);
   if (NULL == io_connection) {
     if (0 == *extended_error) {

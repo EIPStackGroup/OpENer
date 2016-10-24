@@ -45,6 +45,41 @@ typedef struct {
   OpenConnectionFunction open_connection_function;
 } ConnectionManagementHandling;
 
+/* Connection Object functions */
+ProductionTrigger GetProductionTrigger(const ConnectionObject const* connection_object) {
+  const unsigned int ProductionTriggerMask = 0x70;
+
+  switch(connection_object->transport_type_class_trigger & ProductionTriggerMask) {
+    case 0x0: return kProductionTriggerCyclic;
+    case 0x10: return kProductionTriggerChangeOfState;
+    case 0x20: return kProductionTriggerApplicationObjectTriggered;
+    default: return kProductionTriggerInvalid;
+  }
+}
+
+void SetProductionTrigger(const enum ProductionTrigger production_trigger, ConnectionObject *connection_object) {
+  switch(production_trigger) {
+      case kProductionTriggerCyclic: connection_object->transport_type_class_trigger = 0x0; break;
+      case kProductionTriggerChangeOfState: connection_object->transport_type_class_trigger = 0x10; break;
+      case kProductionTriggerApplicationObjectTriggered: connection_object->transport_type_class_trigger = 0x20; break;
+      default: connection_object->transport_type_class_trigger = 0x30; break; /**< Invalid value */
+    }
+}
+
+CipUint GetProductionInhibitTime(const ConnectionObject const* connection_object) {
+  return connection_object->production_inhibit_time;
+}
+
+void SetProductionInhibitTime(const EipUint16 production_inhibit_time, ConnectionObject *const connection_object) {
+  connection_object->production_inhibit_time = production_inhibit_time;
+}
+
+CipUdint GetTargetToOriginatorRequestedPackedInterval(const ConnectionObject const* connection_object){
+  return connection_object->t_to_o_requested_packet_interval;
+}
+
+/* Connection Object functions end */
+
 /* global variables private */
 /** List holding information on the object classes and open/close function
  * pointers to which connections may be established.
@@ -527,11 +562,11 @@ EipStatus ForwardOpen(CipInstance *instance,
   /* Check if request is a Null request or a Non-Null request */
   if (kForwardOpenConnectionTypeNull == o_to_t_connection_type
       && kForwardOpenConnectionTypeNull == t_to_o_connection_type) {
-    OPENER_TRACE_INFO("We have a Null request\n");
     is_null_request = 1;
+    OPENER_TRACE_INFO("We have a Null request\n");
   } else {
-    OPENER_TRACE_INFO("We have a Non-Null request\n");
     is_null_request = 0;
+    OPENER_TRACE_INFO("We have a Non-Null request\n");
   }
 
   /* Check if we have a matching or non matching request */
@@ -594,7 +629,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
   connection_object->production_inhibit_timer = connection_object
       ->production_inhibit_time = 0;
 
-  /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * EpectetedPacketRate, 10s) */
+  /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
       ((((connection_object->o_to_t_requested_packet_interval) / 1000)
           << (2 + connection_object->connection_timeout_multiplier)) > 10000) ?

@@ -115,6 +115,23 @@ typedef enum {
   kConnectionTriggerTypeApplicationTriggeredConnection = 0x20
 } ConnectionTriggerType;
 
+typedef enum ProductionTrigger {
+  kProductionTriggerInvalid = -1,
+  kProductionTriggerCyclic = 0,
+  kProductionTriggerChangeOfState = 1,
+  kProductionTriggerApplicationObjectTriggered = 2
+} ProductionTrigger;
+
+ProductionTrigger GetProductionTrigger(const ConnectionObject const* connection_object);
+
+void SetProductionTrigger(const ProductionTrigger production_trigger, ConnectionObject *connection_object);
+
+CipUint GetProductionInhibitTime(const ConnectionObject const* connection_object);
+
+void SetProductionInhibitTime(const EipUint16 production_inhibit_time, ConnectionObject *const connection_object);
+
+CipUdint GetTargetToOriginatorRequestedPackedInterval(const ConnectionObject const* connection_object);
+
 /** @brief macros for comparing sequence numbers according to CIP spec vol
  * 2 3-4.2 for int type variables
  * @define SEQ_LEQ32(a, b) Checks if sequence number a is less or equal than b

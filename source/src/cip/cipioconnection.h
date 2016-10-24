@@ -49,7 +49,7 @@
  * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
  * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
- *    - EIP_OK ... on success
+ *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
 EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_object,
@@ -75,5 +75,18 @@ void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
 
 extern EipUint8 *g_config_data_buffer;
 extern unsigned int g_config_data_length;
+
+/** @brief Establishes a new IO Type 1 Connection
+ *
+ * This function needs the guarantee that no Null request will be passed to it.
+ * It will generate a new IO connection based on the data parsed in the Forward Open service
+ *
+ * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
+ * @param extended_error the extended error code in case an error happened
+ * @return general status on the establishment
+ *    - kEipStatusOk ... on success
+ *    - On an error the general status code to be put into the response
+ */
+EipStatus EstablishIoConnction(ConnectionObject*const restrict connection_object, EipUint16*const extended_error);
 
 #endif /* OPENER_CIPIOCONNECTION_H_ */

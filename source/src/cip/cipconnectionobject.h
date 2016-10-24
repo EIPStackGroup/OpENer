@@ -40,14 +40,15 @@ typedef enum {
 } CipConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {
-  kCipConnectionObjectTransportClassTriggerTransportClass0 = 0,
-  kCipConnectionObjectTransportClassTriggerTransportClass1 = 1,
-  kCipConnectionObjectTransportClassTriggerTransportClass2 = 2,
-  kCipConnectionObjectTransportClassTriggerTransportClass3 = 3,
-  kCipConnectionObjectTransportClassTriggerTransportClass4 = 4,
-  kCipConnectionObjectTransportClassTriggerTransportClass5 = 5,
-  kCipConnectionObjectTransportClassTriggerTransportClass6 = 6
-} CipConnectionObjectTransportClassTriggerTransportClass;
+  kCipConnectionObjectTransportClassInvalid = -1,
+  kCipConnectionObjectTransportClass0 = 0,
+  kCipConnectionObjectTransportClass1 = 1,
+  kCipConnectionObjectTransportClass2 = 2,
+  kCipConnectionObjectTransportClass3 = 3,
+  kCipConnectionObjectTransportClass4 = 4,
+  kCipConnectionObjectTransportClass5 = 5,
+  kCipConnectionObjectTransportClass6 = 6
+} CipConnectionObjectTransportClass;
 
 typedef enum {
   kCipConnectionObjectWatchdogTimeoutActionTransitionToTimedOut = 0,

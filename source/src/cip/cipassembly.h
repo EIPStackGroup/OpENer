@@ -40,8 +40,8 @@ void ShutdownAssemblies(void);
  *  @param data pointer to the data received
  *  @param data_length number of bytes received
  *  @return 
- *     - EIP_OK the received data was okay
- *     - EIP_ERROR the received data was wrong
+ *     - kEipStatusOk the received data was okay
+ *     - kEipStatusError the received data was wrong
  */
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint8 *const data,

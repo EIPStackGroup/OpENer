@@ -55,10 +55,10 @@ CipConnectionObjectTransportClassTriggerProductionTrigger GetTransportClassTrigg
 	return (CipConnectionObjectTransportClassTriggerProductionTrigger) production_trigger >> 4;
 }
 
-CipConnectionObjectTransportClassTriggerTransportClass GetTransportClassTriggerTransportClass(const ConnectionObject *restrict const connection_object) {
+CipConnectionObjectTransportClass GetTransportClassTriggerTransportClass(const ConnectionObject *restrict const connection_object) {
 	const CipByte transport_class_mask = 0x0F;
 	CipByte transport_class = connection_object->transport_class_trigger & transport_class_mask;
-	return (CipConnectionObjectTransportClassTriggerTransportClass) transport_class;
+	return (CipConnectionObjectTransportClass) transport_class;
 }
 
 CipUint ConnectionObjectGetProducedConnectionSize(const ConnectionObject *restrict const connection_object) {

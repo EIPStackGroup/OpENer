@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include <string.h>    /*needed for memcpy */
+#include <string.h>
 
 #include "cipassembly.h"
 
