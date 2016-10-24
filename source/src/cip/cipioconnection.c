@@ -54,8 +54,7 @@ EipStatus OpenProducingPointToPointConnection(
     ConnectionObject *connection_object,
     CipCommonPacketFormatData *common_packet_format_data);
 
-EipUint16 HandleConfigData(CipClass *assembly_class,
-                           ConnectionObject *connection_object);
+EipUint16 HandleConfigData(ConnectionObject *connection_object);
 
 /* Regularly close the IO connection. If it is an exclusive owner or input only
  * connection and in charge of the connection a new owner will be searched
@@ -126,6 +125,105 @@ void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object) {
       HandleReceivedIoConnectionData;
 }
 
+EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
+    ConnectionObject *io_connection_object,
+    ConnectionObject *const restrict connection_object) {
+  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipInstance* instance = NULL;
+  if (NULL
+      != (instance =
+          GetCipInstance(
+              assembly_class,
+              io_connection_object->connection_path.connection_point[kConnectionPointConsumer]))) {
+    /* consuming Connection Point is present */
+    io_connection_object->consuming_instance = instance;
+    io_connection_object->consumed_connection_path_length = 6;
+    io_connection_object->consumed_connection_path.path_size = 6;
+    io_connection_object->consumed_connection_path.class_id =
+        io_connection_object->connection_path.class_id;
+    io_connection_object->consumed_connection_path.instance_number =
+        io_connection_object->connection_path.connection_point[kConnectionPointConsumer];
+    io_connection_object->consumed_connection_path.attribute_number = 3;
+    int data_size = io_connection_object->consumed_connection_size;
+    int diff_size = 0;
+
+    /* an assembly object should always have an attribute 3 */
+    CipAttributeStruct* attribute = GetCipAttribute(instance, 3);
+    OPENER_ASSERT(attribute != NULL);
+    int is_heartbeat = (((CipByteArray*) attribute->data)->length == 0);
+    if (kCipConnectionObjectTransportClass1
+        == GetConnectionTransportClass(io_connection_object)) {
+      //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
+      /* class 1 connection */
+      data_size -= 2; /* remove 16-bit sequence count length */
+      diff_size += 2;
+    }
+    if ((kOpenerConsumedDataHasRunIdleHeader) && (data_size > 0)
+        && (!is_heartbeat)) {
+      /* we only have an run idle header if it is not an heartbeat connection */
+      data_size -= 4; /* remove the 4 bytes needed for run/idle header */
+      diff_size += 4;
+    }
+    if (((CipByteArray*) attribute->data)->length != data_size) {
+      /*wrong connection size */
+      connection_object->correct_originator_to_target_size =
+          ((CipByteArray*) attribute->data)->length + diff_size;
+      return kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize;
+    }
+  } else {
+    return kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath;
+  }
+  return kConnectionManagerExtendedStatusCodeSuccess;
+}
+
+EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
+    ConnectionObject* io_connection_object,
+    ConnectionObject* const restrict connection_object) {
+  /*setup producer side*/
+  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipInstance* instance = NULL;
+  if (0
+      != (instance =
+          GetCipInstance(
+              assembly_class,
+              io_connection_object->connection_path.connection_point[kConnectionPointProducer]))) {
+    io_connection_object->producing_instance = instance;
+    io_connection_object->produced_connection_path_length = 6;
+    io_connection_object->produced_connection_path.path_size = 6;
+    io_connection_object->produced_connection_path.class_id =
+        io_connection_object->connection_path.class_id;
+    io_connection_object->produced_connection_path.instance_number =
+        io_connection_object->connection_path.connection_point[kConnectionPointProducer];
+    io_connection_object->produced_connection_path.attribute_number = 3;
+    int data_size = io_connection_object->produced_connection_size;
+    int diff_size = 0;
+    /* an assembly object should always have an attribute 3 */
+    CipAttributeStruct* attribute = GetCipAttribute(instance, 3);
+    OPENER_ASSERT(attribute != NULL);
+    int is_heartbeat = (((CipByteArray*) attribute->data)->length == 0);
+    if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
+      /* class 1 connection */
+      data_size -= 2; /* remove 16-bit sequence count length */
+      diff_size += 2;
+    }
+    if ((kOpenerProducedDataHasRunIdleHeader) && (data_size > 0)
+        && (!is_heartbeat)) {
+      /* we only have an run idle header if it is not an heartbeat connection */
+      data_size -= 4; /* remove the 4 bytes needed for run/idle header */
+      diff_size += 4;
+    }
+    if (((CipByteArray*) attribute->data)->length != data_size) {
+      /*wrong connection size*/
+      connection_object->correct_target_to_originator_size =
+          ((CipByteArray*) attribute->data)->length + diff_size;
+      return kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
+    }
+  } else {
+    return kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
+  }
+  return kConnectionManagerExtendedStatusCodeSuccess;
+}
+
 /** @brief Establishes a new IO Type 1 Connection
  *
  * This function needs the guarantee that no Null request will be passed to it.
@@ -137,7 +235,7 @@ void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object) {
  *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_object,
+EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_object,
                          EipUint16 *const extended_error) {
   EipStatus eip_status = kEipStatusOk;
 
@@ -164,10 +262,6 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
   OPENER_ASSERT(!(originator_to_target_connection_type == kForwardOpenConnectionTypeNull &&
                 target_to_originator_connection_type == kForwardOpenConnectionTypeNull));
 
-  int data_size = 0;
-  int diff_size = 0;
-  int is_heartbeat = false;
-
   io_connection_object->consuming_instance = NULL;
   io_connection_object->consumed_connection_path_length = 0;
   io_connection_object->producing_instance = NULL;
@@ -175,106 +269,26 @@ EipStatus EstablishIoConnction(ConnectionObject *restrict const connection_objec
 
 
   /* we don't need to check for zero as this is handled in the connection path parsing */
-  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
 
   if (originator_to_target_connection_type != kForwardOpenConnectionTypeNull) { /*setup consumer side*/
-    CipInstance *instance = NULL;
-    if (NULL != (instance = GetCipInstance(
-            assembly_class,
-            io_connection_object->connection_path.connection_point[kConnectionPointConsumer]))) { /* consuming Connection Point is present */
-      io_connection_object->consuming_instance = instance;
+    *extended_error = SetupIoConnectionOriginatorToTargetConnectionPoint(io_connection_object, connection_object);
+  }
 
-      io_connection_object->consumed_connection_path_length = 6;
-      io_connection_object->consumed_connection_path.path_size = 6;
-      io_connection_object->consumed_connection_path.class_id =
-          io_connection_object->connection_path.class_id;
-      io_connection_object->consumed_connection_path.instance_number =
-          io_connection_object->connection_path.connection_point[kConnectionPointConsumer];
-      io_connection_object->consumed_connection_path.attribute_number = 3;
-
-      CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
-      OPENER_ASSERT(attribute != NULL);
-      /* an assembly object should always have an attribute 3 */
-      data_size = io_connection_object->consumed_connection_size;
-      diff_size = 0;
-      is_heartbeat = (((CipByteArray *) attribute->data)->length == 0);
-
-      if(kCipConnectionObjectTransportClass1 == GetConnectionTransportClass(io_connection_object)) {
-      //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
-        /* class 1 connection */
-        data_size -= 2; /* remove 16-bit sequence count length */
-        diff_size += 2;
-      }
-      if ((kOpenerConsumedDataHasRunIdleHeader) &&(data_size > 0)
-          && (!is_heartbeat)) { /* we only have an run idle header if it is not an heartbeat connection */
-        data_size -= 4; /* remove the 4 bytes needed for run/idle header */
-        diff_size += 4;
-      }
-      if (((CipByteArray *) attribute->data)->length != data_size) {
-        /*wrong connection size */
-        connection_object->correct_originator_to_target_size =
-            ((CipByteArray *) attribute->data)->length + diff_size;
-        *extended_error =
-            kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize;
-        return kCipErrorConnectionFailure;
-      }
-    } else {
-      *extended_error =
-          kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath;
-      return kCipErrorConnectionFailure;
-    }
+  if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+    return kCipErrorConnectionFailure;
   }
 
   if (target_to_originator_connection_type != kForwardOpenConnectionTypeNull) { /*setup producer side*/
-    CipInstance *instance = NULL;
-    if (0 != (instance = GetCipInstance(
-                assembly_class,
-                io_connection_object->connection_path.connection_point[kConnectionPointProducer]))) {
-      io_connection_object->producing_instance = instance;
+    *extended_error = SetupIoConnectionTargetToOriginatorConnectionPoint(io_connection_object,
+                                                       connection_object);
+  }
 
-      io_connection_object->produced_connection_path_length = 6;
-      io_connection_object->produced_connection_path.path_size = 6;
-      io_connection_object->produced_connection_path.class_id =
-          io_connection_object->connection_path.class_id;
-      io_connection_object->produced_connection_path.instance_number =
-          io_connection_object->connection_path.connection_point[kConnectionPointProducer];
-      io_connection_object->produced_connection_path.attribute_number = 3;
-
-      CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
-      OPENER_ASSERT(attribute != NULL);
-      /* an assembly object should always have an attribute 3 */
-      data_size = io_connection_object->produced_connection_size;
-      diff_size = 0;
-      is_heartbeat = (((CipByteArray *) attribute->data)->length == 0);
-
-      if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
-        /* class 1 connection */
-        data_size -= 2; /* remove 16-bit sequence count length */
-        diff_size += 2;
-      }
-      if ((kOpenerProducedDataHasRunIdleHeader) && (data_size > 0)
-          && (!is_heartbeat)) { /* we only have an run idle header if it is not an heartbeat connection */
-        data_size -= 4; /* remove the 4 bytes needed for run/idle header */
-        diff_size += 4;
-      }
-      if (((CipByteArray *) attribute->data)->length != data_size) {
-        /*wrong connection size*/
-        connection_object->correct_target_to_originator_size =
-            ((CipByteArray *) attribute->data)->length + diff_size;
-        *extended_error =
-            kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
-        return kCipErrorConnectionFailure;
-      }
-
-    } else {
-      *extended_error =
-          kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
-      return kCipErrorConnectionFailure;
-    }
+  if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+    return kCipErrorConnectionFailure;
   }
 
   if (NULL != g_config_data_buffer) { /* config data has been sent with this forward open request */
-    *extended_error = HandleConfigData(assembly_class, io_connection_object);
+    *extended_error = HandleConfigData(io_connection_object);
     if (0 != *extended_error) {
       return kCipErrorConnectionFailure;
     }
@@ -525,8 +539,9 @@ EipStatus OpenMulticastConnection(
   return kEipStatusOk;
 }
 
-EipUint16 HandleConfigData(CipClass *assembly_class,
-                           ConnectionObject *connection_object) {
+EipUint16 HandleConfigData(ConnectionObject *connection_object) {
+
+  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
   EipUint16 connection_manager_status = 0;
   CipInstance *config_instance = GetCipInstance(
       assembly_class, connection_object->connection_path.connection_point[2]);

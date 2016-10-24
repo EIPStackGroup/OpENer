@@ -226,7 +226,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   g_incarnation_id = ((EipUint32) unique_connection_id) << 16;
 
   AddConnectableObject(kCipMessageRouterClassCode, EstablishClass3Connection);
-  AddConnectableObject(kCipAssemblyClassCode, EstablishIoConnction);
+  AddConnectableObject(kCipAssemblyClassCode, EstablishIoConnection);
 
   return kEipStatusOk;
 }
