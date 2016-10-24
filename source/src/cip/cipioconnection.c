@@ -76,7 +76,7 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
 
 /**** Global variables ****/
 EipUint8 *g_config_data_buffer = NULL; /**< buffers for the config data coming with a forward open request. */
-unsigned int g_config_data_length = 0;
+unsigned int g_config_data_length = 0; /**< length of g_config_data_buffer. Initialized with 0 */
 
 EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 
