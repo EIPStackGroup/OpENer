@@ -272,24 +272,24 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
 
   if (originator_to_target_connection_type != kForwardOpenConnectionTypeNull) { /*setup consumer side*/
     *extended_error = SetupIoConnectionOriginatorToTargetConnectionPoint(io_connection_object, connection_object);
+    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+      return kCipErrorConnectionFailure;
+    }
   }
 
-  if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
-    return kCipErrorConnectionFailure;
-  }
 
   if (target_to_originator_connection_type != kForwardOpenConnectionTypeNull) { /*setup producer side*/
     *extended_error = SetupIoConnectionTargetToOriginatorConnectionPoint(io_connection_object,
                                                        connection_object);
+    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+      return kCipErrorConnectionFailure;
+    }
   }
 
-  if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
-    return kCipErrorConnectionFailure;
-  }
 
   if (NULL != g_config_data_buffer) { /* config data has been sent with this forward open request */
     *extended_error = HandleConfigData(io_connection_object);
-    if (0 != *extended_error) {
+    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
   }
