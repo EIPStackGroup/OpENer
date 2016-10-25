@@ -23,4 +23,8 @@ char *GetErrorMessage(int error_number) {
   	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, error_number, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                &error_message, 0, NULL);
   	return error_message;
-  }
+}
+
+void FreeErrorMessage(char *error_message) {
+	LocalFree(error_message);
+}
