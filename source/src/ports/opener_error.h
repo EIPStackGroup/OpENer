@@ -39,4 +39,4 @@ char *GetErrorMessage(int error_number);
  * This function shall implement an appropriate method to free the space allocated
  * by GetErrorMessage(int)
  */
-void FreeErrorMessage(char *error_message)
+void FreeErrorMessage(char *error_message);
