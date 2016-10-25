@@ -29,3 +29,7 @@ char *GetErrorMessage(int error_number) {
   return error_message;
 }
 
+void FreeErrorMessage(char *error_message) {
+  free(error_message);
+}
+
