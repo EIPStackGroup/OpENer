@@ -13,6 +13,7 @@ add_test_includes()
 ###################################################
 configure_file( CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake )
 
+#add_subdirectory( cip )
 add_subdirectory( utils )
 add_subdirectory( enet_encap )
 add_executable( OpENer_Tests OpENerTests.cpp )
