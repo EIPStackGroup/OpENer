@@ -47,8 +47,8 @@ EipStatus OpenMulticastConnection(
     CipCommonPacketFormatData *common_packet_format_data);
 
 EipStatus OpenConsumingPointToPointConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data);
+    ConnectionObject *const connection_object,
+    CipCommonPacketFormatData *const common_packet_format_data);
 
 EipStatus OpenProducingPointToPointConnection(
     ConnectionObject *connection_object,
@@ -126,7 +126,7 @@ void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object) {
 }
 
 EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
-    ConnectionObject *io_connection_object,
+    ConnectionObject *const io_connection_object,
     ConnectionObject *const restrict connection_object) {
   CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
   CipInstance* instance = NULL;
@@ -177,8 +177,8 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
 }
 
 EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
-    ConnectionObject* io_connection_object,
-    ConnectionObject* const restrict connection_object) {
+    ConnectionObject *const io_connection_object,
+    ConnectionObject *const restrict connection_object) {
   /*setup producer side*/
   CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
   CipInstance* instance = NULL;
@@ -315,8 +315,8 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
  * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus OpenConsumingPointToPointConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data) {
+    ConnectionObject *const connection_object,
+    CipCommonPacketFormatData *const common_packet_format_data) {
   /*static EIP_UINT16 nUDPPort = 2222; TODO think on improving the udp port assigment for point to point connections */
   int j = 0;
 

@@ -38,7 +38,7 @@ typedef enum {
   kLogicalSegmentLogicalTypeConnectionPoint = 0x0C, /**< Connection Point */
   kLogicalSegmentLogicalTypeAttributeId = 0x10, /**< Attribute ID */
   kLogicalSegmentLogicalTypeSpecial = 0x14, /**< Special */
-  kLogicalSegmentLogicalTypeService = 0x18, /**< Service ID */
+  kLogicalSegmentLogicalTypeServiceId = 0x18, /**< Service ID */
   kLogicalSegmentLogicalTypeExtendedLogical = 0x1C /**< Extended Logical */
 } LogicalSegmentLogicalType;
 
