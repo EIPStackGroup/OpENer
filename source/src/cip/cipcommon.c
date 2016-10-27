@@ -751,7 +751,7 @@ int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
   for (number_of_decoded_elements = 0;
       number_of_decoded_elements < epath->path_size;
       number_of_decoded_elements++) {
-    if (kSegmentTypeSegmentTypeReserved == ((*message_runner) & kSegmentTypeSegmentTypeReserved)) {
+    if (kSegmentTypeReserved == ((*message_runner) & kSegmentTypeReserved)) {
       /* If invalid/reserved segment type, segment type greater than 0xE0 */
       return kEipStatusError;
     }

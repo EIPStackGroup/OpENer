@@ -21,11 +21,11 @@ typedef enum {
   kNetworkSegmentSubtypeExtendedNetworkSegment
 } NetworkSegmentSubtype;
 
-SegmentType GetPathSegementType(const char *const cip_path);
+SegmentType GetPathSegmentType(const char *const cip_path);
 
-void SetPathSegementType(SegmentType segment_type, char *const cip_path);
+void SetPathSegmentType(SegmentType segment_type, char *const cip_path);
 
-bool GetPathPortSegementExtendedLinkAddressSizeBit(const char *const cip_path);
+bool GetPathPortSegmentExtendedLinkAddressSizeBit(const char *const cip_path);
 
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

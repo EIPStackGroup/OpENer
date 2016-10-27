@@ -22,7 +22,7 @@ typedef enum {
   kSegmentTypeDataSegment, /**< Data segment */
   kSegmentTypeDataTypeConstructed, /**< Data type constructed */
   kSegmentTypeDataTypeElementary, /**< Data type elementary */
-  kSegmentTypeSegmentTypeReserved
+  kSegmentTypeReserved /**< Reserved segment type */
 } SegmentType;
 
 /** @brief Port Segment flags */

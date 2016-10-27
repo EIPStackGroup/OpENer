@@ -75,7 +75,7 @@ const unsigned int kDataSegmentSubtypeANSIExtendedSymbolMessageValue = 0x11;
 SegmentType GetPathSegementType(const char *const cip_path) {
   const unsigned int kSegmentTypeMask = 0xE0;
   const unsigned int segment_type = cip_path & kSegmentTypeMask;
-  SegmentType result = kSegmentTypeSegmentTypeReserved;
+  SegmentType result = kSegmentTypeReserved;
   switch (segment_type) {
     case kSegmentTypePortSegmentMessageValue:
       result = kSegmentTypePortSegment;
@@ -99,7 +99,7 @@ SegmentType GetPathSegementType(const char *const cip_path) {
       result = kSegmentTypeDataTypeElementary;
       break;
     case kSegmentTypeSegmentTypeReservedMessageValue:
-      result = kSegmentTypeSegmentTypeReserved;
+      result = kSegmentTypeReserved;
       break;
     default:
       OPENER_ASSERT(
@@ -132,7 +132,7 @@ void SetPathSegementType(SegmentType segment_type, char *const cip_path) {
     case kSegmentTypeDataTypeElementary:
       cip_path |= kSegmentTypeDataTypeElementaryMessageValue;
       break;
-    case kSegmentTypeSegmentTypeReserved:
+    case kSegmentTypeReserved:
       cip_path |= kSegmentTypeSegmentTypeReservedMessageValue;
       break;
     default:
