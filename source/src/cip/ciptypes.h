@@ -15,14 +15,14 @@
  */
 typedef enum {
   /* Segments */
-  kSegmentTypePortSegment = 0x00, /**< Port segment */
-  kSegmentTypeLogicalSegment = 0x20, /**< Logical segment */
-  kSegmentTypeNetworkSegment = 0x40, /**< Network segment */
-  kSegmentTypeSymbolicSegment = 0x60, /**< Symbolic segment */
-  kSegmentTypeDataSegment = 0x80, /**< Data segment */
-  kSegmentTypeDataTypeConstructed = 0xA0, /**< Data type constructed */
-  kSegmentTypeDataTypeElementary = 0xC0, /**< Data type elementary */
-  kSegmentTypeSegmentTypeReserved = 0xE0
+  kSegmentTypePortSegment, /**< Port segment */
+  kSegmentTypeLogicalSegment, /**< Logical segment */
+  kSegmentTypeNetworkSegment, /**< Network segment */
+  kSegmentTypeSymbolicSegment, /**< Symbolic segment */
+  kSegmentTypeDataSegment, /**< Data segment */
+  kSegmentTypeDataTypeConstructed, /**< Data type constructed */
+  kSegmentTypeDataTypeElementary, /**< Data type elementary */
+  kSegmentTypeSegmentTypeReserved
 } SegmentType;
 
 /** @brief Port Segment flags */
@@ -32,23 +32,38 @@ typedef enum {
 
 /** @brief Enum containing values which kind of logical segment is encoded */
 typedef enum {
-  kLogicalSegmentLogicalTypeClassId = 0x00, /**< Class ID */
-  kLogicalSegmentLogicalTypeInstanceId = 0x04, /**< Instance ID */
-  kLogicalSegmentLogicalTypeMemberId = 0x08, /**< Member ID */
-  kLogicalSegmentLogicalTypeConnectionPoint = 0x0C, /**< Connection Point */
-  kLogicalSegmentLogicalTypeAttributeId = 0x10, /**< Attribute ID */
-  kLogicalSegmentLogicalTypeSpecial = 0x14, /**< Special */
-  kLogicalSegmentLogicalTypeServiceId = 0x18, /**< Service ID */
-  kLogicalSegmentLogicalTypeExtendedLogical = 0x1C /**< Extended Logical */
+  kLogicalSegmentLogicalTypeClassId, /**< Class ID */
+  kLogicalSegmentLogicalTypeInstanceId, /**< Instance ID */
+  kLogicalSegmentLogicalTypeMemberId, /**< Member ID */
+  kLogicalSegmentLogicalTypeConnectionPoint, /**< Connection Point */
+  kLogicalSegmentLogicalTypeAttributeId, /**< Attribute ID */
+  kLogicalSegmentLogicalTypeSpecial, /**< Special */
+  kLogicalSegmentLogicalTypeServiceId, /**< Service ID */
+  kLogicalSegmentLogicalTypeExtendedLogical/**< Extended Logical */
 } LogicalSegmentLogicalType;
+
+typedef enum {
+  kLogicalSegmentExtendedLogicalTypeReserved,
+  kLogicalSegmentExtendedLogicalTypeArrayIndex,
+  kLogicalSegmentExtendedLogicalTypeIndirectArrayIndex,
+  kLogicalSegmentExtendedLogicalTypeBitIndex,
+  kLogicalSegmentExtendedLogicalTypeIndirectBitIndex,
+  kLogicalSegmentExtendedLogicalTypeStructureMemberNumber,
+  kLogicalSegmentExtendedLogicalTypeStructureMemberHandle
+} LogicalSegmentExtendedLogicalType;
 
 /** @brief Enum containing values how long the encoded value will be (8, 16, or
  * 32 bit) */
 typedef enum {
-  kLogicalSegmentLogicalFormatEightBitValue = 0x00,
-  kLogicalSegmentLogicalFormatSixteenBitValue = 0x01,
-  kLogicalSegmentLogicalFormatThirtyTwoBitValue = 0x02
+  kLogicalSegmentLogicalFormatEightBit,
+  kLogicalSegmentLogicalFormatSixteenBit,
+  kLogicalSegmentLogicalFormatThirtyTwoBit
 } LogicalSegmentLogicalFormat;
+
+typedef enum {
+  kLogicalSegmentSpecialTypeLogicalFormatReserved,
+  kLogicalSegmentSpecialTypeLogicalFormatElectronicKey
+} LogicalSegmentSpecialTypeLogicalFormat;
 
 typedef enum {
   kProductionTimeInhibitTimeNetworkSegment = 0x43 /**< identifier indicating a production inhibit time network segment */

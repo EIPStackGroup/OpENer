@@ -11,6 +11,16 @@
 
 #include "ciptypes.h"
 
+typedef enum {
+  kNetworkSegmentSubtypeReserved,
+  kNetworkSegmentSubtypeScheduleSegment,
+  kNetworkSegmentSubtypeFixedTagSegment,
+  kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds,
+  kNetworkSegmentSubtypeSafetySegment,
+  kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds,
+  kNetworkSegmentSubtypeExtendedNetworkSegment
+} NetworkSegmentSubtype;
+
 SegmentType GetPathSegementType(const char *const cip_path);
 
 void SetPathSegementType(SegmentType segment_type, char *const cip_path);
