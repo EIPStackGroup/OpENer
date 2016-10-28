@@ -66,5 +66,10 @@ void SetPathSegmentType(SegmentType segment_type, char *const cip_path);
 
 bool GetPathPortSegmentExtendedLinkAddressSizeBit(const char *const cip_path);
 
+unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path);
+
+void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
+                                      char *const cip_path);
+
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

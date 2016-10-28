@@ -68,14 +68,27 @@ TEST(CipEpath, GetSegmentTypeReserved) {
 }
 
 /** Port segment tests **/
-TEST(CipEpath, PortSegmentExtendedAddressSizeTrueTest) {
+TEST(CipEpath, GetPortSegmentExtendedAddressSizeTrue) {
   const char message[] = {0x10};
   bool extended_address = GetPathPortSegmentExtendedLinkAddressSizeBit(message);
   CHECK_EQUAL(true, extended_address);
 }
 
-TEST(CipEpath, PortSegmentExtendedAddressSizeFalseTest) {
+TEST(CipEpath, GetPortSegmentExtendedAddressSizeFalse) {
   const char message[] = {0x00};
   bool extended_address = GetPathPortSegmentExtendedLinkAddressSizeBit(message);
   CHECK_EQUAL(false, extended_address);
+}
+
+TEST(CipEpath, GetPortSegmentPortIdentifier) {
+  const char message[] = {0x0F};
+  unsigned int port = GetPathPortSegmentPortIdentifier(message);
+  unsigned int mes = (unsigned int)(message[0]);
+  CHECK_EQUAL(15, mes);
+}
+
+TEST(CipEpath, SetPortSegmentPortIdentifier) {
+  char message[] = {0x00};
+  SetPathPortSegmentPortIdentifier(15, message);
+  CHECK_EQUAL(15, (unsigned int)(message[0]));
 }

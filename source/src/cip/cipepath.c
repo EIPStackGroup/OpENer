@@ -156,6 +156,7 @@ unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path) {
   const unsigned int kPortIdentifierMask = 0x0F;
   unsigned int port_identifier = *cip_path & kPortIdentifierMask;
 //  OPENER_ASSERT(0 != port_identifier, "Use of reserved port identifier 0\n");
+  OPENER_ASSERT(kSegmentTypePortSegment == GetPathSegmentType(cip_path));
   OPENER_ASSERT(0 != port_identifier);
   return port_identifier;
 }
@@ -166,7 +167,7 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
 //      port_identifier < 16,
 //      "Port identifier too large for standard port identifier field\n");
   OPENER_ASSERT(port_identifier < 16);
-
+  (*cip_path) |= port_identifier;
 }
 
 unsigned int GetPathPortSegmentLinkAddressSize(const char *const cip_path) {
