@@ -92,3 +92,15 @@ TEST(CipEpath, SetPortSegmentPortIdentifier) {
   SetPathPortSegmentPortIdentifier(15, message);
   CHECK_EQUAL(15, (unsigned int)(message[0]));
 }
+
+TEST(CipEpath, GetPortSegmentLinkAddressSize) {
+  const char message[] = {0x10,0x04};
+  unsigned int size = GetPathPortSegmentLinkAddressSize(message);
+  CHECK_EQUAL(4, size);
+}
+
+TEST(CipEpath, GetPortSegmentExtendedPortNumberNoExtendedAddress) {
+  const char message[] = {0x0F, 0x22, 0x64};
+  unsigned int extended_port = GetPathPortSegmentExtendedPortNumber(message);
+  CHECK_EQUAL(25634, extended_port);
+}

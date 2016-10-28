@@ -71,5 +71,9 @@ unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path);
 void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
                                       char *const cip_path);
 
+unsigned int GetPathPortSegmentLinkAddressSize(const char *const cip_path);
+
+unsigned int GetPathPortSegmentExtendedPortNumber(const char *const cip_path);
+
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

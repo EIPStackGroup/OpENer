@@ -173,7 +173,7 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
 unsigned int GetPathPortSegmentLinkAddressSize(const char *const cip_path) {
 //  OPENER_ASSERT(false == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path),
 //                "Call to non existent extended link address size\n");
-  OPENER_ASSERT(false == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path));
+  OPENER_ASSERT(true == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path));
   return *(cip_path + 1);
 }
 
@@ -182,7 +182,7 @@ unsigned int GetPathPortSegmentExtendedPortNumber(const char *const cip_path) {
 //                "There is no extended port available!\n");
   OPENER_ASSERT(kPortSegmentExtendedPort == GetPathPortSegmentPortIdentifier(cip_path));
   const unsigned int kExtendedPortSegmentPosition =
-      GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 3 : 2;
+      GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 2 : 1;
   return cip_path[kExtendedPortSegmentPosition]
       + (cip_path[kExtendedPortSegmentPosition + 1] << 8);
 }
