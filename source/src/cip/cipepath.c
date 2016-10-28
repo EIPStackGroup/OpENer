@@ -191,7 +191,7 @@ void SetPathPortSegmentExtendedPortIdentifier(
     const unsigned int extended_port_identifier, char *const cip_path) {
   SetPathPortSegmentPortIdentifier(kPortSegmentExtendedPort, cip_path);
   const unsigned int kExtendedPortSegmentPosition =
-      GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 3 : 2;
+      GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 2 : 1;
   cip_path[kExtendedPortSegmentPosition] = (char) (extended_port_identifier
       & 0x00FF);
   cip_path[kExtendedPortSegmentPosition + 1] =

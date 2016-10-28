@@ -104,3 +104,16 @@ TEST(CipEpath, GetPortSegmentExtendedPortNumberNoExtendedAddress) {
   unsigned int extended_port = GetPathPortSegmentExtendedPortNumber(message);
   CHECK_EQUAL(25634, extended_port);
 }
+
+TEST(CipEpath, GetPortSegmentExtendedPortNumberWithExtendedAddress) {
+  const char message[] = {0x1F, 0x00, 0x22, 0x64};
+  unsigned int extended_port = GetPathPortSegmentExtendedPortNumber(message);
+  CHECK_EQUAL(25634, extended_port);
+}
+
+TEST(CipEpath, SetPortSegmentExtendedPortNoExtendedAddress) {
+  char message[] = {0x00, 0x00, 0x00};
+  const char expected_message[] = {0x0F, 0x22, 0x64};
+  SetPathPortSegmentExtendedPortIdentifier((unsigned int)25634, message);
+  MEMCMP_EQUAL(expected_message, message, 3);
+}
