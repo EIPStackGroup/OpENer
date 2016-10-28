@@ -16,6 +16,7 @@ extern "C" {
 #include "endianconv.h"
 
 #include "ciptypes.h"
+
 }
 
 TEST_GROUP(EndianConversion) {

@@ -12,6 +12,7 @@
  */
 
 #include <assert.h>
+#include <stdbool.h>
 
 #include "generic_networkhandler.h"
 

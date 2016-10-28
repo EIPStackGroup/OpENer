@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include <string.h>
+#include <stdbool.h>
 
 #include "cipassembly.h"
 

@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 #include <string.h>
+#include <stdbool.h>
 
 #include "cipconnectionmanager.h"
 

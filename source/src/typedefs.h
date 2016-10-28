@@ -108,10 +108,10 @@ typedef enum {
 #ifndef __cplusplus
 /** @brief If we don't have C++ define a C++ -like "bool" keyword defines
  */
-typedef enum {
-  false = 0, /**< defines "false" as 0 */
-  true = 1 /**< defines "true" as 1 */
-} BoolKeywords;
+//typedef enum {
+//  false = 0, /**< defines "false" as 0 */
+//  true = 1 /**< defines "true" as 1 */
+//} BoolKeywords;
 #endif /* __cplusplus */
 
 #endif /* OPENER_TYPEDEFS_H_ */

@@ -21,6 +21,7 @@
 #include "cpf.h"
 #include "trace.h"
 #include "appcontype.h"
+#include "cipepath.h"
 
 /* global public variables */
 EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Reply buffer */
@@ -757,34 +758,34 @@ int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
     }
 
     switch (*message_runner) {
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeClassId + kLogicalSegmentLogicalFormatEightBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_CLASS_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
         epath->class_id = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeClassId + kLogicalSegmentLogicalFormatSixteenBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_CLASS_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
         message_runner += 2;
         epath->class_id = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;
         break;
 
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeInstanceId + kLogicalSegmentLogicalFormatEightBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_INSTANCE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
         epath->instance_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeInstanceId + kLogicalSegmentLogicalFormatSixteenBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_INSTANCE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
         message_runner += 2;
         epath->instance_number = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;
         break;
 
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeAttributeId + kLogicalSegmentLogicalFormatEightBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
         epath->attribute_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case kSegmentTypeLogicalSegment + kLogicalSegmentLogicalTypeAttributeId + kLogicalSegmentLogicalFormatSixteenBitValue:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
         message_runner += 2;
         epath->attribute_number = GetIntFromMessage(&(message_runner));
         number_of_decoded_elements++;

@@ -9,6 +9,8 @@
 
 #include <stdbool.h>
 
+#include "typedefs.h"
+
 typedef struct electronic_key_format_4 ElectronicKeyFormat4;
 
 void SetElectronicKeyFormat4VendorId(const CipUint vendor_id, ElectronicKeyFormat4 *const electronic_key);
