@@ -117,3 +117,58 @@ TEST(CipEpath, SetPortSegmentExtendedPortNoExtendedAddress) {
   SetPathPortSegmentExtendedPortIdentifier((unsigned int)25634, message);
   MEMCMP_EQUAL(expected_message, message, 3);
 }
+
+TEST(CipEpath, SetPortSegmentExtendedPortWithExtendedAddress) {
+  char message[] = {0x10, 0x00, 0x00, 0x00};
+  const char expected_message[] = {0x1F, 0x00, 0x22, 0x64};
+  SetPathPortSegmentExtendedPortIdentifier((unsigned int)25634, message);
+  MEMCMP_EQUAL(expected_message, message, 4);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeClassId) {
+  const char message[] = {0x20};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeClassId, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeInstanceId) {
+  const char message[] = {0x24};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeInstanceId, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeMemberId) {
+  const char message[] = {0x28};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeMemberId, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeConnectionPoint) {
+  const char message[] = {0x2C};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeConnectionPoint, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeAttributeId) {
+  const char message[] = {0x30};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeAttributeId, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeSpecial) {
+  const char message[] = {0x34};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeSpecial, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeServiceId) {
+  const char message[] = {0x38};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeServiceId, type);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalTypeExtendedLogical) {
+  const char message[] = {0x3C};
+  const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalTypeExtendedLogical, type);
+}

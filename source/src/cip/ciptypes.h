@@ -39,7 +39,7 @@ typedef enum {
   kLogicalSegmentLogicalTypeAttributeId, /**< Attribute ID */
   kLogicalSegmentLogicalTypeSpecial, /**< Special */
   kLogicalSegmentLogicalTypeServiceId, /**< Service ID */
-  kLogicalSegmentLogicalTypeExtendedLogical/**< Extended Logical */
+  kLogicalSegmentLogicalTypeExtendedLogical /**< Extended Logical */
 } LogicalSegmentLogicalType;
 
 typedef enum {

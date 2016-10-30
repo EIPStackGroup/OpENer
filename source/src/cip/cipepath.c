@@ -203,6 +203,7 @@ void SetPathPortSegmentExtendedPortIdentifier(
 
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
     const char *const cip_path) {
+  OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
   const unsigned int kLogicalTypeMask = 0x1C;
   const unsigned int logical_type = (*cip_path) & kLogicalTypeMask;
   LogicalSegmentLogicalType result = kLogicalSegmentLogicalTypeExtendedLogical;

@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
+#include <assert.h>
 
 #include "typedefs.h"
 
@@ -116,6 +117,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 /** @brief A specialized assertion command that will log the assertion and block
  *  further execution in an while(1) loop.
  */
+#ifdef IDLING_ASSERT
 #define OPENER_ASSERT(assertion) \
     do { \
       if(!(assertion)) { \
@@ -128,6 +130,9 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 //#include <assert.h>
 //#include <stdio.h>
 //#define OPENER_ASSERT(assertion) assert(assertion)
+#else
+#define OPENER_ASSERT(assertion) assert(assertion)
+#endif
 #else
 
 /* for release builds execute the assertion, but don't test it */
