@@ -244,3 +244,15 @@ TEST(CipEpath, GetLogicalSegmentSpecialTypeLogicalTypeElectronicKey) {
   LogicalSegmentSpecialTypeLogicalFormat special_type = GetPathLogicalSegmentSpecialTypeLogicalType(message);
   CHECK_EQUAL(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey, special_type);
 }
+
+TEST(CipEpath, GetPathLogicalSegmentElectronicKeyFormatReserved) {
+  const char message[] = {0x34, 0x00};
+  ElectronicKeySegmentFormat key_format = GetPathLogicalSegmentElectronicKeyFormat(message);
+  CHECK_EQUAL(kElectronicKeySegmentFormatReserved, key_format);
+}
+
+TEST(CipEpath, GetPathLogicalSegmentElectronicKeyFormat4) {
+  const char message[] = {0x34, 0x04};
+  ElectronicKeySegmentFormat key_format = GetPathLogicalSegmentElectronicKeyFormat(message);
+  CHECK_EQUAL(kElectronicKeySegmentFormatKeyFormat4, key_format);
+}

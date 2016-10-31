@@ -55,11 +55,6 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 #define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS_MESSAGE_VALUE 0x10
 #define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK_MESSAGE_VALUE 0x1F
 
-typedef enum {
-  kElectronicKeySegmentFormatReserved,
-  kElectronicKeySegmentFormatKeyFormat4
-} ElectronicKeySegmentFormat;
-
 #define ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4_MESSAGE_VALUE 0x04
 
 typedef enum {

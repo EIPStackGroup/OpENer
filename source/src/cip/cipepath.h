@@ -60,6 +60,11 @@ typedef enum network_segment_subtype {
   kNetworkSegmentSubtypeExtendedNetworkSegment
 } NetworkSegmentSubtype;
 
+typedef enum {
+  kElectronicKeySegmentFormatReserved,
+  kElectronicKeySegmentFormatKeyFormat4
+} ElectronicKeySegmentFormat;
+
 SegmentType GetPathSegmentType(const char *const cip_path);
 
 void SetPathSegmentType(SegmentType segment_type, char *const cip_path);
@@ -86,5 +91,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
 LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const char *const cip_path);
 
 LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const char *const cip_path);
+
+ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const char *const cip_path);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */
