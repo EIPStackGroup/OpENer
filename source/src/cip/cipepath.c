@@ -69,7 +69,7 @@ typedef enum {
 
 
 /*** Path Segment ***/
-SegmentType GetPathSegmentType(const char *const cip_path) {
+SegmentType GetPathSegmentType(const unsigned char *const cip_path) {
   const unsigned int kSegmentTypeMask = 0xE0;
   const unsigned int segment_type = *cip_path & kSegmentTypeMask;
   SegmentType result = kSegmentTypeReserved;
@@ -106,7 +106,7 @@ SegmentType GetPathSegmentType(const char *const cip_path) {
   return result;
 }
 
-void SetPathSegmentType(SegmentType segment_type, char *const cip_path) {
+void SetPathSegmentType(SegmentType segment_type, unsigned char *const cip_path) {
   switch (segment_type) {
     case kSegmentTypePortSegment:
       *cip_path |= SEGMENT_TYPE_PORT_SEGMENT_MESSAGE_VALUE;
@@ -139,7 +139,7 @@ void SetPathSegmentType(SegmentType segment_type, char *const cip_path) {
 }
 
 /*** Port Segment ***/
-bool GetPathPortSegmentExtendedLinkAddressSizeBit(const char *const cip_path) {
+bool GetPathPortSegmentExtendedLinkAddressSizeBit(const unsigned char *const cip_path) {
   const unsigned int kExtendedLinkAddressSizeMask = 0x10;
   if (kExtendedLinkAddressSizeMask == (*cip_path & kExtendedLinkAddressSizeMask) ) {
     return true;
@@ -147,7 +147,7 @@ bool GetPathPortSegmentExtendedLinkAddressSizeBit(const char *const cip_path) {
   return false;
 }
 
-unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path) {
+unsigned int GetPathPortSegmentPortIdentifier(const unsigned char *const cip_path) {
   const unsigned int kPortIdentifierMask = 0x0F;
   unsigned int port_identifier = *cip_path & kPortIdentifierMask;
 //  OPENER_ASSERT(0 != port_identifier, "Use of reserved port identifier 0\n");
@@ -157,7 +157,7 @@ unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path) {
 }
 
 void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
-                                      char *const cip_path) {
+                                      unsigned char *const cip_path) {
 //  OPENER_ASSERT(
 //      port_identifier < 16,
 //      "Port identifier too large for standard port identifier field\n");
@@ -165,14 +165,14 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
   (*cip_path) |= port_identifier;
 }
 
-unsigned int GetPathPortSegmentLinkAddressSize(const char *const cip_path) {
+unsigned int GetPathPortSegmentLinkAddressSize(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(false == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path),
 //                "Call to non existent extended link address size\n");
   OPENER_ASSERT(true == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path));
   return *(cip_path + 1);
 }
 
-unsigned int GetPathPortSegmentExtendedPortNumber(const char *const cip_path) {
+unsigned int GetPathPortSegmentExtendedPortNumber(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kPortSegmentExtendedPort == GetPathPortSegmentPortIdentifier(cip_path),
 //                "There is no extended port available!\n");
   OPENER_ASSERT(kPortSegmentExtendedPort == GetPathPortSegmentPortIdentifier(cip_path));
@@ -183,7 +183,7 @@ unsigned int GetPathPortSegmentExtendedPortNumber(const char *const cip_path) {
 }
 
 void SetPathPortSegmentExtendedPortIdentifier(
-    const unsigned int extended_port_identifier, char *const cip_path) {
+    const unsigned int extended_port_identifier, unsigned char *const cip_path) {
   SetPathPortSegmentPortIdentifier(kPortSegmentExtendedPort, cip_path);
   const unsigned int kExtendedPortSegmentPosition =
       GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 2 : 1;
@@ -197,7 +197,7 @@ void SetPathPortSegmentExtendedPortIdentifier(
 /*** Logical Segment ***/
 
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
-    const char *const cip_path) {
+    const unsigned char *const cip_path) {
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
   const unsigned int kLogicalTypeMask = 0x1C;
   const unsigned int logical_type = (*cip_path) & kLogicalTypeMask;
@@ -236,7 +236,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
 }
 
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
-    const char *const cip_path) {
+    const unsigned char *const cip_path) {
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
@@ -259,7 +259,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   return result;
 }
 
-LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const char *const cip_path) {
+LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(LOGICAL_SEGMENT_TYPE_EXTENDED_kLogicalSegmentLogicalTypeExtendedLogicalMessageValue == GetPathLogicalSegmentLogicalType(cip_path),
 //                "Trying to extract non-existent extended logical type");
   OPENER_ASSERT(kLogicalSegmentLogicalTypeExtendedLogical == GetPathLogicalSegmentLogicalType(cip_path));
@@ -277,7 +277,7 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const
   return result;
 }
 
-LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const char *const cip_path) {
+LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path), "Not a logical segment!\n");
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
   OPENER_ASSERT(kLogicalSegmentLogicalTypeSpecial == GetPathLogicalSegmentLogicalType(cip_path));
@@ -294,7 +294,7 @@ LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalTy
   return result;
 }
 
-ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const char *const cip_path) {
+ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
 //      GetPathLogicalSegmentSpecialTypeLogicalType(cip_path), "Not an electronic key!\n");
   OPENER_ASSERT(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
@@ -307,7 +307,7 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const char *
   return result;
 }
 
-ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const char *const cip_path) {
+ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kElectronicKeySegmentFormatKeyFormat4 ==
 //      GetPathLogicalSegmentElectronicKeyFormat(cip_path), "Not electronic key format 4!\n");
   OPENER_ASSERT(kElectronicKeySegmentFormatKeyFormat4 ==
@@ -334,7 +334,7 @@ ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const char *cons
  *  @param cip_path Pointer to the start of the EPath message
  *  @return The Network Segment subtype of the EPath
  */
-NetworkSegmentSubType GetPathNetworkSegmentSubtype(const char *const cip_path) {
+NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const cip_path) {
   const unsigned int kSubtypeMask = 0x1F;
   const unsigned int subtype = (*cip_path) & kSubtypeMask;
   NetworkSegmentSubType result = kNetworkSegmentSubtypeReserved;
@@ -361,7 +361,7 @@ NetworkSegmentSubType GetPathNetworkSegmentSubtype(const char *const cip_path) {
  * @param cip_path Pointer to the start of the EPath message
  * @return the Production Inhibit Time in milliseconds ranging from 0 to 255
  */
-CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(const char *const cip_path) {
+CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path),"Not a network segment!\n");
 //  OPENER_ASSERT(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds == GetPathNetworkSegmentSubtype(cip_path),
 //                "Not a Production Inhibit Time milliseconds segment!\n");
@@ -376,7 +376,7 @@ CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(const char *co
  * @param cip_path Pointer to the start of the EPath message
  * @return the Production Inhibit Time in microseconds ranging from 0 to 4294967295
  */
-CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const char *const cip_path) {
+CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path),"Not a network segment!\n");
 //  OPENER_ASSERT(kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds == GetPathNetworkSegmentSubtype(cip_path),
 //                  "Not a Production Inhibit Time microseconds segment!\n");
@@ -400,7 +400,7 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const char *co
 
 /*** Data Segment ***/
 
-DataSegmentSubtype GetPathDataSegmentSubtype(const char *const cip_path) {
+DataSegmentSubtype GetPathDataSegmentSubtype(const unsigned char *const cip_path) {
   const unsigned int kDataSegmentSubtypeMask = 0x1F;
   const unsigned int data_subtype = (*cip_path) & kDataSegmentSubtypeMask;
 
@@ -420,7 +420,7 @@ DataSegmentSubtype GetPathDataSegmentSubtype(const char *const cip_path) {
  * @param cip_path Pointer to the start of the EPath message
  * @return The amount of 16-bit words of data in the EPath
  */
-CipUsint GetPathDataSegmentSimpleDataWordLength(const char * const cip_path) {
+CipUsint GetPathDataSegmentSimpleDataWordLength(const unsigned char *const cip_path) {
 //  OPENER_ASSERT(kSegmentTypeDataSegment == GetPathSegmentType(cip_path),"Not a data segment!\n");
 //  OPENER_ASSERT(kDataSegmentSubtypeSimpleData == GetPathDataSegmentSubtype(cip_path), "Not a simple data segment!\n");
   OPENER_ASSERT(kSegmentTypeDataSegment == GetPathSegmentType(cip_path));

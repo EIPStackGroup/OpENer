@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "ciptypes.h"
+#include "cipelectronickey.h"
 
 #define SEGMENT_TYPE_PORT_SEGMENT_MESSAGE_VALUE 0x00 /**< Message value of the Port segment */
 #define SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE 0x20 /**< Message value of the Logical segment */
@@ -65,33 +66,35 @@ typedef enum {
   kElectronicKeySegmentFormatKeyFormat4
 } ElectronicKeySegmentFormat;
 
-SegmentType GetPathSegmentType(const char *const cip_path);
+SegmentType GetPathSegmentType(const unsigned char *const cip_path);
 
-void SetPathSegmentType(SegmentType segment_type, char *const cip_path);
+void SetPathSegmentType(SegmentType segment_type, unsigned char *const cip_path);
 
-bool GetPathPortSegmentExtendedLinkAddressSizeBit(const char *const cip_path);
+bool GetPathPortSegmentExtendedLinkAddressSizeBit(const unsigned char *const cip_path);
 
-unsigned int GetPathPortSegmentPortIdentifier(const char *const cip_path);
+unsigned int GetPathPortSegmentPortIdentifier(const unsigned char *const cip_path);
 
 void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
-                                      char *const cip_path);
+                                      unsigned char *const cip_path);
 
-unsigned int GetPathPortSegmentLinkAddressSize(const char *const cip_path);
+unsigned int GetPathPortSegmentLinkAddressSize(const unsigned char *const cip_path);
 
-unsigned int GetPathPortSegmentExtendedPortNumber(const char *const cip_path);
+unsigned int GetPathPortSegmentExtendedPortNumber(const unsigned char *const cip_path);
 
 void SetPathPortSegmentExtendedPortIdentifier(
-    const unsigned int extended_port_identifier, char *const cip_path);
+    const unsigned int extended_port_identifier, unsigned char *const cip_path);
 
-LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(const char *const cip_path);
+LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(const unsigned char *const cip_path);
 
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
-    const char *const cip_path);
+    const unsigned char *const cip_path);
 
-LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const char *const cip_path);
+LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const unsigned char *const cip_path);
 
-LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const char *const cip_path);
+LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const unsigned char *const cip_path);
 
-ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const char *const cip_path);
+ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const unsigned char *const cip_path);
+
+ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */
