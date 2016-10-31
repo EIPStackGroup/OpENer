@@ -80,4 +80,11 @@ void SetPathPortSegmentExtendedPortIdentifier(
 
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(const char *const cip_path);
 
+LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
+    const char *const cip_path);
+
+LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const char *const cip_path);
+
+LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const char *const cip_path);
+
 #endif /* SRC_CIP_CIPEPATH_H_ */

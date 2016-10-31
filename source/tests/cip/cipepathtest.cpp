@@ -172,3 +172,75 @@ TEST(CipEpath, GetLogicalSegmentLogicalTypeExtendedLogical) {
   const LogicalSegmentLogicalType type = GetPathLogicalSegmentLogicalType(message);
   CHECK_EQUAL(kLogicalSegmentLogicalTypeExtendedLogical, type);
 }
+
+TEST(CipEpath, GetLogicalSegmentLogicalFormatEightBits) {
+  const char message[] = {0x20};
+  const LogicalSegmentLogicalFormat format = GetPathLogicalSegmentLogicalFormat(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalFormatEightBit, format);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalFormatSixteenBits) {
+  const char message[] = {0x21};
+  const LogicalSegmentLogicalFormat format = GetPathLogicalSegmentLogicalFormat(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalFormatSixteenBit, format);
+}
+
+TEST(CipEpath, GetLogicalSegmentLogicalFormatThirtyTwoBits) {
+  const char message[] = {0x22};
+  const LogicalSegmentLogicalFormat format = GetPathLogicalSegmentLogicalFormat(message);
+  CHECK_EQUAL(kLogicalSegmentLogicalFormatThirtyTwoBit, format);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {
+  const char message[] = {0x3C, 0x00};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeReserved, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeArrayIndex) {
+  const char message[] = {0x3C, 0x01};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeArrayIndex, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeIndirectArrayIndex) {
+  const char message[] = {0x3C, 0x02};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeIndirectArrayIndex, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeBitIndex) {
+  const char message[] = {0x3C, 0x03};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeBitIndex, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeIndirectBitIndex) {
+  const char message[] = {0x3C, 0x04};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeIndirectBitIndex, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeStructureMemberNumber) {
+  const char message[] = {0x3C, 0x05};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeStructureMemberNumber, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeStructureMemberHandle) {
+  const char message[] = {0x3C, 0x06};
+  const LogicalSegmentExtendedLogicalType extended_type = GetPathLogicalSegmentExtendedLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentExtendedLogicalTypeStructureMemberHandle, extended_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentSpecialTypeLogicalTypeReserved) {
+  const char message[] = {0x35};
+  LogicalSegmentSpecialTypeLogicalFormat special_type = GetPathLogicalSegmentSpecialTypeLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentSpecialTypeLogicalFormatReserved, special_type);
+}
+
+TEST(CipEpath, GetLogicalSegmentSpecialTypeLogicalTypeElectronicKey) {
+  const char message[] = {0x34};
+  LogicalSegmentSpecialTypeLogicalFormat special_type = GetPathLogicalSegmentSpecialTypeLogicalType(message);
+  CHECK_EQUAL(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey, special_type);
+}

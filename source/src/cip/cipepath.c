@@ -242,6 +242,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
 
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
     const char *const cip_path) {
+  OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
   LogicalSegmentLogicalFormat result = kLogicalSegmentLogicalFormatEightBit;
@@ -266,7 +267,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
 LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const char *const cip_path) {
 //  OPENER_ASSERT(LOGICAL_SEGMENT_TYPE_EXTENDED_kLogicalSegmentLogicalTypeExtendedLogicalMessageValue == GetPathLogicalSegmentLogicalType(cip_path),
 //                "Trying to extract non-existent extended logical type");
-  OPENER_ASSERT(LOGICAL_SEGMENT_TYPE_EXTENDED_LOGICAL_MESSAGE_VALUE == GetPathLogicalSegmentLogicalType(cip_path));
+  OPENER_ASSERT(kLogicalSegmentLogicalTypeExtendedLogical == GetPathLogicalSegmentLogicalType(cip_path));
   const unsigned int extended_logical_type = *(cip_path + 1);
   LogicalSegmentExtendedLogicalType result = kLogicalSegmentExtendedLogicalTypeReserved;
   switch(extended_logical_type) {
@@ -284,6 +285,7 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(const
 LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalType(const char *const cip_path) {
 //  OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path), "Not a logical segment!\n");
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path));
+  OPENER_ASSERT(kLogicalSegmentLogicalTypeSpecial == GetPathLogicalSegmentLogicalType(cip_path));
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
 
