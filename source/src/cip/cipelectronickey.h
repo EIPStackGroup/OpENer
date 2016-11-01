@@ -13,6 +13,9 @@
 
 typedef struct electronic_key_format_4 ElectronicKeyFormat4;
 
+ElectronicKeyFormat4 *ElectronicKeyFormat4New();
+void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **key);
+
 void SetElectronicKeyFormat4VendorId(const CipUint vendor_id, ElectronicKeyFormat4 *const electronic_key);
 CipUint GetElectronicKeyFormat4VendorId(const ElectronicKeyFormat4 *const electronic_key);
 

@@ -4,6 +4,8 @@
  *
  ******************************************************************************/
 
+#include <stdlib.h>
+
 #include "cipelectronickey.h"
 
 typedef struct electronic_key_format_4 {
@@ -13,6 +15,15 @@ typedef struct electronic_key_format_4 {
   CipByte major_revision_compatibility;
   CipUsint minor_revision;
 } ElectronicKeyFormat4;
+
+ElectronicKeyFormat4 *ElectronicKeyFormat4New() {
+  return (ElectronicKeyFormat4*)calloc(1, sizeof(ElectronicKeyFormat4));
+}
+
+void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **key) {
+  free(*key);
+  *key = NULL;
+}
 
 void SetElectronicKeyFormat4VendorId(const CipUint vendor_id, ElectronicKeyFormat4 *const electronic_key) {
   electronic_key->vendor_id = vendor_id;

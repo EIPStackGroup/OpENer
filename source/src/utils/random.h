@@ -19,6 +19,8 @@ typedef struct {
   GetNextUInt32 get_next_uint32; /**< Function pointer to GetNextUInt32 function */
 } Random;
 
-Random* RandomNew(SetSeed, GetNextUInt32);
+Random *RandomNew(SetSeed, GetNextUInt32);
+
+void RandomDelete(Random **random);
 
 #endif /* OPENER_RANDOM_H_ */

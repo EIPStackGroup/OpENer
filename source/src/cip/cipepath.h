@@ -66,6 +66,12 @@ typedef enum {
   kElectronicKeySegmentFormatKeyFormat4
 } ElectronicKeySegmentFormat;
 
+typedef enum {
+  kDataSegmentSubtypeReserved,
+  kDataSegmentSubtypeSimpleData,
+  kDataSegmentSubtypeANSIExtendedSymbol
+} DataSegmentSubtype;
+
 SegmentType GetPathSegmentType(const unsigned char *const cip_path);
 
 void SetPathSegmentType(SegmentType segment_type, unsigned char *const cip_path);
@@ -95,6 +101,16 @@ LogicalSegmentSpecialTypeLogicalFormat GetPathLogicalSegmentSpecialTypeLogicalTy
 
 ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const unsigned char *const cip_path);
 
-ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path);
+void GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path, ElectronicKeyFormat4 *key);
+
+NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const cip_path);
+
+CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(const unsigned char *const cip_path);
+
+CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const unsigned char *const cip_path);
+
+DataSegmentSubtype GetPathDataSegmentSubtype(const unsigned char *const cip_path);
+
+CipUsint GetPathDataSegmentSimpleDataWordLength(const unsigned char *const cip_path);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

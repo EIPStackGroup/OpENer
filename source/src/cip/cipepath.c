@@ -57,12 +57,6 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 
 #define ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4_MESSAGE_VALUE 0x04
 
-typedef enum {
-  kDataSegmentSubtypeReserved,
-  kDataSegmentSubtypeSimpleData,
-  kDataSegmentSubtypeANSIExtendedSymbol
-} DataSegmentSubtype;
-
 #define DATA_SEGMENT_SUBTYPE_SIMPLE_DATA_MESSAGE_VALUE 0x00
 #define DATA_SEGMENT_SUBTYPE_ANSI_EXTENDED_SYMBOL_MESSAGE_VALUE 0x11
 
@@ -307,21 +301,18 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const unsign
   return result;
 }
 
-ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path) {
+void GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path, ElectronicKeyFormat4 *key) {
 //  OPENER_ASSERT(kElectronicKeySegmentFormatKeyFormat4 ==
 //      GetPathLogicalSegmentElectronicKeyFormat(cip_path), "Not electronic key format 4!\n");
   OPENER_ASSERT(kElectronicKeySegmentFormatKeyFormat4 ==
         GetPathLogicalSegmentElectronicKeyFormat(cip_path));
 
-  const char *message_runner = (const char *)cip_path;
-  ElectronicKeyFormat4 *result = calloc(1, sizeof(ElectronicKeySegmentFormat));
-  SetElectronicKeyFormat4VendorId(GetIntFromMessage(&message_runner), result);
-  SetElectronicKeyFormat4DeviceType(GetIntFromMessage(&message_runner), result);
-  SetElectronicKeyFormat4ProductCode(GetIntFromMessage(&message_runner), result);
-  SetElectronicKeyFormat4MajorRevisionCompatibility(GetSintFromMessage(&message_runner), result);
-  SetElectronicKeyFormat4MinorRevision(GetSintFromMessage(&message_runner), result);
-
-  return result;
+  const char *message_runner = (const char *)(cip_path + 2);
+  SetElectronicKeyFormat4VendorId(GetIntFromMessage(&message_runner), key);
+  SetElectronicKeyFormat4DeviceType(GetIntFromMessage(&message_runner), key);
+  SetElectronicKeyFormat4ProductCode(GetIntFromMessage(&message_runner), key);
+  SetElectronicKeyFormat4MajorRevisionCompatibility(GetSintFromMessage(&message_runner), key);
+  SetElectronicKeyFormat4MinorRevision(GetSintFromMessage(&message_runner), key);
 }
 
 /*** Logical Segment ***/
@@ -335,6 +326,7 @@ ElectronicKeyFormat4 *GetPathLogicalSegmentElectronicKeyFormat4(const unsigned c
  *  @return The Network Segment subtype of the EPath
  */
 NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const cip_path) {
+  OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path));
   const unsigned int kSubtypeMask = 0x1F;
   const unsigned int subtype = (*cip_path) & kSubtypeMask;
   NetworkSegmentSubType result = kNetworkSegmentSubtypeReserved;
@@ -349,6 +341,8 @@ NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const ci
       result = kNetworkSegmentSubtypeSafetySegment; break;
     case NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS_MESSAGE_VALUE:
       result = kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds; break;
+    case NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK_MESSAGE_VALUE:
+          result = kNetworkSegmentSubtypeExtendedNetworkSegment; break;
     default: result = kNetworkSegmentSubtypeReserved; break;
   }
 
@@ -386,7 +380,7 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const unsigned
   OPENER_ASSERT(kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds == GetPathNetworkSegmentSubtype(cip_path));
   OPENER_ASSERT(2 == *(cip_path + 1));
 
-  const char *message_runner = cip_path;
+  const unsigned char *message_runner = cip_path + 2;
   return GetDintFromMessage(&message_runner);
 }
 
@@ -427,7 +421,7 @@ CipUsint GetPathDataSegmentSimpleDataWordLength(const unsigned char *const cip_p
   OPENER_ASSERT(
       kDataSegmentSubtypeSimpleData == GetPathDataSegmentSubtype(cip_path));
 
-  const char *message_runner = cip_path;
+  const unsigned char *message_runner = cip_path + 1;
   return GetSintFromMessage(&message_runner);
 }
 

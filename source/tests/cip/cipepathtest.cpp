@@ -258,9 +258,89 @@ TEST(CipEpath, GetPathLogicalSegmentElectronicKeyFormat4) {
 }
 
 TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
-  const unsigned char message[] = {0x34,0x04};
-  ElectronicKeyFormat4 *electronic_key = GetPathLogicalSegmentElectronicKeyFormat4(message);
+  const unsigned char message[] = {0x34,0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+  ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
+  GetPathLogicalSegmentElectronicKeyFormat4(message, electronic_key);
 
-  //TODO: check on how to free in CppuTest
-  //free(electronic_key);
+  MEMCMP_EQUAL(message + 2, electronic_key, 6);
+
+  ElectronicKeyFormat4Delete(&electronic_key);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeReserved) {
+  const unsigned char message[] = {0x40};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeReserved, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeScheduled) {
+  const unsigned char message[] = {0x41};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeScheduleSegment, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeFixedTag) {
+  const unsigned char message[] = {0x42};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeFixedTagSegment, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeProductionInhibitTimerInMilliseconds) {
+  const unsigned char message[] = {0x43};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeSafety) {
+  const unsigned char message[] = {0x44};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeSafetySegment, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeProductionInhibitTimerInMicroseconds) {
+  const unsigned char message[] = {0x50};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentSubtypeExtendedNetwork) {
+  const unsigned char message[] = {0x5F};
+  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  CHECK_EQUAL(kNetworkSegmentSubtypeExtendedNetworkSegment, sub_type);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentProductionInhibitTimeInMilliseconds) {
+  const unsigned char message[] = {0x43, 0xFF};
+  CipUsint time_im_milliseconds = GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(message);
+  CHECK_EQUAL(255, time_im_milliseconds);
+}
+
+TEST(CipEpath, GetPathNetworkSegmentProductionInhibitTimeInMicroseconds) {
+  const unsigned char message[] = {0x50, 0x02, 0x00, 0x00, 0x00, 0xFF};
+  CipUdint time_in_microseconds = GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(message);
+  CHECK_EQUAL(4278190080, time_in_microseconds);
+}
+
+TEST(CipEpath, GetPathDataSegmentSubtypeReserverd) {
+  const unsigned char message[] = {0x81};
+  DataSegmentSubtype type = GetPathDataSegmentSubtype(message);
+  CHECK_EQUAL(kDataSegmentSubtypeReserved, type);
+}
+
+TEST(CipEpath, GetPathDataSegmentSubtypeSimpleData) {
+  const unsigned char message[] = {0x80};
+  DataSegmentSubtype type = GetPathDataSegmentSubtype(message);
+  CHECK_EQUAL(kDataSegmentSubtypeSimpleData, type);
+}
+
+TEST(CipEpath, GetPathDataSegmentSubtypeANSIExtendedSymbol) {
+  const unsigned char message[] = {0x91};
+  DataSegmentSubtype type = GetPathDataSegmentSubtype(message);
+  CHECK_EQUAL(kDataSegmentSubtypeANSIExtendedSymbol, type);
+}
+
+TEST(CipEpath, GetPathDataSegmentSimpleDataWordLength) {
+  const unsigned char message[] = {0x80, 0x25};
+  CipUsint length = GetPathDataSegmentSimpleDataWordLength(message);
+  CHECK_EQUAL(37, length);
 }
