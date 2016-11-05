@@ -72,6 +72,20 @@ typedef enum {
   kDataSegmentSubtypeANSIExtendedSymbol
 } DataSegmentSubtype;
 
+typedef enum {
+  kSymbolicSegmentFormatASCII,
+  kSymbolicSegmentFormatExtendedString
+} SymbolicSegmentFormat;
+
+typedef enum {
+  kSymbolicSegmentExtendedFormatDoubleByteChars,
+  kSymbolicSegmentExtendedFormatTripleByteChars,
+  kSymbolicSegmentExtendedFormatNumericSymbolUSINT,
+  kSymbolicSegmentExtendedFormatNumericSymbolUINT,
+  kSymbolicSegmentExtendedFormatNumericSymbolUDINT,
+  kSymbolicSegmentExtendedFormatReserved
+} SymbolicSegmentExtendedFormat;
+
 SegmentType GetPathSegmentType(const unsigned char *const cip_path);
 
 void SetPathSegmentType(SegmentType segment_type, unsigned char *const cip_path);
@@ -103,7 +117,7 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(const unsign
 
 void GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_path, ElectronicKeyFormat4 *key);
 
-NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const cip_path);
+NetworkSegmentSubtype GetPathNetworkSegmentSubtype(const unsigned char *const cip_path);
 
 CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(const unsigned char *const cip_path);
 
@@ -112,5 +126,7 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const unsigned
 DataSegmentSubtype GetPathDataSegmentSubtype(const unsigned char *const cip_path);
 
 CipUsint GetPathDataSegmentSimpleDataWordLength(const unsigned char *const cip_path);
+
+SymbolicSegmentFormat GetPathSymbolicSegmentFormat(const unsigned char *const cip_path);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

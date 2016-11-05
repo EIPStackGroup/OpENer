@@ -47,6 +47,7 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 #define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_HANDLE_MESSAGE_VALUE 0x06
 
 #define LOGICAL_SEGMENT_SPECIAL_TYPE_FORMAT_ELECTRONIC_KEY_MESSAGE_VALUE 0x00
+#define ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4_MESSAGE_VALUE 0x04
 
 #define NETWORK_SEGMENT_SUBTYPE_SCHEDULE_MESSAGE_VALUE 0x01
 #define NETWORK_SEGMENT_SUBTYPE_FIXED_TAG_MESSAGE_VALUE 0x02
@@ -55,7 +56,15 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 #define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS_MESSAGE_VALUE 0x10
 #define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK_MESSAGE_VALUE 0x1F
 
-#define ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4_MESSAGE_VALUE 0x04
+#define SYMBOLIC_SEGMENT_FORMAT_EXTENDED_STRING_MESSAGE_VALUE 0x00
+
+#define EXTENDED_FORMAT_DOUBLE_CHAR_MESSAGE_VALUE 0x20
+#define EXTENDED_FORMAT_TRIPLE_CHAR_MESSAGE_VALUE 0x40
+#define EXTENDED_FORMAT_NUMERIC_MESSAGE_VALUE 0xC0
+
+#define EXTENDED_FORMAT_NUMERIC_USINT_TYPE 0x06
+#define EXTENDED_FORMAT_NUMERIC_UINT_TYPE 0x07
+#define EXTENDED_FORMAT_NUMERIC_UDINT_TYPE 0x08
 
 #define DATA_SEGMENT_SUBTYPE_SIMPLE_DATA_MESSAGE_VALUE 0x00
 #define DATA_SEGMENT_SUBTYPE_ANSI_EXTENDED_SYMBOL_MESSAGE_VALUE 0x11
@@ -325,11 +334,11 @@ void GetPathLogicalSegmentElectronicKeyFormat4(const unsigned char *const cip_pa
  *  @param cip_path Pointer to the start of the EPath message
  *  @return The Network Segment subtype of the EPath
  */
-NetworkSegmentSubType GetPathNetworkSegmentSubtype(const unsigned char *const cip_path) {
+NetworkSegmentSubtype GetPathNetworkSegmentSubtype(const unsigned char *const cip_path) {
   OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path));
   const unsigned int kSubtypeMask = 0x1F;
   const unsigned int subtype = (*cip_path) & kSubtypeMask;
-  NetworkSegmentSubType result = kNetworkSegmentSubtypeReserved;
+  NetworkSegmentSubtype result = kNetworkSegmentSubtypeReserved;
   switch(subtype) {
     case NETWORK_SEGMENT_SUBTYPE_SCHEDULE_MESSAGE_VALUE:
       result = kNetworkSegmentSubtypeScheduleSegment; break;
@@ -388,7 +397,48 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(const unsigned
 
 /*** Symbolic Segment ***/
 
-/* Currently not supported */
+SymbolicSegmentFormat GetPathSymbolicSegmentFormat(const unsigned char *const cip_path) {
+  const unsigned int kSymbolicSegmentFormatMask = 0x1F;
+  if( SYMBOLIC_SEGMENT_FORMAT_EXTENDED_STRING_MESSAGE_VALUE == (*cip_path & kSymbolicSegmentFormatMask) ) {
+    return kSymbolicSegmentFormatExtendedString;
+  }
+  return kSymbolicSegmentFormatASCII;
+}
+
+unsigned int GetPathSymbolicSegmentASCIIFormatLength(const unsigned char *const cip_path) {
+  const unsigned int kSymbolicSegmentASCIIFormatLength = 0x1F;
+  const unsigned int length = *cip_path & kSymbolicSegmentASCIIFormatLength;
+  OPENER_ASSERT(0 != length);
+  return length;
+}
+
+SymbolicSegmentExtendedFormat GetPathSymbolicSegmentNumericType(const unsigned char *const cip_path) {
+  const unsigned int kSymbolicSegmentExtendedFormatNumericTypeMask = 0x1F;
+  const unsigned int numeric_subtype = *(cip_path + 1) & kSymbolicSegmentExtendedFormatNumericTypeMask;
+  SymbolicSegmentExtendedFormat result = kSymbolicSegmentExtendedFormatReserved;
+  switch(numeric_subtype) {
+    case EXTENDED_FORMAT_NUMERIC_USINT_TYPE: result = kSymbolicSegmentExtendedFormatNumericSymbolUSINT; break;
+    case EXTENDED_FORMAT_NUMERIC_UINT_TYPE: result = kSymbolicSegmentExtendedFormatNumericSymbolUINT; break;
+    case EXTENDED_FORMAT_NUMERIC_UDINT_TYPE: result = kSymbolicSegmentExtendedFormatNumericSymbolUDINT; break;
+    default: result = kSymbolicSegmentExtendedFormatReserved; break;
+  }
+  return result;
+}
+
+SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(const unsigned char *const cip_path) {
+  OPENER_ASSERT(kSegmentTypeSymbolicSegment == GetPathSegmentType(cip_path));
+  OPENER_ASSERT(kSymbolicSegmentFormatExtendedString == GetPathSymbolicSegmentFormat(cip_path));
+  const unsigned int kSymbolicSegmentExtendedFormatMask = 0xE0;
+  const unsigned int extended_type = *(cip_path + 1) & kSymbolicSegmentExtendedFormatMask;
+  SymbolicSegmentExtendedFormat result = kSymbolicSegmentExtendedFormatReserved;
+  switch(extended_type) {
+    case EXTENDED_FORMAT_DOUBLE_CHAR_MESSAGE_VALUE: result = kSymbolicSegmentExtendedFormatDoubleByteChars; break;
+    case EXTENDED_FORMAT_TRIPLE_CHAR_MESSAGE_VALUE: result = kSymbolicSegmentExtendedFormatTripleByteChars; break;
+    case EXTENDED_FORMAT_NUMERIC_MESSAGE_VALUE: result = GetPathSymbolicSegmentNumericType(cip_path); break;
+    default: result = kSymbolicSegmentExtendedFormatReserved; break;
+  }
+  return result;
+}
 
 /*** Symbolic Segment ***/
 

@@ -269,43 +269,43 @@ TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeReserved) {
   const unsigned char message[] = {0x40};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeReserved, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeScheduled) {
   const unsigned char message[] = {0x41};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeScheduleSegment, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeFixedTag) {
   const unsigned char message[] = {0x42};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeFixedTagSegment, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeProductionInhibitTimerInMilliseconds) {
   const unsigned char message[] = {0x43};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeSafety) {
   const unsigned char message[] = {0x44};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeSafetySegment, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeProductionInhibitTimerInMicroseconds) {
   const unsigned char message[] = {0x50};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds, sub_type);
 }
 
 TEST(CipEpath, GetPathNetworkSegmentSubtypeExtendedNetwork) {
   const unsigned char message[] = {0x5F};
-  NetworkSegmentSubType sub_type = GetPathNetworkSegmentSubtype(message);
+  NetworkSegmentSubtype sub_type = GetPathNetworkSegmentSubtype(message);
   CHECK_EQUAL(kNetworkSegmentSubtypeExtendedNetworkSegment, sub_type);
 }
 
@@ -343,4 +343,61 @@ TEST(CipEpath, GetPathDataSegmentSimpleDataWordLength) {
   const unsigned char message[] = {0x80, 0x25};
   CipUsint length = GetPathDataSegmentSimpleDataWordLength(message);
   CHECK_EQUAL(37, length);
+}
+
+
+TEST(CipEpath, GetPathSymbolicSegmentFormatASCII) {
+  const unsigned char message[] = {0x61};
+  SymbolicSegmentFormat format = GetPathSymbolicSegmentFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentFormatASCII, format);
+}
+
+TEST(CipEpath, GetPathSymbolicSegmentFormatExtendedFormat) {
+  const unsigned char message[] = {0x60};
+  SymbolicSegmentFormat format = GetPathSymbolicSegmentFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentFormatExtendedString, format);
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentASCIIFormatLength) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeReserved) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUSINT) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUINT) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUDINT) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatReserverd) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatDoubleChars) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatTripleChars) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUSINT) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUINT) {
+  FAIL("Implement me!");
+}
+
+IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUDINT) {
+  FAIL("Implement me!");
 }
