@@ -358,46 +358,74 @@ TEST(CipEpath, GetPathSymbolicSegmentFormatExtendedFormat) {
   CHECK_EQUAL(kSymbolicSegmentFormatExtendedString, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentASCIIFormatLength) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentASCIIFormatLength) {
+  const unsigned char message[] = {0x61};
+  SymbolicSegmentFormat format = GetPathSymbolicSegmentFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentFormatASCII, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeReserved) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentNumericTypeReserved) {
+  const unsigned char message[] = {0x60, 0xC0};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentNumericType(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatReserved, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUSINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUSINT) {
+  const unsigned char message[] = {0x60, 0xC6};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentNumericType(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUSINT, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUINT) {
+  const unsigned char message[] = {0x60, 0xC7};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentNumericType(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUINT, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUDINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentNumericTypeUDINT) {
+  const unsigned char message[] = {0x60, 0xC8};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentNumericType(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUDINT, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatReserverd) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatReserverd) {
+  const unsigned char message[] = {0x60, 0x00};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatReserved, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatDoubleChars) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatDoubleChars) {
+  const unsigned char message[] = {0x60, 0x20};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatDoubleByteChars, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatTripleChars) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatTripleChars) {
+  const unsigned char message[] = {0x60, 0x40};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatTripleByteChars, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUSINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUSINT) {
+  const unsigned char message[] = {0x60, 0xC6};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUSINT, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUINT) {
+  const unsigned char message[] = {0x60, 0xC7};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUINT, format);
 }
 
-IGNORE_TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUDINT) {
-  FAIL("Implement me!");
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatUDINT) {
+  const unsigned char message[] = {0x60, 0xC8};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatNumericSymbolUDINT, format);
+}
+
+TEST(CipEpath, GetPathSymbolicSegmentExtendedFormatNumericReserved) {
+  const unsigned char message[] = {0x60, 0xC9};
+  SymbolicSegmentExtendedFormat format = GetPathSymbolicSegmentExtendedFormat(message);
+  CHECK_EQUAL(kSymbolicSegmentExtendedFormatReserved, format);
 }
