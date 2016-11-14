@@ -44,9 +44,9 @@ Compile for POSIX:
 	3. Invoke make
 	4. For invoking opener type:
 
-		./opener ipaddress subnetmask gateway domainname hostaddress macaddress
+		./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
 
-		e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+		e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
  
 2. Within Eclipse
 	1. For a standard configuration invoke setup_posix.sh, otherwise start
