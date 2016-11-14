@@ -29,7 +29,7 @@ EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Rep
 const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT standard value */
 
 /* private functions*/
-int EncodeEPath(CipEpath *epath, EipUint8 * *message);
+int EncodeEPath(CipEpath *epath, EipUint8 **message);
 
 void CipStackInit(const EipUint16 unique_connection_id) {
   EncapsulationInit();
@@ -115,7 +115,7 @@ EipStatus NotifyClass(const CipClass *restrict const cip_class,
 
 CipInstance *AddCipInstances(CipClass *restrict const cip_class,
                              const int number_of_instances) {
-  CipInstance * *next_instance = NULL;
+  CipInstance **next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n", number_of_instances,
@@ -176,7 +176,8 @@ CipClass *CreateCipClass(const EipUint32 class_id,
                          const int number_of_instance_attributes,
                          const EipUint32 get_all_instance_attributes_mask,
                          const int number_of_instance_services,
-                         const int number_of_instances, char *name,
+                         const int number_of_instances,
+                         char *name,
                          const EipUint16 revision) {
 
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
@@ -289,7 +290,8 @@ CipClass *CreateCipClass(const EipUint32 class_id,
 
 void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
-                     const EipUint8 cip_type, void *const data,
+                     const EipUint8 cip_type,
+                     void *const data,
                      const EipByte cip_flags) {
 
   CipAttributeStruct *attribute = instance->attributes;
@@ -319,7 +321,8 @@ void InsertAttribute(CipInstance *const instance,
   /* trying to insert too many attributes*/
 }
 
-void InsertService(const CipClass *const class, const EipUint8 service_number,
+void InsertService(const CipClass *const class,
+                   const EipUint8 service_number,
                    const CipServiceFunction service_function,
                    char *const service_name) {
 
@@ -413,8 +416,9 @@ EipStatus GetAttributeSingle(CipInstance *restrict const instance,
   return kEipStatusOkSend;
 }
 
-int EncodeData(const EipUint8 cip_type, const void *const cip_data,
-               EipUint8 * *cip_message) {
+int EncodeData(const EipUint8 cip_type,
+               const void *const cip_data,
+               EipUint8 **cip_message) {
   int counter = 0;
 
   switch (cip_type)
@@ -576,8 +580,9 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data,
   return counter;
 }
 
-int DecodeData(const EipUint8 cip_type, void *const data,
-               const EipUint8 * *const message) {
+int DecodeData(const EipUint8 cip_type,
+               void *const data,
+               const EipUint8 **const message) {
   int number_of_decoded_bytes = -1;
 
   switch (cip_type)
@@ -703,7 +708,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
   return kEipStatusOk; /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
 }
 
-int EncodeEPath(CipEpath *epath, EipUint8 * *message) {
+int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   unsigned int length = epath->path_size;
   AddIntToMessage(epath->path_size, message);
 
@@ -759,7 +764,7 @@ int EncodeEPath(CipEpath *epath, EipUint8 * *message) {
   return 2 + epath->path_size * 2; /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath, const EipUint8 * *message) {
+int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
   unsigned int number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 

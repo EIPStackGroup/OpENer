@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_USER_CONF_H_
@@ -8,9 +8,9 @@
 
 /** @file opener_user_conf.h
  * @brief OpENer configuration setup
- * 
+ *
  * This file contains the general application specific configuration for OpENer.
- * 
+ *
  * Furthermore you have to specific platform specific network include files.
  * OpENer needs definitions for the following data-types
  * and functions:
@@ -119,12 +119,15 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
  */
 #ifdef IDLING_ASSERT
 #define OPENER_ASSERT(assertion) \
-    do { \
-      if(!(assertion)) { \
-        LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", #assertion, __FILE__, __LINE__); \
-        while(1){;} \
-      } \
-    } while(0)
+  do { \
+    if( !(assertion) ) { \
+      LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", \
+                # assertion, \
+                __FILE__, \
+                __LINE__); \
+      while(1) {; } \
+    } \
+  } while(0)
 
 /* else use standard assert() */
 //#include <assert.h>

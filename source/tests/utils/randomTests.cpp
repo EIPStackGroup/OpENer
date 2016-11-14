@@ -20,10 +20,10 @@ TEST_GROUP(RandomClass)
 
 TEST(RandomClass, CreateXOrShiftObject)
 {
-	Random* pRandom = NULL;
-	uint32_t nResult = 0;
-	pRandom = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
-	POINTERS_EQUAL(SetXorShiftSeed, pRandom->set_seed);
-	POINTERS_EQUAL(NextXorShiftUint32, pRandom->get_next_uint32);
-	RandomDelete(&pRandom);
+  Random *pRandom = NULL;
+  uint32_t nResult = 0;
+  pRandom = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
+  POINTERS_EQUAL(SetXorShiftSeed, pRandom->set_seed);
+  POINTERS_EQUAL(NextXorShiftUint32, pRandom->get_next_uint32);
+  RandomDelete(&pRandom);
 }

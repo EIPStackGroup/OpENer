@@ -30,7 +30,8 @@
  *  @return EIP_OK if the configuring worked otherwise EIP_ERROR
  */
 EipStatus
-ConfigureNetworkInterface(const char *const ip_address, const char *const subnet_mask,
+ConfigureNetworkInterface(const char *const ip_address,
+                          const char *const subnet_mask,
                           const char *const gateway_address);
 
 /** @ingroup CIP_API
@@ -104,7 +105,8 @@ CipClass *GetCipClass(const EipUint32 class_id);
  * @return pointer to CIP Instance
  *          0 if instance is not in the object
  */
-CipInstance *GetCipInstance(const CipClass *restrict const cip_object, const EipUint32 instance_number);
+CipInstance *GetCipInstance(const CipClass *restrict const cip_object,
+                            const EipUint32 instance_number);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance's attribute
@@ -144,13 +146,15 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
  *  @return pointer to new class object
  *      0 on error
  */
-CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_attributes,
+CipClass *CreateCipClass(const EipUint32 class_id,
+                         const int number_of_class_attributes,
                          const EipUint32 class_attributes_get_attribute_all_mask,
                          const int number_of_class_services,
                          const int number_of_instance_attributes,
                          const EipUint32 instance_attributes_get_attributes_all_mask,
                          const int number_of_instance_services,
-                         const int number_of_instances, char *class_name,
+                         const int number_of_instances,
+                         char *class_name,
                          const EipUint16 class_revision);
 
 /** @ingroup CIP_API
@@ -171,8 +175,9 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
  * @return pointer to the first of the new instances
  *              0 on error
  */
-CipInstance *AddCipInstances(CipClass *restrict const cip_object_to_add_instances,
-                             const int number_of_instances);
+CipInstance *AddCipInstances(
+  CipClass *restrict const cip_object_to_add_instances,
+  const int number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -200,8 +205,11 @@ CipInstance *AddCIPInstance(CipClass *restrict const cip_class_to_add_instance,
  *  @param cip_data pointer to data of attribute.
  *  @param cip_flags flags to indicate set-ability and get-ability of attribute.
  */
-void InsertAttribute(CipInstance *const cip_instance, const EipUint16 attribute_number,
-                     const EipUint8 cip_data_type, void *const cip_data, const EipByte cip_flags);
+void InsertAttribute(CipInstance *const cip_instance,
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipByte cip_flags);
 
 /** @ingroup CIP_API
  * @brief Insert a service in an instance of a CIP object
@@ -216,8 +224,10 @@ void InsertAttribute(CipInstance *const cip_instance, const EipUint16 attribute_
  * @param service_function pointer to function which represents the service.
  * @param service_name name of the service
  */
-void InsertService(const CipClass *const cip_class_to_add_service, const EipUint8 service_code,
-                   const CipServiceFunction service_function, char *const service_name);
+void InsertService(const CipClass *const cip_class_to_add_service,
+                   const EipUint8 service_code,
+                   const CipServiceFunction service_function,
+                   char *const service_name);
 
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
@@ -230,7 +240,9 @@ void InsertService(const CipClass *const cip_class_to_add_service, const EipUint
  *  @return length of attribute in bytes
  *          -1 .. error
  */
-int EncodeData(const EipUint8 cip_data_type, const void *const cip_data, EipUint8 **cip_message);
+int EncodeData(const EipUint8 cip_data_type,
+               const void *const cip_data,
+               EipUint8 **cip_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
@@ -244,7 +256,9 @@ int EncodeData(const EipUint8 cip_data_type, const void *const cip_data, EipUint
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const message);
+int DecodeData(const EipUint8 cip_type,
+               void *const data,
+               const EipUint8 **const message);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -263,7 +277,8 @@ int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const
  * The notification on received configuration data is handled with the
  * IApp_after_receive function.
  */
-CipInstance *CreateAssemblyObject(const EipUint32 instance_number, EipByte *const data,
+CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
+                                  EipByte *const data,
                                   const EipUint16 data_length);
 
 typedef struct connection_object ConnectionObject;
@@ -278,7 +293,8 @@ typedef struct connection_object ConnectionObject;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-    ConnectionObject *restrict const connection_object, EipUint16 *const extended_error_code);
+  ConnectionObject *restrict const connection_object,
+  EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections
@@ -287,7 +303,7 @@ typedef EipStatus (*OpenConnectionFunction)(
  * connection
  */
 typedef void (*ConnectionCloseFunction)(
-    struct connection_object *connection_object);
+  struct connection_object *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -295,7 +311,7 @@ typedef void (*ConnectionCloseFunction)(
  * @param connection_object The connection object which connection timed out
  */
 typedef void (*ConnectionTimeoutFunction)(
-    struct connection_object *connection_object);
+  struct connection_object *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -305,7 +321,7 @@ typedef void (*ConnectionTimeoutFunction)(
  * @return EIP stack status
  */
 typedef EipStatus (*ConnectionSendDataFunction)(
-    struct connection_object *connection_object);
+  struct connection_object *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -317,8 +333,8 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-    struct connection_object *connection_object, const EipUint8 *data,
-    const EipUint16 data_length);
+  struct connection_object *connection_object, const EipUint8 *data,
+  const EipUint16 data_length);
 
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.
@@ -348,8 +364,10 @@ AddConnectableObject(EipUint32 class_id,
  * this connection
  */
 void ConfigureExclusiveOwnerConnectionPoint(
-    const unsigned int connection_number, const unsigned int output_assembly_id,
-    const unsigned int input_assembly_id, const unsigned int configuration_assembly_id);
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Configures the connection point for an input only connection.
@@ -362,7 +380,7 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * @param input_assembly_id ID of the T-to-O point to be used for this
  * connection
  * @param configuration_assembly_id ID of the configuration point to be used for
- *this connection
+ * this connection
  */
 void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
                                        const unsigned int output_assembly_id,
@@ -399,7 +417,8 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
  * over after we're done here
  * @return length of reply that need to be sent back
  */
-int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
+int HandleReceivedExplictTcpData(int socket,
+                                 EipUint8 *buffer,
                                  unsigned int buffer_length,
                                  int *number_of_remaining_bytes);
 
@@ -416,9 +435,12 @@ int HandleReceivedExplictTcpData(int socket, EipUint8 *buffer,
  * over after we're done here
  * @return length of reply that need to be sent back
  */
-int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
-                                 EipUint8 *buffer, unsigned int buffer_length,
-                                 int *number_of_remaining_bytes, int unicast);
+int HandleReceivedExplictUdpData(int socket,
+                                 struct sockaddr_in *from_address,
+                                 EipUint8 *buffer,
+                                 unsigned int buffer_length,
+                                 int *number_of_remaining_bytes,
+                                 int unicast);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
@@ -433,7 +455,8 @@ int HandleReceivedExplictUdpData(int socket, struct sockaddr_in *from_address,
  *  @return EIP_OK on success
  */
 EipStatus
-HandleReceivedConnectedData(EipUint8 *received_data, int received_data_length,
+HandleReceivedConnectedData(EipUint8 *received_data,
+                            int received_data_length,
                             struct sockaddr_in *from_address);
 
 /** @ingroup CIP_API
@@ -525,8 +548,8 @@ void HandleApplication(void);
  * @param io_connection_event information on the change occurred
  */
 void CheckIoConnectionEvent(unsigned int output_assembly_id,
-                       unsigned int input_assembly_id,
-                       IoConnectionEvent io_connection_event);
+                            unsigned int input_assembly_id,
+                            IoConnectionEvent io_connection_event);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Call back function to inform application on received data for an
@@ -640,7 +663,9 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
  * @return  EIP_SUCCESS on success
  */
 EipStatus
-SendUdpData(struct sockaddr_in *socket_data, int socket, EipUint8 *data,
+SendUdpData(struct sockaddr_in *socket_data,
+            int socket,
+            EipUint8 *data,
             EipUint16 data_length);
 
 /** @ingroup CIP_CALLBACK_API
@@ -651,7 +676,7 @@ SendUdpData(struct sockaddr_in *socket_data, int socket, EipUint8 *data,
 void CloseSocket(int socket);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
- *Documentation
+ * Documentation
  *
  * EtherNet/IP stack for adapter devices (connection target); supports multiple
  * I/O and explicit connections; includes features and objects required by the
@@ -785,7 +810,7 @@ void CloseSocket(int socket);
  * CloseSocket(int socket_handle)
  *      -# For TCP connection when the peer closed the connection OpENer needs
  *         to be informed to clean up internal data structures. This is done
- *with
+ * with
  *         the function void CloseSession(int socket_handle).
  *      .
  *   - Cyclically update the connection status:\n

@@ -15,12 +15,18 @@
  #include "opener_error.h"
 
 int GetSocketErrorNumber() {
-	return WSAGetLastError();
+  return WSAGetLastError();
 }
 
 char *GetErrorMessage(int error_number) {
-  	char *error_message = NULL;
-  	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, error_number, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-               &error_message, 0, NULL);
-  	return error_message;
-  }
+  char *error_message = NULL;
+  FormatMessage(
+    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL,
+    error_number,
+    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+    &error_message,
+    0,
+    NULL);
+  return error_message;
+}

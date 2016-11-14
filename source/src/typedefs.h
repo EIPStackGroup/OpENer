@@ -10,16 +10,16 @@
 #include <stddef.h>
 
 /** @file typedefs.h
- Do not use interface types for internal variables, such as "int i;", which is
- commonly used for loop counters or counting things.
+   Do not use interface types for internal variables, such as "int i;", which is
+   commonly used for loop counters or counting things.
 
- Do not over-constrain data types. Prefer the use of the native "int" and
- "unsigned" types.
+   Do not over-constrain data types. Prefer the use of the native "int" and
+   "unsigned" types.
 
- Use char for native character strings.
+   Use char for native character strings.
 
- Do not use "char" for data buffers - use "unsigned char" instead. Using char
- for data buffers can occasionally blow up in your face rather nastily.
+   Do not use "char" for data buffers - use "unsigned char" instead. Using char
+   for data buffers can occasionally blow up in your face rather nastily.
  */
 
 /** @brief EIP Data type definitions
@@ -69,20 +69,20 @@ typedef unsigned long long MicroSeconds;
 
 /**
 
- The following are generally true regarding return status:
- -1 ... an error occurred
- 0 ... success
+   The following are generally true regarding return status:
+   -1 ... an error occurred
+   0 ... success
 
- Occasionally there is a variation on this:
- -1 ... an error occurred
- 0 ..  success and there is no reply to send
- 1 ... success and there is a reply to send
+   Occasionally there is a variation on this:
+   -1 ... an error occurred
+   0 ..  success and there is no reply to send
+   1 ... success and there is a reply to send
 
- For both of these cases EIP_STATUS is the return type.
+   For both of these cases EIP_STATUS is the return type.
 
- Other return type are:
- -- return pointer to thing, 0 if error (return type is "pointer to thing")
- -- return count of something, -1 if error, (return type is int)
+   Other return type are:
+   -- return pointer to thing, 0 if error (return type is "pointer to thing")
+   -- return count of something, -1 if error, (return type is int)
 
  */
 
