@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -29,7 +29,7 @@ EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Rep
 const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT standard value */
 
 /* private functions*/
-int EncodeEPath(CipEpath *epath, EipUint8 **message);
+int EncodeEPath(CipEpath *epath, EipUint8 * *message);
 
 void CipStackInit(const EipUint16 unique_connection_id) {
   EncapsulationInit();
@@ -70,8 +70,9 @@ EipStatus NotifyClass(const CipClass *restrict const cip_class,
                       CipMessageRouterResponse *const message_router_response) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
-  EipUint16 instance_number = message_router_request->request_path.instance_number; /* get the instance number */
-  CipInstance * instance = GetCipInstance(cip_class, instance_number); /* look up the instance (note that if inst==0 this will be the class itself) */
+  EipUint16 instance_number =
+    message_router_request->request_path.instance_number;                           /* get the instance number */
+  CipInstance *instance = GetCipInstance(cip_class, instance_number);  /* look up the instance (note that if inst==0 this will be the class itself) */
   if (instance) /* if instance is found */
   {
     OPENER_TRACE_INFO("notify: found instance %d%s\n", instance_number,
@@ -107,13 +108,14 @@ EipStatus NotifyClass(const CipClass *restrict const cip_class,
   message_router_response->size_of_additional_status = 0; /* fill in the rest of the reply with not much of anything*/
   message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80
-      | message_router_request->service); /* except the reply code is an echo of the command + the reply flag */
+                                            | message_router_request->service); /* except the reply code is an echo of the command + the reply flag */
 
   return kEipStatusOkSend;
 }
 
-CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int number_of_instances) {
-  CipInstance **next_instance = NULL;
+CipInstance *AddCipInstances(CipClass *restrict const cip_class,
+                             const int number_of_instances) {
+  CipInstance * *next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n", number_of_instances,
@@ -127,7 +129,7 @@ CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int numbe
   }
 
   CipInstance *current_instance = current_instance = (CipInstance *) CipCalloc(
-        number_of_instances, sizeof(CipInstance)); /* allocate a block of memory for all created instances*/
+                                    number_of_instances, sizeof(CipInstance) ); /* allocate a block of memory for all created instances*/
   CipInstance *first_instance = current_instance; /* allocate a block of memory for all created instances*/
 
   OPENER_ASSERT(NULL != current_instance);
@@ -144,8 +146,8 @@ CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int numbe
 
     if (cip_class->number_of_attributes) /* if the class calls for instance attributes */
     { /* then allocate storage for the attribute array */
-      current_instance->attributes = (CipAttributeStruct*) CipCalloc(
-          cip_class->number_of_attributes, sizeof(CipAttributeStruct));
+      current_instance->attributes = (CipAttributeStruct *) CipCalloc(
+        cip_class->number_of_attributes, sizeof(CipAttributeStruct) );
     }
 
     next_instance = &current_instance->next; /* update pp to point to the next link of the current node */
@@ -156,7 +158,8 @@ CipInstance *AddCipInstances(CipClass *restrict const cip_class, const int numbe
   return first_instance;
 }
 
-CipInstance *AddCIPInstance(CipClass *restrict const class, const EipUint32 instance_id) {
+CipInstance *AddCIPInstance(CipClass *restrict const class,
+                            const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
   if (0 == instance) { /*we have no instance with given id*/
@@ -166,7 +169,8 @@ CipInstance *AddCIPInstance(CipClass *restrict const class, const EipUint32 inst
   return instance;
 }
 
-CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_attributes,
+CipClass *CreateCipClass(const EipUint32 class_id,
+                         const int number_of_class_attributes,
                          const EipUint32 get_all_class_attributes_mask,
                          const int number_of_class_services,
                          const int number_of_instance_attributes,
@@ -175,20 +179,20 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
                          const int number_of_instances, char *name,
                          const EipUint16 revision) {
 
-  OPENER_TRACE_INFO("creating class '%s' with id: 0x%"PRIX32"\n", name,
+  OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
                     class_id);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_id)); /* check if an class with the ClassID already exists */
+  OPENER_ASSERT( NULL == GetCipClass(class_id) ); /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
-   CIP can talk to an instance, therefore an instance has a pointer to its class
-   CIP can talk to a class, therefore a class struct is a subclass of the instance struct,
-   and contains a pointer to a metaclass
-   CIP never explicitly addresses a metaclass*/
+     CIP can talk to an instance, therefore an instance has a pointer to its class
+     CIP can talk to a class, therefore a class struct is a subclass of the instance struct,
+     and contains a pointer to a metaclass
+     CIP never explicitly addresses a metaclass*/
 
-  CipClass *const class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the class object*/
-  CipClass *const meta_class = (CipClass*) CipCalloc(1, sizeof(CipClass)); /* create the metaclass object*/
+  CipClass *const class = (CipClass *) CipCalloc( 1, sizeof(CipClass) ); /* create the class object*/
+  CipClass *const meta_class = (CipClass *) CipCalloc( 1, sizeof(CipClass) ); /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
   class->class_id = class_id; /* the class remembers the class ID */
@@ -198,7 +202,8 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
   class->number_of_attributes = number_of_instance_attributes; /* the class remembers the number of instances of that class */
   class->get_attribute_all_mask = get_all_instance_attributes_mask; /* indicate which attributes are included in instance getAttributeAll */
   class->number_of_services = number_of_instance_services
-      + ((0 == get_all_instance_attributes_mask) ? 1 : 2); /* the class manages the behavior of the instances */
+                              + ( (0 ==
+                                   get_all_instance_attributes_mask) ? 1 : 2 ); /* the class manages the behavior of the instances */
   class->services = 0;
   class->class_name = name; /* initialize the class-specific fields of the metaClass struct */
   meta_class->class_id = 0xffffffff; /* set metaclass ID (this should never be referenced) */
@@ -207,7 +212,8 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
   meta_class->number_of_attributes = number_of_class_attributes + 7; /* the metaclass remembers how many class attributes exist*/
   meta_class->get_attribute_all_mask = get_all_class_attributes_mask; /* indicate which attributes are included in class getAttributeAll*/
   meta_class->number_of_services = number_of_class_services
-      + ((0 == get_all_class_attributes_mask) ? 1 : 2); /* the metaclass manages the behavior of the class itself */
+                                   + ( (0 ==
+                                        get_all_class_attributes_mask) ? 1 : 2 ); /* the metaclass manages the behavior of the class itself */
   class->services = 0;
   meta_class->class_name = (char *) CipCalloc(1, strlen(name) + 6); /* fabricate the name "meta<classname>"*/
   strcpy(meta_class->class_name, "meta-");
@@ -227,40 +233,41 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
   /* further initialization of the class object*/
 
   class->class_instance.attributes = (CipAttributeStruct *) CipCalloc(
-      meta_class->number_of_attributes, sizeof(CipAttributeStruct));
+    meta_class->number_of_attributes, sizeof(CipAttributeStruct) );
   /* TODO -- check that we didn't run out of memory?*/
 
   meta_class->services = (CipServiceStruct *) CipCalloc(
-      meta_class->number_of_services, sizeof(CipServiceStruct));
+    meta_class->number_of_services, sizeof(CipServiceStruct) );
 
-  class->services = (CipServiceStruct *) CipCalloc(class->number_of_services,
-                                                   sizeof(CipServiceStruct));
+  class->services = (CipServiceStruct *) CipCalloc( class->number_of_services,
+                                                    sizeof(CipServiceStruct) );
 
   if (number_of_instances > 0) {
     AddCipInstances(class, number_of_instances); /*TODO handle return value and clean up if necessary*/
   }
 
-  if ((RegisterCipClass(class)) == kEipStatusError) { /* no memory to register class in Message Router */
+  if ( ( RegisterCipClass(class) ) == kEipStatusError ) { /* no memory to register class in Message Router */
     return 0; /*TODO handle return value and clean up if necessary*/
   }
 
   /* create the standard class attributes*/
-  InsertAttribute((CipInstance *) class, 1, kCipUint, (void *) &class->revision,
-                  kGetableSingleAndAll); /* revision */
-  InsertAttribute((CipInstance *) class, 2, kCipUint,
-                  (void *) &class->number_of_instances, kGetableSingleAndAll); /*  largest instance number */
-  InsertAttribute((CipInstance *) class, 3, kCipUint,
-                  (void *) &class->number_of_instances, kGetableSingleAndAll); /* number of instances currently existing*/
-  InsertAttribute((CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
-                  kGetableAll); /* optional attribute list - default = 0 */
-  InsertAttribute((CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
-                  kGetableAll); /* optional service list - default = 0 */
-  InsertAttribute((CipInstance *) class, 6, kCipUint,
-                  (void *) &meta_class->highest_attribute_number,
-                  kGetableSingleAndAll); /* max class attribute number*/
-  InsertAttribute((CipInstance *) class, 7, kCipUint,
-                  (void *) &class->highest_attribute_number,
-                  kGetableSingleAndAll); /* max instance attribute number*/
+  InsertAttribute( (CipInstance *) class, 1, kCipUint,
+                   (void *) &class->revision,
+                   kGetableSingleAndAll ); /* revision */
+  InsertAttribute( (CipInstance *) class, 2, kCipUint,
+                   (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
+  InsertAttribute( (CipInstance *) class, 3, kCipUint,
+                   (void *) &class->number_of_instances, kGetableSingleAndAll ); /* number of instances currently existing*/
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
+                   kGetableAll ); /* optional attribute list - default = 0 */
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
+                   kGetableAll ); /* optional service list - default = 0 */
+  InsertAttribute( (CipInstance *) class, 6, kCipUint,
+                   (void *) &meta_class->highest_attribute_number,
+                   kGetableSingleAndAll ); /* max class attribute number*/
+  InsertAttribute( (CipInstance *) class, 7, kCipUint,
+                   (void *) &class->highest_attribute_number,
+                   kGetableSingleAndAll ); /* max instance attribute number*/
 
   /* create the standard class services*/
   if (0 != get_all_class_attributes_mask) { /*only if the mask has values add the get_attribute_all service */
@@ -280,8 +287,10 @@ CipClass *CreateCipClass(const EipUint32 class_id, const int number_of_class_att
   return class;
 }
 
-void InsertAttribute(CipInstance *const instance, const EipUint16 attribute_number,
-                     const EipUint8 cip_type, void *const data, const EipByte cip_flags) {
+void InsertAttribute(CipInstance *const instance,
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_type, void *const data,
+                     const EipByte cip_flags) {
 
   CipAttributeStruct *attribute = instance->attributes;
   OPENER_ASSERT(NULL != attribute);
@@ -303,22 +312,24 @@ void InsertAttribute(CipInstance *const instance, const EipUint16 attribute_numb
   }
 
   OPENER_TRACE_ERR(
-      "Tried to insert to many attributes into class: %"PRIu32", instance %"PRIu32"\n",
-      instance->cip_class->class_instance.instance_number,
-      instance->instance_number);
+    "Tried to insert to many attributes into class: %" PRIu32 ", instance %" PRIu32 "\n",
+    instance->cip_class->class_instance.instance_number,
+    instance->instance_number);
   OPENER_ASSERT(0);
   /* trying to insert too many attributes*/
 }
 
 void InsertService(const CipClass *const class, const EipUint8 service_number,
-                   const CipServiceFunction service_function, char *const service_name) {
+                   const CipServiceFunction service_function,
+                   char *const service_name) {
 
   CipServiceStruct *service = class->services; /* get a pointer to the service array*/
   OPENER_ASSERT(service != 0);
   /* adding a service to a class that was not declared to have services is not allowed*/
   for (int i = 0; i < class->number_of_services; i++) /* Iterate over all service slots attached to the class */
   {
-    if (service->service_number == service_number || service->service_function == NULL) /* found undefined service slot*/
+    if (service->service_number == service_number ||
+        service->service_function == NULL)                                              /* found undefined service slot*/
     {
       service->service_number = service_number; /* fill in service number*/
       service->service_function = service_function; /* fill in function address*/
@@ -336,10 +347,12 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
 
   CipAttributeStruct *attribute = instance->attributes; /* init pointer to array of attributes*/
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
-    if (attribute_number == attribute->attribute_number)
+    if (attribute_number == attribute->attribute_number) {
       return attribute;
-    else
+    }
+    else{
       ++attribute;
+    }
   }
 
   OPENER_TRACE_WARN("attribute %d not defined\n", attribute_number);
@@ -350,17 +363,18 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
 /* TODO this needs to check for buffer overflow*/
 EipStatus GetAttributeSingle(CipInstance *restrict const instance,
                              CipMessageRouterRequest *const message_router_request,
-                             CipMessageRouterResponse *const message_router_response) {
+                             CipMessageRouterResponse *const message_router_response)
+{
   /* Mask for filtering get-ability */
   EipByte get_mask = kNotSetOrGetable;
 
   CipAttributeStruct *attribute = GetCipAttribute(
-      instance, message_router_request->request_path.attribute_number);
+    instance, message_router_request->request_path.attribute_number);
   EipByte *message = message_router_response->data;
 
   message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80
-      | message_router_request->service);
+                                            | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 
@@ -372,7 +386,7 @@ EipStatus GetAttributeSingle(CipInstance *restrict const instance,
     get_mask = kGetableSingle;
   }
 
-  if ((attribute != 0) && (attribute->data != 0)) {
+  if ( (attribute != 0) && (attribute->data != 0) ) {
     if (attribute->attribute_flags & get_mask) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
@@ -399,7 +413,8 @@ EipStatus GetAttributeSingle(CipInstance *restrict const instance,
   return kEipStatusOkSend;
 }
 
-int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **cip_message) {
+int EncodeData(const EipUint8 cip_type, const void *const cip_data,
+               EipUint8 * *cip_message) {
   int counter = 0;
 
   switch (cip_type)
@@ -479,7 +494,7 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
       break;
 
     case (kCipEpath):
-      counter = EncodeEPath((CipEpath *) cip_data, cip_message);
+      counter = EncodeEPath( (CipEpath *) cip_data, cip_message );
       break;
 
     case (kCipEngUnit):
@@ -498,22 +513,26 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
 
     case (kCipUdintUdintUdintUdintUdintString): {
       /* TCP/IP attribute 5 */
-      CipTcpIpNetworkInterfaceConfiguration *tcp_ip_network_interface_configuration =
-          (CipTcpIpNetworkInterfaceConfiguration *) cip_data;
+      CipTcpIpNetworkInterfaceConfiguration *
+        tcp_ip_network_interface_configuration =
+        (CipTcpIpNetworkInterfaceConfiguration *) cip_data;
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->ip_address), cip_message);
+        ntohl(tcp_ip_network_interface_configuration->ip_address), cip_message);
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->network_mask), cip_message);
-      counter += AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway),
-                       cip_message);
+        ntohl(tcp_ip_network_interface_configuration->network_mask),
+        cip_message);
+      counter +=
+        AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway),
+                         cip_message);
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->name_server), cip_message);
+        ntohl(tcp_ip_network_interface_configuration->name_server),
+        cip_message);
       counter += AddDintToMessage(
-          ntohl(tcp_ip_network_interface_configuration->name_server_2),
-          cip_message);
+        ntohl(tcp_ip_network_interface_configuration->name_server_2),
+        cip_message);
       counter += EncodeData(
-          kCipString, &(tcp_ip_network_interface_configuration->domain_name),
-          cip_message);
+        kCipString, &(tcp_ip_network_interface_configuration->domain_name),
+        cip_message);
       break;
     }
 
@@ -534,7 +553,7 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
       *cip_message += cip_byte_array->length;
       counter = cip_byte_array->length;
     }
-      break;
+    break;
 
     case (kInternalUint6): /* TODO for port class attribute 9, hopefully we can find a better way to do this*/
     {
@@ -557,7 +576,8 @@ int EncodeData(const EipUint8 cip_type, const void *const cip_data, EipUint8 **c
   return counter;
 }
 
-int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const message) {
+int DecodeData(const EipUint8 cip_type, void *const data,
+               const EipUint8 * *const message) {
   int number_of_decoded_bytes = -1;
 
   switch (cip_type)
@@ -575,14 +595,14 @@ int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const
     case (kCipInt):
     case (kCipUint):
     case (kCipWord):
-      (*(EipUint16 *) (data)) = GetIntFromMessage(message);
+      ( *(EipUint16 *) (data) ) = GetIntFromMessage(message);
       number_of_decoded_bytes = 2;
       break;
 
     case (kCipDint):
     case (kCipUdint):
     case (kCipDword):
-      (*(EipUint32 *) (data)) = GetDintFromMessage(message);
+      ( *(EipUint32 *) (data) ) = GetDintFromMessage(message);
       number_of_decoded_bytes = 4;
       break;
 
@@ -590,10 +610,10 @@ int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const
     case (kCipLint):
     case (kCipUlint):
     case (kCipLword): {
-      (*(EipUint64 *) (data)) = GetLintFromMessage(message);
+      ( *(EipUint64 *) (data) ) = GetLintFromMessage(message);
       number_of_decoded_bytes = 8;
     }
-      break;
+    break;
 #endif
 
     case (kCipString): {
@@ -609,7 +629,7 @@ int DecodeData(const EipUint8 cip_type, void *const data, const EipUint8 **const
         number_of_decoded_bytes++;
       }
     }
-      break;
+    break;
     case (kCipShortString): {
       CipShortString *short_string = (CipShortString *) data;
 
@@ -649,30 +669,31 @@ EipStatus GetAttributeAll(CipInstance *instance,
       if (0 == instance->cip_class->number_of_attributes) {
         message_router_response->data_length = 0; /*there are no attributes to be sent back*/
         message_router_response->reply_service = (0x80
-            | message_router_request->service);
+                                                  | message_router_request->
+                                                  service);
         message_router_response->general_status = kCipErrorServiceNotSupported;
         message_router_response->size_of_additional_status = 0;
       } else {
         for (int j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
         {
           int attrNum = attribute->attribute_number;
-          if (attrNum < 32
-              && (instance->cip_class->get_attribute_all_mask & 1 << attrNum)) /* only return attributes that are flagged as being part of GetAttributeALl */
-              {
+          if ( attrNum < 32
+               && (instance->cip_class->get_attribute_all_mask & 1 << attrNum) ) /* only return attributes that are flagged as being part of GetAttributeALl */
+          {
             message_router_request->request_path.attribute_number = attrNum;
-            if (kEipStatusOkSend
-                != service->service_function(instance, message_router_request,
-                                             message_router_response)) {
+            if ( kEipStatusOkSend
+                 != service->service_function(instance, message_router_request,
+                                              message_router_response) ) {
               message_router_response->data = reply;
               return kEipStatusError;
             }
             message_router_response->data += message_router_response
-                ->data_length;
+                                             ->data_length;
           }
           attribute++;
         }
         message_router_response->data_length = message_router_response->data
-            - reply;
+                                               - reply;
         message_router_response->data = reply;
       }
       return kEipStatusOkSend;
@@ -682,7 +703,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
   return kEipStatusOk; /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
 }
 
-int EncodeEPath(CipEpath *epath, EipUint8 **message) {
+int EncodeEPath(CipEpath *epath, EipUint8 * *message) {
   unsigned int length = epath->path_size;
   AddIntToMessage(epath->path_size, message);
 
@@ -738,7 +759,7 @@ int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   return 2 + epath->path_size * 2; /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
+int DecodePaddedEPath(CipEpath *epath, const EipUint8 * *message) {
   unsigned int number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 
@@ -750,44 +771,51 @@ int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
   epath->attribute_number = 0;
 
   for (number_of_decoded_elements = 0;
-      number_of_decoded_elements < epath->path_size;
-      number_of_decoded_elements++) {
-    if (kSegmentTypeReserved == ((*message_runner) & kSegmentTypeReserved)) {
+       number_of_decoded_elements < epath->path_size;
+       number_of_decoded_elements++) {
+    if ( kSegmentTypeReserved ==
+         ( (*message_runner) & kSegmentTypeReserved ) ) {
       /* If invalid/reserved segment type, segment type greater than 0xE0 */
       return kEipStatusError;
     }
 
     switch (*message_runner) {
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_CLASS_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+        LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
         epath->class_id = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_CLASS_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+        LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
         message_runner += 2;
-        epath->class_id = GetIntFromMessage(&(message_runner));
+        epath->class_id = GetIntFromMessage( &(message_runner) );
         number_of_decoded_elements++;
         break;
 
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_INSTANCE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+        LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
         epath->instance_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_INSTANCE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+        LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
         message_runner += 2;
-        epath->instance_number = GetIntFromMessage(&(message_runner));
+        epath->instance_number = GetIntFromMessage( &(message_runner) );
         number_of_decoded_elements++;
         break;
 
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_EIGHT_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+        LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
         epath->attribute_number = *(EipUint8 *) (message_runner + 1);
         message_runner += 2;
         break;
 
-      case SEGMENT_TYPE_LOGICAL_SEGMENT_MESSAGE_VALUE + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID_MESSAGE_VALUE + LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT_MESSAGE_VALUE:
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+        LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
         message_runner += 2;
-        epath->attribute_number = GetIntFromMessage(&(message_runner));
+        epath->attribute_number = GetIntFromMessage( &(message_runner) );
         number_of_decoded_elements++;
         break;
 
