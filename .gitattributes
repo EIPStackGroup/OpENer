@@ -1,0 +1,4 @@
+*.c filter=uncrustify
+*.cpp filter=uncrustify
+*.h filter=uncrustify
+*.hpp filter=uncrustify
