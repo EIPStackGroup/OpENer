@@ -27,7 +27,7 @@
  *  @param ip_address    the current IP address of the device
  *  @param subnet_mask  the subnet mask to be used
  *  @param gateway_address     the gateway address
- *  @return EIP_OK if the configuring worked otherwise EIP_ERROR
+ *  @return kEipStatusOk if the configuring worked otherwise kEipStatusError
  */
 EipStatus
 ConfigureNetworkInterface(const char *const ip_address,

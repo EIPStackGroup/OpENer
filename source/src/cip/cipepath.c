@@ -341,13 +341,13 @@ void GetPathLogicalSegmentElectronicKeyFormat4(
                  GetPathLogicalSegmentElectronicKeyFormat(cip_path) );
 
   const char *message_runner = (const char *)(cip_path + 2);
-  SetElectronicKeyFormat4VendorId(GetIntFromMessage(&message_runner), key);
-  SetElectronicKeyFormat4DeviceType(GetIntFromMessage(&message_runner), key);
-  SetElectronicKeyFormat4ProductCode(GetIntFromMessage(&message_runner), key);
-  SetElectronicKeyFormat4MajorRevisionCompatibility(GetSintFromMessage(&
+  ElectronicKeyFormat4SetVendorId(GetIntFromMessage(&message_runner), key);
+  ElectronicKeyFormat4SetDeviceType(GetIntFromMessage(&message_runner), key);
+  ElectronicKeyFormat4SetProductCode(GetIntFromMessage(&message_runner), key);
+  ElectronicKeyFormat4SetMajorRevisionCompatibility(GetSintFromMessage(&
                                                                        message_runner),
                                                     key);
-  SetElectronicKeyFormat4MinorRevision(GetSintFromMessage(&message_runner),
+  ElectronicKeyFormat4SetMinorRevision(GetSintFromMessage(&message_runner),
                                        key);
 }
 

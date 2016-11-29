@@ -1,4 +1,4 @@
- /*******************************************************************************
+/*******************************************************************************
  * Copyright (c) 2016, Rockwell Automation, Inc.
  * All rights reserved.
  *
@@ -16,59 +16,78 @@ typedef struct electronic_key_format_4 {
   CipUsint minor_revision;
 } ElectronicKeyFormat4;
 
+const unsigned int kElectronicKeyFormat4Size = sizeof(ElectronicKeyFormat4);
+
 ElectronicKeyFormat4 *ElectronicKeyFormat4New() {
-  return (ElectronicKeyFormat4*)calloc(1, sizeof(ElectronicKeyFormat4));
+  return (ElectronicKeyFormat4 *)calloc( 1, sizeof(ElectronicKeyFormat4) );
 }
 
-void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **key) {
-  free(*key);
-  *key = NULL;
+void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **electronic_key) {
+  free(*electronic_key);
+  *electronic_key = NULL;
 }
 
-void SetElectronicKeyFormat4VendorId(const CipUint vendor_id, ElectronicKeyFormat4 *const electronic_key) {
+void ElectronicKeyFormat4SetVendorId(const CipUint vendor_id,
+                                     ElectronicKeyFormat4 *const electronic_key)
+{
   electronic_key->vendor_id = vendor_id;
 }
 
-CipUint GetElectronicKeyFormat4VendorId(const ElectronicKeyFormat4 *const electronic_key) {
+CipUint ElectronicKeyFormat4GetVendorId(
+  const ElectronicKeyFormat4 *const electronic_key) {
   return electronic_key->vendor_id;
 }
 
-void SetElectronicKeyFormat4DeviceType(CipUint device_type, ElectronicKeyFormat4 *const electronic_key) {
+void ElectronicKeyFormat4SetDeviceType(CipUint device_type,
+                                       ElectronicKeyFormat4 *const electronic_key)
+{
   electronic_key->device_type = device_type;
 }
 
-CipUint GetElectronicKeyFormat4DeviceType(const ElectronicKeyFormat4 *const electronic_key) {
+CipUint ElectronicKeyFormat4GetDeviceType(
+  const ElectronicKeyFormat4 *const electronic_key) {
   return electronic_key->device_type;
 }
 
-void SetElectronicKeyFormat4ProductCode(CipUint product_code, ElectronicKeyFormat4 *const electronic_key) {
+void ElectronicKeyFormat4SetProductCode(CipUint product_code,
+                                        ElectronicKeyFormat4 *const electronic_key)
+{
   electronic_key->product_code = product_code;
 }
 
-CipUint GetElectronicKeyFormat4ProductCode(const ElectronicKeyFormat4 *const electronic_key) {
+CipUint ElectronicKeyFormat4GetProductCode(
+  const ElectronicKeyFormat4 *const electronic_key) {
   return electronic_key->product_code;
 }
 
-void SetElectronicKeyFormat4MajorRevisionCompatibility(CipByte major_revision_compatibility, ElectronicKeyFormat4 *const electronic_key) {
+void ElectronicKeyFormat4SetMajorRevisionCompatibility(
+  CipByte major_revision_compatibility,
+  ElectronicKeyFormat4 *const electronic_key) {
   electronic_key->major_revision_compatibility = major_revision_compatibility;
 }
 
-CipByte GetElectronicKeyFormat4MajorRevision(const ElectronicKeyFormat4 *const electronic_key) {
+CipByte ElectronicKeyFormat4GetMajorRevision(
+  const ElectronicKeyFormat4 *const electronic_key) {
   const CipByte kMajorRevisionMask = 0x7F;
   return (electronic_key->major_revision_compatibility & kMajorRevisionMask);
 }
 
-bool GetElectronicKeyFormat4Compatibility(const ElectronicKeyFormat4 *const electronic_key) {
+bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
+  const ElectronicKeyFormat4 *const electronic_key) {
   const CipByte kCompatibilityMask = 0x80;
-  if(kCompatibilityMask == (electronic_key->major_revision_compatibility & kCompatibilityMask) ) {
+  if( kCompatibilityMask ==
+      (electronic_key->major_revision_compatibility & kCompatibilityMask) ) {
     return true;
   }
   return false;
 }
 
-void SetElectronicKeyFormat4MinorRevision(CipUsint minor_revision, ElectronicKeyFormat4 *const electronic_key) {
+void ElectronicKeyFormat4SetMinorRevision(CipUsint minor_revision,
+                                          ElectronicKeyFormat4 *const electronic_key)
+{
   electronic_key->minor_revision = minor_revision;
 }
-CipUsint GetElectronicKeyFormat4MinorRevision(const ElectronicKeyFormat4 *const electronic_key) {
+CipUsint ElectronicKeyFormat4GetMinorRevision(
+  const ElectronicKeyFormat4 *const electronic_key) {
   return electronic_key->minor_revision;
 }

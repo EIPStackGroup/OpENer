@@ -44,46 +44,62 @@
 
 #define LOGICAL_SEGMENT_SPECIAL_TYPE_FORMAT_ELECTRONIC_KEY 0x00 /**< Message value indicating an electronic key */
 
-#define NETWORK_SEGMENT_SUBTYPE_SCHEDULE 0x01
-#define NETWORK_SEGMENT_SUBTYPE_FIXED_TAG 0x02
-#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS 0x03
-#define NETWORK_SEGMENT_SUBTYPE_SAFETY 0x04
-#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS 0x10
-#define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK 0x1F
+#define NETWORK_SEGMENT_SUBTYPE_SCHEDULE 0x01 /**< Message value indicating a network segment schedule message */
+#define NETWORK_SEGMENT_SUBTYPE_FIXED_TAG 0x02 /**< Message value indicating a network segment fixed tag message */
+#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS 0x03 /**< Message value indicating a network segment PIT in milliseconds message */
+#define NETWORK_SEGMENT_SUBTYPE_SAFETY 0x04 /**< Message value indicating a network segment safety message */
+#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS 0x10 /**< Message value indicating a network segment PIT in microseconds message */
+#define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK 0x1F /**< Message indicating a network message extended network message */
 
+/** @brief All types of network segment types for the use in all code
+ *
+ *  Enum constants for the different network segment subtypes to decouple code from the actual needed message values
+ */
 typedef enum network_segment_subtype {
-  kNetworkSegmentSubtypeReserved,
-  kNetworkSegmentSubtypeScheduleSegment,
-  kNetworkSegmentSubtypeFixedTagSegment,
-  kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds,
-  kNetworkSegmentSubtypeSafetySegment,
-  kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds,
-  kNetworkSegmentSubtypeExtendedNetworkSegment
+  kNetworkSegmentSubtypeReserved, /**< Reserverd */
+  kNetworkSegmentSubtypeScheduleSegment, /**< Schedule segment */
+  kNetworkSegmentSubtypeFixedTagSegment, /**< Fixed tag segment */
+  kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds, /**< Production Inhibit Time in milliseconds segment */
+  kNetworkSegmentSubtypeSafetySegment, /**< Safety segment */
+  kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds, /**< Production Inhibit Time in microseconds segment */
+  kNetworkSegmentSubtypeExtendedNetworkSegment /**< Extended network segment */
 } NetworkSegmentSubtype;
 
+/** @brief Electronic key formats
+ *
+ */
 typedef enum electronic_key_segment_format {
-  kElectronicKeySegmentFormatReserved,
-  kElectronicKeySegmentFormatKeyFormat4
+  kElectronicKeySegmentFormatReserved, /**< Reserved */
+  kElectronicKeySegmentFormatKeyFormat4 /**< Electronic key format 4 key */
 } ElectronicKeySegmentFormat;
 
+/** @brief Data segment sub types
+ *
+ */
 typedef enum data_segment_subtype {
-  kDataSegmentSubtypeReserved,
-  kDataSegmentSubtypeSimpleData,
-  kDataSegmentSubtypeANSIExtendedSymbol
+  kDataSegmentSubtypeReserved, /**< Reserved */
+  kDataSegmentSubtypeSimpleData, /**< Simple Data segment */
+  kDataSegmentSubtypeANSIExtendedSymbol /**< ANSI extended symbol segment */
 } DataSegmentSubtype;
 
+/** @brief Symbolic segment formats
+ *
+ */
 typedef enum symbolic_segment_format {
-  kSymbolicSegmentFormatASCII,
-  kSymbolicSegmentFormatExtendedString
+  kSymbolicSegmentFormatASCII, /**< ASCII format */
+  kSymbolicSegmentFormatExtendedString /**< Extended String format */
 } SymbolicSegmentFormat;
 
+/** @brief Extended symbolic symbol formats
+ *
+ */
 typedef enum symbolic_segment_extended_format {
-  kSymbolicSegmentExtendedFormatDoubleByteChars,
-  kSymbolicSegmentExtendedFormatTripleByteChars,
-  kSymbolicSegmentExtendedFormatNumericSymbolUSINT,
-  kSymbolicSegmentExtendedFormatNumericSymbolUINT,
-  kSymbolicSegmentExtendedFormatNumericSymbolUDINT,
-  kSymbolicSegmentExtendedFormatReserved
+  kSymbolicSegmentExtendedFormatDoubleByteChars, /**< Double byte character encoding */
+  kSymbolicSegmentExtendedFormatTripleByteChars, /**< Triple byte character encoding */
+  kSymbolicSegmentExtendedFormatNumericSymbolUSINT, /**< Numeric USINT symbol */
+  kSymbolicSegmentExtendedFormatNumericSymbolUINT, /**< Numeric UINT symbol */
+  kSymbolicSegmentExtendedFormatNumericSymbolUDINT, /**< Numeric UDINT symbol */
+  kSymbolicSegmentExtendedFormatReserved /**< Reserved */
 } SymbolicSegmentExtendedFormat;
 
 /** @brief Gets the basic segment type of a CIP EPath
@@ -98,8 +114,7 @@ SegmentType GetPathSegmentType(const unsigned char *const cip_path);
  * @param segment_type The segment type
  * @param cip_path A message buffer - Will be written on!
  */
-void SetPathSegmentType(SegmentType segment_type,
-                        unsigned char *const cip_path);
+void SetPathSegmentType(SegmentType segment_type,unsigned char *const cip_path);
 
 /*********************************************************
 * Port Segment functions
