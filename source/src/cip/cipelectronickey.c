@@ -38,7 +38,7 @@ CipUint ElectronicKeyFormat4GetVendorId(
   return electronic_key->vendor_id;
 }
 
-void ElectronicKeyFormat4SetDeviceType(CipUint device_type,
+void ElectronicKeyFormat4SetDeviceType(const CipUint device_type,
                                        ElectronicKeyFormat4 *const electronic_key)
 {
   electronic_key->device_type = device_type;
@@ -49,7 +49,7 @@ CipUint ElectronicKeyFormat4GetDeviceType(
   return electronic_key->device_type;
 }
 
-void ElectronicKeyFormat4SetProductCode(CipUint product_code,
+void ElectronicKeyFormat4SetProductCode(const CipUint product_code,
                                         ElectronicKeyFormat4 *const electronic_key)
 {
   electronic_key->product_code = product_code;
@@ -82,7 +82,7 @@ bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
   return false;
 }
 
-void ElectronicKeyFormat4SetMinorRevision(CipUsint minor_revision,
+void ElectronicKeyFormat4SetMinorRevision(const CipUsint minor_revision,
                                           ElectronicKeyFormat4 *const electronic_key)
 {
   electronic_key->minor_revision = minor_revision;

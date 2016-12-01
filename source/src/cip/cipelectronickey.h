@@ -52,7 +52,7 @@ CipUint ElectronicKeyFormat4GetVendorId(
  *	@param device_type The device type which shall be inserted into the electronic key
  *	@param electronic_key A format 4 electronic key
  */
-void ElectronicKeyFormat4SetDeviceType(CipUint device_type,
+void ElectronicKeyFormat4SetDeviceType(const CipUint device_type,
                                        ElectronicKeyFormat4 *const electronic_key);
 
 /** @brief Gets the device type from a format 4 electronic key
@@ -68,7 +68,7 @@ CipUint ElectronicKeyFormat4GetDeviceType(
  *      @param product_code The product code to be inserted
  *      @param electronic_key The electronic key to be modified
  */
-void ElectronicKeyFormat4SetProductCode(CipUint product_code,
+void ElectronicKeyFormat4SetProductCode(const CipUint product_code,
                                         ElectronicKeyFormat4 *const electronic_key);
 
 /** @brief Gets the product code from an format 4 electronic key
@@ -105,7 +105,7 @@ bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
  *      @param minor_revision The minor revision to be set in the electronic key
  *      @param electronic_key The electronic key to be modified
  */
-void ElectronicKeyFormat4SetMinorRevision(CipUsint minor_revision,
+void ElectronicKeyFormat4SetMinorRevision(const CipUsint minor_revision,
                                           ElectronicKeyFormat4 *const electronic_key);
 
 /** @brief Gets the minor revision from an format 4 electronic key
