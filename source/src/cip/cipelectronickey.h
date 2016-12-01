@@ -79,10 +79,14 @@ void ElectronicKeyFormat4SetProductCode(const CipUint product_code,
 CipUint ElectronicKeyFormat4GetProductCode(
   const ElectronicKeyFormat4 *const electronic_key);
 
+/** @brief Sets the major revision byte including the compatibility flag
+ *
+ *      @param major_revision_compatibility The major revision byte including the compatibility flag
+ *      @param electronic_key The electronic key to be modified
+ */
 void ElectronicKeyFormat4SetMajorRevisionCompatibility(
-  CipByte major_revision_compatibility,
+  const CipByte major_revision_compatibility,
   ElectronicKeyFormat4 *const electronic_key);
-//CipByte GetElectronicKeyFormat4MajorRevisionCompatibility(const ElectronicKeyFormat4 *const electronic_key);
 
 /** @brief Gets the major revision from an format 4 electronic key
  *

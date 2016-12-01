@@ -61,7 +61,7 @@ CipUint ElectronicKeyFormat4GetProductCode(
 }
 
 void ElectronicKeyFormat4SetMajorRevisionCompatibility(
-  CipByte major_revision_compatibility,
+  const CipByte major_revision_compatibility,
   ElectronicKeyFormat4 *const electronic_key) {
   electronic_key->major_revision_compatibility = major_revision_compatibility;
 }
