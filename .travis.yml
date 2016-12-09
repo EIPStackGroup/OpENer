@@ -1,0 +1,39 @@
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+language: c
+
+# Blacklist
+branches:
+  except:
+    - gh-pages
+
+# Environment variables
+env:
+  global:
+    - GH_REPO_NAME: OpENer
+    - DOXYFILE: opener.doxyfile
+    - GH_REPO_REF: github.com/CapXilinx/OpENer.git
+    - secure: "RAyvtCis1g7WET5y0NsOsXt7eVLG0iNYoNNyJ+2XXy9BdcOFDsucWJAABAWyb2bf/lqeJ/tvmPRjAzPoQhId4zMxkLMKKEU6xXQqIoTSMsLOlb2R5WUVahnR/dHfoq3u3wXdmZZq/vRnDp9UXDDjyYDvSqIprpN0uvu666QLEGU="
+
+# Install dependencies
+addons:
+  apt:
+    packages:
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
+
+# Build your code e.g. by calling make
+script:
+  - cd $TRAVIS_BUILD_DIR/bin/posix
+  - ./setup_posix.sh
+  - make
+
+# Generate and deploy documentation
+after_success:
+  - cd $TRAVIS_BUILD_DIR/source
+  - chmod +x $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
+  - $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
