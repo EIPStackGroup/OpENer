@@ -11,7 +11,7 @@ add_test_includes()
 ###################################################
 # Copy custom test output file to binary location #
 ###################################################
-configure_file( CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake )
+#configure_file( CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake )
 
 add_subdirectory( utils )
 add_subdirectory( enet_encap )
@@ -27,4 +27,4 @@ target_link_libraries( OpENer_Tests EthernetEncapsulationTest ENET_ENCAP )
 ########################################
 # Adds test to CTest environment       #
 ########################################
-add_test(OpENer_Tests ${EXECUTABLE_OUTPUT_PATH}/OpENer_Tests)
+add_test(OpENer_Tests ${EXECUTABLE_OUTPUT_PATH}/OpENer_Tests -v -c)
