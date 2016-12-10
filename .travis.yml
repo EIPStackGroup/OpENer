@@ -16,7 +16,7 @@ env:
     - GH_REPO_NAME: OpENer
     - DOXYFILE: opener.doxyfile
     - GH_REPO_REF: github.com/EIPStackGroup/OpENer.git
-    - secure: "RAyvtCis1g7WET5y0NsOsXt7eVLG0iNYoNNyJ+2XXy9BdcOFDsucWJAABAWyb2bf/lqeJ/tvmPRjAzPoQhId4zMxkLMKKEU6xXQqIoTSMsLOlb2R5WUVahnR/dHfoq3u3wXdmZZq/vRnDp9UXDDjyYDvSqIprpN0uvu666QLEGU="
+    - secure: "h1vuX5cGZd5W7f5TitD+EamJIsvG2qq8aBpO9MUGIOj3bShwTaR0S0qbcpCyltXiZ9DJklLc7kP5kB0XtX1o6vZMelQsqBjiHQK5yFW0vHmFAg1sLMpVBbsAN0lMWgeGJEmyRstA1KYBixwExtc5GpcgMBvS/mnJQ10zboZNcRU="
 
 # Install dependencies
 addons:
