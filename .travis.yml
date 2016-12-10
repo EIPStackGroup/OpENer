@@ -15,7 +15,7 @@ env:
   global:
     - GH_REPO_NAME: OpENer
     - DOXYFILE: opener.doxyfile
-    - GH_REPO_REF: github.com/CapXilinx/OpENer.git
+    - GH_REPO_REF: github.com/EIPStackGroup/OpENer.git
     - secure: "RAyvtCis1g7WET5y0NsOsXt7eVLG0iNYoNNyJ+2XXy9BdcOFDsucWJAABAWyb2bf/lqeJ/tvmPRjAzPoQhId4zMxkLMKKEU6xXQqIoTSMsLOlb2R5WUVahnR/dHfoq3u3wXdmZZq/vRnDp9UXDDjyYDvSqIprpN0uvu666QLEGU="
 
 # Install dependencies
