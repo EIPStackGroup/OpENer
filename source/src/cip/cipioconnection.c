@@ -39,20 +39,21 @@ const int kOpenerEipIoUdpPort = 0x08AE;
  * application connection types.
  */
 EipStatus OpenProducingMulticastConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data);
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data);
 
 EipStatus OpenMulticastConnection(
-    UdpCommuncationDirection direction, ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data);
+  UdpCommuncationDirection direction,
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data);
 
 EipStatus OpenConsumingPointToPointConnection(
-    ConnectionObject *const connection_object,
-    CipCommonPacketFormatData *const common_packet_format_data);
+  ConnectionObject *const connection_object,
+  CipCommonPacketFormatData *const common_packet_format_data);
 
 EipStatus OpenProducingPointToPointConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data);
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data);
 
 EipUint16 HandleConfigData(ConnectionObject *connection_object);
 
@@ -72,7 +73,8 @@ void HandleIoConnectionTimeOut(ConnectionObject *connection_object);
 EipStatus SendConnectedData(ConnectionObject *connection_object);
 
 EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
-                                         const EipUint8 *data, EipUint16 data_length);
+                                         const EipUint8 *data,
+                                         EipUint16 data_length);
 
 /**** Global variables ****/
 EipUint8 *g_config_data_buffer = NULL; /**< buffers for the config data coming with a forward open request. */
@@ -80,20 +82,21 @@ unsigned int g_config_data_length = 0; /**< length of g_config_data_buffer. Init
 
 EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 
-EipUint16 ProcessProductionInhibitTime(ConnectionObject* io_connection_object) {
-  if (kProductionTriggerCyclic
-      == GetProductionTrigger(io_connection_object)) {
-    if (256 == GetProductionInhibitTime(io_connection_object)) {
+EipUint16 ProcessProductionInhibitTime(ConnectionObject *io_connection_object)
+{
+  if ( kProductionTriggerCyclic
+       == GetProductionTrigger(io_connection_object) ) {
+    if ( 256 == GetProductionInhibitTime(io_connection_object) ) {
       /* there was no PIT segment in the connection path; set PIT to one fourth of RPI */
       SetProductionInhibitTime(
-          GetTargetToOriginatorRequestedPackedInterval(io_connection_object)
-              / 4000,
-          io_connection_object);
+        GetTargetToOriginatorRequestedPackedInterval(io_connection_object)
+        / 4000,
+        io_connection_object);
     } else {
       /* If a production inhibit time is provided, it needs to be smaller than the Requested Packet Interval */
-      if (GetProductionInhibitTime(io_connection_object)
-          > (GetTargetToOriginatorRequestedPackedInterval(io_connection_object)
-              / 1000)) {
+      if ( GetProductionInhibitTime(io_connection_object)
+           > (GetTargetToOriginatorRequestedPackedInterval(io_connection_object)
+              / 1000) ) {
         /* see section C-1.4.3.3 */
         return 0x111; /**< RPI not supported. Extended Error code deprecated */
       }
@@ -102,10 +105,12 @@ EipUint16 ProcessProductionInhibitTime(ConnectionObject* io_connection_object) {
   return kConnectionManagerExtendedStatusCodeSuccess;
 }
 
-CipConnectionObjectTransportClass GetConnectionTransportClass(const ConnectionObject *const connection_object) {
+CipConnectionObjectTransportClass GetConnectionTransportClass(
+  const ConnectionObject *const connection_object) {
   const unsigned int kTransportClassMask = 0x0F;
 
-  switch(connection_object->transport_type_class_trigger & kTransportClassMask) {
+  switch(connection_object->transport_type_class_trigger &
+         kTransportClassMask) {
     case 0: return kCipConnectionObjectTransportClass0;
     case 1: return kCipConnectionObjectTransportClass1;
     case 2: return kCipConnectionObjectTransportClass2;
@@ -122,52 +127,55 @@ void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object) {
   io_connection_object->connection_timeout_function = HandleIoConnectionTimeOut;
   io_connection_object->connection_send_data_function = SendConnectedData;
   io_connection_object->connection_receive_data_function =
-      HandleReceivedIoConnectionData;
+    HandleReceivedIoConnectionData;
 }
 
 EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
-    ConnectionObject *const io_connection_object,
-    ConnectionObject *const restrict connection_object) {
-  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
-  CipInstance* instance = NULL;
-  if (NULL
-      != (instance =
-          GetCipInstance(
-              assembly_class,
-              io_connection_object->connection_path.connection_point[kConnectionPointConsumer]))) {
+  ConnectionObject *const io_connection_object,
+  ConnectionObject *const restrict connection_object)
+{
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipInstance *instance = NULL;
+  if ( NULL
+       != ( instance =
+              GetCipInstance(
+                assembly_class,
+                io_connection_object->connection_path.connection_point[
+                  kConnectionPointConsumer]) ) ) {
     /* consuming Connection Point is present */
     io_connection_object->consuming_instance = instance;
     io_connection_object->consumed_connection_path_length = 6;
     io_connection_object->consumed_connection_path.path_size = 6;
     io_connection_object->consumed_connection_path.class_id =
-        io_connection_object->connection_path.class_id;
+      io_connection_object->connection_path.class_id;
     io_connection_object->consumed_connection_path.instance_number =
-        io_connection_object->connection_path.connection_point[kConnectionPointConsumer];
+      io_connection_object->connection_path.connection_point[
+        kConnectionPointConsumer];
     io_connection_object->consumed_connection_path.attribute_number = 3;
     int data_size = io_connection_object->consumed_connection_size;
     int diff_size = 0;
 
     /* an assembly object should always have an attribute 3 */
-    CipAttributeStruct* attribute = GetCipAttribute(instance, 3);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
-    int is_heartbeat = (((CipByteArray*) attribute->data)->length == 0);
-    if (kCipConnectionObjectTransportClass1
-        == GetConnectionTransportClass(io_connection_object)) {
+    int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+    if ( kCipConnectionObjectTransportClass1
+         == GetConnectionTransportClass(io_connection_object) ) {
       //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-    if ((kOpenerConsumedDataHasRunIdleHeader) && (data_size > 0)
-        && (!is_heartbeat)) {
+    if ( (kOpenerConsumedDataHasRunIdleHeader) && (data_size > 0)
+         && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
-    if (((CipByteArray*) attribute->data)->length != data_size) {
+    if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size */
       connection_object->correct_originator_to_target_size =
-          ((CipByteArray*) attribute->data)->length + diff_size;
+        ( (CipByteArray *) attribute->data )->length + diff_size;
       return kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize;
     }
   } else {
@@ -177,45 +185,49 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
 }
 
 EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
-    ConnectionObject *const io_connection_object,
-    ConnectionObject *const restrict connection_object) {
+  ConnectionObject *const io_connection_object,
+  ConnectionObject *const restrict connection_object)
+{
   /*setup producer side*/
-  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
-  CipInstance* instance = NULL;
-  if (0
-      != (instance =
-          GetCipInstance(
-              assembly_class,
-              io_connection_object->connection_path.connection_point[kConnectionPointProducer]))) {
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipInstance *instance = NULL;
+  if ( 0
+       != ( instance =
+              GetCipInstance(
+                assembly_class,
+                io_connection_object->connection_path.connection_point[
+                  kConnectionPointProducer]) ) ) {
     io_connection_object->producing_instance = instance;
     io_connection_object->produced_connection_path_length = 6;
     io_connection_object->produced_connection_path.path_size = 6;
     io_connection_object->produced_connection_path.class_id =
-        io_connection_object->connection_path.class_id;
+      io_connection_object->connection_path.class_id;
     io_connection_object->produced_connection_path.instance_number =
-        io_connection_object->connection_path.connection_point[kConnectionPointProducer];
+      io_connection_object->connection_path.connection_point[
+        kConnectionPointProducer];
     io_connection_object->produced_connection_path.attribute_number = 3;
     int data_size = io_connection_object->produced_connection_size;
     int diff_size = 0;
     /* an assembly object should always have an attribute 3 */
-    CipAttributeStruct* attribute = GetCipAttribute(instance, 3);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
-    int is_heartbeat = (((CipByteArray*) attribute->data)->length == 0);
-    if (kCipConnectionObjectTransportClass1 == GetConnectionTransportClass(io_connection_object)) {
+    int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+    if ( kCipConnectionObjectTransportClass1 ==
+         GetConnectionTransportClass(io_connection_object) ) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-    if ((kOpenerProducedDataHasRunIdleHeader) && (data_size > 0)
-        && (!is_heartbeat)) {
+    if ( (kOpenerProducedDataHasRunIdleHeader) && (data_size > 0)
+         && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
-    if (((CipByteArray*) attribute->data)->length != data_size) {
+    if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
-          ((CipByteArray*) attribute->data)->length + diff_size;
+        ( (CipByteArray *) attribute->data )->length + diff_size;
       return kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
     }
   } else {
@@ -235,11 +247,15 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
  *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_object,
-                         EipUint16 *const extended_error) {
+EipStatus EstablishIoConnection(
+  ConnectionObject *restrict const connection_object,
+  EipUint16 *const extended_error)
+{
   EipStatus eip_status = kEipStatusOk;
 
-  ConnectionObject *io_connection_object = GetIoConnectionForConnectionData(connection_object, extended_error);
+  ConnectionObject *io_connection_object = GetIoConnectionForConnectionData(
+    connection_object,
+    extended_error);
   if(NULL == io_connection_object) {
     return kCipErrorConnectionFailure;
   }
@@ -253,14 +269,20 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
 
   GeneralConnectionConfiguration(io_connection_object);
 
-  ForwardOpenConnectionType originator_to_target_connection_type = GetConnectionType(io_connection_object
-      ->o_to_t_network_connection_parameter);
-  ForwardOpenConnectionType target_to_originator_connection_type = GetConnectionType(io_connection_object
-      ->t_to_o_network_connection_parameter);
+  ForwardOpenConnectionType originator_to_target_connection_type =
+    GetConnectionType(io_connection_object
+                      ->
+                      o_to_t_network_connection_parameter);
+  ForwardOpenConnectionType target_to_originator_connection_type =
+    GetConnectionType(io_connection_object
+                      ->
+                      t_to_o_network_connection_parameter);
 
   /** Already handled by forward open */
-  OPENER_ASSERT(!(originator_to_target_connection_type == kForwardOpenConnectionTypeNull &&
-                target_to_originator_connection_type == kForwardOpenConnectionTypeNull));
+  OPENER_ASSERT( !(originator_to_target_connection_type ==
+                   kForwardOpenConnectionTypeNull &&
+                   target_to_originator_connection_type ==
+                   kForwardOpenConnectionTypeNull) );
 
   io_connection_object->consuming_instance = NULL;
   io_connection_object->consumed_connection_path_length = 0;
@@ -271,7 +293,9 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
   /* we don't need to check for zero as this is handled in the connection path parsing */
 
   if (originator_to_target_connection_type != kForwardOpenConnectionTypeNull) { /*setup consumer side*/
-    *extended_error = SetupIoConnectionOriginatorToTargetConnectionPoint(io_connection_object, connection_object);
+    *extended_error = SetupIoConnectionOriginatorToTargetConnectionPoint(
+      io_connection_object,
+      connection_object);
     if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
@@ -279,8 +303,9 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
 
 
   if (target_to_originator_connection_type != kForwardOpenConnectionTypeNull) { /*setup producer side*/
-    *extended_error = SetupIoConnectionTargetToOriginatorConnectionPoint(io_connection_object,
-                                                       connection_object);
+    *extended_error = SetupIoConnectionTargetToOriginatorConnectionPoint(
+      io_connection_object,
+      connection_object);
     if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
@@ -302,9 +327,9 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
 
   AddNewActiveConnection(io_connection_object);
   CheckIoConnectionEvent(
-      io_connection_object->connection_path.connection_point[0],
-      io_connection_object->connection_path.connection_point[1],
-      kIoConnectionEventOpened);
+    io_connection_object->connection_path.connection_point[0],
+    io_connection_object->connection_path.connection_point[1],
+    kIoConnectionEventOpened);
   return eip_status;
 }
 
@@ -315,8 +340,9 @@ EipStatus EstablishIoConnection(ConnectionObject *restrict const connection_obje
  * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus OpenConsumingPointToPointConnection(
-    ConnectionObject *const connection_object,
-    CipCommonPacketFormatData *const common_packet_format_data) {
+  ConnectionObject *const connection_object,
+  CipCommonPacketFormatData *const common_packet_format_data)
+{
   /*static EIP_UINT16 nUDPPort = 2222; TODO think on improving the udp port assigment for point to point connections */
   int j = 0;
 
@@ -326,12 +352,14 @@ EipStatus OpenConsumingPointToPointConnection(
     j = 1;
   }
 
-  struct sockaddr_in addr = { .sin_family = PF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = htons(kOpenerEipIoUdpPort) };
+  struct sockaddr_in addr =
+  { .sin_family = PF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = htons(
+      kOpenerEipIoUdpPort) };
 
   int socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming, &addr); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
-        "cannot create UDP socket in OpenPointToPointConnection\n");
+      "cannot create UDP socket in OpenPointToPointConnection\n");
     return kEipStatusError;
   }
 
@@ -341,12 +369,12 @@ EipStatus OpenConsumingPointToPointConnection(
 
   common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].type_id =
-      kCipItemIdSocketAddressInfoOriginatorToTarget;
+    kCipItemIdSocketAddressInfoOriginatorToTarget;
 
   common_packet_format_data->address_info_item[j].sin_port = addr.sin_port;
   /*TODO should we add our own address here? */
   common_packet_format_data->address_info_item[j].sin_addr = addr.sin_addr
-      .s_addr;
+                                                             .s_addr;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
@@ -354,8 +382,9 @@ EipStatus OpenConsumingPointToPointConnection(
 }
 
 EipStatus OpenProducingPointToPointConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data) {
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data)
+{
   in_port_t port = htons(kOpenerEipIoUdpPort); /* the default port to be used if no port information is part of the forward open request */
 
   if (kCipItemIdSocketAddressInfoTargetToOriginator
@@ -373,10 +402,10 @@ EipStatus OpenProducingPointToPointConnection(
   connection_object->remote_address.sin_port = port;
 
   int socket = CreateUdpSocket(kUdpCommuncationDirectionProducing,
-                           &connection_object->remote_address); /* the address is only needed for bind used if consuming */
+                               &connection_object->remote_address); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
-        "cannot create UDP socket in OpenPointToPointConnection\n");
+      "cannot create UDP socket in OpenPointToPointConnection\n");
     /* *pa_pnExtendedError = 0x0315; miscellaneous*/
     return kCipErrorConnectionFailure;
   }
@@ -386,11 +415,12 @@ EipStatus OpenProducingPointToPointConnection(
 }
 
 EipStatus OpenProducingMulticastConnection(
-    ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data) {
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data)
+{
   ConnectionObject *existing_connection_object =
-      GetExistingProducerMulticastConnection(
-          connection_object->connection_path.connection_point[1]);
+    GetExistingProducerMulticastConnection(
+      connection_object->connection_path.connection_point[1]);
 
   if (NULL == existing_connection_object) { /* we are the first connection producing for the given Input Assembly */
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
@@ -398,7 +428,8 @@ EipStatus OpenProducingMulticastConnection(
   } else {
     /* we need to inform our originator on the correct connection id */
     connection_object->cip_produced_connection_id = existing_connection_object
-        ->cip_produced_connection_id;
+                                                    ->
+                                                    cip_produced_connection_id;
   }
 
   /* we have a connection reuse the data and the socket */
@@ -407,7 +438,7 @@ EipStatus OpenProducingMulticastConnection(
   if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
     j = 0;
   } else if (g_common_packet_format_data_item.address_info_item[1].type_id
-      == 0) {
+             == 0) {
     j = 1;
   }
 
@@ -416,23 +447,27 @@ EipStatus OpenProducingMulticastConnection(
      * especially in the case of time outs.
      */
     connection_object->socket[kUdpCommuncationDirectionProducing] =
-        existing_connection_object->socket[kUdpCommuncationDirectionProducing];
+      existing_connection_object->socket[kUdpCommuncationDirectionProducing];
     existing_connection_object->socket[kUdpCommuncationDirectionProducing] =
-        kEipInvalidSocket;
+      kEipInvalidSocket;
   } else { /* this connection will not produce the data */
     connection_object->socket[kUdpCommuncationDirectionProducing] =
-        kEipInvalidSocket;
+      kEipInvalidSocket;
   }
 
   common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].type_id =
-      kCipItemIdSocketAddressInfoTargetToOriginator;
+    kCipItemIdSocketAddressInfoTargetToOriginator;
   connection_object->remote_address.sin_family = AF_INET;
   connection_object->remote_address.sin_port = common_packet_format_data
-      ->address_info_item[j].sin_port = htons(kOpenerEipIoUdpPort);
+                                               ->address_info_item[j].sin_port
+                                                 = htons(kOpenerEipIoUdpPort);
   connection_object->remote_address.sin_addr.s_addr = common_packet_format_data
-      ->address_info_item[j].sin_addr = g_multicast_configuration
-      .starting_multicast_address;
+                                                      ->address_info_item[j].
+                                                      sin_addr =
+                                                        g_multicast_configuration
+                                                        .
+                                                        starting_multicast_address;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
@@ -447,58 +482,65 @@ EipStatus OpenProducingMulticastConnection(
  * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus OpenMulticastConnection(
-    UdpCommuncationDirection direction, ConnectionObject *connection_object,
-    CipCommonPacketFormatData *common_packet_format_data) {
+  UdpCommuncationDirection direction,
+  ConnectionObject *connection_object,
+  CipCommonPacketFormatData *common_packet_format_data)
+{
   int j = -1;
 
   int address_info_item_which_contains_o_to_t = -1;
   int address_info_item_which_contains_t_to_o = -1;
 
   if(kCipItemIdSocketAddressInfoOriginatorToTarget
-            == common_packet_format_data->address_info_item[0].type_id) {
-	  address_info_item_which_contains_o_to_t = 0;
+     == common_packet_format_data->address_info_item[0].type_id) {
+    address_info_item_which_contains_o_to_t = 0;
   } else if(kCipItemIdSocketAddressInfoOriginatorToTarget
-              == common_packet_format_data->address_info_item[1].type_id) {
-	  address_info_item_which_contains_o_to_t = 1;
+            == common_packet_format_data->address_info_item[1].type_id) {
+    address_info_item_which_contains_o_to_t = 1;
   } else {
-	  OPENER_TRACE_INFO("No O->T Sockaddr info available\n");
+    OPENER_TRACE_INFO("No O->T Sockaddr info available\n");
   }
 
   if(kCipItemIdSocketAddressInfoTargetToOriginator
-              == common_packet_format_data->address_info_item[0].type_id) {
-  	  address_info_item_which_contains_t_to_o = 0;
-    } else if(kCipItemIdSocketAddressInfoTargetToOriginator
-                == common_packet_format_data->address_info_item[1].type_id) {
-  	  address_info_item_which_contains_t_to_o = 1;
-    } else {
-    	OPENER_TRACE_INFO("No T->O Sockaddr info available\n");
-    }
+     == common_packet_format_data->address_info_item[0].type_id) {
+    address_info_item_which_contains_t_to_o = 0;
+  } else if(kCipItemIdSocketAddressInfoTargetToOriginator
+            == common_packet_format_data->address_info_item[1].type_id) {
+    address_info_item_which_contains_t_to_o = 1;
+  } else {
+    OPENER_TRACE_INFO("No T->O Sockaddr info available\n");
+  }
 
   if(kUdpCommuncationDirectionConsuming == direction) {
-	  //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
-	  j = address_info_item_which_contains_o_to_t;
+    //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
+    j = address_info_item_which_contains_o_to_t;
   }
 
   if(kUdpCommuncationDirectionProducing == direction) {
-  	  //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
-  	  j = address_info_item_which_contains_t_to_o;
-    }
+    //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
+    j = address_info_item_which_contains_t_to_o;
+  }
 
   /*****************/
 
   if (-1 == j) {
-	  OPENER_TRACE_ERR("no suitable addr info item available / O->T: %d, T->O: %d, Selector: %d, direction: %d\n",
-			  address_info_item_which_contains_o_to_t,address_info_item_which_contains_t_to_o,j,direction);
-	          return kEipStatusError;
+    OPENER_TRACE_ERR(
+      "no suitable addr info item available / O->T: %d, T->O: %d, Selector: %d, direction: %d\n",
+      address_info_item_which_contains_o_to_t,
+      address_info_item_which_contains_t_to_o,
+      j,
+      direction);
+    return kEipStatusError;
   }
 
-  if (kCipItemIdSocketAddressInfoTargetToOriginator == common_packet_format_data->address_info_item[j].type_id) { /* we are using an unused item initialize it with the default multicast address */
+  if (kCipItemIdSocketAddressInfoTargetToOriginator ==
+      common_packet_format_data->address_info_item[j].type_id) {                                                  /* we are using an unused item initialize it with the default multicast address */
     common_packet_format_data->address_info_item[j].sin_family = htons(
-        AF_INET);
+      AF_INET);
     common_packet_format_data->address_info_item[j].sin_port = htons(
-        kOpenerEipIoUdpPort);
+      kOpenerEipIoUdpPort);
     common_packet_format_data->address_info_item[j].sin_addr =
-        g_multicast_configuration.starting_multicast_address;
+      g_multicast_configuration.starting_multicast_address;
     memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
     common_packet_format_data->address_info_item[j].length = 16;
   }
@@ -506,18 +548,18 @@ EipStatus OpenMulticastConnection(
   if (htons(AF_INET)
       != common_packet_format_data->address_info_item[j].sin_family) {
     OPENER_TRACE_ERR(
-        "Sockaddr Info Item with wrong sin family value received\n");
+      "Sockaddr Info Item with wrong sin family value received\n");
     return kEipStatusError;
   }
 
   /* allocate an unused sockaddr struct to use */
   struct sockaddr_in socket_address = {0};
   socket_address.sin_family = ntohs(
-      common_packet_format_data->address_info_item[j].sin_family);
+    common_packet_format_data->address_info_item[j].sin_family);
   socket_address.sin_addr.s_addr =
-      common_packet_format_data->address_info_item[j].sin_addr;
+    common_packet_format_data->address_info_item[j].sin_addr;
   socket_address.sin_port = common_packet_format_data->address_info_item[j]
-      .sin_port;
+                            .sin_port;
 
   int socket = CreateUdpSocket(direction, &socket_address); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
@@ -528,11 +570,11 @@ EipStatus OpenMulticastConnection(
 
   if (direction == kUdpCommuncationDirectionConsuming) {
     common_packet_format_data->address_info_item[j].type_id =
-        kCipItemIdSocketAddressInfoOriginatorToTarget;
+      kCipItemIdSocketAddressInfoOriginatorToTarget;
     connection_object->originator_address = socket_address;
   } else {
     common_packet_format_data->address_info_item[j].type_id =
-        kCipItemIdSocketAddressInfoTargetToOriginator;
+      kCipItemIdSocketAddressInfoTargetToOriginator;
     connection_object->remote_address = socket_address;
   }
 
@@ -541,37 +583,45 @@ EipStatus OpenMulticastConnection(
 
 EipUint16 HandleConfigData(ConnectionObject *connection_object) {
 
-  CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
   EipUint16 connection_manager_status = 0;
   CipInstance *config_instance = GetCipInstance(
-      assembly_class, connection_object->connection_path.connection_point[2]);
+    assembly_class, connection_object->connection_path.connection_point[2]);
 
   if (0 != g_config_data_length) {
-    if (ConnectionWithSameConfigPointExists(
-        connection_object->connection_path.connection_point[kConnectionPointConfig])) { /* there is a connected connection with the same config point
-         * we have to have the same data as already present in the config point*/
-      CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(config_instance, 3)
-          ->data;
+    if ( ConnectionWithSameConfigPointExists(
+           connection_object->connection_path.connection_point[
+             kConnectionPointConfig]) ) {                                               /* there is a connected connection with the same config point
+                                                                                         * we have to have the same data as already present in the config point*/
+      CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
+        config_instance,
+        3)
+                                      ->data;
       if (attribute_three->length != g_config_data_length) {
         connection_manager_status =
-            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+          kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+        OPENER_TRACE_INFO(
+          "Hit an Ownership conflict in cipioconnection.c occurrence 1");
       } else {
         /*FIXME check if this is correct */
-        if (memcmp(attribute_three->data, g_config_data_buffer, g_config_data_length)) {
+        if ( memcmp(attribute_three->data, g_config_data_buffer,
+                    g_config_data_length) ) {
           connection_manager_status =
-              kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+          OPENER_TRACE_INFO(
+            "Hit an Ownership conflict in cipioconnection.c occurrence 2");
         }
       }
     } else {
       /* put the data on the configuration assembly object with the current
-       design this can be done rather efficiently */
-      if (kEipStatusOk
-          != NotifyAssemblyConnectedDataReceived(config_instance,
-                                                 g_config_data_buffer,
-                                                 g_config_data_length)) {
+         design this can be done rather efficiently */
+      if ( kEipStatusOk
+           != NotifyAssemblyConnectedDataReceived(config_instance,
+                                                  g_config_data_buffer,
+                                                  g_config_data_length) ) {
         OPENER_TRACE_WARN("Configuration data was invalid\n");
         connection_manager_status =
-            kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath;
+          kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath;
       }
     }
   }
@@ -580,80 +630,89 @@ EipUint16 HandleConfigData(ConnectionObject *connection_object) {
 
 void CloseIoConnection(ConnectionObject *connection_object) {
 
-  CheckIoConnectionEvent(connection_object->connection_path.connection_point[kConnectionPointConsumer],
-                    connection_object->connection_path.connection_point[kConnectionPointProducer],
-                    kIoConnectionEventClosed);
+  CheckIoConnectionEvent(connection_object->connection_path.connection_point[
+                           kConnectionPointConsumer],
+                         connection_object->connection_path.connection_point[
+                           kConnectionPointProducer],
+                         kIoConnectionEventClosed);
 
-  if ((kConnectionTypeIoExclusiveOwner == connection_object->instance_type)
-      || (kConnectionTypeIoInputOnly == connection_object->instance_type)) {
-    if ((kForwardOpenConnectionTypeMulticastConnection
-        == (connection_object->t_to_o_network_connection_parameter
-            & kForwardOpenConnectionTypeMulticastConnection))
-        && (kEipInvalidSocket
-            != connection_object->socket[kUdpCommuncationDirectionProducing])) {
-      ConnectionObject *next_non_control_master_connection = GetNextNonControlMasterConnection(
-          connection_object->connection_path.connection_point[kConnectionPointProducer]);
+  if ( (kConnectionTypeIoExclusiveOwner == connection_object->instance_type)
+       || (kConnectionTypeIoInputOnly == connection_object->instance_type) ) {
+    if ( ( kForwardOpenConnectionTypeMulticastConnection
+           == (connection_object->t_to_o_network_connection_parameter
+               & kForwardOpenConnectionTypeMulticastConnection) )
+         && (kEipInvalidSocket
+             != connection_object->socket[kUdpCommuncationDirectionProducing]) )
+    {
+      ConnectionObject *next_non_control_master_connection =
+        GetNextNonControlMasterConnection(
+          connection_object->connection_path.connection_point[
+            kConnectionPointProducer]);
       if (NULL != next_non_control_master_connection) {
-        next_non_control_master_connection->socket[kUdpCommuncationDirectionProducing] =
-            connection_object->socket[kUdpCommuncationDirectionProducing];
-        memcpy(&(next_non_control_master_connection->remote_address),
-               &(connection_object->remote_address),
-               sizeof(next_non_control_master_connection->remote_address));
-        next_non_control_master_connection->eip_level_sequence_count_producing =
+        next_non_control_master_connection->socket[
+          kUdpCommuncationDirectionProducing] =
+          connection_object->socket[kUdpCommuncationDirectionProducing];
+        memcpy( &(next_non_control_master_connection->remote_address),
+                &(connection_object->remote_address),
+                sizeof(next_non_control_master_connection->remote_address) );
+        next_non_control_master_connection->eip_level_sequence_count_producing
+          =
             connection_object->eip_level_sequence_count_producing;
         next_non_control_master_connection->sequence_count_producing =
-            connection_object->sequence_count_producing;
+          connection_object->sequence_count_producing;
         connection_object->socket[kUdpCommuncationDirectionProducing] =
-            kEipInvalidSocket;
+          kEipInvalidSocket;
         next_non_control_master_connection->transmission_trigger_timer =
-            connection_object->transmission_trigger_timer;
+          connection_object->transmission_trigger_timer;
       } else { /* this was the last master connection close all listen only connections listening on the port */
         CloseAllConnectionsForInputWithSameType(
-            connection_object->connection_path.connection_point[kConnectionPointProducer],
-            kConnectionTypeIoListenOnly);
+          connection_object->connection_path.connection_point[
+            kConnectionPointProducer],
+          kConnectionTypeIoListenOnly);
       }
     }
   }
 
   CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
-      connection_object);
+    connection_object);
 }
 
 void HandleIoConnectionTimeOut(ConnectionObject *connection_object) {
   ConnectionObject *next_non_control_master_connection;
   CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
-                    connection_object->connection_path.connection_point[1],
-                    kIoConnectionEventTimedOut);
+                         connection_object->connection_path.connection_point[1],
+                         kIoConnectionEventTimedOut);
 
-  if (kForwardOpenConnectionTypeMulticastConnection
-      == (connection_object->t_to_o_network_connection_parameter
-          & kForwardOpenConnectionTypeMulticastConnection)) {
+  if ( kForwardOpenConnectionTypeMulticastConnection
+       == (connection_object->t_to_o_network_connection_parameter
+           & kForwardOpenConnectionTypeMulticastConnection) ) {
     switch (connection_object->instance_type) {
       case kConnectionTypeIoExclusiveOwner:
         CloseAllConnectionsForInputWithSameType(
-            connection_object->connection_path.connection_point[1],
-            kConnectionTypeIoInputOnly);
+          connection_object->connection_path.connection_point[1],
+          kConnectionTypeIoInputOnly);
         CloseAllConnectionsForInputWithSameType(
-            connection_object->connection_path.connection_point[1],
-            kConnectionTypeIoListenOnly);
+          connection_object->connection_path.connection_point[1],
+          kConnectionTypeIoListenOnly);
         break;
       case kConnectionTypeIoInputOnly:
         if (kEipInvalidSocket
             != connection_object->socket[kUdpCommuncationDirectionProducing]) { /* we are the controlling input only connection find a new controller*/
           next_non_control_master_connection =
-              GetNextNonControlMasterConnection(
-                  connection_object->connection_path.connection_point[1]);
+            GetNextNonControlMasterConnection(
+              connection_object->connection_path.connection_point[1]);
           if (NULL != next_non_control_master_connection) {
-            next_non_control_master_connection->socket[kUdpCommuncationDirectionProducing] =
-                connection_object->socket[kUdpCommuncationDirectionProducing];
+            next_non_control_master_connection->socket[
+              kUdpCommuncationDirectionProducing] =
+              connection_object->socket[kUdpCommuncationDirectionProducing];
             connection_object->socket[kUdpCommuncationDirectionProducing] =
-                kEipInvalidSocket;
+              kEipInvalidSocket;
             next_non_control_master_connection->transmission_trigger_timer =
-                connection_object->transmission_trigger_timer;
+              connection_object->transmission_trigger_timer;
           } else { /* this was the last master connection close all listen only connections listening on the port */
             CloseAllConnectionsForInputWithSameType(
-                connection_object->connection_path.connection_point[1],
-                kConnectionTypeIoListenOnly);
+              connection_object->connection_path.connection_point[1],
+              kConnectionTypeIoListenOnly);
           }
         }
         break;
@@ -670,33 +729,36 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
 
   /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
-  CipCommonPacketFormatData *common_packet_format_data = &g_common_packet_format_data_item; /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
+  CipCommonPacketFormatData *common_packet_format_data =
+    &g_common_packet_format_data_item;                                                      /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
 
   connection_object->eip_level_sequence_count_producing++;
 
   /* assembleCPFData */
   common_packet_format_data->item_count = 2;
-  if ((connection_object->transport_type_class_trigger & 0x0F) != 0) { /* use Sequenced Address Items if not Connection Class 0 */
-    common_packet_format_data->address_item.type_id = kCipItemIdSequencedAddressItem;
+  if ( (connection_object->transport_type_class_trigger & 0x0F) != 0 ) { /* use Sequenced Address Items if not Connection Class 0 */
+    common_packet_format_data->address_item.type_id =
+      kCipItemIdSequencedAddressItem;
     common_packet_format_data->address_item.length = 8;
     common_packet_format_data->address_item.data.sequence_number =
-        connection_object->eip_level_sequence_count_producing;
+      connection_object->eip_level_sequence_count_producing;
   } else {
-    common_packet_format_data->address_item.type_id = kCipItemIdConnectionAddress;
+    common_packet_format_data->address_item.type_id =
+      kCipItemIdConnectionAddress;
     common_packet_format_data->address_item.length = 4;
 
   }
   common_packet_format_data->address_item.data.connection_identifier =
-      connection_object->cip_produced_connection_id;
+    connection_object->cip_produced_connection_id;
 
   common_packet_format_data->data_item.type_id = kCipItemIdConnectedDataItem;
 
   CipByteArray *producing_instance_attributes =
-      (CipByteArray *) connection_object->producing_instance->attributes->data;
+    (CipByteArray *) connection_object->producing_instance->attributes->data;
   common_packet_format_data->data_item.length = 0;
 
   /* notify the application that data will be sent immediately after the call */
-  if (BeforeAssemblyDataSend(connection_object->producing_instance)) {
+  if ( BeforeAssemblyDataSend(connection_object->producing_instance) ) {
     /* the data has changed increase sequence counter */
     connection_object->sequence_count_producing++;
   }
@@ -706,16 +768,17 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
   common_packet_format_data->address_info_item[1].type_id = 0;
 
   EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
-                                   &g_message_data_reply_buffer[0]);
+                                             &g_message_data_reply_buffer[0]);
 
-  EipUint8 *message_data_reply_buffer = &g_message_data_reply_buffer[reply_length - 2];
+  EipUint8 *message_data_reply_buffer =
+    &g_message_data_reply_buffer[reply_length - 2];
   common_packet_format_data->data_item.length = producing_instance_attributes
-      ->length;
+                                                ->length;
   if (kOpenerProducedDataHasRunIdleHeader) {
     common_packet_format_data->data_item.length += 4;
   }
 
-  if ((connection_object->transport_type_class_trigger & 0x0F) == 1) {
+  if ( (connection_object->transport_type_class_trigger & 0x0F) == 1 ) {
     common_packet_format_data->data_item.length += 2;
     AddIntToMessage(common_packet_format_data->data_item.length,
                     &message_data_reply_buffer);
@@ -727,7 +790,7 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
   }
 
   if (kOpenerProducedDataHasRunIdleHeader) {
-    AddDintToMessage(g_run_idle_state, &(message_data_reply_buffer));
+    AddDintToMessage( g_run_idle_state, &(message_data_reply_buffer) );
   }
 
   memcpy(message_data_reply_buffer, producing_instance_attributes->data,
@@ -736,19 +799,21 @@ EipStatus SendConnectedData(ConnectionObject *connection_object) {
   reply_length += common_packet_format_data->data_item.length;
 
   return SendUdpData(
-      &connection_object->remote_address,
-      connection_object->socket[kUdpCommuncationDirectionProducing],
-      &g_message_data_reply_buffer[0], reply_length);
+           &connection_object->remote_address,
+           connection_object->socket[kUdpCommuncationDirectionProducing],
+           &g_message_data_reply_buffer[0], reply_length);
 }
 
 EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
-                                         const EipUint8 *data, EipUint16 data_length) {
+                                         const EipUint8 *data,
+                                         EipUint16 data_length)
+{
 
   /* check class 1 sequence number*/
-  if ((connection_object->transport_type_class_trigger & 0x0F) == 1) {
-    EipUint16 sequence_buffer = GetIntFromMessage(&(data));
-    if (SEQ_LEQ16(sequence_buffer,
-                  connection_object->sequence_count_consuming)) {
+  if ( (connection_object->transport_type_class_trigger & 0x0F) == 1 ) {
+    EipUint16 sequence_buffer = GetIntFromMessage( &(data) );
+    if ( SEQ_LEQ16(sequence_buffer,
+                   connection_object->sequence_count_consuming) ) {
       return kEipStatusOk; /* no new data for the assembly */
     }
     connection_object->sequence_count_consuming = sequence_buffer;
@@ -758,7 +823,7 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
   if (data_length > 0) {
     /* we have no heartbeat connection */
     if (kOpenerConsumedDataHasRunIdleHeader) {
-      EipUint32 nRunIdleBuf = GetDintFromMessage(&(data));
+      EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
       if (g_run_idle_state != nRunIdleBuf) {
         RunIdleChanged(nRunIdleBuf);
       }
@@ -767,7 +832,8 @@ EipStatus HandleReceivedIoConnectionData(ConnectionObject *connection_object,
     }
 
     if (NotifyAssemblyConnectedDataReceived(
-        connection_object->consuming_instance, (EipUint8 *const)data, data_length) != 0) {
+          connection_object->consuming_instance, (EipUint8 *const)data,
+          data_length) != 0) {
       return kEipStatusError;
     }
   }
@@ -779,16 +845,21 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
   EipStatus eip_status = kEipStatusOk;
   /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
   CipCommonPacketFormatData *common_packet_format_data =
-      &g_common_packet_format_data_item;
+    &g_common_packet_format_data_item;
 
-  ForwardOpenConnectionType originator_to_target_connection_type = GetConnectionType(connection_object
-      ->o_to_t_network_connection_parameter);
+  ForwardOpenConnectionType originator_to_target_connection_type =
+    GetConnectionType(connection_object
+                      ->
+                      o_to_t_network_connection_parameter);
 
-  ForwardOpenConnectionType target_to_originator_connection_type = GetConnectionType(connection_object
-      ->t_to_o_network_connection_parameter);
+  ForwardOpenConnectionType target_to_originator_connection_type =
+    GetConnectionType(connection_object
+                      ->
+                      t_to_o_network_connection_parameter);
 
   /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
-  if (originator_to_target_connection_type == kForwardOpenConnectionTypeMulticastConnection) /* Multicast consuming */
+  if (originator_to_target_connection_type ==
+      kForwardOpenConnectionTypeMulticastConnection)                                         /* Multicast consuming */
   {
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object, common_packet_format_data)
@@ -796,7 +867,8 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (originator_to_target_connection_type == kForwardOpenConnectionTypePointToPointConnection) /* Point to Point consuming */
+  } else if (originator_to_target_connection_type ==
+             kForwardOpenConnectionTypePointToPointConnection)                                         /* Point to Point consuming */
   {
     if (OpenConsumingPointToPointConnection(connection_object,
                                             common_packet_format_data)
@@ -806,7 +878,8 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
     }
   }
 
-  if (target_to_originator_connection_type == kForwardOpenConnectionTypeMulticastConnection) /* Multicast producing */
+  if (target_to_originator_connection_type ==
+      kForwardOpenConnectionTypeMulticastConnection)                                         /* Multicast producing */
   {
     if (OpenProducingMulticastConnection(connection_object,
                                          common_packet_format_data)
@@ -814,7 +887,8 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
-  } else if (target_to_originator_connection_type == kForwardOpenConnectionTypePointToPointConnection) /* Point to Point producing */
+  } else if (target_to_originator_connection_type ==
+             kForwardOpenConnectionTypePointToPointConnection)                                         /* Point to Point producing */
   {
 
     if (OpenProducingPointToPointConnection(connection_object,
@@ -828,15 +902,15 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
 }
 
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
-    ConnectionObject *connection_object) {
+  ConnectionObject *connection_object) {
   IApp_CloseSocket_udp(
-      connection_object->socket[kUdpCommuncationDirectionConsuming]);
+    connection_object->socket[kUdpCommuncationDirectionConsuming]);
   connection_object->socket[kUdpCommuncationDirectionConsuming] =
-      kEipInvalidSocket;
+    kEipInvalidSocket;
   IApp_CloseSocket_udp(
-      connection_object->socket[kUdpCommuncationDirectionProducing]);
+    connection_object->socket[kUdpCommuncationDirectionProducing]);
   connection_object->socket[kUdpCommuncationDirectionProducing] =
-      kEipInvalidSocket;
+    kEipInvalidSocket;
 
   RemoveFromActiveConnections(connection_object);
 }

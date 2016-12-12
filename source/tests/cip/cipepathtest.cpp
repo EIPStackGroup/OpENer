@@ -285,12 +285,13 @@ TEST(CipEpath, GetPathLogicalSegmentElectronicKeyFormat4) {
 }
 
 TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
+  /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const unsigned char message[] =
-  {0x34,0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
   ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
   GetPathLogicalSegmentElectronicKeyFormat4(message, electronic_key);
 
-  MEMCMP_EQUAL(message + 2, electronic_key, 6);
+  MEMCMP_EQUAL(message + 2, electronic_key, 8);
 
   ElectronicKeyFormat4Delete(&electronic_key);
 }

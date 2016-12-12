@@ -10,6 +10,7 @@
 
 extern "C" {
 
+#include "cipepath.h"
 #include "cipelectronickey.h"
 
 }
@@ -141,4 +142,17 @@ TEST(CipElectronicKey, GetMinorRevision) {
 
   CipUint product_code = ElectronicKeyFormat4GetMinorRevision(key);
   CHECK_EQUAL(expected_minor_revision, product_code);
+}
+
+TEST(CipElectronicKey, ParseElectronicKeyTest) {
+  /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
+  const unsigned char message[] =
+  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
+  GetPathLogicalSegmentElectronicKeyFormat4(message, key);
+
+  CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
+  CHECK_EQUAL( 512, ElectronicKeyFormat4GetDeviceType(key) );
+
+  MEMCMP_EQUAL(message + 2, key, 8);
+
 }

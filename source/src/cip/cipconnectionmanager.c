@@ -25,6 +25,7 @@
 #include "encap.h"
 #include "generic_networkhandler.h"
 #include "cipepath.h"
+#include "cipelectronickey.h"
 
 /* values needed from the CIP identity object */
 extern EipUint16 vendor_id_;
@@ -135,11 +136,8 @@ EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterResponse *message_router_response);
 
 EipStatus AssembleForwardOpenResponse(
-  ConnectionObject *connection_object,
-  CipMessageRouterResponse *
-  message_router_response,
-  EipUint8 general_status,
-  EipUint16 extended_status);
+  ConnectionObject *connection_object,CipMessageRouterResponse *
+  message_router_response,EipUint8 general_status,EipUint16 extended_status);
 
 EipStatus AssembleForwardCloseResponse(
   EipUint16 connection_serial_number,
@@ -874,12 +872,8 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
  *                -1 .. error
  */
 EipStatus AssembleForwardOpenResponse(
-  ConnectionObject *connection_object,
-  CipMessageRouterResponse *
-  message_router_response,
-  EipUint8 general_status,
-  EipUint16 extended_status)
-{
+  ConnectionObject *connection_object,CipMessageRouterResponse *
+  message_router_response,EipUint8 general_status,EipUint16 extended_status) {
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *cip_common_packet_format_data =
     &g_common_packet_format_data_item;
@@ -1016,8 +1010,7 @@ EipStatus AssembleForwardCloseResponse(
   message_router_request,
   CipMessageRouterResponse *
   message_router_response,
-  EipUint16 extended_error_code)
-{
+  EipUint16 extended_error_code)                         {
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *common_data_packet_format_data =
     &g_common_packet_format_data_item;
@@ -1220,7 +1213,59 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
   }
 
   if (remaining_path_size > 0) {
-    /* first electronic key */
+    /* first look if there is an electronic key */
+    if ( kSegmentTypeLogicalSegment == GetPathSegmentType(message) ) {
+      if( kLogicalSegmentLogicalTypeSpecial ==
+          GetPathLogicalSegmentLogicalType(message) ) {
+        if( kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
+            GetPathLogicalSegmentSpecialTypeLogicalType(message) ) {
+          if( kElectronicKeySegmentFormatKeyFormat4 ==
+              GetPathLogicalSegmentElectronicKeyFormat(message) ) {
+            /* Check if there is enough data for holding the electronic key segment */
+            if (remaining_path_size < 5) {
+              *extended_error = 0;
+              return kCipErrorNotEnoughData;
+            }
+            /* Electronic key format 4 found */
+            ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
+            GetPathLogicalSegmentElectronicKeyFormat4(message, electronic_key);
+            /* logical electronic key found */
+            connection_object->electronic_key.segment_type = 0x34;
+            connection_object->electronic_key.key_format = 0x04;                              //ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4;
+            connection_object->electronic_key.key_data.vendor_id =
+              ElectronicKeyFormat4GetVendorId(electronic_key);
+            connection_object->electronic_key.key_data.device_type =
+              ElectronicKeyFormat4GetDeviceType(electronic_key);
+            connection_object->electronic_key.key_data.product_code =
+              ElectronicKeyFormat4GetProductCode(electronic_key);
+            connection_object->electronic_key.key_data.major_revision =
+              ElectronicKeyFormat4GetMajorRevision(electronic_key);
+            if( true ==
+                ElectronicKeyFormat4GetMajorRevisionCompatibility(
+                  electronic_key) )
+            {
+              connection_object->electronic_key.key_data.major_revision =
+                connection_object->electronic_key.key_data.major_revision |
+                0x80;
+            }
+            connection_object->electronic_key.key_data.minor_revision =
+              ElectronicKeyFormat4GetMinorRevision(electronic_key);
+            ElectronicKeyFormat4Delete(&electronic_key);
+            message += 10;
+            remaining_path_size -= 5;                                                /*length of the electronic key*/
+            OPENER_TRACE_INFO(
+              "key: ven ID %d, dev type %d, prod code %d, major %d, minor %d\n",
+              connection_object->electronic_key.key_data.vendor_id,
+              connection_object->electronic_key.key_data.device_type,
+              connection_object->electronic_key.key_data.product_code,
+              connection_object->electronic_key.key_data.major_revision,
+              connection_object->electronic_key.key_data.minor_revision);
+          }
+
+        }
+      }
+    }
+
     if (*message == 0x34) {
       if (remaining_path_size < 5) {
         /*there is not enough data for holding the electronic key segment*/
@@ -1228,28 +1273,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
         return kCipErrorNotEnoughData;
       }
 
-      /* logical electronic key found */
-      connection_object->electronic_key.segment_type = 0x34;
-      message++;
-      connection_object->electronic_key.key_format = *message++;
-      connection_object->electronic_key.key_data.vendor_id =
-        GetIntFromMessage(&message);
-      connection_object->electronic_key.key_data.device_type =
-        GetIntFromMessage(&message);
-      connection_object->electronic_key.key_data.product_code =
-        GetIntFromMessage(&message);
-      connection_object->electronic_key.key_data.major_revision =
-        *message++;
-      connection_object->electronic_key.key_data.minor_revision =
-        *message++;
-      remaining_path_size -= 5;                   /*length of the electronic key*/
-      OPENER_TRACE_INFO(
-        "key: ven ID %d, dev type %d, prod code %d, major %d, minor %d\n",
-        connection_object->electronic_key.key_data.vendor_id,
-        connection_object->electronic_key.key_data.device_type,
-        connection_object->electronic_key.key_data.product_code,
-        connection_object->electronic_key.key_data.major_revision,
-        connection_object->electronic_key.key_data.minor_revision);
+
 
       if ( kEipStatusOk
            != CheckElectronicKeyData(
@@ -1422,6 +1446,8 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                 remaining_path_size -= (g_config_data_length + 2);
                 message += (g_config_data_length + 2);
                 break;
+              default: OPENER_TRACE_ERR("Not allowed in connection manager");
+                break;
             }
           }
           break;
@@ -1443,6 +1469,8 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
                     - remaining_path_size;                                                             /*offset in 16Bit words where within the connection path the error happend*/
                   return kCipErrorPathSegmentError;                               /*status code for invalid segment type*/
                 }
+              default: OPENER_TRACE_ERR("Not allowed in connection manager");
+                break;
             }
           }
           break;
