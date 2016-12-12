@@ -51,6 +51,71 @@
 #define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS 0x10 /**< Message value indicating a network segment PIT in microseconds message */
 #define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK 0x1F /**< Message indicating a network message extended network message */
 
+/** @brief Segment type Enum
+ *
+ * Bits 7-5 in the Segment Type/Format byte
+ *
+ */
+typedef enum segment_type {
+  /* Segments */
+  kSegmentTypePortSegment, /**< Port segment */
+  kSegmentTypeLogicalSegment, /**< Logical segment */
+  kSegmentTypeNetworkSegment, /**< Network segment */
+  kSegmentTypeSymbolicSegment, /**< Symbolic segment */
+  kSegmentTypeDataSegment, /**< Data segment */
+  kSegmentTypeDataTypeConstructed, /**< Data type constructed */
+  kSegmentTypeDataTypeElementary, /**< Data type elementary */
+  kSegmentTypeReserved /**< Reserved segment type */
+} SegmentType;
+
+/** @brief Port Segment flags */
+typedef enum port_segment_type {
+  kPortSegmentFlagExtendedLinkAddressSize = 0x10 /**< Extended Link Address Size flag, Port segment */
+} PortSegmentFlag;
+
+/** @brief Enum containing values which kind of logical segment is encoded */
+typedef enum logical_segment_type {
+  kLogicalSegmentLogicalTypeClassId, /**< Class ID */
+  kLogicalSegmentLogicalTypeInstanceId, /**< Instance ID */
+  kLogicalSegmentLogicalTypeMemberId, /**< Member ID */
+  kLogicalSegmentLogicalTypeConnectionPoint, /**< Connection Point */
+  kLogicalSegmentLogicalTypeAttributeId, /**< Attribute ID */
+  kLogicalSegmentLogicalTypeSpecial, /**< Special */
+  kLogicalSegmentLogicalTypeServiceId, /**< Service ID */
+  kLogicalSegmentLogicalTypeExtendedLogical /**< Extended Logical */
+} LogicalSegmentLogicalType;
+
+typedef enum logical_segment_extended_logical_type {
+  kLogicalSegmentExtendedLogicalTypeReserved,
+  kLogicalSegmentExtendedLogicalTypeArrayIndex,
+  kLogicalSegmentExtendedLogicalTypeIndirectArrayIndex,
+  kLogicalSegmentExtendedLogicalTypeBitIndex,
+  kLogicalSegmentExtendedLogicalTypeIndirectBitIndex,
+  kLogicalSegmentExtendedLogicalTypeStructureMemberNumber,
+  kLogicalSegmentExtendedLogicalTypeStructureMemberHandle
+} LogicalSegmentExtendedLogicalType;
+
+/** @brief Enum containing values how long the encoded value will be (8, 16, or
+ * 32 bit) */
+typedef enum logical_segment_logical_format {
+  kLogicalSegmentLogicalFormatEightBit,
+  kLogicalSegmentLogicalFormatSixteenBit,
+  kLogicalSegmentLogicalFormatThirtyTwoBit
+} LogicalSegmentLogicalFormat;
+
+typedef enum logical_segment_special_type_logical_format {
+  kLogicalSegmentSpecialTypeLogicalFormatReserved,
+  kLogicalSegmentSpecialTypeLogicalFormatElectronicKey
+} LogicalSegmentSpecialTypeLogicalFormat;
+
+/** @brief Electronic key formats
+ *
+ */
+typedef enum electronic_key_segment_format {
+  kElectronicKeySegmentFormatReserved, /**< Reserved */
+  kElectronicKeySegmentFormatKeyFormat4 /**< Electronic key format 4 key */
+} ElectronicKeySegmentFormat;
+
 /** @brief All types of network segment types for the use in all code
  *
  *  Enum constants for the different network segment subtypes to decouple code from the actual needed message values
@@ -64,14 +129,6 @@ typedef enum network_segment_subtype {
   kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds, /**< Production Inhibit Time in microseconds segment */
   kNetworkSegmentSubtypeExtendedNetworkSegment /**< Extended network segment */
 } NetworkSegmentSubtype;
-
-/** @brief Electronic key formats
- *
- */
-typedef enum electronic_key_segment_format {
-  kElectronicKeySegmentFormatReserved, /**< Reserved */
-  kElectronicKeySegmentFormatKeyFormat4 /**< Electronic key format 4 key */
-} ElectronicKeySegmentFormat;
 
 /** @brief Data segment sub types
  *
@@ -245,7 +302,8 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(
  * @param cip_path The start of the EPath message
  * @return The Data Segment subtype
  */
-DataSegmentSubtype GetPathDataSegmentSubtype(const unsigned char *const cip_path);
+DataSegmentSubtype GetPathDataSegmentSubtype(
+  const unsigned char *const cip_path);
 
 /** @brief Gets the data word length of a Simple Data segment
  *
