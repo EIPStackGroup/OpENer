@@ -1,9 +1,9 @@
-/*
- * randomTests.cpp
+/*******************************************************************************
+ * Copyright (c) 2015, Rockwell Automation, Inc.
+ * All rights reserved.
  *
- *  Created on: Dec 16, 2013
- *      Author: mmm
- */
+ ******************************************************************************/
+
 
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
