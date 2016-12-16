@@ -1,9 +1,8 @@
-/*
- * xorshiftrandomtests.c
+/*******************************************************************************
+ * Copyright (c) 2015, Rockwell Automation, Inc.
+ * All rights reserved.
  *
- *  Created on: Dec 1, 2013
- *      Author: mmm
- */
+ ******************************************************************************/
 
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
@@ -17,7 +16,7 @@ TEST_GROUP(XorShiftRandom)
 
 };
 
-/*This test should always return 0 as the next random number (see XorShift algorithm*/
+/* This test should always return 0 as the next random number (see XorShift algorithm) */
 TEST(XorShiftRandom, SeedZeroInitResult)
 {
 	uint32_t nResult;

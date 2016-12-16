@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Rockwell Automation, Inc.
+ * Copyright (c) 2016, Rockwell Automation, Inc.
  * All rights reserved.
  *
  ******************************************************************************/
@@ -147,11 +147,15 @@ TEST(CipElectronicKey, GetMinorRevision) {
 TEST(CipElectronicKey, ParseElectronicKeyTest) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const unsigned char message[] =
-  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
+  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
   GetPathLogicalSegmentElectronicKeyFormat4(message, key);
 
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
   CHECK_EQUAL( 512, ElectronicKeyFormat4GetDeviceType(key) );
+  CHECK_EQUAL( 768, ElectronicKeyFormat4GetProductCode(key) );
+  CHECK_TRUE(ElectronicKeyFormat4GetMajorRevisionCompatibility(key));
+  CHECK_EQUAL(0x04, ElectronicKeyFormat4GetMajorRevision(key));
+  CHECK_EQUAL(0x05, ElectronicKeyFormat4GetMinorRevision(key));
 
   MEMCMP_EQUAL(message + 2, key, 8);
 
