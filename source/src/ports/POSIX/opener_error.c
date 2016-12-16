@@ -17,15 +17,15 @@
 
 #include "opener_error.h"
 
-const int error_message_buffer_size = 255;
+const int kErrorMessageBufferSize = 255;
 
 int GetSocketErrorNumber() {
   return errno;
 }
 
 char *GetErrorMessage(int error_number) {
-  char *error_message = malloc(error_message_buffer_size);
-  strerror_r(error_number, error_message, error_message_buffer_size);
+  char *error_message = malloc(kErrorMessageBufferSize);
+  strerror_r(error_number, error_message, kErrorMessageBufferSize);
   return error_message;
 }
 

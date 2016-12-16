@@ -80,6 +80,7 @@ void SetProductionTrigger(const enum ProductionTrigger production_trigger,
       connection_object->transport_type_class_trigger = 0x20;
       break;
     default:
+    	//TODO: Replace with assert?
       connection_object->transport_type_class_trigger = 0x30;
       break;           /**< Invalid value */
   }
@@ -394,10 +395,10 @@ void ReadOutConnectionObjectFromMessage(
 
 ForwardOpenConnectionType GetConnectionType(
   EipUint16 network_connection_parameter) {
-  const uint16_t connection_parameter_mask = 0x6000;
+  const EipUint16 kConnectionParameterMask = 0x6000;
 
   ForwardOpenConnectionType connection_type = network_connection_parameter
-                                              & connection_parameter_mask;
+                                              & kConnectionParameterMask;
 
   OPENER_TRACE_INFO(
     "Connection type: %x / network connection parameter: %x\n",
@@ -409,7 +410,8 @@ ForwardOpenConnectionType GetConnectionType(
  *
  */
 typedef EipStatus (*HandleForwardOpenRequestFunction)(
-  ConnectionObject *connection_object, CipInstance *instance,
+  ConnectionObject *connection_object,
+  CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response);
 
@@ -788,13 +790,12 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 }
 
 EipStatus ManageConnections(MilliSeconds elapsed_time) {
-  ConnectionObject *connection_object;
 
   /*Inform application that it can execute */
   HandleApplication();
   ManageEncapsulationMessages(elapsed_time);
 
-  connection_object = g_active_connection_list;
+  ConnectionObject *connection_object = g_active_connection_list;
   while (NULL != connection_object) {
     if (connection_object->state == kConnectionStateEstablished) {
       if ( (0 != connection_object->consuming_instance) ||                  /* we have a consuming connection check inactivity watchdog timer */
@@ -858,19 +859,16 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
   return kEipStatusOk;
 }
 
-/* TODO: Update Documentation  INT8 assembleFWDOpenResponse(S_CIP_ConnectionObject *pa_pstConnObj, S_CIP_MR_Response * pa_MRResponse, EIP_UINT8 pa_nGeneralStatus, EIP_UINT16 pa_nExtendedStatus,
-   void * deleteMeSomeday, EIP_UINT8 * pa_msg)
- *   create FWDOpen response dependent on status.
- *      pa_pstConnObj pointer to connection Object
- *      pa_MRResponse	pointer to message router response
- *      pa_nGeneralStatus the general status of the response
- *      pa_nExtendedStatus extended status in the case of an error otherwise 0
- *      pa_CPF_data	pointer to CPF Data Item
- *      pa_msg		pointer to memory where reply has to be stored
- *  return status
- *                      0 .. no reply need to be sent back
- *                      1 .. need to send reply
- *                -1 .. error
+/** @brief Assembles the Forward Open Response
+ *
+ * @param connection_object pointer to connection Object
+ * @param message_router_response pointer to message router response
+ * @param general_status the general status of the response
+ * @param extended_status extended status in the case of an error otherwise 0
+ * @return status
+ *   kEipStatusOk .. no reply need to be sent back
+ *   kEipStatusOkSend .. need to send reply
+ *   kEipStatusError .. error
  */
 EipStatus AssembleForwardOpenResponse(
   ConnectionObject *connection_object,
@@ -912,7 +910,7 @@ EipStatus AssembleForwardOpenResponse(
                      &message);
   } else {
     /* we have an connection creation error */
-    OPENER_TRACE_INFO("assembleFWDOpenResponse: sending error response\n");
+    OPENER_TRACE_INFO("AssembleForwardOpenResponse: sending error response\n");
     connection_object->state = kConnectionStateNonExistent;
     message_router_response->data_length = 10;
 
@@ -1484,7 +1482,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
               "No data segment identifier found for the configuration data\n");
             *extended_error = connection_object->connection_path_size
                               - remaining_path_size;                           /*offset in 16Bit words where within the connection path the error happend*/
-            return 0x04;                             /*status code for invalid segment type*/
+            return 0x04; /* kConnectionManagerGeneralStatusPathSegmentErrorInUnconnectedSend */
             break;
         }
       }

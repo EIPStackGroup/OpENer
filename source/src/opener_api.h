@@ -342,7 +342,7 @@ typedef EipStatus (*ConnectionReceiveDataFunction)(
  * With this function any object can be enabled to be a target for forward
  * open/close request.
  * @param class_id The class ID
- * @param open_connection_function   pointer to the function handling the open
+ * @param open_connection_function Pointer to the function handling the open
  * process
  * @return EIP_OK on success
  */
@@ -615,13 +615,13 @@ ResetDeviceToInitialConfiguration(void);
  * @param size_of_element size in bytes of one element
  * @return pointer to the allocated memory, 0 on error
  */
-void *CipCalloc(unsigned int number_of_elements, unsigned int size_of_element);
+void *CipCalloc(size_t number_of_elements, size_t size_of_element);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Free memory allocated by the OpENer
  *
  * emulate the common c-library function free
- * @param pa_poData pointer to the allocated memory
+ * @param data pointer to the allocated memory
  */
 void CipFree(void *data);
 

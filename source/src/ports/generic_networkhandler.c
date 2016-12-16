@@ -243,7 +243,7 @@ EipBool8 CheckSocketSet(int socket) {
 }
 
 void CheckAndHandleTcpListenerSocket(void) {
-  int new_socket;
+  int new_socket = kEipInvalidSocket;
   /* see if this is a connection request to the TCP listener*/
   if ( true == CheckSocketSet(g_network_status.tcp_listener) ) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
@@ -324,7 +324,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
    * This should compensate the jitter of the windows timer
    */
   if (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
-    /* call manage_connections() in connection manager every OPENER_TIMER_TICK ms */
+    /* call manage_connections() in connection manager every kOpenerTimerTickInMilliSeconds ms */
     ManageConnections(g_network_status.elapsed_time);
     g_network_status.elapsed_time = 0;
   }
