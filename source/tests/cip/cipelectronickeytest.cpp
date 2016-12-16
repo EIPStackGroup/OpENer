@@ -153,9 +153,9 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
   CHECK_EQUAL( 512, ElectronicKeyFormat4GetDeviceType(key) );
   CHECK_EQUAL( 768, ElectronicKeyFormat4GetProductCode(key) );
-  CHECK_TRUE(ElectronicKeyFormat4GetMajorRevisionCompatibility(key));
-  CHECK_EQUAL(0x04, ElectronicKeyFormat4GetMajorRevision(key));
-  CHECK_EQUAL(0x05, ElectronicKeyFormat4GetMinorRevision(key));
+  CHECK_TRUE( ElectronicKeyFormat4GetMajorRevisionCompatibility(key) );
+  CHECK_EQUAL( 0x04, ElectronicKeyFormat4GetMajorRevision(key) );
+  CHECK_EQUAL( 0x05, ElectronicKeyFormat4GetMinorRevision(key) );
 
   MEMCMP_EQUAL(message + 2, key, 8);
 
