@@ -16,7 +16,7 @@
  */
 typedef struct electronic_key_format_4 ElectronicKeyFormat4;
 
-extern const unsigned int kElectronicKeyFormat4Size;
+extern const size_t kElectronicKeyFormat4Size;
 
 /** @brief Constructor for the electroic key format 4 class
  *
@@ -53,8 +53,7 @@ CipUint ElectronicKeyFormat4GetVendorId(
  *	@param electronic_key A format 4 electronic key
  */
 void ElectronicKeyFormat4SetDeviceType(
-  const CipUint device_type,
-  ElectronicKeyFormat4 *const
+  const CipUint device_type,ElectronicKeyFormat4 *const
   electronic_key);
 
 /** @brief Gets the device type from a format 4 electronic key
@@ -71,8 +70,7 @@ CipUint ElectronicKeyFormat4GetDeviceType(
  *      @param electronic_key The electronic key to be modified
  */
 void ElectronicKeyFormat4SetProductCode(
-  const CipUint product_code,
-  ElectronicKeyFormat4 *const
+  const CipUint product_code,ElectronicKeyFormat4 *const
   electronic_key);
 
 /** @brief Gets the product code from an format 4 electronic key
@@ -114,8 +112,7 @@ bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
  *      @param electronic_key The electronic key to be modified
  */
 void ElectronicKeyFormat4SetMinorRevision(
-  const CipUsint minor_revision,
-  ElectronicKeyFormat4 *const
+  const CipUsint minor_revision,ElectronicKeyFormat4 *const
   electronic_key);
 
 /** @brief Gets the minor revision from an format 4 electronic key

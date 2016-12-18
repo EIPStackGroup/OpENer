@@ -16,7 +16,7 @@ typedef struct electronic_key_format_4 {
   CipUsint minor_revision;
 } ElectronicKeyFormat4;
 
-const unsigned int kElectronicKeyFormat4Size = sizeof(ElectronicKeyFormat4);
+const size_t kElectronicKeyFormat4Size = sizeof(ElectronicKeyFormat4);
 
 ElectronicKeyFormat4 *ElectronicKeyFormat4New() {
   return (ElectronicKeyFormat4 *)calloc( 1, sizeof(ElectronicKeyFormat4) );

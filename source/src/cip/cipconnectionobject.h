@@ -9,7 +9,9 @@
 
 static const int kConnectionObjectClassId = 0x05;
 
-typedef struct ConnectionObject;
+typedef struct cip_connection_object CipConnectionObject;
+
+extern const size_t CipConnectionObjectSize;
 
 /** @brief Valid values for the state attribute of the Connection Object */
 typedef enum {
@@ -36,7 +38,8 @@ typedef enum {
 typedef enum {
   kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic = 0,
   kCipConnectionObjectTransportClassTriggerProductionTriggerChangeOfState = 1,
-  kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject = 2
+  kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject =
+    2
 } CipConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {
@@ -57,6 +60,6 @@ typedef enum {
   kCipConnectionObjectWatchdogTimeoutActionDeferredDelete = 3
 } CipConnectionObjectWatchdogTimeoutAction;
 
-ConnectionObject *NewCipConnectionObject(CipConnectionObjectInstanceType type);
+CipConnectionObject *NewCipConnectionObject(CipConnectionObjectInstanceType type);
 
 #endif /* OPENER_SRC_CIP_CIPCONNECTIONOBJECT_H_ */

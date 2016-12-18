@@ -340,7 +340,7 @@ void GetPathLogicalSegmentElectronicKeyFormat4(
   OPENER_ASSERT( kElectronicKeySegmentFormatKeyFormat4 ==
                  GetPathLogicalSegmentElectronicKeyFormat(cip_path) );
 
-  const char *message_runner = (const char *)(cip_path + 2);
+  const EipUint8 *message_runner = (const EipUint8 *)(cip_path + 2);
   ElectronicKeyFormat4SetVendorId(GetIntFromMessage(&message_runner), key);
   ElectronicKeyFormat4SetDeviceType(GetIntFromMessage(&message_runner), key);
   ElectronicKeyFormat4SetProductCode(GetIntFromMessage(&message_runner), key);

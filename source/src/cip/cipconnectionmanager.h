@@ -39,11 +39,15 @@ typedef enum {
 /** @brief Connection Manager Error codes */
 typedef enum {
   kConnectionManagerExtendedStatusCodeSuccess = 0x00, /**< Obsolete code, should be General Status - Everything is ok */
-  kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen = 0x0100, /**< General Status has to be 0x01, Connection is already in use, or a duplicate Forward Open was received */
-  kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported = 0x0103, /**< General Status has to be 0x01, A Transport class and trigger combination has been specified, which is not supported by the target application */
+  kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen
+    = 0x0100,                                                                              /**< General Status has to be 0x01, Connection is already in use, or a duplicate Forward Open was received */
+  kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported
+    = 0x0103,                                                                                        /**< General Status has to be 0x01, A Transport class and trigger combination has been specified, which is not supported by the target application */
   kConnectionManagerExtendedStatusCodeErrorOwnershipConflict = 0x0106, /**< General Status has to be 0x01, Another connection has already reserved some needed resources */
-  kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound = 0x0107, /**< General Status has to be 0x01, Forward Close error message, if connection to be closed is not found at the target */
-  kConnectionManagerExtendedStatusCodeErrorTargetForConnectionNotConfigured = 0x0110, /**< General Status has to be 0x01, Target application not configured and connection request does not contain data segment for configuration */
+  kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound =
+    0x0107,                                                                             /**< General Status has to be 0x01, Forward Close error message, if connection to be closed is not found at the target */
+  kConnectionManagerExtendedStatusCodeErrorTargetForConnectionNotConfigured =
+    0x0110,                                                                           /**< General Status has to be 0x01, Target application not configured and connection request does not contain data segment for configuration */
   kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable = 0x0112, /**< General Status has to be 0x01, Requested RPI parameters outside of range, needs 6 16-bit extended status words, see Vol.1 Table 3-5.33 */
   kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable = 0x0113, /**< General Status has to be 0x01, No free connection slots available */
   kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError = 0x0114, /**< General Status has to be 0x01, The Product Code or Vendor ID in the electronic key logical segment does not match the Product Code or Vendor ID of the device, or if the compatibility bit is set and one or both are zero, or cannot be emulated. */
@@ -51,21 +55,28 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeErrorRevisionMismatch = 0x0116, /**< General Status has to be 0x01, Major and minor revision specified in the electronic key logical segment is not a valid revision of the device, or if the compatibility bit is set and the requested Major Revision and/or Minor Revision is 0 or the device cannot emulate the specified revision. */
   kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened = 0x0119, /**< General Status has to be 0x01, listen-only connection cannot be established, if no non-listen only connections are established  */
   kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections = 0x011A, /**< Maximum number of connections supported by the instance of the target object exceeded */
-  kConnectionManagerExtendedStatusCodeProductionInhibitTimerGreaterThanRpi = 0x011B, /**< The Production Inhibit Time is greater than the Target to Originator RPI */
+  kConnectionManagerExtendedStatusCodeProductionInhibitTimerGreaterThanRpi =
+    0x011B,                                                                          /**< The Production Inhibit Time is greater than the Target to Originator RPI */
   kConnectionManagerExtendedStatusCodeTransportClassNotSupported = 0x011C, /**< The transport class requested in the Transport Type/Trigger parameter is not supported. */
   kConnectionManagerExtendedStatusCodeProductionTriggerNotSuppoerted = 0x011D, /**< The production trigger requested in the Transport Type/Trigger parameter is not supported. */
   kConnectionManagerExtendedStatusCodeDirectionNotSupported = 0x011E, /**< The direction requested in the Transport Type/Trigger parameter is not supported */
-  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionFixVar = 0x011F, /**< Shall be returned as the result of specifying an O->T fixed / variable flag that is not supported. */
-  kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionFixVar = 0x0120, /**< Shall be returned as the result of specifying an T->O fixed / variable flag that is not supported. */
-  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionPriority = 0x0121, /**< Shall be returned as the result of specifying an O->T priority code that is not supported. */
-  kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionPriority = 0x0122, /**< Shall be returned as the result of specifying an T->O priority code that is not supported. */
+  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionFixVar =
+    0x011F,                                                                        /**< Shall be returned as the result of specifying an O->T fixed / variable flag that is not supported. */
+  kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionFixVar =
+    0x0120,                                                                        /**< Shall be returned as the result of specifying an T->O fixed / variable flag that is not supported. */
+  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionPriority =
+    0x0121,                                                                          /**< Shall be returned as the result of specifying an O->T priority code that is not supported. */
+  kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionPriority =
+    0x0122,                                                                          /**< Shall be returned as the result of specifying an T->O priority code that is not supported. */
   kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionType = 0x0123, /**< Shall be returned as the result of specifying an O->T connection type that is not supported */
   kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType = 0x0124, /**< Shall be returned as the result of specifying a T->O connection type that is not supported */
-  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionRedundantOwner = 0x0125, /**< Shall be returned as the result of specifying an O->T Redundant Owner flag that is not supported. */
+  kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionRedundantOwner
+    = 0x0125,                                                                              /**< Shall be returned as the result of specifying an O->T Redundant Owner flag that is not supported. */
   kConnectionManagerExtendedStatusCodeInvalidConfigurationSize = 0x0126, /**< The data segment provided in the Connection_Path parameter did not contain an acceptable number of 16-bit words for the the configuration application path requested. Two additional status words shall follow, the error code plus the max size in words */
   kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize = 0x0127, /**< The size of the consuming object declared in the Forward_Open request and available on the target does not match the size declared in the O->T Network Connection Parameter. Two additional status words shall follow, the error code plus the max size in words */
   kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize = 0x0128, /**< The size of the consuming object declared in the Forward_Open request and available on the target does not match the size declared in the T->O Network Connection Parameter. Two additional status words shall follow, the error code plus the max size in words  */
-  kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath = 0x0129, /**< Configuration application path specified does not correspond to a valid configuration application path within the target application. This error could also be returned if a configuration application path was required, but not provided by a connection request. */
+  kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath =
+    0x0129,                                                                         /**< Configuration application path specified does not correspond to a valid configuration application path within the target application. This error could also be returned if a configuration application path was required, but not provided by a connection request. */
   kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath = 0x012A, /**< Consumed application path specified does not correspond to a valid consumed application path within the target application. This error could also be returned if a consumed application path was required, but not provided by a connection request. */
   kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath = 0x012B, /**< Produced application path specified does not correspond to a valid produced application path within the target application. This error could also be returned if a produced application path was required, but not provided by a connection request. */
   kConnectionManagerExtendedStatusCodeConfigurationSymbolDoesNotExist = 0x012C,
@@ -75,36 +86,51 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeInconsistentConsumeDataFormat = 0x0130,
   kConnectionManagerExtendedStatusCodeInconsistentProduceDataFormat = 0x0131,
   kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported = 0x0132,
-  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable = 0x0133,
+  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable =
+    0x0133,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
-  kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService = 0x0205, /**<  */
-  kConnectionManagerExtendedStatusCodeMessageToLargeForUnconnectedSendService = 0x0206,
-  kConnectionManagerExtendedStatusCodeUnconnectedAcknowledgeWithoutReply = 0x0207,
+  kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
+    = 0x0205,                                                                               /**<  */
+  kConnectionManagerExtendedStatusCodeMessageToLargeForUnconnectedSendService =
+    0x0206,
+  kConnectionManagerExtendedStatusCodeUnconnectedAcknowledgeWithoutReply =
+    0x0207,
   kConnectionManagerExtendedStatusCodeNoBufferMemoryAvailable = 0x0301,
-  kConnectionManagerExtendedStatusCodeNetworkBandwithNotAvailableForData = 0x0302,
-  kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable = 0x0303,
-  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData = 0x0304,
+  kConnectionManagerExtendedStatusCodeNetworkBandwithNotAvailableForData =
+    0x0302,
+  kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable =
+    0x0303,
+  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData =
+    0x0304,
   kConnectionManagerExtendedStatusCodeScheduleSignatureMismatch = 0x0305,
-  kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible = 0x0306,
+  kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible =
+    0x0306,
   kConnectionManagerExtendedStatusCodePortNotAvailable = 0x0311,
   kConnectionManagerExtendedStatusCodeLinkAddressNotValid = 0x0312,
   kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath = 0x0315, /**<  */
-  kConnectionManagerExtendedStatusCodeForwardCloseServiceConnectionPathMismatch = 0x0316,
+  kConnectionManagerExtendedStatusCodeForwardCloseServiceConnectionPathMismatch
+    = 0x0316,
   kConnectionManagerExtendedStatusCodeSchedulingNotSpecified = 0x0317,
   kConnectionManagerExtendedStatusCodeLinkAddressToSelfInvalid = 0x0318,
   kConnectionManagerExtendedStatusCodeSecondaryResourcesUnavailable = 0x0319,
   kConnectionManagerExtendedStatusCodeRackConnectionAlreadyEstablished = 0x031A,
-  kConnectionManagerExtendedStatusCodeModuleConnectionAlreadyEstablished = 0x031B,
+  kConnectionManagerExtendedStatusCodeModuleConnectionAlreadyEstablished =
+    0x031B,
   kConnectionManagerExtendedStatusCodeMiscellaneous = 0x031C,
   kConnectionManagerExtendedStatusCodeRedundantConnectionMismatch = 0x031D,
-  kConnectionManagerExtendedStatusCodeNoMoreUserConfigurableLinkConsumerResourcesAvailableInTheProducingModule = 0x031E,
-  kConnectionManagerExtendedStatusCodeNoUserConfigurableLinkConsumerResourcesConfiguredInTheProducingModule = 0x031F,
+  kConnectionManagerExtendedStatusCodeNoMoreUserConfigurableLinkConsumerResourcesAvailableInTheProducingModule
+    = 0x031E,
+  kConnectionManagerExtendedStatusCodeNoUserConfigurableLinkConsumerResourcesConfiguredInTheProducingModule
+    = 0x031F,
   kConnectionManagerExtendedStatusCodeNetworkLinkOffline = 0x0800,
   kConnectionManagerExtendedStatusCodeNoTargetApplicationDataAvailable = 0x0810,
-  kConnectionManagerExtendedStatusCodeNoOriginatorApplicationDataAvailable = 0x0811,
-  kConnectionManagerExtendedStatusCodeNodeAddressHasChangedSinceTheNetworkWasScheduled = 0x0812,
-  kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast = 0x0813,
+  kConnectionManagerExtendedStatusCodeNoOriginatorApplicationDataAvailable =
+    0x0811,
+  kConnectionManagerExtendedStatusCodeNodeAddressHasChangedSinceTheNetworkWasScheduled
+    = 0x0812,
+  kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast =
+    0x0813,
   kConnectionManagerExtendedStatusCodeInvalidProduceConsumeDataFormat = 0x0814
 } ConnectionManagerExtendedStatusCode;
 
@@ -122,15 +148,19 @@ typedef enum ProductionTrigger {
   kProductionTriggerApplicationObjectTriggered = 2
 } ProductionTrigger;
 
-ProductionTrigger GetProductionTrigger(const ConnectionObject const* connection_object);
+ProductionTrigger GetProductionTrigger(
+  const ConnectionObject const *connection_object);
 
-void SetProductionTrigger(const ProductionTrigger production_trigger, ConnectionObject *connection_object);
+void SetProductionTrigger(const ProductionTrigger production_trigger,
+                          ConnectionObject *connection_object);
 
-CipUint GetProductionInhibitTime(const ConnectionObject const* connection_object);
+CipUint GetProductionInhibitTime(const ConnectionObject const *connection_object);
 
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time, ConnectionObject *const connection_object);
+void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
+                              ConnectionObject *const connection_object);
 
-CipUdint GetTargetToOriginatorRequestedPackedInterval(const ConnectionObject const* connection_object);
+CipUdint GetTargetToOriginatorRequestedPackedInterval(
+  const ConnectionObject const *connection_object);
 
 /** @brief macros for comparing sequence numbers according to CIP spec vol
  * 2 3-4.2 for int type variables
@@ -139,17 +169,17 @@ CipUdint GetTargetToOriginatorRequestedPackedInterval(const ConnectionObject con
  *  b
  *  @define SEQ_GT32(a, b) Checks if sequence number a is greater than b
  */
-#define SEQ_LEQ32(a, b) ((int)((a) - (b)) <= 0)
-#define SEQ_GEQ32(a, b) ((int)((a) - (b)) >= 0)
-#define SEQ_GT32(a, b) ((int)((a) - (b)) > 0)
+#define SEQ_LEQ32(a, b) ( (int)( (a) - (b) ) <= 0 )
+#define SEQ_GEQ32(a, b) ( (int)( (a) - (b) ) >= 0 )
+#define SEQ_GT32(a, b) ( (int)( (a) - (b) ) > 0 )
 
 /** @brief similar macros for comparing 16 bit sequence numbers
  * @define SEQ_LEQ16(a, b) Checks if sequence number a is less or equal than b
  * @define SEQ_GEQ16(a, b) Checks if sequence number a is greater or equal than
  *  b
  */
-#define SEQ_LEQ16(a, b) ((short)((a) - (b)) <= 0)
-#define SEQ_GEQ16(a, b) ((short)((a) - (b)) >= 0)
+#define SEQ_LEQ16(a, b) ( (short)( (a) - (b) ) <= 0 )
+#define SEQ_GEQ16(a, b) ( (short)( (a) - (b) ) >= 0 )
 
 /** @brief States of a connection */
 typedef enum {
@@ -174,7 +204,7 @@ typedef enum {
 typedef enum {
   kWatchdogTimeoutActionTransitionToTimedOut = 0, /**< , invalid for explicit message connections */
   kWatchdogTimeoutActionAutoDelete = 1, /**< Default for explicit message connections,
-   default for I/O connections on EIP */
+                                           default for I/O connections on EIP */
   kWatchdogTimeoutActionAutoReset = 2, /**< Invalid for explicit message connections */
   kWatchdogTimeoutActionDeferredDelete = 3 /**< Only valid for DeviceNet, invalid for I/O connections */
 } WatchdogTimeoutAction;
@@ -183,7 +213,7 @@ typedef struct {
   ConnectionState state;
   EipUint16 connection_id;
 /*TODO think if this is needed anymore
- TCMReceiveDataFunc m_ptfuncReceiveData; */
+   TCMReceiveDataFunc m_ptfuncReceiveData; */
 } LinkConsumer;
 
 typedef struct {
@@ -206,10 +236,10 @@ typedef struct connection_object {
   ConnectionType instance_type; /**< Indicates either I/O or Messaging connection */
   EipByte transport_type_class_trigger;
   /* conditional
-  EipUint16 device_net_produced_connection_id;
-  EipUint16 device_net_consumed_connection_id;
-  EipByte device_net_initial_comm_characteristcs;
-  */
+     EipUint16 device_net_produced_connection_id;
+     EipUint16 device_net_consumed_connection_id;
+     EipByte device_net_initial_comm_characteristcs;
+   */
 
   EipUint16 produced_connection_size;
   EipUint16 consumed_connection_size;
@@ -225,8 +255,8 @@ typedef struct connection_object {
   EipUint16 consumed_connection_path_length;
   CipEpath consumed_connection_path; /**< Packed EPATH */
   /** @brief Minimal time between the production of two application triggered
-    * or change of state triggered I/O connection messages
-    */
+   * or change of state triggered I/O connection messages
+   */
   EipUint16 production_inhibit_time;
   EipUint16 connection_timeout_multiplier;
   /* Conditional
@@ -256,20 +286,20 @@ typedef struct connection_object {
   /*S_CIP_CM_Object *p_stProducingCMObject; */
 
   EipUint32 eip_level_sequence_count_producing; /* the EIP level sequence Count
-   for Class 0/1
-   Producing Connections may have a
-   different
-   value than SequenceCountProducing */
+                                                   for Class 0/1
+                                                   Producing Connections may have a
+                                                   different
+                                                   value than SequenceCountProducing */
   EipUint32 eip_level_sequence_count_consuming; /* the EIP level sequence Count
-   for Class 0/1
-   Producing Connections may have a
-   different
-   value than SequenceCountProducing */
+                                                   for Class 0/1
+                                                   Producing Connections may have a
+                                                   different
+                                                   value than SequenceCountProducing */
 
   EipUint16 sequence_count_producing; /* sequence Count for Class 1 Producing
-   Connections */
+                                         Connections */
   EipUint16 sequence_count_consuming; /* sequence Count for Class 1 Producing
-   Connections */
+                                         Connections */
 
   EipInt32 transmission_trigger_timer;
   EipInt32 inactivity_watchdog_timer;
@@ -283,9 +313,9 @@ typedef struct connection_object {
 
   struct sockaddr_in remote_address; /* socket address for produce */
   struct sockaddr_in originator_address; /* the address of the originator that
-   established the connection. needed
-   for scanning if the right packet is
-   arriving */
+                                            established the connection. needed
+                                            for scanning if the right packet is
+                                            arriving */
   int socket[2]; /* socket handles, indexed by kConsuming or kProducing */
 
   /* pointers to connection handling functions */
@@ -320,7 +350,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-ConnectionObject* GetConnectedObject(EipUint32 connection_id);
+ConnectionObject *GetConnectedObject(EipUint32 connection_id);
 
 /**  Get a connection object for a given output assembly.
  *
@@ -336,14 +366,15 @@ ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
  * @param destination Destination of the copy operation
  * @param osurce Source of the copy operation
  */
-void CopyConnectionData(ConnectionObject *restrict destination, const ConnectionObject *restrict const source);
+void CopyConnectionData(ConnectionObject *restrict destination,
+                        const ConnectionObject *restrict const source);
 
 /** @brief Close the given connection
  *
  * This function will take the data form the connection and correctly closes the
- *connection (e.g., open sockets)
+ * connection (e.g., open sockets)
  * @param connection_object pointer to the connection object structure to be
- *closed
+ * closed
  */
 void CloseConnection(ConnectionObject *restrict connection_object);
 
@@ -378,6 +409,7 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object);
 /** @brief returns the connection type of the supplied network connection parameter
  *
  */
-ForwardOpenConnectionType GetConnectionType(EipUint16 network_connection_parameter);
+ForwardOpenConnectionType GetConnectionType(
+  EipUint16 network_connection_parameter);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

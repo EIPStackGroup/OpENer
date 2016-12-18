@@ -140,23 +140,26 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint8 path_size;
-  /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
-     (EIP_UINT16) */
+  EipUint8 path_size;/**< Path size in 16 bit words (path_size * 16 bit) */
   EipUint16 class_id; /**< Class ID of the linked object */
   EipUint16 instance_number; /**< Requested Instance Number of the linked object */
   EipUint16 attribute_number; /**< Requested Attribute Number of the linked object */
 } CipEpath;
 
+typedef enum connection_point_type {
+  kConnectionPointTypeProducing = 0,
+  kConnectionPointTypeConsuming,
+  kConnectionPointTypeConfig,
+  kConnectionPointTypeMaxValue
+} ConnectionPointType;
+
 /** @brief CIP Connection Path
  *
  */
 typedef struct {
-  EipUint8 path_size;
-  /**< Size of the Path in 16-bit words *//* TODO: Fix, should be UINT
-     (EIP_UINT16) */
+  EipUint8 path_size; /**< Path size in 16 bit words (path_size * 16 bit) */
   EipUint32 class_id; /**< Class ID of the linked object */
-  EipUint32 connection_point[3]; /* TODO:  Why array length 3? */
+  EipUint32 connection_point[kConnectionPointTypeMaxValue];
   EipUint8 data_segment;
   EipUint8 *segment_data;
 } CipConnectionPath;

@@ -88,8 +88,7 @@ void ConfigureExclusiveOwnerConnectionPoint(
   const unsigned int connection_number,
   const unsigned int output_assembly,
   const unsigned int input_assembly,
-  const unsigned int config_assembly)
-{
+  const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS > connection_number) {
     g_exlusive_owner_connections[connection_number].output_assembly =
       output_assembly;
@@ -103,8 +102,7 @@ void ConfigureExclusiveOwnerConnectionPoint(
 void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
                                        const unsigned int output_assembly,
                                        const unsigned int input_assembly,
-                                       const unsigned int config_assembly)
-{
+                                       const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_INPUT_ONLY_CONNS > connection_number) {
     g_input_only_connections[connection_number].output_assembly =
       output_assembly;
@@ -117,8 +115,7 @@ void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
 void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
                                         const unsigned int output_assembly,
                                         const unsigned int input_assembly,
-                                        const unsigned int config_assembly)
-{
+                                        const unsigned int config_assembly) {
   if (OPENER_CIP_NUM_LISTEN_ONLY_CONNS > connection_number) {
     g_listen_only_connections[connection_number].output_assembly =
       output_assembly;
@@ -203,8 +200,7 @@ ConnectionObject *GetExclusiveOwnerConnection(
 
 ConnectionObject *GetInputOnlyConnection(
   const ConnectionObject *const restrict connection_object,
-  EipUint16 *const extended_error)
-{
+  EipUint16 *const extended_error) {
   ConnectionObject *input_only_connection = NULL; //TODO: This variable has no use
 
   for (int i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; i++) {
@@ -239,8 +235,7 @@ ConnectionObject *GetInputOnlyConnection(
 
 ConnectionObject *GetListenOnlyConnection(
   const ConnectionObject *const restrict connection_object,
-  EipUint16 *const extended_error)
-{
+  EipUint16 *const extended_error) {
   ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
   if ( kForwardOpenConnectionTypeMulticastConnection
@@ -404,7 +399,8 @@ EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
 
 void InitializeIoConnectionData(void) {
   memset( g_exlusive_owner_connections, 0,
-          OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS * sizeof(ExclusiveOwnerConnection) );
+          OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS *
+          sizeof(ExclusiveOwnerConnection) );
   memset( g_input_only_connections, 0,
           OPENER_CIP_NUM_INPUT_ONLY_CONNS * sizeof(InputOnlyConnection) );
   memset( g_listen_only_connections, 0,
