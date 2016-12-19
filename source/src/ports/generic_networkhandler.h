@@ -24,6 +24,7 @@
 #include "endianconv.h"
 #include "cipconnectionmanager.h"
 #include "networkhandler.h"
+#include "appcontype.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -46,7 +47,8 @@ int g_current_active_tcp_socket;
 struct timeval g_time_value;
 MilliSeconds g_actual_time;
 MilliSeconds g_last_time;
-
+MilliSeconds g_encap_timestamp;
+MilliSeconds* g_timestamps;
 /** @brief Struct representing the current network status
  *
  */
