@@ -328,6 +328,24 @@ EipStatus GetAttributeAllTcpIpInterface(
         return kEipStatusError;
       }
       message_router_response->data += message_router_response->data_length;
+
+      if (9 == attribute_number) {
+        /* returning default value for unimplemented attributes 10,11 and 12 */
+
+        /* attribute 10, type: BOOL, default value: 0 */
+        message_router_response->data += 6;
+        *(message_router_response->data) = 0;
+        message_router_response->data += 1;
+
+        /* attribute 11, type: STRUCT OF USINT, ARRAY of 6 USINTs, ARRAY of 28 USINTs default value: 0 */
+        memset(message_router_response->data, 0, 29);
+        message_router_response->data += 29;
+
+        /* attribute 12, type: BOOL default value: 0 */
+        *(message_router_response->data) = 0;
+        message_router_response->data += 1;
+      }
+
     }
     attribute++;
   }
