@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -20,19 +20,20 @@ CipDword configuration_capability_ = 0x04 | 0x20; /**< #2  This is a default val
 CipDword configuration_control_ = 0; /**< #3  This is a TCP/IP object attribute. For now it is always zero and is not used for anything. */
 CipEpath physical_link_object_ = /**< #4 */
 { 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks */
-CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID */
-1, /**< EIP_UINT16 InstanceNr*/
-0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object) */
+  CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID */
+  1, /**< EIP_UINT16 InstanceNr*/
+  0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object) */
 };
 
 CipTcpIpNetworkInterfaceConfiguration interface_configuration_ = /**< #5 IP, network mask, gateway, name server 1 & 2, domain name*/
 { 0, /* default IP address */
-0, /* NetworkMask */
-0, /* Gateway */
-0, /* NameServer */
-0, /* NameServer2 */
-{ /* DomainName */
-0, NULL } };
+  0, /* NetworkMask */
+  0, /* Gateway */
+  0, /* NameServer */
+  0, /* NameServer2 */
+  { /* DomainName */
+    0, NULL
+  } };
 
 CipString hostname_ = /**< #6 Hostname*/
 { 0, NULL };
@@ -48,19 +49,21 @@ EipUint8 g_time_to_live_value = 1;
  * allocation algorithm
  */
 MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default allocation algorithm */
-0, /* reserved */
-1, /* we currently use only one multicast address */
-0 /* the multicast address will be allocated on ip address configuration */
+                                                            0, /* reserved */
+                                                            1, /* we currently use only one multicast address */
+                                                            0 /* the multicast address will be allocated on ip address configuration */
 };
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response);
 
 EipStatus GetAttributeAllTcpIpInterface(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response);
 
 EipStatus ConfigureNetworkInterface(const char *const ip_address,
                                     const char *const subnet_mask,
@@ -72,12 +75,12 @@ EipStatus ConfigureNetworkInterface(const char *const ip_address,
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
   EipUint32 host_id = ntohl(interface_configuration_.ip_address)
-      & ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
+                      & ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
   host_id -= 1;
   host_id &= 0x3ff;
 
   g_multicast_configuration.starting_multicast_address = htonl(
-      ntohl(inet_addr("239.192.1.0")) + (host_id << 5));
+    ntohl( inet_addr("239.192.1.0") ) + (host_id << 5) );
 
   return kEipStatusOk;
 }
@@ -92,8 +95,9 @@ void ConfigureDomainName(const char *const restrict domain_name) {
   interface_configuration_.domain_name.length = strlen(domain_name);
   if (interface_configuration_.domain_name.length) {
     interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
-        interface_configuration_.domain_name.length + 1, sizeof(EipInt8));
-    strcpy((char *)(interface_configuration_.domain_name.string), domain_name);
+      interface_configuration_.domain_name.length + 1, sizeof(EipInt8) );
+    strcpy( (char *)(interface_configuration_.domain_name.string),
+            domain_name );
   } else {
     interface_configuration_.domain_name.string = NULL;
   }
@@ -108,19 +112,20 @@ void ConfigureHostName(const char *const restrict hostname) {
   }
   hostname_.length = strlen(hostname);
   if (hostname_.length) {
-    hostname_.string = (EipByte *) CipCalloc(hostname_.length + 1,
-                                             sizeof(EipByte));
-    strcpy((char *)(hostname_.string), hostname);
+    hostname_.string = (EipByte *) CipCalloc( hostname_.length + 1,
+                                              sizeof(EipByte) );
+    strcpy( (char *)(hostname_.string), hostname );
   } else {
     hostname_.string = NULL;
   }
 }
 
 EipStatus SetAttributeSingleTcp(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response) {
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response) {
   CipAttributeStruct *attribute = GetCipAttribute(
-      instance, message_router_request->request_path.attribute_number);
+    instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
 
   if (0 != attribute) {
@@ -136,7 +141,7 @@ EipStatus SetAttributeSingleTcp(
   message_router_response->size_of_additional_status = 0;
   message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80
-      | message_router_request->service);
+                                            | message_router_request->service);
   return kEipStatusOkSend;
 }
 
@@ -200,8 +205,9 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-    CipInstance *const restrict instance, CipMessageRouterRequest *restrict const message_router_request,
-    CipMessageRouterResponse *restrict const message_router_response) {
+  CipInstance *const restrict instance,
+  CipMessageRouterRequest *restrict const message_router_request,
+  CipMessageRouterResponse *restrict const message_router_response) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
@@ -209,22 +215,22 @@ EipStatus GetAttributeSingleTcpIpInterface(
   if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     message_router_response->data_length = 0;
     message_router_response->reply_service = (0x80
-        | message_router_request->service);
+                                              | message_router_request->service);
     message_router_response->general_status = kCipErrorSuccess;
     message_router_response->size_of_additional_status = 0;
 
     message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.alloc_control), &message);
+      kCipUsint, &(g_multicast_configuration.alloc_control), &message);
     message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
-        &message);
+      kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
+      &message);
     message_router_response->data_length += EncodeData(
-        kCipUint,
-        &(g_multicast_configuration.number_of_allocated_multicast_addresses),
-        &message);
+      kCipUint,
+      &(g_multicast_configuration.number_of_allocated_multicast_addresses),
+      &message);
 
     EipUint32 multicast_address = ntohl(
-        g_multicast_configuration.starting_multicast_address);
+      g_multicast_configuration.starting_multicast_address);
 
     message_router_response->data_length += EncodeData(kCipUdint,
                                                        &multicast_address,
@@ -237,8 +243,9 @@ EipStatus GetAttributeSingleTcpIpInterface(
 }
 
 EipStatus GetAttributeAllTcpIpInterface(
-    CipInstance *instance, CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response) {
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
@@ -246,9 +253,10 @@ EipStatus GetAttributeAllTcpIpInterface(
   for (int j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
   {
     int attribute_number = attribute->attribute_number;
-    if (attribute_number < 32
-        && (instance->cip_class->get_attribute_all_mask & 1 << attribute_number)) /* only return attributes that are flagged as being part of GetAttributeALl */
-        {
+    if ( attribute_number < 32
+         && (instance->cip_class->get_attribute_all_mask & 1 <<
+      attribute_number) )                                                         /* only return attributes that are flagged as being part of GetAttributeALl */
+    {
       message_router_request->request_path.attribute_number = attribute_number;
 
       if (8 == attribute_number) { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
@@ -256,9 +264,9 @@ EipStatus GetAttributeAllTcpIpInterface(
         message_router_response->data += 6;
       }
 
-      if (kEipStatusOkSend
-          != GetAttributeSingleTcpIpInterface(instance, message_router_request,
-                                              message_router_response)) {
+      if ( kEipStatusOkSend
+           != GetAttributeSingleTcpIpInterface(instance, message_router_request,
+                                               message_router_response) ) {
         message_router_response->data = response;
         return kEipStatusError;
       }
@@ -267,7 +275,7 @@ EipStatus GetAttributeAllTcpIpInterface(
     attribute++;
   }
   message_router_response->data_length = message_router_response->data
-      - response;
+                                         - response;
   message_router_response->data = response;
 
   return kEipStatusOkSend;

@@ -13,7 +13,7 @@
 
 /** @brief Executes platform dependent network handler initialization code
  *
- * 	@return EipStatusOk if initialization was successful, otherwise EipStatusError
+ *      @return EipStatusOk if initialization was successful, otherwise EipStatusError
  */
 EipStatus NetworkHandlerInitializePlatform(void);
 

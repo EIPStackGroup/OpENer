@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_CPF_H_
@@ -73,7 +73,7 @@ typedef struct {
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received unconnected explicit message and
- * hand the data on to the message router 
+ * hand the data on to the message router
  *
  * @param  received_data pointer to the encapsulation structure with the received message
  * @param  reply_buffer reply buffer
@@ -84,8 +84,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const received_data,
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
- * the connection status, update any timers, and hand the data on to 
- * the message router 
+ * the connection status, update any timers, and hand the data on to
+ * the message router
  *
  * @param  received_data pointer to the encapsulation structure with the received message
  * @param  reply_buffer reply buffer
@@ -100,12 +100,13 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  *  @param  data_length	length of data in pa_Data.
  *  @param  common_packet_format_data	pointer to structure of CPF data item.
  *  @return status
- * 	       EIP_OK .. success
- * 	       EIP_ERROR .. error
+ *             EIP_OK .. success
+ *             EIP_ERROR .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    const EipUint8 *data, int data_length,
-    CipCommonPacketFormatData *common_packet_format_data);
+  const EipUint8 *data,
+  int data_length,
+  CipCommonPacketFormatData *common_packet_format_data);
 
 /** @ingroup ENCAP
  * Copy data from CPFDataItem into linear memory in message for transmission over in encapsulation.
@@ -116,8 +117,7 @@ EipStatus CreateCommonPacketFormatStructure(
  *     EIP_ERROR .. error
  */
 int AssembleIOMessage(
-    CipCommonPacketFormatData *common_packet_format_data_item,
-    EipUint8 *message);
+  CipCommonPacketFormatData *common_packet_format_data_item,EipUint8 *message);
 
 
 /** @ingroup ENCAP
@@ -126,12 +126,12 @@ int AssembleIOMessage(
  * @param  common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
  * @param  message		pointer to linear memory.
  * @return length of reply in pa_msg in bytes
- * 	   EIP_ERROR .. error
+ *         EIP_ERROR .. error
  */
 int AssembleLinearMessage(
-    CipMessageRouterResponse *message_router_response,
-    CipCommonPacketFormatData *common_packet_format_data_item,
-    EipUint8 *message);
+  CipMessageRouterResponse *message_router_response,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 *message);
 
 /** @ingroup ENCAP
  * @brief Data storage for the any CPF data
