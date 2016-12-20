@@ -255,7 +255,7 @@ EipStatus GetAttributeAllTcpIpInterface(
     int attribute_number = attribute->attribute_number;
     if ( attribute_number < 32
          && (instance->cip_class->get_attribute_all_mask & 1 <<
-      attribute_number) )                                                         /* only return attributes that are flagged as being part of GetAttributeALl */
+             attribute_number) )                                                  /* only return attributes that are flagged as being part of GetAttributeALl */
     {
       message_router_request->request_path.attribute_number = attribute_number;
 

@@ -409,7 +409,7 @@ void DetermineDelayTime(EipByte *buffer_start,
 
   buffer_start += 12; /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(
-     (const EipUint8 **const)&buffer_start );
+    (const EipUint8 **const)&buffer_start );
 
   if (0 == maximum_delay_time) {
     maximum_delay_time = kListIdentityDefaultDelayTime;
@@ -509,9 +509,9 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
     GetDintFromMessage(
-       (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over null interface handle*/
+      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                 /* skip over null interface handle*/
     GetIntFromMessage(
-       (const EipUint8 **const)&receive_data->current_communication_buffer_position );               /* skip over unused timeout value*/
+      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
@@ -548,9 +548,9 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
     GetDintFromMessage(
-       (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over null interface handle*/
+      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                 /* skip over null interface handle*/
     GetIntFromMessage(
-       (const EipUint8 **const)&receive_data->current_communication_buffer_position );               /* skip over unused timeout value*/
+      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
