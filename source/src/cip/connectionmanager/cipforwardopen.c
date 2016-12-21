@@ -82,7 +82,7 @@ CipUsint CipForwardOpenGetTimeoutTick(CipForwardOpenData *forward_open_data) {
 MilliSeconds CipForwardOpenGetTimeoutInMilliseconds(
   CipForwardOpenData *forward_open_data) {
   return CipForwardOpenGetTimeoutTick(forward_open_data) * 1 <<
-    CipForwardOpenGetTickTime(forward_open_data);
+         CipForwardOpenGetTickTime(forward_open_data);
 }
 
 CipUdint CipForwardOpenGetOriginatorToTargetNetworkConnectionId(

@@ -147,12 +147,12 @@ EipStatus SetAssemblyAttributeSingle(
           "Assembly AssemblyAttributeSingle: received data for connected output assembly\n\r");
         message_router_response->general_status = kCipErrorAttributeNotSetable;
       } else {
-        if (message_router_request->data_length < data->length) {
+        if (message_router_request->request_path_size < data->length) {
           OPENER_TRACE_INFO(
             "Assembly setAssemblyAttributeSingle: not enough data received.\r\n");
           message_router_response->general_status = kCipErrorNotEnoughData;
         } else {
-          if (message_router_request->data_length > data->length) {
+          if (message_router_request->request_path_size > data->length) {
             OPENER_TRACE_INFO(
               "Assembly setAssemblyAttributeSingle: too much data received.\r\n");
             message_router_response->general_status = kCipErrorTooMuchData;

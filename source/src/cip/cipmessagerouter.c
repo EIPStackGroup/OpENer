@@ -224,9 +224,10 @@ CipError CreateMessageRouterRequestStructure(
   }
 
   message_router_request->data = data;
-  message_router_request->data_length = data_length - number_of_decoded_bytes;
+  message_router_request->request_path_size = data_length -
+                                              number_of_decoded_bytes;
 
-  if (message_router_request->data_length < 0) {
+  if (message_router_request->request_path_size < 0) {
     return kCipErrorPathSizeInvalid;
   }
   else{

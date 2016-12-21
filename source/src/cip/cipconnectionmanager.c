@@ -1182,14 +1182,14 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
   connection_object->production_inhibit_time = 256;
 
   if ( (g_kForwardOpenHeaderLength + remaining_path_size * 2)
-       < message_router_request->data_length ) {
+       < message_router_request->request_path_size ) {
     /* the received packet is larger than the data in the path */
     *extended_error = 0;
     return kCipErrorTooMuchData;
   }
 
   if ( (g_kForwardOpenHeaderLength + remaining_path_size * 2)
-       > message_router_request->data_length ) {
+       > message_router_request->request_path_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;
     return kCipErrorNotEnoughData;
