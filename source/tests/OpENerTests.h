@@ -6,3 +6,4 @@ IMPORT_TEST_GROUP(EndianConversion);
 IMPORT_TEST_GROUP(CipEpath);
 IMPORT_TEST_GROUP(CipElectronicKey);
 IMPORT_TEST_GROUP(CipConnectionObject);
+IMPORT_TEST_GROUP(CipForwardOpen);

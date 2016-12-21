@@ -1,6 +1,8 @@
 
 opener_common_includes()
 
+add_subdirectory( connectionmanager )
+
 set( CipTestSrc cipepathtest.cpp cipelectronickeytest.cpp cipconnectionobjecttest.cpp )
 
 include_directories( ${SRC_DIR}/cip )

@@ -104,21 +104,21 @@ EipUint16 ProcessProductionInhibitTime(ConnectionObject *io_connection_object) {
   return kConnectionManagerExtendedStatusCodeSuccess;
 }
 
-CipConnectionObjectTransportClass GetConnectionTransportClass(
+CipConnectionObjectTransportClassTriggerClass GetConnectionTransportClass(
   const ConnectionObject *const connection_object) {
   const unsigned int kTransportClassMask = 0x0F;
 
   switch(connection_object->transport_type_class_trigger &
          kTransportClassMask) {
-    case 0: return kCipConnectionObjectTransportClass0;
-    case 1: return kCipConnectionObjectTransportClass1;
-    case 2: return kCipConnectionObjectTransportClass2;
-    case 3: return kCipConnectionObjectTransportClass3;
-    case 4: return kCipConnectionObjectTransportClass4;
-    case 5: return kCipConnectionObjectTransportClass5;
-    case 6: return kCipConnectionObjectTransportClass6;
+    case 0: return kCipConnectionObjectTransportClassTriggerClass0;
+    case 1: return kCipConnectionObjectTransportClassTriggerClass1;
+    case 2: return kCipConnectionObjectTransportClassTriggerClass2;
+    case 3: return kCipConnectionObjectTransportClassTriggerClass3;
+    case 4: return kCipConnectionObjectTransportClassTriggerClass4;
+    case 5: return kCipConnectionObjectTransportClassTriggerClass5;
+    case 6: return kCipConnectionObjectTransportClassTriggerClass6;
   }
-  return kCipConnectionObjectTransportClassInvalid;
+  return kCipConnectionObjectTransportClassTriggerClassInvalid;
 }
 
 void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object) {
@@ -157,7 +157,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
     int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
-    if ( kCipConnectionObjectTransportClass1
+    if ( kCipConnectionObjectTransportClassTriggerClass1
          == GetConnectionTransportClass(io_connection_object) ) {
       //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
       /* class 1 connection */
@@ -209,7 +209,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
     int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
-    if ( kCipConnectionObjectTransportClass1 ==
+    if ( kCipConnectionObjectTransportClassTriggerClass1 ==
          GetConnectionTransportClass(io_connection_object) ) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
