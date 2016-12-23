@@ -14,7 +14,7 @@
 #include "cipconnectionobject.h"
 
 typedef struct cip_forward_open_data CipForwardOpenData;
-extern const size_t CipForwardOpenDataSize;
+extern const size_t kCipForwardOpenDataSize;
 
 typedef enum cip_forward_open_priority_tick_time {
   kCipForwardOpenPriorityTickTimeNormal,

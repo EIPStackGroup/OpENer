@@ -26,7 +26,7 @@ typedef struct cip_forward_open_data {
   const CipOctet *connection_path;
 } CipForwardOpenData;
 
-const size_t CipForwardOpenDataSize = sizeof(CipForwardOpenData);
+const size_t kCipForwardOpenDataSize = sizeof(CipForwardOpenData);
 
 const CipOctet *CipForwardOpenGetForwardOpenDataFromMessage(
   CipForwardOpenData *const data, const CipOctet **const message) {
@@ -330,16 +330,20 @@ CipForwardOpenGetTransportClassTriggerProductionTrigger(
                                      forward_open_data->
                                      transport_class_and_trigger;
   CipConnectionObjectTransportClassTriggerProductionTrigger trigger =
-    kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic;
+    kCipConnectionObjectTransportClassTriggerProductionTriggerInvalid;
 
   switch(kProductionTrigger) {
     case PRODUCTION_TRIGGER_CYCLIC: trigger =
-      kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic; break;
+      kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic;
+      break;
     case PRODUCTION_TRIGGER_CHANGE_OF_STATE: trigger =
       kCipConnectionObjectTransportClassTriggerProductionTriggerChangeOfState;
       break;
     case PRODUCTION_TRIGGER_APPLICATION_OBJECT: trigger =
       kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject;
+      break;
+    default: trigger =
+      kCipConnectionObjectTransportClassTriggerProductionTriggerInvalid;
       break;
   }
 

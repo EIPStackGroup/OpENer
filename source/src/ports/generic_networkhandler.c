@@ -13,6 +13,8 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "generic_networkhandler.h"
 
@@ -497,9 +499,32 @@ EipStatus HandleDataOnTcpSocket(int socket) {
      the fastest way and a loop here with a non blocking socket would better
      fit*/
 
+  struct timeval timeout = {
+    .tv_sec = 0,
+    .tv_usec = 10000
+  };
+
+  setsockopt( socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+              sizeof(struct timeval) );
   /*Check how many data is here -- read the first four bytes from the connection */
-  long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
-                                   0); /*TODO we may have to set the socket to a non blocking socket */
+  struct sockaddr_storage addr;
+  memset( &addr, 0, sizeof(addr) );
+  socklen_t fromlen = sizeof(addr);
+  long number_of_read_bytes = recvfrom(socket,
+                                       g_ethernet_communication_buffer,
+                                       4,
+                                       0,
+                                       (struct sockaddr *)&addr,
+                                       &fromlen);                         /*TODO we may have to set the socket to a non blocking socket */
+  OPENER_TRACE_INFO("Message received from: %d\n",
+                    ( (struct sockaddr_in *)&addr )->sin_addr.s_addr);
+  char ipstr[INET6_ADDRSTRLEN];
+  OPENER_TRACE_INFO( "from IP address %s\n",
+                     inet_ntop(addr.ss_family,
+                               addr.ss_family == AF_INET ?
+                               &( (struct sockaddr_in *)&addr )->sin_addr :
+                               &( (struct sockaddr_in6 *)&addr )->sin6_addr,
+                               ipstr, sizeof ipstr) );
 
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
@@ -530,6 +555,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     /* Currently we will drop the whole packet */
 
     do {
+      OPENER_TRACE_INFO(
+        "Entering consumption loop, remaining data to receive: %zu\n",
+        data_sent);
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
 
@@ -558,12 +586,13 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         data_sent = data_size;
       }
     } while (0 < data_size);
-    assert(0 <= data_size);
+    assert(0 == data_size);
     return kEipStatusOk;
   }
 
   number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
                               data_size, 0);
+
 
   if (number_of_read_bytes == 0) /* got error or connection closed by client */
   {
@@ -594,7 +623,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     g_current_active_tcp_socket = socket;
 
     number_of_read_bytes = HandleReceivedExplictTcpData(
-      socket, g_ethernet_communication_buffer, data_size, &remaining_bytes);
+      socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
+      ( (struct sockaddr_in *)&addr )->sin_addr.s_addr);
 
     g_current_active_tcp_socket = -1;
 

@@ -59,19 +59,34 @@ GetTransportClassTriggerDirection(
 CipConnectionObjectTransportClassTriggerProductionTrigger
 GetTransportClassTriggerProductionTrigger(
   const CipConnectionObject *restrict const connection_object) {
-  const CipByte production_trigger_mask = 0x70;       /* Bits 4-7 are representing the production trigger */
+  const CipByte kProductionTriggerMask = 0x70;       /* Bits 4-7 are representing the production trigger */
   CipByte production_trigger = connection_object->transport_class_trigger &
-                               production_trigger_mask;
+                               kProductionTriggerMask;
   return (CipConnectionObjectTransportClassTriggerProductionTrigger)
          production_trigger >> 4;
 }
 
-CipConnectionObjectTransportClass GetTransportClassTriggerTransportClass(
+CipConnectionObjectTransportClassTriggerClass
+GetTransportClassTriggerTransportClass(
   const CipConnectionObject *restrict const connection_object) {
-  const CipByte transport_class_mask = 0x0F;
-  CipByte transport_class = connection_object->transport_class_trigger &
-                            transport_class_mask;
-  return (CipConnectionObjectTransportClass) transport_class;
+  const CipByte kTransportClassMask = 0x0F;
+  const CipByte kTransportClass = connection_object->transport_class_trigger &
+                                  kTransportClassMask;
+  CipConnectionObjectTransportClassTriggerClass transport_class =
+    kCipConnectionObjectTransportClassTriggerClassInvalid;
+  switch(kTransportClass) {
+    case 0: transport_class = kCipConnectionObjectTransportClassTriggerClass0;
+      break;
+    case 1: transport_class = kCipConnectionObjectTransportClassTriggerClass1;
+      break;
+    case 2: transport_class = kCipConnectionObjectTransportClassTriggerClass2;
+      break;
+    case 3: transport_class = kCipConnectionObjectTransportClassTriggerClass3;
+      break;
+    default: transport_class =
+      kCipConnectionObjectTransportClassTriggerClassInvalid; break;
+  }
+  return kTransportClass;
 }
 
 CipUint ConnectionObjectGetProducedConnectionSize(

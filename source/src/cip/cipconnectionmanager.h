@@ -131,7 +131,8 @@ typedef enum {
     = 0x0812,
   kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast =
     0x0813,
-  kConnectionManagerExtendedStatusCodeInvalidProduceConsumeDataFormat = 0x0814
+  kConnectionManagerExtendedStatusCodeInvalidProduceConsumeDataFormat = 0x0814,
+  kConnectionManagerExtendedStatusWrongCloser
 } ConnectionManagerExtendedStatusCode;
 
 typedef enum {
@@ -302,7 +303,7 @@ typedef struct connection_object {
                                          Connections */
 
   EipInt32 transmission_trigger_timer;
-  EipInt32 inactivity_watchdog_timer;
+  uint64_t inactivity_watchdog_timer;
 
 
 
@@ -330,6 +331,7 @@ typedef struct connection_object {
 
   EipUint16 correct_originator_to_target_size;
   EipUint16 correct_target_to_originator_size;
+  in_addr_t original_opener_ip_address;
 } ConnectionObject;
 
 /** @brief Connection Manager class code */

@@ -21,7 +21,8 @@
 EipStatus SetAssemblyAttributeSingle(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response);
+  CipMessageRouterResponse *const message_router_response,
+  in_addr_t originator_address);
 
 /** @brief Constructor for the assembly object class
  *
@@ -121,7 +122,8 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
 EipStatus SetAssemblyAttributeSingle(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response) {
+  CipMessageRouterResponse *const message_router_response,
+  in_addr_t originator_address) {
   OPENER_TRACE_INFO(" setAttribute %d\n",
                     message_router_request->request_path.attribute_number);
 

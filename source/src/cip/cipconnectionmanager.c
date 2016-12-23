@@ -122,15 +122,18 @@ EipUint32 g_incarnation_id;
 /* private functions */
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response);
+                      CipMessageRouterResponse *message_router_response,
+                      in_addr_t originator_address);
 
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
-                       CipMessageRouterResponse *message_router_response);
+                       CipMessageRouterResponse *message_router_response,
+                       in_addr_t originator_address);
 
 EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response);
+                             CipMessageRouterResponse *message_router_response,
+                             in_addr_t originator_address);
 
 EipStatus AssembleForwardOpenResponse(
   ConnectionObject *connection_object,CipMessageRouterResponse *
@@ -583,7 +586,8 @@ static const HandleForwardOpenRequestFunction
  */
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response) {
+                      CipMessageRouterResponse *message_router_response,
+                      in_addr_t originator_address) {
   (void) instance;       /*suppress compiler warning */
 
   uint8_t is_null_request = -1;       /* 1 = Null Request, 0 =  Non-Null Request  */
@@ -592,6 +596,7 @@ EipStatus ForwardOpen(CipInstance *instance,
   /*first check if we have already a connection with the given params */
   ReadOutConnectionObjectFromMessage(message_router_request,
                                      &g_dummy_connection_object);
+  g_dummy_connection_object.original_opener_ip_address = originator_address;
 
   ForwardOpenConnectionType o_to_t_connection_type = GetConnectionType(
     g_dummy_connection_object.o_to_t_network_connection_parameter);
@@ -709,7 +714,8 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
 
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
-                       CipMessageRouterResponse *message_router_response) {
+                       CipMessageRouterResponse *message_router_response,
+                       in_addr_t originator_address) {
   /*Suppress compiler warning*/
   (void) instance;
 
@@ -765,8 +771,8 @@ EipStatus ForwardClose(CipInstance *instance,
 /* TODO: Not implemented */
 EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response)
-{
+                             CipMessageRouterResponse *message_router_response,
+                             in_addr_t originator_address) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;
@@ -783,18 +789,20 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
 
   ConnectionObject *connection_object = g_active_connection_list;
   while (NULL != connection_object) {
-    if (connection_object->state == kConnectionStateEstablished) {
+    OPENER_TRACE_INFO("Entering Connection Object loop\n");
+    if (kConnectionStateEstablished == connection_object->state) {
       if ( (0 != connection_object->consuming_instance) ||                  /* we have a consuming connection check inactivity watchdog timer */
            (connection_object->transport_type_class_trigger & 0x80) )             /* all sever connections have to maintain an inactivity watchdog timer */
       {
-        connection_object->inactivity_watchdog_timer -= elapsed_time;
-        if (connection_object->inactivity_watchdog_timer <= 0) {
+        if (elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
           OPENER_ASSERT(
             NULL != connection_object->connection_timeout_function);
           connection_object->connection_timeout_function(
             connection_object);
+        } else {
+          connection_object->inactivity_watchdog_timer -= elapsed_time;
         }
       }
       /* only if the connection has not timed out check if data is to be send */
@@ -1020,9 +1028,13 @@ EipStatus AssembleForwardCloseResponse(
     message_router_response->size_of_additional_status = 0;
   } else {
     *message = *message_router_request->data;             /* remaining path size */
-    message_router_response->general_status = kCipErrorConnectionFailure;
-    message_router_response->additional_status[0] = extended_error_code;
-    message_router_response->size_of_additional_status = 1;
+    if (kConnectionManagerExtendedStatusWrongCloser == extended_error_code) {
+      message_router_response->general_status = kCipErrorPrivilegeViolation;
+    } else {
+      message_router_response->general_status = kCipErrorConnectionFailure;
+      message_router_response->additional_status[0] = extended_error_code;
+      message_router_response->size_of_additional_status = 1;
+    }
   }
 
   message++;

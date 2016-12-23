@@ -58,12 +58,14 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response);
+  CipMessageRouterResponse *message_router_response,
+  in_addr_t originator_address);
 
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response);
+  CipMessageRouterResponse *message_router_response,
+  in_addr_t originator_address);
 
 EipStatus ConfigureNetworkInterface(const char *const ip_address,
                                     const char *const subnet_mask,
@@ -123,7 +125,8 @@ void ConfigureHostName(const char *const restrict hostname) {
 EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response,
+  in_addr_t originator_address) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
@@ -207,7 +210,8 @@ void ShutdownTcpIpInterface(void) {
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const restrict instance,
   CipMessageRouterRequest *restrict const message_router_request,
-  CipMessageRouterResponse *restrict const message_router_response) {
+  CipMessageRouterResponse *restrict const message_router_response,
+  in_addr_t originator_address) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
@@ -237,7 +241,8 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &message);
   } else {
     status = GetAttributeSingle(instance, message_router_request,
-                                message_router_response);
+                                message_router_response,
+                                originator_address);
   }
   return status;
 }
@@ -245,7 +250,8 @@ EipStatus GetAttributeSingleTcpIpInterface(
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response,
+  in_addr_t originator_address) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
@@ -266,7 +272,8 @@ EipStatus GetAttributeAllTcpIpInterface(
 
       if ( kEipStatusOkSend
            != GetAttributeSingleTcpIpInterface(instance, message_router_request,
-                                               message_router_response) ) {
+                                               message_router_response,
+                                               originator_address) ) {
         message_router_response->data = response;
         return kEipStatusError;
       }

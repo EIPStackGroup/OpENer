@@ -9,6 +9,7 @@
 #include <stdbool.h>
 
 #include "opener_api.h"
+#include "appcontype.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -120,6 +121,7 @@ EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
 
 EipStatus ResetDevice(void) {
   /* add reset code here*/
+  CloseAllConnections();
   return kEipStatusOk;
 }
 

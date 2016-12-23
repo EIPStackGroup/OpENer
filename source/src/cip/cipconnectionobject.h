@@ -36,10 +36,10 @@ typedef enum {
 } CipConnectionObjectTransportClassTriggerDirection;
 
 typedef enum {
-  kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic = 0,
-  kCipConnectionObjectTransportClassTriggerProductionTriggerChangeOfState = 1,
-  kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject =
-    2
+  kCipConnectionObjectTransportClassTriggerProductionTriggerInvalid,
+  kCipConnectionObjectTransportClassTriggerProductionTriggerCyclic,
+  kCipConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,
+  kCipConnectionObjectTransportClassTriggerProductionTriggerApplicationObject
 } CipConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {

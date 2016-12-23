@@ -420,7 +420,8 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
 int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
                                  unsigned int buffer_length,
-                                 int *number_of_remaining_bytes);
+                                 int *number_of_remaining_bytes,
+                                 in_addr_t originator_address);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been

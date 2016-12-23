@@ -104,10 +104,11 @@ void HandleReceivedRegisterSessionCommand(int socket,
 EipStatus HandleReceivedUnregisterSessionCommand(
   EncapsulationData *receive_data);
 
-EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data);
+EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
+                                            in_addr_t originator_address);
 
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data);
+  EncapsulationData *receive_data, in_addr_t originator_address);
 
 int GetFreeSessionIndex(void);
 
@@ -156,7 +157,8 @@ void EncapsulationInit(void) {
 int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
                                  unsigned int length,
-                                 int *remaining_bytes) {
+                                 int *remaining_bytes,
+                                 in_addr_t originator_address) {
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
@@ -202,11 +204,12 @@ int HandleReceivedExplictTcpData(int socket,
 
         case (kEncapsulationCommandSendRequestReplyData):
           return_value = HandleReceivedSendRequestResponseDataCommand(
-            &encapsulation_data);
+            &encapsulation_data, originator_address);
           break;
 
         case (kEncapsulationCommandSendUnitData):
-          return_value = HandleReceivedSendUnitDataCommand(&encapsulation_data);
+          return_value = HandleReceivedSendUnitDataCommand(&encapsulation_data,
+                                                           originator_address);
           break;
 
         default:
@@ -501,7 +504,8 @@ EipStatus HandleReceivedUnregisterSessionCommand(
 /** @brief Call Connection Manager.
  *  @param receive_data Pointer to structure with data and header information.
  */
-EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data) {
+EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
+                                            in_addr_t originator_address) {
   EipInt16 send_size;
   EipStatus return_value = kEipStatusOkSend;
 
@@ -519,7 +523,8 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data) {
       send_size =
         NotifyConnectedCommonPacketFormat(
           receive_data,
-          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH]);
+          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH],
+          originator_address);
 
       if (0 < send_size) { /* need to send reply */
         receive_data->data_length = send_size;
@@ -540,7 +545,7 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data) {
  *                                      -1 .. error
  */
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data) {
+  EncapsulationData *receive_data, in_addr_t originator_address) {
   EipInt16 send_size = 0;
   EipStatus return_value = kEipStatusOkSend;
 
@@ -558,7 +563,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
       send_size =
         NotifyCommonPacketFormat(
           receive_data,
-          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH]);
+          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH],
+          originator_address);
 
       if (send_size >= 0) { /* need to send reply */
         receive_data->data_length = send_size;
@@ -656,7 +662,7 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
     if (kEipInvalidSocket != g_delayed_encapsulation_messages[i].socket) {
       g_delayed_encapsulation_messages[i].time_out -=
         elapsed_time;
-      if (0 > g_delayed_encapsulation_messages[i].time_out) {
+      if (0 >= g_delayed_encapsulation_messages[i].time_out) {
         /* If delay is reached or passed, send the UDP message */
         SendUdpData(&(g_delayed_encapsulation_messages[i].receiver),
                     g_delayed_encapsulation_messages[i].socket,

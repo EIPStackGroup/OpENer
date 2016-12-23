@@ -122,8 +122,7 @@ int GetEndianess(void);
 
 void MoveMessageNOctets(int n, CipOctet **message_runner);
 
-int FillNextNMessageOctetsWith(CipOctet value,
-                               unsigned int n,
+int FillNextNMessageOctetsWith(CipOctet value,unsigned int n,
                                CipOctet **message);
 
 int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,

@@ -7,6 +7,7 @@
 #define OPENER_CIPTYPES_H_
 
 #include "typedefs.h"
+#include <arpa/inet.h>
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */
@@ -283,7 +284,8 @@ typedef struct cip_class {
 typedef EipStatus (*CipServiceFunction)(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response);
+  CipMessageRouterResponse *const message_router_response,
+  in_addr_t originator_address);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {

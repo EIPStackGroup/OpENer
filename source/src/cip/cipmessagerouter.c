@@ -141,7 +141,9 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
   return kEipStatusOk;
 }
 
-EipStatus NotifyMessageRouter(EipUint8 *data, int data_length) {
+EipStatus NotifyMessageRouter(EipUint8 *data,
+                              int data_length,
+                              in_addr_t originator_address) {
   EipStatus eip_status = kEipStatusOkSend;
   EipByte status = kCipErrorSuccess;
 
@@ -186,7 +188,8 @@ EipStatus NotifyMessageRouter(EipUint8 *data, int data_length) {
         registered_object->cip_class->class_name);
       eip_status = NotifyClass(registered_object->cip_class,
                                &g_message_router_request,
-                               &g_message_router_response);
+                               &g_message_router_response,
+                               originator_address);
 
 #ifdef OPENER_TRACE_ENABLED
       if (eip_status == kEipStatusError) {

@@ -80,7 +80,8 @@ typedef struct {
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
 int NotifyCommonPacketFormat(EncapsulationData *const received_data,
-                             EipUint8 *const reply_buffer);
+                             EipUint8 *const reply_buffer,
+                             in_addr_t originator_address);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -92,7 +93,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const received_data,
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
 int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
-                                      EipUint8 *reply_buffer);
+                                      EipUint8 *reply_buffer,
+                                      in_addr_t originator_address);
 
 /** @ingroup ENCAP
  *  Create CPF structure out of the received data.

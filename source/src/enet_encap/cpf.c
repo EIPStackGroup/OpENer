@@ -23,7 +23,8 @@ const size_t sequenced_address_item_length = 8;
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
 int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
-                             EipUint8 *reply_buffer) {
+                             EipUint8 *reply_buffer,
+                             in_addr_t originator_address) {
   int return_value = kEipStatusError;
 
   if ( ( return_value = CreateCommonPacketFormatStructure(
@@ -40,7 +41,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
           == kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
         return_value = NotifyMessageRouter(
           g_common_packet_format_data_item.data_item.data,
-          g_common_packet_format_data_item.data_item.length);
+          g_common_packet_format_data_item.data_item.length,
+          originator_address);
         if (return_value != kEipStatusError) {
           return_value = AssembleLinearMessage(
             &g_message_router_response, &g_common_packet_format_data_item,
@@ -62,7 +64,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
 }
 
 int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
-                                      EipUint8 *reply_buffer) {
+                                      EipUint8 *reply_buffer,
+                                      in_addr_t originator_address) {
 
   int return_value = CreateCommonPacketFormatStructure(
     received_data->current_communication_buffer_position,
@@ -95,7 +98,9 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           g_common_packet_format_data_item.address_item.data.sequence_number =
             (EipUint32) GetIntFromMessage( (const EipUint8 **const)&buffer );
           return_value = NotifyMessageRouter(
-            buffer, g_common_packet_format_data_item.data_item.length - 2);
+            buffer,
+            g_common_packet_format_data_item.data_item.length - 2,
+            originator_address);
 
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data
