@@ -507,24 +507,13 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   setsockopt( socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
               sizeof(struct timeval) );
   /*Check how many data is here -- read the first four bytes from the connection */
-  struct sockaddr_storage addr;
-  memset( &addr, 0, sizeof(addr) );
-  socklen_t fromlen = sizeof(addr);
-  long number_of_read_bytes = recvfrom(socket,
-                                       g_ethernet_communication_buffer,
-                                       4,
-                                       0,
-                                       (struct sockaddr *)&addr,
-                                       &fromlen);                         /*TODO we may have to set the socket to a non blocking socket */
-  OPENER_TRACE_INFO("Message received from: %d\n",
-                    ( (struct sockaddr_in *)&addr )->sin_addr.s_addr);
-  char ipstr[INET6_ADDRSTRLEN];
-  OPENER_TRACE_INFO( "from IP address %s\n",
-                     inet_ntop(addr.ss_family,
-                               addr.ss_family == AF_INET ?
-                               &( (struct sockaddr_in *)&addr )->sin_addr :
-                               &( (struct sockaddr_in6 *)&addr )->sin6_addr,
-                               ipstr, sizeof ipstr) );
+  long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
+                                   0); /*TODO we may have to set the socket to a non blocking socket */
+
+//  OPENER_TRACE_INFO("from IPv4 address %s\n",
+//                  inet_ntop(AF_INET,
+//                      &((struct sockaddr_in *)&addr)->sin_addr,
+//                      ipstr, sizeof ipstr));
 
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
@@ -621,6 +610,16 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     OPENER_TRACE_INFO("Data received on tcp:\n");
 
     g_current_active_tcp_socket = socket;
+
+    struct sockaddr_in addr;
+    memset( &addr, 0, sizeof(addr) );
+    socklen_t fromlen = sizeof(addr);
+    getpeername(socket, (struct sockaddr *)&addr, &fromlen);
+    char ipstr[INET6_ADDRSTRLEN];
+    struct sockaddr_in *s = (struct sockaddr_in *)&addr;
+    inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof ipstr);
+
+    OPENER_TRACE_INFO("Peer IP address: %s\n", ipstr);
 
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,

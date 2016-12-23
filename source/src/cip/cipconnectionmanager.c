@@ -590,6 +590,8 @@ EipStatus ForwardOpen(CipInstance *instance,
                       in_addr_t originator_address) {
   (void) instance;       /*suppress compiler warning */
 
+  OPENER_TRACE_INFO("Forward Open invoked by: %d", originator_address);
+
   uint8_t is_null_request = -1;       /* 1 = Null Request, 0 =  Non-Null Request  */
   uint8_t is_matching_request = -1;       /* 1 = Matching Request, 0 = Non-Matching Request  */
 
