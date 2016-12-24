@@ -598,6 +598,7 @@ EipStatus ForwardOpen(CipInstance *instance,
   /*first check if we have already a connection with the given params */
   ReadOutConnectionObjectFromMessage(message_router_request,
                                      &g_dummy_connection_object);
+
   g_dummy_connection_object.original_opener_ip_address = originator_address;
 
   ForwardOpenConnectionType o_to_t_connection_type = GetConnectionType(
@@ -754,8 +755,13 @@ EipStatus ForwardClose(CipInstance *instance,
         /* found the corresponding connection object -> close it */
         OPENER_ASSERT(
           NULL != connection_object->connection_close_function);
-        connection_object->connection_close_function(connection_object);
-        connection_status = kConnectionManagerExtendedStatusCodeSuccess;
+        if(originator_address ==
+           connection_object->original_opener_ip_address) {
+          connection_object->connection_close_function(connection_object);
+          connection_status = kConnectionManagerExtendedStatusCodeSuccess;
+        } else {
+          connection_status = kConnectionManagerExtendedStatusWrongCloser;
+        }
         break;
       }
     }
