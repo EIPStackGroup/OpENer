@@ -59,13 +59,13 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  in_addr_t originator_address);
+  struct sockaddr_in *originator_address);
 
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  in_addr_t originator_address);
+  struct sockaddr_in *originator_address);
 
 EipStatus ConfigureNetworkInterface(const char *const ip_address,
                                     const char *const subnet_mask,
@@ -126,7 +126,7 @@ EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  in_addr_t originator_address) {
+  struct sockaddr_in *originator_address) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
@@ -211,7 +211,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const restrict instance,
   CipMessageRouterRequest *restrict const message_router_request,
   CipMessageRouterResponse *restrict const message_router_response,
-  in_addr_t originator_address) {
+  struct sockaddr_in *originator_address) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
@@ -251,7 +251,7 @@ EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  in_addr_t originator_address) {
+  struct sockaddr_in *originator_address) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;

@@ -81,7 +81,7 @@ typedef struct {
  */
 int NotifyCommonPacketFormat(EncapsulationData *const received_data,
                              EipUint8 *const reply_buffer,
-                             in_addr_t originator_address);
+                             struct sockaddr *originator_address);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -94,7 +94,7 @@ int NotifyCommonPacketFormat(EncapsulationData *const received_data,
  */
 int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
                                       EipUint8 *reply_buffer,
-                                      in_addr_t originator_address);
+                                      struct sockaddr *originator_address);
 
 /** @ingroup ENCAP
  *  Create CPF structure out of the received data.

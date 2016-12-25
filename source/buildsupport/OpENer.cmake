@@ -13,7 +13,7 @@ macro(opener_platform_support ARGS)
     message(FATAL_ERROR "No platform selected!")  
   endif(OpENer_PLATFORM STREQUAL "")
 
-  include( ${OpENer_BUILDSUPPORT_DIR}/${OpENer_PLATFORM}/OpENer_PLATFORM_${ARGS}.cmake)
+  include( ${OpENer_BUILDSUPPORT_DIR}/${OpENer_PLATFORM}/OpENer_PLATFORM_INCLUDES.cmake)
   opener_platform_spec()
 endmacro(opener_platform_support ARGS)
 

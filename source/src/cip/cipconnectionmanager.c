@@ -123,17 +123,17 @@ EipUint32 g_incarnation_id;
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response,
-                      in_addr_t originator_address);
+                      struct sockaddr *originator_address);
 
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
                        CipMessageRouterResponse *message_router_response,
-                       in_addr_t originator_address);
+                       struct sockaddr *originator_address);
 
 EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
-                             in_addr_t originator_address);
+                             struct sockaddr *originator_address);
 
 EipStatus AssembleForwardOpenResponse(
   ConnectionObject *connection_object,CipMessageRouterResponse *
@@ -587,10 +587,8 @@ static const HandleForwardOpenRequestFunction
 EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response,
-                      in_addr_t originator_address) {
+                      struct sockaddr *originator_address) {
   (void) instance;       /*suppress compiler warning */
-
-  OPENER_TRACE_INFO("Forward Open invoked by: %d", originator_address);
 
   uint8_t is_null_request = -1;       /* 1 = Null Request, 0 =  Non-Null Request  */
   uint8_t is_matching_request = -1;       /* 1 = Matching Request, 0 = Non-Matching Request  */
@@ -599,7 +597,8 @@ EipStatus ForwardOpen(CipInstance *instance,
   ReadOutConnectionObjectFromMessage(message_router_request,
                                      &g_dummy_connection_object);
 
-  g_dummy_connection_object.original_opener_ip_address = originator_address;
+  memcpy( &(g_dummy_connection_object.originator_address), originator_address,
+          sizeof(g_dummy_connection_object.original_opener_ip_address) );
 
   ForwardOpenConnectionType o_to_t_connection_type = GetConnectionType(
     g_dummy_connection_object.o_to_t_network_connection_parameter);
@@ -718,7 +717,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
                        CipMessageRouterResponse *message_router_response,
-                       in_addr_t originator_address) {
+                       struct sockaddr *originator_address) {
   /*Suppress compiler warning*/
   (void) instance;
 
@@ -755,8 +754,8 @@ EipStatus ForwardClose(CipInstance *instance,
         /* found the corresponding connection object -> close it */
         OPENER_ASSERT(
           NULL != connection_object->connection_close_function);
-        if(originator_address ==
-           connection_object->original_opener_ip_address) {
+        if( ( (struct sockaddr_in *)originator_address )->sin_addr.s_addr ==
+            connection_object->originator_address.sin_addr.s_addr ) {
           connection_object->connection_close_function(connection_object);
           connection_status = kConnectionManagerExtendedStatusCodeSuccess;
         } else {
@@ -780,7 +779,7 @@ EipStatus ForwardClose(CipInstance *instance,
 EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
-                             in_addr_t originator_address) {
+                             struct sockaddr *originator_address) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;

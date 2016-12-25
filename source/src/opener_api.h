@@ -421,7 +421,7 @@ int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
                                  unsigned int buffer_length,
                                  int *number_of_remaining_bytes,
-                                 in_addr_t originator_address);
+                                 struct sockaddr *originator_address);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been

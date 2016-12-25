@@ -14,7 +14,6 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include "generic_networkhandler.h"
 
@@ -88,6 +87,8 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
+  int status = SetSocketToNonBlocking(g_network_status.tcp_listener);
+
   /* create a new UDP socket */
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
                                                                  SOCK_DGRAM,
@@ -123,6 +124,9 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
+  status =
+    SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
+
   /* Activates address reuse */
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
                   SO_REUSEADDR, (char *) &set_socket_option_value,
@@ -131,6 +135,8 @@ EipStatus NetworkHandlerInitialize(void) {
       "error setting socket option SO_REUSEADDR on udp_unicast_listener\n");
     return kEipStatusError;
   }
+
+  status = SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
 
   struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
                                       kOpenerEthernetPort),
@@ -499,21 +505,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
      the fastest way and a loop here with a non blocking socket would better
      fit*/
 
-  struct timeval timeout = {
-    .tv_sec = 0,
-    .tv_usec = 10000
-  };
-
-  setsockopt( socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
-              sizeof(struct timeval) );
   /*Check how many data is here -- read the first four bytes from the connection */
   long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
-
-//  OPENER_TRACE_INFO("from IPv4 address %s\n",
-//                  inet_ntop(AF_INET,
-//                      &((struct sockaddr_in *)&addr)->sin_addr,
-//                      ipstr, sizeof ipstr));
 
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
@@ -611,19 +605,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
     g_current_active_tcp_socket = socket;
 
-    struct sockaddr_in addr;
-    memset( &addr, 0, sizeof(addr) );
-    socklen_t fromlen = sizeof(addr);
-    getpeername(socket, (struct sockaddr *)&addr, &fromlen);
-    char ipstr[INET6_ADDRSTRLEN];
-    struct sockaddr_in *s = (struct sockaddr_in *)&addr;
-    inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof ipstr);
-
-    OPENER_TRACE_INFO("Peer IP address: %s\n", ipstr);
+    struct sockaddr sender_address;
+    memset( &sender_address, 0, sizeof(sender_address) );
+    socklen_t fromlen = sizeof(sender_address);
+    getpeername(socket, (struct sockaddr *)&sender_address, &fromlen);
 
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
-      ( (struct sockaddr_in *)&addr )->sin_addr.s_addr);
+      &sender_address);
 
     g_current_active_tcp_socket = -1;
 
@@ -679,6 +668,9 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     free(error_message);
     return kEipInvalidSocket;
   }
+
+  int status = SetSocketToNonBlocking(new_socket);
+
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 

@@ -105,10 +105,10 @@ EipStatus HandleReceivedUnregisterSessionCommand(
   EncapsulationData *receive_data);
 
 EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
-                                            in_addr_t originator_address);
+                                            struct sockaddr *originator_address);
 
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data, in_addr_t originator_address);
+  EncapsulationData *receive_data, struct sockaddr *originator_address);
 
 int GetFreeSessionIndex(void);
 
@@ -158,7 +158,7 @@ int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
                                  unsigned int length,
                                  int *remaining_bytes,
-                                 in_addr_t originator_address) {
+                                 struct sockaddr *originator_address) {
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
@@ -505,7 +505,8 @@ EipStatus HandleReceivedUnregisterSessionCommand(
  *  @param receive_data Pointer to structure with data and header information.
  */
 EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
-                                            in_addr_t originator_address) {
+                                            struct sockaddr *originator_address)
+{
   EipInt16 send_size;
   EipStatus return_value = kEipStatusOkSend;
 
@@ -545,7 +546,7 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
  *                                      -1 .. error
  */
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data, in_addr_t originator_address) {
+  EncapsulationData *receive_data, struct sockaddr *originator_address) {
   EipInt16 send_size = 0;
   EipStatus return_value = kEipStatusOkSend;
 

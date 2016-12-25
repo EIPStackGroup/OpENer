@@ -23,6 +23,8 @@ EipStatus NetworkHandlerInitializePlatform(void);
  */
 void CloseSocketPlatform(int socket_handle);
 
+int SetSocketToNonBlocking(int socket_handle);
+
 /** @brief This function shall return the current time in microseconds relative to epoch, and shall be implemented in a port specific networkhandler
  *
  *  @return Current time relative to epoch as MicroSeconds

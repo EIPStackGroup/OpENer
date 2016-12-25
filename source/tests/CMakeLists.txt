@@ -25,7 +25,6 @@ target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRA
 target_link_libraries( OpENer_Tests UtilsTest Utils ) 
 target_link_libraries( OpENer_Tests EthernetEncapsulationTest ENET_ENCAP )
 target_link_libraries( OpENer_Tests CipTest CIP )
-target_link_libraries( OpENer_Tests CipConnectionManagerTest CIP_CONNECTION_MANAGER )
 
 ########################################
 # Adds test to CTest environment       #

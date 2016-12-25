@@ -34,7 +34,7 @@ extern EipUint8 g_message_data_reply_buffer[];
 EipStatus NotifyClass(const CipClass *restrict const class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      in_addr_t originator_address);
+                      struct sockaddr *originator_address);
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
@@ -49,7 +49,7 @@ EipStatus NotifyClass(const CipClass *restrict const class,
 EipStatus GetAttributeSingle(CipInstance *restrict const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
-                             in_addr_t originator_address);
+                             struct sockaddr *originator_address);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *
@@ -63,7 +63,7 @@ EipStatus GetAttributeSingle(CipInstance *restrict const instance,
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          in_addr_t originator_address);
+                          struct sockaddr *originator_address);
 
 /** @brief Decodes padded EPath
  *  @param epath EPath to the receiving element

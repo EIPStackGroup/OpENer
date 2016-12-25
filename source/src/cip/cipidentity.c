@@ -68,9 +68,12 @@ void SetDeviceStatus(const EipUint16 status) {
  * @param message_router_response
  * @returns Currently always kEipOkSend is returned
  */
-static EipStatus Reset(CipInstance *instance, /* pointer to instance*/
-                       CipMessageRouterRequest *message_router_request, /* pointer to message router request*/
-                       CipMessageRouterResponse *message_router_response) { /* pointer to message router response*/
+static EipStatus Reset(CipInstance *instance,
+                       /* pointer to instance*/
+                       CipMessageRouterRequest *message_router_request,
+                       /* pointer to message router request*/
+                       CipMessageRouterResponse *message_router_response,
+                       struct sockaddr_in *originator_address) {                      /* pointer to message router response*/
   (void) instance;
 
   EipStatus eip_status = kEipStatusOkSend;

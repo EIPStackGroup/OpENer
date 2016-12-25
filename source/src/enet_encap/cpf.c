@@ -24,7 +24,7 @@ CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data
 
 int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
                              EipUint8 *reply_buffer,
-                             in_addr_t originator_address) {
+                             struct sockaddr *originator_address) {
   int return_value = kEipStatusError;
 
   if ( ( return_value = CreateCommonPacketFormatStructure(
@@ -65,7 +65,7 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
 
 int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
                                       EipUint8 *reply_buffer,
-                                      in_addr_t originator_address) {
+                                      struct sockaddr *originator_address) {
 
   int return_value = CreateCommonPacketFormatStructure(
     received_data->current_communication_buffer_position,

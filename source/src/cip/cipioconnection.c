@@ -8,7 +8,6 @@
 
 #include "cipioconnection.h"
 
-#include "cipconnectionobject.h"
 #include "generic_networkhandler.h"
 #include "cipconnectionmanager.h"
 #include "cipassembly.h"
@@ -18,6 +17,18 @@
 #include "cpf.h"
 #include "trace.h"
 #include "endianconv.h"
+
+typedef enum {
+  kCipConnectionObjectTransportClassTriggerClassInvalid = -1,
+  kCipConnectionObjectTransportClassTriggerClass0 = 0,
+  kCipConnectionObjectTransportClassTriggerClass1 = 1,
+  kCipConnectionObjectTransportClassTriggerClass2 = 2,
+  kCipConnectionObjectTransportClassTriggerClass3 = 3,
+  kCipConnectionObjectTransportClassTriggerClass4 = 4,
+  kCipConnectionObjectTransportClassTriggerClass5 = 5,
+  kCipConnectionObjectTransportClassTriggerClass6 = 6
+} CipConnectionObjectTransportClassTriggerClass;
+
 
 const unsigned int kConnectionPointConsumer = 0; /**< Consumer connection point */
 const unsigned int kConnectionPointProducer = 1; /**< Producer connection point */

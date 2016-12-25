@@ -331,7 +331,7 @@ typedef struct connection_object {
 
   EipUint16 correct_originator_to_target_size;
   EipUint16 correct_target_to_originator_size;
-  in_addr_t original_opener_ip_address;
+  struct sockaddr_in original_opener_ip_address;
 } ConnectionObject;
 
 /** @brief Connection Manager class code */
