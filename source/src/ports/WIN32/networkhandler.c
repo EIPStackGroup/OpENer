@@ -24,7 +24,7 @@ MicroSeconds getMicroSeconds() {
   QueryPerformanceFrequency(&performance_frequency);
 
   return (MicroSeconds) (performance_counter.QuadPart * 1000000LL
-      / performance_frequency.QuadPart);
+                         / performance_frequency.QuadPart);
 }
 
 MilliSeconds GetMilliSeconds(void) {
@@ -42,5 +42,10 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 }
 
 void CloseSocketPlatform(int socket_handle) {
-    closesocket(socket_handle);
+  closesocket(socket_handle);
+}
+
+int SetSocketToNonBlocking(int socket_handle) {
+  u_long iMode = 0;
+  ioctlsocket(m_socket, FIONBIO, &iMode);
 }

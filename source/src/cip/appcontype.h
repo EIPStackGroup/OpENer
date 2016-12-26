@@ -24,7 +24,8 @@ void InitializeIoConnectionData(void);
  *        - on error: NULL
  */
 ConnectionObject *GetIoConnectionForConnectionData(
-    ConnectionObject *const RESTRICT connection_object, EipUint16 *const extended_error);
+  ConnectionObject *const RESTRICT connection_object,
+  EipUint16 *const extended_error);
 
 /** @brief Check if there exists already an exclusive owner or listen only connection
  *         which produces the input assembly.
@@ -32,7 +33,8 @@ ConnectionObject *GetIoConnectionForConnectionData(
  *  @param input_point the Input point to be produced
  *  @return if a connection could be found a pointer to this connection if not NULL
  */
-ConnectionObject *GetExistingProducerMulticastConnection(const EipUint32 input_point);
+ConnectionObject *GetExistingProducerMulticastConnection(
+  const EipUint32 input_point);
 
 /** @brief check if there exists an producing multicast exclusive owner or
  * listen only connection that should produce the same input but is not in charge

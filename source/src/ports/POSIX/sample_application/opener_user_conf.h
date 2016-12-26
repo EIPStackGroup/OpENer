@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_USER_CONF_H_
@@ -8,9 +8,9 @@
 
 /** @file opener_user_conf.h
  * @brief OpENer configuration setup
- * 
+ *
  * This file contains the general application specific configuration for OpENer.
- * 
+ *
  * Furthermore you have to specific platform specific network include files.
  * OpENer needs definitions for the following data-types
  * and functions:
@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
+#include <assert.h>
 
 #include "typedefs.h"
 
@@ -116,18 +117,25 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 /** @brief A specialized assertion command that will log the assertion and block
  *  further execution in an while(1) loop.
  */
+#ifdef IDLING_ASSERT
 #define OPENER_ASSERT(assertion) \
-    do { \
-      if(!(assertion)) { \
-        LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", #assertion, __FILE__, __LINE__); \
-        while(1){;} \
-      } \
-    } while(0)
+  do { \
+    if( !(assertion) ) { \
+      LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", \
+                # assertion, \
+                __FILE__, \
+                __LINE__); \
+      while(1) {; } \
+    } \
+  } while(0)
 
 /* else use standard assert() */
 //#include <assert.h>
 //#include <stdio.h>
 //#define OPENER_ASSERT(assertion) assert(assertion)
+#else
+#define OPENER_ASSERT(assertion) assert(assertion)
+#endif
 #else
 
 /* for release builds execute the assertion, but don't test it */

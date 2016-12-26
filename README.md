@@ -93,5 +93,15 @@ Porting OpENer:
 For porting OpENer to new platforms please see the porting section in the 
 Doxygen documentation.
 
+Contributing to OpENer:
+-----------------------
+The easiest way is to fork the repository, then create a feature/bugfix branch.
+After finishing your feature/bugfix create a pull request and explain your changes.
+Also, please update and/or add doxygen comments to the provided code sections.
+Please stick to the coding conventions, as defined in source/doc/coding_rules
+The easiest way to conform to the indenting convertion is to set uncrustify as git filter in the OpENer repository, which can be done with the following to commands:
+
+git config filter.uncrustify.clean=/path/to/uncrustify/uncrustify -c uncrustify.cfg --mtime --no-backup
+git config filter.uncrustify.smudge=cat
 
 

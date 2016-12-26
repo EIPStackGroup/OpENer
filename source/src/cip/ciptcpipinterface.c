@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -65,12 +65,14 @@ EipUint16 g_encapsulation_inactivity_timeout = 0x78;
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response);
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response);
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
 EipStatus ConfigureNetworkInterface(const char *ip_address,
                                     const char *subnet_mask,
@@ -109,7 +111,7 @@ void ConfigureDomainName(const char *domain_name) {
   }
 }
 
-void ConfigureHostName(const char *hostname) {
+void ConfigureHostName(const char *const RESTRICT hostname) {
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
@@ -129,7 +131,8 @@ void ConfigureHostName(const char *hostname) {
 EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
@@ -263,9 +266,10 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipInstance *const RESTRICT instance,
+  CipMessageRouterRequest *RESTRICT const message_router_request,
+  CipMessageRouterResponse *RESTRICT const message_router_response,
+  struct sockaddr *originator_address) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
@@ -295,7 +299,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &message);
   } else {
     status = GetAttributeSingle(instance, message_router_request,
-                                message_router_response);
+                                message_router_response, originator_address);
   }
   return status;
 }
@@ -303,7 +307,8 @@ EipStatus GetAttributeSingleTcpIpInterface(
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
@@ -313,7 +318,7 @@ EipStatus GetAttributeAllTcpIpInterface(
     int attribute_number = attribute->attribute_number;
     if ( attribute_number < 32
          && (instance->cip_class->get_attribute_all_mask & 1 <<
-      attribute_number) )                                                         /* only return attributes that are flagged as being part of GetAttributeALl */
+             attribute_number) )                                                  /* only return attributes that are flagged as being part of GetAttributeALl */
     {
       message_router_request->request_path.attribute_number = attribute_number;
 
@@ -324,7 +329,8 @@ EipStatus GetAttributeAllTcpIpInterface(
 
       if ( kEipStatusOkSend
            != GetAttributeSingleTcpIpInterface(instance, message_router_request,
-                                               message_router_response) ) {
+                                               message_router_response,
+                                               originator_address) ) {
         message_router_response->data = response;
         return kEipStatusError;
       }

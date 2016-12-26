@@ -17,7 +17,7 @@
 
 /**
  * @brief Sets the initial seed for the XOR shift pseudo-random algorithm
- * @param pa_nSeed The initial seed value
+ * @param seed The initial seed value
  */
 void SetXorShiftSeed(uint32_t seed);
 

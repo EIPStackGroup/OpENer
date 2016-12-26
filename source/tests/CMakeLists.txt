@@ -13,6 +13,7 @@ add_test_includes()
 ###################################################
 #configure_file( CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake )
 
+add_subdirectory( cip )
 add_subdirectory( utils )
 add_subdirectory( enet_encap )
 add_executable( OpENer_Tests OpENerTests.cpp )
@@ -23,6 +24,7 @@ find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/l
 target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )
 target_link_libraries( OpENer_Tests UtilsTest Utils ) 
 target_link_libraries( OpENer_Tests EthernetEncapsulationTest ENET_ENCAP )
+target_link_libraries( OpENer_Tests CipTest CIP )
 
 ########################################
 # Adds test to CTest environment       #

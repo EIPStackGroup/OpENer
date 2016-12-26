@@ -12,6 +12,8 @@
  */
 
 #include <assert.h>
+#include <stdbool.h>
+#include <unistd.h>
 
 #include "generic_networkhandler.h"
 
@@ -51,8 +53,8 @@ EipStatus HandleDataOnTcpSocket(int socket);
 void CheckEncapsulationInactivity(int socket_handle);
 
 /*************************************************
- * Function implementations from now on
- *************************************************/
+* Function implementations from now on
+*************************************************/
 
 EipStatus NetworkHandlerInitialize(void) {
 
@@ -86,6 +88,8 @@ EipStatus NetworkHandlerInitialize(void) {
       "error setting socket option SO_REUSEADDR on tcp_listener\n");
     return kEipStatusError;
   }
+
+  int status = SetSocketToNonBlocking(g_network_status.tcp_listener);
 
   /* create a new UDP socket */
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
@@ -122,6 +126,9 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
+  status =
+    SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
+
   /* Activates address reuse */
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
                   SO_REUSEADDR, (char *) &set_socket_option_value,
@@ -130,6 +137,8 @@ EipStatus NetworkHandlerInitialize(void) {
       "error setting socket option SO_REUSEADDR on udp_unicast_listener\n");
     return kEipStatusError;
   }
+
+  status = SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
 
   struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
                                       kOpenerEthernetPort),
@@ -251,7 +260,7 @@ EipBool8 CheckSocketSet(int socket) {
 }
 
 void CheckAndHandleTcpListenerSocket(void) {
-  int new_socket;
+  int new_socket = kEipInvalidSocket;
   /* see if this is a connection request to the TCP listener*/
   if ( true == CheckSocketSet(g_network_status.tcp_listener) ) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
@@ -335,7 +344,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
    * This should compensate the jitter of the windows timer
    */
   if (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
-    /* call manage_connections() in connection manager every OPENER_TIMER_TICK ms */
+    /* call manage_connections() in connection manager every kOpenerTimerTickInMilliSeconds ms */
     ManageConnections(g_network_status.elapsed_time);
     g_network_status.elapsed_time = 0;
   }
@@ -532,7 +541,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusError;
   }
 
-  EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
+  const EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
   size_t data_size = GetIntFromMessage(&read_buffer)
                      + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
   /* (NOTE this advances the buffer pointer) */
@@ -542,6 +551,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     /* Currently we will drop the whole packet */
 
     do {
+      OPENER_TRACE_INFO(
+        "Entering consumption loop, remaining data to receive: %zu\n",
+        data_sent);
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
       g_timestamps[socket] = g_actual_time;
@@ -597,7 +609,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusError;
   }
 
-  if ((unsigned) number_of_read_bytes == data_size) {
+  if ( (unsigned) number_of_read_bytes == data_size ) {
     /*we got the right amount of data */
     data_size += 4;
     /*TODO handle partial packets*/
@@ -605,8 +617,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
     g_current_active_tcp_socket = socket;
 
+    struct sockaddr sender_address;
+    memset( &sender_address, 0, sizeof(sender_address) );
+    socklen_t fromlen = sizeof(sender_address);
+    getpeername(socket, (struct sockaddr *)&sender_address, &fromlen);
+
     number_of_read_bytes = HandleReceivedExplictTcpData(
-      socket, g_ethernet_communication_buffer, data_size, &remaining_bytes);
+      socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
+      &sender_address);
     g_timestamps[socket] = g_actual_time;
 
     g_current_active_tcp_socket = -1;
@@ -664,6 +682,9 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     free(error_message);
     return kEipInvalidSocket;
   }
+
+  int status = SetSocketToNonBlocking(new_socket);
+
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_ENDIANCONV_H_
@@ -25,6 +25,10 @@ typedef enum {
  */
 EipUint8 GetSintFromMessage(const EipUint8 **const buffer);
 
+CipByte GetByteFromMessage(const CipOctet **const buffer_address);
+
+CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
+
 /** @ingroup ENCAP
  *
  * @brief Get an 16Bit integer from the network buffer, and moves pointer beyond the 16 bit value
@@ -33,6 +37,10 @@ EipUint8 GetSintFromMessage(const EipUint8 **const buffer);
  */
 EipUint16 GetIntFromMessage(const EipUint8 **const buffer);
 
+CipUint GetUintFromMessage(const CipOctet **const buffer_address);
+
+CipWord GetWordFromMessage(const CipOctet **const buffer_address);
+
 /** @ingroup ENCAP
  *
  * @brief Get an 32Bit integer from the network buffer.
@@ -40,6 +48,8 @@ EipUint16 GetIntFromMessage(const EipUint8 **const buffer);
  * @return Extracted 32 bit integer value
  */
 EipUint32 GetDintFromMessage(const EipUint8 **const buffer);
+
+CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
 
 /** @ingroup ENCAP
  *
@@ -93,8 +103,9 @@ int AddLintToMessage(const EipUint64 pa_unData, EipUint8 **const buffer);
  * @param address IP address of the socket, has to be provided in big-endian
  * @param communcation_buffer The message buffer for sending the message
  */
-int EncapsulateIpAddress(EipUint16 port, EipUint32 address,
-                                           EipByte **communication_buffer);
+int EncapsulateIpAddress(EipUint16 port,
+                         EipUint32 address,
+                         EipByte **communication_buffer);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -111,7 +122,10 @@ int GetEndianess(void);
 
 void MoveMessageNOctets(int n, CipOctet **message_runner);
 
-int FillNextNMessageOctetsWith(CipOctet value, unsigned int n, CipOctet **message);
+int FillNextNMessageOctetsWith(CipOctet value,unsigned int n,
+                               CipOctet **message);
 
-int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int n, CipOctet **message);
+int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
+                                                         unsigned int n,
+                                                         CipOctet **message);
 #endif /* OPENER_ENDIANCONV_H_ */

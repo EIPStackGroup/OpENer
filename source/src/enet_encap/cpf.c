@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -23,38 +23,40 @@ const size_t sequenced_address_item_length = 8;
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
 int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
-                             EipUint8 *reply_buffer) {
+                             EipUint8 *reply_buffer,
+                             struct sockaddr *originator_address) {
   int return_value = kEipStatusError;
 
-  if ((return_value = CreateCommonPacketFormatStructure(
-      receive_data->current_communication_buffer_position,
-      receive_data->data_length, &g_common_packet_format_data_item))
-      == kEipStatusError) {
+  if ( ( return_value = CreateCommonPacketFormatStructure(
+           receive_data->current_communication_buffer_position,
+           receive_data->data_length, &g_common_packet_format_data_item) )
+       == kEipStatusError ) {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
     return_value = kEipStatusOk; /* In cases of errors we normally need to send an error response */
     if (g_common_packet_format_data_item.address_item.type_id
         == kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
-        { /* found null address item*/
+    {     /* found null address item*/
       if (g_common_packet_format_data_item.data_item.type_id
           == kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
         return_value = NotifyMessageRouter(
-            g_common_packet_format_data_item.data_item.data,
-            g_common_packet_format_data_item.data_item.length);
+          g_common_packet_format_data_item.data_item.data,
+          g_common_packet_format_data_item.data_item.length,
+          originator_address);
         if (return_value != kEipStatusError) {
           return_value = AssembleLinearMessage(
-              &g_message_router_response, &g_common_packet_format_data_item,
-              reply_buffer);
+            &g_message_router_response, &g_common_packet_format_data_item,
+            reply_buffer);
         }
       } else {
         /* wrong data item detected*/
         OPENER_TRACE_ERR(
-            "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+          "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         receive_data->status = kEncapsulationProtocolIncorrectData;
       }
     } else {
       OPENER_TRACE_ERR(
-          "notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
+        "notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
       receive_data->status = kEncapsulationProtocolIncorrectData;
     }
   }
@@ -62,11 +64,12 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
 }
 
 int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
-                                      EipUint8 *reply_buffer) {
+                                      EipUint8 *reply_buffer,
+                                      struct sockaddr *originator_address) {
 
   int return_value = CreateCommonPacketFormatStructure(
-      received_data->current_communication_buffer_position,
-      received_data->data_length, &g_common_packet_format_data_item);
+    received_data->current_communication_buffer_position,
+    received_data->data_length, &g_common_packet_format_data_item);
 
   if (kEipStatusError == return_value) {
     OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
@@ -74,45 +77,51 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
     return_value = kEipStatusError; /* For connected explicit messages status always has to be 0*/
     if (g_common_packet_format_data_item.address_item.type_id
         == kCipItemIdConnectionAddress) /* check if ConnectedAddressItem received, otherwise it is no connected message and should not be here*/
-        { /* ConnectedAddressItem item */
+    {     /* ConnectedAddressItem item */
       ConnectionObject *connection_object = GetConnectedObject(
-          g_common_packet_format_data_item.address_item.data
-              .connection_identifier);
+        g_common_packet_format_data_item.address_item.data
+        .connection_identifier);
       if (NULL != connection_object) {
         /* reset the watchdog timer */
         connection_object->inactivity_watchdog_timer = (connection_object
-            ->o_to_t_requested_packet_interval / 1000)
-            << (2 + connection_object->connection_timeout_multiplier);
+                                                        ->
+                                                        o_to_t_requested_packet_interval
+                                                        / 1000)
+                                                       << (2 +
+                                                           connection_object->
+                                                           connection_timeout_multiplier);
 
         /*TODO check connection id  and sequence count    */
         if (g_common_packet_format_data_item.data_item.type_id
             == kCipItemIdConnectedDataItem) { /* connected data item received*/
           EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
-              (EipUint32) GetIntFromMessage((const EipUint8 ** const)&buffer);
+            (EipUint32) GetIntFromMessage( (const EipUint8 **const)&buffer );
           return_value = NotifyMessageRouter(
-              buffer, g_common_packet_format_data_item.data_item.length - 2);
+            buffer,
+            g_common_packet_format_data_item.data_item.length - 2,
+            originator_address);
 
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data
-                .connection_identifier = connection_object
-                ->produced_connection_id;
+            .connection_identifier = connection_object
+                                     ->cip_produced_connection_id;
             return_value = AssembleLinearMessage(
-                &g_message_router_response, &g_common_packet_format_data_item,
-                reply_buffer);
+              &g_message_router_response, &g_common_packet_format_data_item,
+              reply_buffer);
           }
         } else {
           /* wrong data item detected*/
           OPENER_TRACE_ERR(
-              "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
+            "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         }
       } else {
         OPENER_TRACE_ERR(
-            "notifyConnectedCPF: connection with given ID could not be found\n");
+          "notifyConnectedCPF: connection with given ID could not be found\n");
       }
     } else {
       OPENER_TRACE_ERR(
-          "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
+        "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
     }
   }
   return return_value;
@@ -125,11 +134,12 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  * @param common_packet_format_data	Pointer to structure of CPF data item.
  *
  *   @return kEipStatusOk .. success
- * 	       kEipStatusError .. error
+ *             kEipStatusError .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    const EipUint8 *data, int data_length,
-    CipCommonPacketFormatData *common_packet_format_data) {
+  const EipUint8 *data,
+  int data_length,
+  CipCommonPacketFormatData *common_packet_format_data) {
 
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
@@ -143,12 +153,12 @@ EipStatus CreateCommonPacketFormatStructure(
     length_count += 4;
     if (common_packet_format_data->address_item.length >= 4) {
       common_packet_format_data->address_item.data.connection_identifier =
-          GetDintFromMessage(&data);
+        GetDintFromMessage(&data);
       length_count += 4;
     }
     if (common_packet_format_data->address_item.length == 8) {
       common_packet_format_data->address_item.data.sequence_number =
-          GetDintFromMessage(&data);
+        GetDintFromMessage(&data);
       length_count += 4;
     }
   }
@@ -162,20 +172,22 @@ EipStatus CreateCommonPacketFormatStructure(
   for (int j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
   {
     common_packet_format_data->address_info_item[j].type_id = GetIntFromMessage(
-        &data);
+      &data);
+    OPENER_TRACE_INFO("Sockaddr type id: %x\n",
+                      common_packet_format_data->address_info_item[j].type_id);
     length_count += 2;
-    if ((common_packet_format_data->address_info_item[j].type_id
-        == kCipItemIdSocketAddressInfoOriginatorToTarget)
-        || (common_packet_format_data->address_info_item[j].type_id
-            == kCipItemIdSocketAddressInfoTargetToOriginator)) {
+    if ( (common_packet_format_data->address_info_item[j].type_id
+          == kCipItemIdSocketAddressInfoOriginatorToTarget)
+         || (common_packet_format_data->address_info_item[j].type_id
+             == kCipItemIdSocketAddressInfoTargetToOriginator) ) {
       common_packet_format_data->address_info_item[j].length =
-          GetIntFromMessage(&data);
+        GetIntFromMessage(&data);
       common_packet_format_data->address_info_item[j].sin_family =
-          GetIntFromMessage(&data);
+        GetIntFromMessage(&data);
       common_packet_format_data->address_info_item[j].sin_port =
-          GetIntFromMessage(&data);
+        GetIntFromMessage(&data);
       common_packet_format_data->address_info_item[j].sin_addr =
-          GetDintFromMessage(&data);
+        GetDintFromMessage(&data);
       for (int i = 0; i < 8; i++) {
         common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
         data++;
@@ -197,7 +209,7 @@ EipStatus CreateCommonPacketFormatStructure(
     return kEipStatusOk;
   } else {
     OPENER_TRACE_WARN(
-        "something is wrong with the length in Message Router @ CreateCommonPacketFormatStructure\n");
+      "something is wrong with the length in Message Router @ CreateCommonPacketFormatStructure\n");
     if (common_packet_format_data->item_count > 2) {
       /* there is an optional packet in data stream which is not sockaddr item */
       return kEipStatusOk;
@@ -214,7 +226,7 @@ EipStatus CreateCommonPacketFormatStructure(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeNullAddressItem(EipUint8** message, int size) {
+int EncodeNullAddressItem(EipUint8 **message, int size) {
   size += AddIntToMessage(kCipItemIdNullAddress, message);
   /* null address item -> address length set to 0 */
   size += AddIntToMessage(0, message);
@@ -230,14 +242,15 @@ int EncodeNullAddressItem(EipUint8** message, int size) {
  * @return The new size of the message frame after encoding
  */
 int EncodeConnectedAddressItem(
-    EipUint8** message,
-    CipCommonPacketFormatData* common_packet_format_data_item, int size) {
+  EipUint8 **message,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  int size) {
   /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
   size += AddIntToMessage(kCipItemIdConnectionAddress, message);
   size += AddIntToMessage(4, message);
   size += AddDintToMessage(
-      common_packet_format_data_item->address_item.data.connection_identifier,
-      message);
+    common_packet_format_data_item->address_item.data.connection_identifier,
+    message);
   return size;
 }
 
@@ -251,17 +264,18 @@ int EncodeConnectedAddressItem(
  * @return New message size after encoding
  */
 int EncodeSequencedAddressItem(
-    EipUint8** message,
-    CipCommonPacketFormatData* common_packet_format_data_item, int size) {
+  EipUint8 **message,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  int size) {
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
   size += AddIntToMessage(kCipItemIdSequencedAddressItem, message);
   size += AddIntToMessage(sequenced_address_item_length, message);
   size += AddDintToMessage(
-      common_packet_format_data_item->address_item.data.connection_identifier,
-      message);
+    common_packet_format_data_item->address_item.data.connection_identifier,
+    message);
   size += AddDintToMessage(
-      common_packet_format_data_item->address_item.data.sequence_number,
-      message);
+    common_packet_format_data_item->address_item.data.sequence_number,
+    message);
   return size;
 }
 
@@ -274,8 +288,9 @@ int EncodeSequencedAddressItem(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeItemCount(CipCommonPacketFormatData* common_packet_format_data_item,
-                    EipUint8** message, int size) {
+int EncodeItemCount(CipCommonPacketFormatData *common_packet_format_data_item,
+                    EipUint8 **message,
+                    int size) {
   size += AddIntToMessage(common_packet_format_data_item->item_count, message); /* item count */
   return size;
 }
@@ -290,8 +305,9 @@ int EncodeItemCount(CipCommonPacketFormatData* common_packet_format_data_item,
  * @return The new size of the message frame after encoding
  */
 int EncodeDataItemType(
-    CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message, int size) {
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message,
+  int size) {
   size += AddIntToMessage(common_packet_format_data_item->data_item.type_id,
                           message);
   return size;
@@ -307,8 +323,9 @@ int EncodeDataItemType(
  * @return The new size of the message frame after encoding
  */
 int EncodeDataItemLength(
-    CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message, int size) {
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message,
+  int size) {
   size += AddIntToMessage(common_packet_format_data_item->data_item.length,
                           message);
   return size;
@@ -324,11 +341,12 @@ int EncodeDataItemLength(
  * @return The new size of the message frame after encoding
  */
 int EncodeDataItemData(
-    CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message, int size) {
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message,
+  int size) {
   for (int i = 0; i < common_packet_format_data_item->data_item.length; i++) {
     size += AddSintToMessage(
-        *(common_packet_format_data_item->data_item.data + i), message);
+      *(common_packet_format_data_item->data_item.data + i), message);
   }
   return size;
 }
@@ -344,12 +362,12 @@ int EncodeDataItemData(
  */
 
 int EncodeConnectedDataItemLength(
-    CipMessageRouterResponse* message_router_response, EipUint8** message,
-    int size) {
+  CipMessageRouterResponse *message_router_response, EipUint8 **message,
+  int size) {
   size += AddIntToMessage(
-      (EipUint16) (message_router_response->data_length + 4 + 2 /* TODO: Magic numbers */
-          + (2 * message_router_response->size_of_additional_status)),
-      message);
+    (EipUint16) ( message_router_response->data_length + 4 + 2  /* TODO: Magic numbers */
+                  + (2 * message_router_response->size_of_additional_status) ),
+    message);
   return size;
 }
 
@@ -364,12 +382,13 @@ int EncodeConnectedDataItemLength(
  *
  */
 int EncodeSequenceNumber(
-    int size, const CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message) {
+  int size,
+  const CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message) {
   size += AddIntToMessage(
-      (EipUint16) common_packet_format_data_item->address_item.data
-          .sequence_number,
-      message);
+    (EipUint16) common_packet_format_data_item->address_item.data
+    .sequence_number,
+    message);
   return size;
 }
 
@@ -382,8 +401,9 @@ int EncodeSequenceNumber(
  *
  * @return The new size of the message buffer
  */
-int EncodeReplyService(int size, EipUint8** message,
-                       CipMessageRouterResponse* message_router_response) {
+int EncodeReplyService(int size,
+                       EipUint8 **message,
+                       CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->reply_service, message);
   return size;
 }
@@ -398,8 +418,8 @@ int EncodeReplyService(int size, EipUint8** message,
  * @return New size of the message buffer
  */
 int EncodeReservedFieldOfLengthByte(
-    int size, EipUint8** message,
-    CipMessageRouterResponse* message_router_response) {
+  int size, EipUint8 **message,
+  CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->reserved, message);
   return size;
 }
@@ -413,8 +433,9 @@ int EncodeReservedFieldOfLengthByte(
  *
  * @return New size of the message buffer
  */
-int EncodeGeneralStatus(int size, EipUint8** message,
-                        CipMessageRouterResponse* message_router_response) {
+int EncodeGeneralStatus(int size,
+                        EipUint8 **message,
+                        CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->general_status, message);
   return size;
 }
@@ -430,8 +451,8 @@ int EncodeGeneralStatus(int size, EipUint8** message,
  */
 
 int EncodeExtendedStatusLength(
-    int size, EipUint8** message,
-    CipMessageRouterResponse* message_router_response) {
+  int size, EipUint8 **message,
+  CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->size_of_additional_status,
                            message);
   return size;
@@ -447,11 +468,12 @@ int EncodeExtendedStatusLength(
  * @return New size of the message buffer
  */
 int EncodeExtendedStatusDataItems(
-    int size, CipMessageRouterResponse* message_router_response,
-    EipUint8** message) {
-  for (int i = 0; i < message_router_response->size_of_additional_status; i++)
+  int size, CipMessageRouterResponse *message_router_response,
+  EipUint8 **message) {
+  for (int i = 0; i < message_router_response->size_of_additional_status; i++) {
     size += AddIntToMessage(message_router_response->additional_status[i],
                             message);
+  }
 
   return size;
 }
@@ -469,8 +491,9 @@ int EncodeExtendedStatusDataItems(
  * @return New size of the message buffer
  */
 
-int EncodeExtendedStatus(int size, EipUint8** message,
-                         CipMessageRouterResponse* message_router_response) {
+int EncodeExtendedStatus(int size,
+                         EipUint8 **message,
+                         CipMessageRouterResponse *message_router_response) {
   size = EncodeExtendedStatusLength(size, message, message_router_response);
   size = EncodeExtendedStatusDataItems(size, message_router_response, message);
 
@@ -487,12 +510,12 @@ int EncodeExtendedStatus(int size, EipUint8** message,
  * @return New size of the message buffer
  */
 int EncodeUnconnectedDataItemLength(
-    int size, CipMessageRouterResponse* message_router_response,
-    EipUint8** message) {
+  int size, CipMessageRouterResponse *message_router_response,
+  EipUint8 **message) {
   size += AddIntToMessage(
-      (EipUint16) (message_router_response->data_length + 4 /* TODO: Magic number */
-          + (2 * message_router_response->size_of_additional_status)),
-      message);
+    (EipUint16) ( message_router_response->data_length + 4  /* TODO: Magic number */
+                  + (2 * message_router_response->size_of_additional_status) ),
+    message);
   return size;
 }
 
@@ -504,10 +527,10 @@ int EncodeUnconnectedDataItemLength(
  * @param message Message frame to which the data is added
  */
 int EncodeMessageRouterResponseData(
-    int size, CipMessageRouterResponse* message_router_response,
-    EipUint8** message) {
+  int size, CipMessageRouterResponse *message_router_response,
+  EipUint8 **message) {
   for (int i = 0; i < message_router_response->data_length; i++) {
-    size += AddSintToMessage((message_router_response->data)[i], &*message);
+    size += AddSintToMessage( (message_router_response->data)[i], &*message );
   }
   return size;
 }
@@ -523,13 +546,14 @@ int EncodeMessageRouterResponseData(
  * @return New size of the message buffer
  */
 int EncodeSockaddrInfoItemTypeId(
-    int size, int item_type,
-    CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message) {
+  int size,
+  int item_type,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message) {
   OPENER_ASSERT(item_type == 0 || item_type == 1);
   size += AddIntToMessage(
-      common_packet_format_data_item->address_info_item[item_type].type_id,
-      message);
+    common_packet_format_data_item->address_info_item[item_type].type_id,
+    message);
 
   return size;
 }
@@ -545,10 +569,13 @@ int EncodeSockaddrInfoItemTypeId(
  * @return New size of the message buffer
  */
 int EncodeSockaddrInfoLength(
-    int size, int item_type, CipCommonPacketFormatData* common_packet_format_data_item,
-    EipUint8** message) {
+  int size,
+  int item_type,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 **message) {
   size += AddIntToMessage(
-      common_packet_format_data_item->address_info_item[item_type].length, message);
+    common_packet_format_data_item->address_info_item[item_type].length,
+    message);
   return size;
 }
 
@@ -559,12 +586,12 @@ int EncodeSockaddrInfoLength(
  * @param common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
  * @param message		pointer to linear memory.
  *  @return length of reply in message in bytes
- * 			-1 .. error
+ *                      -1 .. error
  */
 int AssembleLinearMessage(
-    CipMessageRouterResponse *message_router_response,
-    CipCommonPacketFormatData *common_packet_format_data_item,
-    EipUint8 *message) {
+  CipMessageRouterResponse *message_router_response,
+  CipCommonPacketFormatData *common_packet_format_data_item,
+  EipUint8 *message) {
 
   size_t message_size = 0;
 
@@ -599,14 +626,14 @@ int AssembleLinearMessage(
   }
 
   /* process Data Item */
-  if ((common_packet_format_data_item->data_item.type_id
-      == kCipItemIdUnconnectedDataItem)
-      || (common_packet_format_data_item->data_item.type_id
-          == kCipItemIdConnectedDataItem)) {
+  if ( (common_packet_format_data_item->data_item.type_id
+        == kCipItemIdUnconnectedDataItem)
+       || (common_packet_format_data_item->data_item.type_id
+           == kCipItemIdConnectedDataItem) ) {
 
     if (message_router_response) {
       message_size = EncodeDataItemType(common_packet_format_data_item,
-                                         &message, message_size);
+                                        &message, message_size);
 
       if (common_packet_format_data_item->data_item.type_id
           == kCipItemIdConnectedDataItem) { /* Connected Item */
@@ -652,24 +679,24 @@ int AssembleLinearMessage(
    * devices which depend on CPF items to appear in the order of their
    * ID number */
   for (int type = kCipItemIdSocketAddressInfoOriginatorToTarget;
-      type <= kCipItemIdSocketAddressInfoTargetToOriginator; type++) {
+       type <= kCipItemIdSocketAddressInfoTargetToOriginator; type++) {
     for (int j = 0; j < 2; j++) {
       if (common_packet_format_data_item->address_info_item[j].type_id
           == type) {
         message_size = EncodeSockaddrInfoItemTypeId(
-            message_size, j, common_packet_format_data_item, &message);
+          message_size, j, common_packet_format_data_item, &message);
 
         message_size = EncodeSockaddrInfoLength(message_size, j,
                                                 common_packet_format_data_item,
                                                 &message);
 
         message_size += EncapsulateIpAddress(
-            common_packet_format_data_item->address_info_item[j].sin_port,
-            common_packet_format_data_item->address_info_item[j].sin_addr,
-            &message);
+          common_packet_format_data_item->address_info_item[j].sin_port,
+          common_packet_format_data_item->address_info_item[j].sin_addr,
+          &message);
 
         message_size += FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-            0, 8, &message);
+          0, 8, &message);
         break;
       }
     }

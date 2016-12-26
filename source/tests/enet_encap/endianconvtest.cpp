@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Rockwell Automation, Inc.
+ * Copyright (c) 2016, Rockwell Automation, Inc.
  * All rights reserved.
  *
  ******************************************************************************/
@@ -16,6 +16,7 @@ extern "C" {
 #include "endianconv.h"
 
 #include "ciptypes.h"
+
 }
 
 TEST_GROUP(EndianConversion) {

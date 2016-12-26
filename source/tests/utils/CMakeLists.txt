@@ -6,3 +6,5 @@ set( UtilsTestSrc randomTests.cpp xorshiftrandomtests.cpp)
 include_directories( ${SRC_DIR}/utils )
 
 add_library( UtilsTest ${UtilsTestSrc} )
+
+target_link_libraries( UtilsTest gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )

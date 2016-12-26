@@ -13,7 +13,7 @@ macro(opener_platform_support ARGS)
     message(FATAL_ERROR "No platform selected!")  
   endif(OpENer_PLATFORM STREQUAL "")
 
-  include( ${OpENer_BUILDSUPPORT_DIR}/${OpENer_PLATFORM}/OpENer_PLATFORM_${ARGS}.cmake)
+  include( ${OpENer_BUILDSUPPORT_DIR}/${OpENer_PLATFORM}/OpENer_PLATFORM_INCLUDES.cmake)
   opener_platform_spec()
 endmacro(opener_platform_support ARGS)
 
@@ -24,11 +24,12 @@ endmacro(opener_platform_support ARGS)
 macro(opener_common_includes)
   set( SRC_DIR "${PROJECT_SOURCE_DIR}/src" )
   set( CIP_SRC_DIR "${SRC_DIR}/cip" )
+  set( CIP_CONNETION_MANAGER_SRC_DIR "${SRC_DIR}/cip/connectionmanager" )
   set( ENET_ENCAP_SRC_DIR "${SRC_DIR}/enet_encap" )
   set( PORTS_SRC_DIR "${SRC_DIR}/ports")
   set( UTILS_SRC_DIR "${SRC_DIR}/utils")
 
-  include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} ${UTILS_SRC_DIR} ${OpENer_CIP_OBJECTS_DIR} )
+  include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${CIP_CONNETION_MANAGER_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} ${UTILS_SRC_DIR} ${OpENer_CIP_OBJECTS_DIR} )
 endmacro(opener_common_includes)
 
 MACRO(opener_add_cip_object NAME DESCRIPTION)
