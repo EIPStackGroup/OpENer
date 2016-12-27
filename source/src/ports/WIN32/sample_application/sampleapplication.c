@@ -25,16 +25,16 @@ EipUint8 g_assembly_data09A[32]; /* Explicit */
 EipStatus ApplicationInitialization(void) {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assembly_data064[0],
-                       sizeof(g_assembly_data064));
+  CreateAssemblyObject( DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assembly_data064[0],
+                        sizeof(g_assembly_data064) );
 
   /*OUTPUT*/
-  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assembly_data096[0],
-                       sizeof(g_assembly_data096));
+  CreateAssemblyObject( DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assembly_data096[0],
+                        sizeof(g_assembly_data096) );
 
   /*CONFIG*/
-  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assembly_data097[0],
-                       sizeof(g_assembly_data097));
+  CreateAssemblyObject( DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assembly_data097[0],
+                        sizeof(g_assembly_data097) );
 
   /*Heart-beat output assembly for Input only connections */
   CreateAssemblyObject(DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -43,18 +43,18 @@ EipStatus ApplicationInitialization(void) {
   CreateAssemblyObject(DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assembly_data09A[0],
-                       sizeof(g_assembly_data09A));
+  CreateAssemblyObject( DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assembly_data09A[0],
+                        sizeof(g_assembly_data09A) );
 
   ConfigureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
-  DEMO_APP_INPUT_ASSEMBLY_NUM,
+                                         DEMO_APP_INPUT_ASSEMBLY_NUM,
                                          DEMO_APP_CONFIG_ASSEMBLY_NUM);
   ConfigureInputOnlyConnectionPoint(0,
-  DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM,
+                                    DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM,
                                     DEMO_APP_INPUT_ASSEMBLY_NUM,
                                     DEMO_APP_CONFIG_ASSEMBLY_NUM);
   ConfigureListenOnlyConnectionPoint(0,
-  DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
+                                     DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
                                      DEMO_APP_INPUT_ASSEMBLY_NUM,
                                      DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
@@ -66,8 +66,8 @@ void HandleApplication(void) {
 }
 
 void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
-                       unsigned int pa_unInputAssembly,
-                       IoConnectionEvent pa_eIOConnectionEvent) {
+                            unsigned int pa_unInputAssembly,
+                            IoConnectionEvent pa_eIOConnectionEvent) {
   /* maintain a correct output state according to the connection state*/
 
   (void) pa_unOutputAssembly; /* suppress compiler warning */
@@ -83,8 +83,8 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
     case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
       /* Data for the output assembly has been received.
        * Mirror it to the inputs */
-      memcpy(&g_assembly_data064[0], &g_assembly_data096[0],
-             sizeof(g_assembly_data064));
+      memcpy( &g_assembly_data064[0], &g_assembly_data096[0],
+              sizeof(g_assembly_data064) );
       break;
     case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
       /* do something interesting with the new data from
@@ -118,6 +118,7 @@ EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
 
 EipStatus ResetDevice(void) {
   /* add reset code here*/
+  CloseAllConnections();
   return kEipStatusOk;
 }
 

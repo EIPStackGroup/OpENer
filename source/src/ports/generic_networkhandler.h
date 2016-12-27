@@ -47,8 +47,6 @@ int g_current_active_tcp_socket;
 struct timeval g_time_value;
 MilliSeconds g_actual_time;
 MilliSeconds g_last_time;
-MilliSeconds g_encap_timestamp;
-MilliSeconds* g_timestamps;
 /** @brief Struct representing the current network status
  *
  */

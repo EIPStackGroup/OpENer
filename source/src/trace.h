@@ -31,9 +31,10 @@
 #ifndef OPENER_TRACE_LEVEL
 #ifdef WIN32
 #pragma message( \
-    "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
+  "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
 #else
-#warning OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR
+#warning \
+  OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR
 #endif
 
 #define OPENER_TRACE_LEVEL OPENER_TRACE_LEVEL_ERROR
@@ -48,7 +49,7 @@
  */
 #define OPENER_TRACE_ERR(...)                                                  \
   do {                                                                         \
-    if (OPENER_TRACE_LEVEL_ERROR & OPENER_TRACE_LEVEL) LOG_TRACE(__VA_ARGS__); \
+    if (OPENER_TRACE_LEVEL_ERROR & OPENER_TRACE_LEVEL) {LOG_TRACE(__VA_ARGS__);} \
   } while (0)
 
 /** @def OPENER_TRACE_WARN(...) Trace warning messages.
@@ -57,8 +58,8 @@
  */
 #define OPENER_TRACE_WARN(...)                           \
   do {                                                   \
-    if (OPENER_TRACE_LEVEL_WARNING & OPENER_TRACE_LEVEL) \
-      LOG_TRACE(__VA_ARGS__);                            \
+    if (OPENER_TRACE_LEVEL_WARNING & OPENER_TRACE_LEVEL) { \
+      LOG_TRACE(__VA_ARGS__);}                            \
   } while (0)
 
 /** @def OPENER_TRACE_STATE(...) Trace state messages.
@@ -67,7 +68,7 @@
  */
 #define OPENER_TRACE_STATE(...)                                                \
   do {                                                                         \
-    if (OPENER_TRACE_LEVEL_STATE & OPENER_TRACE_LEVEL) LOG_TRACE(__VA_ARGS__); \
+    if (OPENER_TRACE_LEVEL_STATE & OPENER_TRACE_LEVEL) {LOG_TRACE(__VA_ARGS__);} \
   } while (0)
 
 /** @def OPENER_TRACE_INFO(...) Trace information messages.
@@ -76,7 +77,7 @@
  */
 #define OPENER_TRACE_INFO(...)                                                \
   do {                                                                        \
-    if (OPENER_TRACE_LEVEL_INFO & OPENER_TRACE_LEVEL) LOG_TRACE(__VA_ARGS__); \
+    if (OPENER_TRACE_LEVEL_INFO & OPENER_TRACE_LEVEL) {LOG_TRACE(__VA_ARGS__);} \
   } while (0)
 
 #else

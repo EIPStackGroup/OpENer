@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -28,8 +28,8 @@ CipEthernetLinkObject g_ethernet_link;
  *  @param mac_address The MAC address of the Ethernet Link
  */
 void ConfigureMacAddress(const EipUint8 *const mac_address) {
-  memcpy(&g_ethernet_link.physical_address, mac_address,
-         sizeof(g_ethernet_link.physical_address));
+  memcpy( &g_ethernet_link.physical_address, mac_address,
+          sizeof(g_ethernet_link.physical_address) );
 
 }
 
@@ -49,7 +49,8 @@ EipStatus CipEthernetLinkInit() {
 
   if (ethernet_link_class != NULL) {
 
-    CipInstance *ethernet_link_instance = GetCipInstance(ethernet_link_class, 1);
+    CipInstance *ethernet_link_instance =
+      GetCipInstance(ethernet_link_class, 1);
     InsertAttribute(ethernet_link_instance, 1, kCipUdint,
                     &g_ethernet_link.interface_speed, kGetableSingleAndAll); /* bind attributes to the instance*/
     InsertAttribute(ethernet_link_instance, 2, kCipDword,

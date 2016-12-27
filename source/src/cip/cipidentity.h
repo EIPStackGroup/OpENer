@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_CIPIDENTITY_H_
@@ -15,19 +15,19 @@ static const int kIdentityClassCode = 0x01;
 typedef enum {
   kOwned = 0x0001, /**< Indicates that the device has an owner */
   kConfigured = 0x0004, /**< Indicates that the device is configured to do
-   something different, than the out-of-the-box default. */
+                           something different, than the out-of-the-box default. */
   kMinorRecoverableFault = 0x0100, /**< Indicates that the device detected a
-   fault with itself, which was thought to be recoverable. The device did not
-   switch to a faulted state. */
+                                      fault with itself, which was thought to be recoverable. The device did not
+                                      switch to a faulted state. */
   kMinorUncoverableFault = 0x0200, /**< Indicates that the device detected a
-   fault with itself, which was thought to be recoverable. The device did not
-   switch to a faulted state. */
+                                      fault with itself, which was thought to be recoverable. The device did not
+                                      switch to a faulted state. */
   kMajorRecoveralbeFault = 0x0400, /**< Indicates that the device detected a
-   fault with itself,which was thought to be recoverable. The device changed
-   to the "Major Recoverable Fault" state */
+                                      fault with itself,which was thought to be recoverable. The device changed
+                                      to the "Major Recoverable Fault" state */
   kMajorUnrecoverableFault = 0x0800 /**< Indicates that the device detected a
-   fault with itself,which was thought to be recoverable. The device changed
-   to the "Major Unrecoverable Fault" state */
+                                       fault with itself,which was thought to be recoverable. The device changed
+                                       to the "Major Unrecoverable Fault" state */
 } CipIdentityStatus;
 
 typedef enum {

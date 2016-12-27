@@ -73,7 +73,7 @@ static EipStatus Reset(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
                        /* pointer to message router request*/
                        CipMessageRouterResponse *message_router_response,
-                       struct sockaddr_in *originator_address) {                      /* pointer to message router response*/
+                       struct sockaddr *originator_address) {                      /* pointer to message router response*/
   (void) instance;
 
   EipStatus eip_status = kEipStatusOkSend;

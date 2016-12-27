@@ -8,6 +8,8 @@
 
 #include "typedefs.h"
 
+#define OPENER_SOCKET_WOULD_BLOCK WSAEWOULDBLOCK
+
 typedef unsigned long socklen_t;
 
 EipStatus NetworkHandlerInitializePlatform(void);

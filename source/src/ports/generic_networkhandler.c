@@ -13,15 +13,17 @@
 
 #include <assert.h>
 #include <stdbool.h>
-#include <unistd.h>
 
 #include "generic_networkhandler.h"
 
 #include "typedefs.h"
 #include "trace.h"
 #include "opener_error.h"
+#include "socket_timer.h"
 #include "encap.h"
 #include "ciptcpipinterface.h"
+
+SocketTimer g_timestamps[MAX_NO_OF_TCP_SOCKETS];
 
 /** @brief handle any connection request coming in the TCP server socket.
  *
@@ -62,6 +64,8 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
+  SocketTimerArrayInitialize(g_timestamps, MAX_NO_OF_TCP_SOCKETS);
+
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
   FD_ZERO(&read_socket);
@@ -75,7 +79,7 @@ EipStatus NetworkHandlerInitialize(void) {
     OPENER_TRACE_ERR("error allocating socket stream listener, %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -102,7 +106,7 @@ EipStatus NetworkHandlerInitialize(void) {
       "error allocating UDP global broadcast listener socket, %d - %s\n",
       error_code,
       error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -113,7 +117,7 @@ EipStatus NetworkHandlerInitialize(void) {
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error allocating UDP unicast listener socket, %d - %s\n",
                      error_code, error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -153,7 +157,7 @@ EipStatus NetworkHandlerInitialize(void) {
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error with TCP bind: %d - %s\n", error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -164,7 +168,7 @@ EipStatus NetworkHandlerInitialize(void) {
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n", error_code, GetErrorMessage(
                         error_code) );
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -184,7 +188,7 @@ EipStatus NetworkHandlerInitialize(void) {
     OPENER_TRACE_ERR(
       "error with setting broadcast receive for UDP socket: %d - %s\n",
       error_code, error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -196,7 +200,7 @@ EipStatus NetworkHandlerInitialize(void) {
     OPENER_TRACE_ERR("error with global broadcast UDP bind: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -208,7 +212,7 @@ EipStatus NetworkHandlerInitialize(void) {
     OPENER_TRACE_ERR("networkhandler: error with listen: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -227,13 +231,6 @@ EipStatus NetworkHandlerInitialize(void) {
   g_last_time = GetMilliSeconds(); /* initialize time keeping */
   g_network_status.elapsed_time = 0;
 
-  g_timestamps = calloc( MAX_NO_OF_TCP_SOCKETS,sizeof(MilliSeconds) );
-
-  for(int i = 0; i<highest_socket_handle; i++)
-  {
-    g_timestamps[i] = g_actual_time;
-  }
-
   return kEipStatusOk;
 }
 
@@ -242,6 +239,12 @@ void IApp_CloseSocket_udp(int socket_handle) {
 }
 
 void IApp_CloseSocket_tcp(int socket_handle) {
+  SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                             MAX_NO_OF_TCP_SOCKETS,
+                                             socket_handle);
+  if(NULL != socket_timer) {
+    DeleteSocketTimer(socket_timer);
+  }
   CloseSocket(socket_handle);
 }
 
@@ -271,7 +274,7 @@ void CheckAndHandleTcpListenerSocket(void) {
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR("networkhandler: error on accept: %d - %s\n",
                        error_code, error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return;
     }
 
@@ -280,7 +283,11 @@ void CheckAndHandleTcpListenerSocket(void) {
     if (new_socket > highest_socket_handle) {
       highest_socket_handle = new_socket;
     }
-    g_timestamps[new_socket] = g_actual_time;
+    //g_timestamps[new_socket] = g_actual_time;
+    SocketTimer *socket_timer = GetEmptySocketTimer(g_timestamps,
+                                                    MAX_NO_OF_TCP_SOCKETS);
+    SocketTimerSetSocket(socket_timer, new_socket);
+    SocketTimerSetLastUpdate(socket_timer, g_actual_time);
 
     OPENER_TRACE_STATE("networkhandler: opened new TCP connection on fd %d\n",
                        new_socket);
@@ -310,7 +317,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
       OPENER_TRACE_ERR("networkhandler: error with select: %d - %s\n",
                        error_code,
                        error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return kEipStatusError;
     }
   }
@@ -335,6 +342,8 @@ EipStatus NetworkHandlerProcessOnce(void) {
       }
     }
   }
+
+  //OPENER_TRACE_INFO("Socket Loop done\n");
 
   g_actual_time = GetMilliSeconds();
   g_network_status.elapsed_time += g_actual_time - g_last_time;
@@ -386,7 +395,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
         "networkhandler: error on recvfrom UDP global broadcast port: %d - %s\n",
         error_code,
         error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return;
     }
 
@@ -445,7 +454,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
         "networkhandler: error on recvfrom UDP unicast port: %d - %s\n",
         error_code,
         error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return;
     }
 
@@ -492,7 +501,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
       "networkhandler: error with sendto in sendUDPData: %d - %s\n",
       error_code,
       error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -508,6 +517,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 }
 
 EipStatus HandleDataOnTcpSocket(int socket) {
+  //OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket\n");
   int remaining_bytes = 0;
   long data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
 
@@ -521,23 +531,29 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
-  g_timestamps[socket] = g_actual_time;
+  SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                             MAX_NO_OF_TCP_SOCKETS,
+                                             socket);
+  SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: connection closed by client: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
   if (number_of_read_bytes < 0) {
     int error_code = GetSocketErrorNumber();
+    if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
+      return kEipStatusOk;
+    }
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -556,7 +572,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         data_sent);
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
-      g_timestamps[socket] = g_actual_time;
+      SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                                 MAX_NO_OF_TCP_SOCKETS,
+                                                 socket);
+      SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
       {
         int error_code = GetSocketErrorNumber();
@@ -565,16 +584,19 @@ EipStatus HandleDataOnTcpSocket(int socket) {
           "networkhandler: connection closed by client: %d - %s\n",
           error_code,
           error_message);
-        free(error_message);
+        FreeErrorMessage(error_message);
         return kEipStatusError;
       }
       if (number_of_read_bytes < 0) {
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
+        if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
+          return kEipStatusOk;
+        }
         OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                          error_code,
                          error_message);
-        free(error_message);
+        FreeErrorMessage(error_message);
         return kEipStatusError;
       }
       data_size -= number_of_read_bytes;
@@ -588,7 +610,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
   number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
                               data_size, 0);
-  g_timestamps[socket] = g_actual_time;
+//  SocketTimer *socket_timer = GetSocketTimer(g_timestamps, MAX_NO_OF_TCP_SOCKETS, socket);
+  SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) /* got error or connection closed by client */
   {
     int error_code = GetSocketErrorNumber();
@@ -596,16 +619,19 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     OPENER_TRACE_ERR("networkhandler: connection closed by client: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
   if (number_of_read_bytes < 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
+    if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
+      return kEipStatusOk;
+    }
     OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipStatusError;
   }
 
@@ -625,9 +651,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
-    g_timestamps[socket] = g_actual_time;
+    SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                               MAX_NO_OF_TCP_SOCKETS,
+                                               socket);
+    if(NULL != socket_timer) {
+      SocketTimerSetLastUpdate(socket_timer, g_actual_time);
+    }
 
-    g_current_active_tcp_socket = -1;
+    g_current_active_tcp_socket = kEipInvalidSocket;
 
     if (remaining_bytes != 0) {
       OPENER_TRACE_WARN(
@@ -640,7 +671,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
-      g_timestamps[socket] = g_actual_time;
+      SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                                 MAX_NO_OF_TCP_SOCKETS,
+                                                 socket);
+      SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != number_of_read_bytes) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
       }
@@ -679,7 +713,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n",
                      error_code,
                      error_message);
-    free(error_message);
+    FreeErrorMessage(error_message);
     return kEipInvalidSocket;
   }
 
@@ -706,7 +740,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR("error on bind udp: %d - %s\n", error_code,
                        error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return kEipInvalidSocket;
     }
 
@@ -724,7 +758,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
           OPENER_TRACE_ERR(
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
             g_time_to_live_value, error_code, error_message);
-          free(error_message);
+          FreeErrorMessage(error_message);
           return kEipInvalidSocket;
         }
       }
@@ -742,7 +776,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       OPENER_TRACE_ERR("networkhandler: could not get peername: %d - %s\n",
                        error_code,
                        error_message);
-      free(error_message);
+      FreeErrorMessage(error_message);
       return kEipInvalidSocket;
     }
     /* store the originators address */
@@ -792,10 +826,13 @@ void CheckAndHandleConsumingUdpSockets(void) {
       if (0 > received_size) {
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
+        if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
+          return;       // No fatal error, resume execution
+        }
         OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                          error_code,
                          error_message);
-        free(error_message);
+        FreeErrorMessage(error_message);
         current_connection_object->connection_close_function(
           current_connection_object);
         continue;
@@ -816,6 +853,7 @@ void CloseSocket(int socket_handle) {
     FD_CLR(socket_handle, &master_socket);
     CloseSocketPlatform(socket_handle);
   }
+  OPENER_TRACE_INFO("networkhandler: closing socket done %d\n", socket_handle);
 }
 
 int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
@@ -837,14 +875,18 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
 void CheckEncapsulationInactivity(int socket_handle) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
-    MilliSeconds diffms = g_actual_time - g_timestamps[socket_handle];
-    if (diffms < 0) {
-      diffms = 0;
-    }
+    SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
+                                               MAX_NO_OF_TCP_SOCKETS,
+                                               socket_handle);
 
-    if (diffms >= g_encapsulation_inactivity_timeout) {
-      CloseSocket(socket_handle);
-      CloseSession(socket_handle);
+    if(NULL != socket_timer) {
+      MilliSeconds diffms = g_actual_time - GetSocketTimerLastUpdate(
+        socket_timer);
+
+      if (diffms >= g_encapsulation_inactivity_timeout) {
+        CloseSocket(socket_handle);
+        CloseSession(socket_handle);
+      }
     }
   }
 }

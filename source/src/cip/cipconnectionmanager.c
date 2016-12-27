@@ -789,14 +789,14 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 }
 
 EipStatus ManageConnections(MilliSeconds elapsed_time) {
-
+  //OPENER_TRACE_INFO("Entering ManageConnections\n");
   /*Inform application that it can execute */
   HandleApplication();
   ManageEncapsulationMessages(elapsed_time);
 
   ConnectionObject *connection_object = g_active_connection_list;
   while (NULL != connection_object) {
-    OPENER_TRACE_INFO("Entering Connection Object loop\n");
+    //OPENER_TRACE_INFO("Entering Connection Object loop\n");
     if (kConnectionStateEstablished == connection_object->state) {
       if ( (0 != connection_object->consuming_instance) ||                  /* we have a consuming connection check inactivity watchdog timer */
            (connection_object->transport_type_class_trigger & 0x80) )             /* all sever connections have to maintain an inactivity watchdog timer */

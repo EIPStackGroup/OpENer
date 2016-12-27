@@ -17,6 +17,7 @@
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
 #include "generic_networkhandler.h"
+#include "trace.h"
 
 /*Identity data from cipidentity.c*/
 extern EipUint16 vendor_id_;
@@ -488,6 +489,8 @@ void HandleReceivedRegisterSessionCommand(int socket,
 EipStatus HandleReceivedUnregisterSessionCommand(
   EncapsulationData *receive_data) {
 
+  OPENER_TRACE_INFO("encap.c: Unregister Session Command\n");
+
   if ( (0 < receive_data->session_handle)
        && (receive_data->session_handle <=
            OPENER_NUMBER_OF_SUPPORTED_SESSIONS) ) {
@@ -642,8 +645,8 @@ SessionStatus CheckRegisteredSessions(EncapsulationData *receive_data) {
 }
 
 void CloseSession(int socket) {
-  int i;
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+  OPENER_TRACE_INFO("encap.c: Close session\n");
+  for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (g_registered_sessions[i] == socket) {
       IApp_CloseSocket_tcp(socket);
       g_registered_sessions[i] = kEipInvalidSocket;
@@ -653,7 +656,8 @@ void CloseSession(int socket) {
 }
 
 void EncapsulationShutDown(void) {
-  for (int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+  OPENER_TRACE_INFO("encap.c: Encapsulation shutdown\n");
+  for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (kEipInvalidSocket != g_registered_sessions[i]) {
       IApp_CloseSocket_tcp(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef OPENER_USER_CONF_H_
@@ -8,9 +8,9 @@
 
 /** @file
  * @brief OpENer configuration setup
- * 
+ *
  * This file contains the general application specific configuration for OpENer.
- * 
+ *
  * Furthermore you have to specific platform specific network include files.
  * OpENer needs definitions for the following data-types
  * and functions:
@@ -85,18 +85,18 @@ typedef unsigned short in_port_t;
  */
 #define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 20
 
- /** @brief  The time in ms of the timer used in this implementations
+/** @brief  The time in ms of the timer used in this implementations
  */
 static const int kOpenerTimerTickInMilliSeconds = 10;
 
 /** @brief Define if RUN IDLE data is sent with consumed data
-*/
+ */
 static const int kOpenerConsumedDataHasRunIdleHeader = 1;
 
 /** @brief Define if RUN IDLE data is to be sent with produced data
-*
-* Per default we don't send run idle headers with produced data
-*/
+ *
+ * Per default we don't send run idle headers with produced data
+ */
 static const int kOpenerProducedDataHasRunIdleHeader = 0;
 
 #ifdef OPENER_WITH_TRACES
@@ -111,12 +111,15 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
  *  further execution in an while(1) loop.
  */
 #define OPENER_ASSERT(assertion) \
-    do { \
-      if(!(assertion)) { \
-        LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", #assertion, __FILE__, __LINE__); \
-        while(1){;} \
-      } \
-    } while(0)
+  do { \
+    if( !(assertion) ) { \
+      LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", \
+                # assertion, \
+                __FILE__, \
+                __LINE__); \
+      while(1) {;} \
+    } \
+  } while(0)
 
 /* else use standard assert() */
 //#include <assert.h>
@@ -142,7 +145,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 #endif
 
 /** @brief The number of bytes used for the Ethernet message buffer on
- * the pc port. For different platforms it may makes sense to 
+ * the pc port. For different platforms it may makes sense to
  * have more than one buffer.
  *
  *  This buffer size will be used for any received message.

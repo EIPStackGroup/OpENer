@@ -46,6 +46,6 @@ void CloseSocketPlatform(int socket_handle) {
 }
 
 int SetSocketToNonBlocking(int socket_handle) {
-  u_long iMode = 0;
-  ioctlsocket(m_socket, FIONBIO, &iMode);
+  u_long iMode = 1;
+  return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }

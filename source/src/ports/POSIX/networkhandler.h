@@ -11,6 +11,8 @@
 
 #include "typedefs.h"
 
+#define OPENER_SOCKET_WOULD_BLOCK EWOULDBLOCK
+
 /** @brief Executes platform dependent network handler initialization code
  *
  *      @return EipStatusOk if initialization was successful, otherwise EipStatusError
