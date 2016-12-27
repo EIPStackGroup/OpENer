@@ -93,7 +93,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  int status = SetSocketToNonBlocking(g_network_status.tcp_listener);
+  SetSocketToNonBlocking(g_network_status.tcp_listener);
 
   /* create a new UDP socket */
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
@@ -130,8 +130,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  status =
-    SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
+  SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
 
   /* Activates address reuse */
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
@@ -142,7 +141,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  status = SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
+  SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
 
   struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
                                       kOpenerEthernetPort),
@@ -717,7 +716,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     return kEipInvalidSocket;
   }
 
-  int status = SetSocketToNonBlocking(new_socket);
+  SetSocketToNonBlocking(new_socket);
 
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
