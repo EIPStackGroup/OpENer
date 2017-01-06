@@ -17,48 +17,23 @@ typedef struct socket_timer {
   MilliSeconds last_update;       /**< time stop of last update */
 } SocketTimer;
 
-void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket) {
-  socket_timer->socket = socket;
-}
+void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket);
 
 void SocketTimerSetLastUpdate(SocketTimer *const socket_timer,
-                              const MilliSeconds actual_time) {
-  if(NULL != socket_timer) {
-    socket_timer->last_update = actual_time;
-  }
-}
+                              const MilliSeconds actual_time);
 
-MilliSeconds GetSocketTimerLastUpdate(SocketTimer *const socket_timer) {
-  return socket_timer->last_update;
-}
+MilliSeconds GetSocketTimerLastUpdate(SocketTimer *const socket_timer);
 
-void DeleteSocketTimer(SocketTimer *const socket_timer) {
-  socket_timer->socket = kEipInvalidSocket;
-  socket_timer->last_update = 0;
-}
+void DeleteSocketTimer(SocketTimer *const socket_timer);
 
 void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
-                                const size_t array_length) {
-  for( size_t i = 0; i < array_length; ++i ) {
-    DeleteSocketTimer(&array_of_socket_timers[i]);
-  }
-}
+                                const size_t array_length);
 
 SocketTimer *GetSocketTimer(SocketTimer *const array_of_socket_timers,
                             const size_t array_length,
-                            const int socket) {
-  for( size_t i = 0; i < array_length; ++i ) {
-    if(socket == array_of_socket_timers[i].socket) {
-      return &array_of_socket_timers[i];
-    }
-  }
-  return NULL;
-}
+                            const int socket);
 
 SocketTimer *GetEmptySocketTimer(SocketTimer *const array_of_socket_timers,
-                                 const size_t array_length) {
-  return GetSocketTimer(array_of_socket_timers, array_length,
-                        kEipInvalidSocket);
-}
+                                 const size_t array_length);
 
 #endif /* SRC_PORTS_SOCKET_TIMER_H_ */
