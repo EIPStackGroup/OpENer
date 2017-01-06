@@ -972,6 +972,8 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
       }
     }
 
+	message ++;
+	remaining_path_size -= 1;
     if (EQLOGICALPATH(*message, 0x20)) { /* classID */
       connection_object->connection_path.class_id = GetPaddedLogicalPath(
           &message);
