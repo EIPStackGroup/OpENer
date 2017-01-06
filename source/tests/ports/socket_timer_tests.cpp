@@ -26,5 +26,6 @@ TEST(SocketTimer, GetAvailableEmptySocketTimer) {
 
 TEST(SocketTimer, NoEmptySocketTimerAvailable) {
   SocketTimer timers[10];
+  memset( timers, 0, sizeof(timers) );
   POINTERS_EQUAL( NULL, GetEmptySocketTimer(timers, 10) );
 }
