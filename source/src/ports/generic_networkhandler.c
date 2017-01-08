@@ -238,11 +238,11 @@ void IApp_CloseSocket_udp(int socket_handle) {
 }
 
 void IApp_CloseSocket_tcp(int socket_handle) {
-  SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                             MAX_NO_OF_TCP_SOCKETS,
-                                             socket_handle);
+  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                             MAX_NO_OF_TCP_SOCKETS,
+                                                             socket_handle);
   if(NULL != socket_timer) {
-    DeleteSocketTimer(socket_timer);
+    SocketTimerClear(socket_timer);
   }
   CloseSocket(socket_handle);
 }
@@ -282,9 +282,10 @@ void CheckAndHandleTcpListenerSocket(void) {
     if (new_socket > highest_socket_handle) {
       highest_socket_handle = new_socket;
     }
-    //g_timestamps[new_socket] = g_actual_time;
-    SocketTimer *socket_timer = GetEmptySocketTimer(g_timestamps,
-                                                    MAX_NO_OF_TCP_SOCKETS);
+
+    SocketTimer *socket_timer = SocketTimerArrayGetEmptySocketTimer(
+      g_timestamps,
+      MAX_NO_OF_TCP_SOCKETS);
     SocketTimerSetSocket(socket_timer, new_socket);
     SocketTimerSetLastUpdate(socket_timer, g_actual_time);
 
@@ -530,9 +531,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
-  SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                             MAX_NO_OF_TCP_SOCKETS,
-                                             socket);
+  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                             MAX_NO_OF_TCP_SOCKETS,
+                                                             socket);
   SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
@@ -571,9 +572,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         data_sent);
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
-      SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                                 MAX_NO_OF_TCP_SOCKETS,
-                                                 socket);
+      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                                 MAX_NO_OF_TCP_SOCKETS,
+                                                                 socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
       {
@@ -609,7 +610,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
   number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
                               data_size, 0);
-//  SocketTimer *socket_timer = GetSocketTimer(g_timestamps, MAX_NO_OF_TCP_SOCKETS, socket);
+
   SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) /* got error or connection closed by client */
   {
@@ -650,9 +651,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
-    SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                               MAX_NO_OF_TCP_SOCKETS,
-                                               socket);
+    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                               MAX_NO_OF_TCP_SOCKETS,
+                                                               socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
     }
@@ -670,9 +671,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
-      SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                                 MAX_NO_OF_TCP_SOCKETS,
-                                                 socket);
+      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                                 MAX_NO_OF_TCP_SOCKETS,
+                                                                 socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != number_of_read_bytes) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
@@ -874,12 +875,12 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
 void CheckEncapsulationInactivity(int socket_handle) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
-    SocketTimer *socket_timer = GetSocketTimer(g_timestamps,
-                                               MAX_NO_OF_TCP_SOCKETS,
-                                               socket_handle);
+    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                               MAX_NO_OF_TCP_SOCKETS,
+                                                               socket_handle);
 
     if(NULL != socket_timer) {
-      MilliSeconds diffms = g_actual_time - GetSocketTimerLastUpdate(
+      MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
 
       if (diffms >= g_encapsulation_inactivity_timeout) {
