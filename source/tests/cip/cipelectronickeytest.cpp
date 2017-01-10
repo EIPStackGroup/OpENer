@@ -16,7 +16,7 @@ extern "C" {
 }
 
 TEST_GROUP(CipElectronicKey) {
-  ElectronicKeyFormat4 *key = NULL;
+  ElectronicKeyFormat4 *key;
 
   void setup() {
     key = ElectronicKeyFormat4New();
