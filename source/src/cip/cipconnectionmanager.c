@@ -50,7 +50,7 @@ typedef struct {
 
 /* Connection Object functions */
 ProductionTrigger GetProductionTrigger(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   const unsigned int ProductionTriggerMask = 0x70;
 
   switch (connection_object->transport_type_class_trigger
@@ -86,7 +86,7 @@ void SetProductionTrigger(const enum ProductionTrigger production_trigger,
 }
 
 CipUint GetProductionInhibitTime(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   return connection_object->production_inhibit_time;
 }
 
@@ -96,7 +96,7 @@ void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
 }
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
 }
 
