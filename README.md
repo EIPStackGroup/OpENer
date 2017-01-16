@@ -13,6 +13,14 @@ I/O and explicit connections; includes objects and services to make EtherNet/IP&
 compliant products defined in THE ETHERNET/IP SPECIFICATION and published by 
 ODVA (http://www.odva.org).
 
+Participate!
+------------
+Users and developers of OpENer can join the respective Google Groups in order to exchange experience, discuss the usage of OpENer, and to suggest new features and CIP objects, which would be useful for the community.
+
+Developers mailing list: https://groups.google.com/forum/#!forum/eip-stack-group-opener-developers
+
+Users mailing list: https://groups.google.com/forum/#!forum/eip-stack-group-opener-users
+
 Requirements:
 -------------
 OpENer has been developed to be highly portable. The default version targets PCs
