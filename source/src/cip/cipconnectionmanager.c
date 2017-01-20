@@ -397,7 +397,7 @@ ForwardOpenConnectionType GetConnectionType(
                                               & kConnectionParameterMask;
 
   OPENER_TRACE_INFO(
-    "Connection type: %x / network connection parameter: %x\n",
+    "Connection type: 0x%x / network connection parameter: 0x%x\n",
     connection_type, network_connection_parameter);
   return connection_type;
 }
