@@ -426,6 +426,16 @@ EipStatus OpenProducingMulticastConnection(
     GetExistingProducerMulticastConnection(
       connection_object->connection_path.connection_point[1]);
 
+  int j = 0; /* allocate an unused sockaddr struct to use */
+  if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
+    j = 0;
+  } else if (g_common_packet_format_data_item.address_info_item[1].type_id
+             == 0) {
+    j = 1;
+  }
+  
+  common_packet_format_data->address_info_item[j].type_id = kCipItemIdSocketAddressInfoTargetToOriginator;
+	
   if (NULL == existing_connection_object) { /* we are the first connection producing for the given Input Assembly */
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
                                    connection_object,
@@ -438,14 +448,6 @@ EipStatus OpenProducingMulticastConnection(
   }
 
   /* we have a connection reuse the data and the socket */
-
-  int j = 0; /* allocate an unused sockaddr struct to use */
-  if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
-    j = 0;
-  } else if (g_common_packet_format_data_item.address_info_item[1].type_id
-             == 0) {
-    j = 1;
-  }
 
   if (kConnectionTypeIoExclusiveOwner == connection_object->instance_type) {
     /* exclusive owners take the socket and further manage the connection
@@ -461,8 +463,7 @@ EipStatus OpenProducingMulticastConnection(
   }
 
   common_packet_format_data->address_info_item[j].length = 16;
-  common_packet_format_data->address_info_item[j].type_id =
-    kCipItemIdSocketAddressInfoTargetToOriginator;
+
   connection_object->remote_address.sin_family = AF_INET;
   connection_object->remote_address.sin_port = common_packet_format_data
                                                ->address_info_item[j].sin_port
