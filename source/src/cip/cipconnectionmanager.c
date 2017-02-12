@@ -1440,7 +1440,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
               case kDataSegmentSubtypeSimpleData:
                 g_config_data_length = message[1] * 2;                                 /*data segments store length 16-bit word wise */
                 g_config_data_buffer = (EipUint8 *) message + 2;
-                remaining_path_size -= (g_config_data_length + 2);
+                remaining_path_size -= (g_config_data_length + 2) / 2;
                 message += (g_config_data_length + 2);
                 break;
               default:
