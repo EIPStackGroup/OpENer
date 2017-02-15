@@ -909,10 +909,13 @@ void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
   ConnectionObject *connection_object) {
   IApp_CloseSocket_udp(
     connection_object->socket[kUdpCommuncationDirectionConsuming]);
+
   connection_object->socket[kUdpCommuncationDirectionConsuming] =
     kEipInvalidSocket;
+
   IApp_CloseSocket_udp(
     connection_object->socket[kUdpCommuncationDirectionProducing]);
+
   connection_object->socket[kUdpCommuncationDirectionProducing] =
     kEipInvalidSocket;
 

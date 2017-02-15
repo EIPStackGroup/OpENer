@@ -674,7 +674,7 @@ SendUdpData(struct sockaddr_in *socket_data,
  *
  * @param socket_handle socket descriptor to close
  */
-void CloseSocket(int socket);
+void CloseSocket(const int socket);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
  * Documentation

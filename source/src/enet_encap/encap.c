@@ -18,6 +18,7 @@
 #include "cipidentity.h"
 #include "generic_networkhandler.h"
 #include "trace.h"
+#include "socket_timer.h"
 
 /*Identity data from cipidentity.c*/
 extern EipUint16 vendor_id_;
@@ -160,6 +161,7 @@ int HandleReceivedExplictTcpData(int socket,
                                  unsigned int length,
                                  int *remaining_bytes,
                                  struct sockaddr *originator_address) {
+	OPENER_TRACE_INFO("Handles data for TCP socket: %d\n", socket);
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data;
   /* eat the encapsulation header*/
@@ -178,37 +180,45 @@ int HandleReceivedExplictTcpData(int socket,
       /* most of these functions need a reply to be send */
       switch (encapsulation_data.command_code) {
         case (kEncapsulationCommandNoOperation):
+        		OPENER_TRACE_INFO("NOP\n");
           /* NOP needs no reply and does nothing */
           return_value = kEipStatusOk;
           break;
 
         case (kEncapsulationCommandListServices):
+                		OPENER_TRACE_INFO("List services\n");
           HandleReceivedListServicesCommand(&encapsulation_data);
           break;
 
         case (kEncapsulationCommandListIdentity):
+                		OPENER_TRACE_INFO("List identity\n");
           HandleReceivedListIdentityCommandTcp(&encapsulation_data);
           break;
 
         case (kEncapsulationCommandListInterfaces):
+                		OPENER_TRACE_INFO("List interfaces\n");
           HandleReceivedListInterfacesCommand(&encapsulation_data);
           break;
 
         case (kEncapsulationCommandRegisterSession):
+                		OPENER_TRACE_INFO("Register session\n");
           HandleReceivedRegisterSessionCommand(socket, &encapsulation_data);
           break;
 
         case (kEncapsulationCommandUnregisterSession):
+                		OPENER_TRACE_INFO("unregister session\n");
           return_value = HandleReceivedUnregisterSessionCommand(
             &encapsulation_data);
           break;
 
         case (kEncapsulationCommandSendRequestReplyData):
+                		OPENER_TRACE_INFO("Send Request/Reply Data\n");
           return_value = HandleReceivedSendRequestResponseDataCommand(
             &encapsulation_data, originator_address);
           break;
 
         case (kEncapsulationCommandSendUnitData):
+                		OPENER_TRACE_INFO("Send Unit Data\n");
           return_value = HandleReceivedSendUnitDataCommand(&encapsulation_data,
                                                            originator_address);
           break;
@@ -252,10 +262,12 @@ int HandleReceivedExplictUdpData(int socket,
       /* most of these functions need a reply to be send */
       switch (encapsulation_data.command_code) {
         case (kEncapsulationCommandListServices):
+          OPENER_TRACE_INFO("List Service\n");
           HandleReceivedListServicesCommand(&encapsulation_data);
           break;
 
         case (kEncapsulationCommandListIdentity):
+		 OPENER_TRACE_INFO("List Identity\n");
           if(unicast == true) {
             HandleReceivedListIdentityCommandTcp(&encapsulation_data);
           }
@@ -267,6 +279,7 @@ int HandleReceivedExplictUdpData(int socket,
           break;
 
         case (kEncapsulationCommandListInterfaces):
+		  OPENER_TRACE_INFO("List Interfaces\n");
           HandleReceivedListInterfacesCommand(&encapsulation_data);
           break;
 
@@ -277,6 +290,7 @@ int HandleReceivedExplictUdpData(int socket,
         case (kEncapsulationCommandSendRequestReplyData):
         case (kEncapsulationCommandSendUnitData):
         default:
+          OPENER_TRACE_INFO("No command\n");
           encapsulation_data.status = kEncapsulationProtocolInvalidCommand;
           encapsulation_data.data_length = 0;
           break;
@@ -465,6 +479,9 @@ void HandleReceivedRegisterSessionCommand(int socket,
       {
         receive_data->status = kEncapsulationProtocolInsufficientMemory;
       } else { /* successful session registered */
+    	  SocketTimer *socket_timer = SocketTimerArrayGetEmptySocketTimer(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
+    	  SocketTimerSetSocket(socket_timer, socket);
+    	  SocketTimerSetLastUpdate(socket_timer, g_actual_time);
         g_registered_sessions[session_index] = socket; /* store associated socket */
         receive_data->session_handle = session_index + 1;
         receive_data->status = kEncapsulationProtocolSuccess;
@@ -592,7 +609,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
  *                      kInvalidSession .. no free session available
  */
 int GetFreeSessionIndex(void) {
-  for (int session_index = 0;
+  for (size_t session_index = 0;
        session_index < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; session_index++) {
     if (kEipInvalidSocket == g_registered_sessions[session_index]) {
       return session_index;

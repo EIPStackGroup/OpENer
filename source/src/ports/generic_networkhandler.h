@@ -25,8 +25,9 @@
 #include "cipconnectionmanager.h"
 #include "networkhandler.h"
 #include "appcontype.h"
+#include "socket_timer.h"
 
-#define MAX_NO_OF_TCP_SOCKETS 10
+SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
 /* values needed from the connection manager */
 extern ConnectionObject *g_active_connection_list;

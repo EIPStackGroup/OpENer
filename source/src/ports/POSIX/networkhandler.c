@@ -11,11 +11,13 @@
 #include "networkhandler.h"
 
 #include "encap.h"
+#include "opener_user_conf.h"
 
 MicroSeconds GetMicroSeconds(void) {
-  struct timespec now;
+  struct timespec now = { .tv_nsec = 0, .tv_sec = 0 };
 
-  clock_gettime( CLOCK_MONOTONIC, &now );
+  int error = clock_gettime( CLOCK_MONOTONIC, &now );
+  OPENER_ASSERT(-1 != error);
   MicroSeconds micro_seconds =  (MicroSeconds)now.tv_nsec / 1000ULL +
                                now.tv_sec * 1000000ULL;
   return micro_seconds;
