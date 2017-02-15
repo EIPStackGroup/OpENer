@@ -110,7 +110,8 @@ Also, please update and/or add doxygen comments to the provided code sections.
 Please stick to the coding conventions, as defined in source/doc/coding_rules
 The easiest way to conform to the indenting convertion is to set uncrustify as git filter in the OpENer repository, which can be done with the following to commands:
 
-git config filter.uncrustify.clean=/path/to/uncrustify/uncrustify -c uncrustify.cfg --mtime --no-backup
-git config filter.uncrustify.smudge=cat
+git config filter.uncrustify.clean "/path/to/uncrustify/uncrustify -c uncrustify.cfg --mtime --no-backup"
+
+git config filter.uncrustify.smudge "cat"
 
 
