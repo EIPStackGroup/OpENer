@@ -239,9 +239,13 @@ void IApp_CloseSocket_udp(int socket_handle) {
 
 void IApp_CloseSocket_tcp(int socket_handle) {
   SocketTimer *socket_timer = NULL;
-  while(NULL != (socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket_handle)) )
+  while( NULL !=
+         ( socket_timer =
+             SocketTimerArrayGetSocketTimer(g_timestamps,
+                                            OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                            socket_handle) ) )
   {
-	SocketTimerClear(socket_timer);
+    SocketTimerClear(socket_timer);
   }
   CloseSocket(socket_handle);
 }
@@ -275,15 +279,18 @@ void CheckAndHandleTcpListenerSocket(void) {
       FreeErrorMessage(error_message);
       return;
     }
-    OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n", new_socket);
+    OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
+                      new_socket);
 
     SocketTimer *socket_timer = SocketTimerArrayGetEmptySocketTimer(
-          g_timestamps,
-		  OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
+      g_timestamps,
+      OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
 
     OPENER_TRACE_INFO("Current time stamp: %ld\n", g_actual_time);
-    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS;i++) {
-    	OPENER_TRACE_INFO("Socket: %d - Last Update: %ld\n", g_timestamps[i].socket, g_timestamps[i].last_update);
+    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
+      OPENER_TRACE_INFO("Socket: %d - Last Update: %ld\n",
+                        g_timestamps[i].socket,
+                        g_timestamps[i].last_update);
     }
 
     OPENER_ASSERT(socket_timer != NULL);
@@ -537,7 +544,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
   SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-		  OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                                             OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                              socket);
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
@@ -653,7 +660,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-    		OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
@@ -673,7 +680,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-    		  OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                                                 OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                  socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != number_of_read_bytes) {
@@ -785,7 +792,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   /* add new socket to the master list                                             */
   FD_SET(new_socket, &master_socket);
   if (new_socket > highest_socket_handle) {
-	OPENER_TRACE_INFO("New highest socket: %d", new_socket);
+    OPENER_TRACE_INFO("New highest socket: %d", new_socket);
     highest_socket_handle = new_socket;
   }
   return new_socket;
@@ -850,8 +857,8 @@ void CloseSocket(const int socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket %d\n", socket_handle);
 
   if (kEipInvalidSocket != socket_handle) {
-      FD_CLR(socket_handle, &master_socket);
-      CloseSocketPlatform(socket_handle);
+    FD_CLR(socket_handle, &master_socket);
+    CloseSocketPlatform(socket_handle);
   }
   OPENER_TRACE_INFO("networkhandler: closing socket done %d\n", socket_handle);
 }
@@ -876,10 +883,12 @@ void CheckEncapsulationInactivity(int socket_handle) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-    		OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                socket_handle);
 
-    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n", socket_handle, socket_timer);
+    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
+                      socket_handle,
+                      socket_timer);
     if(NULL != socket_timer) {
       MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);

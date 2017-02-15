@@ -433,9 +433,10 @@ EipStatus OpenProducingMulticastConnection(
              == 0) {
     j = 1;
   }
-  
-  common_packet_format_data->address_info_item[j].type_id = kCipItemIdSocketAddressInfoTargetToOriginator;
-	
+
+  common_packet_format_data->address_info_item[j].type_id =
+    kCipItemIdSocketAddressInfoTargetToOriginator;
+
   if (NULL == existing_connection_object) { /* we are the first connection producing for the given Input Assembly */
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
                                    connection_object,
