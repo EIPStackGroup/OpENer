@@ -1524,6 +1524,7 @@ void AddNewActiveConnection(ConnectionObject *connection_object) {
 }
 
 void RemoveFromActiveConnections(ConnectionObject *connection_object) {
+
   if (NULL != connection_object->first_connection_object) {
     connection_object->first_connection_object->next_connection_object =
       connection_object->next_connection_object;
@@ -1534,6 +1535,7 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object) {
     connection_object->next_connection_object->first_connection_object =
       connection_object->first_connection_object;
   }
+
   connection_object->first_connection_object = NULL;
   connection_object->next_connection_object = NULL;
   connection_object->state = kConnectionStateNonExistent;

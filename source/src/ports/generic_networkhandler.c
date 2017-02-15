@@ -19,11 +19,11 @@
 #include "typedefs.h"
 #include "trace.h"
 #include "opener_error.h"
-#include "socket_timer.h"
 #include "encap.h"
 #include "ciptcpipinterface.h"
+#include "opener_user_conf.h"
 
-SocketTimer g_timestamps[MAX_NO_OF_TCP_SOCKETS];
+#define MAX_NO_OF_TCP_SOCKETS 10
 
 /** @brief handle any connection request coming in the TCP server socket.
  *
@@ -64,7 +64,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SocketTimerArrayInitialize(g_timestamps, MAX_NO_OF_TCP_SOCKETS);
+  SocketTimerArrayInitialize(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
 
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
@@ -238,10 +238,13 @@ void IApp_CloseSocket_udp(int socket_handle) {
 }
 
 void IApp_CloseSocket_tcp(int socket_handle) {
-  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                             MAX_NO_OF_TCP_SOCKETS,
-                                                             socket_handle);
-  if(NULL != socket_timer) {
+  SocketTimer *socket_timer = NULL;
+  while( NULL !=
+         ( socket_timer =
+             SocketTimerArrayGetSocketTimer(g_timestamps,
+                                            OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                            socket_handle) ) )
+  {
     SocketTimerClear(socket_timer);
   }
   CloseSocket(socket_handle);
@@ -276,18 +279,28 @@ void CheckAndHandleTcpListenerSocket(void) {
       FreeErrorMessage(error_message);
       return;
     }
+    OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
+                      new_socket);
+
+    SocketTimer *socket_timer = SocketTimerArrayGetEmptySocketTimer(
+      g_timestamps,
+      OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
+
+    OPENER_TRACE_INFO("Current time stamp: %ld\n", g_actual_time);
+    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
+      OPENER_TRACE_INFO("Socket: %d - Last Update: %ld\n",
+                        g_timestamps[i].socket,
+                        g_timestamps[i].last_update);
+    }
+
+    OPENER_ASSERT(socket_timer != NULL);
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
     if (new_socket > highest_socket_handle) {
+      OPENER_TRACE_INFO("New highest socket: %d", new_socket);
       highest_socket_handle = new_socket;
     }
-
-    SocketTimer *socket_timer = SocketTimerArrayGetEmptySocketTimer(
-      g_timestamps,
-      MAX_NO_OF_TCP_SOCKETS);
-    SocketTimerSetSocket(socket_timer, new_socket);
-    SocketTimerSetLastUpdate(socket_timer, g_actual_time);
 
     OPENER_TRACE_STATE("networkhandler: opened new TCP connection on fd %d\n",
                        new_socket);
@@ -329,7 +342,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
 
-    for (int socket = 0; socket <= highest_socket_handle; socket++) {
+    for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
       if ( true == CheckSocketSet(socket) ) {
         /* if it is still checked it is a TCP receive */
         if ( kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
@@ -337,9 +350,8 @@ EipStatus NetworkHandlerProcessOnce(void) {
           CloseSocket(socket);
           CloseSession(socket); /* clean up session and close the socket */
         }
-        CheckEncapsulationInactivity(socket);
-
       }
+      CheckEncapsulationInactivity(socket);
     }
   }
 
@@ -517,7 +529,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 }
 
 EipStatus HandleDataOnTcpSocket(int socket) {
-  //OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket\n");
+  OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket for socket: %d\n", socket);
   int remaining_bytes = 0;
   long data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
 
@@ -532,9 +544,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
   SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                             MAX_NO_OF_TCP_SOCKETS,
+                                                             OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                              socket);
-  SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
@@ -572,10 +583,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         data_sent);
       number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
                                   data_sent, 0);
-      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                                 MAX_NO_OF_TCP_SOCKETS,
-                                                                 socket);
-      SocketTimerSetLastUpdate(socket_timer, g_actual_time);
+
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
       {
         int error_code = GetSocketErrorNumber();
@@ -604,14 +612,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         data_sent = data_size;
       }
     } while (0 < data_size);
-    assert(0 <= data_size);
+    SocketTimerSetLastUpdate(socket_timer, g_actual_time);
+    OPENER_ASSERT(0 <= data_size);
     return kEipStatusOk;
   }
 
   number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
                               data_size, 0);
 
-  SocketTimerSetLastUpdate(socket_timer, g_actual_time);
   if (number_of_read_bytes == 0) /* got error or connection closed by client */
   {
     int error_code = GetSocketErrorNumber();
@@ -652,7 +660,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                               MAX_NO_OF_TCP_SOCKETS,
+                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
@@ -672,7 +680,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                                 MAX_NO_OF_TCP_SOCKETS,
+                                                                 OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                  socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != number_of_read_bytes) {
@@ -701,11 +709,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     struct sockaddr_in *socket_data) {
   struct sockaddr_in peer_address;
-  int new_socket;
+  int new_socket = kEipInvalidSocket;
 
-  socklen_t peer_address_length;
-
-  peer_address_length = sizeof(struct sockaddr_in);
+  socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
   if ( ( new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == -1 ) {
     int error_code = GetSocketErrorNumber();
@@ -786,6 +792,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   /* add new socket to the master list                                             */
   FD_SET(new_socket, &master_socket);
   if (new_socket > highest_socket_handle) {
+    OPENER_TRACE_INFO("New highest socket: %d", new_socket);
     highest_socket_handle = new_socket;
   }
   return new_socket;
@@ -846,9 +853,9 @@ void CheckAndHandleConsumingUdpSockets(void) {
 }
 
 
-void CloseSocket(int socket_handle) {
-
+void CloseSocket(const int socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket %d\n", socket_handle);
+
   if (kEipInvalidSocket != socket_handle) {
     FD_CLR(socket_handle, &master_socket);
     CloseSocketPlatform(socket_handle);
@@ -876,9 +883,12 @@ void CheckEncapsulationInactivity(int socket_handle) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                               MAX_NO_OF_TCP_SOCKETS,
+                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                                socket_handle);
 
+    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
+                      socket_handle,
+                      socket_timer);
     if(NULL != socket_timer) {
       MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
