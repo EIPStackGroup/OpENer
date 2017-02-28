@@ -52,17 +52,20 @@ EipStatus CipMessageRouterInit() {
 
   CipClass *message_router = CreateCipClass(kCipMessageRouterClassCode, /* class ID*/
                                             0, /* # of class attributes */
-                                            0xffffffff, /* class getAttributeAll mask*/
-                                            0, /* # of class services*/
+                                            7, /* # highest class attribute number*/
+                                            2, /* # of class services*/
                                             0, /* # of instance attributes*/
-                                            0xffffffff, /* instance getAttributeAll mask*/
-                                            0, /* # of instance services*/
+                                            4, /* # highest instance attribute number*/
+                                            1, /* # of instance services*/
                                             1, /* # of instances*/
                                             "message router", /* class name*/
-                                            1); /* revision */
+                                            1, /* # class revision*/
+                                            NULL); /* # function pointer for initialization*/
   if (NULL == message_router) {
     return kEipStatusError;
   }
+  InsertService(message_router, kGetAttributeSingle, &GetAttributeSingle,
+                "GetAttributeSingle");
 
   /* reserved for future use -> set to zero */
   g_message_router_response.reserved = 0;
@@ -97,8 +100,7 @@ CipClass *GetCipClass(const EipUint32 class_id) {
 
   if (message_router_object) {
     return message_router_object->cip_class;
-  }
-  else{
+  } else {
     return NULL;
   }
 }
@@ -111,8 +113,8 @@ CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_class,
 
   }
   /* pointer to linked list of instances from the class object*/
-  for (CipInstance *instance = cip_class->instances; instance;
-       instance = instance->next)                                                         /* follow the list*/
+  for (CipInstance *instance = cip_class->instances; instance; instance =
+         instance->next) /* follow the list*/
   {
     if (instance->instance_number == instance_number) {
       return instance; /* if the number matches, return the instance*/
@@ -188,8 +190,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
         registered_object->cip_class->class_name);
       eip_status = NotifyClass(registered_object->cip_class,
                                &g_message_router_request,
-                               &g_message_router_response,
-                               originator_address);
+                               &g_message_router_response, originator_address);
 
 #ifdef OPENER_TRACE_ENABLED
       if (eip_status == kEipStatusError) {
@@ -217,7 +218,7 @@ CipError CreateMessageRouterRequestStructure(
   CipMessageRouterRequest *message_router_request) {
 
   message_router_request->service = *data;
-  data++;  /*TODO: Fix for 16 bit path lengths (+1 */
+  data++; /*TODO: Fix for 16 bit path lengths (+1 */
   data_length--;
 
   int number_of_decoded_bytes = DecodePaddedEPath(
@@ -227,13 +228,12 @@ CipError CreateMessageRouterRequestStructure(
   }
 
   message_router_request->data = data;
-  message_router_request->request_path_size = data_length -
-                                              number_of_decoded_bytes;
+  message_router_request->request_path_size = data_length
+                                              - number_of_decoded_bytes;
 
   if (message_router_request->request_path_size < 0) {
     return kCipErrorPathSizeInvalid;
-  }
-  else{
+  } else {
     return kCipErrorSuccess;
   }
 }
@@ -266,7 +266,8 @@ void DeleteAllClasses(void) {
     CipFree(
       message_router_object_to_delete->cip_class->class_instance.cip_class
       ->services);
-    CipFree(message_router_object_to_delete->cip_class->class_instance.cip_class);
+    CipFree(
+      message_router_object_to_delete->cip_class->class_instance.cip_class);
     /*clear class data*/
     CipFree(
       message_router_object_to_delete->cip_class->class_instance.attributes);
