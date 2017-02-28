@@ -138,14 +138,13 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 #endif
 #else
 
-/* for release builds execute the assertion, but don't test it */
-#define OPENER_ASSERT(assertion) (assertion)
+/* for release builds remove assertion */
+#define OPENER_ASSERT(assertion)
 
-/* the above may result in "statement with no effect" warnings.
- *  If you do not use assert()s to run functions, the an empty
- *  macro can be used as below
+/* if there are any strange timing issues, you can try the version below, where the assertion is performed but the assert
+ * function is not used
  */
-//#define OPENER_ASSERT(assertion)
+//#define OPENER_ASSERT(assertion) (assertion)
 /* else if you still want assertions to stop execution but without tracing, use the following */
 //#define OPENER_ASSERT(assertion) do { if(!(assertion)) { while(1){;} } } while (0)
 /* else use standard assert() */

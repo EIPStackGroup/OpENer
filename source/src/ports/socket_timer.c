@@ -6,14 +6,18 @@
 
 #include "socket_timer.h"
 
+#include "trace.h"
+
 void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket) {
   socket_timer->socket = socket;
+  OPENER_TRACE_INFO("Adds socket %d to socket timers\n", socket);
 }
 
 void SocketTimerSetLastUpdate(SocketTimer *const socket_timer,
                               const MilliSeconds actual_time) {
   if (NULL != socket_timer) {
     socket_timer->last_update = actual_time;
+    OPENER_TRACE_INFO("Sets time stamp for socket %d\n", socket_timer->socket);
   }
 }
 

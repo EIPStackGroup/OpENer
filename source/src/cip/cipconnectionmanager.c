@@ -50,7 +50,7 @@ typedef struct {
 
 /* Connection Object functions */
 ProductionTrigger GetProductionTrigger(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   const unsigned int ProductionTriggerMask = 0x70;
 
   switch (connection_object->transport_type_class_trigger
@@ -86,7 +86,7 @@ void SetProductionTrigger(const enum ProductionTrigger production_trigger,
 }
 
 CipUint GetProductionInhibitTime(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   return connection_object->production_inhibit_time;
 }
 
@@ -96,7 +96,7 @@ void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
 }
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject const *connection_object) {
+  const ConnectionObject *const connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
 }
 
@@ -424,8 +424,10 @@ ForwardOpenConnectionType GetConnectionType(
   ForwardOpenConnectionType connection_type = network_connection_parameter
                                               & kConnectionParameterMask;
 
-  OPENER_TRACE_INFO("Connection type: %x / network connection parameter: %x\n",
-                    connection_type, network_connection_parameter);
+
+  OPENER_TRACE_INFO(
+    "Connection type: 0x%x / network connection parameter: 0x%x\n",
+    connection_type, network_connection_parameter);
   return connection_type;
 }
 
@@ -1441,7 +1443,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
               case kDataSegmentSubtypeSimpleData:
                 g_config_data_length = message[1] * 2; /*data segments store length 16-bit word wise */
                 g_config_data_buffer = (EipUint8 *) message + 2;
-                remaining_path_size -= (g_config_data_length + 2);
+                remaining_path_size -= (g_config_data_length + 2) / 2;
                 message += (g_config_data_length + 2);
                 break;
               default:
@@ -1523,6 +1525,7 @@ void AddNewActiveConnection(ConnectionObject *connection_object) {
 }
 
 void RemoveFromActiveConnections(ConnectionObject *connection_object) {
+
   if (NULL != connection_object->first_connection_object) {
     connection_object->first_connection_object->next_connection_object =
       connection_object->next_connection_object;
@@ -1533,6 +1536,7 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object) {
     connection_object->next_connection_object->first_connection_object =
       connection_object->first_connection_object;
   }
+
   connection_object->first_connection_object = NULL;
   connection_object->next_connection_object = NULL;
   connection_object->state = kConnectionStateNonExistent;

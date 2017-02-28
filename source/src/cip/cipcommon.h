@@ -31,7 +31,7 @@ extern EipUint8 g_message_data_reply_buffer[];
  *     - kEipStatusOk ... no reply to send back
  *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(const CipClass *RESTRICT const class,
+EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
                       struct sockaddr *originator_address);
