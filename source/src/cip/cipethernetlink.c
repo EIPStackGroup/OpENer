@@ -35,28 +35,33 @@ void ConfigureMacAddress(const EipUint8 *const mac_address) {
 
 EipStatus CipEthernetLinkInit() {
   CipClass *ethernet_link_class = CreateCipClass(CIP_ETHERNETLINK_CLASS_CODE, 0, /* # class attributes*/
-                                                 0xffffffff, /* class getAttributeAll mask*/
-                                                 0, /* # class services*/
+                                                 7, /* # highest class attribute number*/
+                                                 2, /* # class services*/
                                                  3, /* # instance attributes*/
-                                                 0xffffffff, /* instance getAttributeAll mask*/
-                                                 0, /* # instance services*/
+                                                 13, /* # highest instance attribute number*/
+                                                 2, /* # instance services*/
                                                  1, /* # instances*/
-                                                 "Ethernet Link", 1);
+                                                 "Ethernet Link",
+                                                 1, /* # class revision*/
+                                                 NULL); /* # function pointer for initialization*/
 
   /* set attributes to initial values */
   g_ethernet_link.interface_speed = 100;
   g_ethernet_link.interface_flags = 0xF; /* successful speed and duplex neg, full duplex active link, TODO in future it should be checked if link is active */
 
   if (ethernet_link_class != NULL) {
-
-    CipInstance *ethernet_link_instance =
-      GetCipInstance(ethernet_link_class, 1);
+    CipInstance *ethernet_link_instance = GetCipInstance(ethernet_link_class,
+                                                         1);
     InsertAttribute(ethernet_link_instance, 1, kCipUdint,
                     &g_ethernet_link.interface_speed, kGetableSingleAndAll); /* bind attributes to the instance*/
     InsertAttribute(ethernet_link_instance, 2, kCipDword,
                     &g_ethernet_link.interface_flags, kGetableSingleAndAll);
     InsertAttribute(ethernet_link_instance, 3, kCip6Usint,
                     &g_ethernet_link.physical_address, kGetableSingleAndAll);
+    InsertService(ethernet_link_class, kGetAttributeSingle, &GetAttributeSingle,
+                  "GetAttributeSingle");
+    InsertService(ethernet_link_class, kGetAttributeAll, &GetAttributeAll,
+                  "GetAttributeAll");
   } else {
     return kEipStatusError;
   }

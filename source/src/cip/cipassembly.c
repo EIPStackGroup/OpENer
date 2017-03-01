@@ -32,16 +32,18 @@ EipStatus SetAssemblyAttributeSingle(
 CipClass *CreateAssemblyClass(void) {
   /* create the CIP Assembly object with zero instances */
   CipClass *assembly_class = CreateCipClass(kCipAssemblyClassCode, 0, /* # class attributes*/
-                                            0, /* 0 as the assembly object should not have a get_attribute_all service*/
-                                            0, /* # class services*/
+                                            7, /* # highest class attribute number*/
+                                            1, /* # class services*/
                                             2, /* # instance attributes*/
-                                            0, /* 0 as the assembly object should not have a get_attribute_all service*/
-                                            1, /* # instance services*/
+                                            4, /* # highest instance attribute number*/
+                                            2, /* # instance services*/
                                             0, /* # instances*/
                                             "assembly", /* name */
-                                            2 /* Revision, according to the CIP spec currently this has to be 2 */
-                                            );
+                                            2, /* Revision, according to the CIP spec currently this has to be 2 */
+                                            NULL); /* # function pointer for initialization*/
   if (NULL != assembly_class) {
+    InsertService(assembly_class, kGetAttributeSingle, &GetAttributeSingle,
+                  "GetAttributeSingle");
     InsertService(assembly_class, kSetAttributeSingle,
                   &SetAssemblyAttributeSingle, "SetAssemblyAttributeSingle");
   }
@@ -81,11 +83,10 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
     }
   }
 
-  CipInstance *const instance = AddCIPInstance(assembly_class, instance_id); /* add instances (always succeeds (or asserts))*/
+  CipInstance *const instance = AddCIPInstance(assembly_class, instance_id);  /* add instances (always succeeds (or asserts))*/
 
-  CipByteArray *const assembly_byte_array = (CipByteArray *) CipCalloc( 1,
-                                                                        sizeof(
-                                                                          CipByteArray) );
+  CipByteArray *const assembly_byte_array = (CipByteArray *) CipCalloc(
+    1, sizeof(CipByteArray) );
   if (assembly_byte_array == NULL) {
     return NULL; /*TODO remove assembly instance in case of error*/
   }
@@ -106,8 +107,8 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint16 data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
-  CipByteArray *assembly_byte_array =
-    (CipByteArray *) instance->attributes->data;
+  CipByteArray *assembly_byte_array = (CipByteArray *) instance->attributes
+                                      ->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
     return kEipStatusError; /*TODO question should we notify the application that wrong data has been received???*/

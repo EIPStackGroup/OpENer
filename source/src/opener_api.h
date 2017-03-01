@@ -143,20 +143,22 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
  *  @param number_of_instances number of initial instances to create
  *  @param class_name  class name (for debugging class structure)
  *  @param class_revision class revision
+ *  @param (*InitializeCipClass)(CipClass*) For non-standard implementation of
+ *  class attributes, function realizes specific implementation
  *  @return pointer to new class object
  *      0 on error
  */
-CipClass *CreateCipClass(const EipUint32 class_id,
-                         const int number_of_class_attributes,
-                         const EipUint32 class_attributes_get_attribute_all_mask,
-                         const int number_of_class_services,
-                         const int number_of_instance_attributes,
-                         const EipUint32 instance_attributes_get_attributes_all_mask,
-                         const int number_of_instance_services,
-                         const int number_of_instances,
-                         char *class_name,
-                         const EipUint16 class_revision);
 
+CipClass *CreateCipClass( const EipUint32 class_id,
+                          const int number_of_class_attributes,
+                          const EipUint32 highest_class_attribute_number,
+                          const int number_of_class_services,
+                          const int number_of_instance_attributes,
+                          const EipUint32 highest_instance_attribute_number,
+                          const int number_of_instance_services,
+                          const int number_of_instances, char *name,
+                          const EipUint16 revision,void (*InitializeCipClass)(
+                            CipClass *) );
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *
@@ -205,11 +207,29 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param cip_data pointer to data of attribute.
  *  @param cip_flags flags to indicate set-ability and get-ability of attribute.
  */
+
+
+
 void InsertAttribute(CipInstance *const cip_instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_data_type,
                      void *const cip_data,
                      const EipByte cip_flags);
+/** @ingroup CIP_API
+ * @brief Allocates Attribute bitmasks
+ *
+ * @param target_class Class, in which the bitmasks will be inserted.
+ *
+ */
+void AllocateAttributeMasks(CipClass *target_class);
+
+/** @ingroup CIP_API
+ * @brief Calculates Byte-Index of Attribute
+ *
+ * @param attribute_number Attribute number.
+ *
+ */
+size_t CalculateIndex(EipUint16 attribute_number);
 
 /** @ingroup CIP_API
  * @brief Insert a service in an instance of a CIP object
@@ -382,10 +402,11 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
-                                       const unsigned int output_assembly_id,
-                                       const unsigned int input_assembly_id,
-                                       const unsigned int configuration_assembly_id);
+void ConfigureInputOnlyConnectionPoint(
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** \ingroup CIP_API
  * \brief Configures the connection point for a listen only connection.
@@ -400,10 +421,11 @@ void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
-                                        const unsigned int output_assembly_id,
-                                        const unsigned int input_assembly_id,
-                                        const unsigned int configuration_assembly_id);
+void ConfigureListenOnlyConnectionPoint(
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
