@@ -1,10 +1,10 @@
- StcRev Data |1.23|CT-12|OPENER|1448878251| DevData |255|0|500|500|500,500|X||ENet|
+ StcRev Data |1.23|CT-12|OPENERPC|1488370865| DevData |255|0|500|500|500,500|X||ENet|
 [<00>]-------|OpENer PC||
   General    |3.16|EtherNet/IP Vol 2, Ed 1.17||1.2|Rockwell Automation/Allen-Bradley|1|65001|
   DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72,78,79,80|
   PhysConf   ||X| |X| | | | | |0|X| | |
   LEDs       | | | | | |
-  IP MAC Set | |X| |192.168.56.102| | ||b8:27:eb:83:e0:f5| | | |
+  IP MAC Set | |X| |192.168.56.101| | ||08:00:27:a9:4b:00| | | |
   CRate Set  |X| | |X| | ||
   CRate Sup  |X|X| |X|X|
   Net Behavi | | ||| | | | | | | |
@@ -113,7 +113,7 @@
   ISP        ||||||||||||
   VSA        | |
   OPT        | | |
-  OPT        |<PossibleConnections><CIPConnection connectionNameString="demo exclusive owner connection point" ePath="200424972c962c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeExclusiveOwner transportTypeExclusiveOwner="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="4" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="32"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="0" connectionTypeMulticast="1" priorityLow="1"/><Size><Constant constValue="32"/></Size></Target2OriginatorParameters></CIPConnection><CIPConnection connectionNameString="demo input only" ePath="200424972c982c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeInputOnly transportTypeInputOnly="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="3" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="0"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters variableSizeSupported="1" realTimeTransferFormat="1" connectionTypeMulticast="1" priorityLow="1"/><Size><Constant constValue="32"/></Size></Target2OriginatorParameters></CIPConnection><CIPConnection connectionNameString="demo listen only" ePath="200424972c992c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeListenOnly transportTypeListenOnly="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="3" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="0"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters variableSizeSupported="1" realTimeTransferFormat="1" connectionTypeMulticast="1" priorityLow="1"/><Size><Constant constValue="32"/></Size></Target2OriginatorParameters></CIPConnection></PossibleConnections>|
+  OPT        |<PossibleConnections><CIPConnection connectionNameString="demo exclusive owner connection point" ePath="200424972c962c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeExclusiveOwner transportTypeExclusiveOwner="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="4" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="32" minValue="32" maxValue="32"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="0" connectionTypeMulticast="1" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="32" minValue="32" maxValue="32"/></Size></Target2OriginatorParameters></CIPConnection><CIPConnection connectionNameString="demo input only" ePath="200424972c982c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeInputOnly transportTypeInputOnly="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="3" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="0" minValue="0" maxValue="0"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters variableSizeSupported="1" realTimeTransferFormat="1" connectionTypeMulticast="1" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="32" minValue="32" maxValue="32"/></Size></Target2OriginatorParameters></CIPConnection><CIPConnection connectionNameString="demo listen only" ePath="200424972c992c64"><TriggerAndTransport class1="1" server="1" triggerCyclic="1"><TransportTypeListenOnly transportTypeListenOnly="1"/></TriggerAndTransport><Originator2TargetParameters><ConnectionParameters fixedSizeSupported="1" realTimeTransferFormat="3" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="0" minValue="0" maxValue="0"/></Size></Originator2TargetParameters><Target2OriginatorParameters><ConnectionParameters variableSizeSupported="1" realTimeTransferFormat="1" connectionTypeMulticast="1" connectionTypePoint2Point="1" priorityLow="1"/><Size><Constant constValue="32" minValue="32" maxValue="32"/></Size></Target2OriginatorParameters></CIPConnection></PossibleConnections>|
 [<245>]--------------------------------------------------
   CAG        |X|X|X| | |X|X|
   CAS        | | | | | | | |
@@ -121,7 +121,7 @@
   CS         |X|X|
   CSP        |||
   IAG        |X|X|X|X|X|X|X|X| | | |X|
-  IAS        | | | | | | | | | | | | |
+  IAS        | | |X| | | | | | | | | |
   IAL        | =(1,17)| =(4)| | | | | =(1..255)| | | | | =(0..3600)|
   IS         |X| |X|X|
   ISP        |||||
@@ -135,7 +135,7 @@
   CSP        ||||
   IAG        |X|X|X| | | | | | | |
   IAS        | | | | | | | | | | |
-  IAL        | =(0,10,100)| |MAC address (b8:27:eb:83:e0:f5)| | | | | | | |
+  IAL        | =(0,10,100)| |MAC address (08:00:27:a9:4b:00)| | | | | | | |
   IS         |X|X| | |
   ISP        |||||
   VSA        | |
