@@ -53,7 +53,7 @@ EipStatus SetAttributeSingleQoS(
       CipUint attribute_value_recieved = GetDintFromMessage(
         &(message_router_request->data));
 
-      if(!((attribute_value_recieved <= 0) || (attribute_value_recieved >= 63)) {
+      if(!((attribute_value_recieved <= 0) || (attribute_value_recieved >= 63))) {
         OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
         if(NULL != attribute->data) {

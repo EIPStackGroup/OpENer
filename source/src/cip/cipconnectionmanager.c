@@ -455,7 +455,7 @@ ForwardOpenPriority GetPriorityForQos(
 	EipUint16 network_connection_parameter) {
 
 	const EipUint16 kConnectionParameterMask = 0xC00;
-	CipUsint priority_for_qos = 0x00;
+	CipUsint priority_value = 0x00;
 
 	ForwardOpenPriority priority = network_connection_parameter
                                   & kConnectionParameterMask;
