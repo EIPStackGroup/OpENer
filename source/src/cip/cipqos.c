@@ -15,14 +15,14 @@
 #include "opener_api.h"
 #include "trace.h"
 
-CipUsint QFramesEnable = 0; /* Enables or disable sending 802.1Q frames on CIP and IEEE 1588 messages */
-CipUsint DscpEvent = 59; /* DSCP value for event messages*/
-CipUsint DscpGeneral = 47; /* DSCP value for general messages*/
-CipUsint kDscpUrgent = 55; /* DSCP value for CIP transport class 0/1 Urgent priority messages */
-CipUsint kDscpScheduled = 47; /* DSCP value for CIP transport class 0/1 Scheduled priority messages*/
-CipUsint kDscpHigh = 43; /* DSCP value for CIP transport class 0/1 High priority messages */
-CipUsint kDscpLow = 31; /* DSCP value for CIP transport class 0/1 low priority messages */
-CipUsint kDscpExplicit = 27; /* DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
+CipUsint q_frames_enable = 0; /**< Enables or disable sending 802.1Q frames on CIP and IEEE 1588 messages */
+CipUsint dscp_event = 59; /**< DSCP value for event messages*/
+CipUsint dscp_general = 47; /**< DSCP value for general messages*/
+CipUsint dscp_urgent = 55; /**< DSCP value for CIP transport class 0/1 Urgent priority messages */
+CipUsint dscp_scheduled = 47; /**< DSCP value for CIP transport class 0/1 Scheduled priority messages*/
+CipUsint dscp_high = 43; /**< DSCP value for CIP transport class 0/1 High priority messages */
+CipUsint dscp_low = 31; /**< DSCP value for CIP transport class 0/1 low priority messages */
+CipUsint dscp_explicit = 27; /**< DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
                               and all other EtherNet/IP encapsulation messages */
 
 /************** Functions ****************************************/
@@ -83,23 +83,23 @@ EipStatus SetAttributeSingleQoS(
 CipUsint GetPriorityForSocket(ForwardOpenPriority priority) {
   switch (priority) {
     case kForwardOpenPriorityLow: {
-      return kDscpLow;
+      return dscp_low;
       break;
     }
     case kForwardOpenPriorityHigh: {
-      return kDscpHigh;
+      return dscp_high;
       break;
     }
     case kForwardOpenPriorityScheduled: {
-      return kDscpScheduled;
+      return dscp_scheduled;
       break;
     }
     case kForwardOpenPriorityUrgent: {
-      return kDscpUrgent;
+      return dscp_urgent;
       break;
     }
     default: {
-      return kDscpExplicit;
+      return dscp_explicit;
       break;
     }
   }
@@ -132,21 +132,21 @@ EipStatus CipQoSInit() {
 
   CipInstance *instance = GetCipInstance(qos_class, 1); /* bind attributes to the instance #1 that was created above*/
 
-  InsertAttribute(instance, 1, kCipUsint, (void *) &QFramesEnable,
+  InsertAttribute(instance, 1, kCipUsint, (void *) &q_frames_enable,
                   kNotSetOrGetable);
-  InsertAttribute(instance, 2, kCipUsint, (void *) &DscpEvent,
+  InsertAttribute(instance, 2, kCipUsint, (void *) &dscp_event,
                   kNotSetOrGetable);
-  InsertAttribute(instance, 3, kCipUsint, (void *) &DscpGeneral,
+  InsertAttribute(instance, 3, kCipUsint, (void *) &dscp_general,
                   kNotSetOrGetable);
-  InsertAttribute(instance, 4, kCipUsint, (void *) &kDscpUrgent,
+  InsertAttribute(instance, 4, kCipUsint, (void *) &dscp_urgent,
                   kGetableSingle | kSetable);
-  InsertAttribute(instance, 5, kCipUsint, (void *) &kDscpScheduled,
+  InsertAttribute(instance, 5, kCipUsint, (void *) &dscp_scheduled,
                   kGetableSingle | kSetable);
-  InsertAttribute(instance, 6, kCipUsint, (void *) &kDscpHigh,
+  InsertAttribute(instance, 6, kCipUsint, (void *) &dscp_high,
                   kGetableSingle | kSetable);
-  InsertAttribute(instance, 7, kCipUsint, (void *) &kDscpLow,
+  InsertAttribute(instance, 7, kCipUsint, (void *) &dscp_low,
                   kGetableSingle | kSetable);
-  InsertAttribute(instance, 8, kCipUsint, (void *) &kDscpExplicit,
+  InsertAttribute(instance, 8, kCipUsint, (void *) &dscp_explicit,
                   kGetableSingle | kSetable);
 
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingleQoS,
