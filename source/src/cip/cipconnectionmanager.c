@@ -26,6 +26,7 @@
 #include "generic_networkhandler.h"
 #include "cipepath.h"
 #include "cipelectronickey.h"
+#include "cipqos.h"
 
 /* values needed from the CIP identity object */
 extern EipUint16 vendor_id_;
@@ -429,6 +430,20 @@ ForwardOpenConnectionType GetConnectionType(
     "Connection type: 0x%x / network connection parameter: 0x%x\n",
     connection_type, network_connection_parameter);
   return connection_type;
+}
+
+ForwardOpenPriority GetPriorityForQos(
+	EipUint16 network_connection_parameter) {
+
+	const EipUint16 kConnectionParameterMask = 0xC00;
+	CipUsint priority_value = 0x00;
+
+	ForwardOpenPriority priority = network_connection_parameter
+                                  & kConnectionParameterMask;
+
+	priority_value = GetPriorityForSocket(priority);
+
+	return priority_value;
 }
 
 /** @brief Function prototype for all Forward Open handle functions

@@ -26,6 +26,13 @@ typedef enum {
 } ForwardOpenConnectionType;
 
 typedef enum {
+  kForwardOpenPriorityLow = 0x000,
+  kForwardOpenPriorityHigh = 0x400,
+  kForwardOpenPriorityScheduled = 0x800,
+  kForwardOpenPriorityUrgent = 0xC00
+} ForwardOpenPriority;
+
+typedef enum {
   kConnectionManagerGeneralStatusSuccess = 0x00, /**< General Status - Everything is ok */
   kConnectionManagerGeneralStatusExtendedStatus = 0x01, /**< Indicates that extended status is set */
   kConnectionManagerGeneralStatusResourceUnavailableForUnconnectedSend = 0x02,
@@ -412,6 +419,9 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object);
  *
  */
 ForwardOpenConnectionType GetConnectionType(
+  EipUint16 network_connection_parameter);
+
+ForwardOpenPriority GetPriorityForQos(
   EipUint16 network_connection_parameter);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

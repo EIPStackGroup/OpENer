@@ -18,6 +18,7 @@
 #include "ciperror.h"
 #include "cipassembly.h"
 #include "cipmessagerouter.h"
+#include "cipqos.h"
 #include "cpf.h"
 #include "trace.h"
 #include "appcontype.h"
@@ -46,6 +47,8 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   eip_status = ConnectionManagerInit(unique_connection_id);
   OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipAssemblyInitialize();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CipQoSInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
@@ -868,4 +871,3 @@ size_t CalculateIndex(EipUint16 attribute_number) {
   size_t index = (attribute_number + 8 - 1) / 8;
   return index;
 }
-

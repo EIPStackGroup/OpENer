@@ -10,6 +10,7 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <Ws2tcpip.h>
+#include <winsock.h>
 
 #include "networkhandler.h"
 
@@ -48,4 +49,10 @@ void CloseSocketPlatform(int socket_handle) {
 int SetSocketToNonBlocking(int socket_handle) {
   u_long iMode = 1;
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
+}
+
+void SetQosOnSocket(int socket, CipUsint qos_value){
+
+  int set_tos = qos_value;
+  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
 }

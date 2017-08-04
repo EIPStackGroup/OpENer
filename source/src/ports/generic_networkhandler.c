@@ -22,6 +22,7 @@
 #include "encap.h"
 #include "ciptcpipinterface.h"
 #include "opener_user_conf.h"
+#include "cipqos.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -279,6 +280,9 @@ void CheckAndHandleTcpListenerSocket(void) {
       FreeErrorMessage(error_message);
       return;
     }
+
+    SetQosOnSocket(new_socket, GetPriorityForSocket(0xFFF));
+
     OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
                       new_socket);
 
@@ -707,7 +711,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
  *
  * @return the socket handle if successful, else -1 */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data) {
+ 					          struct sockaddr_in *socket_data, CipUsint qos_for_socket) {
   struct sockaddr_in peer_address;
   int new_socket = kEipInvalidSocket;
 
@@ -724,7 +728,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   }
 
   SetSocketToNonBlocking(new_socket);
-
+  SetQosOnSocket(new_socket, qos_for_socket);
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
