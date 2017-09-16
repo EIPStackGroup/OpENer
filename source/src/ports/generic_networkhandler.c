@@ -893,7 +893,7 @@ void CheckEncapsulationInactivity(int socket_handle) {
       MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
 
-      if (diffms >= g_encapsulation_inactivity_timeout) {
+      if (diffms >= (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout)) {
         CloseSocket(socket_handle);
         CloseSession(socket_handle);
       }
