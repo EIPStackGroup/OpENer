@@ -866,6 +866,10 @@ void AllocateAttributeMasks(CipClass *target_class) {
 
 size_t CalculateIndex(EipUint16 attribute_number) {
   size_t index = (attribute_number + 8 - 1) / 8;
+  OPENER_ASSERT(index>0);
+  if (index>0){
+	index-=1;
+  }
   return index;
 }
 
