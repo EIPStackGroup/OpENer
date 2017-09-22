@@ -143,7 +143,7 @@ EipStatus SetAttributeSingleTcp(
                                                               attribute_number)]);
 
   if (NULL != attribute) {
-    if ( set_bit_mask & ( 1 << ( (attribute_number - 1) % 8 ) ) ) {
+    if ( set_bit_mask & ( 1 << ( attribute_number % 8 ) ) ) {
       switch (attribute_number) {
         case 3: {
           CipUint configuration_control_recieved = GetDintFromMessage(
@@ -304,7 +304,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                     ]);
   }
 
-  if ( get_bit_mask & ( 1 << ( (attribute_number - 1) % 8 ) ) ) {
+  if ( get_bit_mask & ( 1 << ( attribute_number % 8 ) ) ) {
     if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
 
       message_router_response->general_status = kCipErrorSuccess;
@@ -360,13 +360,13 @@ EipStatus GetAttributeSingleTcpIpInterface(
   //TEST
   CipClass *class = instance->cip_class;
   for (int i = 1; i <= class->highest_attribute_number; i++) {
-    size_t index = (i + 8 - 1) / 8;
+    size_t index = CalculateIndex(i);
     OPENER_TRACE_INFO(
       "Attribute %d: %d / %d / %d\n",
       i,
-      ( ( (class->get_all_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0,
-      ( ( (class->get_single_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0,
-      ( ( (class->set_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0);
+      ( ( (class->get_all_bit_mask)[index] ) & ( 1 << ( i % 8 ) ) ) ? 1 : 0,
+      ( ( (class->get_single_bit_mask)[index] ) & ( 1 << ( i % 8 ) ) ) ? 1 : 0,
+      ( ( (class->set_bit_mask)[index] ) & ( 1 << ( i % 8 ) ) ) ? 1 : 0);
   }
   OPENER_TRACE_INFO("GetAll, byte1: %d, byte2: %d\n",
                     (class->get_all_bit_mask)[1], (class->get_all_bit_mask)[2]);
