@@ -139,11 +139,11 @@ EipStatus SetAttributeSingleTcp(
   (void) instance; /*Suppress compiler warning */
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
-  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
-                                                              attribute_number)]);
 
   if (NULL != attribute) {
-    if ( set_bit_mask & ( 1 << ( (attribute_number - 1) % 8 ) ) ) {
+  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
+                                                              attribute_number)]);
+    if ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) {
       switch (attribute_number) {
         case 3: {
           CipUint configuration_control_recieved = GetDintFromMessage(
@@ -292,21 +292,15 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
-  uint8_t get_bit_mask;
+  uint8_t get_bit_mask = 0;
 
-  if (kGetAttributeAll == message_router_request->service) {
-    get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                            attribute_number)]);
-    message_router_response->general_status = kCipErrorSuccess;
-  } else {
-    get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                               attribute_number)
-                    ]);
-  }
+  message_router_response->general_status = kCipErrorAttributeNotSupported;
 
-  if ( get_bit_mask & ( 1 << ( (attribute_number - 1) % 8 ) ) ) {
-    if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+    if (9 == message_router_request->request_path.attribute_number ) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
 
+    	if (0 == (get_bit_mask & ( 1 << ( attribute_number  % 8 ) )) ) {
+    		return kEipStatusOkSend;
+    	}
       message_router_response->general_status = kCipErrorSuccess;
 
       message_router_response->data_length += EncodeData(
@@ -329,11 +323,25 @@ EipStatus GetAttributeSingleTcpIpInterface(
       CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                       attribute_number);
 
-      if ( (attribute != 0) && (attribute->data != 0) ) {
+      if ( (NULL != attribute) && ( NULL != attribute->data)) {
 
         OPENER_TRACE_INFO(
           "getAttribute %d\n",
           message_router_request->request_path.attribute_number);   /* create a reply message containing the data*/
+
+        if (kGetAttributeAll == message_router_request->service) {
+            get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                                    attribute_number)]);
+            message_router_response->general_status = kCipErrorSuccess;
+          } else {
+            get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                                       attribute_number)
+                            ]);
+          }
+
+        if(0 == (get_bit_mask &  (1 << ( (attribute_number ) % 8 ) ) ) ) {
+        	return kEipStatusOkSend;
+        }
 
         /*TODO think if it is better to put this code in an own
          * getAssemblyAttributeSingle functions which will call get attribute
@@ -353,28 +361,6 @@ EipStatus GetAttributeSingleTcpIpInterface(
         message_router_response->general_status = kCipErrorSuccess;
       }
     }
-  } else {
-    message_router_response->general_status = kCipErrorAttributeNotSupported;
-  }
-
-  //TEST
-  CipClass *class = instance->cip_class;
-  for (int i = 1; i <= class->highest_attribute_number; i++) {
-    size_t index = (i + 8 - 1) / 8;
-    OPENER_TRACE_INFO(
-      "Attribute %d: %d / %d / %d\n",
-      i,
-      ( ( (class->get_all_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0,
-      ( ( (class->get_single_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0,
-      ( ( (class->set_bit_mask)[index] ) & ( 1 << ( (i - 1) % 8 ) ) ) ? 1 : 0);
-  }
-  OPENER_TRACE_INFO("GetAll, byte1: %d, byte2: %d\n",
-                    (class->get_all_bit_mask)[1], (class->get_all_bit_mask)[2]);
-  OPENER_TRACE_INFO("GetSingle, byte1: %d, byte2: %d\n",
-                    (class->get_single_bit_mask)[1],
-                    (class->get_single_bit_mask)[2]);
-  OPENER_TRACE_INFO("Set, byte1: %d, byte2: %d\n", (class->set_bit_mask)[1],
-                    (class->set_bit_mask)[2]);
 
   return kEipStatusOkSend;
 }

@@ -230,7 +230,6 @@ EipUint32 GetConnectionId(void) {
 }
 
 void InitializeConnectionManager(CipClass *class) {
-  const EipUint16 kCipUintZero = 0;
 
   CipClass *meta_class = class->class_instance.cip_class;
 

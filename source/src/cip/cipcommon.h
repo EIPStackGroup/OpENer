@@ -21,6 +21,8 @@
  */
 extern EipUint8 g_message_data_reply_buffer[];
 
+static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT standard value */
+
 /** @brief Check if requested service present in class/instance and call appropriate service.
  *
  * @param class class receiving the message

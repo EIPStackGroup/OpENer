@@ -119,27 +119,27 @@ static EipStatus Reset(CipInstance *instance,
 }
 
 void InitializeCipIdentiy(CipClass *class) {
-  const EipUint16 kCipUintZero = 0;
+
 
   CipClass *meta_class = class->class_instance.cip_class;
 
   InsertAttribute( (CipInstance *) class, 1, kCipUint,
                    (void *) &class->revision,
-                   kGetableSingleAndAll ); /* revision */
+				   kGetableSingleAndAll ); /* revision */
   InsertAttribute( (CipInstance *) class, 2, kCipUint,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
   InsertAttribute( (CipInstance *) class, 3, kCipUint,
-                   (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
+                   (void *) &class->number_of_instances, kGetAttributeSingle ); /* number of instances currently existing*/
   InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
-                   kNotSetOrGetable ); /* optional attribute list - default = 0 */
+		  kNotSetOrGetable ); /* optional attribute list - default = 0 */
   InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
-                   kNotSetOrGetable ); /* optional service list - default = 0 */
+		  kNotSetOrGetable ); /* optional service list - default = 0 */
   InsertAttribute( (CipInstance *) class, 6, kCipUint,
                    (void *) &meta_class->highest_attribute_number,
-                   kGetableSingleAndAll ); /* max class attribute number*/
+				   kGetableSingleAndAll ); /* max class attribute number*/
   InsertAttribute( (CipInstance *) class, 7, kCipUint,
                    (void *) &class->highest_attribute_number,
-                   kGetableSingleAndAll ); /* max instance attribute number*/
+				   kGetableSingleAndAll ); /* max instance attribute number*/
 
 }
 
@@ -149,7 +149,7 @@ EipStatus CipIdentityInit() {
                                    7, /* # highest class attribute number*/
                                    2, /* # of class services*/
                                    7, /* # of instance attributes*/
-                                   19, /* # highest instance attribute number*/
+                                   7, /* # highest instance attribute number*/
                                    3, /* # of instance services*/
                                    1, /* # of instances*/
                                    "identity", /* # class name (for debug)*/
