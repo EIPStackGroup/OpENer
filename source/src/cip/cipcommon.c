@@ -265,13 +265,13 @@ CipClass *CreateCipClass( const EipUint32 class_id,
     InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
                      kGetableAll ); /* optional attribute list - default = 0 */
     InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
-                     kGetableAll ); /* optional service list - default = 0 */
+                     kGetableSingle ); /* optional service list - default = 0 */
     InsertAttribute( (CipInstance *) class, 6, kCipUint,
                      (void *) &meta_class->highest_attribute_number,
-                     kGetableSingleAndAll ); /* max class attribute number*/
+					 kGetableSingle ); /* max class attribute number*/
     InsertAttribute( (CipInstance *) class, 7, kCipUint,
                      (void *) &class->highest_attribute_number,
-                     kGetableSingleAndAll ); /* max instance attribute number*/
+					 kGetableSingle ); /* max instance attribute number*/
   } else {
     InitializeCipClass(class);
   }
