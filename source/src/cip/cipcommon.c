@@ -265,7 +265,7 @@ CipClass *CreateCipClass( const EipUint32 class_id,
     InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
                      kGetableAll ); /* optional attribute list - default = 0 */
     InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
-                     kGetableSingle ); /* optional service list - default = 0 */
+                     kNotSetOrGetable ); /* optional service list - default = 0 */
     InsertAttribute( (CipInstance *) class, 6, kCipUint,
                      (void *) &meta_class->highest_attribute_number,
 					 kGetableSingle ); /* max class attribute number*/
