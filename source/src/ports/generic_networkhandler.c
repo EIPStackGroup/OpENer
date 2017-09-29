@@ -112,7 +112,8 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* create a new UDP socket */
   if ( ( g_network_status.udp_unicast_listener = socket(AF_INET, SOCK_DGRAM,
-                                                        IPPROTO_UDP) ) == -1 ) {
+                                                        IPPROTO_UDP) ) ==
+       -1 ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error allocating UDP unicast listener socket, %d - %s\n",
@@ -165,7 +166,8 @@ EipStatus NetworkHandlerInitialize(void) {
                sizeof(struct sockaddr) ) ) == -1 ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n", error_code, GetErrorMessage(
+    OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n", error_code,
+                      GetErrorMessage(
                         error_code) );
     FreeErrorMessage(error_message);
     return kEipStatusError;
@@ -298,7 +300,7 @@ void CheckAndHandleTcpListenerSocket(void) {
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
     if (new_socket > highest_socket_handle) {
-      OPENER_TRACE_INFO("New highest socket: %d", new_socket);
+      OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
       highest_socket_handle = new_socket;
     }
 
@@ -501,7 +503,8 @@ void CheckAndHandleUdpUnicastSocket(void) {
 EipStatus SendUdpData(struct sockaddr_in *address,
                       int socket,
                       EipUint8 *data,
-                      EipUint16 data_length) {
+                      EipUint16 data_length)
+{
 
   int sent_length = sendto( socket, (char *) data, data_length, 0,
                             (struct sockaddr *) address, sizeof(*address) );
@@ -543,9 +546,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
-  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                             OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                             socket);
+  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
+    g_timestamps,
+    OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+    socket);
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
@@ -659,9 +663,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
-    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                               socket);
+    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
+      g_timestamps,
+      OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+      socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
     }
@@ -679,9 +684,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
-      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                                 OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                                 socket);
+      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
+        g_timestamps,
+        OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+        socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != number_of_read_bytes) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
@@ -707,7 +713,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
  *
  * @return the socket handle if successful, else -1 */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data) {
+                    struct sockaddr_in *socket_data)
+{
   struct sockaddr_in peer_address;
   int new_socket = kEipInvalidSocket;
 
@@ -792,7 +799,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   /* add new socket to the master list                                             */
   FD_SET(new_socket, &master_socket);
   if (new_socket > highest_socket_handle) {
-    OPENER_TRACE_INFO("New highest socket: %d", new_socket);
+    OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
     highest_socket_handle = new_socket;
   }
   return new_socket;
@@ -882,18 +889,20 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
 void CheckEncapsulationInactivity(int socket_handle) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
-    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                               socket_handle);
+    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
+      g_timestamps,
+      OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+      socket_handle);
 
-    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
-                      socket_handle,
-                      socket_timer);
+//    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
+//                      socket_handle,
+//                      socket_timer);
     if(NULL != socket_timer) {
       MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
 
-    if (diffms >= (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout)) {
+      if ( diffms >=
+           (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout) ) {
         CloseSocket(socket_handle);
         CloseSession(socket_handle);
       }

@@ -12,7 +12,7 @@ opener_common_includes()
 #######################################
 opener_platform_support("INCLUDES")
 
-set (PLATFORMLIBNAME ${OpENer_PLATFORM}PLATFORM)
+set (PLATFORMLIBNAME ${OpENer_PLATFORM}PLATFORM CACHE INTERNAL "Platform library") 
 
 add_library( ${PLATFORMLIBNAME} ${PLATFORM_SPEC_SRC})
 
