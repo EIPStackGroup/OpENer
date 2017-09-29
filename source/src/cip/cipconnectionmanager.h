@@ -86,8 +86,9 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeInconsistentConsumeDataFormat = 0x0130,
   kConnectionManagerExtendedStatusCodeInconsistentProduceDataFormat = 0x0131,
   kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported = 0x0132,
-  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable =
-    0x0133,
+  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable
+    =
+      0x0133,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
   kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
@@ -101,8 +102,9 @@ typedef enum {
     0x0302,
   kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable =
     0x0303,
-  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData =
-    0x0304,
+  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData
+    =
+      0x0304,
   kConnectionManagerExtendedStatusCodeScheduleSignatureMismatch = 0x0305,
   kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible =
     0x0306,
@@ -155,7 +157,8 @@ ProductionTrigger GetProductionTrigger(
 void SetProductionTrigger(const ProductionTrigger production_trigger,
                           ConnectionObject *connection_object);
 
-CipUint GetProductionInhibitTime(const ConnectionObject *const connection_object);
+CipUint GetProductionInhibitTime(
+  const ConnectionObject *const connection_object);
 
 void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
                               ConnectionObject *const connection_object);
