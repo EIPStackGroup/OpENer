@@ -98,8 +98,20 @@ void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
 }
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject *const connection_object) {
+  const ConnectionObject *const RESTRICT connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
+}
+
+ConnectionObjectFixedVariable
+GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+  const ConnectionObject *const RESTRICT connection_object) {
+  const EipUint16 kFixedOrVariableMask = 1 << 9;
+  if ( ( (connection_object->t_to_o_network_connection_parameter) &
+         kFixedOrVariableMask ) == kFixedOrVariableMask ) {
+    return kConnectionObjectVariableConnectionSize;
+  } else {
+    return kConnectionObjectFixedConnectionSize;
+  }
 }
 
 /* Connection Object functions end */
@@ -112,7 +124,10 @@ ConnectionManagementHandling g_connection_management_list[2 +
                                                           OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS
 ];
 
-/** List holding all currently active connections*/
+/** @brief List holding all currently active connections
+ *
+ * An implicit list structure inside the ConnectionObject, so the g_active_connection_list holds the first element of the list
+ * */
 /*@null@*/ ConnectionObject *g_active_connection_list = NULL;
 
 /** buffer connection object needed for forward open */
@@ -729,7 +744,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
   connection_object->production_inhibit_timer = connection_object
                                                 ->production_inhibit_time = 0;
 
-  /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
+  /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
     ( ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
         << (2 + connection_object->connection_timeout_multiplier) ) > 10000 ) ?
@@ -965,7 +980,7 @@ EipStatus AssembleForwardOpenResponse(
           }
 
           case
-            kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize:
+            kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize:
           {
             message_router_response->size_of_additional_status = 2;
             message_router_response->additional_status[0] = extended_status;

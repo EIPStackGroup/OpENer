@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include <string.h>
+#include <stdbool.h>
 
 #include "cipioconnection.h"
 
@@ -169,7 +170,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     /* an assembly object should always have an attribute 3 */
     CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
-    int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+    bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1
          == GetConnectionTransportClass(io_connection_object) ) {
       //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
@@ -199,10 +200,33 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   ConnectionObject *const io_connection_object,
   ConnectionObject *const RESTRICT connection_object)
 {
+  ConnectionObject *iterator = g_active_connection_list;
+  while (NULL != iterator) {
+    if(io_connection_object->connection_path.connection_point[
+         kConnectionPointProducer] ==
+       iterator->connection_path.connection_point[kConnectionPointProducer]) {
+      //Check parameters
+      if( GetTargetToOriginatorRequestedPackedInterval(io_connection_object) !=
+          GetTargetToOriginatorRequestedPackedInterval(iterator) ) {
+        return kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable;
+      }
+      if( GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+            io_connection_object) !=
+          GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+            iterator) ) {
+        return
+          kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionFixVar;
+      }
+
+    }
+
+    iterator = iterator->next_connection_object;
+  }
+
   /*setup producer side*/
   CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
   CipInstance *instance = NULL;
-  if ( 0
+  if ( NULL
        != ( instance =
               GetCipInstance(
                 assembly_class,
@@ -222,7 +246,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     /* an assembly object should always have an attribute 3 */
     CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
     OPENER_ASSERT(attribute != NULL);
-    int is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+    bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1 ==
          GetConnectionTransportClass(io_connection_object) ) {
       /* class 1 connection */
@@ -239,7 +263,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
         ( (CipByteArray *) attribute->data )->length + diff_size;
-      return kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
+      return kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize;
     }
   } else {
     return kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
@@ -272,6 +296,7 @@ EipStatus EstablishIoConnection(
   }
 
   *extended_error = ProcessProductionInhibitTime(io_connection_object);
+
   if(0 != *extended_error) {
     return kCipErrorConnectionFailure;
   }
@@ -330,7 +355,7 @@ EipStatus EstablishIoConnection(
     }
   }
 
-  eip_status = OpenCommunicationChannels(io_connection_object);  // Only use T->O Sockaddr Info Item in Forward_Open Request not working
+  eip_status = OpenCommunicationChannels(io_connection_object);
   if (kEipStatusOk != eip_status) {
     *extended_error = 0; /*TODO find out the correct extended error code*/
     return eip_status;

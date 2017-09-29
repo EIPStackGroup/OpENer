@@ -300,7 +300,7 @@ void CheckAndHandleTcpListenerSocket(void) {
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
     if (new_socket > highest_socket_handle) {
-      OPENER_TRACE_INFO("New highest socket: %d", new_socket);
+      OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
       highest_socket_handle = new_socket;
     }
 
@@ -799,7 +799,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   /* add new socket to the master list                                             */
   FD_SET(new_socket, &master_socket);
   if (new_socket > highest_socket_handle) {
-    OPENER_TRACE_INFO("New highest socket: %d", new_socket);
+    OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
     highest_socket_handle = new_socket;
   }
   return new_socket;
@@ -894,9 +894,9 @@ void CheckEncapsulationInactivity(int socket_handle) {
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
       socket_handle);
 
-    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
-                      socket_handle,
-                      socket_timer);
+//    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
+//                      socket_handle,
+//                      socket_timer);
     if(NULL != socket_timer) {
       MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);

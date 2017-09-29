@@ -74,7 +74,7 @@ typedef enum {
     = 0x0125,                                                                              /**< Shall be returned as the result of specifying an O->T Redundant Owner flag that is not supported. */
   kConnectionManagerExtendedStatusCodeInvalidConfigurationSize = 0x0126, /**< The data segment provided in the Connection_Path parameter did not contain an acceptable number of 16-bit words for the the configuration application path requested. Two additional status words shall follow, the error code plus the max size in words */
   kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize = 0x0127, /**< The size of the consuming object declared in the Forward_Open request and available on the target does not match the size declared in the O->T Network Connection Parameter. Two additional status words shall follow, the error code plus the max size in words */
-  kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize = 0x0128, /**< The size of the consuming object declared in the Forward_Open request and available on the target does not match the size declared in the T->O Network Connection Parameter. Two additional status words shall follow, the error code plus the max size in words  */
+  kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize = 0x0128, /**< The size of the consuming object declared in the Forward_Open request and available on the target does not match the size declared in the T->O Network Connection Parameter. Two additional status words shall follow, the error code plus the max size in words  */
   kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath =
     0x0129,                                                                         /**< Configuration application path specified does not correspond to a valid configuration application path within the target application. This error could also be returned if a configuration application path was required, but not provided by a connection request. */
   kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath = 0x012A, /**< Consumed application path specified does not correspond to a valid consumed application path within the target application. This error could also be returned if a consumed application path was required, but not provided by a connection request. */
@@ -89,6 +89,8 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable
     =
       0x0133,
+  kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionFixVar =
+    0x135,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
   kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
@@ -151,21 +153,6 @@ typedef enum ProductionTrigger {
   kProductionTriggerApplicationObjectTriggered = 2
 } ProductionTrigger;
 
-ProductionTrigger GetProductionTrigger(
-  const ConnectionObject *const connection_object);
-
-void SetProductionTrigger(const ProductionTrigger production_trigger,
-                          ConnectionObject *connection_object);
-
-CipUint GetProductionInhibitTime(
-  const ConnectionObject *const connection_object);
-
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
-                              ConnectionObject *const connection_object);
-
-CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject *const connection_object);
-
 /** @brief macros for comparing sequence numbers according to CIP spec vol
  * 2 3-4.2 for int type variables
  * @define SEQ_LEQ32(a, b) Checks if sequence number a is less or equal than b
@@ -203,6 +190,11 @@ typedef enum {
   kConnectionTypeIoInputOnly = 0x11,
   kConnectionTypeIoListenOnly = 0x21
 } ConnectionType;
+
+typedef enum {
+  kConnectionObjectFixedConnectionSize,
+  kConnectionObjectVariableConnectionSize
+} ConnectionObjectFixedVariable;
 
 /** @brief Possible values for the watch dog time out action of a connection */
 typedef enum {
@@ -416,5 +408,24 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object);
  */
 ForwardOpenConnectionType GetConnectionType(
   EipUint16 network_connection_parameter);
+
+ProductionTrigger GetProductionTrigger(
+  const ConnectionObject *const connection_object);
+
+void SetProductionTrigger(const ProductionTrigger production_trigger,
+                          ConnectionObject *connection_object);
+
+CipUint GetProductionInhibitTime(
+  const ConnectionObject *const connection_object);
+
+void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
+                              ConnectionObject *const connection_object);
+
+CipUdint GetTargetToOriginatorRequestedPackedInterval(
+  const ConnectionObject *const RESTRICT connection_object);
+
+ConnectionObjectFixedVariable
+GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+  const ConnectionObject *const RESTRICT connection_object);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */
