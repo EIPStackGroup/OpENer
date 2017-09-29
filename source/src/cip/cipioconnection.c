@@ -200,7 +200,6 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   ConnectionObject *const io_connection_object,
   ConnectionObject *const RESTRICT connection_object)
 {
-
   ConnectionObject *iterator = g_active_connection_list;
   while (NULL != iterator) {
     if(io_connection_object->connection_path.connection_point[
