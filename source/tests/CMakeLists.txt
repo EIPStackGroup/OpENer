@@ -22,7 +22,7 @@ add_executable( OpENer_Tests OpENerTests.cpp )
 find_library ( CPPUTEST_LIBRARY CppUTest ${CPPUTEST_HOME}/cpputest_build/lib )
 find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/lib )
 
-target_link_libraries( OpENer_Tests CIP ENET_ENCAP PLATFORM_GENERIC SAMPLE_APP ${OpENer_PLATFORM}PLATFORM )
+target_link_libraries( OpENer_Tests CIP ENET_ENCAP PLATFORM_GENERIC SAMPLE_APP ${OpENer_PLATFORM}PLATFORM rt )
 
 target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )
 target_link_libraries( OpENer_Tests UtilsTest Utils ) 
