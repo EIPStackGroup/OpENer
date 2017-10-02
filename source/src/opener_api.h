@@ -674,7 +674,7 @@ void RunIdleChanged(EipUint32 run_idle_value);
  *         -1 on error
  */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data);
+                    struct sockaddr_in *socket_data, CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief create a producing or consuming UDP socket
