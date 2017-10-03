@@ -33,7 +33,7 @@ static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT 
  *     - kEipStatusOk ... no reply to send back
  *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
+EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
                       struct sockaddr *originator_address);
@@ -48,10 +48,13 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */
-EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
-                             CipMessageRouterRequest *const message_router_request,
-                             CipMessageRouterResponse *const message_router_response,
-                             struct sockaddr *originator_address);
+EipStatus GetAttributeSingle(
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const
+  message_router_request,
+  CipMessageRouterResponse *const
+  message_router_response,
+  struct sockaddr *originator_address);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *

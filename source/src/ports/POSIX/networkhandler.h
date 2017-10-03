@@ -8,6 +8,8 @@
 
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #include "typedefs.h"
 
@@ -38,5 +40,7 @@ MicroSeconds GetMicroSeconds(void);
  *  @return Current time relative to epoch as MilliSeconds
  */
 MilliSeconds GetMilliSeconds(void);
+
+void SetQosOnSocket(int socket, CipUsint qos_value);
 
 #endif /* OPENER_NETWORKHANDLER_H_ */

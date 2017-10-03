@@ -18,6 +18,7 @@
 #include "ciperror.h"
 #include "cipassembly.h"
 #include "cipmessagerouter.h"
+#include "cipqos.h"
 #include "cpf.h"
 #include "trace.h"
 #include "appcontype.h"
@@ -45,6 +46,8 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipAssemblyInitialize();
   OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CipQoSInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
   OPENER_ASSERT(kEipStatusOk == eip_status);
@@ -70,7 +73,8 @@ void ShutdownCipStack(void) {
 EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address) {
+                      struct sockaddr *originator_address)
+{
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
   EipUint16 instance_number = message_router_request->request_path
@@ -118,7 +122,8 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
-                             const int number_of_instances) {
+                             const int number_of_instances)
+{
   CipInstance **next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
@@ -163,7 +168,8 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCIPInstance(CipClass *RESTRICT const class,
-                            const EipUint32 instance_id) {
+                            const EipUint32 instance_id)
+{
   CipInstance *instance = GetCipInstance(class, instance_id);
 
   if (0 == instance) { /*we have no instance with given id*/
@@ -268,10 +274,10 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                      kNotSetOrGetable ); /* optional service list - default = 0 */
     InsertAttribute( (CipInstance *) class, 6, kCipUint,
                      (void *) &meta_class->highest_attribute_number,
-					 kGetableSingle ); /* max class attribute number*/
+                     kGetableSingle );                     /* max class attribute number*/
     InsertAttribute( (CipInstance *) class, 7, kCipUint,
                      (void *) &class->highest_attribute_number,
-					 kGetableSingle ); /* max instance attribute number*/
+                     kGetableSingle );                     /* max instance attribute number*/
   } else {
     InitializeCipClass(class);
   }
@@ -292,7 +298,8 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      void *const data,
-                     const EipByte cip_flags) {
+                     const EipByte cip_flags)
+{
 
   CipAttributeStruct *attribute = instance->attributes;
   CipClass *class = instance->cip_class;
@@ -310,8 +317,10 @@ void InsertAttribute(CipInstance *const instance,
 
       size_t index = CalculateIndex(attribute_number);
 
-      class->get_single_bit_mask[index] |= (cip_flags & kGetableSingle) ? 1 << (attribute_number) % 8 : 0 ;
-      class->get_all_bit_mask[index] |= (cip_flags & kGetableAll) ? 1 << (attribute_number) % 8 : 0 ;
+      class->get_single_bit_mask[index] |=
+        (cip_flags & kGetableSingle) ? 1 << (attribute_number) % 8 : 0;
+      class->get_all_bit_mask[index] |=
+        (cip_flags & kGetableAll) ? 1 << (attribute_number) % 8 : 0;
       class->set_bit_mask[index] |= ( (cip_flags & kSetable) ? 1 : 0 )
                                     << ( (attribute_number) % 8 );
 
@@ -320,7 +329,8 @@ void InsertAttribute(CipInstance *const instance,
     attribute++;
   }
   OPENER_TRACE_ERR(
-    "Tried to insert to many attributes into class: %" PRIu32 ", instance %" PRIu32 "\n",
+    "Tried to insert to many attributes into class: %" PRIu32 ", instance %"
+    PRIu32 "\n",
     instance->cip_class->class_instance.instance_number,
     instance->instance_number);
   OPENER_ASSERT(0);
@@ -330,7 +340,8 @@ void InsertAttribute(CipInstance *const instance,
 void InsertService(const CipClass *const class,
                    const EipUint8 service_number,
                    const CipServiceFunction service_function,
-                   char *const service_name) {
+                   char *const service_name)
+{
 
   CipServiceStruct *service = class->services; /* get a pointer to the service array*/
   OPENER_TRACE_INFO("%s, number of services:%d, service number:%d\n",
@@ -355,7 +366,8 @@ void InsertService(const CipClass *const class,
 }
 
 CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
-                                    const EipUint16 attribute_number) {
+                                    const EipUint16 attribute_number)
+{
 
   CipAttributeStruct *attribute = instance->attributes; /* init pointer to array of attributes*/
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
@@ -376,7 +388,8 @@ EipStatus GetAttributeSingle(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address)
+{
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(
@@ -393,17 +406,18 @@ EipStatus GetAttributeSingle(
                                .attribute_number;
 
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
-	  uint8_t get_bit_mask = 0;
-	  if (kGetAttributeAll == message_router_request->service) {
-	      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-	                                                              attribute_number)]);
-	      message_router_response->general_status = kCipErrorSuccess;
-	    } else {
-	      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-	                                                                 attribute_number)
-	                      ]);
-	    }
-    if (0 != (get_bit_mask & ( 1 << ( attribute_number % 8 ) ) ) ) {
+    uint8_t get_bit_mask = 0;
+    if (kGetAttributeAll == message_router_request->service) {
+      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                              attribute_number)
+                      ]);
+      message_router_response->general_status = kCipErrorSuccess;
+    } else {
+      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                                 attribute_number)
+                      ]);
+    }
+    if ( 0 != ( get_bit_mask & ( 1 << ( attribute_number % 8 ) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
@@ -432,7 +446,8 @@ EipStatus GetAttributeSingle(
 
 int EncodeData(const EipUint8 cip_type,
                const void *const cip_data,
-               EipUint8 **cip_message) {
+               EipUint8 **cip_message)
+{
   int counter = 0;
 
   switch (cip_type)
@@ -532,7 +547,7 @@ int EncodeData(const EipUint8 cip_type,
     case (kCipUdintUdintUdintUdintUdintString): {
       /* TCP/IP attribute 5 */
       CipTcpIpNetworkInterfaceConfiguration *
-        tcp_ip_network_interface_configuration =
+      tcp_ip_network_interface_configuration =
         (CipTcpIpNetworkInterfaceConfiguration *) cip_data;
       counter += AddDintToMessage(
         ntohl(tcp_ip_network_interface_configuration->ip_address),
@@ -596,7 +611,8 @@ int EncodeData(const EipUint8 cip_type,
 
 int DecodeData(const EipUint8 cip_type,
                void *const data,
-               const EipUint8 **const message) {
+               const EipUint8 **const message)
+{
   int number_of_decoded_bytes = -1;
 
   switch (cip_type)
@@ -672,7 +688,8 @@ int DecodeData(const EipUint8 cip_type,
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address) {
+                          struct sockaddr *originator_address)
+{
 
   EipUint8 *reply = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes; /* pointer to list of attributes*/
@@ -855,7 +872,9 @@ int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
 
 void AllocateAttributeMasks(CipClass *target_class) {
   size_t size = 1 + CalculateIndex(target_class->highest_attribute_number);
-  OPENER_TRACE_INFO(">>> Allocate memory for %s %lu bytes times 3 for masks\n", target_class->class_name, size);
+  OPENER_TRACE_INFO(">>> Allocate memory for %s %lu bytes times 3 for masks\n",
+                    target_class->class_name,
+                    size);
   target_class->get_single_bit_mask = CipCalloc( size, sizeof(uint8_t) );
   target_class->set_bit_mask = CipCalloc( size, sizeof(uint8_t) );
   target_class->get_all_bit_mask = CipCalloc( size, sizeof(uint8_t) );
@@ -865,4 +884,3 @@ size_t CalculateIndex(EipUint16 attribute_number) {
   size_t index = attribute_number / 8;
   return index;
 }
-

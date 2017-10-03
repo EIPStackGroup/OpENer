@@ -263,7 +263,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
         ( (CipByteArray *) attribute->data )->length + diff_size;
-      return kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize;
+      return kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
     }
   } else {
     return kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
@@ -392,7 +392,11 @@ EipStatus OpenConsumingPointToPointConnection(
   { .sin_family = PF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = htons(
       kOpenerEipIoUdpPort) };
 
-  int socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming, &addr); /* the address is only needed for bind used if consuming */
+  CipUsint qos_for_socket = GetPriorityForQos (
+    connection_object->t_to_o_network_connection_parameter);
+  int socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming,
+                               &addr,
+                               qos_for_socket);                                            /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
       "cannot create UDP socket in OpenPointToPointConnection\n");
@@ -437,8 +441,11 @@ EipStatus OpenProducingPointToPointConnection(
   connection_object->remote_address.sin_addr.s_addr = 0; /* we don't know the address of the originate will be set in the IApp_CreateUDPSocket */
   connection_object->remote_address.sin_port = port;
 
+  CipUsint qos_for_socket = GetPriorityForQos (
+    connection_object->t_to_o_network_connection_parameter);
   int socket = CreateUdpSocket(kUdpCommuncationDirectionProducing,
-                               &connection_object->remote_address); /* the address is only needed for bind used if consuming */
+                               &connection_object->remote_address,
+                               qos_for_socket);                                     /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
       "cannot create UDP socket in OpenPointToPointConnection\n");
@@ -600,7 +607,9 @@ EipStatus OpenMulticastConnection(
   socket_address.sin_port = common_packet_format_data->address_info_item[j]
                             .sin_port;
 
-  int socket = CreateUdpSocket(direction, &socket_address); /* the address is only needed for bind used if consuming */
+  CipUsint qos_for_socket = GetPriorityForQos (
+    connection_object->t_to_o_network_connection_parameter);
+  int socket = CreateUdpSocket(direction, &socket_address, qos_for_socket); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR("cannot create UDP socket in OpenMulticastConnection\n");
     return kEipStatusError;
