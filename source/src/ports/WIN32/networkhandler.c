@@ -3,19 +3,15 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <winsock2.h>
 #include <windows.h>
 #include <Ws2tcpip.h>
-#include <winsock.h>
 
 #include "networkhandler.h"
 
 #include "generic_networkhandler.h"
-#include "encap.h"
 
 MicroSeconds getMicroSeconds() {
   LARGE_INTEGER performance_counter;
@@ -33,10 +29,8 @@ MilliSeconds GetMilliSeconds(void) {
 }
 
 EipStatus NetworkHandlerInitializePlatform(void) {
-  /* Add platform dependent code here if necessary */
-  WORD wVersionRequested;
   WSADATA wsaData;
-  wVersionRequested = MAKEWORD(2, 2);
+  const WORD wVersionRequested = MAKEWORD(2, 2);
   WSAStartup(wVersionRequested, &wsaData);
 
   return kEipStatusOk;
@@ -52,7 +46,6 @@ int SetSocketToNonBlocking(int socket_handle) {
 }
 
 void SetQosOnSocket(int socket, CipUsint qos_value){
-
-  int set_tos = qos_value;
+  CipUsint set_tos = qos_value;
   setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
 }
