@@ -33,7 +33,7 @@ static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT 
  *     - kEipStatusOk ... no reply to send back
  *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
+EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
                       struct sockaddr *originator_address);
