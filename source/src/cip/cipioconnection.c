@@ -263,7 +263,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
         ( (CipByteArray *) attribute->data )->length + diff_size;
-      return kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize;
+      return kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize;
     }
   } else {
     return kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
@@ -720,7 +720,6 @@ void CloseIoConnection(ConnectionObject *connection_object) {
 }
 
 void HandleIoConnectionTimeOut(ConnectionObject *connection_object) {
-  ConnectionObject *next_non_control_master_connection;
   CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
                          connection_object->connection_path.connection_point[1],
                          kIoConnectionEventTimedOut);
@@ -740,7 +739,7 @@ void HandleIoConnectionTimeOut(ConnectionObject *connection_object) {
       case kConnectionTypeIoInputOnly:
         if (kEipInvalidSocket
             != connection_object->socket[kUdpCommuncationDirectionProducing]) { /* we are the controlling input only connection find a new controller*/
-          next_non_control_master_connection =
+          ConnectionObject *next_non_control_master_connection =
             GetNextNonControlMasterConnection(
               connection_object->connection_path.connection_point[1]);
           if (NULL != next_non_control_master_connection) {

@@ -995,7 +995,7 @@ EipStatus AssembleForwardOpenResponse(
           }
 
           case
-            kConnectionManagerExtendedStatusCodeErrorInvalidToOConnectionSize:
+            kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize:
           {
             message_router_response->size_of_additional_status = 2;
             message_router_response->additional_status[0] = extended_status;
