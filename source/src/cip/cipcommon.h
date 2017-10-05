@@ -48,10 +48,13 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */
-EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
-                             CipMessageRouterRequest *const message_router_request,
-                             CipMessageRouterResponse *const message_router_response,
-                             struct sockaddr *originator_address);
+EipStatus GetAttributeSingle(
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const
+  message_router_request,
+  CipMessageRouterResponse *const
+  message_router_response,
+  struct sockaddr *originator_address);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *
