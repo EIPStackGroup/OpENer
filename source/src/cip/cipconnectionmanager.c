@@ -452,17 +452,17 @@ ForwardOpenConnectionType GetConnectionType(
 }
 
 ForwardOpenPriority GetPriorityForQos(
-	EipUint16 network_connection_parameter) {
+  EipUint16 network_connection_parameter) {
 
-	const EipUint16 kConnectionParameterMask = 0xC00;
-	CipUsint priority_value = 0x00;
+  const EipUint16 kConnectionParameterMask = 0xC00;
+  CipUsint priority_value = 0x00;
 
-	ForwardOpenPriority priority = network_connection_parameter
-                                  & kConnectionParameterMask;
+  ForwardOpenPriority priority = network_connection_parameter
+                                 & kConnectionParameterMask;
 
-	priority_value = GetPriorityForSocket(priority);
+  priority_value = GetPriorityForSocket(priority);
 
-	return priority_value;
+  return priority_value;
 }
 
 /** @brief Function prototype for all Forward Open handle functions
