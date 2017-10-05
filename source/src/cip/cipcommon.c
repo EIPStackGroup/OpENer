@@ -23,6 +23,8 @@
 #include "appcontype.h"
 #include "cipepath.h"
 #include "stdlib.h"
+#include "energy.h"
+#include "ElEnergy.h"
 
 /* global public variables */
 EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Reply buffer */
@@ -44,6 +46,10 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   eip_status = ConnectionManagerInit(unique_connection_id);
   OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipAssemblyInitialize();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CIP_BaseEnergy_Init();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CIP_ElEnergy_Init();
   OPENER_ASSERT(kEipStatusOk == eip_status);
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
@@ -621,6 +627,7 @@ int DecodeData(const EipUint8 cip_type,
     case (kCipDint):
     case (kCipUdint):
     case (kCipDword):
+    case (kCipReal):
       ( *(EipUint32 *) (data) ) = GetDintFromMessage(message);
       number_of_decoded_bytes = 4;
       break;
