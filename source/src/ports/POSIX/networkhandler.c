@@ -13,7 +13,9 @@
 #include "encap.h"
 #include "opener_user_conf.h"
 
-MicroSeconds GetMicroSeconds(void) {
+MicroSeconds GetMicroSeconds(
+  void
+  ) {
   struct timespec now = { .tv_nsec = 0, .tv_sec = 0 };
 
   int error = clock_gettime( CLOCK_MONOTONIC, &now );
@@ -23,28 +25,39 @@ MicroSeconds GetMicroSeconds(void) {
   return micro_seconds;
 }
 
-MilliSeconds GetMilliSeconds(void) {
+MilliSeconds GetMilliSeconds(
+  void
+  ) {
   return (MilliSeconds) (GetMicroSeconds() / 1000ULL);
 }
 
-EipStatus NetworkHandlerInitializePlatform(void) {
+EipStatus NetworkHandlerInitializePlatform(
+  void
+  ) {
   /* Add platform dependent code here if necessary */
   return kEipStatusOk;
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void CloseSocketPlatform(
+  int socket_handle
+  ) {
   shutdown(socket_handle, SHUT_RDWR);
   close(socket_handle);
 }
 
-int SetSocketToNonBlocking(int socket_handle) {
+int SetSocketToNonBlocking(
+  int socket_handle
+  ) {
   return fcntl(socket_handle, F_SETFL, fcntl(socket_handle,
                                              F_GETFL,
                                              0) | O_NONBLOCK);
 }
 
-void SetQosOnSocket(int socket, CipUsint qos_value){
+void SetQosOnSocket(
+  int socket,
+  CipUsint qos_value
+  ) {
 
   int set_tos = qos_value;
-  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
+  setsockopt( socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

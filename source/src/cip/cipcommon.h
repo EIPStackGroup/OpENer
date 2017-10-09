@@ -33,10 +33,11 @@ static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT 
  *     - kEipStatusOk ... no reply to send back
  *     - kEipStatusError ... error
  */
-EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
-                      CipMessageRouterRequest *const message_router_request,
-                      CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address);
+EipStatus NotifyClass(
+  const CipClass *const RESTRICT cip_class,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  struct sockaddr *originator_address);
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
@@ -65,16 +66,19 @@ EipStatus GetAttributeSingle(
  * @return length of data stream >0 .. success
  *              0 .. no reply to send
  */
-EipStatus GetAttributeAll(CipInstance *instance,
-                          CipMessageRouterRequest *message_router_request,
-                          CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address);
+EipStatus GetAttributeAll(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
 /** @brief Decodes padded EPath
  *  @param epath EPath to the receiving element
  *  @param message CIP Message to decode
  *  @return Number of decoded bytes
  */
-int DecodePaddedEPath(CipEpath *epath, const EipUint8 **data);
+int DecodePaddedEPath(
+  CipEpath *epath,
+  const EipUint8 **data);
 
 #endif /* OPENER_CIPCOMMON_H_ */

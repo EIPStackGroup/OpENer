@@ -97,7 +97,9 @@ typedef enum {
     =
       0x0133,
   kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionFixVar =
-    0x135,
+    0x0135,
+  kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority =
+    0x0136,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
   kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
@@ -163,14 +165,16 @@ typedef enum ProductionTrigger {
 ProductionTrigger GetProductionTrigger(
   const ConnectionObject *const connection_object);
 
-void SetProductionTrigger(const ProductionTrigger production_trigger,
-                          ConnectionObject *connection_object);
+void SetProductionTrigger(
+  const ProductionTrigger production_trigger,
+  ConnectionObject *connection_object);
 
 CipUint GetProductionInhibitTime(
   const ConnectionObject *const connection_object);
 
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
-                              ConnectionObject *const connection_object);
+void SetProductionInhibitTime(
+  const EipUint16 production_inhibit_time,
+  ConnectionObject *const connection_object);
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
   const ConnectionObject *const connection_object);
@@ -361,7 +365,8 @@ static const int g_kCipConnectionManagerClassCode = 0x06;
  *  @param A unique connection id
  *  @return kEipStatusOk if successful, otherwise kEipStatusError
  */
-EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
+EipStatus ConnectionManagerInit(
+  EipUint16 unique_connection_id);
 
 /** @brief Get a connected object dependent on requested ConnectionID.
  *
@@ -369,7 +374,8 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-ConnectionObject *GetConnectedObject(EipUint32 connection_id);
+ConnectionObject *GetConnectedObject(
+  EipUint32 connection_id);
 
 /**  Get a connection object for a given output assembly.
  *
@@ -378,15 +384,17 @@ ConnectionObject *GetConnectedObject(EipUint32 connection_id);
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
+ConnectionObject *GetConnectedOutputAssembly(
+  EipUint32 output_assembly_id);
 
 /** @brief Copy the given connection data from source to destination
  *
  * @param destination Destination of the copy operation
  * @param osurce Source of the copy operation
  */
-void CopyConnectionData(ConnectionObject *RESTRICT destination,
-                        const ConnectionObject *RESTRICT const source);
+void CopyConnectionData(
+  ConnectionObject *RESTRICT destination,
+  const ConnectionObject *RESTRICT const source);
 
 /** @brief Close the given connection
  *
@@ -395,10 +403,12 @@ void CopyConnectionData(ConnectionObject *RESTRICT destination,
  * @param connection_object pointer to the connection object structure to be
  * closed
  */
-void CloseConnection(ConnectionObject *RESTRICT connection_object);
+void CloseConnection(
+  ConnectionObject *RESTRICT connection_object);
 
 /* TODO: Missing documentation */
-EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
+EipBool8 IsConnectedOutputAssembly(
+  const EipUint32 instance_number);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.
@@ -406,7 +416,8 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
  * @param connection_object pointer to the connection object that should be set
  * up.
  */
-void GeneralConnectionConfiguration(ConnectionObject *connection_object);
+void GeneralConnectionConfiguration(
+  ConnectionObject *connection_object);
 
 /** @brief Insert the given connection object to the list of currently active
  *  and managed connections.
@@ -417,13 +428,15 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object);
  *
  * @param connection_object pointer to the connection object to be added.
  */
-void AddNewActiveConnection(ConnectionObject *connection_object);
+void AddNewActiveConnection(
+  ConnectionObject *connection_object);
 
 /** @brief Removes connection from the list of active connections
  *
  * @param connection_object Connection object to be removed from the active connection list
  */
-void RemoveFromActiveConnections(ConnectionObject *connection_object);
+void RemoveFromActiveConnections(
+  ConnectionObject *connection_object);
 
 /** @brief returns the connection type of the supplied network connection parameter
  *
@@ -437,14 +450,16 @@ ForwardOpenPriority GetPriorityForQos(
 ProductionTrigger GetProductionTrigger(
   const ConnectionObject *const connection_object);
 
-void SetProductionTrigger(const ProductionTrigger production_trigger,
-                          ConnectionObject *connection_object);
+void SetProductionTrigger(
+  const ProductionTrigger production_trigger,
+  ConnectionObject *connection_object);
 
 CipUint GetProductionInhibitTime(
   const ConnectionObject *const connection_object);
 
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
-                              ConnectionObject *const connection_object);
+void SetProductionInhibitTime(
+  const EipUint16 production_inhibit_time,
+  ConnectionObject *const connection_object);
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
   const ConnectionObject *const RESTRICT connection_object);

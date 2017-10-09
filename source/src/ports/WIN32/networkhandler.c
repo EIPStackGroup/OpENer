@@ -24,11 +24,15 @@ MicroSeconds getMicroSeconds() {
                          / performance_frequency.QuadPart);
 }
 
-MilliSeconds GetMilliSeconds(void) {
+MilliSeconds GetMilliSeconds(
+  void
+  ) {
   return (MilliSeconds) (getMicroSeconds() / 1000ULL);
 }
 
-EipStatus NetworkHandlerInitializePlatform(void) {
+EipStatus NetworkHandlerInitializePlatform(
+  void
+  ) {
   WSADATA wsaData;
   const WORD wVersionRequested = MAKEWORD(2, 2);
   WSAStartup(wVersionRequested, &wsaData);
@@ -36,16 +40,23 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void CloseSocketPlatform(
+  int socket_handle
+  ) {
   closesocket(socket_handle);
 }
 
-int SetSocketToNonBlocking(int socket_handle) {
+int SetSocketToNonBlocking(
+  int socket_handle
+  ) {
   u_long iMode = 1;
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-void SetQosOnSocket(int socket, CipUsint qos_value){
+void SetQosOnSocket(
+  int socket,
+  CipUsint qos_value
+  ) {
   CipUsint set_tos = qos_value;
-  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
+  setsockopt( socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

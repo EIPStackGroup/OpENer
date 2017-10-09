@@ -29,37 +29,45 @@
 /** @brief handle any connection request coming in the TCP server socket.
  *
  */
-void CheckAndHandleTcpListenerSocket(void);
+void CheckAndHandleTcpListenerSocket(
+  void);
 
 /** @brief Checks and processes request received via the UDP unicast socket, currently the implementation is port-specific
  *
  */
-void CheckAndHandleUdpUnicastSocket(void);
+void CheckAndHandleUdpUnicastSocket(
+  void);
 
 /** @brief Checks and handles incoming messages via UDP broadcast
  *
  */
-void CheckAndHandleUdpGlobalBroadcastSocket(void);
+void CheckAndHandleUdpGlobalBroadcastSocket(
+  void);
 
 /** @brief check if on one of the UDP consuming sockets data has been received and if yes handle it correctly
  *
  */
-void CheckAndHandleConsumingUdpSockets(void);
+void CheckAndHandleConsumingUdpSockets(
+  void);
 
 /** @brief Handles data on an established TCP connection, processed connection is given by socket
  *
  *  @param socket The socket to be processed
  *  @return kEipStatusOk on success, or kEipStatusError on failure
  */
-EipStatus HandleDataOnTcpSocket(int socket);
+EipStatus HandleDataOnTcpSocket(
+  int socket);
 
-void CheckEncapsulationInactivity(int socket_handle);
+void CheckEncapsulationInactivity(
+  int socket_handle);
 
 /*************************************************
 * Function implementations from now on
 *************************************************/
 
-EipStatus NetworkHandlerInitialize(void) {
+EipStatus NetworkHandlerInitialize(
+  void
+  ) {
 
   if( kEipStatusOk != NetworkHandlerInitializePlatform() ) {
     return kEipStatusError;
@@ -236,11 +244,15 @@ EipStatus NetworkHandlerInitialize(void) {
   return kEipStatusOk;
 }
 
-void IApp_CloseSocket_udp(int socket_handle) {
+void IApp_CloseSocket_udp(
+  int socket_handle
+  ) {
   CloseSocket(socket_handle);
 }
 
-void IApp_CloseSocket_tcp(int socket_handle) {
+void IApp_CloseSocket_tcp(
+  int socket_handle
+  ) {
   SocketTimer *socket_timer = NULL;
   while( NULL !=
          ( socket_timer =
@@ -253,7 +265,9 @@ void IApp_CloseSocket_tcp(int socket_handle) {
   CloseSocket(socket_handle);
 }
 
-EipBool8 CheckSocketSet(int socket) {
+EipBool8 CheckSocketSet(
+  int socket
+  ) {
   EipBool8 return_value = false;
   if ( FD_ISSET(socket, &read_socket) ) {
     if ( FD_ISSET(socket, &master_socket) ) {
@@ -267,7 +281,9 @@ EipBool8 CheckSocketSet(int socket) {
   return return_value;
 }
 
-void CheckAndHandleTcpListenerSocket(void) {
+void CheckAndHandleTcpListenerSocket(
+  void
+  ) {
   int new_socket = kEipInvalidSocket;
   /* see if this is a connection request to the TCP listener*/
   if ( true == CheckSocketSet(g_network_status.tcp_listener) ) {
@@ -313,7 +329,9 @@ void CheckAndHandleTcpListenerSocket(void) {
   }
 }
 
-EipStatus NetworkHandlerProcessOnce(void) {
+EipStatus NetworkHandlerProcessOnce(
+  void
+  ) {
 
   read_socket = master_socket;
 
@@ -378,14 +396,18 @@ EipStatus NetworkHandlerProcessOnce(void) {
   return kEipStatusOk;
 }
 
-EipStatus NetworkHandlerFinish(void) {
+EipStatus NetworkHandlerFinish(
+  void
+  ) {
   CloseSocket(g_network_status.tcp_listener);
   CloseSocket(g_network_status.udp_unicast_listener);
   CloseSocket(g_network_status.udp_global_broadcast_listener);
   return kEipStatusOk;
 }
 
-void CheckAndHandleUdpGlobalBroadcastSocket(void) {
+void CheckAndHandleUdpGlobalBroadcastSocket(
+  void
+  ) {
 
   struct sockaddr_in from_address;
   socklen_t from_address_length;
@@ -445,7 +467,9 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
   }
 }
 
-void CheckAndHandleUdpUnicastSocket(void) {
+void CheckAndHandleUdpUnicastSocket(
+  void
+  ) {
 
   struct sockaddr_in from_address;
   socklen_t from_address_length;
@@ -504,11 +528,12 @@ void CheckAndHandleUdpUnicastSocket(void) {
   }
 }
 
-EipStatus SendUdpData(struct sockaddr_in *address,
-                      int socket,
-                      EipUint8 *data,
-                      EipUint16 data_length)
-{
+EipStatus SendUdpData(
+  struct sockaddr_in *address,
+  int socket,
+  EipUint8 *data,
+  EipUint16 data_length
+  ) {
 
   int sent_length = sendto( socket, (char *) data, data_length, 0,
                             (struct sockaddr *) address, sizeof(*address) );
@@ -535,7 +560,9 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   return kEipStatusOk;
 }
 
-EipStatus HandleDataOnTcpSocket(int socket) {
+EipStatus HandleDataOnTcpSocket(
+  int socket
+  ) {
   OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket for socket: %d\n", socket);
   int remaining_bytes = 0;
   long data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
@@ -716,9 +743,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
  * @param socket_data Data for socket creation
  *
  * @return the socket handle if successful, else -1 */
-int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket)                    {
+int CreateUdpSocket(
+  UdpCommuncationDirection communication_direction,
+  struct sockaddr_in *socket_data,
+  CipUsint qos_for_socket
+  ) {
   struct sockaddr_in peer_address;
   int new_socket = kEipInvalidSocket;
 
@@ -809,7 +838,9 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   return new_socket;
 }
 
-void CheckAndHandleConsumingUdpSockets(void) {
+void CheckAndHandleConsumingUdpSockets(
+  void
+  ) {
   struct sockaddr_in from_address;
   socklen_t from_address_length;
 
@@ -864,7 +895,9 @@ void CheckAndHandleConsumingUdpSockets(void) {
 }
 
 
-void CloseSocket(const int socket_handle) {
+void CloseSocket(
+  const int socket_handle
+  ) {
   OPENER_TRACE_INFO("networkhandler: closing socket %d\n", socket_handle);
 
   if (kEipInvalidSocket != socket_handle) {
@@ -874,7 +907,12 @@ void CloseSocket(const int socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket done %d\n", socket_handle);
 }
 
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
+int GetMaxSocket(
+  int socket1,
+  int socket2,
+  int socket3,
+  int socket4
+  ) {
   if ( (socket1 > socket2) && (socket1 > socket3) && (socket1 > socket4) ) {
     return socket1;
   }
@@ -890,7 +928,9 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
   return socket4;
 }
 
-void CheckEncapsulationInactivity(int socket_handle) {
+void CheckEncapsulationInactivity(
+  int socket_handle
+  ) {
 
   if (0 < g_encapsulation_inactivity_timeout) {
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
