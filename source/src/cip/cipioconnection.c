@@ -67,17 +67,14 @@ EipStatus OpenProducingPointToPointConnection(
   ConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data);
 
-EipUint16 HandleConfigData(
-  ConnectionObject *connection_object);
+EipUint16 HandleConfigData(ConnectionObject *connection_object);
 
 /* Regularly close the IO connection. If it is an exclusive owner or input only
  * connection and in charge of the connection a new owner will be searched
  */
-void CloseIoConnection(
-  ConnectionObject *connection_object);
+void CloseIoConnection(ConnectionObject *connection_object);
 
-void HandleIoConnectionTimeOut(
-  ConnectionObject *connection_object);
+void HandleIoConnectionTimeOut(ConnectionObject *connection_object);
 
 /** @brief  Send the data from the produced CIP Object of the connection via the socket of the connection object
  *   on UDP.
@@ -85,8 +82,7 @@ void HandleIoConnectionTimeOut(
  *      @return status  EIP_OK .. success
  *                     EIP_ERROR .. error
  */
-EipStatus SendConnectedData(
-  ConnectionObject *connection_object);
+EipStatus SendConnectedData(ConnectionObject *connection_object);
 
 EipStatus HandleReceivedIoConnectionData(
   ConnectionObject *connection_object,
@@ -99,9 +95,8 @@ unsigned int g_config_data_length = 0; /**< length of g_config_data_buffer. Init
 
 EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
 
-EipUint16 ProcessProductionInhibitTime(
-  ConnectionObject *io_connection_object
-  ) {
+EipUint16 ProcessProductionInhibitTime(ConnectionObject *io_connection_object
+                                       ) {
   if ( kProductionTriggerCyclic
        == GetProductionTrigger(io_connection_object) ) {
     if ( 256 == GetProductionInhibitTime(io_connection_object) ) {
@@ -123,9 +118,10 @@ EipUint16 ProcessProductionInhibitTime(
   return kConnectionManagerExtendedStatusCodeSuccess;
 }
 
-CipConnectionObjectTransportClassTriggerClass GetConnectionTransportClass(
+CipConnectionObjectTransportClassTriggerClass GetConnectionObjectTransportClass(
   const ConnectionObject *const connection_object
-  ) {
+  )
+{
   const unsigned int kTransportClassMask = 0x0F;
 
   switch(connection_object->transport_type_class_trigger &
@@ -141,9 +137,8 @@ CipConnectionObjectTransportClassTriggerClass GetConnectionTransportClass(
   return kCipConnectionObjectTransportClassTriggerClassInvalid;
 }
 
-void SetIoConnectionCallbacks(
-  ConnectionObject *const io_connection_object
-  ) {
+void SetIoConnectionCallbacks(ConnectionObject *const io_connection_object
+                              ) {
   io_connection_object->connection_close_function = CloseIoConnection;
   io_connection_object->connection_timeout_function = HandleIoConnectionTimeOut;
   io_connection_object->connection_send_data_function = SendConnectedData;
@@ -181,7 +176,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1
-         == GetConnectionTransportClass(io_connection_object) ) {
+         == GetConnectionObjectTransportClass(io_connection_object) ) {
       //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
@@ -232,6 +227,11 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
           kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority;
       }
 
+      if( GetConnectionObjectTransportClass(io_connection_object) !=
+          GetConnectionObjectTransportClass(iterator) ) {
+        return kConnectionManagerExtendedStatusCodeMismatchedTransportClass;
+      }
+
     }
 
     iterator = iterator->next_connection_object;
@@ -262,7 +262,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1 ==
-         GetConnectionTransportClass(io_connection_object) ) {
+         GetConnectionObjectTransportClass(io_connection_object) ) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
@@ -640,9 +640,8 @@ EipStatus OpenMulticastConnection(
   return kEipStatusOk;
 }
 
-EipUint16 HandleConfigData(
-  ConnectionObject *connection_object
-  ) {
+EipUint16 HandleConfigData(ConnectionObject *connection_object
+                           ) {
 
   CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
   EipUint16 connection_manager_status = 0;
@@ -689,9 +688,8 @@ EipUint16 HandleConfigData(
   return connection_manager_status;
 }
 
-void CloseIoConnection(
-  ConnectionObject *connection_object
-  ) {
+void CloseIoConnection(ConnectionObject *connection_object
+                       ) {
 
   CheckIoConnectionEvent(connection_object->connection_path.connection_point[
                            kConnectionPointConsumer],
@@ -740,9 +738,8 @@ void CloseIoConnection(
     connection_object);
 }
 
-void HandleIoConnectionTimeOut(
-  ConnectionObject *connection_object
-  ) {
+void HandleIoConnectionTimeOut(ConnectionObject *connection_object
+                               ) {
   CheckIoConnectionEvent(connection_object->connection_path.connection_point[0],
                          connection_object->connection_path.connection_point[1],
                          kIoConnectionEventTimedOut);
@@ -789,9 +786,8 @@ void HandleIoConnectionTimeOut(
   connection_object->connection_close_function(connection_object);
 }
 
-EipStatus SendConnectedData(
-  ConnectionObject *connection_object
-  ) {
+EipStatus SendConnectedData(ConnectionObject *connection_object
+                            ) {
 
   /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
@@ -907,9 +903,8 @@ EipStatus HandleReceivedIoConnectionData(
   return kEipStatusOk;
 }
 
-EipStatus OpenCommunicationChannels(
-  ConnectionObject *connection_object
-  ) {
+EipStatus OpenCommunicationChannels(ConnectionObject *connection_object
+                                    ) {
 
   EipStatus eip_status = kEipStatusOk;
   /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
