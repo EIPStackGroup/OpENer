@@ -365,8 +365,7 @@ static const int g_kCipConnectionManagerClassCode = 0x06;
  *  @param A unique connection id
  *  @return kEipStatusOk if successful, otherwise kEipStatusError
  */
-EipStatus ConnectionManagerInit(
-  EipUint16 unique_connection_id);
+EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
 
 /** @brief Get a connected object dependent on requested ConnectionID.
  *
@@ -374,8 +373,7 @@ EipStatus ConnectionManagerInit(
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-ConnectionObject *GetConnectedObject(
-  EipUint32 connection_id);
+ConnectionObject *GetConnectedObject(EipUint32 connection_id);
 
 /**  Get a connection object for a given output assembly.
  *
@@ -384,8 +382,7 @@ ConnectionObject *GetConnectedObject(
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-ConnectionObject *GetConnectedOutputAssembly(
-  EipUint32 output_assembly_id);
+ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
 
 /** @brief Copy the given connection data from source to destination
  *
@@ -403,12 +400,10 @@ void CopyConnectionData(
  * @param connection_object pointer to the connection object structure to be
  * closed
  */
-void CloseConnection(
-  ConnectionObject *RESTRICT connection_object);
+void CloseConnection(ConnectionObject *RESTRICT connection_object);
 
 /* TODO: Missing documentation */
-EipBool8 IsConnectedOutputAssembly(
-  const EipUint32 instance_number);
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.
@@ -416,8 +411,7 @@ EipBool8 IsConnectedOutputAssembly(
  * @param connection_object pointer to the connection object that should be set
  * up.
  */
-void GeneralConnectionConfiguration(
-  ConnectionObject *connection_object);
+void GeneralConnectionConfiguration(ConnectionObject *connection_object);
 
 /** @brief Insert the given connection object to the list of currently active
  *  and managed connections.
@@ -428,15 +422,13 @@ void GeneralConnectionConfiguration(
  *
  * @param connection_object pointer to the connection object to be added.
  */
-void AddNewActiveConnection(
-  ConnectionObject *connection_object);
+void AddNewActiveConnection(ConnectionObject *connection_object);
 
 /** @brief Removes connection from the list of active connections
  *
  * @param connection_object Connection object to be removed from the active connection list
  */
-void RemoveFromActiveConnections(
-  ConnectionObject *connection_object);
+void RemoveFromActiveConnections(ConnectionObject *connection_object);
 
 /** @brief returns the connection type of the supplied network connection parameter
  *
