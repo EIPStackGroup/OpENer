@@ -507,8 +507,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
 EipStatus SendUdpData(struct sockaddr_in *address,
                       int socket,
                       EipUint8 *data,
-                      EipUint16 data_length)
-{
+                      EipUint16 data_length) {
 
   int sent_length = sendto( socket, (char *) data, data_length, 0,
                             (struct sockaddr *) address, sizeof(*address) );
@@ -718,7 +717,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
  * @return the socket handle if successful, else -1 */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket)                    {
+                    CipUsint qos_for_socket) {
   struct sockaddr_in peer_address;
   int new_socket = kEipInvalidSocket;
 
@@ -874,7 +873,10 @@ void CloseSocket(const int socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket done %d\n", socket_handle);
 }
 
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
+int GetMaxSocket(int socket1,
+                 int socket2,
+                 int socket3,
+                 int socket4) {
   if ( (socket1 > socket2) && (socket1 > socket3) && (socket1 > socket4) ) {
     return socket1;
   }

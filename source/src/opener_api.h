@@ -156,9 +156,10 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instance_attributes,
                           const EipUint32 highest_instance_attribute_number,
                           const int number_of_instance_services,
-                          const int number_of_instances, char *name,
-                          const EipUint16 revision,void (*InitializeCipClass)(
-                            CipClass *) );
+                          const int number_of_instances,
+                          char *name,
+                          const EipUint16 revision,
+                           void (*InitializeCipClass)(CipClass *) );
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *
@@ -638,7 +639,8 @@ ResetDeviceToInitialConfiguration(void);
  * @param size_of_element size in bytes of one element
  * @return pointer to the allocated memory, 0 on error
  */
-void *CipCalloc(size_t number_of_elements, size_t size_of_element);
+void *CipCalloc(size_t number_of_elements,
+                size_t size_of_element);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Free memory allocated by the OpENer
@@ -674,7 +676,8 @@ void RunIdleChanged(EipUint32 run_idle_value);
  *         -1 on error
  */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data, CipUsint qos_for_socket);
+                    struct sockaddr_in *socket_data,
+                    CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief create a producing or consuming UDP socket
