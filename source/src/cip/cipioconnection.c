@@ -118,9 +118,10 @@ EipUint16 ProcessProductionInhibitTime(ConnectionObject *io_connection_object
   return kConnectionManagerExtendedStatusCodeSuccess;
 }
 
-CipConnectionObjectTransportClassTriggerClass GetConnectionTransportClass(
+CipConnectionObjectTransportClassTriggerClass GetConnectionObjectTransportClass(
   const ConnectionObject *const connection_object
-  ) {
+  )
+{
   const unsigned int kTransportClassMask = 0x0F;
 
   switch(connection_object->transport_type_class_trigger &
@@ -175,7 +176,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1
-         == GetConnectionTransportClass(io_connection_object) ) {
+         == GetConnectionObjectTransportClass(io_connection_object) ) {
       //if ((io_connection_object->transport_type_class_trigger & 0x0F) == 1) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
@@ -226,6 +227,11 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
           kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority;
       }
 
+      if( GetConnectionObjectTransportClass(io_connection_object) !=
+          GetConnectionObjectTransportClass(iterator) ) {
+        return kConnectionManagerExtendedStatusCodeMismatchedTransportClass;
+      }
+
     }
 
     iterator = iterator->next_connection_object;
@@ -256,7 +262,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kCipConnectionObjectTransportClassTriggerClass1 ==
-         GetConnectionTransportClass(io_connection_object) ) {
+         GetConnectionObjectTransportClass(io_connection_object) ) {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;

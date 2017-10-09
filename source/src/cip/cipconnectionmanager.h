@@ -100,6 +100,7 @@ typedef enum {
     0x0135,
   kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority =
     0x0136,
+  kConnectionManagerExtendedStatusCodeMismatchedTransportClass = 0x0137,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
   kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
