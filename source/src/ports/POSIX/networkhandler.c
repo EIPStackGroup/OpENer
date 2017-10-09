@@ -47,5 +47,5 @@ void SetQosOnSocket(int socket,
                     CipUsint qos_value) {
 
   int set_tos = qos_value;
-  setsockopt( socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
+  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
 }
