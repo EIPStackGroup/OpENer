@@ -444,8 +444,8 @@ void RemoveFromActiveConnections(
 ForwardOpenConnectionType GetConnectionType(
   EipUint16 network_connection_parameter);
 
-ForwardOpenPriority GetPriorityForQos(
-  EipUint16 network_connection_parameter);
+ForwardOpenPriority GetConnectionObjectTToOPriority(
+  const ConnectionObject *const connection_object);
 
 ProductionTrigger GetProductionTrigger(
   const ConnectionObject *const connection_object);
