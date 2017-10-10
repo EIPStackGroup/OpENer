@@ -766,8 +766,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
                                                             / 1000 );
   }
 
-  connection_object->production_inhibit_timer = connection_object
-                                                ->production_inhibit_time = 0;
+  connection_object->production_inhibit_timer = 0;
 
   /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
@@ -1361,6 +1360,7 @@ EipUint8 ParseConnectionPath(
           GetPathNetworkSegmentSubtype(message);
         if (kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds
             == network_segment_subtype) {
+          OPENER_TRACE_INFO("PIT segment available - value: %u\n",message[1]);
           connection_object->production_inhibit_time = message[1];
           message += 2;
           remaining_path_size -= 1;
@@ -1556,6 +1556,8 @@ EipUint8 ParseConnectionPath(
     }
   }
 
+  OPENER_TRACE_INFO("Resulting PIT value: %u\n",
+                    connection_object->production_inhibit_time);
   /*save back the current position in the stream allowing followers to parse anything thats still there*/
   message_router_request->data = message;
   return kEipStatusOk;
