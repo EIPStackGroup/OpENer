@@ -55,6 +55,7 @@ typedef enum {
     0x0107,                                                                             /**< General Status has to be 0x01, Forward Close error message, if connection to be closed is not found at the target */
   kConnectionManagerExtendedStatusCodeErrorTargetForConnectionNotConfigured =
     0x0110,                                                                           /**< General Status has to be 0x01, Target application not configured and connection request does not contain data segment for configuration */
+  kConnectionManagerExtendedStatusCodeRpiNotSupported = 0x0111,
   kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable = 0x0112, /**< General Status has to be 0x01, Requested RPI parameters outside of range, needs 6 16-bit extended status words, see Vol.1 Table 3-5.33 */
   kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable = 0x0113, /**< General Status has to be 0x01, No free connection slots available */
   kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError = 0x0114, /**< General Status has to be 0x01, The Product Code or Vendor ID in the electronic key logical segment does not match the Product Code or Vendor ID of the device, or if the compatibility bit is set and one or both are zero, or cannot be emulated. */

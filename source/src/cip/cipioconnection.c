@@ -111,7 +111,7 @@ EipUint16 ProcessProductionInhibitTime(ConnectionObject *io_connection_object
            > (GetTargetToOriginatorRequestedPackedInterval(io_connection_object)
               / 1000) ) {
         /* see section C-1.4.3.3 */
-        return 0x111; /**< RPI not supported. Extended Error code deprecated */
+        return kConnectionManagerExtendedStatusCodeRpiNotSupported; /**< RPI not supported. Extended Error code deprecated */
       }
     }
   }
