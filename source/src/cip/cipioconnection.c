@@ -230,6 +230,13 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
         return kConnectionManagerExtendedStatusCodeMismatchedTransportClass;
       }
 
+
+      if( GetProductionTrigger(io_connection_object) !=
+          GetProductionTrigger(iterator) ) {
+        return
+          kConnectionManagerExtendedStatusCodeMismatchedTToOProductionTrigger;
+      }
+
       if( GetProductionInhibitTime(io_connection_object) !=
           GetProductionInhibitTime(iterator) ) {
         return
