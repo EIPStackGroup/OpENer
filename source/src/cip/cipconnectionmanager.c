@@ -51,8 +51,7 @@ typedef struct {
 
 /* Connection Object functions */
 ProductionTrigger GetProductionTrigger(
-  const ConnectionObject *const connection_object
-  ) {
+  const ConnectionObject *const connection_object) {
   const unsigned int ProductionTriggerMask = 0x70;
 
   switch (connection_object->transport_type_class_trigger
@@ -90,8 +89,7 @@ void SetProductionTrigger(
 }
 
 CipUint GetProductionInhibitTime(
-  const ConnectionObject *const connection_object
-  ) {
+  const ConnectionObject *const connection_object) {
   return connection_object->production_inhibit_time;
 }
 
@@ -103,15 +101,13 @@ void SetProductionInhibitTime(
 }
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject *const RESTRICT connection_object
-  ) {
+  const ConnectionObject *const RESTRICT connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
 }
 
 ConnectionObjectFixedVariable
 GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
-  const ConnectionObject *const RESTRICT connection_object
-  ) {
+  const ConnectionObject *const RESTRICT connection_object) {
   const EipUint16 kFixedOrVariableMask = 1 << 9;
   if ( ( (connection_object->t_to_o_network_connection_parameter) &
          kFixedOrVariableMask ) == kFixedOrVariableMask ) {
@@ -218,11 +214,9 @@ EipUint8 ParseConnectionPath(
   CipMessageRouterRequest *message_router_request,
   EipUint16 *extended_error);
 
-ConnectionManagementHandling *GetConnectionManagementEntry(
-  EipUint32 class_id);
+ConnectionManagementHandling *GetConnectionManagementEntry(EipUint32 class_id);
 
-void InitializeConnectionManagerData(
-  void);
+void InitializeConnectionManagerData(void);
 
 void AddNullAddressItem(
   CipCommonPacketFormatData *common_data_packet_format_data);
@@ -232,9 +226,7 @@ void AddNullAddressItem(
  *
  * @return The padded logical path
  */
-unsigned int GetPaddedLogicalPath(
-  const EipUint8 **logical_path_segment
-  ) {
+unsigned int GetPaddedLogicalPath(const EipUint8 **logical_path_segment) {
   unsigned int padded_logical_path = *(*logical_path_segment)++;
 
   if ( (padded_logical_path & 3) == 0 ) {
@@ -256,17 +248,13 @@ unsigned int GetPaddedLogicalPath(
  * and the per-new-connection-incremented connection number/counter.
  * @return new connection id
  */
-EipUint32 GetConnectionId(
-  void
-  ) {
+EipUint32 GetConnectionId(void) {
   static EipUint32 connection_id = 18;
   connection_id++;
   return ( g_incarnation_id | (connection_id & 0x0000FFFF) );
 }
 
-void InitializeConnectionManager(
-  CipClass *class
-  ) {
+void InitializeConnectionManager(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
@@ -290,9 +278,7 @@ void InitializeConnectionManager(
 
 }
 
-EipStatus ConnectionManagerInit(
-  EipUint16 unique_connection_id
-  ) {
+EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InitializeConnectionManagerData();
 
   CipClass *connection_manager = CreateCipClass(
@@ -460,8 +446,7 @@ void ReadOutConnectionObjectFromMessage(
 }
 
 ForwardOpenConnectionType GetConnectionType(
-  EipUint16 network_connection_parameter
-  ) {
+  EipUint16 network_connection_parameter) {
   const EipUint16 kConnectionParameterMask = 0x6000;
 
   ForwardOpenConnectionType connection_type = network_connection_parameter
@@ -475,8 +460,7 @@ ForwardOpenConnectionType GetConnectionType(
 }
 
 ForwardOpenPriority GetConnectionObjectTToOPriority(
-  const ConnectionObject *const connection_object
-  ) {
+  const ConnectionObject *const connection_object) {
 
   const EipUint16 kConnectionParameterMask = 0xC00;
   CipUsint priority_value = 0x00;
@@ -738,9 +722,7 @@ EipStatus ForwardOpen(
                           message_router_request, message_router_response);
 }
 
-void GeneralConnectionConfiguration(
-  ConnectionObject *connection_object
-  ) {
+void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
   if ( kForwardOpenConnectionTypePointToPointConnection
        == (connection_object->o_to_t_network_connection_parameter
            & kForwardOpenConnectionTypePointToPointConnection) ) {
@@ -883,9 +865,7 @@ EipStatus GetConnectionOwner(
   return kEipStatusOk;
 }
 
-EipStatus ManageConnections(
-  MilliSeconds elapsed_time
-  ) {
+EipStatus ManageConnections(MilliSeconds elapsed_time) {
   //OPENER_TRACE_INFO("Entering ManageConnections\n");
   /*Inform application that it can execute */
   HandleApplication();
@@ -1073,8 +1053,7 @@ EipStatus AssembleForwardOpenResponse(
  * @param common_data_packet_format_data The CPF data packet where the Null Address Item shall be added
  */
 void AddNullAddressItem(
-  CipCommonPacketFormatData *common_data_packet_format_data
-  ) {
+  CipCommonPacketFormatData *common_data_packet_format_data) {
   /* Precondition: Null Address Item only valid in unconnected messages */
   assert(
     common_data_packet_format_data->data_item.type_id
@@ -1147,9 +1126,7 @@ EipStatus AssembleForwardCloseResponse(
   return kEipStatusOkSend;
 }
 
-ConnectionObject *GetConnectedObject(
-  EipUint32 connection_id
-  ) {
+ConnectionObject *GetConnectedObject(EipUint32 connection_id) {
   ConnectionObject *active_connection_object_list_item =
     g_active_connection_list;
   while (NULL != active_connection_object_list_item) {
@@ -1166,9 +1143,7 @@ ConnectionObject *GetConnectedObject(
   return NULL;
 }
 
-ConnectionObject *GetConnectedOutputAssembly(
-  EipUint32 output_assembly_id
-  ) {
+ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id) {
   ConnectionObject *active_connection_object_list_item =
     g_active_connection_list;
 
@@ -1189,8 +1164,7 @@ ConnectionObject *GetConnectedOutputAssembly(
 }
 
 ConnectionObject *CheckForExistingConnection(
-  ConnectionObject *connection_object
-  ) {
+  ConnectionObject *connection_object) {
   ConnectionObject *active_connection_object_list_item =
     g_active_connection_list;
 
@@ -1587,9 +1561,7 @@ EipUint8 ParseConnectionPath(
   return kEipStatusOk;
 }
 
-void CloseConnection(
-  ConnectionObject *RESTRICT connection_object
-  ) {
+void CloseConnection(ConnectionObject *RESTRICT connection_object) {
   connection_object->state = kConnectionStateNonExistent;
   if ( 0x03 != (connection_object->transport_type_class_trigger & 0x03) ) {
     /* only close the UDP connection for not class 3 connections */
@@ -1612,9 +1584,7 @@ void CopyConnectionData(
   memcpy( destination, source, sizeof(ConnectionObject) );
 }
 
-void AddNewActiveConnection(
-  ConnectionObject *connection_object
-  ) {
+void AddNewActiveConnection(ConnectionObject *connection_object) {
   connection_object->first_connection_object = NULL;
   connection_object->next_connection_object = g_active_connection_list;
   if (NULL != g_active_connection_list) {
@@ -1624,9 +1594,7 @@ void AddNewActiveConnection(
   g_active_connection_list->state = kConnectionStateEstablished;
 }
 
-void RemoveFromActiveConnections(
-  ConnectionObject *connection_object
-  ) {
+void RemoveFromActiveConnections(ConnectionObject *connection_object) {
 
   if (NULL != connection_object->first_connection_object) {
     connection_object->first_connection_object->next_connection_object =
@@ -1644,9 +1612,7 @@ void RemoveFromActiveConnections(
   connection_object->state = kConnectionStateNonExistent;
 }
 
-EipBool8 IsConnectedOutputAssembly(
-  const EipUint32 instance_number
-  ) {
+EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
   EipBool8 is_connected = false;
 
   ConnectionObject *iterator = g_active_connection_list;
@@ -1683,9 +1649,7 @@ EipStatus AddConnectableObject(
 }
 
 ConnectionManagementHandling *
-GetConnectionManagementEntry(
-  EipUint32 class_id
-  ) {
+GetConnectionManagementEntry(EipUint32 class_id) {
 
   ConnectionManagementHandling *connection_management_entry = NULL;
 
