@@ -58,9 +58,9 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
 
 /** @brief #13 Number of seconds of inactivity before TCP connection is closed
  *
- * Currently we implemented with the default value of 120 (0x78).
+ * Currently we implemented with the default value of 120 seconds.
  */
-EipUint16 g_encapsulation_inactivity_timeout = 0x78;
+EipUint16 g_encapsulation_inactivity_timeout = 120;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -141,8 +141,9 @@ EipStatus SetAttributeSingleTcp(
                                .attribute_number;
 
   if (NULL != attribute) {
-  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
-                                                              attribute_number)]);
+    uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
+                                                                attribute_number)
+                            ]);
     if ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) {
       switch (attribute_number) {
         case 3: {
@@ -296,71 +297,82 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   message_router_response->general_status = kCipErrorAttributeNotSupported;
 
-    if (9 == message_router_request->request_path.attribute_number ) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
-
-    	if (0 == (get_bit_mask & ( 1 << ( attribute_number  % 8 ) )) ) {
-    		return kEipStatusOkSend;
-    	}
+  if (9 == message_router_request->request_path.attribute_number ) {   /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+    if (kGetAttributeAll == message_router_request->service) {
+      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                              attribute_number)
+                      ]);
       message_router_response->general_status = kCipErrorSuccess;
-
-      message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.alloc_control), &message);
-      message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
-        &message);
-      message_router_response->data_length += EncodeData(
-        kCipUint,
-        &(g_multicast_configuration.number_of_allocated_multicast_addresses),
-        &message);
-
-      EipUint32 multicast_address = ntohl(
-        g_multicast_configuration.starting_multicast_address);
-
-      message_router_response->data_length += EncodeData(kCipUdint,
-                                                         &multicast_address,
-                                                         &message);
     } else {
-      CipAttributeStruct *attribute = GetCipAttribute(instance,
-                                                      attribute_number);
-
-      if ( (NULL != attribute) && ( NULL != attribute->data)) {
-
-        OPENER_TRACE_INFO(
-          "getAttribute %d\n",
-          message_router_request->request_path.attribute_number);   /* create a reply message containing the data*/
-
-        if (kGetAttributeAll == message_router_request->service) {
-            get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                                    attribute_number)]);
-            message_router_response->general_status = kCipErrorSuccess;
-          } else {
-            get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                                       attribute_number)
-                            ]);
-          }
-
-        if(0 == (get_bit_mask &  (1 << ( (attribute_number ) % 8 ) ) ) ) {
-        	return kEipStatusOkSend;
-        }
-
-        /*TODO think if it is better to put this code in an own
-         * getAssemblyAttributeSingle functions which will call get attribute
-         * single.
-         */
-
-        if (attribute->type == kCipByteArray
-            && instance->cip_class->class_id == kCipAssemblyClassCode) {
-          /* we are getting a byte array of a assembly object, kick out to the app callback */
-          OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
-          BeforeAssemblyDataSend(instance);
-        }
-
-        message_router_response->data_length = EncodeData(attribute->type,
-                                                          attribute->data,
-                                                          &message);
-        message_router_response->general_status = kCipErrorSuccess;
-      }
+      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                                 attribute_number)
+                      ]);
     }
+
+    if ( 0 == ( get_bit_mask & ( 1 << ( attribute_number  % 8 ) ) ) ) {
+      return kEipStatusOkSend;
+    }
+    message_router_response->general_status = kCipErrorSuccess;
+
+    message_router_response->data_length += EncodeData(
+      kCipUsint, &(g_multicast_configuration.alloc_control), &message);
+    message_router_response->data_length += EncodeData(
+      kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
+      &message);
+    message_router_response->data_length += EncodeData(
+      kCipUint,
+      &(g_multicast_configuration.number_of_allocated_multicast_addresses),
+      &message);
+
+    EipUint32 multicast_address = ntohl(
+      g_multicast_configuration.starting_multicast_address);
+
+    message_router_response->data_length += EncodeData(kCipUdint,
+                                                       &multicast_address,
+                                                       &message);
+  } else {
+    CipAttributeStruct *attribute = GetCipAttribute(instance,
+                                                    attribute_number);
+
+    if ( (NULL != attribute) && ( NULL != attribute->data) ) {
+
+      OPENER_TRACE_INFO(
+        "getAttribute %d\n",
+        message_router_request->request_path.attribute_number);     /* create a reply message containing the data*/
+
+      if (kGetAttributeAll == message_router_request->service) {
+        get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                                attribute_number)
+                        ]);
+        message_router_response->general_status = kCipErrorSuccess;
+      } else {
+        get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                                   attribute_number)
+                        ]);
+      }
+
+      if( 0 == ( get_bit_mask &  ( 1 << ( (attribute_number ) % 8 ) ) ) ) {
+        return kEipStatusOkSend;
+      }
+
+      /*TODO think if it is better to put this code in an own
+       * getAssemblyAttributeSingle functions which will call get attribute
+       * single.
+       */
+
+      if (attribute->type == kCipByteArray
+          && instance->cip_class->class_id == kCipAssemblyClassCode) {
+        /* we are getting a byte array of a assembly object, kick out to the app callback */
+        OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
+        BeforeAssemblyDataSend(instance);
+      }
+
+      message_router_response->data_length = EncodeData(attribute->type,
+                                                        attribute->data,
+                                                        &message);
+      message_router_response->general_status = kCipErrorSuccess;
+    }
+  }
 
   return kEipStatusOkSend;
 }
