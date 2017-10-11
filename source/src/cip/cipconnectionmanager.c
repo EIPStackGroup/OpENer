@@ -766,7 +766,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
                                                             / 1000 );
   }
 
-  connection_object->production_inhibit_timer = 0;
+  connection_object->production_inhibit_timer = connection_object->production_inhibit_time;
 
   /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
@@ -1680,7 +1680,7 @@ EipStatus TriggerConnections(
                & kConnectionTriggerTypeProductionTriggerMask) ) {
         /* produce at the next allowed occurrence */
         pstRunner->transmission_trigger_timer = pstRunner
-                                                ->production_inhibit_timer;
+                                                ->production_inhibit_time;
         status = kEipStatusOk;
       }
       break;
