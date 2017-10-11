@@ -58,9 +58,9 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
 
 /** @brief #13 Number of seconds of inactivity before TCP connection is closed
  *
- * Currently we implemented with the default value of 120 (0x78).
+ * Currently we implemented with the default value of 120 seconds.
  */
-EipUint16 g_encapsulation_inactivity_timeout = 0x78;
+EipUint16 g_encapsulation_inactivity_timeout = 120;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -298,6 +298,16 @@ EipStatus GetAttributeSingleTcpIpInterface(
   message_router_response->general_status = kCipErrorAttributeNotSupported;
 
   if (9 == message_router_request->request_path.attribute_number ) {   /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+    if (kGetAttributeAll == message_router_request->service) {
+      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                              attribute_number)
+                      ]);
+      message_router_response->general_status = kCipErrorSuccess;
+    } else {
+      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                                 attribute_number)
+                      ]);
+    }
 
     if ( 0 == ( get_bit_mask & ( 1 << ( attribute_number  % 8 ) ) ) ) {
       return kEipStatusOkSend;
