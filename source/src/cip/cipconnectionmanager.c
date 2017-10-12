@@ -766,7 +766,8 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
                                                             / 1000 );
   }
 
-  connection_object->production_inhibit_timer = connection_object->production_inhibit_time;
+  connection_object->production_inhibit_timer =
+    connection_object->production_inhibit_time;
 
   /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
