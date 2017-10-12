@@ -357,8 +357,11 @@ EipStatus NetworkHandlerProcessOnce(void) {
           CloseSession(socket); /* clean up session and close the socket */
         }
       }
-      CheckEncapsulationInactivity(socket);
     }
+  }
+
+  for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
+    CheckEncapsulationInactivity(socket);
   }
 
   //OPENER_TRACE_INFO("Socket Loop done\n");
@@ -894,7 +897,7 @@ int GetMaxSocket(int socket1,
 
 void CheckEncapsulationInactivity(int socket_handle) {
 
-  if (0 < g_encapsulation_inactivity_timeout) {
+  if (0 < g_encapsulation_inactivity_timeout) { //*< Encapsulation inactivity timeout is enabled
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
@@ -904,10 +907,10 @@ void CheckEncapsulationInactivity(int socket_handle) {
                       socket_handle,
                       socket_timer);
     if(NULL != socket_timer) {
-      MilliSeconds diffms = g_actual_time - SocketTimerGetLastUpdate(
+      MilliSeconds diff_milliseconds = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
 
-      if ( diffms >=
+      if ( diff_milliseconds >=
            (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout) ) {
         CloseSocket(socket_handle);
         CloseSession(socket_handle);
