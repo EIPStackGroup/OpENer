@@ -110,7 +110,8 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
                                             struct sockaddr *originator_address);
 
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data, struct sockaddr *originator_address);
+  EncapsulationData *receive_data,
+  struct sockaddr *originator_address);
 
 int GetFreeSessionIndex(void);
 
@@ -450,9 +451,11 @@ void HandleReceivedRegisterSessionCommand(int socket,
   int session_index = 0;
   const EipUint8 *receive_data_buffer = NULL;
   EipUint16 protocol_version = GetIntFromMessage(
-    (const EipUint8 **const)&receive_data->current_communication_buffer_position);
+    (const EipUint8 **const)&receive_data->
+    current_communication_buffer_position);
   EipUint16 nOptionFlag = GetIntFromMessage(
-    (const EipUint8 **const)&receive_data->current_communication_buffer_position);
+    (const EipUint8 **const)&receive_data->
+    current_communication_buffer_position);
 
   /* check if requested protocol version is supported and the register session option flag is zero*/
   if ( (0 < protocol_version) && (protocol_version <= kSupportedProtocolVersion)
@@ -513,7 +516,7 @@ EipStatus HandleReceivedUnregisterSessionCommand(
   if ( (0 < receive_data->session_handle)
        && (receive_data->session_handle <=
            OPENER_NUMBER_OF_SUPPORTED_SESSIONS) ) {
-    int i = receive_data->session_handle - 1;
+    size_t i = receive_data->session_handle - 1;
     if (kEipInvalidSocket != g_registered_sessions[i]) {
       IApp_CloseSocket_tcp(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
@@ -540,9 +543,11 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
     GetDintFromMessage(
-      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                 /* skip over null interface handle*/
+      (const EipUint8 **const)&receive_data->
+      current_communication_buffer_position );                                                        /* skip over null interface handle*/
     GetIntFromMessage(
-      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over unused timeout value*/
+      (const EipUint8 **const)&receive_data->
+      current_communication_buffer_position );                                                       /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
@@ -550,7 +555,8 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
       send_size =
         NotifyConnectedCommonPacketFormat(
           receive_data,
-          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH],
+          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH
+          ],
           originator_address);
 
       if (0 < send_size) { /* need to send reply */
@@ -572,7 +578,8 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
  *                                      -1 .. error
  */
 EipStatus HandleReceivedSendRequestResponseDataCommand(
-  EncapsulationData *receive_data, struct sockaddr *originator_address) {
+  EncapsulationData *receive_data,
+  struct sockaddr *originator_address) {
   EipInt16 send_size = 0;
   EipStatus return_value = kEipStatusOkSend;
 
@@ -580,9 +587,11 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
     /* don't use the data yet */
     GetDintFromMessage(
-      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                 /* skip over null interface handle*/
+      (const EipUint8 **const)&receive_data->
+      current_communication_buffer_position );                                                        /* skip over null interface handle*/
     GetIntFromMessage(
-      (const EipUint8 **const)&receive_data->current_communication_buffer_position );                /* skip over unused timeout value*/
+      (const EipUint8 **const)&receive_data->
+      current_communication_buffer_position );                                                       /* skip over unused timeout value*/
     receive_data->data_length -= 6; /* the rest is in CPF format*/
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
@@ -590,7 +599,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
       send_size =
         NotifyCommonPacketFormat(
           receive_data,
-          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH],
+          &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH
+          ],
           originator_address);
 
       if (send_size >= 0) { /* need to send reply */
@@ -672,6 +682,18 @@ void CloseSession(int socket) {
       break;
     }
   }
+  OPENER_TRACE_INFO("encap.c: Close session done\n");
+}
+
+void RemoveSession(const int socket) {
+  OPENER_TRACE_INFO("encap.c: Removing session\n");
+  for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+    if (g_registered_sessions[i] == socket) {
+      g_registered_sessions[i] = kEipInvalidSocket;
+      break;
+    }
+  }
+  OPENER_TRACE_INFO("encap.c: Session removed\n");
 }
 
 void EncapsulationShutDown(void) {

@@ -80,4 +80,6 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
+void RemoveSession(const int socket);
+
 #endif /* OPENER_ENCAP_H_ */

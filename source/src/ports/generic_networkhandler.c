@@ -55,6 +55,8 @@ EipStatus HandleDataOnTcpSocket(int socket);
 
 void CheckEncapsulationInactivity(int socket_handle);
 
+void RemoveSocketTimerFromList(const int socket_handle);
+
 /*************************************************
 * Function implementations from now on
 *************************************************/
@@ -241,6 +243,11 @@ void IApp_CloseSocket_udp(int socket_handle) {
 }
 
 void IApp_CloseSocket_tcp(int socket_handle) {
+  RemoveSocketTimerFromList(socket_handle);
+  CloseSocket(socket_handle);
+}
+
+void RemoveSocketTimerFromList(const int socket_handle) {
   SocketTimer *socket_timer = NULL;
   while( NULL !=
          ( socket_timer =
@@ -250,7 +257,6 @@ void IApp_CloseSocket_tcp(int socket_handle) {
   {
     SocketTimerClear(socket_timer);
   }
-  CloseSocket(socket_handle);
 }
 
 EipBool8 CheckSocketSet(int socket) {
@@ -292,12 +298,12 @@ void CheckAndHandleTcpListenerSocket(void) {
       g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
 
-    OPENER_TRACE_INFO("Current time stamp: %ld\n", g_actual_time);
-    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
-      OPENER_TRACE_INFO("Socket: %d - Last Update: %ld\n",
-                        g_timestamps[i].socket,
-                        g_timestamps[i].last_update);
-    }
+//    OPENER_TRACE_INFO("Current time stamp: %ld\n", g_actual_time);
+//    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
+//      OPENER_TRACE_INFO("Socket: %d - Last Update: %ld\n",
+//                        g_timestamps[i].socket,
+//                        g_timestamps[i].last_update);
+//    }
 
     OPENER_ASSERT(socket_timer != NULL);
 
@@ -353,8 +359,8 @@ EipStatus NetworkHandlerProcessOnce(void) {
         /* if it is still checked it is a TCP receive */
         if ( kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
         {
-          CloseSocket(socket);
-          CloseSession(socket); /* clean up session and close the socket */
+          IApp_CloseSocket_tcp(socket);
+          RemoveSession(socket); /* clean up session and close the socket */
         }
       }
     }
@@ -433,7 +439,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
       received_size = remaining_bytes;
 
       if (reply_length > 0) {
-        OPENER_TRACE_INFO("reply sent:\n");
+        OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
         if (sendto( g_network_status.udp_global_broadcast_listener,
@@ -492,7 +498,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
       received_size = remaining_bytes;
 
       if (reply_length > 0) {
-        OPENER_TRACE_INFO("reply sent:\n");
+        OPENER_TRACE_INFO("UDP unicast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
         if (sendto( g_network_status.udp_unicast_listener,
@@ -563,6 +569,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
+    RemoveSocketTimerFromList(socket);
+    RemoveSession(socket);
     return kEipStatusError;
   }
   if (number_of_read_bytes < 0) {
@@ -603,6 +611,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
           error_code,
           error_message);
         FreeErrorMessage(error_message);
+        RemoveSocketTimerFromList(socket);
         return kEipStatusError;
       }
       if (number_of_read_bytes < 0) {
@@ -630,7 +639,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
                               data_size, 0);
 
-  if (number_of_read_bytes == 0) /* got error or connection closed by client */
+  if (0 == number_of_read_bytes) /* got error or connection closed by client */
   {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
@@ -638,6 +647,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
+    RemoveSocketTimerFromList(socket);
+    RemoveSession(socket);
     return kEipStatusError;
   }
   if (number_of_read_bytes < 0) {
@@ -686,7 +697,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     }
 
     if (number_of_read_bytes > 0) {
-      OPENER_TRACE_INFO("reply sent:\n");
+      OPENER_TRACE_INFO("TCP reply sent:\n");
 
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
                        number_of_read_bytes, 0);
@@ -896,24 +907,23 @@ int GetMaxSocket(int socket1,
 }
 
 void CheckEncapsulationInactivity(int socket_handle) {
-
   if (0 < g_encapsulation_inactivity_timeout) { //*< Encapsulation inactivity timeout is enabled
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
       socket_handle);
 
-    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
-                      socket_handle,
-                      socket_timer);
+//    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
+//                      socket_handle,
+//                      socket_timer);
     if(NULL != socket_timer) {
       MilliSeconds diff_milliseconds = g_actual_time - SocketTimerGetLastUpdate(
         socket_timer);
 
       if ( diff_milliseconds >=
            (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout) ) {
-        CloseSocket(socket_handle);
-        CloseSession(socket_handle);
+        IApp_CloseSocket_tcp(socket_handle);
+        RemoveSession(socket_handle);
       }
     }
   }
