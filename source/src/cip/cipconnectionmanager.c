@@ -1568,11 +1568,11 @@ void CloseConnection(ConnectionObject *RESTRICT connection_object) {
   connection_object->state = kConnectionStateNonExistent;
   if ( 0x03 != (connection_object->transport_type_class_trigger & 0x03) ) {
     /* only close the UDP connection for not class 3 connections */
-    IApp_CloseSocket_udp(
+    CloseUdpSocket(
       connection_object->socket[kUdpCommuncationDirectionConsuming]);
     connection_object->socket[kUdpCommuncationDirectionConsuming] =
       kEipInvalidSocket;
-    IApp_CloseSocket_udp(
+    CloseUdpSocket(
       connection_object->socket[kUdpCommuncationDirectionProducing]);
     connection_object->socket[kUdpCommuncationDirectionProducing] =
       kEipInvalidSocket;

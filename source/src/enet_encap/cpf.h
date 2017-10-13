@@ -107,7 +107,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  */
 EipStatus CreateCommonPacketFormatStructure(
   const EipUint8 *data,
-  int data_length,
+  size_t data_length,
   CipCommonPacketFormatData *common_packet_format_data);
 
 /** @ingroup ENCAP

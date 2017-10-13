@@ -518,7 +518,7 @@ EipStatus HandleReceivedUnregisterSessionCommand(
            OPENER_NUMBER_OF_SUPPORTED_SESSIONS) ) {
     size_t i = receive_data->session_handle - 1;
     if (kEipInvalidSocket != g_registered_sessions[i]) {
-      IApp_CloseSocket_tcp(g_registered_sessions[i]);
+      CloseTcpSocket(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
       return kEipStatusOk;
     }
@@ -675,7 +675,7 @@ void CloseSession(int socket) {
   OPENER_TRACE_INFO("encap.c: Close session\n");
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (g_registered_sessions[i] == socket) {
-      IApp_CloseSocket_tcp(socket);
+      CloseTcpSocket(socket);
       g_registered_sessions[i] = kEipInvalidSocket;
       break;
     }
@@ -698,7 +698,7 @@ void EncapsulationShutDown(void) {
   OPENER_TRACE_INFO("encap.c: Encapsulation shutdown\n");
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (kEipInvalidSocket != g_registered_sessions[i]) {
-      IApp_CloseSocket_tcp(g_registered_sessions[i]);
+      CloseTcpSocket(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
     }
   }

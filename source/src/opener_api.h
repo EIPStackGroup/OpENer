@@ -297,7 +297,7 @@ int DecodeData(const EipUint8 cip_type,
  * In order to support a configuration assembly object it has to be created with
  * this function.
  * The notification on received configuration data is handled with the
- * IApp_after_receive function.
+ * AfterAssemblyDataReceived.
  */
 CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
                                   EipByte *const data,

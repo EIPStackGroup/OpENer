@@ -973,13 +973,13 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object) {
 
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
   ConnectionObject *connection_object) {
-  IApp_CloseSocket_udp(
+  CloseUdpSocket(
     connection_object->socket[kUdpCommuncationDirectionConsuming]);
 
   connection_object->socket[kUdpCommuncationDirectionConsuming] =
     kEipInvalidSocket;
 
-  IApp_CloseSocket_udp(
+  CloseUdpSocket(
     connection_object->socket[kUdpCommuncationDirectionProducing]);
 
   connection_object->socket[kUdpCommuncationDirectionProducing] =

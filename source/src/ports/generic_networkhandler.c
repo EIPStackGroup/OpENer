@@ -238,11 +238,11 @@ EipStatus NetworkHandlerInitialize(void) {
   return kEipStatusOk;
 }
 
-void IApp_CloseSocket_udp(int socket_handle) {
+void CloseUdpSocket(int socket_handle) {
   CloseSocket(socket_handle);
 }
 
-void IApp_CloseSocket_tcp(int socket_handle) {
+void CloseTcpSocket(int socket_handle) {
   RemoveSocketTimerFromList(socket_handle);
   CloseSocket(socket_handle);
 }
@@ -359,7 +359,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
         /* if it is still checked it is a TCP receive */
         if ( kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
         {
-          IApp_CloseSocket_tcp(socket);
+          CloseTcpSocket(socket);
           RemoveSession(socket); /* clean up session and close the socket */
         }
       }
@@ -396,14 +396,11 @@ EipStatus NetworkHandlerFinish(void) {
 
 void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
-  struct sockaddr_in from_address;
-  socklen_t from_address_length;
-
   /* see if this is an unsolicited inbound UDP message */
   if ( true ==
        CheckSocketSet(g_network_status.udp_global_broadcast_listener) ) {
-
-    from_address_length = sizeof(from_address);
+	  struct sockaddr_in from_address = {0};
+	  socklen_t from_address_length = sizeof(from_address);
 
     OPENER_TRACE_STATE(
       "networkhandler: unsolicited UDP message on EIP global broadcast socket\n");
@@ -456,13 +453,12 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
 void CheckAndHandleUdpUnicastSocket(void) {
 
-  struct sockaddr_in from_address;
-  socklen_t from_address_length;
 
   /* see if this is an unsolicited inbound UDP message */
   if ( true == CheckSocketSet(g_network_status.udp_unicast_listener) ) {
 
-    from_address_length = sizeof(from_address);
+  struct sockaddr_in from_address = {0};
+	  socklen_t from_address_length = sizeof(from_address);
 
     OPENER_TRACE_STATE(
       "networkhandler: unsolicited UDP message on EIP unicast socket\n");
@@ -823,8 +819,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 }
 
 void CheckAndHandleConsumingUdpSockets(void) {
-  struct sockaddr_in from_address;
-  socklen_t from_address_length;
 
   ConnectionObject *connection_object_iterator = g_active_connection_list;
   ConnectionObject *current_connection_object = NULL;
@@ -842,7 +836,8 @@ void CheckAndHandleConsumingUdpSockets(void) {
               == CheckSocketSet(
                 current_connection_object->socket[
                   kUdpCommuncationDirectionConsuming]) ) ) {
-      from_address_length = sizeof(from_address);
+    	  struct sockaddr_in from_address = {0};
+    	socklen_t from_address_length = sizeof(from_address);
       int received_size = recvfrom(
         current_connection_object->socket[kUdpCommuncationDirectionConsuming],
         g_ethernet_communication_buffer, PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
@@ -921,8 +916,8 @@ void CheckEncapsulationInactivity(int socket_handle) {
         socket_timer);
 
       if ( diff_milliseconds >=
-           (1000UL * (MilliSeconds)g_encapsulation_inactivity_timeout) ) {
-        IApp_CloseSocket_tcp(socket_handle);
+    		  (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
+        CloseTcpSocket(socket_handle);
         RemoveSession(socket_handle);
       }
     }

@@ -34,7 +34,7 @@ void ShutdownAssemblies(void);
 /** @brief notify an Assembly object that data has been received for it.
  *
  *  The data will be copied into the assembly objects attribute 3 and
- *  the application will be informed with the IApp_after_assembly_data_received function.
+ *  the application will be informed with the AfterAssemblyDataReceived function.
  *
  *  @param instance the assembly object instance for which the data was received
  *  @param data pointer to the data received
