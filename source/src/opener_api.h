@@ -7,6 +7,7 @@
 #define OPENER_OPENER_API_H_
 
 #include <assert.h>
+#include <stdbool.h>
 
 #include "typedefs.h"
 #include "ciptypes.h"
@@ -442,7 +443,7 @@ void ConfigureListenOnlyConnectionPoint(
  */
 int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
-                                 unsigned int buffer_length,
+                                 size_t buffer_length,
                                  int *number_of_remaining_bytes,
                                  struct sockaddr *originator_address);
 
@@ -462,9 +463,9 @@ int HandleReceivedExplictTcpData(int socket,
 int HandleReceivedExplictUdpData(int socket,
                                  struct sockaddr_in *from_address,
                                  EipUint8 *buffer,
-                                 unsigned int buffer_length,
+                                 size_t buffer_length,
                                  int *number_of_remaining_bytes,
-                                 int unicast);
+                                 bool unicast);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
