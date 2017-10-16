@@ -95,6 +95,9 @@ EipBool8 CheckSocketSet(int socket);
  *
  * @return Highest socket id from the provided sockets
  */
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4);
+int GetMaxSocket(int socket1,
+                 int socket2,
+                 int socket3,
+                 int socket4);
 
 #endif /* GENERIC_NETWORKHANDLER_H_ */

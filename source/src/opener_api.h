@@ -160,7 +160,7 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instances,
                           char *name,
                           const EipUint16 revision,
-                           void (*InitializeCipClass)(CipClass *) );
+                          void (*InitializeCipClass)(CipClass *) );
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *

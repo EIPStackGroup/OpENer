@@ -126,7 +126,8 @@ int EncapsulateData(const EncapsulationData *const send_data);
 void DetermineDelayTime(EipByte *buffer_start,
                         DelayedEncapsulationMessage *delayed_message_buffer);
 
-ptrdiff_t EncapsulateListIdentyResponseMessage(EipByte *const communication_buffer);
+ptrdiff_t EncapsulateListIdentyResponseMessage(
+  EipByte *const communication_buffer);
 
 /*   @brief Initializes session list and interface information. */
 void EncapsulationInit(void) {
@@ -390,7 +391,8 @@ void HandleReceivedListIdentityCommandUdp(int socket,
   }
 }
 
-ptrdiff_t EncapsulateListIdentyResponseMessage(EipByte *const communication_buffer) {
+ptrdiff_t EncapsulateListIdentyResponseMessage(
+  EipByte *const communication_buffer) {
   EipUint8 *communication_buffer_runner = communication_buffer;
 
   AddIntToMessage( 1, &(communication_buffer_runner) ); /* Item count: one item */
@@ -551,7 +553,7 @@ EipStatus HandleReceivedSendUnitDataCommand(EncapsulationData *receive_data,
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
     {
-    	EipInt16 send_size =
+      EipInt16 send_size =
         NotifyConnectedCommonPacketFormat(
           receive_data,
           &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH
@@ -594,7 +596,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
 
     if ( kSessionStatusValid == CheckRegisteredSessions(receive_data) ) /* see if the EIP session is registered*/
     {
-    	EipInt16 send_size =
+      EipInt16 send_size =
         NotifyCommonPacketFormat(
           receive_data,
           &receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH

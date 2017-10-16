@@ -841,8 +841,15 @@ EipStatus ForwardClose(
     }
     connection_object = connection_object->next_connection_object;
   }
-  if(kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound == connection_status) {
-  OPENER_TRACE_INFO("Connection not found! Requested connection triad: %u, %u, %u\n", connection_serial_number, originator_vendor_id, originator_serial_number);;
+  if(
+    kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound
+    ==
+    connection_status) {
+    OPENER_TRACE_INFO(
+      "Connection not found! Requested connection triad: %u, %u, %u\n",
+      connection_serial_number,
+      originator_vendor_id,
+      originator_serial_number);
   }
 
   return AssembleForwardCloseResponse(connection_serial_number,

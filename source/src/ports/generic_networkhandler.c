@@ -399,8 +399,8 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
   /* see if this is an unsolicited inbound UDP message */
   if ( true ==
        CheckSocketSet(g_network_status.udp_global_broadcast_listener) ) {
-	  struct sockaddr_in from_address = {0};
-	  socklen_t from_address_length = sizeof(from_address);
+    struct sockaddr_in from_address = {0};
+    socklen_t from_address_length = sizeof(from_address);
 
     OPENER_TRACE_STATE(
       "networkhandler: unsolicited UDP message on EIP global broadcast socket\n");
@@ -457,8 +457,8 @@ void CheckAndHandleUdpUnicastSocket(void) {
   /* see if this is an unsolicited inbound UDP message */
   if ( true == CheckSocketSet(g_network_status.udp_unicast_listener) ) {
 
-  struct sockaddr_in from_address = {0};
-	  socklen_t from_address_length = sizeof(from_address);
+    struct sockaddr_in from_address = {0};
+    socklen_t from_address_length = sizeof(from_address);
 
     OPENER_TRACE_STATE(
       "networkhandler: unsolicited UDP message on EIP unicast socket\n");
@@ -836,8 +836,8 @@ void CheckAndHandleConsumingUdpSockets(void) {
               == CheckSocketSet(
                 current_connection_object->socket[
                   kUdpCommuncationDirectionConsuming]) ) ) {
-    	  struct sockaddr_in from_address = {0};
-    	socklen_t from_address_length = sizeof(from_address);
+      struct sockaddr_in from_address = {0};
+      socklen_t from_address_length = sizeof(from_address);
       int received_size = recvfrom(
         current_connection_object->socket[kUdpCommuncationDirectionConsuming],
         g_ethernet_communication_buffer, PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
@@ -916,7 +916,7 @@ void CheckEncapsulationInactivity(int socket_handle) {
         socket_timer);
 
       if ( diff_milliseconds >=
-    		  (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
+           (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
         CloseTcpSocket(socket_handle);
         RemoveSession(socket_handle);
       }
