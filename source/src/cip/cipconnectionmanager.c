@@ -673,7 +673,7 @@ EipStatus ForwardOpen(
                                      &g_dummy_connection_object);
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
-          sizeof(g_dummy_connection_object.original_opener_ip_address) );
+          sizeof(g_dummy_connection_object.originator_address) );
 
   ForwardOpenConnectionType o_to_t_connection_type = GetConnectionType(
     g_dummy_connection_object.o_to_t_network_connection_parameter);
@@ -840,6 +840,9 @@ EipStatus ForwardClose(
       }
     }
     connection_object = connection_object->next_connection_object;
+  }
+  if(kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound == connection_status) {
+  OPENER_TRACE_INFO("Connection not found! Requested connection triad: %u, %u, %u\n", connection_serial_number, originator_vendor_id, originator_serial_number);;
   }
 
   return AssembleForwardCloseResponse(connection_serial_number,
