@@ -349,14 +349,8 @@ EipStatus HandleReceivedConnectedData(
                  sequence_number,
                  connection_object->eip_level_sequence_count_consuming) ) {
             /* reset the watchdog timer */
-            connection_object->inactivity_watchdog_timer = (connection_object
-                                                            ->
-                                                            o_to_t_requested_packet_interval
-                                                            / 1000)
-                                                           << (2 +
-                                                               connection_object
-                                                               ->
-                                                               connection_timeout_multiplier);
+            connection_object->inactivity_watchdog_timer =
+              GetConnectionObjectInactivityWatchdogTimerValue(connection_object);
 
             /* only inform assembly object if the sequence counter is greater or equal */
             connection_object->eip_level_sequence_count_consuming =
@@ -722,6 +716,20 @@ EipStatus ForwardOpen(
                           message_router_request, message_router_response);
 }
 
+EipUint32 GetConnectionObjectInitialInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object) {
+  return (GetConnectionObjectInactivityWatchdogTimerValue(connection_object) >
+          10000) ?
+         GetConnectionObjectInactivityWatchdogTimerValue(connection_object) :
+         10000;
+}
+
+EipUint32 GetConnectionObjectInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object) {
+  return ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
+           << (2 + connection_object->connection_timeout_multiplier) );
+}
+
 void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
   if ( kForwardOpenConnectionTypePointToPointConnection
        == (connection_object->o_to_t_network_connection_parameter
@@ -771,11 +779,7 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
 
   /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
-    ( ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
-        << (2 + connection_object->connection_timeout_multiplier) ) > 10000 ) ?
-    ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
-      << (2 + connection_object->connection_timeout_multiplier) ) :
-    10000;
+    GetConnectionObjectInitialInactivityWatchdogTimerValue(connection_object);
 
   connection_object->consumed_connection_size = connection_object
                                                 ->
@@ -885,12 +889,13 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
   while (NULL != connection_object) {
     //OPENER_TRACE_INFO("Entering Connection Object loop\n");
     if (kConnectionStateEstablished == connection_object->state) {
-      if ( (0 != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
+      if ( (NULL != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
            (connection_object->transport_type_class_trigger & 0x80) ) /* all sever connections have to maintain an inactivity watchdog timer */
       {
         if (elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
-          OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
+          OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
+                            connection_object->connection_serial_number);
           OPENER_ASSERT(NULL != connection_object->connection_timeout_function);
           connection_object->connection_timeout_function(connection_object);
         } else {

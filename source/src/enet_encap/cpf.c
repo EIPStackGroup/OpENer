@@ -83,13 +83,8 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
         .connection_identifier);
       if (NULL != connection_object) {
         /* reset the watchdog timer */
-        connection_object->inactivity_watchdog_timer = (connection_object
-                                                        ->
-                                                        o_to_t_requested_packet_interval
-                                                        / 1000)
-                                                       << (2 +
-                                                           connection_object->
-                                                           connection_timeout_multiplier);
+        connection_object->inactivity_watchdog_timer =
+          GetConnectionObjectInactivityWatchdogTimerValue(connection_object);
 
         /*TODO check connection id  and sequence count    */
         if (g_common_packet_format_data_item.data_item.type_id

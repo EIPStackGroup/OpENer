@@ -432,7 +432,7 @@ ptrdiff_t EncapsulateListIdentyResponseMessage(
 void DetermineDelayTime(EipByte *buffer_start,
                         DelayedEncapsulationMessage *delayed_message_buffer) {
 
-  MoveMessageNOctets(12, buffer_start); /* start of the sender context */
+  MoveMessageNOctets(12, &buffer_start); /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(
     (const EipUint8 **const)&buffer_start );
 

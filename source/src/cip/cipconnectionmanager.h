@@ -465,4 +465,7 @@ ConnectionObjectFixedVariable
 GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
   const ConnectionObject *const RESTRICT connection_object);
 
+EipUint32 GetConnectionObjectInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object);
+
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */
