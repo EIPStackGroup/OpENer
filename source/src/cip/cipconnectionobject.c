@@ -18,6 +18,10 @@
 #define CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO 1
 #define CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED 2
 
+#define CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CYCLIC (0 << 4)
+#define CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CHANGE_OF_STATE (1 << 4)
+#define CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_APPLICATION_OBJECT (2 << 4)
+
 ConnectionObjectState GetConnectionObjectState(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->state) {
@@ -47,7 +51,6 @@ ConnectionObjectInstanceType GetConnectionObjectInstanceType(
 	case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED: return kConnectionObjectInstanceTypeCipBridged; break;
 	default: return kConnectionObjectInstanceTypeInvalid;
 	}
-
 }
 
 ConnectionObjectTransportClassTriggerDirection
@@ -59,4 +62,14 @@ GetConnectionObjectTransportClassTriggerDirection(
          TransportClassTriggerDirectionMask ?
          kConnectionObjectTransportClassTriggerDirectionServer
          : kConnectionObjectTransportClassTriggerDirectionClient;
+}
+
+ConnectionObjectTransportClassTriggerProductionTrigger GetConnectionObjectTransportClassTriggerProductionTrigger(const CipConnectionObject *const connection_object) {
+const CipByte kTransportClassTriggerProductionTriggerMask = 0x70;
+switch( (connection_object->transport_class_trigger) & kTransportClassTriggerProductionTriggerMask) {
+case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CYCLIC: return kConnectionObjectTransportClassTriggerProductionTriggerCyclic; break;
+case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CHANGE_OF_STATE: return kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState; break;
+case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_APPLICATION_OBJECT: return kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject; break;
+default: return kConnectionObjectTransportClassTriggerProductionTriggerInvalid;
+}
 }

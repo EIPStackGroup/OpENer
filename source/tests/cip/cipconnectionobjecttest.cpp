@@ -101,3 +101,45 @@ TEST(CipConnectionObject, InstanceTypeCipBridged) {
 	ConnectionObjectInstanceType type = GetConnectionObjectInstanceType(&connection_object);
 	CHECK_EQUAL(kConnectionObjectInstanceTypeCipBridged, type);
 }
+
+TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 0x80;
+	ConnectionObjectTransportClassTriggerDirection direction = GetConnectionObjectTransportClassTriggerDirection(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerDirectionServer, direction);
+}
+
+TEST(CipConnectionObject, TransportClassTriggerDirectionClient) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 0x00;
+	ConnectionObjectTransportClassTriggerDirection direction = GetConnectionObjectTransportClassTriggerDirection(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerDirectionClient, direction);
+}
+
+TEST(CipConnectionObject, TransportClassTriggerProductionTriggerInvalid) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 3 << 4;
+	ConnectionObjectTransportClassTriggerProductionTrigger production_trigger = GetConnectionObjectTransportClassTriggerProductionTrigger(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerInvalid, production_trigger);
+}
+
+TEST(CipConnectionObject, TransportClassTriggerProductionTriggerCyclic) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 0x00;
+	ConnectionObjectTransportClassTriggerProductionTrigger production_trigger = GetConnectionObjectTransportClassTriggerProductionTrigger(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerCyclic, production_trigger);
+}
+
+TEST(CipConnectionObject, TransportClassTriggerProductionTriggerChangeOfState) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 1 << 4;
+	ConnectionObjectTransportClassTriggerProductionTrigger production_trigger = GetConnectionObjectTransportClassTriggerProductionTrigger(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState, production_trigger);
+}
+
+TEST(CipConnectionObject, TransportClassTriggerProductionTriggerApplicationObject) {
+	CipConnectionObject connection_object = { 0 };
+	connection_object.transport_class_trigger = 2 << 4;
+	ConnectionObjectTransportClassTriggerProductionTrigger production_trigger = GetConnectionObjectTransportClassTriggerProductionTrigger(&connection_object);
+	CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject, production_trigger);
+}

@@ -81,4 +81,6 @@ ConnectionObjectTransportClassTriggerDirection
 GetConnectionObjectTransportClassTriggerDirection(
   const CipConnectionObject *const connection_object);
 
+ConnectionObjectTransportClassTriggerProductionTrigger GetConnectionObjectTransportClassTriggerProductionTrigger(const CipConnectionObject *const connection_object);
+
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */
