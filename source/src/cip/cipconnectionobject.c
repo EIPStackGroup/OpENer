@@ -6,7 +6,7 @@
 
 #include "cipconnectionobject.h"
 
-#define CIP_CONNECTION_OBJECT_STATE_NON_EXISTANT 0U
+#define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U
 #define CIP_CONNECTION_OBJECT_STATE_WAITING_FOR_CONNECTION_ID 2U
 #define CIP_CONNECTION_OBJECT_STATE_ESTABLISHED 3U
@@ -17,8 +17,8 @@
 ConnectionObjectState GetConnectionObjectState(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->state) {
-    case CIP_CONNECTION_OBJECT_STATE_NON_EXISTANT: return
-        kConnectionObjectStateNonExistant; break;
+    case CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT: return
+        kConnectionObjectStateNonExistent; break;
     case CIP_CONNECTION_OBJECT_STATE_CONFIGURING: return
         kConnectionObjectStateConfiguring; break;
     case CIP_CONNECTION_OBJECT_STATE_WAITING_FOR_CONNECTION_ID: return
@@ -28,7 +28,7 @@ ConnectionObjectState GetConnectionObjectState(
     case CIP_CONNECTION_OBJECT_STATE_TIMEOUT: return
         kConnectionObjectStateTimedOut; break;
     case CIP_CONNECTION_OBJECT_STATE_DEFERRED_DELETE: return
-        kConnectionStateDeferredDelete; break;
+        kConnectionObjectStateDeferredDelete; break;
     case CIP_CONNECTION_OBJECT_STATE_CLOSING: return
         kConnectionObjectStateClosing; break;
     default: return kConnectionObjectStateInvalid;

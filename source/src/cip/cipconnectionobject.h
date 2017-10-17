@@ -8,12 +8,13 @@
 #define SRC_CIP_CIPCONNECTIONOBJECT_H_
 
 #include "typedefs.h"
+#include "ciptypes.h"
 
 #define CIP_CONNECTION_OBJECT_CODE 0x05
 
 typedef enum {
   kConnectionObjectStateInvalid = -1,
-  kConnectionObjectStateNonExistant = 0,
+  kConnectionObjectStateNonExistent = 0,
   kConnectionObjectStateConfiguring,
   kConnectionObjectStateWaitingForConnectionID,
   kConnectionObjectStateEstablished,
@@ -23,6 +24,7 @@ typedef enum {
 } ConnectionObjectState;
 
 typedef enum {
+  kConnectionObjectInstanceTypeInvalid = -1,
   kConnectionObjectInstanceTypeExplicitMessaging = 0,
   kConnectionObjectInstanceTypeIO,
   kConnectionObjectInstanceTypeCipBridged
@@ -34,12 +36,14 @@ typedef enum {
 } ConnectionObjectTransportClassTriggerDirection;
 
 typedef enum {
+  kConnectionObjectTransportClassTriggerProductionTriggerInvalid = -1,
   kConnectionObjectTransportClassTriggerProductionTriggerCyclic = 0,
   kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,
   kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject
 } ConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {
+  kConnectionObjectTransportClassTriggerTransportClassInvalid = -1,
   kConnectionObjectTransportClassTriggerTransportClass0 = 0,
   kConnectionObjectTransportClassTriggerTransportClass1,
   kConnectionObjectTransportClassTriggerTransportClass2,
