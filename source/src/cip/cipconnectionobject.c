@@ -14,6 +14,10 @@
 #define CIP_CONNECTION_OBJECT_STATE_DEFERRED_DELETE 5U
 #define CIP_CONNECTION_OBJECT_STATE_CLOSING 6U
 
+#define CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING 0
+#define CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO 1
+#define CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED 2
+
 ConnectionObjectState GetConnectionObjectState(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->state) {
@@ -37,6 +41,12 @@ ConnectionObjectState GetConnectionObjectState(
 
 ConnectionObjectInstanceType GetConnectionObjectInstanceType(
   const CipConnectionObject *const connection_object) {
+	switch(connection_object->instance_type) {
+	case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING: return kConnectionObjectInstanceTypeExplicitMessaging; break;
+	case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO: return kConnectionObjectInstanceTypeIO; break;
+	case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED: return kConnectionObjectInstanceTypeCipBridged; break;
+	default: return kConnectionObjectInstanceTypeInvalid;
+	}
 
 }
 
