@@ -7,3 +7,4 @@ IMPORT_TEST_GROUP(CipEpath);
 IMPORT_TEST_GROUP(CipElectronicKey);
 IMPORT_TEST_GROUP(CipConnectionManager);
 IMPORT_TEST_GROUP(SocketTimer);
+IMPORT_TEST_GROUP(DoublyLinkedList);
