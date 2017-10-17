@@ -1,9 +1,8 @@
-/*
- * random.h
+/*******************************************************************************
+ * Copyright (c) 2017, Rockwell Automation, Inc.
+ * All rights reserved.
  *
- *  Created on: Dec 1, 2013
- *      Author: mmm
- */
+ ******************************************************************************/
 
 #ifndef OPENER_RANDOM_H_
 #define OPENER_RANDOM_H_
