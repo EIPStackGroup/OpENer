@@ -32,7 +32,7 @@
 #define CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_2 2
 #define CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_3 3
 
-ConnectionObjectState GetConnectionObjectState(
+ConnectionObjectState ConnectionObjectGetState(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->state) {
     case CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT: return
@@ -53,7 +53,7 @@ ConnectionObjectState GetConnectionObjectState(
   }
 }
 
-ConnectionObjectInstanceType GetConnectionObjectInstanceType(
+ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->instance_type) {
     case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING: return
@@ -67,7 +67,7 @@ ConnectionObjectInstanceType GetConnectionObjectInstanceType(
 }
 
 ConnectionObjectTransportClassTriggerDirection
-GetConnectionObjectTransportClassTriggerDirection(
+ConnectionObjectGetTransportClassTriggerDirection(
   const CipConnectionObject *const connection_object) {
   const CipByte TransportClassTriggerDirectionMask = 0x80;
   return (connection_object->transport_class_trigger &
@@ -78,7 +78,7 @@ GetConnectionObjectTransportClassTriggerDirection(
 }
 
 ConnectionObjectTransportClassTriggerProductionTrigger
-GetConnectionObjectTransportClassTriggerProductionTrigger(
+ConnectionObjectGetTransportClassTriggerProductionTrigger(
   const CipConnectionObject *const connection_object) {
   const CipByte kTransportClassTriggerProductionTriggerMask = 0x70;
   switch( (connection_object->transport_class_trigger) &
@@ -103,7 +103,7 @@ GetConnectionObjectTransportClassTriggerProductionTrigger(
 }
 
 ConnectionObjectTransportClassTriggerTransportClass
-GetConnectionObjectTransportClassTriggerTransportClass(
+ConnectionObjectGetTransportClassTriggerTransportClass(
   const CipConnectionObject *const connection_object) {
   const CipByte kTransportClassTriggerTransportClassMask = 0x0F;
   switch( (connection_object->transport_class_trigger) &
@@ -118,4 +118,52 @@ GetConnectionObjectTransportClassTriggerTransportClass(
       return kConnectionObjectTransportClassTriggerTransportClass3; break;
     default: return kConnectionObjectTransportClassTriggerTransportClassInvalid;
   }
+}
+
+CipUint ConnectionObjectGetProducedConnectionSize(
+  const CipConnectionObject *const connection_object) {
+  return connection_object->produced_connection_size;
+}
+
+void ConnectionObjectSetProducedConnectionSize(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  produced_connection_size) {
+  connection_object->produced_connection_size = produced_connection_size;
+}
+
+CipUint ConnectionObjectGetConsumedConnectionSize(
+  const CipConnectionObject *const connection_object) {
+  return connection_object->consumed_connection_size;
+}
+
+void ConnectionObjectSetConsumedConnectionSize(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  consumed_connection_size) {
+  connection_object->consumed_connection_size = consumed_connection_size;
+}
+
+CipUdint ConnectionObjectGetCipProducedConnectionID(
+  const CipConnectionObject *const connection_object) {
+  return connection_object->cip_produced_connection_id;
+}
+
+void ConnectionObjectSetCipProducedConnectionID(
+  CipConnectionObject *const connection_object,
+  const CipUdint
+  cip_produced_connection_id) {
+  connection_object->cip_produced_connection_id = cip_produced_connection_id;
+}
+
+CipUdint ConnectionObjectGetCipConsumedConnectionID(
+  const CipConnectionObject *const connection_object) {
+  return connection_object->cip_consumed_connection_id;
+}
+
+void ConnectionObjectSetCipConsumedConnectionID(
+  CipConnectionObject *const connection_object,
+  const CipUdint
+  cip_consumed_connection_id) {
+  connection_object->cip_consumed_connection_id = cip_consumed_connection_id;
 }
