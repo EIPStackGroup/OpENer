@@ -210,3 +210,27 @@ TEST(CipConnectionObject, TransportClassTriggerClass3) {
   CHECK_EQUAL(kConnectionObjectTransportClassTriggerTransportClass3,
               transport_class);
 }
+
+TEST(CipConnectionObject, ExpectedPacketRate) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetExpectedPacketRate(&connection_object, 11);
+  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
+    &connection_object);
+  CHECK_EQUAL(20, expected_packet_rate);
+}
+
+TEST(CipConnectionObject, ExpectedPacketRateBelowTimerResolution) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetExpectedPacketRate(&connection_object, 9);
+  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
+    &connection_object);
+  CHECK_EQUAL(10, expected_packet_rate);
+}
+
+TEST(CipConnectionObject, ExpectedPacketRateZero) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetExpectedPacketRate(&connection_object, 0);
+  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
+    &connection_object);
+  CHECK_EQUAL(0, expected_packet_rate);
+}

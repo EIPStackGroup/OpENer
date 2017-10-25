@@ -85,8 +85,29 @@ typedef struct cip_connection_object {
 
 } CipConnectionObject;
 
+/** @brief Array allocator
+ *
+ */
+CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message);
+
+/** @brief Array deallocator
+ *
+ */
+void CipConnectionObjectDelete(CipConnectionObject **connection_object);
+
+void ConnectionObjectInitializeEmpty(
+  CipConnectionObject *const connection_object);
+
+void ConnectionObjectInitializeFromMessage(
+  const CipOctet *message,
+  CipConnectionObject *const
+  connection_object);
+
 ConnectionObjectState ConnectionObjectGetState(
   const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetState(CipConnectionObject *const connection_object,
+                              const ConnectionObjectState state);
 
 ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
   const CipConnectionObject *const connection_object);
@@ -119,6 +140,9 @@ void ConnectionObjectSetConsumedConnectionSize(
   const CipUint
   consumed_connection_size);
 
+CipUint ConnectionObjectGetExpectedPacketRate(
+  const CipConnectionObject *const connection_object);
+
 /**
  * @brief Sets the expected packet rate according to the rules of the CIP specification
  *
@@ -144,6 +168,46 @@ void ConnectionObjectSetCipConsumedConnectionID(
   CipConnectionObject *const connection_object,
   const CipUdint
   cip_consumed_connection_id);
+
+ConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutAction(
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetWatchdofTimeoutAction(
+  CipConnectionObject *const connection_object,
+  const CipUsint
+  watchdog_timeout_action);
+
+CipUint ConnectionObjectGetProducedConnectionPathLength(
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetProducedConnectionPathLength(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  produced_connection_path_length);
+
+CipUint ConnectionObjectGetConsumedConnectionPathLength(
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetConsumedConnectionPathLength(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  consumed_connection_path_length);
+
+CipUint ConnectionObjectGetProductionInhibitTime(
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetProductionInhibitTime(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  production_inhibit_time);
+
+CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetConnectionTimeoutMultiplier(
+  CipConnectionObject *const connection_object,
+  const CipUsint
+  connection_timeout_multiplier);
 
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

@@ -592,7 +592,7 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
 
   /*parsing is now finished all data is available and check now establish the connection */
   ConnectionManagementHandling *connection_management_entry =
-    GetConnectionManagementEntry(
+    GetConnectionManagementEntry( /* Gets correct open connection function for the targeted object */
       g_dummy_connection_object.connection_path.class_id);
   if (NULL != connection_management_entry) {
     temp = connection_management_entry->open_connection_function(
