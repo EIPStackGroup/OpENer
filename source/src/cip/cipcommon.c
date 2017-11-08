@@ -400,6 +400,7 @@ EipStatus GetAttributeSingle(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
+
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
@@ -630,6 +631,7 @@ int DecodeData(const EipUint8 cip_type,
     case (kCipDint):
     case (kCipUdint):
     case (kCipDword):
+    case (kCipReal):
       ( *(EipUint32 *) (data) ) = GetDintFromMessage(message);
       number_of_decoded_bytes = 4;
       break;
@@ -877,4 +879,135 @@ void AllocateAttributeMasks(CipClass *target_class) {
 size_t CalculateIndex(EipUint16 attribute_number) {
   size_t index = attribute_number / 8;
   return index;
+}
+
+size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
+  switch (attribute_struct->type) {
+
+    case (kCipBool):
+      return sizeof(CipBool);
+      break;
+    case (kCipSint):
+      return sizeof(CipSint);
+      break;
+    case (kCipInt):
+      return sizeof(CipInt);
+      break;
+    case (kCipDint):
+      return sizeof(CipDint);
+      break;
+    case (kCipLint):
+      return sizeof(CipLint);
+      break;
+    case (kCipUsint):
+      return sizeof(CipUsint);
+      break;
+    case (kCipUint):
+      return sizeof(CipUint);
+      break;
+    case (kCipUdint):
+      return sizeof(CipUdint);
+      break;
+    case (kCipUlint):
+      return sizeof(CipUlint);
+      break;
+    case (kCipReal):
+      return sizeof(CipReal);
+      break;
+    case (kCipLreal):
+      return sizeof(CipLreal);
+      break;
+    case (kCipStime):
+      return sizeof(CipDint);
+      break;
+    case (kCipDate):
+      return sizeof(CipUint);
+      break;
+    case (kCipTimeOfDay):
+      return sizeof(CipUdint);
+      break;
+    case (kCipDateAndTime):
+      return sizeof(CipUdint) + sizeof(CipUint);
+      break;
+    case (kCipString): {
+      CipString *data = (CipString*) attribute_struct->data;
+      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+    }
+      break;
+    case (kCipByte):
+      return sizeof(CipByte);
+      break;
+    case (kCipWord):
+      return sizeof(CipWord);
+      break;
+    case (kCipDword):
+      return sizeof(CipDword);
+      break;
+    case (kCipLword):
+      return sizeof(CipLword);
+      break;
+    case (kCipString2): {
+      CipString *data = (CipString*) attribute_struct->data;
+      return sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
+    }
+      break;
+    case (kCipFtime):
+      return sizeof(CipDint);
+      break;
+    case (kCipLtime):
+      return sizeof(CipLint);
+      break;
+    case (kCipItime):
+      return sizeof(CipInt);
+      break;
+    case (kCipStringN): {
+      CipStringN *data = (CipStringN*) attribute_struct->data;
+      return sizeof(CipUint) + sizeof(CipUint) + (data->length) * (data->size);
+    }
+      break;
+    case (kCipShortString): {
+      CipShortString *data = (CipShortString*) attribute_struct->data;
+      return sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
+    }
+      break;
+    case (kCipTime):
+      return sizeof(CipDint);
+      break;
+    case (kCipEpath): {
+      CipEpath *data = (CipEpath*) attribute_struct->data;
+      return 2 * (data->path_size);
+    }
+      break;
+    case (kCipEngUnit):
+      return sizeof(CipUint);
+      break;
+    case (kCipUsintUsint):
+      return 2 * sizeof(CipUsint);
+      break;
+    case (kCipUdintUdintUdintUdintUdintString): {
+      CipTcpIpNetworkInterfaceConfiguration *data =
+          (CipTcpIpNetworkInterfaceConfiguration*) attribute_struct->data;
+      return 5 * sizeof(CipUdint) + sizeof(CipUint)
+          + (data->domain_name.length) * sizeof(EipByte);
+    }
+      break;
+    case (kCip6Usint):
+      return 6 * sizeof(CipUsint);
+      break;
+    case (kCipMemberList):
+      return 0;
+      break;
+    case (kCipByteArray): {
+      CipByteArray *data = (CipByteArray*) attribute_struct->data;
+      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+    }
+      break;
+    case (kInternalUint6):
+      return 6 * sizeof(CipUint);
+      break;
+    default:
+      return 0;
+      break;
+
+  }
 }

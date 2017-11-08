@@ -56,6 +56,7 @@ typedef enum cip_data_types {
                            figure out the right way to handle it */
 } CipDataType;
 
+
 /** @brief Definition of CIP service codes
  *
  * An Enum with all CIP service codes. Common services codes range from 0x01 to
@@ -136,6 +137,12 @@ typedef struct {
   EipUint16 length; /**< Length of the String (16 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipString;
+
+typedef struct {
+  EipUint16 size;
+  EipUint16 length; /**< Length of the String (16 bit value) */
+  EipByte *string; /**< Pointer to the string data */
+} CipStringN;
 
 /** @brief Struct for padded EPATHs
  *
@@ -326,6 +333,22 @@ typedef struct {
   CipRoutePath route_path;
   void *data;
 } CipUnconnectedSendParameter;
+
+/** @brief Data of an CIP Ethernet Link object */
+//typedef struct {
+//  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
+//  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
+//  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
+//} CipEthernetLinkObject;
+
+
+
+
+typedef struct {
+  CipUint num_conn_entries;
+  CipBool *conn_open_bits;
+} CipConnectionManagerConnectionEntryList;
+
 
 /* these are used for creating the getAttributeAll masks
    TODO there might be a way simplifying this using __VARARGS__ in #define */
