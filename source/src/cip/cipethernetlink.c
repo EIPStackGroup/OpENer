@@ -45,18 +45,18 @@ typedef struct {
 CipEthernetLinkObject g_ethernet_link;
 
 EipStatus GetAttributeSingleEthernetLink(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest * const message_router_request,
-    CipMessageRouterResponse * const message_router_response,
-    struct sockaddr *originator_address);
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  struct sockaddr *originator_address);
 
 /** @bried Configures the MAC address of the Ethernet Link object*
  *
  *  @param mac_address The MAC address of the Ethernet Link
  */
-void ConfigureMacAddress(const EipUint8 * const mac_address) {
-  memcpy(&g_ethernet_link.physical_address, mac_address,
-         sizeof(g_ethernet_link.physical_address));
+void ConfigureMacAddress(const EipUint8 *const mac_address) {
+  memcpy( &g_ethernet_link.physical_address, mac_address,
+          sizeof(g_ethernet_link.physical_address) );
 
 }
 
@@ -65,13 +65,19 @@ CipUdint dummy_attribute_udint = 0;
 
 CipShortString interface_label = { .length = 0, .string = NULL };
 CipEthernetLinkInterfaceControl interface_control = { .control_bits = 0,
-    .forced_interface_speed = 0 };
+                                                      .forced_interface_speed =
+                                                        0 };
 
 CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_object = { .interface_speed =
-    100, .interface_duplex_mode = 1 };
+                                                               100,
+                                                             .
+                                                             interface_duplex_mode
+                                                               = 1 };
 CipEthernetLinkInterfaceCapability interface_capability = {
-    .capability_bits = 1, .speed_duplex_options = { .speed_duplex_array_count =
-        1, .speed_duplex_array = &speed_duplex_object } };
+  .capability_bits = 1, .speed_duplex_options = { .speed_duplex_array_count =
+                                                    1, .speed_duplex_array =
+                                                    &speed_duplex_object }
+};
 
 EipStatus CipEthernetLinkInit() {
   CipClass *ethernet_link_class = CreateCipClass(CIP_ETHERNETLINK_CLASS_CODE, 0, /* # class attributes*/
@@ -159,65 +165,67 @@ int EncodeInterfaceCapability(EipUint8 **pa_acMsg) {
   return_value += EncodeData(kCipDword, &interface_capability.capability_bits,
                              pa_acMsg);
   return_value += EncodeData(
-      kCipUsint,
-      &interface_capability.speed_duplex_options.speed_duplex_array_count,
-      pa_acMsg);
+    kCipUsint,
+    &interface_capability.speed_duplex_options.speed_duplex_array_count,
+    pa_acMsg);
 
   for (int i = 0;
-      i < interface_capability.speed_duplex_options.speed_duplex_array_count;
-      i++) {
+       i < interface_capability.speed_duplex_options.speed_duplex_array_count;
+       i++) {
     return_value += EncodeData(
-        kCipUint,
-        &(interface_capability.speed_duplex_options.speed_duplex_array[i]
-            .interface_speed),
-        pa_acMsg);
+      kCipUint,
+      &(interface_capability.speed_duplex_options.speed_duplex_array[i]
+        .interface_speed),
+      pa_acMsg);
     return_value += EncodeData(
-        kCipUsint,
-        &(interface_capability.speed_duplex_options.speed_duplex_array[i]
-            .interface_duplex_mode),
-        pa_acMsg);
+      kCipUsint,
+      &(interface_capability.speed_duplex_options.speed_duplex_array[i]
+        .interface_duplex_mode),
+      pa_acMsg);
   }
   return return_value;
 }
 
 EipStatus GetAttributeSingleEthernetLink(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest * const message_router_request,
-    CipMessageRouterResponse * const message_router_response,
-    struct sockaddr *originator_address) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  struct sockaddr *originator_address) {
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(
-      instance, message_router_request->request_path.attribute_number);
+    instance, message_router_request->request_path.attribute_number);
   EipByte *message = message_router_response->data;
 
   message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80
-      | message_router_request->service);
+                                            | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 
   EipUint16 attribute_number = message_router_request->request_path
-      .attribute_number;
+                               .attribute_number;
 
-  if ((NULL != attribute) && (NULL != attribute->data)) {
+  if ( (NULL != attribute) && (NULL != attribute->data) ) {
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-          attribute_number)]);
+                                                              attribute_number)
+                      ]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-          attribute_number)]);
+                                                                 attribute_number)
+                      ]);
     }
-    if (0 != (get_bit_mask & (1 << (attribute_number % 8)))) {
+    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
       switch (attribute_number) {
         case 4:
           message_router_response->data_length = EncodeInterfaceCounters(
-              &message);
+            &message);
           message_router_response->general_status = kCipErrorSuccess;
           break;
         case 5:
@@ -226,12 +234,12 @@ EipStatus GetAttributeSingleEthernetLink(
           break;
         case 6:
           message_router_response->data_length = EncodeInterfaceControl(
-              &message);
+            &message);
           message_router_response->general_status = kCipErrorSuccess;
           break;
         case 11:
           message_router_response->data_length = EncodeInterfaceCapability(
-              &message);
+            &message);
           message_router_response->general_status = kCipErrorSuccess;
           break;
 

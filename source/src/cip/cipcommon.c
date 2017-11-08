@@ -187,7 +187,7 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instances,
                           char *name,
                           const EipUint16 revision,
-                           void (*InitializeCipClass)(CipClass *) ) {
+                          void (*InitializeCipClass)(CipClass *) ) {
 
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
                     class_id);
@@ -881,7 +881,7 @@ size_t CalculateIndex(EipUint16 attribute_number) {
   return index;
 }
 
-size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
+size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
   switch (attribute_struct->type) {
 
     case (kCipBool):
@@ -930,10 +930,10 @@ size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
       return sizeof(CipUdint) + sizeof(CipUint);
       break;
     case (kCipString): {
-      CipString *data = (CipString*) attribute_struct->data;
+      CipString *data = (CipString *) attribute_struct->data;
       return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
-      break;
+    break;
     case (kCipByte):
       return sizeof(CipByte);
       break;
@@ -947,10 +947,10 @@ size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
       return sizeof(CipLword);
       break;
     case (kCipString2): {
-      CipString *data = (CipString*) attribute_struct->data;
+      CipString *data = (CipString *) attribute_struct->data;
       return sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
     }
-      break;
+    break;
     case (kCipFtime):
       return sizeof(CipDint);
       break;
@@ -961,23 +961,23 @@ size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
       return sizeof(CipInt);
       break;
     case (kCipStringN): {
-      CipStringN *data = (CipStringN*) attribute_struct->data;
+      CipStringN *data = (CipStringN *) attribute_struct->data;
       return sizeof(CipUint) + sizeof(CipUint) + (data->length) * (data->size);
     }
-      break;
+    break;
     case (kCipShortString): {
-      CipShortString *data = (CipShortString*) attribute_struct->data;
+      CipShortString *data = (CipShortString *) attribute_struct->data;
       return sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
     }
-      break;
+    break;
     case (kCipTime):
       return sizeof(CipDint);
       break;
     case (kCipEpath): {
-      CipEpath *data = (CipEpath*) attribute_struct->data;
+      CipEpath *data = (CipEpath *) attribute_struct->data;
       return 2 * (data->path_size);
     }
-      break;
+    break;
     case (kCipEngUnit):
       return sizeof(CipUint);
       break;
@@ -986,11 +986,11 @@ size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
       break;
     case (kCipUdintUdintUdintUdintUdintString): {
       CipTcpIpNetworkInterfaceConfiguration *data =
-          (CipTcpIpNetworkInterfaceConfiguration*) attribute_struct->data;
+        (CipTcpIpNetworkInterfaceConfiguration *) attribute_struct->data;
       return 5 * sizeof(CipUdint) + sizeof(CipUint)
-          + (data->domain_name.length) * sizeof(EipByte);
+             + (data->domain_name.length) * sizeof(EipByte);
     }
-      break;
+    break;
     case (kCip6Usint):
       return 6 * sizeof(CipUsint);
       break;
@@ -998,10 +998,10 @@ size_t GetSizeOfAttribute(const CipAttributeStruct * const attribute_struct) {
       return 0;
       break;
     case (kCipByteArray): {
-      CipByteArray *data = (CipByteArray*) attribute_struct->data;
+      CipByteArray *data = (CipByteArray *) attribute_struct->data;
       return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
-      break;
+    break;
     case (kInternalUint6):
       return 6 * sizeof(CipUint);
       break;
