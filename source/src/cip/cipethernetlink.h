@@ -18,4 +18,18 @@
  */
 EipStatus CipEthernetLinkInit(void);
 
+int EncodeInterfaceCounters(EipUint8 **pa_acMsg);
+
+int EncodeMediaCounters(EipUint8 **pa_acMsg);
+
+int EncodeInterfaceControl(EipUint8 **pa_acMsg);
+
+int EncodeInterfaceCapability(EipUint8 **pa_acMsg);
+
+EipStatus GetAttributeSingleEthernetLink(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest * const message_router_request,
+    CipMessageRouterResponse * const message_router_response,
+    struct sockaddr *originator_address);
+
 #endif /* OPENER_CIPETHERNETLINK_H_*/
