@@ -29,7 +29,8 @@
 EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Reply buffer */
 
 /* private functions*/
-int EncodeEPath(CipEpath *epath, EipUint8 **message);
+int EncodeEPath(CipEpath *epath,
+                EipUint8 **message);
 
 void CipStackInit(const EipUint16 unique_connection_id) {
   EncapsulationInit();
@@ -73,8 +74,7 @@ void ShutdownCipStack(void) {
 EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address)
-{
+                      struct sockaddr *originator_address) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
   EipUint16 instance_number = message_router_request->request_path
@@ -122,8 +122,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
-                             const int number_of_instances)
-{
+                             const int number_of_instances) {
   CipInstance **next_instance = NULL;
   EipUint32 instance_number = 1; /* the first instance is number 1 */
 
@@ -168,8 +167,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCIPInstance(CipClass *RESTRICT const class,
-                            const EipUint32 instance_id)
-{
+                            const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
   if (0 == instance) { /*we have no instance with given id*/
@@ -186,9 +184,10 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instance_attributes,
                           const EipUint32 highest_instance_attribute_number,
                           const int number_of_instance_services,
-                          const int number_of_instances, char *name,
-                          const EipUint16 revision,void (*InitializeCipClass)(
-                            CipClass *) ) {
+                          const int number_of_instances,
+                          char *name,
+                          const EipUint16 revision,
+                           void (*InitializeCipClass)(CipClass *) ) {
 
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
                     class_id);
@@ -298,8 +297,7 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      void *const data,
-                     const EipByte cip_flags)
-{
+                     const EipByte cip_flags) {
 
   CipAttributeStruct *attribute = instance->attributes;
   CipClass *class = instance->cip_class;
@@ -340,8 +338,7 @@ void InsertAttribute(CipInstance *const instance,
 void InsertService(const CipClass *const class,
                    const EipUint8 service_number,
                    const CipServiceFunction service_function,
-                   char *const service_name)
-{
+                   char *const service_name) {
 
   CipServiceStruct *service = class->services; /* get a pointer to the service array*/
   OPENER_TRACE_INFO("%s, number of services:%d, service number:%d\n",
@@ -366,8 +363,7 @@ void InsertService(const CipClass *const class,
 }
 
 CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
-                                    const EipUint16 attribute_number)
-{
+                                    const EipUint16 attribute_number) {
 
   CipAttributeStruct *attribute = instance->attributes; /* init pointer to array of attributes*/
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
@@ -388,8 +384,7 @@ EipStatus GetAttributeSingle(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address)
-{
+  struct sockaddr *originator_address) {
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(
@@ -446,8 +441,7 @@ EipStatus GetAttributeSingle(
 
 int EncodeData(const EipUint8 cip_type,
                const void *const cip_data,
-               EipUint8 **cip_message)
-{
+               EipUint8 **cip_message) {
   int counter = 0;
 
   switch (cip_type)
@@ -611,8 +605,7 @@ int EncodeData(const EipUint8 cip_type,
 
 int DecodeData(const EipUint8 cip_type,
                void *const data,
-               const EipUint8 **const message)
-{
+               const EipUint8 **const message) {
   int number_of_decoded_bytes = -1;
 
   switch (cip_type)
@@ -688,8 +681,7 @@ int DecodeData(const EipUint8 cip_type,
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address)
-{
+                          struct sockaddr *originator_address) {
 
   EipUint8 *reply = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes; /* pointer to list of attributes*/
@@ -743,7 +735,8 @@ EipStatus GetAttributeAll(CipInstance *instance,
   return kEipStatusOk; /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
 }
 
-int EncodeEPath(CipEpath *epath, EipUint8 **message) {
+int EncodeEPath(CipEpath *epath,
+                EipUint8 **message) {
   unsigned int length = epath->path_size;
   AddIntToMessage(epath->path_size, message);
 
@@ -799,7 +792,8 @@ int EncodeEPath(CipEpath *epath, EipUint8 **message) {
   return 2 + epath->path_size * 2; /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
+int DecodePaddedEPath(CipEpath *epath,
+                      const EipUint8 **message) {
   unsigned int number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 
