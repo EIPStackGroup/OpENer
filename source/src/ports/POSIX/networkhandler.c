@@ -42,3 +42,10 @@ int SetSocketToNonBlocking(int socket_handle) {
                                              F_GETFL,
                                              0) | O_NONBLOCK);
 }
+
+void SetQosOnSocket(int socket,
+                    CipUsint qos_value) {
+
+  int set_tos = qos_value;
+  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
+}

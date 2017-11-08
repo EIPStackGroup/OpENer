@@ -26,6 +26,7 @@
 #include "generic_networkhandler.h"
 #include "cipepath.h"
 #include "cipelectronickey.h"
+#include "cipqos.h"
 
 /* values needed from the CIP identity object */
 extern EipUint16 vendor_id_;
@@ -66,8 +67,10 @@ ProductionTrigger GetProductionTrigger(
   }
 }
 
-void SetProductionTrigger(const enum ProductionTrigger production_trigger,
-                          ConnectionObject *connection_object) {
+void SetProductionTrigger(
+  const enum ProductionTrigger production_trigger,
+  ConnectionObject *connection_object
+  ) {
   switch (production_trigger) {
     case kProductionTriggerCyclic:
       connection_object->transport_type_class_trigger = 0x0;
@@ -90,14 +93,28 @@ CipUint GetProductionInhibitTime(
   return connection_object->production_inhibit_time;
 }
 
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
-                              ConnectionObject *const connection_object) {
+void SetProductionInhibitTime(
+  const EipUint16 production_inhibit_time,
+  ConnectionObject *const connection_object
+  ) {
   connection_object->production_inhibit_time = production_inhibit_time;
 }
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
-  const ConnectionObject *const connection_object) {
+  const ConnectionObject *const RESTRICT connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
+}
+
+ConnectionObjectFixedVariable
+GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+  const ConnectionObject *const RESTRICT connection_object) {
+  const EipUint16 kFixedOrVariableMask = 1 << 9;
+  if ( ( (connection_object->t_to_o_network_connection_parameter) &
+         kFixedOrVariableMask ) == kFixedOrVariableMask ) {
+    return kConnectionObjectVariableConnectionSize;
+  } else {
+    return kConnectionObjectFixedConnectionSize;
+  }
 }
 
 /* Connection Object functions end */
@@ -110,7 +127,10 @@ ConnectionManagementHandling g_connection_management_list[2 +
                                                           OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS
 ];
 
-/** List holding all currently active connections*/
+/** @brief List holding all currently active connections
+ *
+ * An implicit list structure inside the ConnectionObject, so the g_active_connection_list holds the first element of the list
+ * */
 /*@null@*/ ConnectionObject *g_active_connection_list = NULL;
 
 /** buffer connection object needed for forward open */
@@ -120,20 +140,23 @@ ConnectionObject g_dummy_connection_object;
 EipUint32 g_incarnation_id;
 
 /* private functions */
-EipStatus ForwardOpen(CipInstance *instance,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response,
-                      struct sockaddr *originator_address);
+EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
-EipStatus ForwardClose(CipInstance *instance,
-                       CipMessageRouterRequest *message_router_request,
-                       CipMessageRouterResponse *message_router_response,
-                       struct sockaddr *originator_address);
+EipStatus ForwardClose(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
-EipStatus GetConnectionOwner(CipInstance *instance,
-                             CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response,
-                             struct sockaddr *originator_address);
+EipStatus GetConnectionOwner(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address);
 
 EipStatus AssembleForwardOpenResponse(
   ConnectionObject *connection_object,
@@ -170,9 +193,10 @@ ConnectionObject *CheckForExistingConnection(
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus CheckElectronicKeyData(EipUint8 key_format,
-                                 CipKeyData *key_data,
-                                 EipUint16 *extended_status);
+EipStatus CheckElectronicKeyData(
+  EipUint8 key_format,
+  CipKeyData *key_data,
+  EipUint16 *extended_status);
 
 /** @brief Parse the connection path of a forward open request
  *
@@ -185,9 +209,10 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format,
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
-                             CipMessageRouterRequest *message_router_request,
-                             EipUint16 *extended_error);
+EipUint8 ParseConnectionPath(
+  ConnectionObject *connection_object,
+  CipMessageRouterRequest *message_router_request,
+  EipUint16 *extended_error);
 
 ConnectionManagementHandling *GetConnectionManagementEntry(EipUint32 class_id);
 
@@ -289,9 +314,11 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   return kEipStatusOk;
 }
 
-EipStatus HandleReceivedConnectedData(EipUint8 *data,
-                                      int data_length,
-                                      struct sockaddr_in *from_address) {
+EipStatus HandleReceivedConnectedData(
+  EipUint8 *data,
+  int data_length,
+  struct sockaddr_in *from_address
+  ) {
 
   if ( ( CreateCommonPacketFormatStructure(data, data_length,
                                            &g_common_packet_format_data_item) )
@@ -322,14 +349,8 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data,
                  sequence_number,
                  connection_object->eip_level_sequence_count_consuming) ) {
             /* reset the watchdog timer */
-            connection_object->inactivity_watchdog_timer = (connection_object
-                                                            ->
-                                                            o_to_t_requested_packet_interval
-                                                            / 1000)
-                                                           << (2 +
-                                                               connection_object
-                                                               ->
-                                                               connection_timeout_multiplier);
+            connection_object->inactivity_watchdog_timer =
+              GetConnectionObjectInactivityWatchdogTimerValue(connection_object);
 
             /* only inform assembly object if the sequence counter is greater or equal */
             connection_object->eip_level_sequence_count_consuming =
@@ -338,9 +359,9 @@ EipStatus HandleReceivedConnectedData(EipUint8 *data,
 
             if (NULL != connection_object->connection_receive_data_function) {
               return connection_object->connection_receive_data_function(
-                connection_object,
-                g_common_packet_format_data_item.data_item.data,
-                g_common_packet_format_data_item.data_item.length);
+                       connection_object,
+                       g_common_packet_format_data_item.data_item.data,
+                       g_common_packet_format_data_item.data_item.length);
             }
           }
         } else {
@@ -359,7 +380,8 @@ void ReadOutConnectionObjectFromMessage(
 
 void ReadOutConnectionObjectFromMessage(
   CipMessageRouterRequest *const message_router_request,
-  ConnectionObject *const connection_object) {
+  ConnectionObject *const connection_object
+  ) {
   connection_object->priority_timetick = *message_router_request->data++;
   connection_object->timeout_ticks = *message_router_request->data++;
   /* O_to_T Conn ID */
@@ -386,7 +408,8 @@ void ReadOutConnectionObjectFromMessage(
   message_router_request->data += 3; /* reserved */
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
   OPENER_TRACE_INFO(
-    "ForwardOpen: ConConnID %" PRIu32 ", ProdConnID %" PRIu32 ", ConnSerNo %u\n",
+    "ForwardOpen: ConConnID %" PRIu32 ", ProdConnID %" PRIu32
+    ", ConnSerNo %u\n",
     connection_object->cip_consumed_connection_id,
     connection_object->cip_produced_connection_id,
     connection_object->connection_serial_number);
@@ -430,6 +453,21 @@ ForwardOpenConnectionType GetConnectionType(
   return connection_type;
 }
 
+ForwardOpenPriority GetConnectionObjectTToOPriority(
+  const ConnectionObject *const connection_object) {
+
+  const EipUint16 kConnectionParameterMask = 0xC00;
+  CipUsint priority_value = 0x00;
+
+  ForwardOpenPriority priority =
+    (connection_object->t_to_o_network_connection_parameter)
+    & kConnectionParameterMask;
+
+  priority_value = GetPriorityForSocket(priority);
+
+  return priority_value;
+}
+
 /** @brief Function prototype for all Forward Open handle functions
  *
  */
@@ -454,11 +492,14 @@ EipStatus HandleNullNonMatchingForwardOpenRequest(
   ConnectionObject *connection_object,
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response
+  ) {
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(
-    connection_object, message_router_response, kCipErrorConnectionFailure,
-    kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
+           connection_object,
+           message_router_response,
+           kCipErrorConnectionFailure,
+           kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
 }
 
 /** @brief Handles a Null Matching Forward Open request
@@ -477,11 +518,14 @@ EipStatus HandleNullMatchingForwardOpenRequest(
   ConnectionObject *connection_object,
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response
+  ) {
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(
-    connection_object, message_router_response, kCipErrorConnectionFailure,
-    kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
+           connection_object,
+           message_router_response,
+           kCipErrorConnectionFailure,
+           kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported);
 }
 
 /** @brief Handles a Non Null Matching Forward Open Request
@@ -499,13 +543,14 @@ EipStatus HandleNonNullMatchingForwardOpenRequest(
   ConnectionObject *connection_object,
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response
+  ) {
   OPENER_TRACE_INFO("Right now we cannot handle reconfiguration requests\n");
   return AssembleForwardOpenResponse(
-    connection_object,
-    message_router_response,
-    kCipErrorConnectionFailure,
-    kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen);
+           connection_object,
+           message_router_response,
+           kCipErrorConnectionFailure,
+           kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen);
 }
 
 /** @brief Handles a Non Null Non Matching Forward Open Request
@@ -522,17 +567,18 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   ConnectionObject *connection_object,
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+  CipMessageRouterResponse *message_router_response
+  ) {
 
   EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
   /*check if the trigger type value is ok */
   if (0x40 & g_dummy_connection_object.transport_type_class_trigger) {
     return AssembleForwardOpenResponse(
-      &g_dummy_connection_object,
-      message_router_response,
-      kCipErrorConnectionFailure,
-      kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported);
+             &g_dummy_connection_object,
+             message_router_response,
+             kCipErrorConnectionFailure,
+             kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported);
   }
 
   EipUint32 temp = ParseConnectionPath(&g_dummy_connection_object,
@@ -605,10 +651,12 @@ static const HandleForwardOpenRequestFunction
  *      @return >0 .. success, 0 .. no reply to send back
  *              -1 .. error
  */
-EipStatus ForwardOpen(CipInstance *instance,
-                      CipMessageRouterRequest *message_router_request,
-                      CipMessageRouterResponse *message_router_response,
-                      struct sockaddr *originator_address) {
+EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address
+  ) {
   (void) instance; /*suppress compiler warning */
 
   uint8_t is_null_request = -1; /* 1 = Null Request, 0 =  Non-Null Request  */
@@ -619,7 +667,7 @@ EipStatus ForwardOpen(CipInstance *instance,
                                      &g_dummy_connection_object);
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
-          sizeof(g_dummy_connection_object.original_opener_ip_address) );
+          sizeof(g_dummy_connection_object.originator_address) );
 
   ForwardOpenConnectionType o_to_t_connection_type = GetConnectionType(
     g_dummy_connection_object.o_to_t_network_connection_parameter);
@@ -629,16 +677,16 @@ EipStatus ForwardOpen(CipInstance *instance,
   /* Check if both connection types are valid, otherwise send error response */
   if (kForwardOpenConnectionTypeReserved == o_to_t_connection_type) {
     return AssembleForwardOpenResponse(
-      &g_dummy_connection_object, message_router_response,
-      kCipErrorConnectionFailure,
-      kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionType);
+             &g_dummy_connection_object, message_router_response,
+             kCipErrorConnectionFailure,
+             kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionType);
   }
 
   if (kForwardOpenConnectionTypeReserved == t_to_o_connection_type) {
     return AssembleForwardOpenResponse(
-      &g_dummy_connection_object, message_router_response,
-      kCipErrorConnectionFailure,
-      kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType);
+             &g_dummy_connection_object, message_router_response,
+             kCipErrorConnectionFailure,
+             kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType);
   }
 
   /* Check if request is a Null request or a Non-Null request */
@@ -666,6 +714,20 @@ EipStatus ForwardOpen(CipInstance *instance,
 
   return choosen_function(&g_dummy_connection_object, instance,
                           message_router_request, message_router_response);
+}
+
+EipUint32 GetConnectionObjectInitialInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object) {
+  return (GetConnectionObjectInactivityWatchdogTimerValue(connection_object) >
+          10000) ?
+         GetConnectionObjectInactivityWatchdogTimerValue(connection_object) :
+         10000;
+}
+
+EipUint32 GetConnectionObjectInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object) {
+  return ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
+           << (2 + connection_object->connection_timeout_multiplier) );
 }
 
 void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
@@ -712,16 +774,12 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
                                                             / 1000 );
   }
 
-  connection_object->production_inhibit_timer = connection_object
-                                                ->production_inhibit_time = 0;
+  connection_object->production_inhibit_timer =
+    connection_object->production_inhibit_time;
 
-  /*setup the preconsuption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
+  /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
   connection_object->inactivity_watchdog_timer =
-    ( ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
-        << (2 + connection_object->connection_timeout_multiplier) ) > 10000 ) ?
-    ( ( (connection_object->o_to_t_requested_packet_interval) / 1000 )
-      << (2 + connection_object->connection_timeout_multiplier) ) :
-    10000;
+    GetConnectionObjectInitialInactivityWatchdogTimerValue(connection_object);
 
   connection_object->consumed_connection_size = connection_object
                                                 ->
@@ -735,10 +793,12 @@ void GeneralConnectionConfiguration(ConnectionObject *connection_object) {
 
 }
 
-EipStatus ForwardClose(CipInstance *instance,
-                       CipMessageRouterRequest *message_router_request,
-                       CipMessageRouterResponse *message_router_response,
-                       struct sockaddr *originator_address) {
+EipStatus ForwardClose(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address
+  ) {
   /*Suppress compiler warning*/
   (void) instance;
 
@@ -785,6 +845,16 @@ EipStatus ForwardClose(CipInstance *instance,
     }
     connection_object = connection_object->next_connection_object;
   }
+  if(
+    kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound
+    ==
+    connection_status) {
+    OPENER_TRACE_INFO(
+      "Connection not found! Requested connection triad: %u, %u, %u\n",
+      connection_serial_number,
+      originator_vendor_id,
+      originator_serial_number);
+  }
 
   return AssembleForwardCloseResponse(connection_serial_number,
                                       originator_vendor_id,
@@ -795,10 +865,12 @@ EipStatus ForwardClose(CipInstance *instance,
 }
 
 /* TODO: Not implemented */
-EipStatus GetConnectionOwner(CipInstance *instance,
-                             CipMessageRouterRequest *message_router_request,
-                             CipMessageRouterResponse *message_router_response,
-                             struct sockaddr *originator_address) {
+EipStatus GetConnectionOwner(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  struct sockaddr *originator_address
+  ) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;
@@ -817,12 +889,13 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
   while (NULL != connection_object) {
     //OPENER_TRACE_INFO("Entering Connection Object loop\n");
     if (kConnectionStateEstablished == connection_object->state) {
-      if ( (0 != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
+      if ( (NULL != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
            (connection_object->transport_type_class_trigger & 0x80) ) /* all sever connections have to maintain an inactivity watchdog timer */
       {
         if (elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
-          OPENER_TRACE_INFO(">>>>>>>>>>Connection timed out\n");
+          OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
+                            connection_object->connection_serial_number);
           OPENER_ASSERT(NULL != connection_object->connection_timeout_function);
           connection_object->connection_timeout_function(connection_object);
         } else {
@@ -834,7 +907,8 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
         /* client connection */
         if ( (connection_object->expected_packet_rate != 0)
              && (kEipInvalidSocket
-                 != connection_object->socket[kUdpCommuncationDirectionProducing
+                 != connection_object->socket[
+                   kUdpCommuncationDirectionProducing
                  ]) )                                                              /* only produce for the master connection */
         {
           if ( kConnectionTriggerTypeCyclicConnection
@@ -892,7 +966,8 @@ EipStatus AssembleForwardOpenResponse(
   ConnectionObject *connection_object,
   CipMessageRouterResponse *message_router_response,
   EipUint8 general_status,
-  EipUint16 extended_status) {
+  EipUint16 extended_status
+  ) {
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *cip_common_packet_format_data =
     &g_common_packet_format_data_item;
@@ -1024,7 +1099,8 @@ EipStatus AssembleForwardCloseResponse(
   EipUint32 originator_serial_number,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  EipUint16 extended_error_code) {
+  EipUint16 extended_error_code
+  ) {
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *common_data_packet_format_data =
     &g_common_packet_format_data_item;
@@ -1089,7 +1165,8 @@ ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id) {
   while (NULL != active_connection_object_list_item) {
     if (active_connection_object_list_item->state
         == kConnectionStateEstablished) {
-      if (active_connection_object_list_item->connection_path.connection_point[0
+      if (active_connection_object_list_item->connection_path.connection_point[
+            0
           ]
           == output_assembly_id) {
         return active_connection_object_list_item;
@@ -1125,9 +1202,11 @@ ConnectionObject *CheckForExistingConnection(
   return NULL;
 }
 
-EipStatus CheckElectronicKeyData(EipUint8 key_format,
-                                 CipKeyData *key_data,
-                                 EipUint16 *extended_status) {
+EipStatus CheckElectronicKeyData(
+  EipUint8 key_format,
+  CipKeyData *key_data,
+  EipUint16 *extended_status
+  ) {
   EipByte compatiblity_mode = key_data->major_revision & 0x80;
 
   /* Remove compatibility bit */
@@ -1198,9 +1277,11 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format,
     kEipStatusOk : kEipStatusError;
 }
 
-EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
-                             CipMessageRouterRequest *message_router_request,
-                             EipUint16 *extended_error) {
+EipUint8 ParseConnectionPath(
+  ConnectionObject *connection_object,
+  CipMessageRouterRequest *message_router_request,
+  EipUint16 *extended_error
+  ) {
   const EipUint8 *message = message_router_request->data;
   unsigned int remaining_path_size = connection_object->connection_path_size =
                                        *message++; /* length in words */
@@ -1295,6 +1376,7 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
           GetPathNetworkSegmentSubtype(message);
         if (kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds
             == network_segment_subtype) {
+          OPENER_TRACE_INFO("PIT segment available - value: %u\n",message[1]);
           connection_object->production_inhibit_time = message[1];
           message += 2;
           remaining_path_size -= 1;
@@ -1368,10 +1450,13 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         return kCipErrorConnectionFailure;
       }
-      connection_object->connection_path.connection_point[0] = connection_object
-                                                               ->connection_path
-                                                               .connection_point
-                                                               [2];
+      connection_object->connection_path.connection_point[0] =
+        connection_object
+        ->
+        connection_path
+        .
+        connection_point
+        [2];
     } else { /* we have an IO connection */
       originator_to_target_connection_type = GetConnectionType(
         connection_object->o_to_t_network_connection_parameter);
@@ -1487,6 +1572,8 @@ EipUint8 ParseConnectionPath(ConnectionObject *connection_object,
     }
   }
 
+  OPENER_TRACE_INFO("Resulting PIT value: %u\n",
+                    connection_object->production_inhibit_time);
   /*save back the current position in the stream allowing followers to parse anything thats still there*/
   message_router_request->data = message;
   return kEipStatusOk;
@@ -1496,11 +1583,11 @@ void CloseConnection(ConnectionObject *RESTRICT connection_object) {
   connection_object->state = kConnectionStateNonExistent;
   if ( 0x03 != (connection_object->transport_type_class_trigger & 0x03) ) {
     /* only close the UDP connection for not class 3 connections */
-    IApp_CloseSocket_udp(
+    CloseUdpSocket(
       connection_object->socket[kUdpCommuncationDirectionConsuming]);
     connection_object->socket[kUdpCommuncationDirectionConsuming] =
       kEipInvalidSocket;
-    IApp_CloseSocket_udp(
+    CloseUdpSocket(
       connection_object->socket[kUdpCommuncationDirectionProducing]);
     connection_object->socket[kUdpCommuncationDirectionProducing] =
       kEipInvalidSocket;
@@ -1508,8 +1595,10 @@ void CloseConnection(ConnectionObject *RESTRICT connection_object) {
   RemoveFromActiveConnections(connection_object);
 }
 
-void CopyConnectionData(ConnectionObject *RESTRICT destination,
-                        const ConnectionObject *RESTRICT const source) {
+void CopyConnectionData(
+  ConnectionObject *RESTRICT destination,
+  const ConnectionObject *RESTRICT const source
+  ) {
   memcpy( destination, source, sizeof(ConnectionObject) );
 }
 
@@ -1556,9 +1645,10 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
   return is_connected;
 }
 
-EipStatus AddConnectableObject(EipUint32 class_id,
-                               OpenConnectionFunction open_connection_function)
-{
+EipStatus AddConnectableObject(
+  EipUint32 class_id,
+  OpenConnectionFunction open_connection_function
+  ) {
   EipStatus status = kEipStatusError;
 
   /*parsing is now finished all data is available and check now establish the connection */
@@ -1590,8 +1680,10 @@ GetConnectionManagementEntry(EipUint32 class_id) {
   return connection_management_entry;
 }
 
-EipStatus TriggerConnections(unsigned int output_assembly,
-                             unsigned int input_assembly) {
+EipStatus TriggerConnections(
+  unsigned int output_assembly,
+  unsigned int input_assembly
+  ) {
   EipStatus status = kEipStatusError;
 
   ConnectionObject *pstRunner = g_active_connection_list;
@@ -1604,7 +1696,7 @@ EipStatus TriggerConnections(unsigned int output_assembly,
                & kConnectionTriggerTypeProductionTriggerMask) ) {
         /* produce at the next allowed occurrence */
         pstRunner->transmission_trigger_timer = pstRunner
-                                                ->production_inhibit_timer;
+                                                ->production_inhibit_time;
         status = kEipStatusOk;
       }
       break;

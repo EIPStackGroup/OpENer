@@ -66,9 +66,9 @@ NetworkStatus g_network_status; /**< Global variable holding the current network
  */
 EipStatus NetworkHandlerInitialize(void);
 
-void IApp_CloseSocket_udp(int socket_handle);
+void CloseUdpSocket(int socket_handle);
 
-void IApp_CloseSocket_tcp(int socket_handle);
+void CloseTcpSocket(int socket_handle);
 
 
 /** @brief Initializes the network handler, shall be implemented by a port-specific networkhandler
@@ -95,6 +95,9 @@ EipBool8 CheckSocketSet(int socket);
  *
  * @return Highest socket id from the provided sockets
  */
-int GetMaxSocket(int socket1, int socket2, int socket3, int socket4);
+int GetMaxSocket(int socket1,
+                 int socket2,
+                 int socket3,
+                 int socket4);
 
 #endif /* GENERIC_NETWORKHANDLER_H_ */

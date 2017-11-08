@@ -26,6 +26,13 @@ typedef enum {
 } ForwardOpenConnectionType;
 
 typedef enum {
+  kForwardOpenPriorityLow = 0x000,
+  kForwardOpenPriorityHigh = 0x400,
+  kForwardOpenPriorityScheduled = 0x800,
+  kForwardOpenPriorityUrgent = 0xC00
+} ForwardOpenPriority;
+
+typedef enum {
   kConnectionManagerGeneralStatusSuccess = 0x00, /**< General Status - Everything is ok */
   kConnectionManagerGeneralStatusExtendedStatus = 0x01, /**< Indicates that extended status is set */
   kConnectionManagerGeneralStatusResourceUnavailableForUnconnectedSend = 0x02,
@@ -48,6 +55,7 @@ typedef enum {
     0x0107,                                                                             /**< General Status has to be 0x01, Forward Close error message, if connection to be closed is not found at the target */
   kConnectionManagerExtendedStatusCodeErrorTargetForConnectionNotConfigured =
     0x0110,                                                                           /**< General Status has to be 0x01, Target application not configured and connection request does not contain data segment for configuration */
+  kConnectionManagerExtendedStatusCodeRpiNotSupported = 0x0111,
   kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable = 0x0112, /**< General Status has to be 0x01, Requested RPI parameters outside of range, needs 6 16-bit extended status words, see Vol.1 Table 3-5.33 */
   kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable = 0x0113, /**< General Status has to be 0x01, No free connection slots available */
   kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError = 0x0114, /**< General Status has to be 0x01, The Product Code or Vendor ID in the electronic key logical segment does not match the Product Code or Vendor ID of the device, or if the compatibility bit is set and one or both are zero, or cannot be emulated. */
@@ -86,8 +94,17 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeInconsistentConsumeDataFormat = 0x0130,
   kConnectionManagerExtendedStatusCodeInconsistentProduceDataFormat = 0x0131,
   kConnectionManagerExtendedStatusCodeNullForwardOpenNotSupported = 0x0132,
-  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable =
-    0x0133,
+  kConnectionManagerExtendedStatusCodeConnectionTimeoutMultiplierNotAcceptable
+    =
+      0x0133,
+  kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionFixVar =
+    0x0135,
+  kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority =
+    0x0136,
+  kConnectionManagerExtendedStatusCodeMismatchedTransportClass = 0x0137,
+  kConnectionManagerExtendedStatusCodeMismatchedTToOProductionTrigger = 0x0138,
+  kConnectionManagerExtendedStatusCodeMismatchedTToOProductionInhibitTimeSegment
+    = 0x0139,
   kConnectionManagerExtendedStatusCodeConnectionTimedOut = 0x0203,
   kConnectionManagerExtendedStatusCodeUnconnectedRequestTimedOut = 0x0204,
   kConnectionManagerExtendedStatusCodeErrorParameterErrorInUnconnectedSendService
@@ -101,8 +118,9 @@ typedef enum {
     0x0302,
   kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable =
     0x0303,
-  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData =
-    0x0304,
+  kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData
+    =
+      0x0304,
   kConnectionManagerExtendedStatusCodeScheduleSignatureMismatch = 0x0305,
   kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible =
     0x0306,
@@ -152,13 +170,16 @@ typedef enum ProductionTrigger {
 ProductionTrigger GetProductionTrigger(
   const ConnectionObject *const connection_object);
 
-void SetProductionTrigger(const ProductionTrigger production_trigger,
-                          ConnectionObject *connection_object);
+void SetProductionTrigger(
+  const ProductionTrigger production_trigger,
+  ConnectionObject *connection_object);
 
-CipUint GetProductionInhibitTime(const ConnectionObject *const connection_object);
+CipUint GetProductionInhibitTime(
+  const ConnectionObject *const connection_object);
 
-void SetProductionInhibitTime(const EipUint16 production_inhibit_time,
-                              ConnectionObject *const connection_object);
+void SetProductionInhibitTime(
+  const EipUint16 production_inhibit_time,
+  ConnectionObject *const connection_object);
 
 CipUdint GetTargetToOriginatorRequestedPackedInterval(
   const ConnectionObject *const connection_object);
@@ -200,6 +221,11 @@ typedef enum {
   kConnectionTypeIoInputOnly = 0x11,
   kConnectionTypeIoListenOnly = 0x21
 } ConnectionType;
+
+typedef enum {
+  kConnectionObjectFixedConnectionSize,
+  kConnectionObjectVariableConnectionSize
+} ConnectionObjectFixedVariable;
 
 /** @brief Possible values for the watch dog time out action of a connection */
 typedef enum {
@@ -368,8 +394,9 @@ ConnectionObject *GetConnectedOutputAssembly(EipUint32 output_assembly_id);
  * @param destination Destination of the copy operation
  * @param osurce Source of the copy operation
  */
-void CopyConnectionData(ConnectionObject *RESTRICT destination,
-                        const ConnectionObject *RESTRICT const source);
+void CopyConnectionData(
+  ConnectionObject *RESTRICT destination,
+  const ConnectionObject *RESTRICT const source);
 
 /** @brief Close the given connection
  *
@@ -413,5 +440,32 @@ void RemoveFromActiveConnections(ConnectionObject *connection_object);
  */
 ForwardOpenConnectionType GetConnectionType(
   EipUint16 network_connection_parameter);
+
+ForwardOpenPriority GetConnectionObjectTToOPriority(
+  const ConnectionObject *const connection_object);
+
+ProductionTrigger GetProductionTrigger(
+  const ConnectionObject *const connection_object);
+
+void SetProductionTrigger(
+  const ProductionTrigger production_trigger,
+  ConnectionObject *connection_object);
+
+CipUint GetProductionInhibitTime(
+  const ConnectionObject *const connection_object);
+
+void SetProductionInhibitTime(
+  const EipUint16 production_inhibit_time,
+  ConnectionObject *const connection_object);
+
+CipUdint GetTargetToOriginatorRequestedPackedInterval(
+  const ConnectionObject *const RESTRICT connection_object);
+
+ConnectionObjectFixedVariable
+GetConnectionObjectTargetToOriginatorFixedOrVariableConnectionSize(
+  const ConnectionObject *const RESTRICT connection_object);
+
+EipUint32 GetConnectionObjectInactivityWatchdogTimerValue(
+  ConnectionObject *connection_object);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

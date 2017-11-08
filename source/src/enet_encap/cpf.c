@@ -83,13 +83,8 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
         .connection_identifier);
       if (NULL != connection_object) {
         /* reset the watchdog timer */
-        connection_object->inactivity_watchdog_timer = (connection_object
-                                                        ->
-                                                        o_to_t_requested_packet_interval
-                                                        / 1000)
-                                                       << (2 +
-                                                           connection_object->
-                                                           connection_timeout_multiplier);
+        connection_object->inactivity_watchdog_timer =
+          GetConnectionObjectInactivityWatchdogTimerValue(connection_object);
 
         /*TODO check connection id  and sequence count    */
         if (g_common_packet_format_data_item.data_item.type_id
@@ -138,7 +133,7 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
  */
 EipStatus CreateCommonPacketFormatStructure(
   const EipUint8 *data,
-  int data_length,
+  size_t data_length,
   CipCommonPacketFormatData *common_packet_format_data) {
 
   common_packet_format_data->address_info_item[0].type_id = 0;
@@ -226,7 +221,8 @@ EipStatus CreateCommonPacketFormatStructure(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeNullAddressItem(EipUint8 **message, int size) {
+int EncodeNullAddressItem(EipUint8 **message,
+                          int size) {
   size += AddIntToMessage(kCipItemIdNullAddress, message);
   /* null address item -> address length set to 0 */
   size += AddIntToMessage(0, message);
@@ -362,7 +358,8 @@ int EncodeDataItemData(
  */
 
 int EncodeConnectedDataItemLength(
-  CipMessageRouterResponse *message_router_response, EipUint8 **message,
+  CipMessageRouterResponse *message_router_response,
+  EipUint8 **message,
   int size) {
   size += AddIntToMessage(
     (EipUint16) ( message_router_response->data_length + 4 + 2  /* TODO: Magic numbers */
@@ -418,7 +415,8 @@ int EncodeReplyService(int size,
  * @return New size of the message buffer
  */
 int EncodeReservedFieldOfLengthByte(
-  int size, EipUint8 **message,
+  int size,
+  EipUint8 **message,
   CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->reserved, message);
   return size;
@@ -451,7 +449,8 @@ int EncodeGeneralStatus(int size,
  */
 
 int EncodeExtendedStatusLength(
-  int size, EipUint8 **message,
+  int size,
+  EipUint8 **message,
   CipMessageRouterResponse *message_router_response) {
   size += AddSintToMessage(message_router_response->size_of_additional_status,
                            message);
@@ -468,9 +467,11 @@ int EncodeExtendedStatusLength(
  * @return New size of the message buffer
  */
 int EncodeExtendedStatusDataItems(
-  int size, CipMessageRouterResponse *message_router_response,
+  int size,
+  CipMessageRouterResponse *message_router_response,
   EipUint8 **message) {
-  for (int i = 0; i < message_router_response->size_of_additional_status; i++) {
+  for (int i = 0; i < message_router_response->size_of_additional_status;
+       i++) {
     size += AddIntToMessage(message_router_response->additional_status[i],
                             message);
   }
@@ -510,7 +511,8 @@ int EncodeExtendedStatus(int size,
  * @return New size of the message buffer
  */
 int EncodeUnconnectedDataItemLength(
-  int size, CipMessageRouterResponse *message_router_response,
+  int size,
+  CipMessageRouterResponse *message_router_response,
   EipUint8 **message) {
   size += AddIntToMessage(
     (EipUint16) ( message_router_response->data_length + 4  /* TODO: Magic number */
@@ -527,7 +529,8 @@ int EncodeUnconnectedDataItemLength(
  * @param message Message frame to which the data is added
  */
 int EncodeMessageRouterResponseData(
-  int size, CipMessageRouterResponse *message_router_response,
+  int size,
+  CipMessageRouterResponse *message_router_response,
   EipUint8 **message) {
   for (int i = 0; i < message_router_response->data_length; i++) {
     size += AddSintToMessage( (message_router_response->data)[i], &*message );

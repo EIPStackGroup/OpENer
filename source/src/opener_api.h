@@ -7,6 +7,7 @@
 #define OPENER_OPENER_API_H_
 
 #include <assert.h>
+#include <stdbool.h>
 
 #include "typedefs.h"
 #include "ciptypes.h"
@@ -156,9 +157,10 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instance_attributes,
                           const EipUint32 highest_instance_attribute_number,
                           const int number_of_instance_services,
-                          const int number_of_instances, char *name,
-                          const EipUint16 revision,void (*InitializeCipClass)(
-                            CipClass *) );
+                          const int number_of_instances,
+                          char *name,
+                          const EipUint16 revision,
+                          void (*InitializeCipClass)(CipClass *) );
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *
@@ -295,7 +297,7 @@ int DecodeData(const EipUint8 cip_type,
  * In order to support a configuration assembly object it has to be created with
  * this function.
  * The notification on received configuration data is handled with the
- * IApp_after_receive function.
+ * AfterAssemblyDataReceived.
  */
 CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
                                   EipByte *const data,
@@ -441,7 +443,7 @@ void ConfigureListenOnlyConnectionPoint(
  */
 int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
-                                 unsigned int buffer_length,
+                                 size_t buffer_length,
                                  int *number_of_remaining_bytes,
                                  struct sockaddr *originator_address);
 
@@ -461,9 +463,9 @@ int HandleReceivedExplictTcpData(int socket,
 int HandleReceivedExplictUdpData(int socket,
                                  struct sockaddr_in *from_address,
                                  EipUint8 *buffer,
-                                 unsigned int buffer_length,
+                                 size_t buffer_length,
                                  int *number_of_remaining_bytes,
-                                 int unicast);
+                                 bool unicast);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
@@ -638,7 +640,8 @@ ResetDeviceToInitialConfiguration(void);
  * @param size_of_element size in bytes of one element
  * @return pointer to the allocated memory, 0 on error
  */
-void *CipCalloc(size_t number_of_elements, size_t size_of_element);
+void *CipCalloc(size_t number_of_elements,
+                size_t size_of_element);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Free memory allocated by the OpENer
@@ -674,7 +677,8 @@ void RunIdleChanged(EipUint32 run_idle_value);
  *         -1 on error
  */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data);
+                    struct sockaddr_in *socket_data,
+                    CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief create a producing or consuming UDP socket
