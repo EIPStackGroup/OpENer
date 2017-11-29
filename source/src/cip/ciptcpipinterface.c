@@ -60,7 +60,8 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
  *
  * Currently we implemented with the default value of 120 seconds.
  */
-EipUint16 g_encapsulation_inactivity_timeout = 120;
+CipUint g_encapsulation_inactivity_timeout = 120;
+
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(

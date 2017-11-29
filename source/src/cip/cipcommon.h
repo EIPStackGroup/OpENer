@@ -77,5 +77,5 @@ EipStatus GetAttributeAll(CipInstance *instance,
  */
 int DecodePaddedEPath(CipEpath *epath,
                       const EipUint8 **data);
-
+size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct);
 #endif /* OPENER_CIPCOMMON_H_ */

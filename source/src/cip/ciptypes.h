@@ -56,10 +56,11 @@ typedef enum cip_data_types {
                            figure out the right way to handle it */
 } CipDataType;
 
+
 /** @brief Definition of CIP service codes
  *
  * An Enum with all CIP service codes. Common services codes range from 0x01 to
- **0x1C
+ ****0x1C
  *
  */
 typedef enum {
@@ -137,11 +138,17 @@ typedef struct {
   EipByte *string; /**< Pointer to the string data */
 } CipString;
 
+typedef struct {
+  EipUint16 size;
+  EipUint16 length; /**< Length of the String (16 bit value) */
+  EipByte *string; /**< Pointer to the string data */
+} CipStringN;
+
 /** @brief Struct for padded EPATHs
  *
  */
 typedef struct {
-  EipUint8 path_size;/**< Path size in 16 bit words (path_size * 16 bit) */
+  EipUint8 path_size; /**< Path size in 16 bit words (path_size * 16 bit) */
   EipUint16 class_id; /**< Class ID of the linked object */
   EipUint16 instance_number; /**< Requested Instance Number of the linked object */
   EipUint16 attribute_number; /**< Requested Attribute Number of the linked object */
@@ -272,18 +279,18 @@ typedef struct cip_class {
 
 /** @ingroup CIP_API
  *  @typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
- **S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
+ ****S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
  *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly
- **by the stack.
+ ****by the stack.
  *  @param pa_pstInstance the instance which was referenced in the service
- **request
+ ****request
  *  @param pa_MRRequest request data
  *  @param pa_MRResponse storage for the response data, including a buffer for
- **extended data
+ ****extended data
  *  @return EIP_OK_SEND if service could be executed successfully and a response
- **should be sent
+ ****should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
   CipInstance *const instance,
@@ -326,6 +333,22 @@ typedef struct {
   CipRoutePath route_path;
   void *data;
 } CipUnconnectedSendParameter;
+
+/** @brief Data of an CIP Ethernet Link object */
+//typedef struct {
+//  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
+//  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
+//  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
+//} CipEthernetLinkObject;
+
+
+
+
+typedef struct {
+  CipUint num_conn_entries;
+  CipBool *conn_open_bits;
+} CipConnectionManagerConnectionEntryList;
+
 
 /* these are used for creating the getAttributeAll masks
    TODO there might be a way simplifying this using __VARARGS__ in #define */
