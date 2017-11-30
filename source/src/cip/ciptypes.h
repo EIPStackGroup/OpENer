@@ -60,7 +60,7 @@ typedef enum cip_data_types {
 /** @brief Definition of CIP service codes
  *
  * An Enum with all CIP service codes. Common services codes range from 0x01 to
- ****0x1C
+ *****0x1C
  *
  */
 typedef enum {
@@ -279,18 +279,18 @@ typedef struct cip_class {
 
 /** @ingroup CIP_API
  *  @typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
- ****S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
+ *   S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
  *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly
- ****by the stack.
+ *   by the stack.
  *  @param pa_pstInstance the instance which was referenced in the service
- ****request
+ *   request
  *  @param pa_MRRequest request data
  *  @param pa_MRResponse storage for the response data, including a buffer for
- ****extended data
+ *   extended data
  *  @return EIP_OK_SEND if service could be executed successfully and a response
- ****should be sent
+ *   should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
   CipInstance *const instance,
