@@ -23,6 +23,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <linux/if.h>
+#include <stdio.h>
 
 CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
 CipDword configuration_capability_ = 20; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
@@ -198,13 +199,17 @@ EipStatus SetAttributeSingleTcp(
           OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
           if (attribute->data != NULL) {
-            interface_configuration_.ip_address = ip;
-            interface_configuration_.network_mask = network_mask;
-            interface_configuration_.gateway = gateway;
-            interface_configuration_.name_server = name_server;
-            interface_configuration_.name_server_2 = name_server_2;
-            message_router_response->general_status = kCipErrorSuccess;
-            setIPv4();
+            if (setIPv4(ip, network_mask) == kCipErrorSuccess) {
+              interface_configuration_.ip_address = ip;
+              interface_configuration_.network_mask = network_mask;
+              interface_configuration_.gateway = gateway;
+              interface_configuration_.name_server = name_server;
+              interface_configuration_.name_server_2 = name_server_2;
+              message_router_response->general_status = kCipErrorSuccess;
+            } else {
+              message_router_response->general_status =
+                kCipErrorInvalidAttributeValue;
+            }
           } else {
             message_router_response->general_status = kCipErrorNotEnoughData;
 
@@ -480,7 +485,8 @@ EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   return encapsulation_inactivity_timeout;
 }
 
-void setIPv4() {
+EipStatus setIPv4(CipUdint ip,
+                  CipUdint network_mask) {
 
   struct ifreq ifr;
   const char *name = "eth1";
@@ -491,16 +497,19 @@ void setIPv4() {
   ifr.ifr_addr.sa_family = AF_INET;
 
   struct sockaddr_in *addr = (struct sockaddr_in *) &ifr.ifr_addr;
-
-  inet_pton(AF_INET,
-            convertIpUdintToString(interface_configuration_.ip_address),
-            &addr->sin_addr);
-  ioctl(fd, SIOCSIFADDR, &ifr);
-
+  char *data_string = convertIpUdintToString(ip);
+  if (data_string == NULL) {
+    return kEipStatusError;
+  } else if ( strcmp(data_string, "127.0.0.1") ) {
+    return kEipStatusError;
+  } else {
+    if ( strcmp(data_string, "") ) {
+      inet_pton(AF_INET, data_string, &addr->sin_addr);
+    }
+    ioctl(fd, SIOCSIFADDR, &ifr);
+  }
   struct sockaddr_in *subnet = (struct sockaddr_in *) &ifr.ifr_netmask;
-  inet_pton(AF_INET,
-            convertIpUdintToString(interface_configuration_.network_mask),
-            &subnet->sin_addr);
+  inet_pton(AF_INET, convertIpUdintToString(network_mask), &subnet->sin_addr);
   ioctl(fd, SIOCSIFNETMASK, &ifr);
 
   ioctl(fd, SIOCGIFFLAGS, &ifr);
@@ -508,7 +517,7 @@ void setIPv4() {
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
 
   ioctl(fd, SIOCSIFFLAGS, &ifr);
-
+  return kEipStatusOk;
 }
 
 char *convertIpUdintToString(CipUdint address) {
@@ -523,11 +532,16 @@ char *convertIpUdintToString(CipUdint address) {
   char str4[4];
   sprintf(str4, "%d", ptr[3]);
 
-  strcat(str1, ".");
-  strcat(str1, str2);
-  strcat(str1, ".");
-  strcat(str1, str3);
-  strcat(str1, ".");
-  strcat(str1, str4);
+  if ( strcmp(str4, "0") || strcmp(str4, "00") || strcmp(str4, "000") ) {
+    return NULL;
+  } else {
+    strcat(str1, ".");
+    strcat(str1, str2);
+    strcat(str1, ".");
+    strcat(str1, str3);
+    strcat(str1, ".");
+    strcat(str1, str4);
+    return str1;
+  }
 }
 
