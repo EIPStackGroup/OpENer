@@ -273,10 +273,10 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                      kNotSetOrGetable ); /* optional service list - default = 0 */
     InsertAttribute( (CipInstance *) class, 6, kCipUint,
                      (void *) &meta_class->highest_attribute_number,
-                     kGetableSingle );                     /* max class attribute number*/
+                     kGetableSingle ); /* max class attribute number*/
     InsertAttribute( (CipInstance *) class, 7, kCipUint,
                      (void *) &class->highest_attribute_number,
-                     kGetableSingle );                     /* max instance attribute number*/
+                     kGetableSingle );                                          /* max instance attribute number*/
   } else {
     InitializeCipClass(class);
   }
@@ -327,8 +327,7 @@ void InsertAttribute(CipInstance *const instance,
     attribute++;
   }
   OPENER_TRACE_ERR(
-    "Tried to insert to many attributes into class: %" PRIu32 ", instance %"
-    PRIu32 "\n",
+    "Tried to insert to many attributes into class: %" PRIu32 ", instance %" PRIu32 "\n",
     instance->cip_class->class_instance.instance_number,
     instance->instance_number);
   OPENER_ASSERT(0);
@@ -400,20 +399,18 @@ EipStatus GetAttributeSingle(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
-
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
                                                                  attribute_number)
                       ]);
     }
-    if ( 0 != ( get_bit_mask & ( 1 << ( attribute_number % 8 ) ) ) ) {
+    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
@@ -711,7 +708,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
           if ( attrNum < 32
                && ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
                                                              attrNum)])
-                    & ( 1 << ( attrNum % 8 ) ) ) ) /* only return attributes that are flagged as being part of GetAttributeALl */
+                    & ( 1 << (attrNum % 8) ) ) ) /* only return attributes that are flagged as being part of GetAttributeALl */
           {
             message_router_request->request_path.attribute_number = attrNum;
             if ( kEipStatusOkSend
@@ -869,8 +866,7 @@ int DecodePaddedEPath(CipEpath *epath,
 void AllocateAttributeMasks(CipClass *target_class) {
   size_t size = 1 + CalculateIndex(target_class->highest_attribute_number);
   OPENER_TRACE_INFO(">>> Allocate memory for %s %lu bytes times 3 for masks\n",
-                    target_class->class_name,
-                    size);
+                    target_class->class_name, size);
   target_class->get_single_bit_mask = CipCalloc( size, sizeof(uint8_t) );
   target_class->set_bit_mask = CipCalloc( size, sizeof(uint8_t) );
   target_class->get_all_bit_mask = CipCalloc( size, sizeof(uint8_t) );

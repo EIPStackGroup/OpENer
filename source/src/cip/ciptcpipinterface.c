@@ -492,15 +492,15 @@ void setIPv4() {
 
   struct sockaddr_in *addr = (struct sockaddr_in *) &ifr.ifr_addr;
 
-
-  inet_pton(AF_INET, convertIpUdintToString(
-              interface_configuration_.ip_address), &addr->sin_addr);
+  inet_pton(AF_INET,
+            convertIpUdintToString(interface_configuration_.ip_address),
+            &addr->sin_addr);
   ioctl(fd, SIOCSIFADDR, &ifr);
 
   struct sockaddr_in *subnet = (struct sockaddr_in *) &ifr.ifr_netmask;
   inet_pton(AF_INET,
-            convertIpUdintToString(
-              interface_configuration_.network_mask), &subnet->sin_addr);
+            convertIpUdintToString(interface_configuration_.network_mask),
+            &subnet->sin_addr);
   ioctl(fd, SIOCSIFNETMASK, &ifr);
 
   ioctl(fd, SIOCGIFFLAGS, &ifr);
@@ -523,11 +523,11 @@ char *convertIpUdintToString(CipUdint address) {
   char str4[4];
   sprintf(str4, "%d", ptr[3]);
 
-  strcat(str1,".");
-  strcat(str1,str2);
-  strcat(str1,".");
-  strcat(str1,str3);
-  strcat(str1,".");
-  strcat(str1,str4);
+  strcat(str1, ".");
+  strcat(str1, str2);
+  strcat(str1, ".");
+  strcat(str1, str3);
+  strcat(str1, ".");
+  strcat(str1, str4);
 }
 
