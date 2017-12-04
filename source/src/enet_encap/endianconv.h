@@ -7,6 +7,7 @@
 #define OPENER_ENDIANCONV_H_
 
 #include "typedefs.h"
+#include "ciptypes.h"
 
 /** @file endianconv.h
  * @brief Responsible for Endianess conversion
@@ -50,14 +51,18 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address);
 EipUint32 GetDintFromMessage(const EipUint8 **const buffer);
 
 CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
+CipUdint GetUdintFromMessageTcpIp(const CipOctet **const buffer_address);
 
+void GetCipStringFromMessageToLocation(const CipOctet **const buffer_address,
+                                       CipString *cip_string);
 /** @ingroup ENCAP
  *
  * @brief converts UINT8 data from host to little endian an writes it to buffer.
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer);
+int AddSintToMessage(const EipUint8 data,
+                     EipUint8 **const buffer);
 
 /** @ingroup ENCAP
  *
@@ -67,7 +72,8 @@ int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer);
  *
  * @return Length in bytes of the encoded message
  */
-int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer);
+int AddIntToMessage(const EipUint16 data,
+                    EipUint8 **const buffer);
 
 /** @ingroup ENCAP
  *
@@ -77,7 +83,8 @@ int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer);
  *
  * @return Length in bytes of the encoded message
  */
-int AddDintToMessage(const EipUint32 data, EipUint8 **const buffer);
+int AddDintToMessage(const EipUint32 data,
+                     EipUint8 **const buffer);
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
@@ -91,7 +98,8 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
  *
  * @return Length in bytes of the encoded message
  */
-int AddLintToMessage(const EipUint64 pa_unData, EipUint8 **const buffer);
+int AddLintToMessage(const EipUint64 pa_unData,
+                     EipUint8 **const buffer);
 
 #endif
 
@@ -120,9 +128,11 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-void MoveMessageNOctets(int n, CipOctet **message_runner);
+void MoveMessageNOctets(int n,
+                        CipOctet **message_runner);
 
-int FillNextNMessageOctetsWith(CipOctet value,unsigned int n,
+int FillNextNMessageOctetsWith(CipOctet value,
+                               unsigned int n,
                                CipOctet **message);
 
 int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,

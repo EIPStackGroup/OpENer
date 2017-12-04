@@ -17,8 +17,15 @@
 #include "trace.h"
 #include "cipassembly.h"
 
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <linux/if.h>
+
 CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
-CipDword configuration_capability_ = 0x04; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
+CipDword configuration_capability_ = 20; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
 CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
 CipEpath physical_link_object_ = /**< #4 */
 { 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
@@ -61,7 +68,6 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
  * Currently we implemented with the default value of 120 seconds.
  */
 CipUint g_encapsulation_inactivity_timeout = 120;
-
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -170,6 +176,41 @@ EipStatus SetAttributeSingleTcp(
         }
         break;
 
+        case 5: {
+          CipUdint ip = 0;
+          CipUdint network_mask = 0;
+          CipUdint gateway = 0;
+          CipUdint name_server = 0;
+          CipUdint name_server_2 = 0;
+
+          ip = GetUdintFromMessageTcpIp( &(message_router_request->data) );
+          network_mask = GetUdintFromMessageTcpIp(
+            &(message_router_request->data) );
+          gateway = GetUdintFromMessageTcpIp( &(message_router_request->data) );
+          name_server = GetUdintFromMessageTcpIp(
+            &(message_router_request->data) );
+          name_server_2 = GetUdintFromMessageTcpIp(
+            &(message_router_request->data) );
+          GetCipStringFromMessageToLocation(
+            &(message_router_request->data),
+            &(interface_configuration_.domain_name) );
+
+          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+
+          if (attribute->data != NULL) {
+            interface_configuration_.ip_address = ip;
+            interface_configuration_.network_mask = network_mask;
+            interface_configuration_.gateway = gateway;
+            interface_configuration_.name_server = name_server;
+            interface_configuration_.name_server_2 = name_server_2;
+            message_router_response->general_status = kCipErrorSuccess;
+            setIPv4();
+          } else {
+            message_router_response->general_status = kCipErrorNotEnoughData;
+
+          }
+        }
+        break;
         case 13: {
 
           CipUint inactivity_timeout_received = GetIntFromMessage(
@@ -224,10 +265,10 @@ EipStatus CipTcpIpInterfaceInit() {
                                        13, /* # highest instance attribute number*/
                                        3, /* # instance services*/
                                        1, /* # instances*/
-                                       "TCP/IP interface",
-                                       4, /* # class revision*/
+                                       "TCP/IP interface", 4, /* # class revision*/
                                        NULL /* # function pointer for initialization*/
                                        ) ) == 0 ) {
+
     return kEipStatusError;
   }
 
@@ -242,7 +283,7 @@ EipStatus CipTcpIpInterfaceInit() {
   InsertAttribute(instance, 4, kCipEpath, &physical_link_object_,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
-                  &interface_configuration_, kGetableSingleAndAll);
+                  &interface_configuration_, kSetAndGetAble);
   InsertAttribute(instance, 6, kCipString, (void *) &hostname_,
                   kGetableSingleAndAll);
 
@@ -298,11 +339,10 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   message_router_response->general_status = kCipErrorAttributeNotSupported;
 
-  if (9 == message_router_request->request_path.attribute_number ) {   /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+  if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
@@ -310,7 +350,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                       ]);
     }
 
-    if ( 0 == ( get_bit_mask & ( 1 << ( attribute_number  % 8 ) ) ) ) {
+    if ( 0 == ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       return kEipStatusOkSend;
     }
     message_router_response->general_status = kCipErrorSuccess;
@@ -332,14 +372,12 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &multicast_address,
                                                        &message);
   } else {
-    CipAttributeStruct *attribute = GetCipAttribute(instance,
-                                                    attribute_number);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
 
     if ( (NULL != attribute) && ( NULL != attribute->data) ) {
 
-      OPENER_TRACE_INFO(
-        "getAttribute %d\n",
-        message_router_request->request_path.attribute_number);     /* create a reply message containing the data*/
+      OPENER_TRACE_INFO("getAttribute %d\n",
+                        message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
       if (kGetAttributeAll == message_router_request->service) {
         get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
@@ -352,7 +390,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                         ]);
       }
 
-      if( 0 == ( get_bit_mask &  ( 1 << ( (attribute_number ) % 8 ) ) ) ) {
+      if ( 0 == ( get_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
         return kEipStatusOkSend;
       }
 
@@ -440,5 +478,56 @@ EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipUint *data = (CipUint *) attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;
+}
+
+void setIPv4() {
+
+  struct ifreq ifr;
+  const char *name = "eth1";
+  int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
+
+  strncpy(ifr.ifr_name, name, 4);
+
+  ifr.ifr_addr.sa_family = AF_INET;
+
+  struct sockaddr_in *addr = (struct sockaddr_in *) &ifr.ifr_addr;
+
+
+  inet_pton(AF_INET, convertIpUdintToString(
+              interface_configuration_.ip_address), &addr->sin_addr);
+  ioctl(fd, SIOCSIFADDR, &ifr);
+
+  struct sockaddr_in *subnet = (struct sockaddr_in *) &ifr.ifr_netmask;
+  inet_pton(AF_INET,
+            convertIpUdintToString(
+              interface_configuration_.network_mask), &subnet->sin_addr);
+  ioctl(fd, SIOCSIFNETMASK, &ifr);
+
+  ioctl(fd, SIOCGIFFLAGS, &ifr);
+  strncpy(ifr.ifr_name, name, IFNAMSIZ);
+  ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
+
+  ioctl(fd, SIOCSIFFLAGS, &ifr);
+
+}
+
+char *convertIpUdintToString(CipUdint address) {
+  CipOctet *ptr = &(address);
+
+  char str1[100];
+  sprintf(str1, "%d", ptr[0]);
+  char str2[4];
+  sprintf(str2, "%d", ptr[1]);
+  char str3[4];
+  sprintf(str3, "%d", ptr[2]);
+  char str4[4];
+  sprintf(str4, "%d", ptr[3]);
+
+  strcat(str1,".");
+  strcat(str1,str2);
+  strcat(str1,".");
+  strcat(str1,str3);
+  strcat(str1,".");
+  strcat(str1,str4);
 }
 
