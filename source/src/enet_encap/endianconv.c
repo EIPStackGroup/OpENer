@@ -14,8 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "opener_api.h"
 #include "endianconv.h"
+#include "trace.h"
 
 OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 
@@ -89,10 +90,41 @@ EipUint32 GetDintFromMessage(const EipUint8 **const buffer) {
 
 CipUdint GetUdintFromMessage(const CipOctet **const buffer_address) {
   const CipOctet *buffer = *buffer_address;
-  CipUdint data = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] <<
-                  24;
+  CipUdint data = buffer[0] | buffer[1] << 8 | buffer[2] << 16
+                  | buffer[3] << 24;
   *buffer_address += 4;
   return data;
+}
+
+CipUdint GetUdintFromMessageTcpIp(const CipOctet **const buffer_address) {
+  const CipOctet *buffer = *buffer_address;
+
+  CipUdint data = buffer[3] | buffer[2] << 8 | buffer[1] << 16
+                  | buffer[0] << 24;
+  *buffer_address += 4;
+  return data;
+}
+
+void GetCipStringFromMessageToLocation(const CipOctet **const buffer_address,
+                                       CipString *cip_string) {
+  const CipOctet *buffer = *buffer_address;
+  size_t length = buffer[0] | buffer[1] << 8;
+  *buffer_address += 2;
+  buffer += 2;
+  CipString *temp_cip_string = CipCalloc( 1, sizeof(CipString) );
+  temp_cip_string->length = length;
+  CipByte *string = CipCalloc( length, sizeof(CipByte) );
+  temp_cip_string->string = string;
+  for (int i = 0; i < length; i++) {
+    OPENER_TRACE_INFO("==============================%c\n", buffer[i]);
+    temp_cip_string->string[i] = buffer[i];
+  }
+
+  *buffer_address += length;
+  *cip_string = *temp_cip_string;
+
+  CipFree(temp_cip_string);
+
 }
 
 /**
@@ -100,7 +132,8 @@ CipUdint GetUdintFromMessage(const CipOctet **const buffer_address) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer) {
+int AddSintToMessage(const EipUint8 data,
+                     EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -113,7 +146,8 @@ int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer) {
+int AddIntToMessage(const EipUint16 data,
+                    EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -127,7 +161,8 @@ int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddDintToMessage(const EipUint32 data, EipUint8 **const buffer) {
+int AddDintToMessage(const EipUint32 data,
+                     EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -172,7 +207,8 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddLintToMessage(const EipUint64 data, EipUint8 **const buffer) {
+int AddLintToMessage(const EipUint64 data,
+                     EipUint8 **const buffer) {
   EipUint8 *buffer_address = *buffer;
   buffer_address[0] = (EipUint8) (data >> 56) & 0xFF;
   buffer_address[1] = (EipUint8) (data >> 48) & 0xFF;
@@ -188,7 +224,6 @@ int AddLintToMessage(const EipUint64 data, EipUint8 **const buffer) {
 }
 
 #endif
-
 
 int EncapsulateIpAddress(EipUint16 port,
                          EipUint32 address,
@@ -218,9 +253,10 @@ int EncapsulateIpAddress(EipUint16 port,
       *communication_buffer += 4;
       size += 4;
     } else {
-      fprintf(stderr,
-              "No endianess detected! Probably the DetermineEndianess function was not executed!");
-      exit (EXIT_FAILURE);
+      fprintf(
+        stderr,
+        "No endianess detected! Probably the DetermineEndianess function was not executed!");
+      exit(EXIT_FAILURE);
     }
   }
   return size;
@@ -251,7 +287,8 @@ int GetEndianess() {
   return g_opener_platform_endianess;
 }
 
-void MoveMessageNOctets(int amount_of_bytes_moved, CipOctet **message_runner) {
+void MoveMessageNOctets(int amount_of_bytes_moved,
+                        CipOctet **message_runner) {
   (*message_runner) += amount_of_bytes_moved;
 }
 
@@ -262,9 +299,10 @@ int FillNextNMessageOctetsWith(CipOctet value,
   return amount_of_bytes_written;
 }
 
-int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
-                                                         unsigned int amount_of_filled_bytes,
-                                                         CipOctet **message) {
+int FillNextNMessageOctetsWithValueAndMoveToNextPosition(
+  CipOctet value,
+  unsigned int amount_of_filled_bytes,
+  CipOctet **message) {
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, message);
   MoveMessageNOctets(amount_of_filled_bytes, message);
   return amount_of_filled_bytes;
