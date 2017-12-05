@@ -59,7 +59,11 @@ typedef enum {
   kConnectionObjectWatchdogTimeoutActionDeferredDelete       /**< Only for Device Net, invalid for I/O connections */
 } ConnectionObjectWatchdogTimeoutAction;
 
-typedef struct cip_connection_object {
+typedef struct cip_connection_object CipConnectionObject;
+
+typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state);
+
+struct cip_connection_object {
   CipUsint state; /*< Attribute 1 */
   CipUsint instance_type; /*< Attribute 2 */
   CipByte transport_class_trigger; /*< Attribute 3 */
@@ -79,11 +83,23 @@ typedef struct cip_connection_object {
   /* Attribute 19 not supported as Connection Bind service not supported */
 
   /* End of CIP attributes */
-  /* Start of OpENer specific variables */
+  /* Start of needed non-object variables */
   CipUint requested_produced_connection_size;
   CipUint requested_consumed_connection_size;
 
-} CipConnectionObject;
+  uint64_t transmission_trigger_timer;
+  uint64_t inactivity_watchdog_timer;
+  uint64_t production_inhibit_timer;
+
+  CipUint connection_serial_number;
+  CipUint originator_vendor_id;
+  CipUdint originator_serial_number;
+
+  CipUint sequence_count_producing;
+
+  CipConnectionStateHandler current_state_handler;
+
+};
 
 /** @brief Array allocator
  *
@@ -172,7 +188,7 @@ void ConnectionObjectSetCipConsumedConnectionID(
 ConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutAction(
   const CipConnectionObject *const connection_object);
 
-void ConnectionObjectSetWatchdofTimeoutAction(
+void ConnectionObjectSetWatchdogTimeoutAction(
   CipConnectionObject *const connection_object,
   const CipUsint
   watchdog_timeout_action);

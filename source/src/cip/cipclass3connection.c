@@ -70,3 +70,22 @@ void InitializeClass3ConnectionData(void) {
   memset( g_explicit_connections, 0,
           OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(ConnectionObject) );
 }
+
+EipStatus CipClass3ConnectionObjectStateEstablishedHandler(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state) {
+  switch(new_state) {
+    case kConnectionObjectStateNonExistent:
+      ConnectionObjectInitializeEmpty(connection_object);
+      ConnectionObjectSetState(connection_object, new_state);
+      return kEipStatusOk;
+    default: return kEipStatusError;
+  }
+}
+
+EipStatus CipClass3ConnectionObjectStateNonExistentHandler(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state) {
+  switch(new_state) {
+    case kConnectionObjectStateEstablished:
+      ConnectionObjectSetState(connection_object, new_state);
+      return kEipStatusOk;
+    default: return kEipStatusError;
+  }
+}

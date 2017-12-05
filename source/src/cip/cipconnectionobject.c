@@ -7,6 +7,8 @@
 #include "cipconnectionobject.h"
 
 #include "opener_user_conf.h"
+#include "endianconv.h"
+#include "trace.h"
 
 #define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U
@@ -55,6 +57,68 @@ void ConnectionObjectInitializeEmpty(
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
 
+}
+
+void ConnectionObjectInitializeFromMessage(
+  const CipOctet *message,
+  CipConnectionObject *const
+  connection_object) {
+  CipByte priority_timetick = GetSintFromMessage(&message);
+  CipUsint timeout_ticks = GetSintFromMessage(&message);
+  /* O_to_T Conn ID */
+  connection_object->cip_consumed_connection_id = GetDintFromMessage(
+    &message);
+  /* T_to_O Conn ID */
+  connection_object->cip_produced_connection_id = GetDintFromMessage(
+    &message);
+  connection_object->connection_serial_number = GetIntFromMessage(
+    &message);
+  connection_object->originator_vendor_id = GetIntFromMessage(
+    &message);
+  connection_object->originator_serial_number = GetDintFromMessage(
+    &message);
+
+  /* keep it to none existent till the setup is done this eases error handling and
+   * the state changes within the forward open request can not be detected from
+   * the application or from outside (reason we are single threaded)*/
+  connection_object->state = kConnectionObjectStateNonExistent;
+  connection_object->sequence_count_producing = 0; /* set the sequence count to zero */
+
+  CipUsint connection_timeout_multiplier = GetSintFromMessage(&message);
+
+  MoveMessageNOctets(3, &message); /* 3 bytes reserved */
+
+  /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
+  OPENER_TRACE_INFO(
+    "ForwardOpen: ConConnID %" PRIu32 ", ProdConnID %" PRIu32
+    ", ConnSerNo %u\n",
+    connection_object->cip_consumed_connection_id,
+    connection_object->cip_produced_connection_id,
+    connection_object->connection_serial_number);
+
+  CipUdint o_to_t_requested_packet_interval = GetDintFromMessage(
+    &message);
+
+  CipWord o_to_t_network_connection_parameter = GetIntFromMessage(
+    &message);
+  CipUdint t_to_o_requested_packet_interval = GetDintFromMessage(
+    &message);
+
+  ConnectionObjectSetExpectedPacketRate(connection_object, t_to_o_requested_packet_interval);
+  EipUint32 temp = t_to_o_requested_packet_interval
+                   % (kOpenerTimerTickInMilliSeconds * 1000);
+  if (temp > 0) {
+    t_to_o_requested_packet_interval =
+      (EipUint32) ( t_to_o_requested_packet_interval
+                    / (kOpenerTimerTickInMilliSeconds * 1000) )
+      * (kOpenerTimerTickInMilliSeconds * 1000)
+      + (kOpenerTimerTickInMilliSeconds * 1000);
+  }
+
+  CipWord t_to_o_network_connection_parameter = GetIntFromMessage(
+    &message);
+
+  CipByte transport_type_class_trigger = GetSintFromMessage(&message);
 }
 
 ConnectionObjectState ConnectionObjectGetState(
@@ -247,7 +311,7 @@ ConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutAction(
   }
 }
 
-void ConnectionObjectSetWatchdofTimeoutAction(
+void ConnectionObjectSetWatchdogTimeoutAction(
   CipConnectionObject *const connection_object,
   const CipUsint
   watchdog_timeout_action) {
