@@ -659,8 +659,8 @@ EipStatus ForwardOpen(
   ) {
   (void) instance; /*suppress compiler warning */
 
-  uint8_t is_null_request = -1; /* 1 = Null Request, 0 =  Non-Null Request  */
-  uint8_t is_matching_request = -1; /* 1 = Matching Request, 0 = Non-Matching Request  */
+  bool is_null_request = false; /* 1 = Null Request, 0 =  Non-Null Request  */
+  bool is_matching_request = false; /* 1 = Matching Request, 0 = Non-Matching Request  */
 
   /*first check if we have already a connection with the given params */
   ReadOutConnectionObjectFromMessage(message_router_request,
@@ -692,21 +692,21 @@ EipStatus ForwardOpen(
   /* Check if request is a Null request or a Non-Null request */
   if (kForwardOpenConnectionTypeNull == o_to_t_connection_type
       && kForwardOpenConnectionTypeNull == t_to_o_connection_type) {
-    is_null_request = 1;
+    is_null_request = true;
     OPENER_TRACE_INFO("We have a Null request\n");
   } else {
-    is_null_request = 0;
+    is_null_request = false;
     OPENER_TRACE_INFO("We have a Non-Null request\n");
   }
 
   /* Check if we have a matching or non matching request */
   if ( ( NULL != CheckForExistingConnection(&g_dummy_connection_object) ) ) {
     OPENER_TRACE_INFO("We have a Matching request\n");
-    is_matching_request = 1;
+    is_matching_request = true;
 
   } else {
     OPENER_TRACE_INFO("We have a Non-Matching request\n");
-    is_matching_request = 0;
+    is_matching_request = false;
   }
 
   HandleForwardOpenRequestFunction choosen_function =
