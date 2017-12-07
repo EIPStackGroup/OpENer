@@ -125,7 +125,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
                 # assertion, \
                 __FILE__, \
                 __LINE__); \
-      while(1) {; } \
+      while(1) {  } \
     } \
   } while(0)
 
