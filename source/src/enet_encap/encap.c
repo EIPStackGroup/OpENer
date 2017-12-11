@@ -311,10 +311,10 @@ int HandleReceivedExplictUdpData(int socket,
 }
 
 int EncapsulateData(const EncapsulationData *const send_data) {
-  EipUint8 *communcation_buffer = send_data->communication_buffer_start + 2;
+  CipOctet *communcation_buffer = send_data->communication_buffer_start + 2;
   AddIntToMessage(send_data->data_length, &communcation_buffer);
   /*the CommBuf should already contain the correct session handle*/
-  MoveMessageNOctets(4, &communcation_buffer);
+  MoveMessageNOctets(4, (const CipOctet**)&communcation_buffer);
   AddDintToMessage(send_data->status, &communcation_buffer);
   /*the CommBuf should already contain the correct sender context*/
   /*the CommBuf should already contain the correct  options value*/
@@ -393,13 +393,13 @@ void HandleReceivedListIdentityCommandUdp(int socket,
 
 ptrdiff_t EncapsulateListIdentyResponseMessage(
   EipByte *const communication_buffer) {
-  EipUint8 *communication_buffer_runner = communication_buffer;
+  CipOctet *communication_buffer_runner = communication_buffer;
 
   AddIntToMessage( 1, &(communication_buffer_runner) ); /* Item count: one item */
   AddIntToMessage(kCipItemIdListIdentityResponse, &communication_buffer_runner);
 
   EipByte *id_length_buffer = communication_buffer_runner;
-  MoveMessageNOctets(2, &communication_buffer_runner); /*at this place the real length will be inserted below*/
+  MoveMessageNOctets(2, (const CipOctet**)&communication_buffer_runner); /*at this place the real length will be inserted below*/
 
   AddIntToMessage(kSupportedProtocolVersion, &communication_buffer_runner);
 
@@ -408,7 +408,7 @@ ptrdiff_t EncapsulateListIdentyResponseMessage(
                        &communication_buffer_runner);
 
   memset(communication_buffer_runner, 0, 8);
-  MoveMessageNOctets(8, &communication_buffer_runner);
+  MoveMessageNOctets(8, (const CipOctet**)&communication_buffer_runner);
 
   AddIntToMessage(vendor_id_, &communication_buffer_runner);
   AddIntToMessage(device_type_, &communication_buffer_runner);
@@ -432,7 +432,7 @@ ptrdiff_t EncapsulateListIdentyResponseMessage(
 void DetermineDelayTime(EipByte *buffer_start,
                         DelayedEncapsulationMessage *delayed_message_buffer) {
 
-  MoveMessageNOctets(12, &buffer_start); /* start of the sender context */
+  MoveMessageNOctets(12, (const CipOctet**)&buffer_start); /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(
     (const EipUint8 **const)&buffer_start );
 

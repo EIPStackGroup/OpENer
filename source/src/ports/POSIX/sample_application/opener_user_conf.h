@@ -36,7 +36,7 @@
 #define OPENER_DEVICE_PRODUCT_CODE      65001
 #define OPENER_DEVICE_MAJOR_REVISION      1
 #define OPENER_DEVICE_MINOR_REVISION      2
-#define OPENER_DEVICE_NAME      "OpENer PC"
+#define OPENER_DEVICE_NAME      ("OpENer PC")
 
 /** @brief Define the number of objects that may be used in connections
  *

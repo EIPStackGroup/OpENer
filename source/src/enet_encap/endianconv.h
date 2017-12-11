@@ -120,7 +120,7 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-void MoveMessageNOctets(int n, CipOctet **message_runner);
+void MoveMessageNOctets(int n, const CipOctet **message_runner);
 
 int FillNextNMessageOctetsWith(CipOctet value,unsigned int n,
                                CipOctet **message);

@@ -59,6 +59,25 @@ typedef enum {
   kConnectionObjectWatchdogTimeoutActionDeferredDelete       /**< Only for Device Net, invalid for I/O connections */
 } ConnectionObjectWatchdogTimeoutAction;
 
+typedef enum {
+  kConnectionObjectConnectionTypeInvalid = -1,
+  kConnectionObjectConnectionTypeNull = 0,
+  kConnectionObjectConnectionTypeMulticast,
+  kConnectionObjectConnectionTypePointToPoint
+} ConnectionObjectConnectionType;
+
+typedef enum {
+  kConnectionObjectPriorityLow = 0,
+  kConnectionObjectPriorityHigh,
+  kConnectionObjectPriorityScheduled,
+  kConnectionObjectPriorityUrgent
+} ConnectionObjectPriority;
+
+typedef enum {
+  kConnectionObjectConnectionSizeTypeFixed,
+  kConnectionObjectConnectionSizeTypeVariable
+} ConnectionObjectConnectionSizeType;
+
 typedef struct cip_connection_object CipConnectionObject;
 
 typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state);
@@ -94,6 +113,12 @@ struct cip_connection_object {
   CipUint connection_serial_number;
   CipUint originator_vendor_id;
   CipUdint originator_serial_number;
+
+  CipUdint o_to_t_requested_packet_interval;
+  CipWord o_to_t_network_connection_parameters;
+
+  CipUdint t_to_o_requested_packet_interval;
+  CipWord t_to_o_network_connection_parameters;
 
   CipUint sequence_count_producing;
 
@@ -225,5 +250,54 @@ void ConnectionObjectSetConnectionTimeoutMultiplier(
   const CipUsint
   connection_timeout_multiplier);
 
+void ConnectionObjectResetInactivityWatchdogTimerValue(
+  CipConnectionObject *connection_object);
+
+CipUint ConnectionObjectGetConnectionSerialNumber(
+    const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetConnectionSerialNumber(
+    CipConnectionObject *connection_object, const CipUint connection_serial_number);
+
+CipUint ConnectionObjectGetOriginatorVendorId(
+    const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetOriginatorVendorId(
+    CipConnectionObject *connection_object, const CipUint vendor_id);
+
+CipUdint ConnectionObjectGetOriginatorSerialNumber(
+    const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetOriginatorSerialNumber(
+    CipConnectionObject *connection_object, CipUdint originator_serial_number);
+
+CipUdint ConnectionObjectGetOToTRequestedPacketInterval(const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetOToTRequestedPacketInterval(CipConnectionObject *connection_object, const CipUdint requested_packet_interval);
+
+bool ConnectionObjectIsOToTRedundantOwner(const CipConnectionObject *const connection_object);
+
+ConnectionObjectConnectionType ConnectionObjectGetOToTConnectionType(const CipConnectionObject *const connection_object);
+
+ConnectionObjectPriority ConnectionObjectGetOToTPriority(const CipConnectionObject *const connection_object);
+
+ConnectionObjectConnectionSizeType ConnectionObjectGetOToTConnectionSizeType(const CipConnectionObject *const connection_object);
+
+size_t ConnectionObjectGetOToTConnectionSize(const CipConnectionObject *const connection_object);
+
+/* T to O */
+CipUdint ConnectionObjectGetTToORequestedPacketInterval(const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetTToORequestedPacketInterval(CipConnectionObject *connection_object, const CipUdint requested_packet_interval);
+
+bool ConnectionObjectIsTToORedundantOwner(const CipConnectionObject *const connection_object);
+
+ConnectionObjectConnectionType ConnectionObjectGetTToOConnectionType(const CipConnectionObject *const connection_object);
+
+ConnectionObjectPriority ConnectionObjectGetTToOPriority(const CipConnectionObject *const connection_object);
+
+ConnectionObjectConnectionSizeType ConnectionObjectGetTToOConnectionSizeType(const CipConnectionObject *const connection_object);
+
+size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const connection_object);
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

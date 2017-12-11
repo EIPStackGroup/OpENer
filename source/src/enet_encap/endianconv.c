@@ -251,7 +251,7 @@ int GetEndianess() {
   return g_opener_platform_endianess;
 }
 
-void MoveMessageNOctets(int amount_of_bytes_moved, CipOctet **message_runner) {
+void MoveMessageNOctets(int amount_of_bytes_moved, const CipOctet **message_runner) {
   (*message_runner) += amount_of_bytes_moved;
 }
 
@@ -266,7 +266,7 @@ int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
                                                          unsigned int amount_of_filled_bytes,
                                                          CipOctet **message) {
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, message);
-  MoveMessageNOctets(amount_of_filled_bytes, message);
+  MoveMessageNOctets(amount_of_filled_bytes, (const CipOctet**)message);
   return amount_of_filled_bytes;
 }
 
