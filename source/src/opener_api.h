@@ -31,28 +31,27 @@
  *  @return kEipStatusOk if the configuring worked otherwise kEipStatusError
  */
 EipStatus
-ConfigureNetworkInterface(const char *const ip_address,
-                          const char *const subnet_mask,
-                          const char *const gateway_address);
+ConfigureNetworkInterface(const char *const interface);
 
 /** @ingroup CIP_API
  * @brief Configure the MAC address of the device
  *
  *  @param mac_address  the hardware MAC address of the network interface
  */
-void ConfigureMacAddress(const EipUint8 *const mac_address);
+void ConfigureMacAddress(const char *interface);
 
 /** @ingroup CIP_API
  * @brief Configure the domain name of the device
  * @param domain_name the domain name to be used
  */
-void ConfigureDomainName(const char *const RESTRICT domain_name);
-
+void ConfigureDomainName(
+  );
 /** @ingroup CIP_API
  * @brief Configure the host name of the device
  * @param host_name the host name to be used
  */
-void ConfigureHostName(const char *const RESTRICT host_name);
+void ConfigureHostName(
+  );
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -324,16 +323,16 @@ typedef EipStatus (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(
-  struct connection_object *connection_object);
+typedef void (*ConnectionCloseFunction)(struct connection_object *
+                                        connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
  *
  * @param connection_object The connection object which connection timed out
  */
-typedef void (*ConnectionTimeoutFunction)(
-  struct connection_object *connection_object);
+typedef void (*ConnectionTimeoutFunction)(struct connection_object *
+                                          connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -342,8 +341,8 @@ typedef void (*ConnectionTimeoutFunction)(
  *
  * @return EIP stack status
  */
-typedef EipStatus (*ConnectionSendDataFunction)(
-  struct connection_object *connection_object);
+typedef EipStatus (*ConnectionSendDataFunction)(struct connection_object *
+                                                connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -355,7 +354,8 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-  struct connection_object *connection_object, const EipUint8 *data,
+  struct connection_object *connection_object,
+  const EipUint8 *data,
   const EipUint16 data_length);
 
 /** @ingroup CIP_API

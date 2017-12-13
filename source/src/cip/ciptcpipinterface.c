@@ -17,6 +17,18 @@
 #include "trace.h"
 #include "cipassembly.h"
 
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <linux/if.h>
+#include <net/if.h>
+#include <netinet/in.h>
+
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
 CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
 CipDword configuration_capability_ = 0x04; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
 CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
@@ -62,7 +74,6 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
  */
 CipUint g_encapsulation_inactivity_timeout = 120;
 
-
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
@@ -76,14 +87,53 @@ EipStatus GetAttributeAllTcpIpInterface(
   CipMessageRouterResponse *message_router_response,
   struct sockaddr *originator_address);
 
-EipStatus ConfigureNetworkInterface(const char *ip_address,
-                                    const char *subnet_mask,
-                                    const char *gateway) {
+EipStatus ConfigureNetworkInterface(const char *interface) {
 
-  interface_configuration_.ip_address = inet_addr(ip_address);
-  interface_configuration_.network_mask = inet_addr(subnet_mask);
-  interface_configuration_.gateway = inet_addr(gateway);
+  struct ifreq ifr;
+  size_t if_name_len = strlen(interface);
+  if ( if_name_len < sizeof(ifr.ifr_name) ) {
+    memcpy(ifr.ifr_name, interface, if_name_len);
+    ifr.ifr_name[if_name_len] = 0;
+  } else {
+    OPENER_TRACE_INFO("interface name is too long");
+  }
 
+  int fd = socket(PF_INET, SOCK_DGRAM, 0);
+  int ipaddr = 0;
+  int netaddr = 0;
+  if (ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
+    ipaddr = ( (struct sockaddr_in *) &ifr.ifr_addr )->sin_addr.s_addr;
+  }
+
+  if (ioctl(fd, SIOCGIFNETMASK, &ifr) == 0) {
+    netaddr = ( (struct sockaddr_in *) &ifr.ifr_netmask )->sin_addr.s_addr;
+  }
+
+  interface_configuration_.ip_address = ipaddr;
+  interface_configuration_.network_mask = netaddr;
+
+  FILE *f;
+  char line[100], *p;
+  char *c = NULL;
+  char *d = NULL;
+  CipUdint test = 0;
+
+  f = fopen("/proc/net/route", "r");
+
+  while ( fgets(line, 100, f) ) {
+    if ( strstr(line, interface) ) {
+      p = strtok(line, " \t");
+      c = strtok(NULL, " \t");
+      d = strtok(NULL, "\t");
+    }
+  }
+  fclose(f);
+
+  if ( (test == 0x7f000001) || (inet_pton(AF_INET, d, test) == 0) ) {
+    interface_configuration_.gateway = 0;
+  } else {
+    interface_configuration_.gateway = test;
+  }
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
   EipUint32 host_id = ntohl(interface_configuration_.ip_address)
                       & ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
@@ -96,35 +146,77 @@ EipStatus ConfigureNetworkInterface(const char *ip_address,
   return kEipStatusOk;
 }
 
-void ConfigureDomainName(const char *domain_name) {
-  if (NULL != interface_configuration_.domain_name.string) {
-    /* if the string is already set to a value we have to free the resources
-     * before we can set the new value in order to avoid memory leaks.
-     */
-    CipFree(interface_configuration_.domain_name.string);
+void ConfigureDomainName() {
+  FILE *f;
+  char line[100], *p, *q, *r;
+  char *c;
+  char *n1 = NULL;
+  char *n2 = NULL;
+  CipBool done_domain = false;
+  CipBool done_n1 = false;
+  f = fopen("/etc/resolv.conf", "r");
+
+  while ( fgets(line, 100, f) ) {
+    if (strstr(line, "domain") && !done_domain) {
+      p = strtok(line, " ");
+      c  = strtok(NULL, "\n");
+
+      if (NULL != interface_configuration_.domain_name.string) {
+        /* if the string is already set to a value we have to free the resources
+         * before we can set the new value in order to avoid memory leaks.
+         */
+        CipFree(interface_configuration_.domain_name.string);
+      }
+      interface_configuration_.domain_name.length = strlen(c);
+
+      if (interface_configuration_.domain_name.length) {
+        interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
+          interface_configuration_.domain_name.length + 1, sizeof(EipInt8) );
+        strcpy(interface_configuration_.domain_name.string, c);
+      } else {
+        interface_configuration_.domain_name.string = NULL;
+      }
+      done_domain = true;
+      continue;
+    }
+
+    if (strstr(line, "nameserver") && !done_n1) {
+      q = strtok(line, " ");
+      n1 = strtok(NULL, "\n");
+
+      inet_pton(AF_INET, n1, &interface_configuration_.name_server);
+
+      done_n1 = true;
+      continue;
+    }
+    if (strstr(line, "nameserver ") && done_n1) {
+      r = strtok(line, " ");
+      OPENER_TRACE_INFO("HALLOOOOOO %s\n",line);
+      n2 = strtok(NULL, "\n");
+
+      inet_pton(AF_INET, n2, &interface_configuration_.name_server_2);
+      break;
+    }
   }
-  interface_configuration_.domain_name.length = strlen(domain_name);
-  if (interface_configuration_.domain_name.length) {
-    interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
-      interface_configuration_.domain_name.length + 1, sizeof(EipInt8) );
-    strcpy(interface_configuration_.domain_name.string, domain_name);
-  } else {
-    interface_configuration_.domain_name.string = NULL;
-  }
+
+
 }
 
-void ConfigureHostName(const char *const RESTRICT hostname) {
+void ConfigureHostName() {
+  char name[1024];
+  gethostname(name, 1024);
+
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
      */
     CipFree(hostname_.string);
   }
-  hostname_.length = strlen(hostname);
+  hostname_.length = strlen(name);
   if (hostname_.length) {
     hostname_.string = (EipByte *) CipCalloc( hostname_.length + 1,
                                               sizeof(EipByte) );
-    strcpy(hostname_.string, hostname);
+    strcpy(hostname_.string, name);
   } else {
     hostname_.string = NULL;
   }
@@ -224,8 +316,7 @@ EipStatus CipTcpIpInterfaceInit() {
                                        13, /* # highest instance attribute number*/
                                        3, /* # instance services*/
                                        1, /* # instances*/
-                                       "TCP/IP interface",
-                                       4, /* # class revision*/
+                                       "TCP/IP interface", 4, /* # class revision*/
                                        NULL /* # function pointer for initialization*/
                                        ) ) == 0 ) {
     return kEipStatusError;
@@ -298,11 +389,10 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   message_router_response->general_status = kCipErrorAttributeNotSupported;
 
-  if (9 == message_router_request->request_path.attribute_number ) {   /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+  if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
@@ -310,7 +400,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                       ]);
     }
 
-    if ( 0 == ( get_bit_mask & ( 1 << ( attribute_number  % 8 ) ) ) ) {
+    if ( 0 == ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       return kEipStatusOkSend;
     }
     message_router_response->general_status = kCipErrorSuccess;
@@ -332,14 +422,12 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &multicast_address,
                                                        &message);
   } else {
-    CipAttributeStruct *attribute = GetCipAttribute(instance,
-                                                    attribute_number);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
 
     if ( (NULL != attribute) && ( NULL != attribute->data) ) {
 
-      OPENER_TRACE_INFO(
-        "getAttribute %d\n",
-        message_router_request->request_path.attribute_number);     /* create a reply message containing the data*/
+      OPENER_TRACE_INFO("getAttribute %d\n",
+                        message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
       if (kGetAttributeAll == message_router_request->service) {
         get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
@@ -352,7 +440,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                         ]);
       }
 
-      if( 0 == ( get_bit_mask &  ( 1 << ( (attribute_number ) % 8 ) ) ) ) {
+      if ( 0 == ( get_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
         return kEipStatusOkSend;
       }
 
