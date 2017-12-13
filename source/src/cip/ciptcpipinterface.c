@@ -159,7 +159,7 @@ void ConfigureDomainName() {
   while ( fgets(line, 100, f) ) {
     if (strstr(line, "domain") && !done_domain) {
       p = strtok(line, " ");
-      c  = strtok(NULL, "\n");
+      c = strtok(NULL, "\n");
 
       if (NULL != interface_configuration_.domain_name.string) {
         /* if the string is already set to a value we have to free the resources
@@ -191,14 +191,13 @@ void ConfigureDomainName() {
     }
     if (strstr(line, "nameserver ") && done_n1) {
       r = strtok(line, " ");
-      OPENER_TRACE_INFO("HALLOOOOOO %s\n",line);
+      OPENER_TRACE_INFO("HALLOOOOOO %s\n", line);
       n2 = strtok(NULL, "\n");
 
       inet_pton(AF_INET, n2, &interface_configuration_.name_server_2);
       break;
     }
   }
-
 
 }
 

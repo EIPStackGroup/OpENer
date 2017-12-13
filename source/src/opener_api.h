@@ -209,8 +209,6 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param cip_flags flags to indicate set-ability and get-ability of attribute.
  */
 
-
-
 void InsertAttribute(CipInstance *const cip_instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_data_type,

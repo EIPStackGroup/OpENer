@@ -32,17 +32,14 @@ int main(int argc,
   if (argc != 2) {
     printf("Wrong number of command line parameters!\n");
     printf("The correct command line parameters are:\n");
-    printf(
-      "./OpENer interfacename\n");
-    printf(
-      "    e.g. ./OpENer eth1\n");
+    printf("./OpENer interfacename\n");
+    printf("    e.g. ./OpENer eth1\n");
     exit(0);
   } else {
     /* fetch Internet address info from the platform */
     ConfigureNetworkInterface(arg[1]);
     ConfigureDomainName();
     ConfigureHostName();
-
 
     ConfigureMacAddress(arg[1]);
   }
