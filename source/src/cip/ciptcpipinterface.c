@@ -129,7 +129,7 @@ EipStatus ConfigureNetworkInterface(const char *interface) {
   }
   fclose(f);
 
-  if ( (test == 0x7f000001) || (inet_pton(AF_INET, d, test) == 0) ) {
+  if ( (test == LOCALHOST_BINARY) || (inet_pton(AF_INET, d, test) == 0) ) {
     interface_configuration_.gateway = 0;
   } else {
     interface_configuration_.gateway = test;
