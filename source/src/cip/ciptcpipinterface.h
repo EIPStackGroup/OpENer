@@ -14,8 +14,6 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-#define LOCALHOST_BINARY 0x7f000001
-
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
 static const EipUint16 kCipTcpIpInterfaceClassCode = 0xF5; /**< TCP/IP Interface Object class code */
