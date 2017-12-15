@@ -25,9 +25,8 @@
 #include <unistd.h>
 
 #define LOOPBACK_BINARY 0x7f000001
-#define STANDARD_PROTOCOL 0
 
-EipStatus ConfigureNetworkInterface(const char *interface) {
+EipStatus ConfigureNetworkInterface(const char *const interface) {
 
   struct ifreq ifr;
   size_t if_name_len = strlen(interface);
@@ -38,7 +37,7 @@ EipStatus ConfigureNetworkInterface(const char *interface) {
     OPENER_TRACE_INFO("interface name is too long\n");
   }
 
-  int fd = socket(AF_INET, SOCK_DGRAM, STANDARD_PROTOCOL);
+  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   int ipaddr = 0;
   int netaddr = 0;
   if (ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
@@ -52,14 +51,12 @@ EipStatus ConfigureNetworkInterface(const char *interface) {
   interface_configuration_.ip_address = ipaddr;
   interface_configuration_.network_mask = netaddr;
 
-  FILE *file_handle = NULL;
+  FILE *file_handle = fopen("/proc/net/route", "r");
   char line[100] = { 0 };
   char *string_part1 = NULL;
   char *string_part2 = NULL;
   char *gateway_string = NULL;
   CipUdint gateway = 0;
-
-  file_handle = fopen("/proc/net/route", "r");
 
   while ( fgets(line, 100, file_handle) ) {
     if ( strstr(line, interface) ) {
@@ -93,7 +90,8 @@ EipStatus ConfigureNetworkInterface(const char *interface) {
 }
 
 void ConfigureDomainName() {
-  FILE *file_handle = { 0 };
+  FILE *file_handle = fopen("/etc/resolv.conf", "r");
+
   char line[100] = { 0 };
   char *string_part1 = NULL;
   char *domain_name_string = NULL;
@@ -101,7 +99,6 @@ void ConfigureDomainName() {
   char *dns2_string = NULL;
   CipBool done_domain = false;
   CipBool done_n1 = false;
-  file_handle = fopen("/etc/resolv.conf", "r");
 
   while ( fgets(line, 100, file_handle) ) {
     if (strstr(line, "domain") && !done_domain) {
@@ -149,8 +146,8 @@ void ConfigureDomainName() {
 }
 
 void ConfigureHostName() {
-  char name[1024];
-  gethostname(name, 1024);
+  char name[1024] = { 0 };
+  gethostname( name, sizeof(name) );
 
   if (NULL != hostname_.string) {
     /* if the string is already set to a value we have to free the resources

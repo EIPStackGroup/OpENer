@@ -26,8 +26,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define STANDARD_PROTOCOL 0
-
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
   EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
@@ -78,7 +76,7 @@ void ConfigureMacAddress(const char *interface) {
     OPENER_TRACE_INFO("interface name is too long");
   }
 
-  int fd = socket(AF_INET, SOCK_DGRAM, STANDARD_PROTOCOL);
+  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
 
   if (ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
     memcpy( &g_ethernet_link.physical_address, &ifr.ifr_hwaddr.sa_data,
