@@ -14,7 +14,6 @@
 #include "opener_api.h"
 #include "trace.h"
 
-
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <linux/if.h>
@@ -26,6 +25,9 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
+#define STANDARD_PROTOCOL 0
+
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
   EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
@@ -76,7 +78,7 @@ void ConfigureMacAddress(const char *interface) {
     OPENER_TRACE_INFO("interface name is too long");
   }
 
-  int fd = socket(PF_INET, SOCK_DGRAM, 0);
+  int fd = socket(AF_INET, SOCK_DGRAM, STANDARD_PROTOCOL);
 
   if (ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
     memcpy( &g_ethernet_link.physical_address, &ifr.ifr_hwaddr.sa_data,
@@ -93,13 +95,13 @@ CipEthernetLinkInterfaceControl interface_control = { .control_bits = 0,
                                                         0 };
 
 CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_object = { .interface_speed =
-                                                               100,
-                                                             .
+                                                               100, .
                                                              interface_duplex_mode
                                                                = 1 };
 CipEthernetLinkInterfaceCapability interface_capability = {
   .capability_bits = 1, .speed_duplex_options = { .speed_duplex_array_count =
-                                                    1, .speed_duplex_array =
+                                                    1,
+                                                  .speed_duplex_array =
                                                     &speed_duplex_object }
 };
 
@@ -234,8 +236,7 @@ EipStatus GetAttributeSingleEthernetLink(
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(

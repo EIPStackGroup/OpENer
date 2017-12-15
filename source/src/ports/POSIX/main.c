@@ -11,6 +11,7 @@
 #include "opener_api.h"
 #include "cipcommon.h"
 #include "trace.h"
+#include "networkconfig.h"
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
