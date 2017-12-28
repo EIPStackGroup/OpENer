@@ -508,7 +508,7 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   } else {
     OPENER_TRACE_INFO("connection manager: connect succeeded\n");
     /* in case of success the new connection is added at the head of the connection list */
-    return AssembleForwardOpenResponse(connection_list.first,
+    return AssembleForwardOpenResponse(connection_list.first->data,
                                        message_router_response,
                                        kCipErrorSuccess, 0);
   }
@@ -559,7 +559,7 @@ EipStatus ForwardOpen(
   bool is_matching_request = false; /* 1 = Matching Request, 0 = Non-Matching Request  */
 
   /*first check if we have already a connection with the given params */
-  ConnectionObjectInitializeFromMessage(message_router_request,
+  ConnectionObjectInitializeFromMessage(message_router_request->data,
                                      &g_dummy_connection_object);
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
@@ -640,7 +640,7 @@ EipStatus ForwardClose(
 
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
     /* this check should not be necessary as only established connections should be in the active connection list */
   CipConnectionObject *connection_object = node->data;
     if ( (kConnectionObjectStateEstablished == ConnectionObjectGetState(connection_object))
@@ -706,7 +706,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
 
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
     //OPENER_TRACE_INFO("Entering Connection Object loop\n");
     CipConnectionObject *connection_object = node->data;
     if (kConnectionObjectStateEstablished == ConnectionObjectGetState(connection_object)) {
@@ -1004,7 +1004,7 @@ CipConnectionObject *CheckForExistingConnection(
 
   DoublyLinkedListNode *iterator = connection_list.first;
 
-    while(NULL != iterator->next) {
+    while(NULL != iterator) {
         if(kConnectionObjectStateEstablished == ConnectionObjectGetState(iterator->data)) {
           if(EqualConnectionTriad(connection_object, iterator->data)){
             return iterator->data;
@@ -1436,7 +1436,7 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
 
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
     CipDword produced_connection_point = ((CipConnectionObject*)node->data)->produced_path.attribute_id_or_connection_point;
     if (instance_number == produced_connection_point) {
       is_connected = true;

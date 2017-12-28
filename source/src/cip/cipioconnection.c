@@ -158,7 +158,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   CipConnectionObject *const RESTRICT connection_object
   ) {
   DoublyLinkedListNode *node = connection_list.first;
-  while (NULL != node->next) {
+  while (NULL != node) {
   CipConnectionObject *iterator = node->data;
     if(io_connection_object->produced_path.attribute_id_or_connection_point ==
        iterator->produced_path.attribute_id_or_connection_point) {

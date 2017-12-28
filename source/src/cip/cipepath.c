@@ -344,7 +344,7 @@ const CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   }
 }
 
-size_t CipEpathSetLogicalValue(const CipDword logical_value, const LogicalSegmentLogicalFormat logical_format, EipUint8 **message) {
+size_t CipEpathSetLogicalValue(const CipDword logical_value, const LogicalSegmentLogicalFormat logical_format, CipOctet **message) {
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit: AddSintToMessage(logical_value, message); return 1; break;
     case kLogicalSegmentLogicalFormatSixteenBit: MoveMessageNOctets(1, message); AddIntToMessage(logical_value, message); return 3; break;

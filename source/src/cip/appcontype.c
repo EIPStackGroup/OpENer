@@ -285,7 +285,7 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
   const EipUint32 input_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
   CipConnectionObject *producer_multicast_connection = node->data;
     if ( (kConnectionObjectInstanceTypeIO
           == producer_multicast_connection->instance_type)) {
@@ -311,7 +311,7 @@ CipConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_poi
 {
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
   CipConnectionObject *next_non_control_master_connection =
     node->data;
     if ( (kConnectionObjectInstanceTypeIO
@@ -341,7 +341,7 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
   CipConnectionObject *connection = node->data;
     if ( (instance_type == connection->instance_type)
          && (input_point == connection->consumed_path.attribute_id_or_connection_point) ) {
@@ -362,22 +362,23 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 }
 
 void CloseAllConnections(void) {
-  CipConnectionObject *connection = connection_list.first->data;
-  while (NULL != connection) {
+	DoublyLinkedListNode *node = connection_list.first;
+  while (NULL != node) {
+  CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
     CloseConnection(connection);
     /* Close connection will remove the connection from the list therefore we
      * need to get again the start until there is no connection left
      */
-    connection = connection_list.first->data;
+    node = connection_list.first;
   }
 }
 
 EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != node->next) {
+  while (NULL != node) {
   CipConnectionObject *connection = node->data;
     if (config_point == connection->configuration_path.attribute_id_or_connection_point) {
       return (NULL != connection);
