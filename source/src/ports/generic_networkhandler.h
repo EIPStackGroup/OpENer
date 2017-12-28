@@ -29,9 +29,6 @@
 
 SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
-/* values needed from the connection manager */
-extern ConnectionObject *g_active_connection_list;
-
 EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
 
 fd_set master_socket;

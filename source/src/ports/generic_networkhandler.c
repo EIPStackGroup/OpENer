@@ -819,15 +819,14 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 }
 
 void CheckAndHandleConsumingUdpSockets(void) {
+  DoublyLinkedListNode *iterator = connection_list.first;
 
-  ConnectionObject *connection_object_iterator = g_active_connection_list;
-  ConnectionObject *current_connection_object = NULL;
+  CipConnectionObject *current_connection_object = NULL;
 
   /* see a message on one of the registered UDP sockets has been received     */
-  while (NULL != connection_object_iterator) {
-    current_connection_object = connection_object_iterator;
-    connection_object_iterator = connection_object_iterator
-                                 ->next_connection_object; /* do this at the beginning as the close function may can make the entry invalid */
+  while (NULL != iterator) {
+    current_connection_object = (CipConnectionObject*)iterator->data;
+    iterator = iterator->next; /* do this at the beginning as the close function may can make the entry invalid */
 
     if ( (-1
           != current_connection_object->socket[

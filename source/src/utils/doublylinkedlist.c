@@ -40,7 +40,7 @@ DoublyLinkedListNode *DoublyLinkedListNodeCreate(
   return new_node;
 }
 
-void DoublyLinkedListNodeDestroy(DoublyLinkedList *list,
+void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
                                  DoublyLinkedListNode **node) {
   OPENER_ASSERT(list->deallocator != NULL);
   list->deallocator(node);
@@ -62,7 +62,7 @@ void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
 }
 
 void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
-                                  void *data) {
+                                  const void *const data) {
   OPENER_ASSERT(list->allocator != NULL);
   DoublyLinkedListNode *new_node = DoublyLinkedListNodeCreate(data,
                                                               list->allocator);
@@ -106,4 +106,26 @@ void DoublyLinkedListInsertAfterNode(DoublyLinkedList *const list,
     node->next->previous = new_node;
     node->next = new_node;
   }
+}
+
+void DoublyLinkedListRemoveNode(DoublyLinkedList *const list,
+                                DoublyLinkedListNode **pointer_to_node_pointer) {
+  DoublyLinkedListNode *node = *pointer_to_node_pointer;
+  if(node == list->first) {
+    list->first = node->next;
+  }
+  if(node == list->last) {
+    list->last = node->previous;
+  }
+  DoublyLinkedListNode *previous = node->previous;
+  DoublyLinkedListNode *next = node->next;
+
+  if(NULL != previous) {
+  previous->next = next;
+  }
+  if(NULL != next) {
+  next->previous = previous;
+  }
+
+  DoublyLinkedListNodeDestroy(list, pointer_to_node_pointer);
 }

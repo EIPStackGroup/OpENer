@@ -44,7 +44,7 @@ TEST(CipElectronicKey, SetVendorID) {
   memset(demoArea, 0, sizeof(demoArea));
   CipUint *vendor_id = (CipUint *)demoArea;
   *vendor_id = 1;
-  ElectronicKeyFormat4SetVendorId(1, key);
+  ElectronicKeyFormat4SetVendorId(key, 1);
 
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
@@ -65,7 +65,7 @@ TEST(CipElectronicKey, SetDeviceType) {
   CipUint *device_type = (CipUint *)demoArea + 1;
   *device_type = 1;
 
-  ElectronicKeyFormat4SetDeviceType(1, key);
+  ElectronicKeyFormat4SetDeviceType(key, 1);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
@@ -85,7 +85,7 @@ TEST(CipElectronicKey, SetProductCode) {
   CipUint *product_code = (CipUint *)demoArea + 2;
   *product_code = 1;
 
-  ElectronicKeyFormat4SetProductCode(1, key);
+  ElectronicKeyFormat4SetProductCode(key, 1);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
@@ -105,7 +105,7 @@ TEST(CipElectronicKey, SetMajorRevisionCompatibility) {
   CipByte *major_revision_compatiblitiy = (CipByte *)demoArea + 6;
   *major_revision_compatiblitiy = 0x81;
 
-  ElectronicKeyFormat4SetMajorRevisionCompatibility(0x81, key);
+  ElectronicKeyFormat4SetMajorRevisionCompatibility(key, 0x81);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
@@ -136,7 +136,7 @@ TEST(CipElectronicKey, SetMinorRevision) {
   CipByte *minor_revision_compatiblitiy = (CipByte *)demoArea + 7;
   *minor_revision_compatiblitiy = 0x81;
 
-  ElectronicKeyFormat4SetMinorRevision(0x81, key);
+  ElectronicKeyFormat4SetMinorRevision(key, 0x81);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
@@ -152,10 +152,11 @@ TEST(CipElectronicKey, GetMinorRevision) {
 
 TEST(CipElectronicKey, ParseElectronicKeyTest) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
-  const unsigned char message[] =
+  const CipOctet message[] =
   {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
-  GetPathLogicalSegmentElectronicKeyFormat4(message, key);
+  GetElectronicKeyFormat4FromMessage((const CipOctet**)&message, key);
 
+  const CipOctet *message_buffer = message;
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
   CHECK_EQUAL( 512, ElectronicKeyFormat4GetDeviceType(key) );
   CHECK_EQUAL( 768, ElectronicKeyFormat4GetProductCode(key) );
@@ -163,6 +164,6 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
   CHECK_EQUAL( 0x04, ElectronicKeyFormat4GetMajorRevision(key) );
   CHECK_EQUAL( 0x05, ElectronicKeyFormat4GetMinorRevision(key) );
 
-  MEMCMP_EQUAL(message + 2, key, 8);
+  MEMCMP_EQUAL(message_buffer + 2, key, 8);
 
 }

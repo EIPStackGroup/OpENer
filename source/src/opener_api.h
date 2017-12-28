@@ -303,7 +303,7 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
                                   EipByte *const data,
                                   const EipUint16 data_length);
 
-typedef struct connection_object ConnectionObject;
+typedef struct cip_connection_object CipConnectionObject;
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the opening of connections
@@ -315,7 +315,7 @@ typedef struct connection_object ConnectionObject;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-  ConnectionObject *RESTRICT const connection_object,
+    CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
@@ -325,7 +325,7 @@ typedef EipStatus (*OpenConnectionFunction)(
  * connection
  */
 typedef void (*ConnectionCloseFunction)(
-  struct connection_object *connection_object);
+    CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -333,7 +333,7 @@ typedef void (*ConnectionCloseFunction)(
  * @param connection_object The connection object which connection timed out
  */
 typedef void (*ConnectionTimeoutFunction)(
-  struct connection_object *connection_object);
+    CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -343,7 +343,7 @@ typedef void (*ConnectionTimeoutFunction)(
  * @return EIP stack status
  */
 typedef EipStatus (*ConnectionSendDataFunction)(
-  struct connection_object *connection_object);
+    CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -355,7 +355,8 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-  struct connection_object *connection_object, const EipUint8 *data,
+  CipConnectionObject *connection_object,
+  const EipUint8 *data,
   const EipUint16 data_length);
 
 /** @ingroup CIP_API
@@ -369,7 +370,7 @@ typedef EipStatus (*ConnectionReceiveDataFunction)(
  * @return EIP_OK on success
  */
 EipStatus
-AddConnectableObject(EipUint32 class_id,
+AddConnectableObject(const EipUint32 class_id,
                      OpenConnectionFunction open_connection_function);
 
 /** @ingroup CIP_API

@@ -6,9 +6,9 @@
 
 #include "cipconnectionobject.h"
 
-#include "opener_user_conf.h"
 #include "endianconv.h"
 #include "trace.h"
+#include "cipconnectionmanager.h"
 
 #define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U
@@ -50,18 +50,38 @@
 #define CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED (1 << 14)
 #define CIP_CONNECTION_OBJECT_PRIORITY_URGENT (3 << 13)
 
-static CipConnectionObject explicit_connection_object_pool[
+DoublyLinkedList connection_list;
+
+/** @brief Array of the available explicit connections */
+CipConnectionObject explicit_connection_object_pool[
   OPENER_CIP_NUM_EXPLICIT_CONNS];
-static CipConnectionObject input_only_connection_object_pool[
-  OPENER_CIP_NUM_INPUT_ONLY_CONNS];
-static CipConnectionObject exclusive_owner_connection_object_pool[
-  OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
-static CipConnectionObject listen_only_connection_object_pool[
-  OPENER_CIP_NUM_LISTEN_ONLY_CONNS];
+
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
+enum {kNodesAmount = OPENER_CIP_NUM_EXPLICIT_CONNS + OPENER_CIP_NUM_INPUT_ONLY_CONNS + OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS + OPENER_CIP_NUM_LISTEN_ONLY_CONNS};
+  static DoublyLinkedListNode nodes[kNodesAmount];
+  for(size_t i = 0; i < kNodesAmount; ++i) {
+    if(nodes[i].previous == NULL && nodes[i].next == NULL && nodes[i].data ==
+       NULL) {
+      return &nodes[i];
+    }
+  }
+  return NULL;
+}
+
+void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
+  if(*node != NULL) {
+    memset( *node, 0, sizeof(DoublyLinkedListNode) );
+    *node = NULL;
+  }
+}
+
 
 /* Private methods declaration */
 uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
-  const CipConnectionObject *connection_object);
+  const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetInitialInactivityWatchdogTimerValue(
+  CipConnectionObject *const connection_object);
 /* End private methods declaration */
 
 void ConnectionObjectInitializeEmpty(
@@ -70,13 +90,13 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
-
+  assert(false); /* NOT IMLEMENTED */
+  return NULL;
 }
 
 void ConnectionObjectInitializeFromMessage(
   const CipOctet *message,
-  CipConnectionObject *const
-  connection_object) {
+  CipConnectionObject *const connection_object) {
   /* For unconnected send - can be ignored by targets, and is ignored here */
   CipByte priority_timetick = GetSintFromMessage(&message);
   CipUsint timeout_ticks = GetSintFromMessage(&message);
@@ -113,7 +133,7 @@ void ConnectionObjectInitializeFromMessage(
   ConnectionObjectSetOToTRequestedPacketInterval(connection_object, GetDintFromMessage(
     &message));
 
-  ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
+  ConnectionObjectSetInitialInactivityWatchdogTimerValue(connection_object);
 
   //TODO: introduce setter function
   connection_object->o_to_t_network_connection_parameters = GetIntFromMessage(&message);
@@ -207,6 +227,24 @@ ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
       break;
     default:
       return kConnectionObjectInstanceTypeInvalid;
+  }
+}
+
+void ConnectionObjectSetInstanceType(
+  CipConnectionObject *const connection_object,
+  const ConnectionObjectInstanceType instance_type) {
+  switch (connection_object->instance_type) {
+    case kConnectionObjectInstanceTypeExplicitMessaging:
+      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
+      break;
+    case kConnectionObjectInstanceTypeIO:
+      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
+      break;
+    case kConnectionObjectInstanceTypeCipBridged:
+      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
+      break;
+    default:
+      assert(false);
   }
 }
 
@@ -413,26 +451,36 @@ void ConnectionObjectSetConsumedConnectionPathLength(
     consumed_connection_path_length;
 }
 
+CipUint ConnectionObjectGetProductionInhibitTime(
+  const CipConnectionObject *const connection_object) {
+	return connection_object->production_inhibit_time;
+}
+
+void ConnectionObjectSetProductionInhibitTime(
+  CipConnectionObject *const connection_object,
+  const CipUint
+  production_inhibit_time) {
+	connection_object->production_inhibit_time = production_inhibit_time;
+}
+
+/*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
 void ConnectionObjectSetInitialInactivityWatchdogTimerValue(
-  CipConnectionObject *connection_object) {
-  connection_object->inactivity_watchdog_timer =
-    (ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
-       connection_object) >
-     10000) ? ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
-      connection_object)
-    :
-    10000;
+  CipConnectionObject *const connection_object) {
+  const uint64_t kMinimumInitialTimeoutValue = 10000;
+  const uint64_t calculated_timeout_value = ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
+      connection_object);
+  connection_object->inactivity_watchdog_timer = (calculated_timeout_value > kMinimumInitialTimeoutValue) ? calculated_timeout_value : kMinimumInitialTimeoutValue;
 }
 
 void ConnectionObjectResetInactivityWatchdogTimerValue(
-  CipConnectionObject *connection_object) {
+  CipConnectionObject *const connection_object) {
   connection_object->inactivity_watchdog_timer =
     ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
       connection_object);
 }
 
 uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
-  const CipConnectionObject *connection_object) {
+  const CipConnectionObject *const connection_object) {
   return ( ( (connection_object->o_to_t_requested_packet_interval) /
              1000 ) << (2 + connection_object->connection_timeout_multiplier) );
 }
@@ -514,22 +562,24 @@ ConnectionObjectConnectionType ConnectionObjectGetConnectionType(const CipWord c
 }
 
 ConnectionObjectConnectionType ConnectionObjectGetOToTConnectionType(const CipConnectionObject *const connection_object) {
-  ConnectionObjectGetConnectionType(connection_object->o_to_t_network_connection_parameters);
+  return ConnectionObjectGetConnectionType(connection_object->o_to_t_network_connection_parameters);
 }
 
 ConnectionObjectConnectionType ConnectionObjectGetTToOConnectionType(const CipConnectionObject *const connection_object) {
-  ConnectionObjectGetConnectionType(connection_object->t_to_o_network_connection_parameters);
+  return ConnectionObjectGetConnectionType(connection_object->t_to_o_network_connection_parameters);
 }
 
 ConnectionObjectPriority ConnectionObjectGetPriority(const CipWord connection_parameters) {
   const CipWord kPriorityMask = 3 << 10;
+  ConnectionObjectPriority result;
   switch(connection_parameters & kPriorityMask) {
-    case CIP_CONNECTION_OBJECT_PRIORITY_LOW: return kConnectionObjectPriorityLow;
-    case CIP_CONNECTION_OBJECT_PRIORITY_HIGH: return kConnectionObjectPriorityHigh;
-    case CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED: return kConnectionObjectPriorityScheduled;
-    case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: return kConnectionObjectPriorityUrgent;
+    case CIP_CONNECTION_OBJECT_PRIORITY_LOW: result = kConnectionObjectPriorityLow; break;
+    case CIP_CONNECTION_OBJECT_PRIORITY_HIGH: result = kConnectionObjectPriorityHigh; break;
+    case CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED: result =kConnectionObjectPriorityScheduled; break;
+    case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: result = kConnectionObjectPriorityUrgent; break;
     default: OPENER_ASSERT(false); //Not possible to get here!
   }
+  return result;
 }
 
 ConnectionObjectPriority ConnectionObjectGetOToTPriority(const CipConnectionObject *const connection_object) {
@@ -569,4 +619,52 @@ size_t ConnectionObjectGetOToTConnectionSize(const CipConnectionObject *const co
 
 size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionSize(connection_object->t_to_o_network_connection_parameters);
+}
+
+void ConnectionObjectDeepCopy(
+  CipConnectionObject *RESTRICT destination,
+  const CipConnectionObject *RESTRICT const source
+  ) {
+  memcpy( destination, source, sizeof(CipConnectionObject) );
+}
+
+void ConnectionObjectResetSequenceCounts(CipConnectionObject *const connection_object){
+  connection_object->eip_level_sequence_count_producing = 0;
+  connection_object->sequence_count_producing = 0;
+  connection_object->eip_level_sequence_count_consuming = 0;
+  connection_object->sequence_count_consuming = 0;
+}
+
+void ConnectionObjectResetProductionInhibitTimer(CipConnectionObject* const connection_object){
+  connection_object->production_inhibit_timer = connection_object->production_inhibit_time;
+}
+
+void ConnectionObjectGeneralConfiguration(CipConnectionObject *const connection_object) {
+
+  connection_object->socket[0] = kEipInvalidSocket;
+  connection_object->socket[1] = kEipInvalidSocket;
+
+  if ( kConnectionObjectConnectionTypePointToPoint
+       == ConnectionObjectGetOToTConnectionType(connection_object) ) {
+    /* if we have a point to point connection for the O to T direction
+     * the target shall choose the connection ID.
+     */
+    ConnectionObjectSetCipConsumedConnectionID(connection_object, GetConnectionId());
+  }
+
+  if ( kConnectionObjectConnectionTypeMulticast
+       == ConnectionObjectGetTToOConnectionType(connection_object) ) {
+    /* if we have a multi-cast connection for the T to O direction the
+     * target shall choose the connection ID.
+     */
+    ConnectionObjectSetCipProducedConnectionID(connection_object, GetConnectionId());
+  }
+
+  ConnectionObjectResetSequenceCounts(connection_object);
+
+  ConnectionObjectSetWatchdogTimeoutAction(connection_object, kConnectionObjectWatchdogTimeoutActionInvalid); /* Correct value not know at this point */
+
+  ConnectionObjectResetProductionInhibitTimer(connection_object);
+
+  connection_object->transmission_trigger_timer = 0;
 }

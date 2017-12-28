@@ -86,21 +86,21 @@ EipStatus SetAttributeSingleQoS(
   return kEipStatusOkSend;
 }
 
-CipUsint GetPriorityForSocket(ForwardOpenPriority priority) {
+CipUsint GetPriorityForSocket(ConnectionObjectPriority priority) {
   switch (priority) {
-    case kForwardOpenPriorityLow: {
+    case kConnectionObjectPriorityLow: {
       return dscp_low;
       break;
     }
-    case kForwardOpenPriorityHigh: {
+    case kConnectionObjectPriorityHigh: {
       return dscp_high;
       break;
     }
-    case kForwardOpenPriorityScheduled: {
+    case kConnectionObjectPriorityScheduled: {
       return dscp_scheduled;
       break;
     }
-    case kForwardOpenPriorityUrgent: {
+    case kConnectionObjectPriorityUrgent: {
       return dscp_urgent;
       break;
     }

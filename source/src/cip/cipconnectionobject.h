@@ -9,24 +9,32 @@
 
 #include "typedefs.h"
 #include "ciptypes.h"
+#include "opener_user_conf.h"
+#include "opener_api.h"
+#include "doublylinkedlist.h"
+#include "cipelectronickey.h"
+#include "cipepath.h"
 
 #define CIP_CONNECTION_OBJECT_CODE 0x05
 
 typedef enum {
-  kConnectionObjectStateInvalid = -1, /**< An invalid state, shall never occur! */
   kConnectionObjectStateNonExistent = 0, /**< Connection is non existent */
   kConnectionObjectStateConfiguring, /**< Waiting for both to be configured and to apply the configuration */
   kConnectionObjectStateWaitingForConnectionID, /**< Only used for device net */
   kConnectionObjectStateEstablished, /**< Connection is established */
   kConnectionObjectStateTimedOut, /**< Connection timed out - inactivity or watchdog timer expired */
   kConnectionObjectStateDeferredDelete, /**< Only used for device net */
-  kConnectionObjectStateClosing /**< For CIP bridged connections - have to wait for a successful forward close */
+  kConnectionObjectStateClosing, /**< For CIP bridged connections - have to wait for a successful forward close */
+  kConnectionObjectStateInvalid /**< An invalid state, shall never occur! */
 } ConnectionObjectState;
 
 typedef enum {
   kConnectionObjectInstanceTypeInvalid = -1, /**< Invalid instance type - shall never occur! */
   kConnectionObjectInstanceTypeExplicitMessaging = 0, /**< Connection is an explicit messaging connection */
   kConnectionObjectInstanceTypeIO, /**< Connection is an I/O connection */
+  kConnectionObjectInstanceTypeIOExclusiveOwner, /**< Also I/O connection, only for easy differentiation */
+  kConnectionObjectInstanceTypeIOInputOnly, /**< Also I/O connection, only for easy differentiation */
+  kConnectionObjectInstanceTypeIOListenOnly, /**< Also I/O connection, only for easy differentiation */
   kConnectionObjectInstanceTypeCipBridged  /**< Connection is a bridged connection */
 } ConnectionObjectInstanceType;
 
@@ -51,19 +59,23 @@ typedef enum {
   /* Higher transport classes not supported */
 } ConnectionObjectTransportClassTriggerTransportClass;
 
+/** @brief Possible values for the watch dog time out action of a connection
+ *
+ * Only positive values allowed
+ */
 typedef enum {
-  kConnectionObjectWatchdogTimeoutActionInvalid = -1,       /**< Invalid Watchdog Timeout Action - shall never occur! */
   kConnectionObjectWatchdogTimeoutActionTransitionToTimedOut = 0,       /**< Default for I/O connections, invalid for Explicit Messaging */
   kConnectionObjectWatchdogTimeoutActionAutoDelete,       /**< Default for explicit connections */
   kConnectionObjectWatchdogTimeoutActionAutoReset,       /**< Invalid for explicit connections */
-  kConnectionObjectWatchdogTimeoutActionDeferredDelete       /**< Only for Device Net, invalid for I/O connections */
+  kConnectionObjectWatchdogTimeoutActionDeferredDelete,       /**< Only for Device Net, invalid for I/O connections */
+  kConnectionObjectWatchdogTimeoutActionInvalid       /**< Invalid Watchdog Timeout Action - shall never occur! */
 } ConnectionObjectWatchdogTimeoutAction;
 
 typedef enum {
-  kConnectionObjectConnectionTypeInvalid = -1,
   kConnectionObjectConnectionTypeNull = 0,
   kConnectionObjectConnectionTypeMulticast,
-  kConnectionObjectConnectionTypePointToPoint
+  kConnectionObjectConnectionTypePointToPoint,
+  kConnectionObjectConnectionTypeInvalid
 } ConnectionObjectConnectionType;
 
 typedef enum {
@@ -77,6 +89,11 @@ typedef enum {
   kConnectionObjectConnectionSizeTypeFixed,
   kConnectionObjectConnectionSizeTypeVariable
 } ConnectionObjectConnectionSizeType;
+
+typedef enum {
+  kConnectionObjectSocketTypeProducing = 0,
+  kConnectionObjectSocketTypeConsuming = 1
+} ConnectionObjectSocketType;
 
 typedef struct cip_connection_object CipConnectionObject;
 
@@ -94,15 +111,24 @@ struct cip_connection_object {
   CipUint cip_consumed_connection_id; /*< Attribute 11 */
   CipUsint watchdog_timeout_action; /*< Attribute 12 */
   CipUint produced_connection_path_length; /*< Attribute 13 */
-  unsigned char *produced_connection_path; /*< Attribute 14 */
+  CipOctet *produced_connection_path; /*< Attribute 14 */
+  CipConnectionPathEpath produced_path;
   CipUint consumed_connection_path_length; /*< Attribute 15 */
-  unsigned char *consumed_connection_path; /*< Attribute 16 */
+  CipOctet *consumed_connection_path; /*< Attribute 16 */
+  CipConnectionPathEpath consumed_path;
   CipUint production_inhibit_time; /*< Attribute 17 */
   CipUsint connection_timeout_multiplier; /*< Attribute 18 */
   /* Attribute 19 not supported as Connection Bind service not supported */
 
   /* End of CIP attributes */
   /* Start of needed non-object variables */
+  CipElectronicKey electronic_key; //TODO: Check if really needed
+
+  CipConnectionPathEpath configuration_path;
+
+  CipInstance *producing_instance;
+  CipInstance *consuming_instance;
+
   CipUint requested_produced_connection_size;
   CipUint requested_consumed_connection_size;
 
@@ -120,11 +146,54 @@ struct cip_connection_object {
   CipUdint t_to_o_requested_packet_interval;
   CipWord t_to_o_network_connection_parameters;
 
-  CipUint sequence_count_producing;
+  CipUint sequence_count_producing; /**< sequence Count for Class 1 Producing
+                                         Connections */
+  CipUint sequence_count_consuming; /**< sequence Count for Class 1 Producing
+                                         Connections */
 
+  EipUint32 eip_level_sequence_count_producing; /**< the EIP level sequence Count
+                                                   for Class 0/1
+                                                   Producing Connections may have a
+                                                   different
+                                                   value than SequenceCountProducing */
+  EipUint32 eip_level_sequence_count_consuming; /**< the EIP level sequence Count
+                                                   for Class 0/1
+                                                   Producing Connections may have a
+                                                   different
+                                                   value than SequenceCountProducing */
+
+  CipInt correct_originator_to_target_size;
+  CipInt correct_target_to_originator_size;
+
+  /* Sockets for consuming and producing connection */
+  int socket[2];
+
+  struct sockaddr_in remote_address; /* socket address for produce */
+  struct sockaddr_in originator_address; /* the address of the originator that
+                                              established the connection. needed
+                                              for scanning if the right packet is
+                                              arriving */
+
+  /* pointers to connection handling functions */
   CipConnectionStateHandler current_state_handler;
 
+  ConnectionCloseFunction connection_close_function;
+  ConnectionTimeoutFunction connection_timeout_function;
+  ConnectionSendDataFunction connection_send_data_function;
+  ConnectionReceiveDataFunction connection_receive_data_function;
 };
+
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator();
+void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
+
+//extern CipConnectionObject input_only_connection_object_pool[
+//  OPENER_CIP_NUM_INPUT_ONLY_CONNS];
+//
+//extern CipConnectionObject exclusive_owner_connection_object_pool[
+//  OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
+//
+//extern CipConnectionObject listen_only_connection_object_pool[
+//  OPENER_CIP_NUM_LISTEN_ONLY_CONNS];
 
 /** @brief Array allocator
  *
@@ -152,6 +221,10 @@ void ConnectionObjectSetState(CipConnectionObject *const connection_object,
 
 ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
   const CipConnectionObject *const connection_object);
+
+void ConnectionObjectSetInstanceType(
+  CipConnectionObject *const connection_object,
+  const ConnectionObjectInstanceType instance_type);
 
 ConnectionObjectTransportClassTriggerDirection
 ConnectionObjectGetTransportClassTriggerDirection(
@@ -299,5 +372,23 @@ ConnectionObjectPriority ConnectionObjectGetTToOPriority(const CipConnectionObje
 ConnectionObjectConnectionSizeType ConnectionObjectGetTToOConnectionSizeType(const CipConnectionObject *const connection_object);
 
 size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const connection_object);
+
+/** @brief Copy the given connection data from source to destination
+ *
+ * @param destination Destination of the copy operation
+ * @param source Source of the copy operation
+ */
+void ConnectionObjectDeepCopy(
+  CipConnectionObject *RESTRICT destination,
+  const CipConnectionObject *RESTRICT const source
+  );
+
+/** @brief Generate the ConnectionIDs and set the general configuration
+ * parameter in the given connection object.
+ *
+ * @param connection_object pointer to the connection object that should be set
+ * up.
+ */
+void ConnectionObjectGeneralConfiguration(CipConnectionObject *const connection_object);
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

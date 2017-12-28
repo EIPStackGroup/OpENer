@@ -43,14 +43,14 @@ void DoublyLinkedListDestroy(DoublyLinkedList *list);
 DoublyLinkedListNode *DoublyLinkedListNodeCreate(void *data,
                                                  NodeMemoryAllocator allocator);
 
-void DoublyLinkedListNodeDestroy(DoublyLinkedList *list,
+void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
                                  DoublyLinkedListNode **node);
 
 void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
                                   void *data);
 
 void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
-                                  void *data);
+                                  const void *const data);
 
 void DoublyLinkedListInsertBeforeNode(DoublyLinkedList *const list,
                                       DoublyLinkedListNode *node,
@@ -59,5 +59,8 @@ void DoublyLinkedListInsertBeforeNode(DoublyLinkedList *const list,
 void DoublyLinkedListInsertAfterNode(DoublyLinkedList *const list,
                                      DoublyLinkedListNode *node,
                                      void *data);
+
+void DoublyLinkedListRemoveNode(DoublyLinkedList *const list,
+                                DoublyLinkedListNode **pointer_to_node_pointer);
 
 #endif /* SRC_UTILS_DOUBLYLINKEDLIST_H_ */

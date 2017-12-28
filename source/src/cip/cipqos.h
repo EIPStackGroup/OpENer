@@ -21,7 +21,7 @@ static const EipUint16 kCipQoSClassCode = 0x48; /**< QoS Object class code */
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object
  */
-CipUsint GetPriorityForSocket(ForwardOpenPriority priority);
+CipUsint GetPriorityForSocket(ConnectionObjectPriority priority);
 EipStatus CipQoSInit(void);
 
 #endif  /* OPENER_CIPQOS_H_*/

@@ -12,7 +12,7 @@
  *   * Explicit Connection Object State Transition Diagram
  * ----------------------------------------------
  * @dot
- *   digraph IOConnectionObjectStateTransition {
+ *   digraph ExplicitConnectionObjectStateTransition {
  *     A[label="Any State"]
  *     N[label="Non-existent"]
  *     D[label="Deferred Delete"]
@@ -46,7 +46,7 @@ EipStatus CipClass3ConnectionObjectStateEstablishedHandler(CipConnectionObject *
  *    - On an error the general status code to be put into the response
  */
 EipStatus EstablishClass3Connection(
-  ConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Initializes the explicit connections mechanism

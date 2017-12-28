@@ -47,7 +47,7 @@
 #define OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS 1
 
 /** @brief Define the number of supported explicit connections.
- *  According to ODVA's PUB 70 this number should be greater than 6.
+ *  According to ODVA's PUB 70 this number should be equal or greater than 6.
  */
 #define OPENER_CIP_NUM_EXPLICIT_CONNS 6
 
@@ -94,7 +94,6 @@
 /** @brief The time in ms of the timer used in this implementations, time base for time-outs and production timers
  */
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
-
 
 /** @brief Define if RUN IDLE data is sent with consumed data
  */
