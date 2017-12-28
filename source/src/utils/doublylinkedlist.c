@@ -32,7 +32,7 @@ void DoublyLinkedListDestroy(DoublyLinkedList *list) {
 }
 
 DoublyLinkedListNode *DoublyLinkedListNodeCreate(
-  void *data,
+  const void *const data,
   NodeMemoryAllocator const
   allocator) {
   DoublyLinkedListNode *new_node = (DoublyLinkedListNode *)allocator();

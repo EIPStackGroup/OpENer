@@ -172,7 +172,7 @@ typedef struct connection_path_epath {
  * @param cip_path The start of the EPath message
  * @return The basic segment type
  */
-SegmentType GetPathSegmentType(const unsigned char *const cip_path);
+SegmentType GetPathSegmentType(const CipOctet *const cip_path);
 
 /** @brief Sets the basic segment type of an CIP EPath to be sent
  *
@@ -231,7 +231,7 @@ unsigned int GetPathPortSegmentExtendedPortNumber(
  * @param cip_path The start for the EPatch message
  */
 void SetPathPortSegmentExtendedPortIdentifier(
-  const unsigned int extended_port_identifier, unsigned char *const cip_path);
+  const unsigned int extended_port_identifier, CipOctet *const cip_path);
 
 /** @brief Gets the Logical Type of an EPath Logical Segment message
  *
@@ -241,7 +241,7 @@ void SetPathPortSegmentExtendedPortIdentifier(
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
   const unsigned char *const cip_path);
 
-void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type, unsigned char *const cip_path);
+void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type, CipOctet *const cip_path);
 
 /** @brief Gets the Logical Format of a Logical Segment EPath message
  *
@@ -251,7 +251,7 @@ void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type, un
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   const unsigned char *const cip_path);
 
-void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format, unsigned char *const cip_path);
+void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format, CipOctet *const cip_path);
 
 const CipDword CipEpathGetLogicalValue(const EipUint8 **message);
 

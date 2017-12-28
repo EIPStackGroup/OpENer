@@ -40,7 +40,7 @@ void DoublyLinkedListInitialize(DoublyLinkedList *list,
 
 void DoublyLinkedListDestroy(DoublyLinkedList *list);
 
-DoublyLinkedListNode *DoublyLinkedListNodeCreate(void *data,
+DoublyLinkedListNode *DoublyLinkedListNodeCreate(const void *const data,
                                                  NodeMemoryAllocator allocator);
 
 void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,

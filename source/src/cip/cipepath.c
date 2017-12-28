@@ -72,7 +72,7 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 
 
 /*** Path Segment ***/
-SegmentType GetPathSegmentType(const unsigned char *const cip_path) {
+SegmentType GetPathSegmentType(const CipOctet *const cip_path) {
   const unsigned int kSegmentTypeMask = 0xE0;
   const unsigned int segment_type = *cip_path & kSegmentTypeMask;
   SegmentType result = kSegmentTypeReserved;
@@ -194,7 +194,7 @@ unsigned int GetPathPortSegmentExtendedPortNumber(
 }
 
 void SetPathPortSegmentExtendedPortIdentifier(
-  const unsigned int extended_port_identifier, unsigned char *const cip_path) {
+  const unsigned int extended_port_identifier, CipOctet *const cip_path) {
   SetPathPortSegmentPortIdentifier(kPortSegmentExtendedPort, cip_path);
   const unsigned int kExtendedPortSegmentPosition =
     GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 2 : 1;
@@ -246,7 +246,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
   return result;
 }
 
-void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type, unsigned char *const cip_path) {
+void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type, CipOctet *const cip_path) {
   OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   switch (logical_type) {
       case kLogicalSegmentLogicalTypeClassId:
@@ -304,8 +304,8 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   return result;
 }
 
-void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format, unsigned char *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
+void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format, CipOctet *const cip_path) {
+  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType((const CipOctet *)cip_path) );
   switch (format) {
     case kLogicalSegmentLogicalFormatEightBit:
       (*cip_path) |= LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
@@ -347,8 +347,8 @@ const CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
 size_t CipEpathSetLogicalValue(const CipDword logical_value, const LogicalSegmentLogicalFormat logical_format, CipOctet **message) {
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit: AddSintToMessage(logical_value, message); return 1; break;
-    case kLogicalSegmentLogicalFormatSixteenBit: MoveMessageNOctets(1, message); AddIntToMessage(logical_value, message); return 3; break;
-    case kLogicalSegmentLogicalFormatThirtyTwoBit: MoveMessageNOctets(1, message); AddDintToMessage(logical_value, message); return 5; break;
+    case kLogicalSegmentLogicalFormatSixteenBit: MoveMessageNOctets(1, (const CipOctet**)message); AddIntToMessage(logical_value, message); return 3; break;
+    case kLogicalSegmentLogicalFormatThirtyTwoBit: MoveMessageNOctets(1, (const CipOctet**)message); AddDintToMessage(logical_value, message); return 5; break;
   }
   OPENER_ASSERT(false); /* This should never happen! */
   return 0;
@@ -420,14 +420,14 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
 void GetElectronicKeyFormat4FromMessage(
   const CipOctet **const message, ElectronicKeyFormat4 *key) {
   OPENER_ASSERT( kElectronicKeySegmentFormatKeyFormat4 ==
-                 GetPathLogicalSegmentElectronicKeyFormat(message) );
+                 GetPathLogicalSegmentElectronicKeyFormat(*message) );
 
   MoveMessageNOctets(2, message);
-  ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(&message));
-  ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(&message));
-  ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(&message));
-  ElectronicKeyFormat4SetMajorRevisionCompatibility(key, GetSintFromMessage(&message));
-  ElectronicKeyFormat4SetMinorRevision(key, GetSintFromMessage(&message));
+  ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(message));
+  ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message));
+  ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message));
+  ElectronicKeyFormat4SetMajorRevisionCompatibility(key, GetSintFromMessage(message));
+  ElectronicKeyFormat4SetMinorRevision(key, GetSintFromMessage(message));
 }
 
 /*** Logical Segment ***/
@@ -621,32 +621,32 @@ size_t CipEpathEncodeConnectionEpath(const CipConnectionPathEpath *const connect
 
 	size_t encoded_path_length = 0;
   {
-  SetPathSegmentType(kSegmentTypeLogicalSegment, encoded_path);
-  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, encoded_path);
+  SetPathSegmentType(kSegmentTypeLogicalSegment, *encoded_path);
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, *encoded_path);
   LogicalSegmentLogicalFormat logical_value = CipEpathGetNeededLogicalFormatForValue(connection_epath->class_id);
-  SetPathLogicalSegmentLogicalFormat(logical_value, encoded_path);
+  SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
   encoded_path_length += 1;
-  MoveMessageNOctets(1, encoded_path);
+  MoveMessageNOctets(1, (const CipOctet**)encoded_path);
   encoded_path_length += CipEpathSetLogicalValue(connection_epath->class_id, logical_value, encoded_path);
   }
 
   {
-  SetPathSegmentType(kSegmentTypeLogicalSegment, encoded_path);
-  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, encoded_path);
+  SetPathSegmentType(kSegmentTypeLogicalSegment, *encoded_path);
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, *encoded_path);
   LogicalSegmentLogicalFormat logical_value = CipEpathGetNeededLogicalFormatForValue(connection_epath->instance_id);
-  SetPathLogicalSegmentLogicalFormat(logical_value, encoded_path);
+  SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
   encoded_path_length += 1;
-  MoveMessageNOctets(1, encoded_path);
+  MoveMessageNOctets(1, (const CipOctet**)encoded_path);
   encoded_path_length += CipEpathSetLogicalValue(connection_epath->instance_id, logical_value, encoded_path);
   }
 
   if(0 != connection_epath->attribute_id_or_connection_point){
-    SetPathSegmentType(kSegmentTypeLogicalSegment, encoded_path);
-    SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, encoded_path);
+    SetPathSegmentType(kSegmentTypeLogicalSegment, *encoded_path);
+    SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, *encoded_path);
     LogicalSegmentLogicalFormat logical_value = CipEpathGetNeededLogicalFormatForValue(connection_epath->attribute_id_or_connection_point);
-    SetPathLogicalSegmentLogicalFormat(logical_value, encoded_path);
+    SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
     encoded_path_length += 1;
-    MoveMessageNOctets(1, encoded_path);
+    MoveMessageNOctets(1, (const CipOctet**)encoded_path);
     encoded_path_length += CipEpathSetLogicalValue(connection_epath->attribute_id_or_connection_point, logical_value, encoded_path);
   }
   return encoded_path_length += 1;
