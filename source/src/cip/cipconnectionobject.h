@@ -209,7 +209,7 @@ void ConnectionObjectInitializeEmpty(
   CipConnectionObject *const connection_object);
 
 void ConnectionObjectInitializeFromMessage(
-  const CipOctet *message,
+  const CipOctet **message,
   CipConnectionObject *const
   connection_object);
 

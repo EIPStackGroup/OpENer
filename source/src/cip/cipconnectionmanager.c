@@ -494,7 +494,7 @@ EipStatus ForwardOpen(
   bool is_matching_request = false; /* 1 = Matching Request, 0 = Non-Matching Request  */
 
   /*first check if we have already a connection with the given params */
-  ConnectionObjectInitializeFromMessage(message_router_request->data,
+  ConnectionObjectInitializeFromMessage(&(message_router_request->data),
                                      &g_dummy_connection_object);
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
@@ -1050,6 +1050,7 @@ EipUint8 ParseConnectionPath(
        > message_router_request->request_path_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;
+    OPENER_TRACE_INFO("Message not long enough for path\n");
     return kCipErrorNotEnoughData;
   }
 
@@ -1065,6 +1066,7 @@ EipUint8 ParseConnectionPath(
             /* Check if there is enough data for holding the electronic key segment */
             if (remaining_path < 5) {
               *extended_error = 0;
+              OPENER_TRACE_INFO("Message not long enough for electronic key\n");
               return kCipErrorNotEnoughData;
             }
             /* Electronic key format 4 found */

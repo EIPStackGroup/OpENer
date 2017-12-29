@@ -11,6 +11,8 @@
 #include "opener_api.h"
 #include "cipcommon.h"
 #include "trace.h"
+#include "doublylinkedlist.h"
+#include "cipconnectionobject.h"
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
@@ -38,6 +40,7 @@ int main(int argc, char *arg[]) {
       "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
     exit(0);
   } else {
+	  DoublyLinkedListInitialize(&connection_list, CipConnectionObjectListArrayAllocator, CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
     ConfigureNetworkInterface(arg[1], arg[2], arg[3]);
     ConfigureDomainName(arg[4]);

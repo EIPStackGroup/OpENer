@@ -69,6 +69,7 @@ EipStatus SetAttributeSingleQoS(
         message_router_response->general_status = kCipErrorSuccess;
       } else {
         message_router_response->general_status = kCipErrorNotEnoughData;
+        OPENER_TRACE_INFO("CIP QoS not enough data\n");
       }
     } else {
       message_router_response->general_status = kCipErrorInvalidAttributeValue;

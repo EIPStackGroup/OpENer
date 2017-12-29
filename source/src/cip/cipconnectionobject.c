@@ -95,20 +95,20 @@ CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
 }
 
 void ConnectionObjectInitializeFromMessage(
-  const CipOctet *message,
+  const CipOctet **message,
   CipConnectionObject *const connection_object) {
   /* For unconnected send - can be ignored by targets, and is ignored here */
-  CipByte priority_timetick = GetSintFromMessage(&message);
-  CipUsint timeout_ticks = GetSintFromMessage(&message);
+  CipByte priority_timetick = GetSintFromMessage(message);
+  CipUsint timeout_ticks = GetSintFromMessage(message);
 
   /* O_to_T Conn ID */
-  ConnectionObjectSetCipConsumedConnectionID(connection_object, GetDintFromMessage(&message));
+  ConnectionObjectSetCipConsumedConnectionID(connection_object, GetDintFromMessage(message));
   /* T_to_O Conn ID */
-  ConnectionObjectSetCipProducedConnectionID(connection_object, GetDintFromMessage(&message));
+  ConnectionObjectSetCipProducedConnectionID(connection_object, GetDintFromMessage(message));
 
-  ConnectionObjectSetConnectionSerialNumber(connection_object, GetIntFromMessage(&message));
-  ConnectionObjectSetOriginatorVendorId(connection_object, GetIntFromMessage(&message));
-  ConnectionObjectSetOriginatorSerialNumber(connection_object, GetDintFromMessage(&message));
+  ConnectionObjectSetConnectionSerialNumber(connection_object, GetIntFromMessage(message));
+  ConnectionObjectSetOriginatorVendorId(connection_object, GetIntFromMessage(message));
+  ConnectionObjectSetOriginatorSerialNumber(connection_object, GetDintFromMessage(message));
 
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
@@ -118,9 +118,9 @@ void ConnectionObjectInitializeFromMessage(
   connection_object->sequence_count_producing = 0; /* set the sequence count to zero */
 
   ConnectionObjectSetConnectionTimeoutMultiplier(connection_object, GetSintFromMessage(
-    &message));
+    message));
 
-  MoveMessageNOctets(3, &message); /* 3 bytes reserved */
+  MoveMessageNOctets(3, message); /* 3 bytes reserved */
 
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
   OPENER_TRACE_INFO(
@@ -131,21 +131,21 @@ void ConnectionObjectInitializeFromMessage(
     connection_object->connection_serial_number);
 
   ConnectionObjectSetOToTRequestedPacketInterval(connection_object, GetDintFromMessage(
-    &message));
+    message));
 
   ConnectionObjectSetInitialInactivityWatchdogTimerValue(connection_object);
 
   //TODO: introduce setter function
-  connection_object->o_to_t_network_connection_parameters = GetIntFromMessage(&message);
+  connection_object->o_to_t_network_connection_parameters = GetIntFromMessage(message);
 
-  connection_object->t_to_o_requested_packet_interval = GetDintFromMessage(&message);
+  connection_object->t_to_o_requested_packet_interval = GetDintFromMessage(message);
 
   ConnectionObjectSetExpectedPacketRate(connection_object,
       connection_object->t_to_o_requested_packet_interval);
 
-  connection_object->t_to_o_network_connection_parameters = GetIntFromMessage(&message);
+  connection_object->t_to_o_network_connection_parameters = GetIntFromMessage(message);
 
-  connection_object->transport_class_trigger = GetSintFromMessage(&message);
+  connection_object->transport_class_trigger = GetSintFromMessage(message);
 }
 
 ConnectionObjectState ConnectionObjectGetState(
