@@ -241,9 +241,9 @@ TEST(CipConnectionObject, ParseConnectionData) {
 "\x34\x12\x00\x00\x00\x00\xe0\x93\x04\x00\x02\x40\xa0\x86\x01\x00" \
 "\x22\x20\x01\x04\x20\x04\x24\x97\x2c\x98\x2c\x64";
 
-  const CipOctet **message_runner = (const CipOctet **)&message;
+  const CipOctet *message_runner = (const CipOctet*)message;
 
-  ConnectionObjectInitializeFromMessage(message_runner, &connection_object);
+  ConnectionObjectInitializeFromMessage(&message_runner, &connection_object);
   CipUdint o_to_t_network_connection_id = ConnectionObjectGetCipConsumedConnectionID(&connection_object);
   CHECK_EQUAL(0, o_to_t_network_connection_id);
 

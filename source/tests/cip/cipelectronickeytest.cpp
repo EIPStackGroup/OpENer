@@ -154,9 +154,10 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const CipOctet message[] =
   {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
-  GetElectronicKeyFormat4FromMessage((const CipOctet**)&message, key);
-
   const CipOctet *message_buffer = message;
+  GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer, key);
+
+  message_buffer = message;
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
   CHECK_EQUAL( 512, ElectronicKeyFormat4GetDeviceType(key) );
   CHECK_EQUAL( 768, ElectronicKeyFormat4GetProductCode(key) );
