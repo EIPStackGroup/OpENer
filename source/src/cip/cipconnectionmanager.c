@@ -898,7 +898,7 @@ EipStatus AssembleForwardCloseResponse(
 CipConnectionObject *GetConnectedObject(const EipUint32 connection_id) {
   DoublyLinkedListNode *iterator = connection_list.first;
 
-  while(NULL != iterator->next) {
+  while(NULL != iterator) {
     if(kConnectionObjectStateEstablished == ConnectionObjectGetState(iterator->data) &&
         connection_id == ConnectionObjectGetCipConsumedConnectionID(iterator->data)) {
       return iterator->data;
@@ -911,7 +911,7 @@ CipConnectionObject *GetConnectedObject(const EipUint32 connection_id) {
 CipConnectionObject *GetConnectedOutputAssembly(const EipUint32 output_assembly_id) {
   DoublyLinkedListNode *iterator = connection_list.first;
 
-  while(NULL != iterator->next) {
+  while(NULL != iterator) {
       if(kConnectionObjectStateEstablished == ConnectionObjectGetState(iterator->data) &&
           output_assembly_id == ((CipConnectionObject*)iterator->data)->produced_path.instance_id ) {
         return iterator->data;
@@ -1340,11 +1340,12 @@ void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
 void AddNewActiveConnection(const CipConnectionObject *const connection_object) {
   DoublyLinkedListInsertAtTail(&connection_list, connection_object);
+  ConnectionObjectSetState(connection_object, kConnectionObjectStateEstablished);
 }
 
 void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
 
-  for(DoublyLinkedListNode *iterator = connection_list.first; iterator != connection_list.last; iterator = iterator->next) {
+  for(DoublyLinkedListNode *iterator = connection_list.first; iterator != NULL; iterator = iterator->next) {
     if(iterator->data == connection_object) {
       ConnectionObjectInitializeEmpty(connection_object);
       DoublyLinkedListRemoveNode(&connection_list, &iterator);
