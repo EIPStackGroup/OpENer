@@ -231,6 +231,7 @@ TEST(DoublyLinkedList, RemoveFirstElementInList) {
   DoublyLinkedListRemoveNode(&list, &node_to_be_deleted);
   CHECK_EQUAL(2, test_data_1);
   CHECK_EQUAL(4, *((int*)list.first->data));
+  DoublyLinkedListDestroy(&list);
 }
 
 TEST(DoublyLinkedList, RemoveLastElementInList) {
