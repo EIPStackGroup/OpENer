@@ -956,8 +956,6 @@ EipStatus CheckElectronicKeyData(
   void *key_data,
   EipUint16 *extended_status
   ) {
-  bool compatiblity_mode = ElectronicKeyFormat4GetMajorRevisionCompatibility(key_data);
-
   /* Default return value */
   *extended_status = kConnectionManagerExtendedStatusCodeSuccess;
 
@@ -967,6 +965,8 @@ EipStatus CheckElectronicKeyData(
       kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
     return kEipStatusError;
   }
+
+  bool compatiblity_mode = ElectronicKeyFormat4GetMajorRevisionCompatibility(key_data);
 
   /* Check VendorID and ProductCode, must match, or 0 */
   if ( ( (ElectronicKeyFormat4GetVendorId(key_data) != vendor_id_) && (ElectronicKeyFormat4GetVendorId(key_data) != 0) )
@@ -989,7 +989,7 @@ EipStatus CheckElectronicKeyData(
 
       if (false == compatiblity_mode) {
         /* Major = 0 is valid */
-        if (0 == ElectronicKeyFormat4GetDeviceType(key_data)) {
+        if (0 == ElectronicKeyFormat4GetMajorRevision(key_data)) {
           return kEipStatusOk;
         }
 
@@ -1070,12 +1070,12 @@ EipUint8 ParseConnectionPath(
               return kCipErrorNotEnoughData;
             }
             /* Electronic key format 4 found */
+            connection_object->electronic_key.key_format = 4;
             ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
             GetElectronicKeyFormat4FromMessage(&message, electronic_key);
             /* logical electronic key found */
             connection_object->electronic_key.key_data = electronic_key;
 
-            ElectronicKeyFormat4Delete(&electronic_key);
 
             remaining_path -= 5; /*length of the electronic key*/
             OPENER_TRACE_INFO(
@@ -1088,10 +1088,12 @@ EipUint8 ParseConnectionPath(
             if ( kEipStatusOk
                  != CheckElectronicKeyData(
                    connection_object->electronic_key.key_format,
-                   &(connection_object->electronic_key.key_data),
+                   connection_object->electronic_key.key_data,
                    extended_error) ) {
+            ElectronicKeyFormat4Delete(&electronic_key);
               return kCipErrorConnectionFailure;
             }
+            ElectronicKeyFormat4Delete(&electronic_key);
           }
 
         } else {
