@@ -36,7 +36,7 @@ DoublyLinkedListNode *DoublyLinkedListNodeCreate(
   NodeMemoryAllocator const
   allocator) {
   DoublyLinkedListNode *new_node = (DoublyLinkedListNode *)allocator();
-  new_node->data = data;
+  new_node->data = (void *)data;
   return new_node;
 }
 

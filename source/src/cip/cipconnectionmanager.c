@@ -34,12 +34,7 @@ extern EipUint16 device_type_;
 extern EipUint16 product_code_;
 extern CipRevision revision_;
 
-#define CIP_CONN_TYPE_MASK 0x6000   /**< Bit mask filter on bit 13 & 14 */
-
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
-
-/** @brief Compares the logical path on equality */
-#define EQLOGICALPATH(x,y) ( ( (x) & 0xfc )==(y) )
 
 static const int g_kNumberOfConnectableObjects = 2 +
                                                  OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
@@ -1354,21 +1349,6 @@ void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
       break;
     }
   }
-
-//  if (NULL != connection_object->first_connection_object) {
-//    connection_object->first_connection_object->next_connection_object =
-//      connection_object->next_connection_object;
-//  } else {
-//    g_active_connection_list = connection_object->next_connection_object;
-//  }
-//  if (NULL != connection_object->next_connection_object) {
-//    connection_object->next_connection_object->first_connection_object =
-//      connection_object->first_connection_object;
-//  }
-//
-//  connection_object->first_connection_object = NULL;
-//  connection_object->next_connection_object = NULL;
-//  connection_object->state = kConnectionStateNonExistent;
 }
 
 EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
@@ -1413,7 +1393,7 @@ GetConnectionManagementEntry(const EipUint32 class_id) {
 
   ConnectionManagementHandling *connection_management_entry = NULL;
 
-  for (int i = 0; i < g_kNumberOfConnectableObjects; ++i) {
+  for (size_t i = 0; i < g_kNumberOfConnectableObjects; ++i) {
     if (class_id == g_connection_management_list[i].class_id) {
       connection_management_entry = &(g_connection_management_list[i]);
       break;
