@@ -325,23 +325,24 @@ void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format, CipO
 
 const CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   LogicalSegmentLogicalFormat logical_format = GetPathLogicalSegmentLogicalFormat(*message);
+  CipDword data = 0;
   MoveMessageNOctets(1, message); /* Move to logical value */
   switch (logical_format){
     case kLogicalSegmentLogicalFormatEightBit:
-      return GetSintFromMessage(message);
+    	data = GetSintFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
       MoveMessageNOctets(1, message); /* Pad byte needs to be skipped */
-      return GetIntFromMessage(message);
+      data = GetIntFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
       MoveMessageNOctets(1, message); /* Pad byte needs to be skipped */
-      return GetDintFromMessage(message);
+      data = GetDintFromMessage(message);
       break;
     default:
       OPENER_ASSERT(false); //shall not happen!
-      return 0;
   }
+  return data;
 }
 
 size_t CipEpathSetLogicalValue(const CipDword logical_value, const LogicalSegmentLogicalFormat logical_format, CipOctet **message) {

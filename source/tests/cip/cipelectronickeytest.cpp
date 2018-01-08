@@ -168,3 +168,14 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
   MEMCMP_EQUAL(message_buffer + 2, key, 8);
 
 }
+
+//TEST(CipElectronicKey, CheckElectronicKeyWrongVendorId) {
+//	const CipOctet message [] = "\x34\x04\x02\x00\x0c\x00\xe9\xfd\x01\x02";
+//	const CipOctet *message_buffer = message;
+//	EipUint16 *extended_status = 0;
+//
+//	GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer, key);
+//
+//	CheckElectronicKeyData(4, key_data, extended_status);
+//
+//}

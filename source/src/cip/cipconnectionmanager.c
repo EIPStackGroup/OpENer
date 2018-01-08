@@ -1189,6 +1189,13 @@ EipUint8 ParseConnectionPath(
 
     /* End class 3 connection handling */
     } else { /* we have an IO connection */
+    	//TODO: Check in old implementation how this was done (this is a fix for checking)
+    	 CipConnectionPathEpath connection_epath = {
+    	          .class_id = class_id,
+    	          .instance_id = instance_id,
+    	          .attribute_id_or_connection_point = 0
+    	      };
+    	memcpy(&(connection_object->configuration_path), &connection_epath, sizeof(connection_object->configuration_path));
         ConnectionObjectConnectionType originator_to_target_connection_type = ConnectionObjectGetOToTConnectionType(
         connection_object);
         ConnectionObjectConnectionType target_to_originator_connection_type = ConnectionObjectGetTToOConnectionType(

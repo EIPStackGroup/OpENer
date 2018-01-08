@@ -28,7 +28,7 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  */
 EipUint8 GetSintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
-  EipUint16 data = buffer_address[0];
+  EipUint8 data = buffer_address[0];
   *buffer += 1;
   return data;
 }
