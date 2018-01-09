@@ -1206,6 +1206,7 @@ EipUint8 ParseConnectionPath(
       //connection_object->connection_path.connection_point[1] = 0; /* set not available path to Invalid */
 
       size_t number_of_encoded_paths = 0;
+      CipConnectionPathEpath *paths_to_encode[2] = { 0 };
       if (kConnectionObjectConnectionTypeNull == originator_to_target_connection_type) {
         if (kConnectionObjectConnectionTypeNull == target_to_originator_connection_type) { /* configuration only connection */
           number_of_encoded_paths = 0;
@@ -1213,13 +1214,17 @@ EipUint8 ParseConnectionPath(
         } else { /* 1 path -> path is for production */
           OPENER_TRACE_INFO("assembly: type produce\n");
           number_of_encoded_paths = 1;
+          paths_to_encode[0] = &(connection_object->produced_path);
         }
       } else {
         if (kConnectionObjectConnectionTypeNull == target_to_originator_connection_type) { /* 1 path -> path is for consumption */
           OPENER_TRACE_INFO("assembly: type consume\n");
           number_of_encoded_paths = 1;
+          paths_to_encode[0] = &(connection_object->consumed_path);
         } else { /* 2 paths -> 1st for production 2nd for consumption */
           OPENER_TRACE_INFO("assembly: type bidirectional\n");
+          paths_to_encode[0] = &(connection_object->consumed_path);
+          paths_to_encode[1] = &(connection_object->produced_path);
           number_of_encoded_paths = 2;
         }
       }
@@ -1231,16 +1236,10 @@ EipUint8 ParseConnectionPath(
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
           CipConnectionPathEpath connection_epath = {
                     .class_id = class_id,
-                    .instance_id = instance_id,
-                    .attribute_id_or_connection_point = attribute_id
+                    .instance_id = attribute_id,
+                    .attribute_id_or_connection_point = 0
                 };
-          /* TODO: Remainder of old implementation, look for better way of doing this */
-          if(0 == i){
-            memcpy(&(connection_object->produced_path), &connection_epath, sizeof(connection_object->produced_path));
-          }
-          if(1 == i){
-            memcpy(&(connection_object->consumed_path), &connection_epath, sizeof(connection_object->consumed_path));
-          }
+          memcpy(paths_to_encode[i], &connection_epath, sizeof(connection_object->produced_path));
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
             attribute_id);

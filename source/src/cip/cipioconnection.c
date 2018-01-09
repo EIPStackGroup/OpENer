@@ -126,7 +126,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     int diff_size = 0;
 
     /* an assembly object should always have an attribute 3 */
-    CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, io_connection_object->consumed_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kConnectionObjectTransportClassTriggerTransportClass1

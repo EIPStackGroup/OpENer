@@ -174,12 +174,12 @@ CipConnectionObject *GetExclusiveOwnerConnection(
   EipUint16 *const extended_error) {
 
   for (size_t i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; ++i) {
-    if ( (g_exlusive_owner_connections[i].connection_data.produced_path.attribute_id_or_connection_point ==
-         connection_object->produced_path.attribute_id_or_connection_point)
-         && (g_exlusive_owner_connections[i].connection_data.consumed_path.attribute_id_or_connection_point ==
-             connection_object->consumed_path.attribute_id_or_connection_point)
-         && (g_exlusive_owner_connections[i].connection_data.configuration_path.attribute_id_or_connection_point ==
-             connection_object->configuration_path.attribute_id_or_connection_point) ) {
+    if ( (g_exlusive_owner_connections[i].output_assembly ==
+         connection_object->consumed_path.instance_id)
+         && (g_exlusive_owner_connections[i].input_assembly ==
+             connection_object->produced_path.instance_id)
+         && (g_exlusive_owner_connections[i].config_assembly ==
+             connection_object->configuration_path.instance_id) ) {
 
       /* check if on other connection point with the same output assembly is currently connected */
       if ( NULL
@@ -203,15 +203,15 @@ CipConnectionObject *GetInputOnlyConnection(
 
   for (size_t i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; ++i) {
     if (g_input_only_connections[i].output_assembly
-        == connection_object->produced_path.attribute_id_or_connection_point) { /* we have the same output assembly */
+        == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_input_only_connections[i].input_assembly
-          != connection_object->consumed_path.attribute_id_or_connection_point) {
+          != connection_object->produced_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_input_only_connections[i].config_assembly
-          != connection_object->configuration_path.attribute_id_or_connection_point) {
+          != connection_object->configuration_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
@@ -245,15 +245,15 @@ CipConnectionObject *GetListenOnlyConnection(
 
   for (int i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
-        == connection_object->produced_path.attribute_id_or_connection_point) { /* we have the same output assembly */
+        == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_listen_only_connections[i].input_assembly
-          != connection_object->consumed_path.attribute_id_or_connection_point) {
+          != connection_object->produced_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_listen_only_connections[i].config_assembly
-          != connection_object->configuration_path.attribute_id_or_connection_point) {
+          != connection_object->configuration_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
@@ -261,7 +261,7 @@ CipConnectionObject *GetListenOnlyConnection(
 
       if ( NULL
            == GetExistingProducerMulticastConnection(
-             connection_object->consumed_path.attribute_id_or_connection_point) ) {
+             connection_object->produced_path.instance_id) ) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
