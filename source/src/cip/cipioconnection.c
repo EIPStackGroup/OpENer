@@ -211,18 +211,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
               GetCipInstance(
                 assembly_class,
                 io_connection_object->produced_path.instance_id) ) ) {
-    //TODO: Check if this can be done immediately at parsing
-    /*
-    io_connection_object->producing_instance = instance;
-    io_connection_object->produced_connection_path_length = 6;
-    io_connection_object->produced_connection_path.path_size = 6;
-    io_connection_object->produced_connection_path.class_id =
-      io_connection_object->connection_path.class_id;
-    io_connection_object->produced_connection_path.instance_number =
-      io_connection_object->connection_path.connection_point[
-        kConnectionPointProducer];
-    io_connection_object->produced_connection_path.attribute_number = 3;
-    */
+
     int data_size = ConnectionObjectGetTToOConnectionSize(io_connection_object);
     int diff_size = 0;
     /* an assembly object should always have an attribute 3 */
@@ -439,7 +428,7 @@ EipStatus OpenProducingMulticastConnection(
   ) {
   CipConnectionObject *existing_connection_object =
     GetExistingProducerMulticastConnection(
-      connection_object->consumed_path.instance_id);
+      connection_object->produced_path.instance_id);
 
   int j = 0; /* allocate an unused sockaddr struct to use */
   if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */

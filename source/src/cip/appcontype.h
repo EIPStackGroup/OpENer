@@ -70,6 +70,6 @@ void CloseAllConnections(void);
  * @param config_point The configuration point
  * @return true if connection was found, otherwise false
  */
-EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point);
+bool ConnectionWithSameConfigPointExists(const EipUint32 config_point);
 
 #endif /* OPENER_APPCONTYPE_H_ */

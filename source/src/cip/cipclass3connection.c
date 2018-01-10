@@ -33,6 +33,7 @@ EipStatus EstablishClass3Connection(
     ConnectionObjectDeepCopy(explicit_connection, connection_object);
 
     ConnectionObjectGeneralConfiguration(explicit_connection);
+
     ConnectionObjectSetInstanceType(explicit_connection, kConnectionObjectInstanceTypeExplicitMessaging);
 
     /* set the connection call backs */

@@ -184,7 +184,7 @@ CipConnectionObject *GetExclusiveOwnerConnection(
       /* check if on other connection point with the same output assembly is currently connected */
       if ( NULL
            != GetConnectedOutputAssembly(
-             connection_object->produced_path.attribute_id_or_connection_point) ) {
+             connection_object->produced_path.instance_id) ) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
         OPENER_TRACE_INFO("Hit an Ownership conflict in appcontype.c");
@@ -290,7 +290,7 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
     if ( (kConnectionObjectInstanceTypeIO
           == producer_multicast_connection->instance_type)) {
       if ( (input_point
-            == producer_multicast_connection->consumed_path.attribute_id_or_connection_point)
+            == producer_multicast_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
                 == ConnectionObjectGetTToOConnectionType(producer_multicast_connection) )
            && (kEipInvalidSocket
@@ -318,7 +318,7 @@ CipConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_poi
           == next_non_control_master_connection->instance_type)
          ) {
       if ( (input_point
-            == next_non_control_master_connection->consumed_path.attribute_id_or_connection_point)
+            == next_non_control_master_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
                 == ConnectionObjectGetTToOConnectionType(next_non_control_master_connection) )
            && (kEipInvalidSocket
@@ -344,12 +344,12 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
   while (NULL != node) {
   CipConnectionObject *connection = node->data;
     if ( (instance_type == connection->instance_type)
-         && (input_point == connection->consumed_path.attribute_id_or_connection_point) ) {
+         && (input_point == connection->produced_path.instance_id) ) {
       CipConnectionObject *connection_to_delete = connection;
       node = node->next;
       CheckIoConnectionEvent(
-        connection_to_delete->produced_path.attribute_id_or_connection_point,
-        connection_to_delete->consumed_path.attribute_id_or_connection_point,
+        connection_to_delete->consumed_path.instance_id,
+        connection_to_delete->produced_path.instance_id,
         kIoConnectionEventClosed);
 
       assert(connection_to_delete->connection_close_function != NULL);
@@ -375,12 +375,12 @@ void CloseAllConnections(void) {
   }
 }
 
-EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
+bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
   CipConnectionObject *connection = node->data;
-    if (config_point == connection->configuration_path.attribute_id_or_connection_point) {
+    if (config_point == connection->configuration_path.instance_id) {
       return (NULL != connection);
     }
     node = node->next;
