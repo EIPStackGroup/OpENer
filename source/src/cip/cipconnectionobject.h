@@ -186,15 +186,6 @@ struct cip_connection_object {
 DoublyLinkedListNode *CipConnectionObjectListArrayAllocator();
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
 
-//extern CipConnectionObject input_only_connection_object_pool[
-//  OPENER_CIP_NUM_INPUT_ONLY_CONNS];
-//
-//extern CipConnectionObject exclusive_owner_connection_object_pool[
-//  OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS];
-//
-//extern CipConnectionObject listen_only_connection_object_pool[
-//  OPENER_CIP_NUM_LISTEN_ONLY_CONNS];
-
 /** @brief Array allocator
  *
  */
@@ -378,10 +369,7 @@ size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const co
  * @param destination Destination of the copy operation
  * @param source Source of the copy operation
  */
-void ConnectionObjectDeepCopy(
-  CipConnectionObject *RESTRICT destination,
-  const CipConnectionObject *RESTRICT const source
-  );
+void ConnectionObjectDeepCopy(CipConnectionObject *RESTRICT destination, const CipConnectionObject *RESTRICT const source);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.
@@ -390,5 +378,7 @@ void ConnectionObjectDeepCopy(
  * up.
  */
 void ConnectionObjectGeneralConfiguration(CipConnectionObject *const connection_object);
+
+bool ConnectionObjectIsTypeIOConnection(const CipConnectionObject *const connection_object);
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

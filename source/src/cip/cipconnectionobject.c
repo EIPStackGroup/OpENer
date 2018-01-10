@@ -215,37 +215,54 @@ void ConnectionObjectSetState(CipConnectionObject *const connection_object,
 
 ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
   const CipConnectionObject *const connection_object) {
-  switch (connection_object->instance_type) {
-    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING:
-      return kConnectionObjectInstanceTypeExplicitMessaging;
-      break;
-    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO:
-      return kConnectionObjectInstanceTypeIO;
-      break;
-    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED:
-      return kConnectionObjectInstanceTypeCipBridged;
-      break;
-    default:
-      return kConnectionObjectInstanceTypeInvalid;
-  }
+	return connection_object->instance_type;
+//  switch (connection_object->instance_type) {
+//    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING:
+//      return kConnectionObjectInstanceTypeExplicitMessaging;
+//      break;
+//    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO:
+//      return kConnectionObjectInstanceTypeIO;
+//      break;
+//    case CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED:
+//      return kConnectionObjectInstanceTypeCipBridged;
+//      break;
+//    default:
+//      return kConnectionObjectInstanceTypeInvalid;
+//  }
 }
 
 void ConnectionObjectSetInstanceType(
   CipConnectionObject *const connection_object,
   const ConnectionObjectInstanceType instance_type) {
-  switch (connection_object->instance_type) {
-    case kConnectionObjectInstanceTypeExplicitMessaging:
-      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
-      break;
-    case kConnectionObjectInstanceTypeIO:
-      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
-      break;
-    case kConnectionObjectInstanceTypeCipBridged:
-      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
-      break;
-    default:
-      assert(false);
-  }
+	connection_object->instance_type = instance_type;
+//  switch (connection_object->instance_type) {
+//    case kConnectionObjectInstanceTypeExplicitMessaging:
+//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
+//      break;
+//    case kConnectionObjectInstanceTypeIO:
+//    case kConnectionObjectInstanceTypeIOExclusiveOwner:
+//    case kConnectionObjectInstanceTypeIOInputOnly:
+//    case kConnectionObjectInstanceTypeIOListenOnly:
+//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
+//      break;
+//    case kConnectionObjectInstanceTypeCipBridged:
+//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
+//      break;
+//    default:
+//      assert(false);
+//  }
+}
+
+bool ConnectionObjectIsTypeIOConnection(const CipConnectionObject *const connection_object) {
+	switch(connection_object->instance_type) {
+	    case kConnectionObjectInstanceTypeIO:
+	    case kConnectionObjectInstanceTypeIOExclusiveOwner:
+	    case kConnectionObjectInstanceTypeIOInputOnly:
+	    case kConnectionObjectInstanceTypeIOListenOnly:
+	    	return true;
+	    default: return false;
+	}
+	return false;
 }
 
 ConnectionObjectTransportClassTriggerDirection

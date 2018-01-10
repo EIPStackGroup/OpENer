@@ -287,8 +287,7 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
 
   while (NULL != node) {
   CipConnectionObject *producer_multicast_connection = node->data;
-    if ( (kConnectionObjectInstanceTypeIO
-          == producer_multicast_connection->instance_type)) {
+    if ( true == ConnectionObjectIsTypeIOConnection(producer_multicast_connection)) {
       if ( (input_point
             == producer_multicast_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
@@ -314,8 +313,7 @@ CipConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_poi
   while (NULL != node) {
   CipConnectionObject *next_non_control_master_connection =
     node->data;
-    if ( (kConnectionObjectInstanceTypeIO
-          == next_non_control_master_connection->instance_type)
+    if ( true == ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
          ) {
       if ( (input_point
             == next_non_control_master_connection->produced_path.instance_id)
