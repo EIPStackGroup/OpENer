@@ -14,13 +14,6 @@
 #include "opener_api.h"
 #include "trace.h"
 
-/** @brief Data of an CIP Ethernet Link object */
-typedef struct {
-  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
-  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
-  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
-} CipEthernetLinkObject;
-
 typedef struct {
   CipWord control_bits;
   CipUint forced_interface_speed;
@@ -41,9 +34,6 @@ typedef struct {
   struct speed_duplex_options speed_duplex_options;
 } CipEthernetLinkInterfaceCapability;
 
-/* global private variables */
-CipEthernetLinkObject g_ethernet_link;
-
 EipStatus GetAttributeSingleEthernetLink(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
@@ -54,11 +44,6 @@ EipStatus GetAttributeSingleEthernetLink(
  *
  *  @param mac_address The MAC address of the Ethernet Link
  */
-void ConfigureMacAddress(const EipUint8 *const mac_address) {
-  memcpy( &g_ethernet_link.physical_address, mac_address,
-          sizeof(g_ethernet_link.physical_address) );
-
-}
 
 CipUsint dummy_attribute_usint = 0;
 CipUdint dummy_attribute_udint = 0;
@@ -69,13 +54,13 @@ CipEthernetLinkInterfaceControl interface_control = { .control_bits = 0,
                                                         0 };
 
 CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_object = { .interface_speed =
-                                                               100,
-                                                             .
+                                                               100, .
                                                              interface_duplex_mode
                                                                = 1 };
 CipEthernetLinkInterfaceCapability interface_capability = {
   .capability_bits = 1, .speed_duplex_options = { .speed_duplex_array_count =
-                                                    1, .speed_duplex_array =
+                                                    1,
+                                                  .speed_duplex_array =
                                                     &speed_duplex_object }
 };
 
@@ -210,8 +195,7 @@ EipStatus GetAttributeSingleEthernetLink(
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
