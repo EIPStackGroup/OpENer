@@ -160,8 +160,8 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
   CipConnectionObject *iterator = node->data;
-    if(io_connection_object->produced_path.attribute_id_or_connection_point ==
-       iterator->produced_path.attribute_id_or_connection_point) {
+    if(io_connection_object->produced_path.instance_id ==
+       iterator->produced_path.instance_id) {
       //Check parameters
       if( ConnectionObjectGetTToORequestedPacketInterval(io_connection_object) !=
           ConnectionObjectGetTToORequestedPacketInterval(iterator) ) {
@@ -212,10 +212,12 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
                 assembly_class,
                 io_connection_object->produced_path.instance_id) ) ) {
 
+	io_connection_object->producing_instance = instance;
     int data_size = ConnectionObjectGetTToOConnectionSize(io_connection_object);
     int diff_size = 0;
     /* an assembly object should always have an attribute 3 */
-    CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
+    io_connection_object->produced_path.attribute_id_or_connection_point = 3;
+    CipAttributeStruct *attribute = GetCipAttribute(instance, io_connection_object->produced_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL);
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kConnectionObjectTransportClassTriggerTransportClass1 ==

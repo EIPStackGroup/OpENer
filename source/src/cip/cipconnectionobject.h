@@ -132,7 +132,7 @@ struct cip_connection_object {
   CipUint requested_produced_connection_size;
   CipUint requested_consumed_connection_size;
 
-  uint64_t transmission_trigger_timer;
+  int64_t transmission_trigger_timer;
   uint64_t inactivity_watchdog_timer;
   uint64_t production_inhibit_timer;
 

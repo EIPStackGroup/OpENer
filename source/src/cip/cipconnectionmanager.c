@@ -656,7 +656,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
       /* only if the connection has not timed out check if data is to be send */
       if (kConnectionObjectStateEstablished == ConnectionObjectGetState(connection_object)) {
         /* client connection */
-        if ( (0 != connection_object->expected_packet_rate)
+        if ( (0 != ConnectionObjectGetExpectedPacketRate(connection_object))
              && (kEipInvalidSocket
                  != connection_object->socket[
                    kUdpCommuncationDirectionProducing
@@ -681,9 +681,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
                 "sending of UDP data in manage Connection failed\n");
             }
             /* reload the timer value */
-            connection_object->transmission_trigger_timer = connection_object
-                                                            ->
-                                                            expected_packet_rate;
+            connection_object->transmission_trigger_timer = ConnectionObjectGetExpectedPacketRate(connection_object);
             if ( kConnectionObjectTransportClassTriggerProductionTriggerCyclic
                  != ConnectionObjectGetTransportClassTriggerProductionTrigger(connection_object) ) {
               /* non cyclic connections have to reload the production inhibit timer */
@@ -1347,7 +1345,6 @@ void AddNewActiveConnection(const CipConnectionObject *const connection_object) 
 }
 
 void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
-
   for(DoublyLinkedListNode *iterator = connection_list.first; iterator != NULL; iterator = iterator->next) {
     if(iterator->data == connection_object) {
       ConnectionObjectInitializeEmpty(connection_object);

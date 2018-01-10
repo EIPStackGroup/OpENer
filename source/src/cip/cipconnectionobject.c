@@ -358,14 +358,14 @@ CipUint ConnectionObjectGetExpectedPacketRate(
 void ConnectionObjectSetExpectedPacketRate(
   CipConnectionObject *const connection_object,
   CipUint expected_packet_rate) {
-  if( (expected_packet_rate % kOpenerTimerTickInMilliSeconds) == 0 ) {
-    connection_object->expected_packet_rate = expected_packet_rate;
+  if( (expected_packet_rate % (kOpenerTimerTickInMilliSeconds * 1000)) == 0 ) {
+    connection_object->expected_packet_rate = expected_packet_rate / 1000;
   }
   else{
-    connection_object->expected_packet_rate = expected_packet_rate +
+    connection_object->expected_packet_rate = expected_packet_rate / 1000 +
                                               (kOpenerTimerTickInMilliSeconds -
-                                               expected_packet_rate %
-                                               kOpenerTimerTickInMilliSeconds);
+                                               (expected_packet_rate / 1000) %
+                                               (kOpenerTimerTickInMilliSeconds * 1000) );
   }
 }
 
