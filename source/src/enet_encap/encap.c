@@ -466,6 +466,7 @@ void HandleReceivedRegisterSessionCommand(int socket,
     for (int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
       if (g_registered_sessions[i] == socket) {
         /* the socket has already registered a session this is not allowed*/
+    	  OPENER_TRACE_INFO("Error: A session is already registered at socket %d\n", socket);
         receive_data->session_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
         receive_data->status = kEncapsulationProtocolInvalidCommand;
         session_index = kSessionStatusInvalid;

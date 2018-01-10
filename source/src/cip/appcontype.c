@@ -367,7 +367,7 @@ void CloseAllConnections(void) {
   CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
-    CloseConnection(connection);
+    //CloseConnection(connection);
     /* Close connection will remove the connection from the list therefore we
      * need to get again the start until there is no connection left
      */

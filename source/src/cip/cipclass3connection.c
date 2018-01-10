@@ -38,10 +38,10 @@ EipStatus EstablishClass3Connection(
 
     /* set the connection call backs */
     explicit_connection->connection_close_function =
-      RemoveFromActiveConnections;
+    		CloseConnection;
     /* explicit connection have to be closed on time out*/
     explicit_connection->connection_timeout_function =
-      RemoveFromActiveConnections;
+    		CloseConnection;
 
     AddNewActiveConnection(explicit_connection);
   }

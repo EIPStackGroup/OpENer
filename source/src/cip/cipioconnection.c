@@ -330,8 +330,8 @@ EipStatus EstablishIoConnection(
 
   AddNewActiveConnection(io_connection_object);
   CheckIoConnectionEvent(
-    io_connection_object->produced_path.instance_id,
     io_connection_object->consumed_path.instance_id,
+    io_connection_object->produced_path.instance_id,
     kIoConnectionEventOpened);
   return eip_status;
 }
