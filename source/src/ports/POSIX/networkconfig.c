@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "ciptcpipinterface.h"
-
+#include "networkconfig.h"
 #include "cipcommon.h"
 #include "ciperror.h"
 #include "trace.h"
@@ -25,6 +25,24 @@
 #include <unistd.h>
 
 #define LOOPBACK_BINARY 0x7f000001
+
+void ConfigureMacAddress(const char *interface) {
+  struct ifreq ifr;
+  size_t if_name_len = strlen(interface);
+  if ( if_name_len < sizeof(ifr.ifr_name) ) {
+    memcpy(ifr.ifr_name, interface, if_name_len);
+    ifr.ifr_name[if_name_len] = 0;
+  } else {
+    OPENER_TRACE_INFO("interface name is too long");
+  }
+
+  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+
+  if (ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
+    memcpy( &(g_ethernet_link.physical_address), &ifr.ifr_hwaddr.sa_data,
+            sizeof(g_ethernet_link.physical_address) );
+  }
+}
 
 EipStatus ConfigureNetworkInterface(const char *const interface) {
 

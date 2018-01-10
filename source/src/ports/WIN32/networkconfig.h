@@ -3,6 +3,9 @@
  * All rights reserved.
  *
  ******************************************************************************/
+
+#include "cipethernetlink.h"
+
 EipStatus ConfigureNetworkInterface(const char *ip_address,
                                     const char *subnet_mask,
                                     const char *gateway);

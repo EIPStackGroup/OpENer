@@ -3,6 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#include "cipethernetlink.h"
+
 EipStatus ConfigureNetworkInterface(const char *interface);
 
 void ConfigureDomainName(

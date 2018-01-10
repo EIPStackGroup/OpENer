@@ -14,25 +14,6 @@
 #include "opener_api.h"
 #include "trace.h"
 
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <linux/if.h>
-#include <net/if.h>
-#include <netinet/in.h>
-
-#include <errno.h>
-#include <string.h>
-#include <stdio.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-/** @brief Data of an CIP Ethernet Link object */
-typedef struct {
-  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
-  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
-  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
-} CipEthernetLinkObject;
-
 typedef struct {
   CipWord control_bits;
   CipUint forced_interface_speed;
@@ -53,9 +34,6 @@ typedef struct {
   struct speed_duplex_options speed_duplex_options;
 } CipEthernetLinkInterfaceCapability;
 
-/* global private variables */
-CipEthernetLinkObject g_ethernet_link;
-
 EipStatus GetAttributeSingleEthernetLink(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
@@ -66,23 +44,6 @@ EipStatus GetAttributeSingleEthernetLink(
  *
  *  @param mac_address The MAC address of the Ethernet Link
  */
-void ConfigureMacAddress(const char *interface) {
-  struct ifreq ifr;
-  size_t if_name_len = strlen(interface);
-  if ( if_name_len < sizeof(ifr.ifr_name) ) {
-    memcpy(ifr.ifr_name, interface, if_name_len);
-    ifr.ifr_name[if_name_len] = 0;
-  } else {
-    OPENER_TRACE_INFO("interface name is too long");
-  }
-
-  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-
-  if (ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
-    memcpy( &g_ethernet_link.physical_address, &ifr.ifr_hwaddr.sa_data,
-            sizeof(g_ethernet_link.physical_address) );
-  }
-}
 
 CipUsint dummy_attribute_usint = 0;
 CipUdint dummy_attribute_udint = 0;

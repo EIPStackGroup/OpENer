@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <string.h>
 
 #include "ciptcpipinterface.h"
-
+#include "networkconfig.h"
 #include "cipcommon.h"
 #include "ciperror.h"
 #include "opener_api.h"
 #include "trace.h"
+#include <string.h>
 
 EipStatus ConfigureNetworkInterface(const char *ip_address,
                                     const char *subnet_mask,
@@ -30,6 +30,12 @@ EipStatus ConfigureNetworkInterface(const char *ip_address,
     ntohl( inet_addr("239.192.1.0") ) + (host_id << 5) );
 
   return kEipStatusOk;
+}
+
+void ConfigureMacAddress(const EipUint8 *const mac_address) {
+  memcpy( &g_ethernet_link.physical_address, mac_address,
+          sizeof(g_ethernet_link.physical_address) );
+
 }
 
 void ConfigureDomainName(const char *domain_name) {
