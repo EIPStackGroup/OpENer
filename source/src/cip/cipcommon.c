@@ -917,6 +917,9 @@ size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
     case (kCipLword):
       return sizeof(CipLword);
       break;
+    case (kCipLtime):
+      return sizeof(CipLint);
+      break;
 #endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
     case (kCipStime):
@@ -952,9 +955,6 @@ size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
     break;
     case (kCipFtime):
       return sizeof(CipDint);
-      break;
-    case (kCipLtime):
-      return sizeof(CipLint);
       break;
     case (kCipItime):
       return sizeof(CipInt);
