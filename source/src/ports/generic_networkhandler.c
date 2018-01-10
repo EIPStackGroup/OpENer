@@ -744,7 +744,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   }
 
   SetSocketToNonBlocking(new_socket);
-  SetQosOnSocket(new_socket, qos_for_socket);
+  SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket));
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 

@@ -604,10 +604,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
     if ( ConnectionWithSameConfigPointExists(
            connection_object->configuration_path.instance_id) ) {                                               /* there is a connected connection with the same config point
                                                                                          * we have to have the same data as already present in the config point*/
-      CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
-        config_instance,
-        3)
-                                      ->data;
+      CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(config_instance, 3)->data;
       if (attribute_three->length != g_config_data_length) {
         connection_manager_status =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
