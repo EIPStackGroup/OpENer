@@ -31,14 +31,14 @@
  *  @return kEipStatusOk if the configuring worked otherwise kEipStatusError
  */
 EipStatus
-ConfigureNetworkInterface(const char *const interface);
+ConfigureNetworkInterface(const char *const network_interface);
 
 /** @ingroup CIP_API
  * @brief Configure the MAC address of the device
  *
  *  @param mac_address  the hardware MAC address of the network interface
  */
-void ConfigureMacAddress(const char *interface);
+void ConfigureMacAddress(const char *network_interface);
 
 /** @ingroup CIP_API
  * @brief Configure the domain name of the device

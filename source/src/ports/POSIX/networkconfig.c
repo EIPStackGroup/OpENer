@@ -44,12 +44,12 @@ void ConfigureMacAddress(const char *interface) {
   }
 }
 
-EipStatus ConfigureNetworkInterface(const char *const interface) {
+EipStatus ConfigureNetworkInterface(const char *const network_interface) {
 
   struct ifreq ifr;
-  size_t if_name_len = strlen(interface);
+  size_t if_name_len = strlen(network_interface);
   if ( if_name_len < sizeof(ifr.ifr_name) ) {
-    memcpy(ifr.ifr_name, interface, if_name_len);
+    memcpy(ifr.ifr_name, network_interface, if_name_len);
     ifr.ifr_name[if_name_len] = 0;
   } else {
     OPENER_TRACE_INFO("interface name is too long\n");
@@ -77,7 +77,7 @@ EipStatus ConfigureNetworkInterface(const char *const interface) {
   CipUdint gateway = 0;
 
   while ( fgets(line, 100, file_handle) ) {
-    if ( strstr(line, interface) ) {
+    if ( strstr(line, network_interface) ) {
       string_part1 = strtok(line, " \t");
       string_part2 = strtok(NULL, " \t");
       gateway_string = strtok(NULL, "\t");

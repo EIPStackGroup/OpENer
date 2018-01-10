@@ -5,7 +5,7 @@
  ******************************************************************************/
 #include "cipethernetlink.h"
 
-EipStatus ConfigureNetworkInterface(const char *interface);
+EipStatus ConfigureNetworkInterface(const char *network_interface);
 
 void ConfigureDomainName(
   );
