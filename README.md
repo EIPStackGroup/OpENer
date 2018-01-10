@@ -55,9 +55,9 @@ Compile for POSIX:
 	3. Invoke make
 	4. For invoking opener type:
 
-		./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
+		./OpENer interface
 
-		e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+		e.g. ./OpENer eth1
  
 2. Within Eclipse
 	1. For a standard configuration invoke setup_posix.sh, otherwise start
@@ -72,7 +72,12 @@ Compile for Windows XP/7/8:
 ---------------------------
 1. Invoke setup_windows.bat or configure via CMake
 2. Open Visual Studio solution in bin/win32
+3. For invoking opener type in command line:
 
+		OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
+
+		e.g. OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+ 
 Directory structure:
 --------------------
 - bin ...  The resulting binaries and make files for different ports
