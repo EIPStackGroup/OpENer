@@ -138,10 +138,9 @@ void ConnectionObjectInitializeFromMessage(
   //TODO: introduce setter function
   connection_object->o_to_t_network_connection_parameters = GetIntFromMessage(message);
 
-  connection_object->t_to_o_requested_packet_interval = GetDintFromMessage(message);
+  ConnectionObjectSetTToORequestedPacketInterval(connection_object, GetDintFromMessage(message));
 
-  ConnectionObjectSetExpectedPacketRate(connection_object,
-      connection_object->t_to_o_requested_packet_interval);
+  ConnectionObjectSetExpectedPacketRate(connection_object);
 
   connection_object->t_to_o_network_connection_parameters = GetIntFromMessage(message);
 
@@ -356,15 +355,14 @@ CipUint ConnectionObjectGetExpectedPacketRate(
 }
 
 void ConnectionObjectSetExpectedPacketRate(
-  CipConnectionObject *const connection_object,
-  CipUint expected_packet_rate) {
-  if( (expected_packet_rate % (kOpenerTimerTickInMilliSeconds * 1000)) == 0 ) {
-    connection_object->expected_packet_rate = expected_packet_rate / 1000;
+  CipConnectionObject *const connection_object) {
+  if( (connection_object->t_to_o_requested_packet_interval % (kOpenerTimerTickInMilliSeconds * 1000)) == 0 ) {
+    connection_object->expected_packet_rate = connection_object->t_to_o_requested_packet_interval / 1000;
   }
   else{
-    connection_object->expected_packet_rate = expected_packet_rate / 1000 +
+    connection_object->expected_packet_rate = connection_object->t_to_o_requested_packet_interval / 1000 +
                                               (kOpenerTimerTickInMilliSeconds -
-                                               (expected_packet_rate / 1000) %
+                                               (connection_object->t_to_o_requested_packet_interval / 1000) %
                                                (kOpenerTimerTickInMilliSeconds * 1000) );
   }
 }
@@ -501,6 +499,8 @@ uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   return ( ( (connection_object->o_to_t_requested_packet_interval) /
              1000 ) << (2 + connection_object->connection_timeout_multiplier) );
 }
+
+
 
 CipUint ConnectionObjectGetConnectionSerialNumber(
     const CipConnectionObject *const connection_object) {

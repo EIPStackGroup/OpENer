@@ -255,8 +255,7 @@ CipUint ConnectionObjectGetExpectedPacketRate(
  * the exact value entered, but rounded up to the next serviceable increment, relative to the timer resolution
  */
 void ConnectionObjectSetExpectedPacketRate(
-  CipConnectionObject *const connection_object,
-  CipUint expected_packet_rate);
+  CipConnectionObject *const connection_object);
 
 CipUdint ConnectionObjectGetCipProducedConnectionID(
   const CipConnectionObject *const connection_object);
@@ -370,6 +369,8 @@ size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const co
  * @param source Source of the copy operation
  */
 void ConnectionObjectDeepCopy(CipConnectionObject *RESTRICT destination, const CipConnectionObject *RESTRICT const source);
+
+void ConnectionObjectResetProductionInhibitTimer(CipConnectionObject *const connection_object);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.

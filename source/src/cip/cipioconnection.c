@@ -666,6 +666,7 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
             connection_object->eip_level_sequence_count_producing;
         next_non_control_master_connection->sequence_count_producing =
           connection_object->sequence_count_producing;
+        CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
         connection_object->socket[kUdpCommuncationDirectionProducing] =
           kEipInvalidSocket;
         next_non_control_master_connection->transmission_trigger_timer =
@@ -692,10 +693,10 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
     switch (connection_object->instance_type) {
       case kConnectionObjectInstanceTypeIOExclusiveOwner:
         CloseAllConnectionsForInputWithSameType(
-          connection_object->consumed_path.instance_id,
+          connection_object->produced_path.instance_id,
           kConnectionObjectInstanceTypeIOInputOnly);
         CloseAllConnectionsForInputWithSameType(
-          connection_object->consumed_path.instance_id,
+          connection_object->produced_path.instance_id,
           kConnectionObjectInstanceTypeIOListenOnly);
         break;
       case kConnectionObjectInstanceTypeIOInputOnly:
@@ -703,7 +704,7 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
             != connection_object->socket[kUdpCommuncationDirectionProducing]) { /* we are the controlling input only connection find a new controller*/
           CipConnectionObject *next_non_control_master_connection =
             GetNextNonControlMasterConnection(
-              connection_object->consumed_path.instance_id);
+              connection_object->produced_path.instance_id);
           if (NULL != next_non_control_master_connection) {
             next_non_control_master_connection->socket[
               kUdpCommuncationDirectionProducing] =
@@ -714,7 +715,7 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
               connection_object->transmission_trigger_timer;
           } else { /* this was the last master connection close all listen only connections listening on the port */
             CloseAllConnectionsForInputWithSameType(
-              connection_object->consumed_path.instance_id,
+              connection_object->produced_path.instance_id,
               kConnectionObjectInstanceTypeIOListenOnly);
           }
         }

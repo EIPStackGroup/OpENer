@@ -17,6 +17,7 @@
 #include "encap.h"
 #include "cipidentity.h"
 #include "trace.h"
+#include "cipconnectionobject.h"
 #include "cipclass3connection.h"
 #include "cipioconnection.h"
 #include "cipassembly.h"
@@ -685,9 +686,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
             if ( kConnectionObjectTransportClassTriggerProductionTriggerCyclic
                  != ConnectionObjectGetTransportClassTriggerProductionTrigger(connection_object) ) {
               /* non cyclic connections have to reload the production inhibit timer */
-              connection_object->production_inhibit_timer = connection_object
-                                                            ->
-                                                            production_inhibit_time;
+              ConnectionObjectResetProductionInhibitTimer(connection_object);
             }
           }
         }
@@ -1360,8 +1359,8 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipDword produced_connection_point = ((CipConnectionObject*)node->data)->produced_path.attribute_id_or_connection_point;
-    if (instance_number == produced_connection_point) {
+    CipDword consumed_connection_point = ((CipConnectionObject*)node->data)->consumed_path.instance_id;
+    if (instance_number == consumed_connection_point) {
       is_connected = true;
       break;
     }
@@ -1414,9 +1413,9 @@ EipStatus TriggerConnections(
   DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
   CipConnectionObject *connection_object = node->data;
-    if ( (output_assembly == connection_object->produced_path.attribute_id_or_connection_point)
+    if ( (output_assembly == connection_object->consumed_path.instance_id)
          && (input_assembly ==
-             connection_object->consumed_path.attribute_id_or_connection_point) ) {
+             connection_object->produced_path.instance_id) ) {
       if ( kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject
            == ConnectionObjectGetTransportClassTriggerProductionTrigger(connection_object) ) {
         /* produce at the next allowed occurrence */
