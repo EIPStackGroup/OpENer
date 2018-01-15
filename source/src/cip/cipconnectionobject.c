@@ -234,22 +234,27 @@ void ConnectionObjectSetInstanceType(
   CipConnectionObject *const connection_object,
   const ConnectionObjectInstanceType instance_type) {
 	connection_object->instance_type = instance_type;
-//  switch (connection_object->instance_type) {
-//    case kConnectionObjectInstanceTypeExplicitMessaging:
-//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
-//      break;
-//    case kConnectionObjectInstanceTypeIO:
-//    case kConnectionObjectInstanceTypeIOExclusiveOwner:
-//    case kConnectionObjectInstanceTypeIOInputOnly:
-//    case kConnectionObjectInstanceTypeIOListenOnly:
-//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
-//      break;
-//    case kConnectionObjectInstanceTypeCipBridged:
-//      connection_object->instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
-//      break;
-//    default:
-//      assert(false);
-//  }
+}
+
+CipUsint ConnectionObjectGetInstanceTypeForAttribute(const CipConnectionObject *const connection_object) {
+	  switch (connection_object->instance_type) {
+	    case kConnectionObjectInstanceTypeExplicitMessaging:
+	      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
+	      break;
+	    case kConnectionObjectInstanceTypeIO:
+	    case kConnectionObjectInstanceTypeIOExclusiveOwner:
+	    case kConnectionObjectInstanceTypeIOInputOnly:
+	    case kConnectionObjectInstanceTypeIOListenOnly:
+	      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
+	      break;
+	    case kConnectionObjectInstanceTypeCipBridged:
+	      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
+	      break;
+	    default:
+	      assert(false);
+	  }
+	  assert(false); //We should never come to this point
+	  return 255;
 }
 
 bool ConnectionObjectIsTypeIOConnection(const CipConnectionObject *const connection_object) {
@@ -356,14 +361,13 @@ CipUint ConnectionObjectGetExpectedPacketRate(
 
 void ConnectionObjectSetExpectedPacketRate(
   CipConnectionObject *const connection_object) {
-  if( (connection_object->t_to_o_requested_packet_interval % (kOpenerTimerTickInMilliSeconds * 1000)) == 0 ) {
+	CipUdint remainder_to_resolution = (connection_object->t_to_o_requested_packet_interval) % (kOpenerTimerTickInMilliSeconds * 1000);
+  if( 0 == remainder_to_resolution ) { /* Value can be represented in multiples of the timer resolution */
     connection_object->expected_packet_rate = connection_object->t_to_o_requested_packet_interval / 1000;
   }
   else{
     connection_object->expected_packet_rate = connection_object->t_to_o_requested_packet_interval / 1000 +
-                                              (kOpenerTimerTickInMilliSeconds -
-                                               (connection_object->t_to_o_requested_packet_interval / 1000) %
-                                               (kOpenerTimerTickInMilliSeconds * 1000) );
+                                              ((CipUdint)kOpenerTimerTickInMilliSeconds - remainder_to_resolution / 1000);
   }
 }
 

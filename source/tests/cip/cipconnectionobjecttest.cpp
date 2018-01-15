@@ -74,36 +74,52 @@ TEST(CipConnectionObject, StateInvalid) {
   CHECK_EQUAL(kConnectionObjectStateInvalid, state);
 }
 
-TEST(CipConnectionObject, InstanceTypeInvalid) {
-  CipConnectionObject connection_object = { 0 };
-  connection_object.instance_type = 4;
-  ConnectionObjectInstanceType type = ConnectionObjectGetInstanceType(
-    &connection_object);
-  CHECK_EQUAL(kConnectionObjectInstanceTypeInvalid, type);
-}
-
 TEST(CipConnectionObject, InstanceTypeIExplicitMessaging) {
   CipConnectionObject connection_object = { 0 };
-  connection_object.instance_type = 0;
-  ConnectionObjectInstanceType type = ConnectionObjectGetInstanceType(
+  connection_object.instance_type = kConnectionObjectInstanceTypeExplicitMessaging;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
     &connection_object);
-  CHECK_EQUAL(kConnectionObjectInstanceTypeExplicitMessaging, type);
+  CHECK_EQUAL(0, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeIO) {
   CipConnectionObject connection_object = { 0 };
-  connection_object.instance_type = 1;
-  ConnectionObjectInstanceType type = ConnectionObjectGetInstanceType(
-    &connection_object);
-  CHECK_EQUAL(kConnectionObjectInstanceTypeIO, type);
+  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
+      &connection_object);
+  CHECK_EQUAL(1, value);
+}
+
+TEST(CipConnectionObject, InstanceTypeIOExclusiveOwner) {
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOExclusiveOwner;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
+      &connection_object);
+  CHECK_EQUAL(1, value);
+}
+
+TEST(CipConnectionObject, InstanceTypeIOInputOnly) {
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
+      &connection_object);
+  CHECK_EQUAL(1, value);
+}
+
+TEST(CipConnectionObject, InstanceTypeIOListenOnly) {
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
+      &connection_object);
+  CHECK_EQUAL(1, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeCipBridged) {
   CipConnectionObject connection_object = { 0 };
-  connection_object.instance_type = 2;
-  ConnectionObjectInstanceType type = ConnectionObjectGetInstanceType(
-    &connection_object);
-  CHECK_EQUAL(kConnectionObjectInstanceTypeCipBridged, type);
+  connection_object.instance_type = kConnectionObjectInstanceTypeCipBridged;
+  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
+      &connection_object);
+  CHECK_EQUAL(2, value);
 }
 
 TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
@@ -213,7 +229,8 @@ TEST(CipConnectionObject, TransportClassTriggerClass3) {
 
 TEST(CipConnectionObject, ExpectedPacketRate) {
   CipConnectionObject connection_object = { 0 };
-  ConnectionObjectSetExpectedPacketRate(&connection_object, 11);
+  connection_object.t_to_o_requested_packet_interval = 11 * 1000; // 11 ms in µs
+  ConnectionObjectSetExpectedPacketRate(&connection_object);
   CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
     &connection_object);
   CHECK_EQUAL(20, expected_packet_rate);
@@ -221,7 +238,8 @@ TEST(CipConnectionObject, ExpectedPacketRate) {
 
 TEST(CipConnectionObject, ExpectedPacketRateBelowTimerResolution) {
   CipConnectionObject connection_object = { 0 };
-  ConnectionObjectSetExpectedPacketRate(&connection_object, 9);
+  connection_object.t_to_o_requested_packet_interval = 9 * 1000; // 9 ms in µs
+  ConnectionObjectSetExpectedPacketRate(&connection_object);
   CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
     &connection_object);
   CHECK_EQUAL(10, expected_packet_rate);
@@ -229,7 +247,8 @@ TEST(CipConnectionObject, ExpectedPacketRateBelowTimerResolution) {
 
 TEST(CipConnectionObject, ExpectedPacketRateZero) {
   CipConnectionObject connection_object = { 0 };
-  ConnectionObjectSetExpectedPacketRate(&connection_object, 0);
+  connection_object.t_to_o_requested_packet_interval = 0; // A value of zero needs to be maintained, as this deactivates timeout
+  ConnectionObjectSetExpectedPacketRate(&connection_object);
   CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
     &connection_object);
   CHECK_EQUAL(0, expected_packet_rate);

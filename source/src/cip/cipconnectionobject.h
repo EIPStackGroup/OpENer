@@ -217,6 +217,8 @@ void ConnectionObjectSetInstanceType(
   CipConnectionObject *const connection_object,
   const ConnectionObjectInstanceType instance_type);
 
+CipUsint ConnectionObjectGetInstanceTypeForAttribute(const CipConnectionObject *const connection_object);
+
 ConnectionObjectTransportClassTriggerDirection
 ConnectionObjectGetTransportClassTriggerDirection(
   const CipConnectionObject *const connection_object);
