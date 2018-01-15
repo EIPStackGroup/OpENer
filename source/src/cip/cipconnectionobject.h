@@ -97,7 +97,9 @@ typedef enum {
 
 typedef struct cip_connection_object CipConnectionObject;
 
-typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state);
+typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT
+                                               const connection_object,
+                                               ConnectionObjectState new_state);
 
 struct cip_connection_object {
   CipUsint state; /*< Attribute 1 */
@@ -132,7 +134,7 @@ struct cip_connection_object {
   CipUint requested_produced_connection_size;
   CipUint requested_consumed_connection_size;
 
-  int64_t transmission_trigger_timer;
+  uint64_t transmission_trigger_timer;
   uint64_t inactivity_watchdog_timer;
   uint64_t production_inhibit_timer;
 
@@ -183,7 +185,8 @@ struct cip_connection_object {
   ConnectionReceiveDataFunction connection_receive_data_function;
 };
 
-DoublyLinkedListNode *CipConnectionObjectListArrayAllocator();
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
+  );
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
 
 /** @brief Array allocator
@@ -217,7 +220,8 @@ void ConnectionObjectSetInstanceType(
   CipConnectionObject *const connection_object,
   const ConnectionObjectInstanceType instance_type);
 
-CipUsint ConnectionObjectGetInstanceTypeForAttribute(const CipConnectionObject *const connection_object);
+CipUsint ConnectionObjectGetInstanceTypeForAttribute(
+  const CipConnectionObject *const connection_object);
 
 ConnectionObjectTransportClassTriggerDirection
 ConnectionObjectGetTransportClassTriggerDirection(
@@ -319,60 +323,81 @@ void ConnectionObjectResetInactivityWatchdogTimerValue(
   CipConnectionObject *connection_object);
 
 CipUint ConnectionObjectGetConnectionSerialNumber(
-    const CipConnectionObject *const connection_object);
+  const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetConnectionSerialNumber(
-    CipConnectionObject *connection_object, const CipUint connection_serial_number);
+  CipConnectionObject *connection_object,
+  const CipUint connection_serial_number);
 
 CipUint ConnectionObjectGetOriginatorVendorId(
-    const CipConnectionObject *const connection_object);
+  const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetOriginatorVendorId(
-    CipConnectionObject *connection_object, const CipUint vendor_id);
+  CipConnectionObject *connection_object,
+  const CipUint vendor_id);
 
 CipUdint ConnectionObjectGetOriginatorSerialNumber(
-    const CipConnectionObject *const connection_object);
+  const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetOriginatorSerialNumber(
-    CipConnectionObject *connection_object, CipUdint originator_serial_number);
+  CipConnectionObject *connection_object,
+  CipUdint originator_serial_number);
 
-CipUdint ConnectionObjectGetOToTRequestedPacketInterval(const CipConnectionObject *const connection_object);
+CipUdint ConnectionObjectGetOToTRequestedPacketInterval(
+  const CipConnectionObject *const connection_object);
 
-void ConnectionObjectSetOToTRequestedPacketInterval(CipConnectionObject *connection_object, const CipUdint requested_packet_interval);
+void ConnectionObjectSetOToTRequestedPacketInterval(
+  CipConnectionObject *connection_object,
+  const CipUdint requested_packet_interval);
 
-bool ConnectionObjectIsOToTRedundantOwner(const CipConnectionObject *const connection_object);
+bool ConnectionObjectIsOToTRedundantOwner(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectConnectionType ConnectionObjectGetOToTConnectionType(const CipConnectionObject *const connection_object);
+ConnectionObjectConnectionType ConnectionObjectGetOToTConnectionType(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectPriority ConnectionObjectGetOToTPriority(const CipConnectionObject *const connection_object);
+ConnectionObjectPriority ConnectionObjectGetOToTPriority(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectConnectionSizeType ConnectionObjectGetOToTConnectionSizeType(const CipConnectionObject *const connection_object);
+ConnectionObjectConnectionSizeType ConnectionObjectGetOToTConnectionSizeType(
+  const CipConnectionObject *const connection_object);
 
-size_t ConnectionObjectGetOToTConnectionSize(const CipConnectionObject *const connection_object);
+size_t ConnectionObjectGetOToTConnectionSize(
+  const CipConnectionObject *const connection_object);
 
 /* T to O */
-CipUdint ConnectionObjectGetTToORequestedPacketInterval(const CipConnectionObject *const connection_object);
+CipUdint ConnectionObjectGetTToORequestedPacketInterval(
+  const CipConnectionObject *const connection_object);
 
-void ConnectionObjectSetTToORequestedPacketInterval(CipConnectionObject *connection_object, const CipUdint requested_packet_interval);
+void ConnectionObjectSetTToORequestedPacketInterval(
+  CipConnectionObject *connection_object,
+  const CipUdint requested_packet_interval);
 
-bool ConnectionObjectIsTToORedundantOwner(const CipConnectionObject *const connection_object);
+bool ConnectionObjectIsTToORedundantOwner(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectConnectionType ConnectionObjectGetTToOConnectionType(const CipConnectionObject *const connection_object);
+ConnectionObjectConnectionType ConnectionObjectGetTToOConnectionType(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectPriority ConnectionObjectGetTToOPriority(const CipConnectionObject *const connection_object);
+ConnectionObjectPriority ConnectionObjectGetTToOPriority(
+  const CipConnectionObject *const connection_object);
 
-ConnectionObjectConnectionSizeType ConnectionObjectGetTToOConnectionSizeType(const CipConnectionObject *const connection_object);
+ConnectionObjectConnectionSizeType ConnectionObjectGetTToOConnectionSizeType(
+  const CipConnectionObject *const connection_object);
 
-size_t ConnectionObjectGetTToOConnectionSize(const CipConnectionObject *const connection_object);
+size_t ConnectionObjectGetTToOConnectionSize(
+  const CipConnectionObject *const connection_object);
 
 /** @brief Copy the given connection data from source to destination
  *
  * @param destination Destination of the copy operation
  * @param source Source of the copy operation
  */
-void ConnectionObjectDeepCopy(CipConnectionObject *RESTRICT destination, const CipConnectionObject *RESTRICT const source);
+void ConnectionObjectDeepCopy(CipConnectionObject *RESTRICT destination,
+                              const CipConnectionObject *RESTRICT const source);
 
-void ConnectionObjectResetProductionInhibitTimer(CipConnectionObject *const connection_object);
+void ConnectionObjectResetProductionInhibitTimer(
+  CipConnectionObject *const connection_object);
 
 /** @brief Generate the ConnectionIDs and set the general configuration
  * parameter in the given connection object.
@@ -380,8 +405,10 @@ void ConnectionObjectResetProductionInhibitTimer(CipConnectionObject *const conn
  * @param connection_object pointer to the connection object that should be set
  * up.
  */
-void ConnectionObjectGeneralConfiguration(CipConnectionObject *const connection_object);
+void ConnectionObjectGeneralConfiguration(
+  CipConnectionObject *const connection_object);
 
-bool ConnectionObjectIsTypeIOConnection(const CipConnectionObject *const connection_object);
+bool ConnectionObjectIsTypeIOConnection(
+  const CipConnectionObject *const connection_object);
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */
