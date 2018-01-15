@@ -1359,8 +1359,9 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipDword consumed_connection_point = ((CipConnectionObject*)node->data)->consumed_path.instance_id;
-    if (instance_number == consumed_connection_point) {
+	  CipConnectionObject *connection_object = (CipConnectionObject*)node->data;
+    CipDword consumed_connection_point = connection_object->consumed_path.instance_id;
+    if (instance_number == consumed_connection_point && true == ConnectionObjectIsTypeIOConnection(connection_object)) {
       is_connected = true;
       break;
     }
