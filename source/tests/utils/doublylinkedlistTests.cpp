@@ -235,7 +235,19 @@ TEST(DoublyLinkedList, RemoveFirstElementInList) {
 }
 
 TEST(DoublyLinkedList, RemoveMiddleElement) {
-  FAIL("Not implemented!");
+  int test_data_1 = 2;
+  int test_data_2 = 4;
+  int test_data_3 = 8;
+  DoublyLinkedList list;
+  DoublyLinkedListInitialize(&list, CallocAllocator, CallocDeallocator);
+  DoublyLinkedListInsertAtTail(&list, &test_data_1);
+  DoublyLinkedListInsertAtTail(&list, &test_data_2);
+  DoublyLinkedListInsertAtTail(&list, &test_data_3);
+  DoublyLinkedListNode *node_to_be_deleted = list.first->next;
+  DoublyLinkedListRemoveNode(&list, &node_to_be_deleted);
+  CHECK_EQUAL(4, test_data_2);
+  CHECK_EQUAL(8, *( (int *)list.first->next->data ) );
+  DoublyLinkedListDestroy(&list);
 }
 
 TEST(DoublyLinkedList, RemoveFirstElementInOtherwiseEmptyList) {
