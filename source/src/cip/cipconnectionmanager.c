@@ -1416,7 +1416,6 @@ void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
   for(DoublyLinkedListNode *iterator = connection_list.first; iterator != NULL;
       iterator = iterator->next) {
     if(iterator->data == connection_object) {
-      ConnectionObjectInitializeEmpty(connection_object);
       DoublyLinkedListRemoveNode(&connection_list, &iterator);
       break;
     }
