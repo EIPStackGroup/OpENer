@@ -698,7 +698,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
             }
             /* reload the timer value */
             connection_object->transmission_trigger_timer =
-              ConnectionObjectGetExpectedPacketRate(connection_object);
+              ConnectionObjectGetRequestedPacketInterval(connection_object);
             if ( kConnectionObjectTransportClassTriggerProductionTriggerCyclic
                  != ConnectionObjectGetTransportClassTriggerProductionTrigger(
                    connection_object) ) {

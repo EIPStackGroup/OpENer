@@ -254,6 +254,9 @@ void ConnectionObjectSetConsumedConnectionSize(
 CipUint ConnectionObjectGetExpectedPacketRate(
   const CipConnectionObject *const connection_object);
 
+CipUint ConnectionObjectGetRequestedPacketInterval(
+  const CipConnectionObject *const connection_object);
+
 /**
  * @brief Sets the expected packet rate according to the rules of the CIP specification
  *
