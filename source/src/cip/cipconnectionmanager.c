@@ -1235,7 +1235,6 @@ EipUint8 ParseConnectionPath(
 
       /* End class 3 connection handling */
     } else { /* we have an IO connection */
-      //TODO: Check in old implementation how this was done (this is a fix for checking)
       CipConnectionPathEpath connection_epath = {
         .class_id = class_id,
         .instance_id = instance_id,
