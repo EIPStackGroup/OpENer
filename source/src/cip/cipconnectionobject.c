@@ -598,8 +598,7 @@ CipUdint ConnectionObjectGetOToTRequestedPacketInterval(
 
 void ConnectionObjectSetOToTRequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval)
-{
+  const CipUdint requested_packet_interval) {
   connection_object->o_to_t_requested_packet_interval =
     requested_packet_interval;
 }
@@ -611,8 +610,7 @@ CipUdint ConnectionObjectGetTToORequestedPacketInterval(
 
 void ConnectionObjectSetTToORequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval)
-{
+  const CipUdint requested_packet_interval) {
   connection_object->t_to_o_requested_packet_interval =
     requested_packet_interval;
 }

@@ -27,7 +27,8 @@ void LeaveStack(int signal);
 int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc, char *arg[]) {
+int main(int argc,
+         char *arg[]) {
   EipUint8 my_mac_address[6];
   EipUint16 unique_connection_id;
 
@@ -40,7 +41,9 @@ int main(int argc, char *arg[]) {
       "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
     exit(0);
   } else {
-	  DoublyLinkedListInitialize(&connection_list, CipConnectionObjectListArrayAllocator, CipConnectionObjectListArrayFree);
+    DoublyLinkedListInitialize(&connection_list,
+                               CipConnectionObjectListArrayAllocator,
+                               CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
     ConfigureNetworkInterface(arg[1], arg[2], arg[3]);
     ConfigureDomainName(arg[4]);

@@ -28,7 +28,8 @@ typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  CipConnectionObject connection_data[OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH]; /*< the connection data */
+  CipConnectionObject connection_data[
+    OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH];                                   /*< the connection data */
 } InputOnlyConnection;
 
 /** @brief Listen Only connection data */
@@ -36,7 +37,8 @@ typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  CipConnectionObject connection_data[OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
+  CipConnectionObject connection_data[
+    OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
   ];                                                                               /**< the connection data */
 } ListenOnlyConnection;
 
@@ -146,18 +148,21 @@ CipConnectionObject *GetIoConnectionForConnectionData(
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
           } else {
-            ConnectionObjectSetInstanceType(connection_object, kConnectionObjectInstanceTypeIOListenOnly);
-                //Is listen only connection
+            ConnectionObjectSetInstanceType(connection_object,
+                                            kConnectionObjectInstanceTypeIOListenOnly);
+            //Is listen only connection
             //connection_object->instance_type = kConnectionTypeIoListenOnly;
           }
         }
       } else {
-        ConnectionObjectSetInstanceType(connection_object, kConnectionObjectInstanceTypeIOInputOnly);
+        ConnectionObjectSetInstanceType(connection_object,
+                                        kConnectionObjectInstanceTypeIOInputOnly);
         //is Input only connection
       }
     }
   } else {
-    ConnectionObjectSetInstanceType(connection_object, kConnectionObjectInstanceTypeIOExclusiveOwner);
+    ConnectionObjectSetInstanceType(connection_object,
+                                    kConnectionObjectInstanceTypeIOExclusiveOwner);
     //Is exclusive owner connection
     //connection_object->instance_type = kConnectionTypeIoExclusiveOwner;
   }
@@ -175,7 +180,7 @@ CipConnectionObject *GetExclusiveOwnerConnection(
 
   for (size_t i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; ++i) {
     if ( (g_exlusive_owner_connections[i].output_assembly ==
-         connection_object->consumed_path.instance_id)
+          connection_object->consumed_path.instance_id)
          && (g_exlusive_owner_connections[i].input_assembly ==
              connection_object->produced_path.instance_id)
          && (g_exlusive_owner_connections[i].config_assembly ==
@@ -217,9 +222,11 @@ CipConnectionObject *GetInputOnlyConnection(
         break;
       }
 
-      for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH; ++j) {
+      for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
         if (kConnectionObjectStateNonExistent
-            == ConnectionObjectGetState(&(g_input_only_connections[i].connection_data[j]))) {
+            == ConnectionObjectGetState(&(g_input_only_connections[i].
+                                          connection_data[j]) ) ) {
           return &(g_input_only_connections[i].connection_data[j]);
         }
       }
@@ -269,7 +276,8 @@ CipConnectionObject *GetListenOnlyConnection(
 
       for (int j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH; j++) {
         if (kConnectionObjectStateNonExistent
-            == ConnectionObjectGetState(&(g_listen_only_connections[i].connection_data[j]))) {
+            == ConnectionObjectGetState(&(g_listen_only_connections[i].
+                                          connection_data[j]) ) ) {
           return &(g_listen_only_connections[i].connection_data[j]);
         }
       }
@@ -286,12 +294,14 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-  CipConnectionObject *producer_multicast_connection = node->data;
-    if ( true == ConnectionObjectIsTypeIOConnection(producer_multicast_connection)) {
+    CipConnectionObject *producer_multicast_connection = node->data;
+    if ( true ==
+         ConnectionObjectIsTypeIOConnection(producer_multicast_connection) ) {
       if ( (input_point
             == producer_multicast_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
-                == ConnectionObjectGetTToOConnectionType(producer_multicast_connection) )
+                == ConnectionObjectGetTToOConnectionType(
+                  producer_multicast_connection) )
            && (kEipInvalidSocket
                != producer_multicast_connection->socket[
                  kUdpCommuncationDirectionProducing]) ) {
@@ -306,19 +316,21 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
   return NULL;
 }
 
-CipConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point)
-{
+CipConnectionObject *GetNextNonControlMasterConnection(
+  const EipUint32 input_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-  CipConnectionObject *next_non_control_master_connection =
-    node->data;
-    if ( true == ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
+    CipConnectionObject *next_non_control_master_connection =
+      node->data;
+    if ( true ==
+         ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
          ) {
       if ( (input_point
             == next_non_control_master_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
-                == ConnectionObjectGetTToOConnectionType(next_non_control_master_connection) )
+                == ConnectionObjectGetTToOConnectionType(
+                  next_non_control_master_connection) )
            && (kEipInvalidSocket
                == next_non_control_master_connection->socket[
                  kUdpCommuncationDirectionProducing]) ) {
@@ -340,7 +352,7 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-  CipConnectionObject *connection = node->data;
+    CipConnectionObject *connection = node->data;
     if ( (instance_type == connection->instance_type)
          && (input_point == connection->produced_path.instance_id) ) {
       CipConnectionObject *connection_to_delete = connection;
@@ -360,9 +372,9 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 }
 
 void CloseAllConnections(void) {
-	DoublyLinkedListNode *node = connection_list.first;
+  DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
-  CipConnectionObject *connection = node->data;
+    CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
     //CloseConnection(connection);
@@ -377,7 +389,7 @@ bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-  CipConnectionObject *connection = node->data;
+    CipConnectionObject *connection = node->data;
     if (config_point == connection->configuration_path.instance_id) {
       return (NULL != connection);
     }
