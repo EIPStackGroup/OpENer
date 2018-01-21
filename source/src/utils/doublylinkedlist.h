@@ -15,7 +15,8 @@
 
 typedef struct doubly_linked_list_node DoublyLinkedListNode;
 
-typedef DoublyLinkedListNode * (*NodeMemoryAllocator)();
+typedef DoublyLinkedListNode * (*NodeMemoryAllocator)(
+  );
 
 typedef void (*NodeMemoryDeallocator)(DoublyLinkedListNode **node);
 

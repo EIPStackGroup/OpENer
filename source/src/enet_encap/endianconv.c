@@ -100,7 +100,8 @@ CipUdint GetUdintFromMessage(const CipOctet **const buffer_address) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer) {
+int AddSintToMessage(const EipUint8 data,
+                     EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -113,7 +114,8 @@ int AddSintToMessage(const EipUint8 data, EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer) {
+int AddIntToMessage(const EipUint16 data,
+                    EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -127,7 +129,8 @@ int AddIntToMessage(const EipUint16 data, EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddDintToMessage(const EipUint32 data, EipUint8 **const buffer) {
+int AddDintToMessage(const EipUint32 data,
+                     EipUint8 **const buffer) {
   unsigned char *p = (unsigned char *) *buffer;
 
   p[0] = (unsigned char) data;
@@ -172,7 +175,8 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-int AddLintToMessage(const EipUint64 data, EipUint8 **const buffer) {
+int AddLintToMessage(const EipUint64 data,
+                     EipUint8 **const buffer) {
   EipUint8 *buffer_address = *buffer;
   buffer_address[0] = (EipUint8) (data >> 56) & 0xFF;
   buffer_address[1] = (EipUint8) (data >> 48) & 0xFF;
@@ -251,7 +255,8 @@ int GetEndianess() {
   return g_opener_platform_endianess;
 }
 
-void MoveMessageNOctets(int amount_of_bytes_moved, const CipOctet **message_runner) {
+void MoveMessageNOctets(int amount_of_bytes_moved,
+                        const CipOctet **message_runner) {
   (*message_runner) += amount_of_bytes_moved;
 }
 
@@ -266,7 +271,7 @@ int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
                                                          unsigned int amount_of_filled_bytes,
                                                          CipOctet **message) {
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, message);
-  MoveMessageNOctets(amount_of_filled_bytes, (const CipOctet**)message);
+  MoveMessageNOctets(amount_of_filled_bytes, (const CipOctet **)message);
   return amount_of_filled_bytes;
 }
 

@@ -542,7 +542,7 @@ int EncodeData(const EipUint8 cip_type,
     case (kCipUdintUdintUdintUdintUdintString): {
       /* TCP/IP attribute 5 */
       CipTcpIpNetworkInterfaceConfiguration *
-      tcp_ip_network_interface_configuration =
+        tcp_ip_network_interface_configuration =
         (CipTcpIpNetworkInterfaceConfiguration *) cip_data;
       counter += AddDintToMessage(
         ntohl(tcp_ip_network_interface_configuration->ip_address),

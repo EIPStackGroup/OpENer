@@ -28,7 +28,8 @@ LeaveStack(int pa_nSig);
 int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc, char *arg[]) {
+int main(int argc,
+         char *arg[]) {
   EipUint8 acMyMACAddress[6];
   EipUint16 nUniqueConnectionID;
 

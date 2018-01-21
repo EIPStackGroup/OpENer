@@ -46,7 +46,8 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
  * @return if a connection could be found the pointer to this connection
  *      otherwise NULL.
  */
-CipConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point);
+CipConnectionObject *GetNextNonControlMasterConnection(
+  const EipUint32 input_point);
 
 /** @brief Close all connection producing the same input and have the same type
  * (i.e., listen only or input only).

@@ -187,7 +187,8 @@ CipConnectionObject *GetConnectedObject(const EipUint32 connection_id);
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-CipConnectionObject *GetConnectedOutputAssembly(const EipUint32 output_assembly_id);
+CipConnectionObject *GetConnectedOutputAssembly(
+  const EipUint32 output_assembly_id);
 
 /** @brief Close the given connection
  *

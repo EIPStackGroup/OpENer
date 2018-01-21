@@ -315,7 +315,7 @@ typedef struct cip_connection_object CipConnectionObject;
  * @return CIP error code
  */
 typedef EipStatus (*OpenConnectionFunction)(
-    CipConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
@@ -324,8 +324,7 @@ typedef EipStatus (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(
-    CipConnectionObject *connection_object);
+typedef void (*ConnectionCloseFunction)(CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -333,7 +332,7 @@ typedef void (*ConnectionCloseFunction)(
  * @param connection_object The connection object which connection timed out
  */
 typedef void (*ConnectionTimeoutFunction)(
-    CipConnectionObject *connection_object);
+  CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -342,8 +341,8 @@ typedef void (*ConnectionTimeoutFunction)(
  *
  * @return EIP stack status
  */
-typedef EipStatus (*ConnectionSendDataFunction)(
-    CipConnectionObject *connection_object);
+typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
+                                                connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection

@@ -30,7 +30,7 @@ TEST_GROUP(CipElectronicKey) {
 
 TEST(CipElectronicKey, CreateElectronicKey) {
   char dummyArea[kElectronicKeyFormat4Size];
-  memset(dummyArea, 0, sizeof(dummyArea));
+  memset(dummyArea, 0, sizeof(dummyArea) );
   MEMCMP_EQUAL(dummyArea, key, kElectronicKeyFormat4Size);
 };
 
@@ -41,7 +41,7 @@ TEST(CipElectronicKey, DeleteElectronicKey) {
 
 TEST(CipElectronicKey, SetVendorID) {
   char demoArea[kElectronicKeyFormat4Size];
-  memset(demoArea, 0, sizeof(demoArea));
+  memset(demoArea, 0, sizeof(demoArea) );
   CipUint *vendor_id = (CipUint *)demoArea;
   *vendor_id = 1;
   ElectronicKeyFormat4SetVendorId(key, 1);
@@ -61,7 +61,7 @@ TEST(CipElectronicKey, GetVendorID) {
 
 TEST(CipElectronicKey, SetDeviceType) {
   char demoArea[kElectronicKeyFormat4Size];
-  memset(demoArea, 0, sizeof(demoArea));
+  memset(demoArea, 0, sizeof(demoArea) );
   CipUint *device_type = (CipUint *)demoArea + 1;
   *device_type = 1;
 
@@ -81,7 +81,7 @@ TEST(CipElectronicKey, GetDeviceType) {
 
 TEST(CipElectronicKey, SetProductCode) {
   char demoArea[kElectronicKeyFormat4Size];
-  memset(demoArea, 0, sizeof(demoArea));
+  memset(demoArea, 0, sizeof(demoArea) );
   CipUint *product_code = (CipUint *)demoArea + 2;
   *product_code = 1;
 
@@ -101,7 +101,7 @@ TEST(CipElectronicKey, GetProductCode) {
 
 TEST(CipElectronicKey, SetMajorRevisionCompatibility) {
   char demoArea[kElectronicKeyFormat4Size];
-  memset(demoArea, 0, sizeof(demoArea));
+  memset(demoArea, 0, sizeof(demoArea) );
   CipByte *major_revision_compatiblitiy = (CipByte *)demoArea + 6;
   *major_revision_compatiblitiy = 0x81;
 
@@ -132,7 +132,7 @@ TEST(CipElectronicKey, GetMajorRevisionCompatibility) {
 
 TEST(CipElectronicKey, SetMinorRevision) {
   char demoArea[kElectronicKeyFormat4Size];
-  memset(demoArea, 0, sizeof(demoArea));
+  memset(demoArea, 0, sizeof(demoArea) );
   CipByte *minor_revision_compatiblitiy = (CipByte *)demoArea + 7;
   *minor_revision_compatiblitiy = 0x81;
 
@@ -155,7 +155,7 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
   const CipOctet message[] =
   {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
   const CipOctet *message_buffer = message;
-  GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer, key);
+  GetElectronicKeyFormat4FromMessage( (const CipOctet **)&message_buffer, key );
 
   message_buffer = message;
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );

@@ -32,9 +32,13 @@
 #include "cipconnectionmanager.h"
 #include "cipconnectionobject.h"
 
-typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state);
+typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT
+                                               const connection_object,
+                                               ConnectionObjectState new_state);
 
-EipStatus CipClass3ConnectionObjectStateEstablishedHandler(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state);
+EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state);
 
 /** @brief Check if Class3 connection is available and if yes setup all data.
  *

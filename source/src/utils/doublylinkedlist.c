@@ -109,7 +109,8 @@ void DoublyLinkedListInsertAfterNode(DoublyLinkedList *const list,
 }
 
 void DoublyLinkedListRemoveNode(DoublyLinkedList *const list,
-                                DoublyLinkedListNode **pointer_to_node_pointer) {
+                                DoublyLinkedListNode **pointer_to_node_pointer)
+{
   DoublyLinkedListNode *node = *pointer_to_node_pointer;
   if(node == list->first) {
     list->first = node->next;
@@ -121,10 +122,10 @@ void DoublyLinkedListRemoveNode(DoublyLinkedList *const list,
   DoublyLinkedListNode *next = node->next;
 
   if(NULL != previous) {
-  previous->next = next;
+    previous->next = next;
   }
   if(NULL != next) {
-  next->previous = previous;
+    next->previous = previous;
   }
 
   DoublyLinkedListNodeDestroy(list, pointer_to_node_pointer);

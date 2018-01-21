@@ -34,14 +34,15 @@ EipStatus EstablishClass3Connection(
 
     ConnectionObjectGeneralConfiguration(explicit_connection);
 
-    ConnectionObjectSetInstanceType(explicit_connection, kConnectionObjectInstanceTypeExplicitMessaging);
+    ConnectionObjectSetInstanceType(explicit_connection,
+                                    kConnectionObjectInstanceTypeExplicitMessaging);
 
     /* set the connection call backs */
     explicit_connection->connection_close_function =
-    		CloseConnection;
+      CloseConnection;
     /* explicit connection have to be closed on time out*/
     explicit_connection->connection_timeout_function =
-    		CloseConnection;
+      CloseConnection;
 
     AddNewActiveConnection(explicit_connection);
   }
@@ -54,7 +55,8 @@ EipStatus EstablishClass3Connection(
  */
 CipConnectionObject *GetFreeExplicitConnection(void) {
   for (size_t i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; ++i) {
-    if (ConnectionObjectGetState(&(explicit_connection_object_pool[i])) == kConnectionObjectStateNonExistent) {
+    if (ConnectionObjectGetState(&(explicit_connection_object_pool[i]) ) ==
+        kConnectionObjectStateNonExistent) {
       return &(explicit_connection_object_pool[i]);
     }
   }
@@ -66,7 +68,9 @@ void InitializeClass3ConnectionData(void) {
           OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(CipConnectionObject) );
 }
 
-EipStatus CipClass3ConnectionObjectStateEstablishedHandler(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state) {
+EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state) {
   switch(new_state) {
     case kConnectionObjectStateNonExistent:
       ConnectionObjectInitializeEmpty(connection_object);
@@ -76,7 +80,9 @@ EipStatus CipClass3ConnectionObjectStateEstablishedHandler(CipConnectionObject *
   }
 }
 
-EipStatus CipClass3ConnectionObjectStateNonExistentHandler(CipConnectionObject *RESTRICT const connection_object, ConnectionObjectState new_state) {
+EipStatus CipClass3ConnectionObjectStateNonExistentHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state) {
   switch(new_state) {
     case kConnectionObjectStateEstablished:
       ConnectionObjectSetState(connection_object, new_state);

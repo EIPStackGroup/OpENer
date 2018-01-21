@@ -24,7 +24,8 @@ typedef struct socket_timer {
  * @param socket_timer Socket Timer to be set
  * @param Socket value
  */
-void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket);
+void SocketTimerSetSocket(SocketTimer *const socket_timer,
+                          const int socket);
 
 /** @brief
  * Sets time stamp entry of the Socket Timer
@@ -82,6 +83,7 @@ SocketTimer *SocketTimerArrayGetSocketTimer(
  * @return An empty Socket Timer entry, or NULL if non is available
  */
 SocketTimer *SocketTimerArrayGetEmptySocketTimer(
-  SocketTimer *const array_of_socket_timers,const size_t array_length);
+  SocketTimer *const array_of_socket_timers,
+  const size_t array_length);
 
 #endif /* SRC_PORTS_SOCKET_TIMER_H_ */

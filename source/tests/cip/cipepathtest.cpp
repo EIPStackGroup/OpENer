@@ -288,7 +288,7 @@ TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const CipOctet message[] =
   {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
-  const CipOctet *message_pp = (const CipOctet*)message;
+  const CipOctet *message_pp = (const CipOctet *)message;
   const CipOctet *message_buffer = message;
   ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
   GetElectronicKeyFormat4FromMessage(&message_pp, electronic_key);

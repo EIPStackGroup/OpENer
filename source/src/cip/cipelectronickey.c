@@ -8,15 +8,18 @@
 
 #include "cipelectronickey.h"
 
-void ElectronicKeySetKeyFormat(CipElectronicKey *const electronic_key, const CipUsint key_format) {
+void ElectronicKeySetKeyFormat(CipElectronicKey *const electronic_key,
+                               const CipUsint key_format) {
   electronic_key->key_format = key_format;
 }
 
-CipUint ElectronicKeyGetKeyFormat(const CipElectronicKey *const electronic_key) {
+CipUint ElectronicKeyGetKeyFormat(const CipElectronicKey *const electronic_key)
+{
   return electronic_key->key_format;
 }
 
-void ElectronicKeySetKeyData(CipElectronicKey *const electronic_key, void *key_data) {
+void ElectronicKeySetKeyData(CipElectronicKey *const electronic_key,
+                             void *key_data) {
   electronic_key->key_data = key_data;
 }
 
@@ -43,7 +46,8 @@ void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **electronic_key) {
   *electronic_key = NULL;
 }
 
-void ElectronicKeyFormat4SetVendorId(ElectronicKeyFormat4 *const electronic_key, const CipUint vendor_id) {
+void ElectronicKeyFormat4SetVendorId(ElectronicKeyFormat4 *const electronic_key,
+                                     const CipUint vendor_id) {
   electronic_key->vendor_id = vendor_id;
 }
 
@@ -52,7 +56,9 @@ CipUint ElectronicKeyFormat4GetVendorId(
   return electronic_key->vendor_id;
 }
 
-void ElectronicKeyFormat4SetDeviceType(ElectronicKeyFormat4 *const electronic_key, const CipUint device_type) {
+void ElectronicKeyFormat4SetDeviceType(
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUint device_type) {
   electronic_key->device_type = device_type;
 }
 
@@ -61,8 +67,9 @@ CipUint ElectronicKeyFormat4GetDeviceType(
   return electronic_key->device_type;
 }
 
-void ElectronicKeyFormat4SetProductCode(ElectronicKeyFormat4 *const electronic_key, const CipUint product_code)
-{
+void ElectronicKeyFormat4SetProductCode(
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUint product_code) {
   electronic_key->product_code = product_code;
 }
 
@@ -72,8 +79,8 @@ CipUint ElectronicKeyFormat4GetProductCode(
 }
 
 void ElectronicKeyFormat4SetMajorRevisionCompatibility(
-    ElectronicKeyFormat4 *const electronic_key,
-    const CipByte major_revision_compatibility) {
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipByte major_revision_compatibility) {
   electronic_key->major_revision_compatibility = major_revision_compatibility;
 }
 
@@ -93,7 +100,9 @@ bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
   return false;
 }
 
-void ElectronicKeyFormat4SetMinorRevision(ElectronicKeyFormat4 *const electronic_key, const CipUsint minor_revision) {
+void ElectronicKeyFormat4SetMinorRevision(
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUsint minor_revision) {
   electronic_key->minor_revision = minor_revision;
 }
 
