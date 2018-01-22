@@ -164,7 +164,9 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   CipConnectionObject *const RESTRICT connection_object
   ) {
   DoublyLinkedListNode *node = connection_list.first;
-  while (NULL != node) {
+  while (NULL != node &&
+         kConnectionObjectConnectionTypeMulticast ==
+         ConnectionObjectGetTToOConnectionType(io_connection_object) ) {
     CipConnectionObject *iterator = node->data;
     if(io_connection_object->produced_path.instance_id ==
        iterator->produced_path.instance_id) {
@@ -661,10 +663,10 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
                          connection_object->produced_path.instance_id,
                          kIoConnectionEventClosed);
 
-  if ( (kConnectionObjectInstanceTypeIOExclusiveOwner ==
-        connection_object->instance_type)
-       || (kConnectionObjectInstanceTypeIOInputOnly ==
-           connection_object->instance_type) ) {
+  if ( kConnectionObjectInstanceTypeIOExclusiveOwner ==
+       ConnectionObjectGetInstanceType(connection_object)
+       || kConnectionObjectInstanceTypeIOInputOnly ==
+       ConnectionObjectGetInstanceType(connection_object) ) {
     if ( ( kConnectionObjectConnectionTypeMulticast
            == ConnectionObjectGetTToOConnectionType(connection_object) )
          && (kEipInvalidSocket
@@ -674,9 +676,16 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
         GetNextNonControlMasterConnection(
           connection_object->produced_path.instance_id);
       if (NULL != next_non_control_master_connection) {
+
+        /* Transfer socket ownership */
         next_non_control_master_connection->socket[
           kUdpCommuncationDirectionProducing] =
           connection_object->socket[kUdpCommuncationDirectionProducing];
+
+        connection_object->socket[kUdpCommuncationDirectionProducing] =
+          kEipInvalidSocket;
+        /* End */
+
         memcpy( &(next_non_control_master_connection->remote_address),
                 &(connection_object->remote_address),
                 sizeof(next_non_control_master_connection->remote_address) );
@@ -685,10 +694,8 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
             connection_object->eip_level_sequence_count_producing;
         next_non_control_master_connection->sequence_count_producing =
           connection_object->sequence_count_producing;
-        CloseUdpSocket(connection_object->socket[
-                         kUdpCommuncationDirectionProducing]);
-        connection_object->socket[kUdpCommuncationDirectionProducing] =
-          kEipInvalidSocket;
+//        CloseUdpSocket(connection_object->socket[
+//                         kUdpCommuncationDirectionProducing]);
         next_non_control_master_connection->transmission_trigger_timer =
           connection_object->transmission_trigger_timer;
       } else { /* this was the last master connection close all listen only connections listening on the port */

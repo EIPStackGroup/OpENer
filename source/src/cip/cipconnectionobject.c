@@ -90,6 +90,10 @@ void ConnectionObjectSetInitialInactivityWatchdogTimerValue(
 void ConnectionObjectInitializeEmpty(
   CipConnectionObject *const connection_object) {
   memset( connection_object, 0, sizeof(*connection_object) );
+  ConnectionObjectSetState(connection_object,
+                           kConnectionObjectStateNonExistent);
+  connection_object->socket[0] = kEipInvalidSocket;
+  connection_object->socket[1] = kEipInvalidSocket;
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {

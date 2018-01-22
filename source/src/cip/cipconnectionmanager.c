@@ -1400,6 +1400,7 @@ void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
       kEipInvalidSocket;
   }
   RemoveFromActiveConnections(connection_object);
+  ConnectionObjectInitializeEmpty(connection_object);
 
 }
 
@@ -1416,9 +1417,10 @@ void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
       iterator = iterator->next) {
     if(iterator->data == connection_object) {
       DoublyLinkedListRemoveNode(&connection_list, &iterator);
-      break;
+      return;
     }
   }
+  OPENER_TRACE_ERR("Connection not found in active connection list\n");
 }
 
 EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {

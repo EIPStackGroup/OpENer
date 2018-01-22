@@ -250,7 +250,7 @@ CipConnectionObject *GetListenOnlyConnection(
     return NULL;
   }
 
-  for (int i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
+  for (size_t i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
         == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_listen_only_connections[i].input_assembly
@@ -274,7 +274,8 @@ CipConnectionObject *GetListenOnlyConnection(
         break;
       }
 
-      for (int j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH; j++) {
+      for (size_t j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH;
+           j++) {
         if (kConnectionObjectStateNonExistent
             == ConnectionObjectGetState(&(g_listen_only_connections[i].
                                           connection_data[j]) ) ) {
@@ -325,7 +326,8 @@ CipConnectionObject *GetNextNonControlMasterConnection(
       node->data;
     if ( true ==
          ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
-         ) {
+         && kConnectionObjectStateEstablished ==
+         ConnectionObjectGetState(next_non_control_master_connection) ) {
       if ( (input_point
             == next_non_control_master_connection->produced_path.instance_id)
            && ( kConnectionObjectConnectionTypeMulticast
@@ -364,7 +366,6 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 
       assert(connection_to_delete->connection_close_function != NULL);
       connection_to_delete->connection_close_function(connection_to_delete);
-      //TODO: delete node
     } else {
       node = node->next;
     }
@@ -377,6 +378,7 @@ void CloseAllConnections(void) {
     CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
+    DoublyLinkedListRemoveNode(&connection_list, &node);
     //CloseConnection(connection);
     /* Close connection will remove the connection from the list therefore we
      * need to get again the start until there is no connection left

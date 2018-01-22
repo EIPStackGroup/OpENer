@@ -280,7 +280,7 @@ void CheckAndHandleTcpListenerSocket(void) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
 
     new_socket = accept(g_network_status.tcp_listener, NULL, NULL);
-    if (new_socket == -1) {
+    if (new_socket == kEipInvalidSocket) {
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR("networkhandler: error on accept: %d - %s\n",
