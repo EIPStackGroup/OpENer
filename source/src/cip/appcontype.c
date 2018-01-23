@@ -327,20 +327,19 @@ CipConnectionObject *GetNextNonControlMasterConnection(
     if ( true ==
          ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
          && kConnectionObjectStateEstablished ==
-         ConnectionObjectGetState(next_non_control_master_connection) ) {
-      if ( (input_point
-            == next_non_control_master_connection->produced_path.instance_id)
-           && ( kConnectionObjectConnectionTypeMulticast
-                == ConnectionObjectGetTToOConnectionType(
-                  next_non_control_master_connection) )
-           && (kEipInvalidSocket
-               == next_non_control_master_connection->socket[
-                 kUdpCommuncationDirectionProducing]) ) {
-        /* we have a connection that produces the same input assembly,
-         * is a multicast producer and does not manage the connection.
-         */
-        return next_non_control_master_connection;
-      }
+         ConnectionObjectGetState(next_non_control_master_connection)
+         && input_point ==
+         next_non_control_master_connection->produced_path.instance_id
+         &&  kConnectionObjectConnectionTypeMulticast ==
+         ConnectionObjectGetTToOConnectionType(
+           next_non_control_master_connection)
+         && (kEipInvalidSocket
+             == next_non_control_master_connection->socket[
+               kUdpCommuncationDirectionProducing]) ) {
+      /* we have a connection that produces the same input assembly,
+       * is a multicast producer and does not manage the connection.
+       */
+      return next_non_control_master_connection;
     }
     node = node->next;
   }
