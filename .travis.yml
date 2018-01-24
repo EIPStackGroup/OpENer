@@ -1,7 +1,7 @@
 # This will run on Travis' 'new' container-based infrastructure
 sudo: false
 os: linux
-dist: precise
+dist: trusty
 
 language: c
 
