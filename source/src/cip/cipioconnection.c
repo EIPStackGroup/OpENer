@@ -657,6 +657,18 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
   return connection_manager_status;
 }
 
+bool CheckForDeadConnectionsInActiveConnectionList() {
+  DoublyLinkedListNode *node = connection_list.first;
+  while(NULL != node) {
+    if( ( (CipConnectionObject *)node->data )->connection_close_function ==
+        NULL ) {
+      return true;
+    }
+    node = node->next;
+  }
+  return false;
+}
+
 void CloseIoConnection(CipConnectionObject *connection_object) {
 
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
@@ -694,8 +706,6 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
             connection_object->eip_level_sequence_count_producing;
         next_non_control_master_connection->sequence_count_producing =
           connection_object->sequence_count_producing;
-//        CloseUdpSocket(connection_object->socket[
-//                         kUdpCommuncationDirectionProducing]);
         next_non_control_master_connection->transmission_trigger_timer =
           connection_object->transmission_trigger_timer;
       } else { /* this was the last master connection close all listen only connections listening on the port */
@@ -708,6 +718,10 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
 
   CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
     connection_object);
+
+  if(CheckForDeadConnectionsInActiveConnectionList() ) {
+    OPENER_ASSERT(false);
+  }
 }
 
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
@@ -717,7 +731,7 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
 
   if ( kConnectionObjectConnectionTypeMulticast
        == ConnectionObjectGetTToOConnectionType(connection_object) ) {
-    switch (connection_object->instance_type) {
+    switch (ConnectionObjectGetInstanceType(connection_object) ) {
       case kConnectionObjectInstanceTypeIOExclusiveOwner:
         CloseAllConnectionsForInputWithSameType(
           connection_object->produced_path.instance_id,
@@ -752,8 +766,9 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
     }
   }
 
-  OPENER_ASSERT(NULL != connection_object->connection_close_function);
-  connection_object->connection_close_function(connection_object);
+  ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
+//  OPENER_ASSERT(NULL != connection_object->connection_close_function);
+//  connection_object->connection_close_function(connection_object);
 }
 
 EipStatus SendConnectedData(CipConnectionObject *connection_object) {

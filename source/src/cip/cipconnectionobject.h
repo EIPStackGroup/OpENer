@@ -414,4 +414,7 @@ void ConnectionObjectGeneralConfiguration(
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object);
 
+bool EqualConnectionTriad(const CipConnectionObject *const object1,
+                          const CipConnectionObject *const object2);
+
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

@@ -259,3 +259,20 @@ TEST(DoublyLinkedList, RemoveLastElementInOtherwiseEmptyList) {
   POINTERS_EQUAL(NULL, list.last);
   DoublyLinkedListDestroy(&list);
 }
+
+TEST(DoublyLinkedList, CheckDeleteAllNodesResultsInEmptyList) {
+  int test_data = 42;
+  int test_data_2 = 84;
+  DoublyLinkedList list;
+  DoublyLinkedListInitialize(&list, CallocAllocator, CallocDeallocator);
+  DoublyLinkedListInsertAtHead(&list, &test_data);
+  DoublyLinkedListInsertAtHead(&list, &test_data_2);
+  DoublyLinkedListNode *node_to_delete = list.first;
+  DoublyLinkedListRemoveNode(&list, &node_to_delete);
+  POINTERS_EQUAL(NULL, node_to_delete);
+  node_to_delete = list.first;
+  DoublyLinkedListRemoveNode(&list, &node_to_delete);
+  POINTERS_EQUAL(NULL, list.first);
+  POINTERS_EQUAL(NULL, list.last);
+  DoublyLinkedListDestroy(&list);
+}
