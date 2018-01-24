@@ -8,45 +8,41 @@
 
 #include "cipclass3connection.h"
 
-ConnectionObject *GetFreeExplicitConnection(void);
-
 /**** Global variables ****/
+extern CipConnectionObject explicit_connection_object_pool[
+  OPENER_CIP_NUM_EXPLICIT_CONNS];
 
-/** @brief Array of the available explicit connections */
-ConnectionObject g_explicit_connections[OPENER_CIP_NUM_EXPLICIT_CONNS];
+CipConnectionObject *GetFreeExplicitConnection(void);
 
 /**** Implementation ****/
 EipStatus EstablishClass3Connection(
-  ConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error) {
   EipStatus eip_status = kEipStatusOk;
 
   /*TODO add check for transport type trigger */
   /* if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03)) */
 
-  ConnectionObject *explicit_connection = GetFreeExplicitConnection();
+  CipConnectionObject *explicit_connection = GetFreeExplicitConnection();
 
   if (NULL == explicit_connection) {
     eip_status = kCipErrorConnectionFailure;
     *extended_error =
       kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable;
   } else {
-    CopyConnectionData(explicit_connection, connection_object);
+    ConnectionObjectDeepCopy(explicit_connection, connection_object);
 
-    EipUint32 produced_connection_id_buffer =
-      explicit_connection->cip_produced_connection_id;
-    GeneralConnectionConfiguration(explicit_connection);
-    explicit_connection->cip_produced_connection_id =
-      produced_connection_id_buffer;
-    explicit_connection->instance_type = kConnectionTypeExplicit;
-    explicit_connection->socket[0] = explicit_connection->socket[1] =
-                                       kEipInvalidSocket;
+    ConnectionObjectGeneralConfiguration(explicit_connection);
+
+    ConnectionObjectSetInstanceType(explicit_connection,
+                                    kConnectionObjectInstanceTypeExplicitMessaging);
+
     /* set the connection call backs */
     explicit_connection->connection_close_function =
-      RemoveFromActiveConnections;
+      CloseConnection;
     /* explicit connection have to be closed on time out*/
     explicit_connection->connection_timeout_function =
-      RemoveFromActiveConnections;
+      CloseConnection;
 
     AddNewActiveConnection(explicit_connection);
   }
@@ -57,16 +53,40 @@ EipStatus EstablishClass3Connection(
  *
  * @return Free explicit connection slot, or NULL if no slot is free
  */
-ConnectionObject *GetFreeExplicitConnection(void) {
-  for (int i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; i++) {
-    if (g_explicit_connections[i].state == kConnectionStateNonExistent) {
-      return &(g_explicit_connections[i]);
+CipConnectionObject *GetFreeExplicitConnection(void) {
+  for (size_t i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; ++i) {
+    if (ConnectionObjectGetState(&(explicit_connection_object_pool[i]) ) ==
+        kConnectionObjectStateNonExistent) {
+      return &(explicit_connection_object_pool[i]);
     }
   }
   return NULL;
 }
 
 void InitializeClass3ConnectionData(void) {
-  memset( g_explicit_connections, 0,
-          OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(ConnectionObject) );
+  memset( explicit_connection_object_pool, 0,
+          OPENER_CIP_NUM_EXPLICIT_CONNS * sizeof(CipConnectionObject) );
+}
+
+EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state) {
+  switch(new_state) {
+    case kConnectionObjectStateNonExistent:
+      ConnectionObjectInitializeEmpty(connection_object);
+      ConnectionObjectSetState(connection_object, new_state);
+      return kEipStatusOk;
+    default: return kEipStatusError;
+  }
+}
+
+EipStatus CipClass3ConnectionObjectStateNonExistentHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state) {
+  switch(new_state) {
+    case kConnectionObjectStateEstablished:
+      ConnectionObjectSetState(connection_object, new_state);
+      return kEipStatusOk;
+    default: return kEipStatusError;
+  }
 }

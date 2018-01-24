@@ -171,34 +171,12 @@ typedef struct {
   EipUint8 *segment_data;
 } CipConnectionPath;
 
-/** @brief Struct representing the key data format of the electronic key segment
- *
- */
-typedef struct {
-  CipUint vendor_id; /**< Vendor ID */
-  CipUint device_type; /**< Device Type */
-  CipUint product_code; /**< Product Code */
-  CipByte major_revision; /**< Major Revision and Compatibility (Bit 0-6 = Major
-                             Revision) Bit 7 = Compatibility */
-  CipUsint minor_revision; /**< Minor Revision */
-} CipKeyData;
 
 /** @brief Struct storing the CIP revision */
 typedef struct {
   EipUint8 major_revision;
   EipUint8 minor_revision;
 } CipRevision;
-
-/** @brief CIP Electronic Key Segment struct
- *
- */
-typedef struct {
-  CipUsint segment_type; /**< Specifies the Segment Type */
-  CipUsint key_format; /**< Key Format 0-3 reserved, 4 = see Key Format Table,
-                          5-255 = Reserved */
-  CipKeyData key_data; /**< Depends on key format used, usually Key Format 4 as
-                          specified in CIP Specification, Volume 1*/
-} CipElectronicKey;
 
 /** @brief CIP Message Router Request
  *

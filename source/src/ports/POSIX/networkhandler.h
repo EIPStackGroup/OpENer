@@ -41,6 +41,7 @@ MicroSeconds GetMicroSeconds(void);
  */
 MilliSeconds GetMilliSeconds(void);
 
-void SetQosOnSocket(int socket, CipUsint qos_value);
+void SetQosOnSocket(int socket,
+                    CipUsint qos_value);
 
 #endif /* OPENER_NETWORKHANDLER_H_ */

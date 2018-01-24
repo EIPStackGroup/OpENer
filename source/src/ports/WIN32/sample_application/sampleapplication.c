@@ -17,6 +17,8 @@
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
+extern CipUint g_encapsulation_inactivity_timeout;
+
 EipUint8 g_assembly_data064[32]; /* Input */
 EipUint8 g_assembly_data096[32]; /* Output */
 EipUint8 g_assembly_data097[10]; /* Config */
@@ -124,14 +126,15 @@ EipStatus ResetDevice(void) {
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
   /*rest the parameters */
-
+  g_encapsulation_inactivity_timeout = 120;
   /*than perform device reset*/
   ResetDevice();
   return kEipStatusOk;
 }
 
 void *
-CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement) {
+CipCalloc(unsigned pa_nNumberOfElements,
+          unsigned pa_nSizeOfElement) {
   return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
 }
 

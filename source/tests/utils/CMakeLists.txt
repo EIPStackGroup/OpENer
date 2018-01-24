@@ -1,7 +1,7 @@
 
 opener_common_includes()
 
-set( UtilsTestSrc randomTests.cpp xorshiftrandomtests.cpp)
+set( UtilsTestSrc randomTests.cpp xorshiftrandomtests.cpp doublylinkedlistTests.cpp)
 
 include_directories( ${SRC_DIR}/utils )
 

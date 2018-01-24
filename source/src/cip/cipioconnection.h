@@ -42,6 +42,7 @@
 
 #include "opener_api.h"
 #include "cipconnectionmanager.h"
+#include "cipconnectionobject.h"
 
 /** @brief Setup all data in order to establish an IO connection
  *
@@ -53,7 +54,7 @@
  *    - On an error the general status code to be put into the response
  */
 EipStatus EstablishIoConnection(
-  ConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Take the data given in the connection object structure and open the necessary communication channels
@@ -64,7 +65,7 @@ EipStatus EstablishIoConnection(
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus OpenCommunicationChannels(ConnectionObject *connection_object);
+EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object);
 
 /** @brief close the communication channels of the given connection and remove it
  * from the active connections list.
@@ -72,7 +73,7 @@ EipStatus OpenCommunicationChannels(ConnectionObject *connection_object);
  * @param connection_object pointer to the connection object data
  */
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
-  ConnectionObject *connection_object);
+  CipConnectionObject *connection_object);
 
 extern EipUint8 *g_config_data_buffer;
 extern unsigned int g_config_data_length;

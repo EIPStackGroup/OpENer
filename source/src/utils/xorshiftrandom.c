@@ -1,9 +1,8 @@
-/*
- * xorshiftrandom.c
+/*******************************************************************************
+ * Copyright (c) 2017, Rockwell Automation, Inc.
+ * All rights reserved.
  *
- *  Created on: Nov 28, 2013
- *      Author: mmm
- */
+ ******************************************************************************/
 
 #include "xorshiftrandom.h"
 

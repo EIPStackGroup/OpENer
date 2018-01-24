@@ -30,8 +30,7 @@ EipStatus GetAttributeSingleQoS(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *RESTRICT const message_router_request,
   CipMessageRouterResponse *RESTRICT const message_router_response,
-  struct sockaddr *originator_address)
-{
+  struct sockaddr *originator_address) {
 
   return GetAttributeSingle(instance, message_router_request,
                             message_router_response, originator_address);
@@ -41,8 +40,7 @@ EipStatus SetAttributeSingleQoS(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address)
-{
+  struct sockaddr *originator_address) {
 
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
@@ -69,6 +67,7 @@ EipStatus SetAttributeSingleQoS(
         message_router_response->general_status = kCipErrorSuccess;
       } else {
         message_router_response->general_status = kCipErrorNotEnoughData;
+        OPENER_TRACE_INFO("CIP QoS not enough data\n");
       }
     } else {
       message_router_response->general_status = kCipErrorInvalidAttributeValue;
@@ -86,21 +85,21 @@ EipStatus SetAttributeSingleQoS(
   return kEipStatusOkSend;
 }
 
-CipUsint GetPriorityForSocket(ForwardOpenPriority priority) {
+CipUsint GetPriorityForSocket(ConnectionObjectPriority priority) {
   switch (priority) {
-    case kForwardOpenPriorityLow: {
+    case kConnectionObjectPriorityLow: {
       return dscp_low;
       break;
     }
-    case kForwardOpenPriorityHigh: {
+    case kConnectionObjectPriorityHigh: {
       return dscp_high;
       break;
     }
-    case kForwardOpenPriorityScheduled: {
+    case kConnectionObjectPriorityScheduled: {
       return dscp_scheduled;
       break;
     }
-    case kForwardOpenPriorityUrgent: {
+    case kConnectionObjectPriorityUrgent: {
       return dscp_urgent;
       break;
     }

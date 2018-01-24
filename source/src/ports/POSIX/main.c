@@ -12,6 +12,8 @@
 #include "cipcommon.h"
 #include "trace.h"
 #include "networkconfig.h"
+#include "doublylinkedlist.h"
+#include "cipconnectionobject.h"
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
@@ -37,6 +39,9 @@ int main(int argc,
     printf("    e.g. ./OpENer eth1\n");
     exit(0);
   } else {
+    DoublyLinkedListInitialize(&connection_list,
+                               CipConnectionObjectListArrayAllocator,
+                               CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
     ConfigureNetworkInterface(arg[1]);
     ConfigureDomainName();

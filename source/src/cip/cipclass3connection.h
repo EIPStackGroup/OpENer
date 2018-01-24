@@ -9,10 +9,36 @@
 
 /** @file cipclass3connection.h
  *  @brief CIP Class 3 connection
+ *   * Explicit Connection Object State Transition Diagram
+ * ----------------------------------------------
+ * @dot
+ *   digraph ExplicitConnectionObjectStateTransition {
+ *     A[label="Any State"]
+ *     N[label="Non-existent"]
+ *     D[label="Deferred Delete"]
+ *     E[label="Established"]
+ *
+ *     A->N [label="Delete"]
+ *     N->E [label="Open Explicit Messaging Connection Response"]
+ *     E->N [label="Delete or inactivity time-out"]
+ *     E->E [label="Get/Set/Apply Attribute, Reset, Message Produced/Consumed"]
+ *     E->D [label="Inactivity time-out and deferred delete set"]
+ *     D->N [label="Delete"]
+ *   }
+ * @enddot
  */
 
 #include "opener_api.h"
 #include "cipconnectionmanager.h"
+#include "cipconnectionobject.h"
+
+typedef EipStatus (*CipConnectionStateHandler)(CipConnectionObject *RESTRICT
+                                               const connection_object,
+                                               ConnectionObjectState new_state);
+
+EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
+  CipConnectionObject *RESTRICT const connection_object,
+  ConnectionObjectState new_state);
 
 /** @brief Check if Class3 connection is available and if yes setup all data.
  *
@@ -24,7 +50,7 @@
  *    - On an error the general status code to be put into the response
  */
 EipStatus EstablishClass3Connection(
-  ConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Initializes the explicit connections mechanism
