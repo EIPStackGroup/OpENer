@@ -144,7 +144,6 @@ CipConnectionObject *GetIoConnectionForConnectionData(
                                                   extended_error);
           if ( (NULL == io_connection) && (0 == *extended_error) ) {
             /* no application connection type was found that suits the given data */
-            /* TODO check error code VS */
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
           } else {
@@ -152,7 +151,6 @@ CipConnectionObject *GetIoConnectionForConnectionData(
                                             kConnectionObjectInstanceTypeIOListenOnly);
             OPENER_TRACE_INFO("IO Listen only connection requested\n");
             //Is listen only connection
-            //connection_object->instance_type = kConnectionTypeIoListenOnly;
           }
         }
       } else {
@@ -167,13 +165,11 @@ CipConnectionObject *GetIoConnectionForConnectionData(
                                     kConnectionObjectInstanceTypeIOExclusiveOwner);
     OPENER_TRACE_INFO("IO Exclusive Owner connection requested\n");
     //Is exclusive owner connection
-    //connection_object->instance_type = kConnectionTypeIoExclusiveOwner;
   }
 
   if (NULL != io_connection) {
     ConnectionObjectDeepCopy(io_connection, connection_object);
   }
-//  OPENER_ASSERT(ConnectionObjectGetInstanceType(io_connection) == ConnectionObjectGetInstanceType(connection_object));
 
   return io_connection;
 }

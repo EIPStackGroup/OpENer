@@ -657,18 +657,6 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
   return connection_manager_status;
 }
 
-bool CheckForDeadConnectionsInActiveConnectionList() {
-  DoublyLinkedListNode *node = connection_list.first;
-  while(NULL != node) {
-    if( ( (CipConnectionObject *)node->data )->connection_close_function ==
-        NULL ) {
-      return true;
-    }
-    node = node->next;
-  }
-  return false;
-}
-
 void CloseIoConnection(CipConnectionObject *connection_object) {
 
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
@@ -718,10 +706,6 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
 
   CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
     connection_object);
-
-  if(CheckForDeadConnectionsInActiveConnectionList() ) {
-    OPENER_ASSERT(false);
-  }
 }
 
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
