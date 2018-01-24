@@ -203,7 +203,8 @@ CipConnectionObject *GetExclusiveOwnerConnection(
           break;
         }
         if(kConnectionObjectStateTimedOut ==
-           ConnectionObjectGetState(exclusive_owner) ) {
+           ConnectionObjectGetState(exclusive_owner)
+           && EqualConnectionTriad(connection_object, exclusive_owner) ) {
           exclusive_owner->connection_close_function(exclusive_owner);
           return &(g_exlusive_owner_connections[i].connection_data);
         }
