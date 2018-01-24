@@ -927,29 +927,18 @@ CipConnectionObject *GetConnectedOutputAssembly(
   DoublyLinkedListNode *iterator = connection_list.first;
 
   while(NULL != iterator) {
-    if(kConnectionObjectStateEstablished ==
-       ConnectionObjectGetState(iterator->data) &&
-       output_assembly_id ==
-       ( (CipConnectionObject *)iterator->data )->produced_path.instance_id ) {
+    if( (kConnectionObjectStateEstablished ==
+         ConnectionObjectGetState(iterator->data)
+         || kConnectionObjectStateTimedOut ==
+         ConnectionObjectGetState(iterator->data) ) &&
+        output_assembly_id ==
+        ( (CipConnectionObject *)iterator->data )->produced_path.instance_id ) {
       return iterator->data;
     }
     iterator = iterator->next;
   }
 
   return NULL;
-}
-
-bool EqualConnectionTriad(const CipConnectionObject const *object1,
-                          const CipConnectionObject const *object2) {
-  if ( (object1->connection_serial_number
-        == object2->connection_serial_number)
-       && (object1->originator_vendor_id
-           == object2->originator_vendor_id)
-       && (object1->originator_serial_number
-           == object2->originator_serial_number) ) {
-    return true;
-  }
-  return false;
 }
 
 CipConnectionObject *CheckForExistingConnection(
@@ -1384,8 +1373,7 @@ EipUint8 ParseConnectionPath(
 }
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
-  ConnectionObjectSetState(connection_object,
-                           kConnectionObjectStateNonExistent);
+
   if ( kConnectionObjectTransportClassTriggerTransportClass3 !=
        ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {

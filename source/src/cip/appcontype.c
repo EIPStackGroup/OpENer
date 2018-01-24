@@ -134,37 +134,37 @@ CipConnectionObject *GetIoConnectionForConnectionData(
     connection_object,
     extended_error);
   if (NULL == io_connection) {
-    if (0 == *extended_error) {
+    if (kConnectionManagerExtendedStatusCodeSuccess == *extended_error) {
       /* we found no connection and don't have an error so try input only next */
       io_connection = GetInputOnlyConnection(connection_object, extended_error);
       if (NULL == io_connection) {
-        if (0 == *extended_error) {
+        if (kConnectionManagerExtendedStatusCodeSuccess == *extended_error) {
           /* we found no connection and don't have an error so try listen only next */
           io_connection = GetListenOnlyConnection(connection_object,
                                                   extended_error);
           if ( (NULL == io_connection) && (0 == *extended_error) ) {
             /* no application connection type was found that suits the given data */
-            /* TODO check error code VS */
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
           } else {
             ConnectionObjectSetInstanceType(connection_object,
                                             kConnectionObjectInstanceTypeIOListenOnly);
+            OPENER_TRACE_INFO("IO Listen only connection requested\n");
             //Is listen only connection
-            //connection_object->instance_type = kConnectionTypeIoListenOnly;
           }
         }
       } else {
         ConnectionObjectSetInstanceType(connection_object,
                                         kConnectionObjectInstanceTypeIOInputOnly);
+        OPENER_TRACE_INFO("IO Input only connection requested\n");
         //is Input only connection
       }
     }
   } else {
     ConnectionObjectSetInstanceType(connection_object,
                                     kConnectionObjectInstanceTypeIOExclusiveOwner);
+    OPENER_TRACE_INFO("IO Exclusive Owner connection requested\n");
     //Is exclusive owner connection
-    //connection_object->instance_type = kConnectionTypeIoExclusiveOwner;
   }
 
   if (NULL != io_connection) {
@@ -187,13 +187,23 @@ CipConnectionObject *GetExclusiveOwnerConnection(
              connection_object->configuration_path.instance_id) ) {
 
       /* check if on other connection point with the same output assembly is currently connected */
+      CipConnectionObject *exclusive_owner = GetConnectedOutputAssembly(
+        connection_object->produced_path.instance_id);
       if ( NULL
-           != GetConnectedOutputAssembly(
-             connection_object->produced_path.instance_id) ) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
-        OPENER_TRACE_INFO("Hit an Ownership conflict in appcontype.c");
-        break;
+           != exclusive_owner ) {
+        if(kConnectionObjectStateEstablished ==
+           ConnectionObjectGetState(exclusive_owner) ) {
+          *extended_error =
+            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+          OPENER_TRACE_INFO("Hit an Ownership conflict in appcontype.c");
+          break;
+        }
+        if(kConnectionObjectStateTimedOut ==
+           ConnectionObjectGetState(exclusive_owner)
+           && EqualConnectionTriad(connection_object, exclusive_owner) ) {
+          exclusive_owner->connection_close_function(exclusive_owner);
+          return &(g_exlusive_owner_connections[i].connection_data);
+        }
       }
       return &(g_exlusive_owner_connections[i].connection_data);
       break;
@@ -220,6 +230,22 @@ CipConnectionObject *GetInputOnlyConnection(
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
+      }
+
+      for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
+        if (kConnectionObjectStateTimedOut
+            == ConnectionObjectGetState(&(g_input_only_connections[i].
+                                          connection_data[j]) )
+            && EqualConnectionTriad(connection_object,
+                                    &(g_input_only_connections[i].
+                                      connection_data[j]) ) )
+        {
+          g_input_only_connections[i].connection_data[j].
+          connection_close_function(
+            &g_input_only_connections[i].connection_data[j]);
+          return &(g_input_only_connections[i].connection_data[j]);
+        }
       }
 
       for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
@@ -272,6 +298,22 @@ CipConnectionObject *GetListenOnlyConnection(
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
+      }
+
+      for (size_t j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
+        if (kConnectionObjectStateTimedOut
+            == ConnectionObjectGetState(&(g_listen_only_connections[i].
+                                          connection_data[j]) )
+            && EqualConnectionTriad(connection_object,
+                                    &(g_listen_only_connections[i].
+                                      connection_data[j]) ) )
+        {
+          g_listen_only_connections[i].connection_data[j].
+          connection_close_function(
+            &g_listen_only_connections[i].connection_data[j]);
+          return &(g_listen_only_connections[i].connection_data[j]);
+        }
       }
 
       for (size_t j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH;
@@ -357,7 +399,6 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
     if ( (instance_type == connection->instance_type)
          && (input_point == connection->produced_path.instance_id) ) {
       CipConnectionObject *connection_to_delete = connection;
-      node = node->next;
       CheckIoConnectionEvent(
         connection_to_delete->consumed_path.instance_id,
         connection_to_delete->produced_path.instance_id,
@@ -365,6 +406,7 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 
       assert(connection_to_delete->connection_close_function != NULL);
       connection_to_delete->connection_close_function(connection_to_delete);
+      node = connection_list.first;
     } else {
       node = node->next;
     }
@@ -377,11 +419,6 @@ void CloseAllConnections(void) {
     CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
-    DoublyLinkedListRemoveNode(&connection_list, &node);
-    //CloseConnection(connection);
-    /* Close connection will remove the connection from the list therefore we
-     * need to get again the start until there is no connection left
-     */
     node = connection_list.first;
   }
 }

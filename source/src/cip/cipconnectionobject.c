@@ -61,7 +61,7 @@ DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
                        OPENER_CIP_NUM_INPUT_ONLY_CONNS +
                        OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS +
                        OPENER_CIP_NUM_LISTEN_ONLY_CONNS};
-  static DoublyLinkedListNode nodes[kNodesAmount];
+  static DoublyLinkedListNode nodes[kNodesAmount] = {0};
   for(size_t i = 0; i < kNodesAmount; ++i) {
     if(nodes[i].previous == NULL && nodes[i].next == NULL && nodes[i].data ==
        NULL) {
@@ -72,10 +72,14 @@ DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
 }
 
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
-  if(*node != NULL) {
+
+  if(NULL != *node && NULL != node) {
     memset( *node, 0, sizeof(DoublyLinkedListNode) );
     *node = NULL;
+  } else {
+    OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
   }
+
 }
 
 
@@ -780,4 +784,17 @@ void ConnectionObjectGeneralConfiguration(
   ConnectionObjectResetProductionInhibitTimer(connection_object);
 
   connection_object->transmission_trigger_timer = 0;
+}
+
+bool EqualConnectionTriad(const CipConnectionObject *const object1,
+                          const CipConnectionObject *const object2) {
+  if ( (object1->connection_serial_number
+        == object2->connection_serial_number)
+       && (object1->originator_vendor_id
+           == object2->originator_vendor_id)
+       && (object1->originator_serial_number
+           == object2->originator_serial_number) ) {
+    return true;
+  }
+  return false;
 }
