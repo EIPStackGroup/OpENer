@@ -136,6 +136,7 @@ struct cip_connection_object {
 
   uint64_t transmission_trigger_timer;
   uint64_t inactivity_watchdog_timer;
+  uint64_t last_package_watchdog_timer;
   uint64_t production_inhibit_timer;
 
   CipUint connection_serial_number;
@@ -323,7 +324,10 @@ void ConnectionObjectSetConnectionTimeoutMultiplier(
   connection_timeout_multiplier);
 
 void ConnectionObjectResetInactivityWatchdogTimerValue(
-  CipConnectionObject *connection_object);
+  CipConnectionObject *const connection_object);
+
+void ConnectionObjectResetLastPackageInactivityTimerValue(
+  CipConnectionObject *const connection_object);
 
 CipUint ConnectionObjectGetConnectionSerialNumber(
   const CipConnectionObject *const connection_object);
@@ -413,6 +417,9 @@ void ConnectionObjectGeneralConfiguration(
 
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object);
+
+bool ConnectionObjectEqualOriginator(const CipConnectionObject *const object1,
+                                     const CipConnectionObject *const object2);
 
 bool EqualConnectionTriad(const CipConnectionObject *const object1,
                           const CipConnectionObject *const object2);

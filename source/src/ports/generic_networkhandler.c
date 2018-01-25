@@ -370,11 +370,15 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckEncapsulationInactivity(socket);
   }
 
+  /* Check if all connections from one originator times out */
+  //CheckForTimedOutConnectionsAndCloseTCPConnections();
+
   //OPENER_TRACE_INFO("Socket Loop done\n");
 
   g_actual_time = GetMilliSeconds();
   g_network_status.elapsed_time += g_actual_time - g_last_time;
   g_last_time = g_actual_time;
+  //OPENER_TRACE_INFO("Elapsed time: %u\n", g_network_status.elapsed_time);
 
   /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
    * This should compensate the jitter of the windows timer

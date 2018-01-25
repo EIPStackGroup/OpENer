@@ -546,6 +546,13 @@ void ConnectionObjectResetInactivityWatchdogTimerValue(
       connection_object);
 }
 
+void ConnectionObjectResetLastPackageInactivityTimerValue(
+  CipConnectionObject *const connection_object) {
+  connection_object->last_package_watchdog_timer =
+    ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
+      connection_object);
+}
+
 uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   const CipConnectionObject *const connection_object) {
   return ( ( (connection_object->o_to_t_requested_packet_interval) /
@@ -784,6 +791,17 @@ void ConnectionObjectGeneralConfiguration(
   ConnectionObjectResetProductionInhibitTimer(connection_object);
 
   connection_object->transmission_trigger_timer = 0;
+}
+
+bool ConnectionObjectEqualOriginator(const CipConnectionObject *const object1,
+                                     const CipConnectionObject *const object2) {
+  if ( (object1->originator_vendor_id
+        == object2->originator_vendor_id)
+       && (object1->originator_serial_number
+           == object2->originator_serial_number) ) {
+    return true;
+  }
+  return false;
 }
 
 bool EqualConnectionTriad(const CipConnectionObject *const object1,

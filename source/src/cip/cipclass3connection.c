@@ -14,6 +14,11 @@ extern CipConnectionObject explicit_connection_object_pool[
 
 CipConnectionObject *GetFreeExplicitConnection(void);
 
+void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
+  CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object);
+  CloseConnection(connection_object);
+}
+
 /**** Implementation ****/
 EipStatus EstablishClass3Connection(
   CipConnectionObject *RESTRICT const connection_object,
@@ -42,7 +47,7 @@ EipStatus EstablishClass3Connection(
       CloseConnection;
     /* explicit connection have to be closed on time out*/
     explicit_connection->connection_timeout_function =
-      CloseConnection;
+      Class3ConnectionTimeoutHandler;
 
     AddNewActiveConnection(explicit_connection);
   }

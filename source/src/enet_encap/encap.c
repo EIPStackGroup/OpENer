@@ -726,3 +726,20 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
     }
   }
 }
+
+void CloseEncapsulationSessionBySockAddr(
+  const CipConnectionObject *const connection_object) {
+  for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+    if (kEipInvalidSocket != g_registered_sessions[i]) {
+      struct sockaddr_in encapsulation_session_addr = {0};
+      socklen_t addrlength = sizeof(encapsulation_session_addr);
+      int error_code = getpeername(g_registered_sessions[i],
+                                   &encapsulation_session_addr,
+                                   &addrlength);
+      if(encapsulation_session_addr.sin_addr.s_addr ==
+         connection_object->originator_address.sin_addr.s_addr) {
+        CloseSession(g_registered_sessions[i]);
+      }
+    }
+  }
+}

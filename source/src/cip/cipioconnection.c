@@ -713,6 +713,11 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
                          connection_object->consumed_path.instance_id,
                          kIoConnectionEventTimedOut);
 
+  if(connection_object->last_package_watchdog_timer ==
+     connection_object->inactivity_watchdog_timer) {
+    CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object);
+  }
+
   if ( kConnectionObjectConnectionTypeMulticast
        == ConnectionObjectGetTToOConnectionType(connection_object) ) {
     switch (ConnectionObjectGetInstanceType(connection_object) ) {
@@ -751,8 +756,6 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
   }
 
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
-//  OPENER_ASSERT(NULL != connection_object->connection_close_function);
-//  connection_object->connection_close_function(connection_object);
 }
 
 EipStatus SendConnectedData(CipConnectionObject *connection_object) {
