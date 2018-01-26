@@ -525,6 +525,7 @@ EipStatus HandleReceivedUnregisterSessionCommand(EncapsulationData *receive_data
     if (kEipInvalidSocket != g_registered_sessions[i]) {
       CloseTcpSocket(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
+      CloseClass3ConnectionBasedOnSession(i + 1);
       return kEipStatusOk;
     }
   }
