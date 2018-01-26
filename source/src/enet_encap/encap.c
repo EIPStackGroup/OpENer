@@ -752,3 +752,12 @@ void CloseEncapsulationSessionBySockAddr(
     }
   }
 }
+
+size_t GetSessionFromSocket(const int socket_handle) {
+  for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+    if(socket_handle == g_registered_sessions[i]) {
+      return i;
+    }
+  }
+  return OPENER_NUMBER_OF_SUPPORTED_SESSIONS;
+}

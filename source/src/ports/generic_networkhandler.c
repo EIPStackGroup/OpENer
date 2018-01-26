@@ -934,6 +934,22 @@ void CheckEncapsulationInactivity(int socket_handle) {
 
       if ( diff_milliseconds >=
            (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
+
+        size_t encapsulation_session_handle =
+          GetSessionFromSocket(socket_handle);
+
+        DoublyLinkedListNode *node = connection_list.first;
+        while(NULL != node) {
+          CipConnectionObject *connection_object = node->data;
+          if(kConnectionObjectTransportClassTriggerTransportClass3 ==
+             ConnectionObjectGetTransportClassTriggerTransportClass(
+               connection_object)
+             && connection_object->associated_encapsulation_session ==
+             encapsulation_session_handle ) {
+            connection_object->connection_close_function(connection_object);
+          }
+          node = node->next;
+        }
         CloseTcpSocket(socket_handle);
         RemoveSession(socket_handle);
       }

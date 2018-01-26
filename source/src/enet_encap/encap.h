@@ -81,6 +81,8 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
+size_t GetSessionFromSocket(const int socket_handle);
+
 void RemoveSession(const int socket);
 
 void CloseSessionBySessionHandle(
