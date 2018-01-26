@@ -18,7 +18,7 @@ CipConnectionObject *GetFreeExplicitConnection(void);
 
 void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
   CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
-                                                    CloseEncapsulationSessionBySockAddr);
+                                                    CloseSessionBySessionHandle);
   CloseConnection(connection_object);
 }
 

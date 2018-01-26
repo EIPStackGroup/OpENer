@@ -91,4 +91,6 @@ void CloseSessionBySessionHandle(
 void CloseEncapsulationSessionBySockAddr(
   const CipConnectionObject *const connection_object);
 
+void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle);
+
 #endif /* OPENER_ENCAP_H_ */

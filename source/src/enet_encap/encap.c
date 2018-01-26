@@ -691,6 +691,7 @@ void CloseSession(int socket) {
     if (g_registered_sessions[i] == socket) {
       CloseTcpSocket(socket);
       g_registered_sessions[i] = kEipInvalidSocket;
+      CloseClass3ConnectionBasedOnSession(i + 1);
       break;
     }
   }
@@ -702,6 +703,7 @@ void RemoveSession(const int socket) {
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if (g_registered_sessions[i] == socket) {
       g_registered_sessions[i] = kEipInvalidSocket;
+      CloseClass3ConnectionBasedOnSession(i + 1);
       break;
     }
   }
@@ -760,4 +762,18 @@ size_t GetSessionFromSocket(const int socket_handle) {
     }
   }
   return OPENER_NUMBER_OF_SUPPORTED_SESSIONS;
+}
+
+void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle) {
+  DoublyLinkedListNode *node = connection_list.first;
+  while(NULL != node) {
+    CipConnectionObject *connection_object = node->data;
+    if(kConnectionObjectTransportClassTriggerTransportClass3 ==
+       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object)
+       && connection_object->associated_encapsulation_session ==
+       encapsulation_session_handle ) {
+      connection_object->connection_close_function(connection_object);
+    }
+    node = node->next;
+  }
 }
