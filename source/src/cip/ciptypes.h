@@ -273,7 +273,8 @@ typedef EipStatus (*CipServiceFunction)(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {

@@ -715,7 +715,8 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
 
   if(connection_object->last_package_watchdog_timer ==
      connection_object->inactivity_watchdog_timer) {
-    CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object);
+    CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
+                                                      CloseEncapsulationSessionBySockAddr);
   }
 
   if ( kConnectionObjectConnectionTypeMulticast

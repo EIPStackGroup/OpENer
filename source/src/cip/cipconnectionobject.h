@@ -177,6 +177,8 @@ struct cip_connection_object {
                                               for scanning if the right packet is
                                               arriving */
 
+  size_t associated_encapsulation_session; /* The session handle ID via which the forward open was sent */
+
   /* pointers to connection handling functions */
   CipConnectionStateHandler current_state_handler;
 

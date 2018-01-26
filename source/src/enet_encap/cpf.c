@@ -42,7 +42,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
         return_value = NotifyMessageRouter(
           g_common_packet_format_data_item.data_item.data,
           g_common_packet_format_data_item.data_item.length,
-          originator_address);
+          originator_address,
+          receive_data->session_handle);
         if (return_value != kEipStatusError) {
           return_value = AssembleLinearMessage(
             &g_message_router_response, &g_common_packet_format_data_item,
@@ -94,7 +95,8 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           return_value = NotifyMessageRouter(
             buffer,
             g_common_packet_format_data_item.data_item.length - 2,
-            originator_address);
+            originator_address,
+            received_data->session_handle);
 
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data

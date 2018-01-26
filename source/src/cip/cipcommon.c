@@ -74,7 +74,8 @@ void ShutdownCipStack(void) {
 EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address) {
+                      struct sockaddr *originator_address,
+                      const int encapsulation_session) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
   EipUint16 instance_number = message_router_request->request_path
@@ -97,7 +98,8 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
           OPENER_ASSERT(NULL != service->service_function);
           return service->service_function(instance, message_router_request,
                                            message_router_response,
-                                           originator_address);
+                                           originator_address,
+                                           encapsulation_session);
         } else {
           service++;
         }
@@ -383,7 +385,8 @@ EipStatus GetAttributeSingle(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(
@@ -680,7 +683,8 @@ int DecodeData(const EipUint8 cip_type,
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address) {
+                          struct sockaddr *originator_address,
+                          const int encapsulation_session) {
 
   EipUint8 *reply = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes; /* pointer to list of attributes*/
@@ -714,7 +718,8 @@ EipStatus GetAttributeAll(CipInstance *instance,
             if ( kEipStatusOkSend
                  != service->service_function(instance, message_router_request,
                                               message_router_response,
-                                              originator_address) ) {
+                                              originator_address,
+                                              encapsulation_session) ) {
               message_router_response->data = reply;
               return kEipStatusError;
             }

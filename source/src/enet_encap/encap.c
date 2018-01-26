@@ -676,6 +676,15 @@ SessionStatus CheckRegisteredSessions(EncapsulationData *receive_data) {
   return kSessionStatusInvalid;
 }
 
+void CloseSessionBySessionHandle(
+  const CipConnectionObject *const connection_object) {
+  OPENER_TRACE_INFO("encap.c: Close session by handle\n");
+  size_t session_handle = connection_object->associated_encapsulation_session;
+  CloseTcpSocket(g_registered_sessions[session_handle - 1]);
+  g_registered_sessions[session_handle - 1] = kEipInvalidSocket;
+  OPENER_TRACE_INFO("encap.c: Close session by handle done\n");
+}
+
 void CloseSession(int socket) {
   OPENER_TRACE_INFO("encap.c: Close session\n");
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {

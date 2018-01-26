@@ -83,6 +83,9 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
 void RemoveSession(const int socket);
 
+void CloseSessionBySessionHandle(
+  const CipConnectionObject *const connection_object);
+
 void CloseEncapsulationSessionBySockAddr(
   const CipConnectionObject *const connection_object);
 

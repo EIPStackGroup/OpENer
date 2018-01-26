@@ -172,7 +172,8 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
-                              struct sockaddr *originator_address) {
+                              struct sockaddr *originator_address,
+                              const int encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   EipByte status = kCipErrorSuccess;
 
@@ -217,7 +218,9 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
         registered_object->cip_class->class_name);
       eip_status = NotifyClass(registered_object->cip_class,
                                &g_message_router_request,
-                               &g_message_router_response, originator_address);
+                               &g_message_router_response,
+                               originator_address,
+                               encapsulation_session);
 
 #ifdef OPENER_TRACE_ENABLED
       if (eip_status == kEipStatusError) {

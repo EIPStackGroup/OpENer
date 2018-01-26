@@ -66,19 +66,22 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus AssembleForwardOpenResponse(
   CipConnectionObject *connection_object,
@@ -488,7 +491,8 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
+  struct sockaddr *originator_address,
+  const int encapsulation_session
   ) {
   (void) instance; /*suppress compiler warning */
 
@@ -498,6 +502,8 @@ EipStatus ForwardOpen(
   /*first check if we have already a connection with the given params */
   ConnectionObjectInitializeFromMessage(&(message_router_request->data),
                                         &g_dummy_connection_object);
+  g_dummy_connection_object.associated_encapsulation_session =
+    encapsulation_session;
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
           sizeof(g_dummy_connection_object.originator_address) );
@@ -553,8 +559,8 @@ EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
-  ) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
 
@@ -629,8 +635,8 @@ EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
-  ) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;
@@ -1496,7 +1502,8 @@ EipStatus TriggerConnections(
 }
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
-  const CipConnectionObject *const connection_object) {
+  const CipConnectionObject *const connection_object,
+  CloseSessionFunction CloseSessions) {
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
@@ -1512,7 +1519,7 @@ void CheckForTimedOutConnectionsAndCloseTCPConnections(
     search_node = search_node->next;
   }
   if(false == non_timed_out_connection_found) {
-    CloseEncapsulationSessionBySockAddr(connection_object);
+    CloseSessions(connection_object);
   }
 }
 

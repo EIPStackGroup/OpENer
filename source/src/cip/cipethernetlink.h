@@ -30,7 +30,8 @@ EipStatus GetAttributeSingleEthernetLink(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {

@@ -8,6 +8,8 @@
 
 #include "cipclass3connection.h"
 
+#include "encap.h"
+
 /**** Global variables ****/
 extern CipConnectionObject explicit_connection_object_pool[
   OPENER_CIP_NUM_EXPLICIT_CONNS];
@@ -15,7 +17,8 @@ extern CipConnectionObject explicit_connection_object_pool[
 CipConnectionObject *GetFreeExplicitConnection(void);
 
 void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
-  CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object);
+  CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
+                                                    CloseEncapsulationSessionBySockAddr);
   CloseConnection(connection_object);
 }
 
