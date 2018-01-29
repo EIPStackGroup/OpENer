@@ -812,6 +812,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_code,
                        error_message);
       FreeErrorMessage(error_message);
+      CloseSocket(new_socket);
       return kEipInvalidSocket;
     }
     /* store the originators address */
