@@ -966,7 +966,8 @@ size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
       break;
     case (kCipStringN): {
       CipStringN *data = (CipStringN *) attribute_struct->data;
-      return sizeof(CipUint) + sizeof(CipUint) + (data->length) * (data->size);
+      return sizeof(CipUint) + sizeof(CipUint) + (size_t)(data->length) *
+             (size_t)(data->size);
     }
     break;
     case (kCipShortString): {
