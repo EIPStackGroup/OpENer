@@ -164,34 +164,36 @@ EipStatus CreateCommonPacketFormatStructure(
     common_packet_format_data->data_item.data = (EipUint8 *)data;
     data += common_packet_format_data->data_item.length;
     length_count += (4 + common_packet_format_data->data_item.length);
-  }
-  for (int j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
-  {
-    common_packet_format_data->address_info_item[j].type_id = GetIntFromMessage(
-      &data);
-    OPENER_TRACE_INFO("Sockaddr type id: %x\n",
-                      common_packet_format_data->address_info_item[j].type_id);
-    length_count += 2;
-    if ( (common_packet_format_data->address_info_item[j].type_id
-          == kCipItemIdSocketAddressInfoOriginatorToTarget)
-         || (common_packet_format_data->address_info_item[j].type_id
-             == kCipItemIdSocketAddressInfoTargetToOriginator) ) {
-      common_packet_format_data->address_info_item[j].length =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_family =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_port =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_addr =
-        GetDintFromMessage(&data);
-      for (int i = 0; i < 8; i++) {
-        common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
-        data++;
+
+    for (size_t j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
+    {
+      common_packet_format_data->address_info_item[j].type_id =
+        GetIntFromMessage(
+          &data);
+      OPENER_TRACE_INFO("Sockaddr type id: %x\n",
+                        common_packet_format_data->address_info_item[j].type_id);
+      length_count += 2;
+      if ( (common_packet_format_data->address_info_item[j].type_id
+            == kCipItemIdSocketAddressInfoOriginatorToTarget)
+           || (common_packet_format_data->address_info_item[j].type_id
+               == kCipItemIdSocketAddressInfoTargetToOriginator) ) {
+        common_packet_format_data->address_info_item[j].length =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_family =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_port =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_addr =
+          GetDintFromMessage(&data);
+        for (size_t i = 0; i < 8; i++) {
+          common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
+          data++;
+        }
+        length_count += 18;
+      } else { /* no sockaddr item found */
+        common_packet_format_data->address_info_item[j].type_id = 0; /* mark as not set */
+        data -= 2;
       }
-      length_count += 18;
-    } else { /* no sockaddr item found */
-      common_packet_format_data->address_info_item[j].type_id = 0; /* mark as not set */
-      data -= 2;
     }
   }
   /* set the addressInfoItems to not set if they were not received */

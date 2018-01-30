@@ -19,6 +19,7 @@
 #include "generic_networkhandler.h"
 #include "trace.h"
 #include "socket_timer.h"
+#include "opener_error.h"
 
 /*Identity data from cipidentity.c*/
 extern EipUint16 vendor_id_;
@@ -745,9 +746,16 @@ void CloseEncapsulationSessionBySockAddr(
     if (kEipInvalidSocket != g_registered_sessions[i]) {
       struct sockaddr_in encapsulation_session_addr = {0};
       socklen_t addrlength = sizeof(encapsulation_session_addr);
-      int error_code = getpeername(g_registered_sessions[i],
-                                   &encapsulation_session_addr,
-                                   &addrlength);
+      if (getpeername(g_registered_sessions[i], &encapsulation_session_addr,
+                      &addrlength) <= 0) {                                                                  /* got error */
+        int error_code = GetSocketErrorNumber();
+        char *error_message = GetErrorMessage(error_code);
+        OPENER_TRACE_ERR(
+          "encap.c: error on getting peer name on closing session: %d - %s\n",
+          error_code,
+          error_message);
+        FreeErrorMessage(error_message);
+      }
       if(encapsulation_session_addr.sin_addr.s_addr ==
          connection_object->originator_address.sin_addr.s_addr) {
         CloseSession(g_registered_sessions[i]);

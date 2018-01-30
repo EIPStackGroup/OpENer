@@ -96,7 +96,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.tcp_listener);
+  if (SetSocketToNonBlocking(g_network_status.tcp_listener) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
 
   /* create a new UDP socket */
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
@@ -134,7 +138,12 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
+  if (SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener) <
+      0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
 
   /* Activates address reuse */
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
@@ -145,7 +154,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
+  if (SetSocketToNonBlocking(g_network_status.udp_unicast_listener) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on udp_unicast_listener\n");
+    return kEipStatusError;
+  }
 
   struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
                                       kOpenerEthernetPort),
@@ -289,7 +302,15 @@ void CheckAndHandleTcpListenerSocket(void) {
       return;
     }
 
-    SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) );
+    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) <= 0) { /* got error */
+      int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR(
+        "networkhandler: error on set QoS on socket on new socket: %d - %s\n",
+        error_code,
+        error_message);
+      FreeErrorMessage(error_message);
+    }
 
     OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
                       new_socket);
@@ -635,7 +656,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       }
     } while (0 < data_size);
     SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-    OPENER_ASSERT(0 <= data_size);
     return kEipStatusOk;
   }
 
@@ -759,8 +779,21 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     return kEipInvalidSocket;
   }
 
-  SetSocketToNonBlocking(new_socket);
-  SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) );
+  if (SetSocketToNonBlocking(new_socket) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
+
+  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) <= 0) { /* got error */
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
+      "networkhandler: error on set QoS on socket on new socket: %d - %s\n",
+      error_code,
+      error_message);
+    FreeErrorMessage(error_message);
+  }
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 

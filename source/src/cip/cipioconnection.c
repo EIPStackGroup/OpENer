@@ -626,6 +626,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
       CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
         config_instance,
         3)->data;
+      OPENER_ASSERT(NULL != attribute_three);
       if (attribute_three->length != g_config_data_length) {
         connection_manager_status =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
