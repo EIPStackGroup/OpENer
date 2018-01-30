@@ -73,11 +73,14 @@ DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
 
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
 
-  if(NULL != *node && NULL != node) {
-    memset( *node, 0, sizeof(DoublyLinkedListNode) );
-    *node = NULL;
-  } else {
-    OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
+  if(NULL != node) {
+    if(NULL != *node) {
+      memset( *node, 0, sizeof(DoublyLinkedListNode) );
+      *node = NULL;
+    } else {
+      OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
+    }
+    OPENER_TRACE_ERR("Attempt to provide a NULL pointer to node pointer\n");
   }
 
 }
