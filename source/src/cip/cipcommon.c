@@ -138,8 +138,8 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
     instance_number++; /*    keep track of what the first new instance number will be */
   }
 
-  CipInstance *current_instance = current_instance = (CipInstance *) CipCalloc(
-                                    number_of_instances, sizeof(CipInstance) ); /* allocate a block of memory for all created instances*/
+  CipInstance *current_instance = (CipInstance *) CipCalloc(
+    number_of_instances, sizeof(CipInstance) );                                 /* allocate a block of memory for all created instances*/
   CipInstance *first_instance = current_instance; /* allocate a block of memory for all created instances*/
 
   OPENER_ASSERT(NULL != current_instance);
@@ -172,7 +172,7 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const class,
                             const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
-  if (0 == instance) { /*we have no instance with given id*/
+  if (NULL == instance) { /*we have no instance with given id*/
     instance = AddCipInstances(class, 1);
     instance->instance_number = instance_id;
   }

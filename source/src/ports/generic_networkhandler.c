@@ -680,7 +680,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     struct sockaddr sender_address;
     memset( &sender_address, 0, sizeof(sender_address) );
     socklen_t fromlen = sizeof(sender_address);
-    getpeername(socket, (struct sockaddr *)&sender_address, &fromlen);
+    if (getpeername(socket, (struct sockaddr *)&sender_address, &fromlen) < 0) {
+      int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR("networkhandler: could not get peername: %d - %s\n",
+                       error_code,
+                       error_message);
+      FreeErrorMessage(error_message);
+    }
 
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,

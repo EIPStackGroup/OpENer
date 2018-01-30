@@ -558,8 +558,9 @@ void ConnectionObjectResetLastPackageInactivityTimerValue(
 
 uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   const CipConnectionObject *const connection_object) {
-  return ( ( (connection_object->o_to_t_requested_packet_interval) /
-             1000 ) << (2 + connection_object->connection_timeout_multiplier) );
+  return ( ( (uint64_t)(connection_object->o_to_t_requested_packet_interval) /
+             (uint64_t)1000 ) <<
+           (2 + connection_object->connection_timeout_multiplier) );
 }
 
 
