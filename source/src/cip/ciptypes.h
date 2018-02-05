@@ -56,7 +56,6 @@ typedef enum cip_data_types {
                            figure out the right way to handle it */
 } CipDataType;
 
-
 /** @brief Definition of CIP service codes
  *
  * An Enum with all CIP service codes. Common services codes range from 0x01 to
@@ -172,34 +171,12 @@ typedef struct {
   EipUint8 *segment_data;
 } CipConnectionPath;
 
-/** @brief Struct representing the key data format of the electronic key segment
- *
- */
-typedef struct {
-  CipUint vendor_id; /**< Vendor ID */
-  CipUint device_type; /**< Device Type */
-  CipUint product_code; /**< Product Code */
-  CipByte major_revision; /**< Major Revision and Compatibility (Bit 0-6 = Major
-                             Revision) Bit 7 = Compatibility */
-  CipUsint minor_revision; /**< Minor Revision */
-} CipKeyData;
 
 /** @brief Struct storing the CIP revision */
 typedef struct {
   EipUint8 major_revision;
   EipUint8 minor_revision;
 } CipRevision;
-
-/** @brief CIP Electronic Key Segment struct
- *
- */
-typedef struct {
-  CipUsint segment_type; /**< Specifies the Segment Type */
-  CipUsint key_format; /**< Key Format 0-3 reserved, 4 = see Key Format Table,
-                          5-255 = Reserved */
-  CipKeyData key_data; /**< Depends on key format used, usually Key Format 4 as
-                          specified in CIP Specification, Volume 1*/
-} CipElectronicKey;
 
 /** @brief CIP Message Router Request
  *
@@ -266,8 +243,8 @@ typedef struct cip_class {
                                          (attribute numbers are not necessarily
                                          consecutive)*/
   uint8_t *get_single_bit_mask; /**< Bitmask for GetAttributeSingle*/
-  uint8_t *set_bit_mask;        /**< Bitmask for SetAttributeSingle*/
-  uint8_t *get_all_bit_mask;    /**< Bitmask for GetAttributeAll*/
+  uint8_t *set_bit_mask; /**< Bitmask for SetAttributeSingle*/
+  uint8_t *get_all_bit_mask; /**< Bitmask for GetAttributeAll*/
 
   EipUint32 get_attribute_all_mask; /**< mask indicating which attributes are
                                        returned by getAttributeAll*/
@@ -340,15 +317,10 @@ typedef struct {
 //  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
 //  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
 //} CipEthernetLinkObject;
-
-
-
-
 typedef struct {
   CipUint num_conn_entries;
   CipBool *conn_open_bits;
 } CipConnectionManagerConnectionEntryList;
-
 
 /* these are used for creating the getAttributeAll masks
    TODO there might be a way simplifying this using __VARARGS__ in #define */

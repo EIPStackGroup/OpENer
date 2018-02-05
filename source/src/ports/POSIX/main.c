@@ -11,6 +11,9 @@
 #include "opener_api.h"
 #include "cipcommon.h"
 #include "trace.h"
+#include "networkconfig.h"
+#include "doublylinkedlist.h"
+#include "cipconnectionobject.h"
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
@@ -27,30 +30,24 @@ int g_end_stack = 0;
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
-  EipUint8 my_mac_address[6];
   EipUint16 unique_connection_id;
 
-  if (argc != 12) {
+  if (argc != 2) {
     printf("Wrong number of command line parameters!\n");
     printf("The correct command line parameters are:\n");
-    printf(
-      "./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress\n");
-    printf(
-      "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
+    printf("./OpENer interfacename\n");
+    printf("    e.g. ./OpENer eth1\n");
     exit(0);
   } else {
+    DoublyLinkedListInitialize(&connection_list,
+                               CipConnectionObjectListArrayAllocator,
+                               CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
-    ConfigureNetworkInterface(arg[1], arg[2], arg[3]);
-    ConfigureDomainName(arg[4]);
-    ConfigureHostName(arg[5]);
+    ConfigureNetworkInterface(arg[1]);
+    ConfigureDomainName();
+    ConfigureHostName();
 
-    my_mac_address[0] = (EipUint8) strtoul(arg[6], NULL, 16);
-    my_mac_address[1] = (EipUint8) strtoul(arg[7], NULL, 16);
-    my_mac_address[2] = (EipUint8) strtoul(arg[8], NULL, 16);
-    my_mac_address[3] = (EipUint8) strtoul(arg[9], NULL, 16);
-    my_mac_address[4] = (EipUint8) strtoul(arg[10], NULL, 16);
-    my_mac_address[5] = (EipUint8) strtoul(arg[11], NULL, 16);
-    ConfigureMacAddress(my_mac_address);
+    ConfigureMacAddress(arg[1]);
   }
 
   /*for a real device the serial number should be unique per device */

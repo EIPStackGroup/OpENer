@@ -8,7 +8,8 @@
 
 #include "trace.h"
 
-void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket) {
+void SocketTimerSetSocket(SocketTimer *const socket_timer,
+                          const int socket) {
   socket_timer->socket = socket;
   OPENER_TRACE_INFO("Adds socket %d to socket timers\n", socket);
 }
@@ -50,7 +51,8 @@ SocketTimer *SocketTimerArrayGetSocketTimer(
 }
 
 SocketTimer *SocketTimerArrayGetEmptySocketTimer(
-  SocketTimer *const array_of_socket_timers,const size_t array_length) {
+  SocketTimer *const array_of_socket_timers,
+  const size_t array_length) {
   return SocketTimerArrayGetSocketTimer(array_of_socket_timers, array_length,
                                         kEipInvalidSocket);
 }

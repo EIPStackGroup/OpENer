@@ -130,8 +130,8 @@ TEST(EndianConversion, EncapsulateIpAddress) {
 }
 
 TEST(EndianConversion, MoveMessageNOctets) {
-  CipOctet message[8];
-  CipOctet *message_runner = message;
+  const CipOctet message[] = "This is a test message";
+  const CipOctet *message_runner = message;
 
   MoveMessageNOctets(4, &message_runner);
 

@@ -10,6 +10,8 @@
 
 #include "networkhandler.h"
 
+#include "opener_error.h"
+#include "trace.h"
 #include "encap.h"
 #include "opener_user_conf.h"
 
@@ -33,7 +35,15 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 }
 
 void CloseSocketPlatform(int socket_handle) {
-  shutdown(socket_handle, SHUT_RDWR);
+  if(0 != shutdown(socket_handle, SHUT_RDWR) ) {
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR("Could not close socket %d - Error Code: %d - %s\n",
+                     socket_handle,
+                     error_code,
+                     error_message);
+    FreeErrorMessage(error_message);
+  }
   close(socket_handle);
 }
 
@@ -47,5 +57,5 @@ void SetQosOnSocket(int socket,
                     CipUsint qos_value) {
 
   int set_tos = qos_value;
-  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
+  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

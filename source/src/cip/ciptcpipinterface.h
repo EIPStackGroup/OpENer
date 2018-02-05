@@ -14,6 +14,8 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
+extern CipString hostname_;
+
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
 static const EipUint16 kCipTcpIpInterfaceClassCode = 0xF5; /**< TCP/IP Interface Object class code */

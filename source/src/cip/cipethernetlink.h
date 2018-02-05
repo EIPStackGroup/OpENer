@@ -32,4 +32,15 @@ EipStatus GetAttributeSingleEthernetLink(
   CipMessageRouterResponse *const message_router_response,
   struct sockaddr *originator_address);
 
+/** @brief Data of an CIP Ethernet Link object */
+typedef struct {
+  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
+  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
+  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
+} CipEthernetLinkObject;
+
+/* global private variables */
+
+CipEthernetLinkObject g_ethernet_link;
+
 #endif /* OPENER_CIPETHERNETLINK_H_*/

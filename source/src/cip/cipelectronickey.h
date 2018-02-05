@@ -11,6 +11,32 @@
 
 #include "typedefs.h"
 
+/** @brief CIP Electronic Key Segment struct
+ *
+ */
+typedef struct {
+  CipUsint key_format; /**< Key Format 0-3 reserved, 4 = see Key Format Table,
+                          5-255 = Reserved */
+  void *key_data; /**< Depends on key format used, usually Key Format 4 as
+                          specified in CIP Specification, Volume 1*/
+} CipElectronicKey;
+
+void ElectronicKeySetSegmentType(CipElectronicKey *const electronic_key,
+                                 const CipUsint segment_type);
+
+CipUsint ElectronicKeyGetSegmentType(
+  const CipElectronicKey *const electronic_key);
+
+void ElectronicKeySetKeyFormat(CipElectronicKey *const electronic_key,
+                               const CipUsint key_format);
+
+CipUint ElectronicKeyGetKeyFormat(const CipElectronicKey *const electronic_key);
+
+void ElectronicKeySetKeyData(CipElectronicKey *const electronic_key,
+                             void *key_data);
+
+void *ElectronicKeyGetKeyData(const CipElectronicKey *const electronic_key);
+
 /** @brief Declaration of the electronic key format 4 data struct for the class
  *
  */
@@ -22,7 +48,8 @@ extern const size_t kElectronicKeyFormat4Size;
  *
  *	@return A new unset electronic key
  */
-ElectronicKeyFormat4 *ElectronicKeyFormat4New();
+ElectronicKeyFormat4 *ElectronicKeyFormat4New(
+  );
 
 /** @brief Destructor for the electroic key format 4 class
  *
@@ -36,8 +63,8 @@ void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **electronic_key);
  *	@param vendor_id The vendor ID to be set into the electronic key
  *	@param electronic_key The electronic key to be set - will be modified
  */
-void ElectronicKeyFormat4SetVendorId(const CipUint vendor_id,
-                                     ElectronicKeyFormat4 *const electronic_key);
+void ElectronicKeyFormat4SetVendorId(ElectronicKeyFormat4 *const electronic_key,
+                                     const CipUint vendor_id);
 
 /** @brief Gets the vendor ID form the electronic key
  *
@@ -53,8 +80,8 @@ CipUint ElectronicKeyFormat4GetVendorId(
  *	@param electronic_key A format 4 electronic key
  */
 void ElectronicKeyFormat4SetDeviceType(
-  const CipUint device_type,ElectronicKeyFormat4 *const
-  electronic_key);
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUint device_type);
 
 /** @brief Gets the device type from a format 4 electronic key
  *
@@ -70,8 +97,8 @@ CipUint ElectronicKeyFormat4GetDeviceType(
  *      @param electronic_key The electronic key to be modified
  */
 void ElectronicKeyFormat4SetProductCode(
-  const CipUint product_code,ElectronicKeyFormat4 *const
-  electronic_key);
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUint product_code);
 
 /** @brief Gets the product code from an format 4 electronic key
  *
@@ -87,8 +114,8 @@ CipUint ElectronicKeyFormat4GetProductCode(
  *      @param electronic_key The electronic key to be modified
  */
 void ElectronicKeyFormat4SetMajorRevisionCompatibility(
-  const CipByte major_revision_compatibility,
-  ElectronicKeyFormat4 *const electronic_key);
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipByte major_revision_compatibility);
 
 /** @brief Gets the major revision from an format 4 electronic key
  *
@@ -112,8 +139,8 @@ bool ElectronicKeyFormat4GetMajorRevisionCompatibility(
  *      @param electronic_key The electronic key to be modified
  */
 void ElectronicKeyFormat4SetMinorRevision(
-  const CipUsint minor_revision,ElectronicKeyFormat4 *const
-  electronic_key);
+  ElectronicKeyFormat4 *const electronic_key,
+  const CipUsint minor_revision);
 
 /** @brief Gets the minor revision from an format 4 electronic key
  *

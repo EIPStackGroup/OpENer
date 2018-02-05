@@ -159,19 +159,28 @@ typedef enum symbolic_segment_extended_format {
   kSymbolicSegmentExtendedFormatReserved /**< Reserved */
 } SymbolicSegmentExtendedFormat;
 
+/* Start - Often used types of EPaths */
+typedef struct connection_path_epath {
+  CipDword class_id;
+  CipDword instance_id;
+  CipDword attribute_id_or_connection_point;
+} CipConnectionPathEpath;
+/* End - Often used types of EPaths */
+
 /** @brief Gets the basic segment type of a CIP EPath
  *
  * @param cip_path The start of the EPath message
  * @return The basic segment type
  */
-SegmentType GetPathSegmentType(const unsigned char *const cip_path);
+SegmentType GetPathSegmentType(const CipOctet *const cip_path);
 
 /** @brief Sets the basic segment type of an CIP EPath to be sent
  *
  * @param segment_type The segment type
  * @param cip_path A message buffer - Will be written on!
  */
-void SetPathSegmentType(SegmentType segment_type,unsigned char *const cip_path);
+void SetPathSegmentType(SegmentType segment_type,
+                        unsigned char *const cip_path);
 
 /*********************************************************
 * Port Segment functions
@@ -223,7 +232,8 @@ unsigned int GetPathPortSegmentExtendedPortNumber(
  * @param cip_path The start for the EPatch message
  */
 void SetPathPortSegmentExtendedPortIdentifier(
-  const unsigned int extended_port_identifier, unsigned char *const cip_path);
+  const unsigned int extended_port_identifier,
+  CipOctet *const cip_path);
 
 /** @brief Gets the Logical Type of an EPath Logical Segment message
  *
@@ -233,6 +243,9 @@ void SetPathPortSegmentExtendedPortIdentifier(
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
   const unsigned char *const cip_path);
 
+void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type,
+                                      CipOctet *const cip_path);
+
 /** @brief Gets the Logical Format of a Logical Segment EPath message
  *
  * @param cip_path The start of the EPath message
@@ -240,6 +253,15 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
  */
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   const unsigned char *const cip_path);
+
+void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
+                                        CipOctet *const cip_path);
+
+const CipDword CipEpathGetLogicalValue(const EipUint8 **message);
+
+size_t CipEpathSetLogicalValue(const CipDword logical_value,
+                               const LogicalSegmentLogicalFormat logical_format,
+                               CipOctet **message);
 
 /** @brief  Gets the Extended Logical Type of a Logical Segment EPath message
  *
@@ -255,7 +277,8 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
  * @return The Special Type Logical Format subtype of a Logical Segment EPath message
  */
 LogicalSegmentSpecialTypeLogicalFormat
-GetPathLogicalSegmentSpecialTypeLogicalType(const unsigned char *const cip_path);
+GetPathLogicalSegmentSpecialTypeLogicalType(
+  const unsigned char *const cip_path);
 
 /** @brief Gets the Electronic Key format of a Logical Segment Special Type EPath message
  *
@@ -270,8 +293,9 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
  * @param cip_path The start of the EPath message
  * @param Writes the data on the user provided data electronic key struct
  */
-void GetPathLogicalSegmentElectronicKeyFormat4(
-  const unsigned char *const cip_path, ElectronicKeyFormat4 *key);
+void GetElectronicKeyFormat4FromMessage(
+  const CipOctet **const cip_path,
+  ElectronicKeyFormat4 *key);
 
 /** @brief Gets the Network Segment Subtype of a EPatch Network Segement EPath message
  *
@@ -336,5 +360,16 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentNumericType(
  */
 SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
   const unsigned char *const cip_path);
+
+/* Special purpose encoding and decoding functions */
+
+size_t CipEpathEncodeConnectionEpath(
+  const CipConnectionPathEpath *const connection_epath,
+  CipOctet **encoded_path);
+
+bool CipEpathEqual(const CipOctet *const path1,
+                   const CipUint path1_length,
+                   const CipOctet *const path2,
+                   const CipUint path2_length);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

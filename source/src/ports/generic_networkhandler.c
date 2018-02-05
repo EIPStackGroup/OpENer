@@ -280,7 +280,7 @@ void CheckAndHandleTcpListenerSocket(void) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
 
     new_socket = accept(g_network_status.tcp_listener, NULL, NULL);
-    if (new_socket == -1) {
+    if (new_socket == kEipInvalidSocket) {
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR("networkhandler: error on accept: %d - %s\n",
@@ -561,9 +561,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   if (number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR("networkhandler: connection closed by client: %d - %s\n",
-                     error_code,
-                     error_message);
+    OPENER_TRACE_ERR(
+      "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+      socket,
+      error_code,
+      error_message);
     FreeErrorMessage(error_message);
     RemoveSocketTimerFromList(socket);
     RemoveSession(socket);
@@ -603,7 +605,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(
-          "networkhandler: connection closed by client: %d - %s\n",
+          "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+          socket,
           error_code,
           error_message);
         FreeErrorMessage(error_message);
@@ -639,9 +642,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR("networkhandler: connection closed by client: %d - %s\n",
-                     error_code,
-                     error_message);
+    OPENER_TRACE_ERR(
+      "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+      socket,
+      error_code,
+      error_message);
     FreeErrorMessage(error_message);
     RemoveSocketTimerFromList(socket);
     RemoveSession(socket);
@@ -744,7 +749,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   }
 
   SetSocketToNonBlocking(new_socket);
-  SetQosOnSocket(new_socket, qos_for_socket);
+  SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) );
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
@@ -819,15 +824,14 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 }
 
 void CheckAndHandleConsumingUdpSockets(void) {
+  DoublyLinkedListNode *iterator = connection_list.first;
 
-  ConnectionObject *connection_object_iterator = g_active_connection_list;
-  ConnectionObject *current_connection_object = NULL;
+  CipConnectionObject *current_connection_object = NULL;
 
   /* see a message on one of the registered UDP sockets has been received     */
-  while (NULL != connection_object_iterator) {
-    current_connection_object = connection_object_iterator;
-    connection_object_iterator = connection_object_iterator
-                                 ->next_connection_object; /* do this at the beginning as the close function may can make the entry invalid */
+  while (NULL != iterator) {
+    current_connection_object = (CipConnectionObject *)iterator->data;
+    iterator = iterator->next; /* do this at the beginning as the close function may can make the entry invalid */
 
     if ( (-1
           != current_connection_object->socket[
@@ -843,11 +847,20 @@ void CheckAndHandleConsumingUdpSockets(void) {
         g_ethernet_communication_buffer, PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
         (struct sockaddr *) &from_address, &from_address_length);
       if (0 == received_size) {
-        OPENER_TRACE_STATE("connection closed by client\n");
+        int error_code = GetSocketErrorNumber();
+        char *error_message = GetErrorMessage(error_code);
+        OPENER_TRACE_ERR(
+          "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+          current_connection_object->socket[
+            kUdpCommuncationDirectionConsuming],
+          error_code,
+          error_message);
+        FreeErrorMessage(error_message);
         current_connection_object->connection_close_function(
           current_connection_object);
         continue;
       }
+
 
       if (0 > received_size) {
         int error_code = GetSocketErrorNumber();

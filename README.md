@@ -1,4 +1,9 @@
 [![Build Status](https://travis-ci.org/EIPStackGroup/OpENer.svg?branch=master)](https://travis-ci.org/EIPStackGroup/OpENer)
+    <p><a href="https://scan.coverity.com/projects/opener">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/14200/badge.svg?flat=1"/>
+</a>
+ </p>
 
 [![Stories in Ready](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=ready&title=Ready)](http://waffle.io/EIPStackGroup/OpENer)
 [![Stories in In Progress](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=in%20progress&title=In%20Progress)](http://waffle.io/EIPStackGroup/OpENer)
@@ -55,9 +60,9 @@ Compile for POSIX:
 	3. Invoke make
 	4. For invoking opener type:
 
-		./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
+		./OpENer interface
 
-		e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+		e.g. ./OpENer eth1
  
 2. Within Eclipse
 	1. For a standard configuration invoke setup_posix.sh, otherwise start
@@ -72,7 +77,12 @@ Compile for Windows XP/7/8:
 ---------------------------
 1. Invoke setup_windows.bat or configure via CMake
 2. Open Visual Studio solution in bin/win32
+3. For invoking opener type in command line:
 
+		OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
+
+		e.g. OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+ 
 Directory structure:
 --------------------
 - bin ...  The resulting binaries and make files for different ports

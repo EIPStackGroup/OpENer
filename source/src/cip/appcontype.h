@@ -8,6 +8,8 @@
 
 #include "cipconnectionmanager.h"
 
+extern DoublyLinkedList connection_list;
+
 void InitializeIoConnectionData(void);
 
 /** @brief check if for the given connection data received in a forward_open request
@@ -23,8 +25,8 @@ void InitializeIoConnectionData(void);
  *          data given in connection_object.
  *        - on error: NULL
  */
-ConnectionObject *GetIoConnectionForConnectionData(
-  ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetIoConnectionForConnectionData(
+  CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Check if there exists already an exclusive owner or listen only connection
@@ -33,7 +35,7 @@ ConnectionObject *GetIoConnectionForConnectionData(
  *  @param input_point the Input point to be produced
  *  @return if a connection could be found a pointer to this connection if not NULL
  */
-ConnectionObject *GetExistingProducerMulticastConnection(
+CipConnectionObject *GetExistingProducerMulticastConnection(
   const EipUint32 input_point);
 
 /** @brief check if there exists an producing multicast exclusive owner or
@@ -44,7 +46,8 @@ ConnectionObject *GetExistingProducerMulticastConnection(
  * @return if a connection could be found the pointer to this connection
  *      otherwise NULL.
  */
-ConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point);
+CipConnectionObject *GetNextNonControlMasterConnection(
+  const EipUint32 input_point);
 
 /** @brief Close all connection producing the same input and have the same type
  * (i.e., listen only or input only).
@@ -53,7 +56,7 @@ ConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point)
  * @param instance_type the connection application type
  */
 void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
-                                             const ConnectionType instance_type);
+                                             const ConnectionObjectConnectionType instance_type);
 
 /**@ brief close all open connections.
  *
@@ -68,6 +71,6 @@ void CloseAllConnections(void);
  * @param config_point The configuration point
  * @return true if connection was found, otherwise false
  */
-EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point);
+bool ConnectionWithSameConfigPointExists(const EipUint32 config_point);
 
 #endif /* OPENER_APPCONTYPE_H_ */

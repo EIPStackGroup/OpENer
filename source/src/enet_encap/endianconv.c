@@ -28,7 +28,7 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  */
 EipUint8 GetSintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
-  EipUint16 data = buffer_address[0];
+  EipUint8 data = buffer_address[0];
   *buffer += 1;
   return data;
 }
@@ -256,7 +256,7 @@ int GetEndianess() {
 }
 
 void MoveMessageNOctets(int amount_of_bytes_moved,
-                        CipOctet **message_runner) {
+                        const CipOctet **message_runner) {
   (*message_runner) += amount_of_bytes_moved;
 }
 
@@ -271,7 +271,7 @@ int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
                                                          unsigned int amount_of_filled_bytes,
                                                          CipOctet **message) {
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, message);
-  MoveMessageNOctets(amount_of_filled_bytes, message);
+  MoveMessageNOctets(amount_of_filled_bytes, (const CipOctet **)message);
   return amount_of_filled_bytes;
 }
 

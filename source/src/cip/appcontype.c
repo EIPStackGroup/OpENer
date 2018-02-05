@@ -9,20 +9,18 @@
 #include "appcontype.h"
 
 #include "cipconnectionmanager.h"
+#include "cipconnectionobject.h"
 #include "opener_api.h"
 #include "assert.h"
 #include "trace.h"
-
-
-/** @brief External globals needed from connectionmanager.c */
-extern ConnectionObject *g_active_connection_list;
+#include "cipepath.h"
 
 /** @brief Exclusive Owner connection data */
 typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  ConnectionObject connection_data; /**< the connection data, only one connection is allowed per O-to-T point*/
+  CipConnectionObject connection_data; /**< the connection data, only one connection is allowed per O-to-T point*/
 } ExclusiveOwnerConnection;
 
 /** @brief Input Only connection data */
@@ -30,7 +28,8 @@ typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  ConnectionObject connection_data[OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH]; /*< the connection data */
+  CipConnectionObject connection_data[
+    OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH];                                   /*< the connection data */
 } InputOnlyConnection;
 
 /** @brief Listen Only connection data */
@@ -38,7 +37,8 @@ typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly; /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  ConnectionObject connection_data[OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
+  CipConnectionObject connection_data[
+    OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
   ];                                                                               /**< the connection data */
 } ListenOnlyConnection;
 
@@ -56,8 +56,8 @@ ListenOnlyConnection g_listen_only_connections[OPENER_CIP_NUM_LISTEN_ONLY_CONNS]
  * @param extended_error Pointer to the extended error variable, will be written if an error occurs
  * @return The corresponding Exclusive Owner Connection or NULL if there is non
  */
-ConnectionObject *GetExclusiveOwnerConnection(
-  const ConnectionObject *RESTRICT connection_object,
+CipConnectionObject *GetExclusiveOwnerConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Takes an ConnectionObject and searches and returns an Input Only Connection based on the ConnectionObject,
@@ -67,8 +67,8 @@ ConnectionObject *GetExclusiveOwnerConnection(
  * @param extended_error Pointer to the extended error variable, will be written if an error occurs
  * @return The corresponding Exclusive Owner Connection or NULL if there is non
  */
-ConnectionObject *GetInputOnlyConnection(
-  const ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetInputOnlyConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error);
 
 /** @brief Takes an ConnectionObject and searches and returns an Listen Only Connection based on the ConnectionObject,
@@ -78,8 +78,8 @@ ConnectionObject *GetInputOnlyConnection(
  * @param extended_error Pointer to the extended error variable, will be written if an error occurs
  * @return The corresponding Exclusive Owner Connection or NULL if there is non
  */
-ConnectionObject *GetListenOnlyConnection(
-  const ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetListenOnlyConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error);
 
 void ConfigureExclusiveOwnerConnectionPoint(
@@ -124,102 +124,135 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
   }
 }
 
-ConnectionObject *GetIoConnectionForConnectionData(
-  ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetIoConnectionForConnectionData(
+  CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
 
   *extended_error = 0;
 
-  ConnectionObject *io_connection = GetExclusiveOwnerConnection(
+  CipConnectionObject *io_connection = GetExclusiveOwnerConnection(
     connection_object,
     extended_error);
   if (NULL == io_connection) {
-    if (0 == *extended_error) {
+    if (kConnectionManagerExtendedStatusCodeSuccess == *extended_error) {
       /* we found no connection and don't have an error so try input only next */
       io_connection = GetInputOnlyConnection(connection_object, extended_error);
       if (NULL == io_connection) {
-        if (0 == *extended_error) {
+        if (kConnectionManagerExtendedStatusCodeSuccess == *extended_error) {
           /* we found no connection and don't have an error so try listen only next */
           io_connection = GetListenOnlyConnection(connection_object,
                                                   extended_error);
           if ( (NULL == io_connection) && (0 == *extended_error) ) {
             /* no application connection type was found that suits the given data */
-            /* TODO check error code VS */
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
           } else {
-            connection_object->instance_type = kConnectionTypeIoListenOnly;
+            ConnectionObjectSetInstanceType(connection_object,
+                                            kConnectionObjectInstanceTypeIOListenOnly);
+            OPENER_TRACE_INFO("IO Listen only connection requested\n");
+            //Is listen only connection
           }
         }
       } else {
-        connection_object->instance_type = kConnectionTypeIoInputOnly;
+        ConnectionObjectSetInstanceType(connection_object,
+                                        kConnectionObjectInstanceTypeIOInputOnly);
+        OPENER_TRACE_INFO("IO Input only connection requested\n");
+        //is Input only connection
       }
     }
   } else {
-    connection_object->instance_type = kConnectionTypeIoExclusiveOwner;
+    ConnectionObjectSetInstanceType(connection_object,
+                                    kConnectionObjectInstanceTypeIOExclusiveOwner);
+    OPENER_TRACE_INFO("IO Exclusive Owner connection requested\n");
+    //Is exclusive owner connection
   }
 
   if (NULL != io_connection) {
-    CopyConnectionData(io_connection, connection_object);
+    ConnectionObjectDeepCopy(io_connection, connection_object);
   }
 
   return io_connection;
 }
 
-ConnectionObject *GetExclusiveOwnerConnection(
-  const ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetExclusiveOwnerConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
-  ConnectionObject *exclusive_owner_connection = NULL;
 
-  for (int i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; i++) {
-    if ( (g_exlusive_owner_connections[i].output_assembly
-          == connection_object->connection_path.connection_point[0])
-         && (g_exlusive_owner_connections[i].input_assembly
-             == connection_object->connection_path.connection_point[1])
-         && (g_exlusive_owner_connections[i].config_assembly
-             == connection_object->connection_path.connection_point[2]) ) {
+  for (size_t i = 0; i < OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS; ++i) {
+    if ( (g_exlusive_owner_connections[i].output_assembly ==
+          connection_object->consumed_path.instance_id)
+         && (g_exlusive_owner_connections[i].input_assembly ==
+             connection_object->produced_path.instance_id)
+         && (g_exlusive_owner_connections[i].config_assembly ==
+             connection_object->configuration_path.instance_id) ) {
 
       /* check if on other connection point with the same output assembly is currently connected */
+      CipConnectionObject *exclusive_owner = GetConnectedOutputAssembly(
+        connection_object->produced_path.instance_id);
       if ( NULL
-           != GetConnectedOutputAssembly(
-             connection_object->connection_path.connection_point[0]) ) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
-        OPENER_TRACE_INFO("Hit an Ownership conflict in appcontype.c");
-        break;
+           != exclusive_owner ) {
+        if(kConnectionObjectStateEstablished ==
+           ConnectionObjectGetState(exclusive_owner) ) {
+          *extended_error =
+            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+          OPENER_TRACE_INFO("Hit an Ownership conflict in appcontype.c");
+          break;
+        }
+        if(kConnectionObjectStateTimedOut ==
+           ConnectionObjectGetState(exclusive_owner)
+           && EqualConnectionTriad(connection_object, exclusive_owner) ) {
+          exclusive_owner->connection_close_function(exclusive_owner);
+          return &(g_exlusive_owner_connections[i].connection_data);
+        }
       }
-      exclusive_owner_connection = &(g_exlusive_owner_connections[i]
-                                     .connection_data);
+      return &(g_exlusive_owner_connections[i].connection_data);
       break;
     }
   }
-  return exclusive_owner_connection;
+  return NULL;
 }
 
-ConnectionObject *GetInputOnlyConnection(
-  const ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetInputOnlyConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
-  ConnectionObject *input_only_connection = NULL; //TODO: This variable has no use
 
-  for (int i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; i++) {
+  for (size_t i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; ++i) {
     if (g_input_only_connections[i].output_assembly
-        == connection_object->connection_path.connection_point[0]) { /* we have the same output assembly */
+        == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_input_only_connections[i].input_assembly
-          != connection_object->connection_path.connection_point[1]) {
+          != connection_object->produced_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_input_only_connections[i].config_assembly
-          != connection_object->connection_path.connection_point[2]) {
+          != connection_object->configuration_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
       }
 
-      for (int j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH; j++) {
-        if (kConnectionStateNonExistent
-            == g_input_only_connections[i].connection_data[j].state) {
+      for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
+        if (kConnectionObjectStateTimedOut
+            == ConnectionObjectGetState(&(g_input_only_connections[i].
+                                          connection_data[j]) )
+            && EqualConnectionTriad(connection_object,
+                                    &(g_input_only_connections[i].
+                                      connection_data[j]) ) )
+        {
+          g_input_only_connections[i].connection_data[j].
+          connection_close_function(
+            &g_input_only_connections[i].connection_data[j]);
+          return &(g_input_only_connections[i].connection_data[j]);
+        }
+      }
+
+      for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
+        if (kConnectionObjectStateNonExistent
+            == ConnectionObjectGetState(&(g_input_only_connections[i].
+                                          connection_data[j]) ) ) {
           return &(g_input_only_connections[i].connection_data[j]);
         }
       }
@@ -228,34 +261,32 @@ ConnectionObject *GetInputOnlyConnection(
       break;
     }
   }
-  return input_only_connection;
+  return NULL;
 }
 
-ConnectionObject *GetListenOnlyConnection(
-  const ConnectionObject *const RESTRICT connection_object,
+CipConnectionObject *GetListenOnlyConnection(
+  const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
-  ConnectionObject *listen_only_connection = NULL; //TODO: This variable has no use
 
-  if ( kForwardOpenConnectionTypeMulticastConnection
-       != (connection_object->t_to_o_network_connection_parameter
-           & kForwardOpenConnectionTypeMulticastConnection) ) {
+  if ( kConnectionObjectConnectionTypeMulticast
+       != ConnectionObjectGetTToOConnectionType(connection_object) ) {
     /* a listen only connection has to be a multicast connection. */
     *extended_error =
       kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;   /* maybe not the best error message however there is no suitable definition in the cip spec */
     return NULL;
   }
 
-  for (int i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
+  for (size_t i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
-        == connection_object->connection_path.connection_point[0]) { /* we have the same output assembly */
+        == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_listen_only_connections[i].input_assembly
-          != connection_object->connection_path.connection_point[1]) {
+          != connection_object->produced_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
         break;
       }
       if (g_listen_only_connections[i].config_assembly
-          != connection_object->connection_path.connection_point[2]) {
+          != connection_object->configuration_path.instance_id) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
         break;
@@ -263,15 +294,33 @@ ConnectionObject *GetListenOnlyConnection(
 
       if ( NULL
            == GetExistingProducerMulticastConnection(
-             connection_object->connection_path.connection_point[1]) ) {
+             connection_object->produced_path.instance_id) ) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
       }
 
-      for (int j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH; j++) {
-        if (kConnectionStateNonExistent
-            == g_listen_only_connections[i].connection_data[j].state) {
+      for (size_t j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH;
+           ++j) {
+        if (kConnectionObjectStateTimedOut
+            == ConnectionObjectGetState(&(g_listen_only_connections[i].
+                                          connection_data[j]) )
+            && EqualConnectionTriad(connection_object,
+                                    &(g_listen_only_connections[i].
+                                      connection_data[j]) ) )
+        {
+          g_listen_only_connections[i].connection_data[j].
+          connection_close_function(
+            &g_listen_only_connections[i].connection_data[j]);
+          return &(g_listen_only_connections[i].connection_data[j]);
+        }
+      }
+
+      for (size_t j = 0; j < OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH;
+           j++) {
+        if (kConnectionObjectStateNonExistent
+            == ConnectionObjectGetState(&(g_listen_only_connections[i].
+                                          connection_data[j]) ) ) {
           return &(g_listen_only_connections[i].connection_data[j]);
         }
       }
@@ -280,118 +329,111 @@ ConnectionObject *GetListenOnlyConnection(
       break;
     }
   }
-  return listen_only_connection;
+  return NULL;
 }
 
-ConnectionObject *GetExistingProducerMulticastConnection(
+CipConnectionObject *GetExistingProducerMulticastConnection(
   const EipUint32 input_point) {
-  ConnectionObject *producer_multicast_connection = g_active_connection_list;
+  DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != producer_multicast_connection) {
-    if ( (kConnectionTypeIoExclusiveOwner
-          == producer_multicast_connection->instance_type)
-         || (kConnectionTypeIoInputOnly
-             == producer_multicast_connection->instance_type) ) {
+  while (NULL != node) {
+    CipConnectionObject *producer_multicast_connection = node->data;
+    if ( true ==
+         ConnectionObjectIsTypeIOConnection(producer_multicast_connection) ) {
       if ( (input_point
-            == producer_multicast_connection->connection_path.connection_point[
-              1])
-           && ( kForwardOpenConnectionTypeMulticastConnection
-                == (producer_multicast_connection
-                    ->t_to_o_network_connection_parameter
-                    & kForwardOpenConnectionTypeMulticastConnection) )
+            == producer_multicast_connection->produced_path.instance_id)
+           && ( kConnectionObjectConnectionTypeMulticast
+                == ConnectionObjectGetTToOConnectionType(
+                  producer_multicast_connection) )
            && (kEipInvalidSocket
                != producer_multicast_connection->socket[
                  kUdpCommuncationDirectionProducing]) ) {
         /* we have a connection that produces the same input assembly,
          * is a multicast producer and manages the connection.
          */
-        break;
+        return producer_multicast_connection;
       }
     }
-    producer_multicast_connection = producer_multicast_connection
-                                    ->next_connection_object;
+    node = node->next;
   }
-  return producer_multicast_connection;
+  return NULL;
 }
 
-ConnectionObject *GetNextNonControlMasterConnection(const EipUint32 input_point)
-{
-  ConnectionObject *next_non_control_master_connection =
-    g_active_connection_list;
+CipConnectionObject *GetNextNonControlMasterConnection(
+  const EipUint32 input_point) {
+  DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != next_non_control_master_connection) {
-    if ( (kConnectionTypeIoExclusiveOwner
-          == next_non_control_master_connection->instance_type)
-         || (kConnectionTypeIoInputOnly
-             == next_non_control_master_connection->instance_type) ) {
-      if ( (input_point
-            == next_non_control_master_connection->connection_path
-            .connection_point[1])
-           && ( kForwardOpenConnectionTypeMulticastConnection
-                == (next_non_control_master_connection
-                    ->t_to_o_network_connection_parameter
-                    & kForwardOpenConnectionTypeMulticastConnection) )
-           && (kEipInvalidSocket
-               == next_non_control_master_connection->socket[
-                 kUdpCommuncationDirectionProducing]) ) {
-        /* we have a connection that produces the same input assembly,
-         * is a multicast producer and does not manages the connection.
-         */
-        break;
-      }
+  while (NULL != node) {
+    CipConnectionObject *next_non_control_master_connection =
+      node->data;
+    if ( true ==
+         ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
+         && kConnectionObjectStateEstablished ==
+         ConnectionObjectGetState(next_non_control_master_connection)
+         && input_point ==
+         next_non_control_master_connection->produced_path.instance_id
+         &&  kConnectionObjectConnectionTypeMulticast ==
+         ConnectionObjectGetTToOConnectionType(
+           next_non_control_master_connection)
+         && (kEipInvalidSocket
+             == next_non_control_master_connection->socket[
+               kUdpCommuncationDirectionProducing]) ) {
+      /* we have a connection that produces the same input assembly,
+       * is a multicast producer and does not manage the connection.
+       */
+      return next_non_control_master_connection;
     }
-    next_non_control_master_connection = next_non_control_master_connection
-                                         ->next_connection_object;
+    node = node->next;
   }
-  return next_non_control_master_connection;
+  return NULL;
 }
 
 void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
-                                             const ConnectionType instance_type)
+                                             const ConnectionObjectConnectionType instance_type)
 {
-  ConnectionObject *connection = g_active_connection_list;
 
-  while (NULL != connection) {
+  DoublyLinkedListNode *node = connection_list.first;
+
+  while (NULL != node) {
+    CipConnectionObject *connection = node->data;
     if ( (instance_type == connection->instance_type)
-         && (input_point == connection->connection_path.connection_point[1]) ) {
-      ConnectionObject *connection_to_delete = connection;
-      connection = connection->next_connection_object;
+         && (input_point == connection->produced_path.instance_id) ) {
+      CipConnectionObject *connection_to_delete = connection;
       CheckIoConnectionEvent(
-        connection_to_delete->connection_path.connection_point[0],
-        connection_to_delete->connection_path.connection_point[1],
+        connection_to_delete->consumed_path.instance_id,
+        connection_to_delete->produced_path.instance_id,
         kIoConnectionEventClosed);
 
       assert(connection_to_delete->connection_close_function != NULL);
       connection_to_delete->connection_close_function(connection_to_delete);
+      node = connection_list.first;
     } else {
-      connection = connection->next_connection_object;
+      node = node->next;
     }
   }
 }
 
 void CloseAllConnections(void) {
-  ConnectionObject *connection = g_active_connection_list;
-  while (NULL != connection) {
+  DoublyLinkedListNode *node = connection_list.first;
+  while (NULL != node) {
+    CipConnectionObject *connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
-    CloseConnection(connection);
-    /* Close connection will remove the connection from the list therefore we
-     * need to get again the start until there is no connection left
-     */
-    connection = g_active_connection_list;
+    node = connection_list.first;
   }
 }
 
-EipBool8 ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
-  ConnectionObject *connection = g_active_connection_list;
+bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
+  DoublyLinkedListNode *node = connection_list.first;
 
-  while (NULL != connection) {
-    if (config_point == connection->connection_path.connection_point[2]) {
-      break;
+  while (NULL != node) {
+    CipConnectionObject *connection = node->data;
+    if (config_point == connection->configuration_path.instance_id) {
+      return (NULL != connection);
     }
-    connection = connection->next_connection_object;
+    node = node->next;
   }
-  return (NULL != connection);
+  return false;
 }
 
 void InitializeIoConnectionData(void) {

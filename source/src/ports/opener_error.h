@@ -17,7 +17,8 @@
  *
  * @return Error number
  */
-int GetSocketErrorNumber();
+int GetSocketErrorNumber(
+  );
 
 
 /**

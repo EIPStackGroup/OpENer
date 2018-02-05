@@ -62,7 +62,6 @@ MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default
  */
 CipUint g_encapsulation_inactivity_timeout = 120;
 
-
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
@@ -75,60 +74,6 @@ EipStatus GetAttributeAllTcpIpInterface(
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
   struct sockaddr *originator_address);
-
-EipStatus ConfigureNetworkInterface(const char *ip_address,
-                                    const char *subnet_mask,
-                                    const char *gateway) {
-
-  interface_configuration_.ip_address = inet_addr(ip_address);
-  interface_configuration_.network_mask = inet_addr(subnet_mask);
-  interface_configuration_.gateway = inet_addr(gateway);
-
-  /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  EipUint32 host_id = ntohl(interface_configuration_.ip_address)
-                      & ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
-  host_id -= 1;
-  host_id &= 0x3ff;
-
-  g_multicast_configuration.starting_multicast_address = htonl(
-    ntohl( inet_addr("239.192.1.0") ) + (host_id << 5) );
-
-  return kEipStatusOk;
-}
-
-void ConfigureDomainName(const char *domain_name) {
-  if (NULL != interface_configuration_.domain_name.string) {
-    /* if the string is already set to a value we have to free the resources
-     * before we can set the new value in order to avoid memory leaks.
-     */
-    CipFree(interface_configuration_.domain_name.string);
-  }
-  interface_configuration_.domain_name.length = strlen(domain_name);
-  if (interface_configuration_.domain_name.length) {
-    interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
-      interface_configuration_.domain_name.length + 1, sizeof(EipInt8) );
-    strcpy(interface_configuration_.domain_name.string, domain_name);
-  } else {
-    interface_configuration_.domain_name.string = NULL;
-  }
-}
-
-void ConfigureHostName(const char *const RESTRICT hostname) {
-  if (NULL != hostname_.string) {
-    /* if the string is already set to a value we have to free the resources
-     * before we can set the new value in order to avoid memory leaks.
-     */
-    CipFree(hostname_.string);
-  }
-  hostname_.length = strlen(hostname);
-  if (hostname_.length) {
-    hostname_.string = (EipByte *) CipCalloc( hostname_.length + 1,
-                                              sizeof(EipByte) );
-    strcpy(hostname_.string, hostname);
-  } else {
-    hostname_.string = NULL;
-  }
-}
 
 EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
@@ -224,8 +169,7 @@ EipStatus CipTcpIpInterfaceInit() {
                                        13, /* # highest instance attribute number*/
                                        3, /* # instance services*/
                                        1, /* # instances*/
-                                       "TCP/IP interface",
-                                       4, /* # class revision*/
+                                       "TCP/IP interface", 4, /* # class revision*/
                                        NULL /* # function pointer for initialization*/
                                        ) ) == 0 ) {
     return kEipStatusError;
@@ -298,11 +242,10 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
   message_router_response->general_status = kCipErrorAttributeNotSupported;
 
-  if (9 == message_router_request->request_path.attribute_number ) {   /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+  if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                      ]);
+                                                              attribute_number)]);
       message_router_response->general_status = kCipErrorSuccess;
     } else {
       get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
@@ -310,7 +253,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                       ]);
     }
 
-    if ( 0 == ( get_bit_mask & ( 1 << ( attribute_number  % 8 ) ) ) ) {
+    if ( 0 == ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       return kEipStatusOkSend;
     }
     message_router_response->general_status = kCipErrorSuccess;
@@ -332,14 +275,12 @@ EipStatus GetAttributeSingleTcpIpInterface(
                                                        &multicast_address,
                                                        &message);
   } else {
-    CipAttributeStruct *attribute = GetCipAttribute(instance,
-                                                    attribute_number);
+    CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
 
     if ( (NULL != attribute) && ( NULL != attribute->data) ) {
 
-      OPENER_TRACE_INFO(
-        "getAttribute %d\n",
-        message_router_request->request_path.attribute_number);     /* create a reply message containing the data*/
+      OPENER_TRACE_INFO("getAttribute %d\n",
+                        message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
 
       if (kGetAttributeAll == message_router_request->service) {
         get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
@@ -352,7 +293,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
                         ]);
       }
 
-      if( 0 == ( get_bit_mask &  ( 1 << ( (attribute_number ) % 8 ) ) ) ) {
+      if ( 0 == ( get_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
         return kEipStatusOkSend;
       }
 
