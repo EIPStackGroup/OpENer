@@ -819,7 +819,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_message);
       FreeErrorMessage(error_message);
       CloseSocket(new_socket);
-      return kEipInvalidSocket;
+      return new_socket;
     }
 
     OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", new_socket);
@@ -837,7 +837,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
             g_time_to_live_value, error_code, error_message);
           FreeErrorMessage(error_message);
-          return kEipInvalidSocket;
+          return new_socket;
         }
       }
     }
@@ -855,7 +855,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_code,
                        error_message);
       FreeErrorMessage(error_message);
-      return kEipInvalidSocket;
+      return new_socket;
     }
     /* store the originators address */
     socket_data->sin_addr.s_addr = peer_address.sin_addr.s_addr;
