@@ -807,6 +807,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     sizeof(option_value) ) == -1) {
       OPENER_TRACE_ERR(
         "error setting socket option SO_REUSEADDR on consuming udp socket\n");
+      CloseSocket(new_socket);
       return kEipStatusError;
     }
 
