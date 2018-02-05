@@ -306,7 +306,8 @@ void CheckAndHandleTcpListenerSocket(void) {
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR(
-        "networkhandler: error on set QoS on socket on new socket: %d - %s\n",
+        "networkhandler: error on set QoS on on new socket %d: %d - %s\n",
+        new_socket,
         error_code,
         error_message);
       FreeErrorMessage(error_message);
@@ -769,14 +770,15 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
-  if ( ( new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == -1 ) {
+  if ( ( new_socket =
+           socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n",
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
-    return kEipInvalidSocket;
+    return new_socket;
   }
 
   if (SetSocketToNonBlocking(new_socket) < 0) {
@@ -816,6 +818,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       OPENER_TRACE_ERR("error on bind udp: %d - %s\n", error_code,
                        error_message);
       FreeErrorMessage(error_message);
+      CloseSocket(new_socket);
       return kEipInvalidSocket;
     }
 
@@ -834,7 +837,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
             g_time_to_live_value, error_code, error_message);
           FreeErrorMessage(error_message);
-          CloseSocket(new_socket);
           return kEipInvalidSocket;
         }
       }
@@ -853,7 +855,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_code,
                        error_message);
       FreeErrorMessage(error_message);
-      CloseSocket(new_socket);
       return kEipInvalidSocket;
     }
     /* store the originators address */
