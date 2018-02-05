@@ -85,7 +85,7 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   }
   fclose(file_handle);
 
-  if (inet_pton(AF_INET, gateway_string, gateway) == 1) {
+  if (inet_pton(AF_INET, gateway_string, &gateway) == 1) {
     if (gateway != LOOPBACK_BINARY) {
       interface_configuration_.gateway = gateway;
     } else {
