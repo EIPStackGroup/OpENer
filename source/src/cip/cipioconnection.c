@@ -620,9 +620,11 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
     assembly_class, connection_object->configuration_path.instance_id);
 
   if (0 != g_config_data_length) {
+    OPENER_ASSERT(NULL != config_instance);
     if ( ConnectionWithSameConfigPointExists(
-           connection_object->configuration_path.instance_id) ) {                                               /* there is a connected connection with the same config point
-                                                                                                                 * we have to have the same data as already present in the config point*/
+           connection_object->configuration_path.instance_id) ) {
+      /* there is a connected connection with the same config point
+       * we have to have the same data as already present in the config point*/
       CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
         config_instance,
         3)->data;
