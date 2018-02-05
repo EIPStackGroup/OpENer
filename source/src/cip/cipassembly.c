@@ -22,7 +22,8 @@ EipStatus SetAssemblyAttributeSingle(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 /** @brief Constructor for the assembly object class
  *
@@ -124,7 +125,8 @@ EipStatus SetAssemblyAttributeSingle(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   OPENER_TRACE_INFO(" setAttribute %d\n",
                     message_router_request->request_path.attribute_number);
 

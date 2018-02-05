@@ -42,7 +42,8 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
         return_value = NotifyMessageRouter(
           g_common_packet_format_data_item.data_item.data,
           g_common_packet_format_data_item.data_item.length,
-          originator_address);
+          originator_address,
+          receive_data->session_handle);
         if (return_value != kEipStatusError) {
           return_value = AssembleLinearMessage(
             &g_message_router_response, &g_common_packet_format_data_item,
@@ -94,7 +95,8 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           return_value = NotifyMessageRouter(
             buffer,
             g_common_packet_format_data_item.data_item.length - 2,
-            originator_address);
+            originator_address,
+            received_data->session_handle);
 
           if (return_value != kEipStatusError) {
             g_common_packet_format_data_item.address_item.data
@@ -162,34 +164,36 @@ EipStatus CreateCommonPacketFormatStructure(
     common_packet_format_data->data_item.data = (EipUint8 *)data;
     data += common_packet_format_data->data_item.length;
     length_count += (4 + common_packet_format_data->data_item.length);
-  }
-  for (int j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
-  {
-    common_packet_format_data->address_info_item[j].type_id = GetIntFromMessage(
-      &data);
-    OPENER_TRACE_INFO("Sockaddr type id: %x\n",
-                      common_packet_format_data->address_info_item[j].type_id);
-    length_count += 2;
-    if ( (common_packet_format_data->address_info_item[j].type_id
-          == kCipItemIdSocketAddressInfoOriginatorToTarget)
-         || (common_packet_format_data->address_info_item[j].type_id
-             == kCipItemIdSocketAddressInfoTargetToOriginator) ) {
-      common_packet_format_data->address_info_item[j].length =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_family =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_port =
-        GetIntFromMessage(&data);
-      common_packet_format_data->address_info_item[j].sin_addr =
-        GetDintFromMessage(&data);
-      for (int i = 0; i < 8; i++) {
-        common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
-        data++;
+
+    for (size_t j = 0; j < (common_packet_format_data->item_count - 2); j++) /* TODO there needs to be a limit check here???*/
+    {
+      common_packet_format_data->address_info_item[j].type_id =
+        GetIntFromMessage(
+          &data);
+      OPENER_TRACE_INFO("Sockaddr type id: %x\n",
+                        common_packet_format_data->address_info_item[j].type_id);
+      length_count += 2;
+      if ( (common_packet_format_data->address_info_item[j].type_id
+            == kCipItemIdSocketAddressInfoOriginatorToTarget)
+           || (common_packet_format_data->address_info_item[j].type_id
+               == kCipItemIdSocketAddressInfoTargetToOriginator) ) {
+        common_packet_format_data->address_info_item[j].length =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_family =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_port =
+          GetIntFromMessage(&data);
+        common_packet_format_data->address_info_item[j].sin_addr =
+          GetDintFromMessage(&data);
+        for (size_t i = 0; i < 8; i++) {
+          common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
+          data++;
+        }
+        length_count += 18;
+      } else { /* no sockaddr item found */
+        common_packet_format_data->address_info_item[j].type_id = 0; /* mark as not set */
+        data -= 2;
       }
-      length_count += 18;
-    } else { /* no sockaddr item found */
-      common_packet_format_data->address_info_item[j].type_id = 0; /* mark as not set */
-      data -= 2;
     }
   }
   /* set the addressInfoItems to not set if they were not received */

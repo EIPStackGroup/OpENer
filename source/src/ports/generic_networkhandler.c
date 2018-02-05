@@ -96,7 +96,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.tcp_listener);
+  if (SetSocketToNonBlocking(g_network_status.tcp_listener) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
 
   /* create a new UDP socket */
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
@@ -134,7 +138,12 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener);
+  if (SetSocketToNonBlocking(g_network_status.udp_global_broadcast_listener) <
+      0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
 
   /* Activates address reuse */
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
@@ -145,7 +154,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  SetSocketToNonBlocking(g_network_status.udp_unicast_listener);
+  if (SetSocketToNonBlocking(g_network_status.udp_unicast_listener) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on udp_unicast_listener\n");
+    return kEipStatusError;
+  }
 
   struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
                                       kOpenerEthernetPort),
@@ -289,7 +302,16 @@ void CheckAndHandleTcpListenerSocket(void) {
       return;
     }
 
-    SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) );
+    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) <= 0) { /* got error */
+      int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR(
+        "networkhandler: error on set QoS on on new socket %d: %d - %s\n",
+        new_socket,
+        error_code,
+        error_message);
+      FreeErrorMessage(error_message);
+    }
 
     OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
                       new_socket);
@@ -370,11 +392,15 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckEncapsulationInactivity(socket);
   }
 
+  /* Check if all connections from one originator times out */
+  //CheckForTimedOutConnectionsAndCloseTCPConnections();
+
   //OPENER_TRACE_INFO("Socket Loop done\n");
 
   g_actual_time = GetMilliSeconds();
   g_network_status.elapsed_time += g_actual_time - g_last_time;
   g_last_time = g_actual_time;
+  //OPENER_TRACE_INFO("Elapsed time: %u\n", g_network_status.elapsed_time);
 
   /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
    * This should compensate the jitter of the windows timer
@@ -631,7 +657,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       }
     } while (0 < data_size);
     SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-    OPENER_ASSERT(0 <= data_size);
     return kEipStatusOk;
   }
 
@@ -676,7 +701,14 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     struct sockaddr sender_address;
     memset( &sender_address, 0, sizeof(sender_address) );
     socklen_t fromlen = sizeof(sender_address);
-    getpeername(socket, (struct sockaddr *)&sender_address, &fromlen);
+    if (getpeername(socket, (struct sockaddr *)&sender_address, &fromlen) < 0) {
+      int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR("networkhandler: could not get peername: %d - %s\n",
+                       error_code,
+                       error_message);
+      FreeErrorMessage(error_message);
+    }
 
     number_of_read_bytes = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
@@ -738,18 +770,32 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
-  if ( ( new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == -1 ) {
+  if ( ( new_socket =
+           socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n",
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
-    return kEipInvalidSocket;
+    return new_socket;
   }
 
-  SetSocketToNonBlocking(new_socket);
-  SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) );
+  if (SetSocketToNonBlocking(new_socket) < 0) {
+    OPENER_TRACE_ERR(
+      "error setting socket to non-blocking on new socket\n");
+    return kEipStatusError;
+  }
+
+  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) <= 0) { /* got error */
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
+      "networkhandler: error on set QoS on socket on new socket: %d - %s\n",
+      error_code,
+      error_message);
+    FreeErrorMessage(error_message);
+  }
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
@@ -772,6 +818,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       OPENER_TRACE_ERR("error on bind udp: %d - %s\n", error_code,
                        error_message);
       FreeErrorMessage(error_message);
+      CloseSocket(new_socket);
       return kEipInvalidSocket;
     }
 
@@ -783,7 +830,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
                         &g_time_to_live_value,
-                        sizeof(g_time_to_live_value) < 0) ) {
+                        sizeof(g_time_to_live_value) ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
           OPENER_TRACE_ERR(
@@ -930,6 +977,12 @@ void CheckEncapsulationInactivity(int socket_handle) {
 
       if ( diff_milliseconds >=
            (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
+
+        size_t encapsulation_session_handle =
+          GetSessionFromSocket(socket_handle);
+
+        CloseClass3ConnectionBasedOnSession(encapsulation_session_handle);
+
         CloseTcpSocket(socket_handle);
         RemoveSession(socket_handle);
       }

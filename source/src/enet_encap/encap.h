@@ -7,6 +7,7 @@
 #define OPENER_ENCAP_H_
 
 #include "typedefs.h"
+#include "cipconnectionobject.h"
 
 /** @file encap.h
  * @brief This file contains the public interface of the encapsulation layer
@@ -80,6 +81,16 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
+size_t GetSessionFromSocket(const int socket_handle);
+
 void RemoveSession(const int socket);
+
+void CloseSessionBySessionHandle(
+  const CipConnectionObject *const connection_object);
+
+void CloseEncapsulationSessionBySockAddr(
+  const CipConnectionObject *const connection_object);
+
+void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle);
 
 #endif /* OPENER_ENCAP_H_ */

@@ -222,4 +222,11 @@ void RemoveFromActiveConnections(CipConnectionObject *const connection_object);
 
 CipUint GetConnectionId(void);
 
+typedef void (*CloseSessionFunction)(const CipConnectionObject *const
+                                     connection_object);
+
+void CheckForTimedOutConnectionsAndCloseTCPConnections(
+  const CipConnectionObject *const connection_object,
+  CloseSessionFunction CloseSessions);
+
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

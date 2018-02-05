@@ -620,12 +620,15 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
     assembly_class, connection_object->configuration_path.instance_id);
 
   if (0 != g_config_data_length) {
+    OPENER_ASSERT(NULL != config_instance);
     if ( ConnectionWithSameConfigPointExists(
-           connection_object->configuration_path.instance_id) ) {                                               /* there is a connected connection with the same config point
-                                                                                                                 * we have to have the same data as already present in the config point*/
+           connection_object->configuration_path.instance_id) ) {
+      /* there is a connected connection with the same config point
+       * we have to have the same data as already present in the config point*/
       CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
         config_instance,
         3)->data;
+      OPENER_ASSERT(NULL != attribute_three);
       if (attribute_three->length != g_config_data_length) {
         connection_manager_status =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
@@ -713,6 +716,12 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
                          connection_object->consumed_path.instance_id,
                          kIoConnectionEventTimedOut);
 
+  if(connection_object->last_package_watchdog_timer ==
+     connection_object->inactivity_watchdog_timer) {
+    CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
+                                                      CloseEncapsulationSessionBySockAddr);
+  }
+
   if ( kConnectionObjectConnectionTypeMulticast
        == ConnectionObjectGetTToOConnectionType(connection_object) ) {
     switch (ConnectionObjectGetInstanceType(connection_object) ) {
@@ -751,8 +760,6 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
   }
 
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
-//  OPENER_ASSERT(NULL != connection_object->connection_close_function);
-//  connection_object->connection_close_function(connection_object);
 }
 
 EipStatus SendConnectedData(CipConnectionObject *connection_object) {

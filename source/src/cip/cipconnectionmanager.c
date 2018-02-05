@@ -66,19 +66,22 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus AssembleForwardOpenResponse(
   CipConnectionObject *connection_object,
@@ -266,6 +269,7 @@ EipStatus HandleReceivedConnectedData(
         /* only handle the data if it is coming from the originator */
         if (connection_object->originator_address.sin_addr.s_addr
             == from_address->sin_addr.s_addr) {
+          ConnectionObjectResetLastPackageInactivityTimerValue(connection_object);
 
           if ( SEQ_GT32(
                  g_common_packet_format_data_item.address_item.data.
@@ -487,7 +491,8 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
+  struct sockaddr *originator_address,
+  const int encapsulation_session
   ) {
   (void) instance; /*suppress compiler warning */
 
@@ -497,6 +502,8 @@ EipStatus ForwardOpen(
   /*first check if we have already a connection with the given params */
   ConnectionObjectInitializeFromMessage(&(message_router_request->data),
                                         &g_dummy_connection_object);
+  g_dummy_connection_object.associated_encapsulation_session =
+    encapsulation_session;
 
   memcpy( &(g_dummy_connection_object.originator_address), originator_address,
           sizeof(g_dummy_connection_object.originator_address) );
@@ -552,8 +559,8 @@ EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
-  ) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
 
@@ -628,8 +635,8 @@ EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address
-  ) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;
@@ -663,6 +670,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
           connection_object->connection_timeout_function(connection_object);
         } else {
           connection_object->inactivity_watchdog_timer -= elapsed_time;
+          connection_object->last_package_watchdog_timer -= elapsed_time;
         }
       }
       /* only if the connection has not timed out check if data is to be send */
@@ -1491,6 +1499,28 @@ EipStatus TriggerConnections(
     }
   }
   return status;
+}
+
+void CheckForTimedOutConnectionsAndCloseTCPConnections(
+  const CipConnectionObject *const connection_object,
+  CloseSessionFunction CloseSessions) {
+
+  DoublyLinkedListNode *search_node = connection_list.first;
+  bool non_timed_out_connection_found = false;
+  while(NULL != search_node) {
+    CipConnectionObject *search_connection = search_node->data;
+    if(ConnectionObjectEqualOriginator(connection_object, search_connection)
+       && connection_object != search_connection
+       && kConnectionObjectStateTimedOut !=
+       ConnectionObjectGetState(search_connection) ) {
+      non_timed_out_connection_found = true;
+      break;
+    }
+    search_node = search_node->next;
+  }
+  if(false == non_timed_out_connection_found) {
+    CloseSessions(connection_object);
+  }
 }
 
 void InitializeConnectionManagerData() {

@@ -8,11 +8,19 @@
 
 #include "cipclass3connection.h"
 
+#include "encap.h"
+
 /**** Global variables ****/
 extern CipConnectionObject explicit_connection_object_pool[
   OPENER_CIP_NUM_EXPLICIT_CONNS];
 
 CipConnectionObject *GetFreeExplicitConnection(void);
+
+void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
+  CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
+                                                    CloseSessionBySessionHandle);
+  CloseConnection(connection_object);
+}
 
 /**** Implementation ****/
 EipStatus EstablishClass3Connection(
@@ -42,7 +50,7 @@ EipStatus EstablishClass3Connection(
       CloseConnection;
     /* explicit connection have to be closed on time out*/
     explicit_connection->connection_timeout_function =
-      CloseConnection;
+      Class3ConnectionTimeoutHandler;
 
     AddNewActiveConnection(explicit_connection);
   }

@@ -67,19 +67,22 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address);
+  struct sockaddr *originator_address,
+  const int encapsulation_session);
 
 EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
   (void) instance; /*Suppress compiler warning */
@@ -226,7 +229,8 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *RESTRICT const message_router_request,
   CipMessageRouterResponse *RESTRICT const message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
 
   EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
@@ -323,7 +327,8 @@ EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address) {
+  struct sockaddr *originator_address,
+  const int encapsulation_session) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
@@ -343,7 +348,8 @@ EipStatus GetAttributeAllTcpIpInterface(
       if ( kEipStatusOkSend
            != GetAttributeSingleTcpIpInterface(instance, message_router_request,
                                                message_router_response,
-                                               originator_address) ) {
+                                               originator_address,
+                                               encapsulation_session) ) {
         message_router_response->data = response;
         return kEipStatusError;
       }
@@ -378,6 +384,7 @@ EipStatus GetAttributeAllTcpIpInterface(
 
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
+  OPENER_ASSERT(NULL != attribute);
   CipUint *data = (CipUint *) attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;

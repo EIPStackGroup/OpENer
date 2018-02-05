@@ -73,11 +73,14 @@ DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
 
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
 
-  if(NULL != *node && NULL != node) {
-    memset( *node, 0, sizeof(DoublyLinkedListNode) );
-    *node = NULL;
-  } else {
-    OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
+  if(NULL != node) {
+    if(NULL != *node) {
+      memset( *node, 0, sizeof(DoublyLinkedListNode) );
+      *node = NULL;
+    } else {
+      OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
+    }
+    OPENER_TRACE_ERR("Attempt to provide a NULL pointer to node pointer\n");
   }
 
 }
@@ -546,10 +549,18 @@ void ConnectionObjectResetInactivityWatchdogTimerValue(
       connection_object);
 }
 
+void ConnectionObjectResetLastPackageInactivityTimerValue(
+  CipConnectionObject *const connection_object) {
+  connection_object->last_package_watchdog_timer =
+    ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
+      connection_object);
+}
+
 uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   const CipConnectionObject *const connection_object) {
-  return ( ( (connection_object->o_to_t_requested_packet_interval) /
-             1000 ) << (2 + connection_object->connection_timeout_multiplier) );
+  return ( ( (uint64_t)(connection_object->o_to_t_requested_packet_interval) /
+             (uint64_t)1000 ) <<
+           (2 + connection_object->connection_timeout_multiplier) );
 }
 
 
@@ -784,6 +795,17 @@ void ConnectionObjectGeneralConfiguration(
   ConnectionObjectResetProductionInhibitTimer(connection_object);
 
   connection_object->transmission_trigger_timer = 0;
+}
+
+bool ConnectionObjectEqualOriginator(const CipConnectionObject *const object1,
+                                     const CipConnectionObject *const object2) {
+  if ( (object1->originator_vendor_id
+        == object2->originator_vendor_id)
+       && (object1->originator_serial_number
+           == object2->originator_serial_number) ) {
+    return true;
+  }
+  return false;
 }
 
 bool EqualConnectionTriad(const CipConnectionObject *const object1,
