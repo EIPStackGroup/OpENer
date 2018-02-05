@@ -784,6 +784,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   if (SetSocketToNonBlocking(new_socket) < 0) {
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
+    CloseSocket(new_socket);
+    OPENER_ASSERT(false); /* This should never happen! */
     return kEipStatusError;
   }
 
