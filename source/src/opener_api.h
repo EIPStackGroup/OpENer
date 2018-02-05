@@ -324,16 +324,16 @@ typedef EipStatus (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(
-  struct connection_object *connection_object);
+typedef void (*ConnectionCloseFunction)(struct connection_object *
+                                        connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
  *
  * @param connection_object The connection object which connection timed out
  */
-typedef void (*ConnectionTimeoutFunction)(
-  struct connection_object *connection_object);
+typedef void (*ConnectionTimeoutFunction)(struct connection_object *
+                                          connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -342,8 +342,8 @@ typedef void (*ConnectionTimeoutFunction)(
  *
  * @return EIP stack status
  */
-typedef EipStatus (*ConnectionSendDataFunction)(
-  struct connection_object *connection_object);
+typedef EipStatus (*ConnectionSendDataFunction)(struct connection_object *
+                                                connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -355,7 +355,8 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-  struct connection_object *connection_object, const EipUint8 *data,
+  struct connection_object *connection_object,
+  const EipUint8 *data,
   const EipUint16 data_length);
 
 /** @ingroup CIP_API
