@@ -26,13 +26,13 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 
-void ConfigureIpMacAddress(const EipUint16 interface_index) {
+void ConfigureIpMacAddress(const CipUint interface_index) {
 
 	PIP_ADAPTER_INFO pAdapterInfo;
 	PIP_ADAPTER_INFO pAdapter = NULL;
-	DWORD dwRetVal = 0;
+	CipDword dwRetVal = 0;
 
-	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+	CipUdint ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 	pAdapterInfo = (IP_ADAPTER_INFO *)CipCalloc(1,sizeof(IP_ADAPTER_INFO));
 	if (pAdapterInfo == NULL) {
 		printf("Error allocating memory needed to call GetAdaptersinfo\n");
@@ -42,7 +42,7 @@ void ConfigureIpMacAddress(const EipUint16 interface_index) {
 	// the necessary size into the ulOutBufLen variable
 	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
 		CipFree(pAdapterInfo);
-		pAdapterInfo = (IP_ADAPTER_INFO *)CipCalloc(ulOutBufLen,sizeof(CipLint));
+		pAdapterInfo = (IP_ADAPTER_INFO *)CipCalloc(ulOutBufLen,sizeof(CipUdint));
 		if (pAdapterInfo == NULL) {
 			printf("Error allocating memory needed to call GetAdaptersinfo\n");
 			return 1;
@@ -63,7 +63,7 @@ void ConfigureIpMacAddress(const EipUint16 interface_index) {
 				interface_configuration_.network_mask = inet_addr(pAdapter->IpAddressList.IpMask.String);
 				interface_configuration_.gateway = inet_addr(pAdapter->GatewayList.IpAddress.String);
 
-				EipUint32 host_id = ntohl(interface_configuration_.ip_address)
+				CipUdint host_id = ntohl(interface_configuration_.ip_address)
 					& ~ntohl(interface_configuration_.network_mask); /* see CIP spec 3-5.3 for multicast address algorithm*/
 				host_id -= 1;
 				host_id &= 0x3ff;
@@ -82,28 +82,23 @@ void ConfigureIpMacAddress(const EipUint16 interface_index) {
 	CipFree(pAdapter);
 }
 
-void ConfigureDomainName(const EipUint16 interface_index) {
+void ConfigureDomainName(const CipUint interface_index) {
 
-	DWORD dwSize = 0;
+	CipDword dwSize = 0;
 	int i = 0;
 	// Set the flags to pass to GetAdaptersAddresses
-	ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
-	DWORD dwRetVal = 0;
+	CipUdint flags = GAA_FLAG_INCLUDE_PREFIX;
+	CipDword dwRetVal = 0;
 	// default to unspecified address family (both)
-	ULONG family = AF_UNSPEC;
+	CipUdint family = AF_UNSPEC;
 
 	LPVOID lpMsgBuf = NULL;
 
 	PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-	ULONG outBufLen = 0;
-	ULONG Iterations = 0;
-
 	PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-	PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-	PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-	PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
 	IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-	IP_ADAPTER_PREFIX *pPrefix = NULL;
+	CipUdint outBufLen = 0;
+	CipUdint tries = 0;
 
 	family = AF_INET;
 		// Allocate a 15 KB buffer to start with.
@@ -129,9 +124,9 @@ void ConfigureDomainName(const EipUint16 interface_index) {
 			break;
 		}
 
-		Iterations++;
+		tries++;
 
-	} while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
+	} while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (tries < MAX_TRIES));
 
 	if (dwRetVal == NO_ERROR) {
 		// If successful, output some information from the data we received
@@ -155,8 +150,8 @@ void ConfigureDomainName(const EipUint16 interface_index) {
 					}
 					interface_configuration_.domain_name.length = strlen(pCurrAddresses->DnsSuffix);
 					if (interface_configuration_.domain_name.length) {
-						interface_configuration_.domain_name.string = (EipByte *)CipCalloc(
-							interface_configuration_.domain_name.length + 1, sizeof(EipInt8));
+						interface_configuration_.domain_name.string = (CipByte *)CipCalloc(
+							interface_configuration_.domain_name.length + 1, sizeof(CipUsint));
 						strcpy(interface_configuration_.domain_name.string, pCurrAddresses->DnsSuffix);
 					}
 					else {
@@ -167,52 +162,16 @@ void ConfigureDomainName(const EipUint16 interface_index) {
 					InetNtop(AF_INET, pCurrAddresses->FirstDnsServerAddress->Next->Address.lpSockaddr->sa_data + 2, interface_configuration_.name_server_2, sizeof(interface_configuration_.name_server_2));
 				}
 				else interface_configuration_.domain_name.length = 0;
-
-				if (pCurrAddresses->PhysicalAddressLength != 0) {
-					printf("\tPhysical address: ");
-					for (int i = 0; i < (int)pCurrAddresses->PhysicalAddressLength;
-						i++) {
-						if (i == (pCurrAddresses->PhysicalAddressLength - 1))
-							printf("%.2X\n",
-							(int)pCurrAddresses->PhysicalAddress[i]);
-						else
-							printf("%.2X-",
-							(int)pCurrAddresses->PhysicalAddress[i]);
-					}
-				}
-				/*			printf("\tFlags: %ld\n", pCurrAddresses->Flags);
-				printf("\tMtu: %lu\n", pCurrAddresses->Mtu);
-				printf("\tIfType: %ld\n", pCurrAddresses->IfType);
-				printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
-				printf("\tIpv6IfIndex (IPv6 interface): %u\n",
-				pCurrAddresses->Ipv6IfIndex);
-				printf("\tZoneIndices (hex): ");
-				for (i = 0; i < 16; i++)
-				printf("%lx ", pCurrAddresses->ZoneIndices[i]);
-				printf("\n");
-
-				printf("\tTransmit link speed: %I64u\n", pCurrAddresses->TransmitLinkSpeed);
-				printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed);
-
-				pPrefix = pCurrAddresses->FirstPrefix;
-				if (pPrefix) {
-				for (i = 0; pPrefix != NULL; i++)
-				pPrefix = pPrefix->Next;
-				printf("\tNumber of IP Adapter Prefix entries: %d\n", i);
-				}
-				else
-				printf("\tNumber of IP Adapter Prefix entries: 0\n");*/
-
-				printf("\n");
+				
 			}
 			pCurrAddresses = pCurrAddresses->Next;
 		}
 	}
 	else {
-		printf("Call to GetAdaptersAddresses failed with error: %d\n",
+		OPENER_TRACE_INFO("Call to GetAdaptersAddresses failed with error: %d\n",
 			dwRetVal);
 		if (dwRetVal == ERROR_NO_DATA)
-			printf("\tNo addresses were found for the requested parameters\n");
+			OPENER_TRACE_INFO("\tNo addresses were found for the requested parameters\n");
 		else {
 
 			if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -220,7 +179,7 @@ void ConfigureDomainName(const EipUint16 interface_index) {
 				NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				// Default language
 				(LPTSTR)& lpMsgBuf, 0, NULL)) {
-				printf("\tError: %s", lpMsgBuf);
+				OPENER_TRACE_INFO("\tError: %s", lpMsgBuf);
 				CipFree(lpMsgBuf);
 				if (pAddresses)
 					CipFree(pAddresses);
@@ -236,8 +195,8 @@ void ConfigureDomainName(const EipUint16 interface_index) {
 
 }
 
-void ConfigureHostName(const EipUint16 interface_index) {
-	WORD wVersionRequested;
+void ConfigureHostName(const CipUint interface_index) {
+	CipWord wVersionRequested;
 	WSADATA wsaData;
 	int err;
 
@@ -269,8 +228,8 @@ void ConfigureHostName(const EipUint16 interface_index) {
   }
   hostname_.length = strlen(hostname);
   if (hostname_.length) {
-    hostname_.string = (EipByte *) CipCalloc( hostname_.length + 1,
-                                              sizeof(EipByte) );
+    hostname_.string = (CipByte *) CipCalloc( hostname_.length + 1,
+                                              sizeof(CipByte) );
     strcpy(hostname_.string, hostname);
   } else {
     hostname_.string = NULL;

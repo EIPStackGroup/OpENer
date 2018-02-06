@@ -79,9 +79,9 @@ Compile for Windows XP/7/8:
 2. Open Visual Studio solution in bin/win32
 3. For invoking opener type in command line:
 
-		OpENer ipaddress subnetmask gateway domainname hostaddress macaddress
+		OpENer interface_index
 
-		e.g. OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87
+		e.g. OpENer 3
  
 Directory structure:
 --------------------
