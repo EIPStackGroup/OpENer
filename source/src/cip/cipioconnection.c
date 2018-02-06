@@ -625,18 +625,21 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
            connection_object->configuration_path.instance_id) ) {
       /* there is a connected connection with the same config point
        * we have to have the same data as already present in the config point*/
-      CipByteArray *attribute_three = (CipByteArray *) GetCipAttribute(
+      CipAttributeStruct *attribute_three = GetCipAttribute(
         config_instance,
-        3)->data;
+        3);
       OPENER_ASSERT(NULL != attribute_three);
-      if (attribute_three->length != g_config_data_length) {
+      CipByteArray *attribute_three_data =
+        (CipByteArray *) attribute_three->data;
+      OPENER_ASSERT(NULL != attribute_three_data);
+      if (attribute_three_data->length != g_config_data_length) {
         connection_manager_status =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
         OPENER_TRACE_INFO(
           "Hit an Ownership conflict in cipioconnection.c occurrence 1");
       } else {
         /*FIXME check if this is correct */
-        if ( memcmp(attribute_three->data, g_config_data_buffer,
+        if ( memcmp(attribute_three_data->data, g_config_data_buffer,
                     g_config_data_length) ) {
           connection_manager_status =
             kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;

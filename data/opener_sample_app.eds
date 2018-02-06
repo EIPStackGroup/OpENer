@@ -1,24 +1,24 @@
-$ EZ-EDS Version 3.11 (Beta, March-29, 2012) Generated Electronic Data Sheet
+$ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
 
 [File]
         DescText = "EDS file for the sample application of OpENer";
         CreateDate = 11-03-2009;
         CreateTime = 13:15:23;
-        ModDate = 04-18-2012;
-        ModTime = 13:10:38;
-        Revision = 1.0;
-        HomeURL = "opener.sf.net";
+        ModDate = 02-06-2018;
+        ModTime = 14:05:38;
+        Revision = 2.1;
+        HomeURL = "https://github.com/EIPStackGroup/OpENer";
 
 [Device]
         VendCode = 1;
         VendName = "Rockwell Automation";
         ProdType = 12;
         ProdTypeStr = "Communications Adapter";
-        ProdCode = 200;
-        MajRev = 1;
-        MinRev = 2;
+        ProdCode = 65001;
+        MajRev = 2;
+        MinRev = 1;
         ProdName = "OpENer PC";
-        Catalog = "OpENer-1.x";
+        Catalog = "OpENer-2.x";
 
 [Device Classification]
         Class1 = EtherNetIP;
@@ -78,6 +78,8 @@ $ EZ-EDS Version 3.11 (Beta, March-29, 2012) Generated Electronic Data Sheet
                 ;                       $ decimal places
 
 [Assembly]
+        Object_Name = "Assembly Object";
+        Object_Class_Code = 0x04;
         Number_Of_Static_Instances = 6;
         Assem100 =
                 "Input Assembly",
@@ -173,6 +175,12 @@ $ EZ-EDS Version 3.11 (Beta, March-29, 2012) Generated Electronic Data Sheet
                 8,Param3;
 
 [Connection Manager]
+        Revision = 1;
+        Object_Name = "Connection Manager Object";
+        Object_Class_Code = 0x06;
+        MaxInst = 1;
+        Number_Of_Static_Instances = 1;
+        Max_Number_Of_Dynamic_Instances = 0;
         Connection1 =
                 0x84010002,             $ 0-15    = supported transport classes
                                         $ 16      = trigger: cyclic
@@ -316,4 +324,36 @@ $ EZ-EDS Version 3.11 (Beta, March-29, 2012) Generated Electronic Data Sheet
         MaxIOMcastConsumers = 1;
         MaxConsumersPerMcast = 6;
         TSpec1 = TxRx, 32, 100;
+
+[TCP/IP Interface Class]
+        Revision = 4;
+        Object_Name = "TCP/IP Interface Object";
+        Object_Class_Code = 0xF5;
+        MaxInst = 1;
+        Number_Of_Static_Instances = 1;
+        Max_Number_Of_Dynamic_Instances = 0;
+
+[Ethernet Link Class]
+        Revision = 4;
+        Object_Name = "Ethernet Link Object";
+        Object_Class_Code = 0xF6;
+        MaxInst = 1;
+        Number_Of_Static_Instances = 1;
+        Max_Number_Of_Dynamic_Instances = 0;
+
+[Identity Class]
+        Revision = 2;
+        Object_Name = "Identity Object";
+        Object_Class_Code = 0x01;
+        MaxInst = 1;
+        Number_Of_Static_Instances = 1;
+        Max_Number_Of_Dynamic_Instances = 0;
+
+[QoS Class]
+        Revision = 1;
+        Object_Name = "QoS Object";
+        Object_Class_Code = 0x48;
+        MaxInst = 1;
+        Number_Of_Static_Instances = 1;
+        Max_Number_Of_Dynamic_Instances = 0;
 

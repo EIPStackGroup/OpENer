@@ -11,8 +11,17 @@ project( OpENer C )
 #######################################
 # Project version                     #
 #######################################
-set( OpENer_VERSION_MAJOR 1 )
-set( OpENer_VERSION_MINOR 2 )
+set( OpENer_Device_Config_Vendor_Id 1 CACHE STRING "Device Vendor ID")
+set( OpENer_Device_Config_Device_Type 12 CACHE STRING "Device Type ID")
+set( OpENer_Device_Config_Product_Code 65001 CACHE STRING "Device Product Code")
+set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name")
+set( OpENer_VERSION_MAJOR 2 )
+set( OpENer_VERSION_MINOR 1 )
+
+configure_file( 
+	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
+	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
+	)
 
 find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsupport )
  

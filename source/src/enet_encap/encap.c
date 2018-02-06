@@ -302,9 +302,6 @@ int HandleReceivedExplictUdpData(int socket,
       if (kEipStatusOk < status) {
         /* if status is greater than 0 data has to be sent */
         status = EncapsulateData(&encapsulation_data);
-      } else if (kEipStatusError == status) {
-        /* Report error state with negative return value */
-        status = kEipStatusError;
       }
     }
   }
