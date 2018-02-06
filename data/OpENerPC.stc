@@ -1,10 +1,10 @@
- StcRev Data |1.23|CT-14|OpENerPC|1507751755| DevData |255|0|500|500|500,500|X||ENet|
+ StcRev Data |1.23|CT-14|OpENerPC|1517911412| DevData |255|0|500|500|500,500|X||ENet|
 [<00>]-------|OpENer PC||
-  General    |3.21|EtherNet/IP Vol 2, Ed 1.22||1.2|Rockwell Automation/Allen-Bradley|1|65001|
+  General    |3.21|EtherNet/IP Vol 2, Ed 1.22||2.1|Rockwell Automation/Allen-Bradley|1|65001|
   DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72,77,84,85,86,87,69,81,78,79,80,83,92|
   PhysConf   ||X| |X| | | | | |0|X| | |
   LEDs       | | | | | |
-  IP MAC Set | |X| |192.168.56.101| | ||08:00:27:36:40:8c| | | |
+  IP MAC Set | |X| |192.168.56.101| | ||08:00:27:a9:4b:00| | | |
   CRate Set  |X| | |X| | ||
   CRate Sup  |X|X| |X|X|
   Net Behavi | | ||| | | | | | | |
@@ -26,7 +26,7 @@
   CSP        |||||||||||||
   IAG        |X|X|X|X|X|X|X| | | | | | | | | | | | |
   IAS        | | | | | | | | | | | | | | | | | | | |
-  IAL        | =(1)| =(12)| =(65001)| =(1.2)| | | =(OpENer PC)| | | | | | | | | | | | |
+  IAL        | =(1)| =(12)| =(65001)| =(2.1)| | | =(OpENer PC)| | | | | | | | | | | | |
   IS         |X|X|X| | | | | | | | | |
   ISP        ||0,1|||||||||||
   VSA        | |
@@ -135,7 +135,7 @@
   CSP        |||||||||||
   IAG        |X|X|X| | | | | | | |X| | | | |
   IAS        | | | | | | | | | | | | | | | |
-  IAL        | =(0,10,100)| |MAC address (08:00:27:36:40:8c)| | | | | | | | | | | | |
+  IAL        | =(0,10,100)| |MAC address (08:00:27:a9:4b:00)| | | | | | | | | | | | |
   IS         |X|X| | | | | | | | | |
   ISP        ||||||||||||
   VSA        | |
@@ -146,8 +146,8 @@
   CAL        | | | | | | | |
   CS         | | | | | | | | | | |
   CSP        |||||||||||
-  IAG        |X|X|X|X|X|X|X|X|
-  IAS        |X|X|X|X|X|X|X|X|
+  IAG        | | | |X|X|X|X|X|
+  IAS        | | | |X|X|X|X|X|
   IAL        | =(0)| =(59)| =(47)| =(55)| =(47)| =(43)| =(31)| =(27)|
   IS         |X|X| | | | | | | |
   ISP        ||||||||||
