@@ -45,8 +45,8 @@ int SetSocketToNonBlocking(int socket_handle) {
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-void SetQosOnSocket(int socket,
+int SetQosOnSocket(int socket,
                     CipUsint qos_value) {
   CipUsint set_tos = qos_value;
-  setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
+  return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

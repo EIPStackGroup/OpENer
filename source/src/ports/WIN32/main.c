@@ -31,30 +31,24 @@ int g_end_stack = 0;
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
-  EipUint8 acMyMACAddress[6];
   EipUint16 nUniqueConnectionID;
 
-  if (argc != 12) {
+  if (argc != 2) {
     printf("Wrong number of command line parameters!\n");
     printf("The correct command line parameters are:\n");
     printf(
-      "./OpENer ipaddress subnetmask gateway domainname hostaddress macaddress\n");
+      "./OpENer index\n");
     printf(
-      "    e.g. ./OpENer 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
+      "    e.g. ./OpENer index\n");
     exit(0);
   } else {
+	  DoublyLinkedListInitialize(&connection_list,
+		  CipConnectionObjectListArrayAllocator,
+		  CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
-    ConfigureNetworkInterface(arg[1], arg[2], arg[3]);
-    ConfigureDomainName(arg[4]);
-    ConfigureHostName(arg[5]);
-
-    acMyMACAddress[0] = (EipUint8) strtoul(arg[6], NULL, 16);
-    acMyMACAddress[1] = (EipUint8) strtoul(arg[7], NULL, 16);
-    acMyMACAddress[2] = (EipUint8) strtoul(arg[8], NULL, 16);
-    acMyMACAddress[3] = (EipUint8) strtoul(arg[9], NULL, 16);
-    acMyMACAddress[4] = (EipUint8) strtoul(arg[10], NULL, 16);
-    acMyMACAddress[5] = (EipUint8) strtoul(arg[11], NULL, 16);
-    ConfigureMacAddress(acMyMACAddress);
+    ConfigureDomainName(atoi(arg[1]));
+    ConfigureHostName(atoi(arg[1]));    
+    ConfigureIpMacAddress(atoi(arg[1]));
   }
 
   /*for a real device the serial number should be unique per device */
