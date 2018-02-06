@@ -430,7 +430,7 @@ bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
     CipConnectionObject *connection = node->data;
     OPENER_ASSERT(NULL != connection);
     if (config_point == connection->configuration_path.instance_id) {
-      return (NULL != connection);
+      return true;
     }
     node = node->next;
   }
