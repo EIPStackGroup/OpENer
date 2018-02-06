@@ -8,7 +8,7 @@
 [![Stories in Ready](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=ready&title=Ready)](http://waffle.io/EIPStackGroup/OpENer)
 [![Stories in In Progress](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=in%20progress&title=In%20Progress)](http://waffle.io/EIPStackGroup/OpENer)
 
-OpENer Version 1.2.0
+OpENer Version 2.1.0
 ====================
 
 Welcome to OpENer!
