@@ -29,14 +29,8 @@
 
 #include "typedefs.h"
 
-
 /** @brief Identity configuration of the device */
-#define OPENER_DEVICE_VENDOR_ID           1
-#define OPENER_DEVICE_TYPE               12
-#define OPENER_DEVICE_PRODUCT_CODE      65001
-#define OPENER_DEVICE_MAJOR_REVISION      1
-#define OPENER_DEVICE_MINOR_REVISION      2
-#define OPENER_DEVICE_NAME      ("OpENer PC")
+#include "devicedata.h"
 
 /** @brief Define the number of objects that may be used in connections
  *
