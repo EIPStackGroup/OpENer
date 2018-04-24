@@ -42,13 +42,13 @@ int main(int argc,
       "    e.g. ./OpENer index\n");
     exit(0);
   } else {
-	  DoublyLinkedListInitialize(&connection_list,
-		  CipConnectionObjectListArrayAllocator,
-		  CipConnectionObjectListArrayFree);
+    DoublyLinkedListInitialize(&connection_list,
+                               CipConnectionObjectListArrayAllocator,
+                               CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
-    ConfigureDomainName(atoi(arg[1]));
-    ConfigureHostName(atoi(arg[1]));    
-    ConfigureIpMacAddress(atoi(arg[1]));
+    ConfigureDomainName(atoi(arg[1]) );
+    ConfigureHostName(atoi(arg[1]) );
+    ConfigureIpMacAddress(atoi(arg[1]) );
   }
 
   /*for a real device the serial number should be unique per device */
