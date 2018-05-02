@@ -456,6 +456,11 @@ EipStatus OpenProducingMulticastConnection(
     j = 1;
   }
 
+  int port = htons(kOpenerEipIoUdpPort);
+    if(kCipItemIdSocketAddressInfoTargetToOriginator != common_packet_format_data->address_info_item[j].type_id) {
+  	  port = common_packet_format_data->address_info_item[j].sin_port;
+    }
+
   common_packet_format_data->address_info_item[j].type_id =
     kCipItemIdSocketAddressInfoTargetToOriginator;
 
@@ -491,7 +496,7 @@ EipStatus OpenProducingMulticastConnection(
   connection_object->remote_address.sin_family = AF_INET;
   connection_object->remote_address.sin_port = common_packet_format_data
                                                ->address_info_item[j].sin_port
-                                                 = htons(kOpenerEipIoUdpPort);
+                                                 = port;
   connection_object->remote_address.sin_addr.s_addr = common_packet_format_data
                                                       ->address_info_item[j].
                                                       sin_addr =

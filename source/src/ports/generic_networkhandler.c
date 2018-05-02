@@ -540,6 +540,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
                       EipUint8 *data,
                       EipUint16 data_length) {
 
+	OPENER_TRACE_INFO("UDP port to be sent to: %x\n", ntohs(address->sin_port));
   int sent_length = sendto( socket, (char *) data, data_length, 0,
                             (struct sockaddr *) address, sizeof(*address) );
 
@@ -828,6 +829,21 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", new_socket);
   } else { /* we have a producing udp socket */
 
+	  int option_value = 1;
+	  setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
+	                      (char *) &option_value,
+	                      sizeof(option_value) );
+
+	  struct sockaddr_in source_addr = {
+	  .sin_addr = INADDR_ANY,
+	  .sin_family = AF_INET,
+	  .sin_port = htons(0x08ae)
+	  };
+
+	  memset(source_addr.sin_zero, 0, 8 * sizeof(CipUsint));
+
+	  // The bind on UDP sockets is necessary as the ENIP spec wants the source port to be specified to 2222 = 0x08ae
+	  bind(new_socket, (struct sockaddr*) &source_addr, sizeof(source_addr));
     if (socket_data->sin_addr.s_addr
         == g_multicast_configuration.starting_multicast_address) {
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
