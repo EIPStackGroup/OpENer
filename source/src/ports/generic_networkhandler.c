@@ -711,7 +711,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       FreeErrorMessage(error_message);
     }
 
-    number_of_read_bytes = HandleReceivedExplictTcpData(
+    int number_of_bytes_to_send = HandleReceivedExplictTcpData(
       socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
       &sender_address);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
@@ -730,17 +730,17 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         remaining_bytes);
     }
 
-    if (number_of_read_bytes > 0) {
+    if (number_of_bytes_to_send > 0) {
       OPENER_TRACE_INFO("TCP reply sent:\n");
 
       data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
-                       number_of_read_bytes, 0);
+                       number_of_bytes_to_send, 0);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
         g_timestamps,
         OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
         socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-      if (data_sent != number_of_read_bytes) {
+      if (data_sent != number_of_bytes_to_send) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
       }
     }
