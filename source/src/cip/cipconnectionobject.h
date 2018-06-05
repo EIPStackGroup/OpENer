@@ -186,6 +186,8 @@ struct cip_connection_object {
   ConnectionTimeoutFunction connection_timeout_function;
   ConnectionSendDataFunction connection_send_data_function;
   ConnectionReceiveDataFunction connection_receive_data_function;
+
+  CipOctet last_reply_sent[OPENER_MESSAGE_DATA_REPLY_BUFFER];
 };
 
 DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(

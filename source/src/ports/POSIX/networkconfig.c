@@ -114,7 +114,6 @@ void ConfigureDomainName() {
   FILE *file_handle = fopen("/etc/resolv.conf", "r");
 
   char line[100] = { 0 };
-  char *string_part1 = NULL;
   char *domain_name_string = NULL;
   char *dns1_string = NULL;
   char *dns2_string = NULL;
@@ -123,7 +122,7 @@ void ConfigureDomainName() {
 
   while ( fgets(line, 100, file_handle) ) {
     if (strstr(line, "domain") && !done_domain) {
-      string_part1 = strtok(line, " ");
+      strtok(line, " ");
       domain_name_string = strtok(NULL, "\n");
 
       if (NULL != interface_configuration_.domain_name.string) {
@@ -146,7 +145,7 @@ void ConfigureDomainName() {
     }
 
     if (strstr(line, "nameserver") && !done_n1) {
-      string_part1 = strtok(line, " ");
+      strtok(line, " ");
       dns1_string = strtok(NULL, "\n");
 
       inet_pton(AF_INET, dns1_string, &interface_configuration_.name_server);
@@ -155,7 +154,7 @@ void ConfigureDomainName() {
       continue;
     }
     if (strstr(line, "nameserver ") && done_n1) {
-      string_part1 = strtok(line, " ");
+      strtok(line, " ");
       dns2_string = strtok(NULL, "\n");
 
       inet_pton(AF_INET, dns2_string, &interface_configuration_.name_server_2);

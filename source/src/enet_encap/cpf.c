@@ -92,6 +92,9 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
           EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
             (EipUint32) GetIntFromMessage( (const EipUint8 **const)&buffer );
+
+          ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
+
           return_value = NotifyMessageRouter(
             buffer,
             g_common_packet_format_data_item.data_item.length - 2,

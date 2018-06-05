@@ -53,8 +53,7 @@ int SetSocketToNonBlocking(int socket_handle) {
                                              0) | O_NONBLOCK);
 }
 
-//TODO: Return setsocket return value
-int SetQosOnSocket(int socket,
+int SetQosOnSocket(const int socket,
                    CipUsint qos_value) {
 
   int set_tos = qos_value;
