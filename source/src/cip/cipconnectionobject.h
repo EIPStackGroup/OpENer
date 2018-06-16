@@ -106,8 +106,8 @@ struct cip_connection_object {
   CipUsint instance_type; /*< Attribute 2 */
   CipByte transport_class_trigger; /*< Attribute 3 */
   /* Attribute 4-6 only for device net*/
-  CipUint produced_connection_size; /*< Attribute 7 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
-  CipUint consumed_connection_size; /*< Attribute 8 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
+  CipUdint produced_connection_size; /*< Attribute 7 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
+  CipUdint consumed_connection_size; /*< Attribute 8 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
   CipUint cip_produced_connection_id; /*< Attribute 10 */
   CipUint cip_consumed_connection_id; /*< Attribute 11 */
