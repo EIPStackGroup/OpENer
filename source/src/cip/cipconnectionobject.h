@@ -109,8 +109,8 @@ struct cip_connection_object {
   CipUint produced_connection_size; /*< Attribute 7 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint consumed_connection_size; /*< Attribute 8 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
-  CipUint cip_produced_connection_id; /*< Attribute 10 */
-  CipUint cip_consumed_connection_id; /*< Attribute 11 */
+  CipUdint cip_produced_connection_id; /*< Attribute 10 */
+  CipUdint cip_consumed_connection_id; /*< Attribute 11 */
   CipUsint watchdog_timeout_action; /*< Attribute 12 */
   CipUint produced_connection_path_length; /*< Attribute 13 */
   CipOctet *produced_connection_path; /*< Attribute 14 */
