@@ -92,9 +92,10 @@ int NotifyCommonPacketFormat(EncapsulationData *const received_data,
  * @param  reply_buffer reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
-                                      EipUint8 *reply_buffer,
-                                      struct sockaddr *originator_address);
+int NotifyConnectedCommonPacketFormat(
+  const EncapsulationData *const received_data,
+  struct sockaddr *originator_address,
+  ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  *  Create CPF structure out of the received data.
@@ -132,8 +133,8 @@ int AssembleIOMessage(
  *         EIP_ERROR .. error
  */
 int AssembleLinearMessage(
-  CipMessageRouterResponse *message_router_response,
-  CipCommonPacketFormatData *common_packet_format_data_item,
+  const CipMessageRouterResponse *const message_router_response,
+  const CipCommonPacketFormatData *const common_packet_format_data_item,
   EipUint8 *message);
 
 /** @ingroup ENCAP

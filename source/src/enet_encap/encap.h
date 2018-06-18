@@ -45,8 +45,8 @@ typedef struct encapsulation_data {
   CipUdint status;
   CipOctet sender_context[8]; /**< length of 8, according to the specification */
   CipUdint options;
-  EipUint8 *communication_buffer_start; /**< Pointer to the communication buffer used for this message */
-  EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
+  const EipUint8 *communication_buffer_start; /**< Pointer to the communication buffer used for this message */
+  const EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
 } EncapsulationData;
 
 typedef struct encapsulation_interface_information {

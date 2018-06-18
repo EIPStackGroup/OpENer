@@ -64,9 +64,10 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
   return return_value;
 }
 
-int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
-                                      EipUint8 *reply_buffer,
-                                      struct sockaddr *originator_address) {
+int NotifyConnectedCommonPacketFormat(
+  const EncapsulationData *const received_data,
+  struct sockaddr *originator_address,
+  ENIPMessage *const outgoing_message) {
 
   int return_value = CreateCommonPacketFormatStructure(
     received_data->current_communication_buffer_position,
@@ -105,9 +106,9 @@ int NotifyConnectedCommonPacketFormat(EncapsulationData *received_data,
             g_common_packet_format_data_item.address_item.data
             .connection_identifier = connection_object
                                      ->cip_produced_connection_id;
-            return_value = AssembleLinearMessage(
+            outgoing_message->used_message_length += AssembleLinearMessage(
               &g_message_router_response, &g_common_packet_format_data_item,
-              reply_buffer);
+              outgoing_message->current_message_position);
           }
         } else {
           /* wrong data item detected*/
@@ -600,8 +601,8 @@ int EncodeSockaddrInfoLength(
  *                      -1 .. error
  */
 int AssembleLinearMessage(
-  CipMessageRouterResponse *message_router_response,
-  CipCommonPacketFormatData *common_packet_format_data_item,
+  const CipMessageRouterResponse *const message_router_response,
+  const CipCommonPacketFormatData *const common_packet_format_data_item,
   EipUint8 *message) {
 
   size_t message_size = 0;

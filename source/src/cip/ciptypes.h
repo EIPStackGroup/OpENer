@@ -8,6 +8,9 @@
 
 #include "typedefs.h"
 #include "networkhandler.h"
+#include "enipmessage.h"
+
+#include "opener_user_conf.h"
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */
