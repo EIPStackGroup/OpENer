@@ -93,4 +93,14 @@ void CloseEncapsulationSessionBySockAddr(
 
 void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle);
 
+/* No reason to use this functions outside the encapsulation layer, they are here for testing */
+typedef struct enip_message ENIPMessage;
+void EncapsulateListIdentityResponseMessage(
+  const EncapsulationData *const receive_data,
+  ENIPMessage *const outgoing_message);
+
+EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                      int receive_buffer_length,
+                                      EncapsulationData *const encapsulation_data);
+
 #endif /* OPENER_ENCAP_H_ */

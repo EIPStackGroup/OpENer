@@ -65,6 +65,7 @@ if( OpENer_TESTS )
   enable_language( CXX )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
+  add_test_includes()
   add_subdirectory( tests )
 endif( OpENer_TESTS )
 

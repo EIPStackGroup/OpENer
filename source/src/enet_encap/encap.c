@@ -130,10 +130,6 @@ EipStatus HandleReceivedInvalidCommand(
 
 int GetFreeSessionIndex(void);
 
-EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
-                                      int receive_buffer_length,
-                                      EncapsulationData *const encapsulation_data);
-
 SessionStatus CheckRegisteredSessions(
   const EncapsulationData *const receive_data);
 
@@ -141,10 +137,6 @@ int EncapsulateData(const EncapsulationData *const send_data);
 
 void DetermineDelayTime(const EipByte *const buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer);
-
-void EncapsulateListIdentityResponseMessage(
-  const EncapsulationData *const receive_data,
-  ENIPMessage *const outgoing_message);
 
 /*   @brief Initializes session list and interface information. */
 void EncapsulationInit(void) {
@@ -334,11 +326,11 @@ int HandleReceivedExplictUdpData(const int socket,
 
       if (kEipStatusOk < status) {
         /* if status is greater than 0 data has to be sent */
-        status = EncapsulateData(&encapsulation_data);
+        //status = EncapsulateData(&encapsulation_data);
       }
     }
   }
-  return status;
+  return outgoing_message->used_message_length;
 }
 
 /* Probably not needed with new approach */
@@ -439,7 +431,6 @@ void HandleReceivedListIdentityCommandTcp(
   EncapsulateListIdentityResponseMessage(receive_data, outgoing_message);
 }
 
-//TODO: Check and update this - Issue 141
 void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const struct sockaddr_in *const from_address,
                                           const EncapsulationData *const receive_data,
@@ -475,21 +466,46 @@ void EncapsulateListIdentityResponseMessage(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {
 
-  const CipUint kEncapsulationCommandListIdentity = 0x63;
+
+  const CipUint kEncapsulationCommandListIdentityCommandSpecificLength =
+    sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) + sizeof(CipUdint) +
+    8 *
+    sizeof(CipUsint) + sizeof(CipUint) + sizeof(CipUint) + sizeof(CipUint) + 2 *
+    sizeof(CipUsint) + sizeof(CipWord) + sizeof(CipUdint) +
+    sizeof(
+      CipUsint) + product_name_.length + sizeof(CipUsint);
+  const CipUint kEncapsulationCommandListIdentityLength =
+    kEncapsulationCommandListIdentityCommandSpecificLength + sizeof(CipUint) +
+    sizeof(CipUint)
+    + sizeof(CipUint);               /* Last element is item count */
+
+  GenerateEncapsulationHeader(receive_data,
+                              kEncapsulationCommandListIdentityLength,
+                              0,   /* Session handle will be ignored by receiver */
+                              kEncapsulationProtocolSuccess,
+                              outgoing_message);
 
   outgoing_message->used_message_length += AddIntToMessage(1,
                                                            &outgoing_message->current_message_position); /* Item count: one item */
+
+  /* Item ID*/
+  const CipUint kItemIDCipIdentity = 0x0C;
   outgoing_message->used_message_length += AddIntToMessage(
-    kEncapsulationCommandListIdentity,
+    kItemIDCipIdentity,
     &outgoing_message->current_message_position);
 
+
   EipByte *id_length_buffer = outgoing_message->current_message_position;
-  outgoing_message->used_message_length += MoveMessageNOctets(2,
-                                                              (const CipOctet **) (
-                                                                &
-                                                                outgoing_message
-                                                                ->
-                                                                current_message_position) ); /*at this place the real length will be inserted below*/
+//  outgoing_message->used_message_length += MoveMessageNOctets(2,
+//                                                              (const CipOctet **) (
+//                                                                &
+//                                                                outgoing_message
+//                                                                ->
+//                                                                current_message_position) ); /*at this place the real length will be inserted below*/
+
+  outgoing_message->used_message_length += AddIntToMessage(
+    kEncapsulationCommandListIdentityCommandSpecificLength,
+    &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += AddIntToMessage(
     kSupportedProtocolVersion,
@@ -499,9 +515,10 @@ void EncapsulateListIdentityResponseMessage(
     htons(kOpenerEthernetPort), interface_configuration_.ip_address,
     &outgoing_message->current_message_position);
 
+  /** Array of USINT - length 8 shall be set to zero */
   memset(outgoing_message->current_message_position, 0, 8);
-  MoveMessageNOctets(8,
-                     (const CipOctet **) &outgoing_message->current_message_position);
+  outgoing_message->used_message_length += MoveMessageNOctets(8,
+                                                              (const CipOctet **) &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += AddIntToMessage(vendor_id_,
                                                            &outgoing_message->current_message_position);
@@ -520,16 +537,18 @@ void EncapsulateListIdentityResponseMessage(
   *outgoing_message->current_message_position++ =
     (unsigned char) product_name_.length;
   outgoing_message->used_message_length++;
+
   memcpy(outgoing_message->current_message_position, product_name_.string,
          product_name_.length);
   outgoing_message->current_message_position += product_name_.length;
   outgoing_message->used_message_length += product_name_.length;
+
   *outgoing_message->current_message_position++ = 0xFF;
   outgoing_message->used_message_length++;
 
-  outgoing_message->used_message_length += AddIntToMessage(
-    outgoing_message->current_message_position - id_length_buffer - 2,
-    &id_length_buffer);                     /* the -2 is for not counting the length field*/
+//  outgoing_message->used_message_length += AddIntToMessage(
+//    outgoing_message->current_message_position - id_length_buffer - 2,
+//    &id_length_buffer);                     /* the -2 is for not counting the length field*/
 }
 
 void DetermineDelayTime(const EipByte *const buffer_start,
