@@ -94,7 +94,7 @@ int NotifyCommonPacketFormat(EncapsulationData *const received_data,
  */
 int NotifyConnectedCommonPacketFormat(
   const EncapsulationData *const received_data,
-  struct sockaddr *originator_address,
+  const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP

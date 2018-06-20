@@ -95,6 +95,7 @@ void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle);
 
 /* No reason to use this functions outside the encapsulation layer, they are here for testing */
 typedef struct enip_message ENIPMessage;
+
 void EncapsulateListIdentityResponseMessage(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
@@ -102,5 +103,17 @@ void EncapsulateListIdentityResponseMessage(
 EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
                                       int receive_buffer_length,
                                       EncapsulationData *const encapsulation_data);
+
+void HandleReceivedListServicesCommand(
+  const EncapsulationData *const receive_data,
+  ENIPMessage *const outgoing_message);
+
+void HandleReceivedListInterfacesCommand(
+  const EncapsulationData *const receive_data,
+  ENIPMessage *const outgoing_message);
+
+void HandleReceivedRegisterSessionCommand(int socket,
+                                          const EncapsulationData *const receive_data,
+                                          ENIPMessage *const outgoing_message);
 
 #endif /* OPENER_ENCAP_H_ */

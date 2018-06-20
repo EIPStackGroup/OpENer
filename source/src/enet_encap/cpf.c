@@ -66,7 +66,7 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
 
 int NotifyConnectedCommonPacketFormat(
   const EncapsulationData *const received_data,
-  struct sockaddr *originator_address,
+  const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message) {
 
   int return_value = CreateCommonPacketFormatStructure(
@@ -87,7 +87,7 @@ int NotifyConnectedCommonPacketFormat(
         /* reset the watchdog timer */
         ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
-        /*TODO check connection id  and sequence count    */
+        /*TODO check connection id  and sequence count */
         if (g_common_packet_format_data_item.data_item.type_id
             == kCipItemIdConnectedDataItem) { /* connected data item received*/
           EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;

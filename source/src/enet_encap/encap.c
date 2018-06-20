@@ -89,24 +89,12 @@ DelayedEncapsulationMessage g_delayed_encapsulation_messages[
   ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES];
 
 /*** private functions ***/
-void HandleReceivedListServicesCommand(
-  const EncapsulationData *const receive_data,
-  ENIPMessage *const outgoing_message);
-
-void HandleReceivedListInterfacesCommand(
-  const EncapsulationData *const receive_data,
-  ENIPMessage *const outgoing_message);
-
 void HandleReceivedListIdentityCommandTcp(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
 
 void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const struct sockaddr_in *const from_address,
-                                          const EncapsulationData *const receive_data,
-                                          ENIPMessage *const outgoing_message);
-
-void HandleReceivedRegisterSessionCommand(int socket,
                                           const EncapsulationData *const receive_data,
                                           ENIPMessage *const outgoing_message);
 
@@ -132,8 +120,6 @@ int GetFreeSessionIndex(void);
 
 SessionStatus CheckRegisteredSessions(
   const EncapsulationData *const receive_data);
-
-int EncapsulateData(const EncapsulationData *const send_data);
 
 void DetermineDelayTime(const EipByte *const buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer);
@@ -256,7 +242,7 @@ int HandleReceivedExplictTcpData(int socket,
     }
   }
 
-  return return_value;
+  return outgoing_message->used_message_length;
 }
 
 int HandleReceivedExplictUdpData(const int socket,
@@ -318,6 +304,7 @@ int HandleReceivedExplictUdpData(const int socket,
         case (kEncapsulationCommandSendUnitData):
         default:
           OPENER_TRACE_INFO("No command\n");
+          //TODO: Check this
           encapsulation_data.status =
             kEncapsulationProtocolInvalidCommand;
           encapsulation_data.data_length = 0;
@@ -331,19 +318,6 @@ int HandleReceivedExplictUdpData(const int socket,
     }
   }
   return outgoing_message->used_message_length;
-}
-
-/* Probably not needed with new approach */
-int EncapsulateData(const EncapsulationData *const send_data) {
-  CipOctet *communcation_buffer = send_data->communication_buffer_start + 2;
-  AddIntToMessage(send_data->data_length, &communcation_buffer);
-  /*the CommBuf should already contain the correct session handle*/
-  MoveMessageNOctets(4, (const CipOctet **) &communcation_buffer);
-  AddDintToMessage(send_data->status, &communcation_buffer);
-  /*the CommBuf should already contain the correct sender context*/
-  /*the CommBuf should already contain the correct  options value*/
-
-  return ENCAPSULATION_HEADER_LENGTH + send_data->data_length;
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
@@ -402,9 +376,11 @@ void HandleReceivedListServicesCommand(
   outgoing_message->used_message_length += AddIntToMessage(
     g_interface_information.capability_flags,
     &outgoing_message->current_message_position);
-  memcpy(&outgoing_message->current_message_position,
+  memcpy(outgoing_message->current_message_position,
          g_interface_information.name_of_service,
          sizeof(g_interface_information.name_of_service) );
+  outgoing_message->used_message_length +=
+    sizeof(g_interface_information.name_of_service);
 }
 
 void HandleReceivedListInterfacesCommand(
@@ -494,15 +470,6 @@ void EncapsulateListIdentityResponseMessage(
     kItemIDCipIdentity,
     &outgoing_message->current_message_position);
 
-
-  EipByte *id_length_buffer = outgoing_message->current_message_position;
-//  outgoing_message->used_message_length += MoveMessageNOctets(2,
-//                                                              (const CipOctet **) (
-//                                                                &
-//                                                                outgoing_message
-//                                                                ->
-//                                                                current_message_position) ); /*at this place the real length will be inserted below*/
-
   outgoing_message->used_message_length += AddIntToMessage(
     kEncapsulationCommandListIdentityCommandSpecificLength,
     &outgoing_message->current_message_position);
@@ -546,9 +513,6 @@ void EncapsulateListIdentityResponseMessage(
   *outgoing_message->current_message_position++ = 0xFF;
   outgoing_message->used_message_length++;
 
-//  outgoing_message->used_message_length += AddIntToMessage(
-//    outgoing_message->current_message_position - id_length_buffer - 2,
-//    &id_length_buffer);                     /* the -2 is for not counting the length field*/
 }
 
 void DetermineDelayTime(const EipByte *const buffer_start,
@@ -580,7 +544,7 @@ void EncapsulateRegisterSessionCommandResponseMessage(
   GenerateEncapsulationHeader(receive_data,
                               kListInterfacesCommandSpecificDataLength,
                               session_handle,
-                              kEncapsulationProtocolSuccess,
+                              encapsulation_protocol_status,
                               outgoing_message);
 
   outgoing_message->used_message_length += AddIntToMessage(1,
@@ -602,14 +566,12 @@ void HandleReceivedRegisterSessionCommand(int socket,
   EncapsulationProtocolErrorCode encapsulation_protocol_status =
     kEncapsulationProtocolSuccess;
 
-  const EipUint8 *receive_data_buffer = NULL;
   EipUint16 protocol_version =
     GetIntFromMessage(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);
   EipUint16 option_flag =
     GetIntFromMessage(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);
-
 
   /* check if requested protocol version is supported and the register session option flag is zero*/
   if ( (0 < protocol_version)
@@ -664,9 +626,7 @@ void HandleReceivedRegisterSessionCommand(int socket,
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {
-
   OPENER_TRACE_INFO("encap.c: Unregister Session Command\n");
-
   if ( (0 < receive_data->session_handle) && (receive_data->session_handle <=
                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS) )
   {

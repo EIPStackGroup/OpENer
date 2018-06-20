@@ -172,7 +172,7 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
-                              struct sockaddr *originator_address,
+                              const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   EipByte status = kCipErrorSuccess;
