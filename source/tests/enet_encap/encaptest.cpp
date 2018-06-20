@@ -103,3 +103,28 @@ TEST(EncapsulationProtocol, AnswerRegisterSessionRequestWrongProtocolVersion) {
   HandleReceivedRegisterSessionCommand(0, &received_data, &outgoing_message);
 
 }
+
+TEST(EncapsulationProtocol, SendRRData) {
+  CipOctet incoming_message[] =
+    "\x6f\x00\x0c\x00\x01\x00\x00\x00\x00\x00\x00\x00\xf0\xdd\x00\x00" \
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00" \
+    "\x01\x00\x00\x00";
+
+  CipOctet expected_outgoing_message[] = "";
+
+  ENIPMessage outgoing_message = {0};
+  InitializeENIPMessage(&outgoing_message);
+
+  EncapsulationData received_data = {0};
+  CreateEncapsulationStructure(incoming_message,
+                               sizeof(incoming_message),
+                               &received_data);
+
+  struct sockaddr_in fake_originator = {0};
+  struct sockaddr *fake_originator_pointer =
+    (struct sockaddr *)&fake_originator;
+
+  HandleReceivedSendRequestResponseDataCommand(&received_data,
+                                               fake_originator_pointer,
+                                               &outgoing_message);
+}

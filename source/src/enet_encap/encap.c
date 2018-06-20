@@ -107,11 +107,6 @@ EipStatus HandleReceivedSendUnitDataCommand(
   const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message);
 
-EipStatus HandleReceivedSendRequestResponseDataCommand(
-  const EncapsulationData *const receive_data,
-  const struct sockaddr *const originator_address,
-  ENIPMessage *const outgoing_message);
-
 EipStatus HandleReceivedInvalidCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
@@ -227,22 +222,14 @@ int HandleReceivedExplictTcpData(int socket,
           break;
 
         default:
-          /**TODO Handle invalid command */
           return_value = HandleReceivedInvalidCommand(&encapsulation_data,
                                                       outgoing_message);
-//          encapsulation_data.status =
-//            kEncapsulationProtocolInvalidCommand;
-//          encapsulation_data.data_length = 0;
           break;
-      }
-      /* if nRetVal is greater than 0 data has to be sent */
-      if (kEipStatusOk < return_value) {
-        //return_value = EncapsulateData(&encapsulation_data);
       }
     }
   }
 
-  return outgoing_message->used_message_length;
+  return return_value;
 }
 
 int HandleReceivedExplictUdpData(const int socket,
@@ -318,6 +305,11 @@ int HandleReceivedExplictUdpData(const int socket,
     }
   }
   return outgoing_message->used_message_length;
+}
+
+void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
+  MoveMessageNOctets(ENCAPSULATION_HEADER_LENGTH,
+                     &outgoing_message->current_message_position);
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
@@ -708,18 +700,18 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);                            /* skip over null interface handle*/
     GetIntFromMessage(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);                            /* skip over unused timeout value*/
-    //receive_data->data_length -= 6;             /* the rest is in CPF format*/
+    ( (EncapsulationData *const)receive_data )->data_length -= 6;             /* the rest is in CPF format*/
 
     if (kSessionStatusValid == CheckRegisteredSessions(receive_data) )            /* see if the EIP session is registered*/
     {
+      //((EncapsulationData*)receive_data)->current_communication_buffer_position = receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH];
       EipInt16 send_size =
         NotifyCommonPacketFormat(receive_data,
                                  originator_address,
                                  outgoing_message);
+      return_value = send_size;
 
-      if (send_size >= 0) {                   /* need to send reply */
-        outgoing_message->used_message_length += send_size;
-      } else {
+      if (send_size < 0) {                   /* need to send reply */
         return_value = kEipStatusError;
       }
     } else {             /* received a package with non registered session handle */

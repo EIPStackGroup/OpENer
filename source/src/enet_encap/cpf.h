@@ -79,9 +79,9 @@ typedef struct {
  * @param  reply_buffer reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int NotifyCommonPacketFormat(EncapsulationData *const received_data,
-                             EipUint8 *const reply_buffer,
-                             struct sockaddr *originator_address);
+int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
+                             const struct sockaddr *const originator_address,
+                             ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -135,7 +135,7 @@ int AssembleIOMessage(
 int AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
-  EipUint8 *message);
+  ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  * @brief Data storage for the any CPF data
