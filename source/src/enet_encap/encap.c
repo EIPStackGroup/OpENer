@@ -704,7 +704,6 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
 
     if (kSessionStatusValid == CheckRegisteredSessions(receive_data) )            /* see if the EIP session is registered*/
     {
-      //((EncapsulationData*)receive_data)->current_communication_buffer_position = receive_data->communication_buffer_start[ENCAPSULATION_HEADER_LENGTH];
       EipInt16 send_size =
         NotifyCommonPacketFormat(receive_data,
                                  originator_address,
