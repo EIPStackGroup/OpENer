@@ -752,9 +752,10 @@ int AssembleLinearMessage(
   return outgoing_message->used_message_length;
 }
 
-int AssembleIOMessage(CipCommonPacketFormatData *common_packet_format_data_item,
-                      EipUint8 *message) {
+int AssembleIOMessage(
+  const CipCommonPacketFormatData *const common_packet_format_data_item,
+  ENIPMessage *const outgoing_message) {
   return AssembleLinearMessage(0, common_packet_format_data_item,
-                               &g_message_data_reply_buffer[0]);
+                               outgoing_message);
 }
 

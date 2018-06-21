@@ -815,11 +815,13 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
+  ENIPMessage outgoing_message = {0};
+  InitializeENIPMessage(&outgoing_message);
   EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
-                                             &g_message_data_reply_buffer[0]);
+                                             &outgoing_message);
 
-  EipUint8 *message_data_reply_buffer =
-    &g_message_data_reply_buffer[reply_length - 2];
+
+  outgoing_message.current_message_position -= 2;
   common_packet_format_data->data_item.length = producing_instance_attributes
                                                 ->length;
   if (kOpenerProducedDataHasRunIdleHeader) {
@@ -831,27 +833,31 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   {
     common_packet_format_data->data_item.length += 2;
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &message_data_reply_buffer);
+                    &outgoing_message.current_message_position);
     AddIntToMessage(connection_object->sequence_count_producing,
-                    &message_data_reply_buffer);
+                    &outgoing_message.current_message_position);
   } else {
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &message_data_reply_buffer);
+                    &outgoing_message.current_message_position);
   }
 
   if (kOpenerProducedDataHasRunIdleHeader) {
-    AddDintToMessage( g_run_idle_state, &(message_data_reply_buffer) );
+    AddDintToMessage( g_run_idle_state,
+                      &(outgoing_message.current_message_position) );
   }
 
-  memcpy(message_data_reply_buffer, producing_instance_attributes->data,
+  memcpy(outgoing_message.current_message_position,
+         producing_instance_attributes->data,
          producing_instance_attributes->length);
 
-  reply_length += common_packet_format_data->data_item.length;
+  outgoing_message.used_message_length +=
+    common_packet_format_data->data_item.length;
 
   return SendUdpData(
     &connection_object->remote_address,
     connection_object->socket[kUdpCommuncationDirectionProducing],
-    &g_message_data_reply_buffer[0], reply_length);
+    outgoing_message.current_message_position,
+    outgoing_message.used_message_length);
 }
 
 EipStatus HandleReceivedIoConnectionData(

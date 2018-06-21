@@ -120,8 +120,8 @@ EipStatus CreateCommonPacketFormatStructure(
  *     EIP_ERROR .. error
  */
 int AssembleIOMessage(
-  CipCommonPacketFormatData *common_packet_format_data_item,
-  EipUint8 *message);
+  const CipCommonPacketFormatData *const common_packet_format_data_item,
+  ENIPMessage *const message);
 
 
 /** @ingroup ENCAP
