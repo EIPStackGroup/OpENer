@@ -89,7 +89,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
     CipServiceStruct *service = instance->cip_class->services;             /* get pointer to array of services */
     if (NULL != service)             /* if services are defined */
     {
-      for (int i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
+      for (size_t i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
       {
         if (message_router_request->service == service->service_number)                         /* if match is found */
         {
@@ -151,7 +151,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 
   cip_class->number_of_instances += number_of_instances;       /* add the number of instances just created to the total recorded by the class */
 
-  for (int i = 0; i < number_of_instances; i++)       /* initialize all the new instances */
+  for (size_t i = 0; i < number_of_instances; i++)       /* initialize all the new instances */
   {
     *next_instance = current_instance;             /* link the previous pointer to this new node */
 
