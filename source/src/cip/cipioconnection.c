@@ -856,8 +856,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   return SendUdpData(
     &connection_object->remote_address,
     connection_object->socket[kUdpCommuncationDirectionProducing],
-    outgoing_message.current_message_position,
-    outgoing_message.used_message_length);
+    outgoing_message.message_buffer, outgoing_message.used_message_length);
 }
 
 EipStatus HandleReceivedIoConnectionData(
