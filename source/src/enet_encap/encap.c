@@ -656,7 +656,7 @@ EipStatus HandleReceivedSendUnitDataCommand(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);                            /* skip over null interface handle*/
     GetIntFromMessage(
       (const EipUint8 **const ) &receive_data->current_communication_buffer_position);                            /* skip over unused timeout value*/
-    //receive_data->data_length -= 6;             /* the rest is in CPF format*/
+    ( (EncapsulationData *const)receive_data )->data_length -= 6;             /* the rest is in CPF format*/
 
     if (kSessionStatusValid == CheckRegisteredSessions(receive_data) )            /* see if the EIP session is registered*/
     {
@@ -665,9 +665,9 @@ EipStatus HandleReceivedSendUnitDataCommand(
                                           originator_address,
                                           outgoing_message);
 
-      if (0 < send_size) {                   /* need to send reply */
-        outgoing_message->used_message_length += send_size;
-      } else {
+      return_value = send_size;
+
+      if (send_size < 0) {                   /* need to send reply */
         return_value = kEipStatusError;
       }
     } else {             /* received a package with non registered session handle */

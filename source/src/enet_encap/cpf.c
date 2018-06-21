@@ -129,9 +129,21 @@ int NotifyConnectedCommonPacketFormat(
             g_common_packet_format_data_item.address_item.data
             .connection_identifier = connection_object
                                      ->cip_produced_connection_id;
-            AssembleLinearMessage(
+            SkipEncapsulationHeader(outgoing_message);
+            return_value = AssembleLinearMessage(
               &g_message_router_response, &g_common_packet_format_data_item,
               outgoing_message);
+
+            CipOctet *buffer = outgoing_message->current_message_position;
+            outgoing_message->current_message_position =
+              outgoing_message->message_buffer;
+            GenerateEncapsulationHeader(received_data,
+                                        return_value,
+                                        received_data->session_handle,
+                                        kEncapsulationProtocolSuccess,
+                                        outgoing_message);
+            outgoing_message->current_message_position = buffer;
+            return_value = outgoing_message->used_message_length;
           }
         } else {
           /* wrong data item detected*/
