@@ -13,7 +13,7 @@ add_subdirectory( utils )
 opener_common_includes()
 
 #######################################
-# Add platfrom specific things        #
+# Add platform specific things        #
 #######################################
 
 opener_platform_support( "INCLUDES" )

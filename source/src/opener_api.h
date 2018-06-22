@@ -442,9 +442,10 @@ void ConfigureListenOnlyConnectionPoint(
  */
 int HandleReceivedExplictTcpData(int socket,
                                  EipUint8 *buffer,
-                                 size_t buffer_length,
-                                 int *number_of_remaining_bytes,
-                                 struct sockaddr *originator_address);
+                                 size_t length,
+                                 int *remaining_bytes,
+                                 struct sockaddr *originator_address,
+                                 ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -459,12 +460,13 @@ int HandleReceivedExplictTcpData(int socket,
  * over after we're done here
  * @return length of reply that need to be sent back
  */
-int HandleReceivedExplictUdpData(int socket,
-                                 struct sockaddr_in *from_address,
-                                 EipUint8 *buffer,
-                                 size_t buffer_length,
+int HandleReceivedExplictUdpData(const int socket,
+                                 const struct sockaddr_in *from_address,
+                                 const EipUint8 *buffer,
+                                 const size_t buffer_length,
                                  int *number_of_remaining_bytes,
-                                 bool unicast);
+                                 bool unicast,
+                                 ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
@@ -479,7 +481,7 @@ int HandleReceivedExplictUdpData(int socket,
  *  @return EIP_OK on success
  */
 EipStatus
-HandleReceivedConnectedData(EipUint8 *received_data,
+HandleReceivedConnectedData(const EipUint8 *const received_data,
                             int received_data_length,
                             struct sockaddr_in *from_address);
 

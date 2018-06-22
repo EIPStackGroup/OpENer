@@ -241,7 +241,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
 }
 
 EipStatus HandleReceivedConnectedData(
-  EipUint8 *data,
+  const EipUint8 *const data,
   int data_length,
   struct sockaddr_in *from_address
   ) {

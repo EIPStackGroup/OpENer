@@ -232,7 +232,6 @@ EipStatus GetAttributeSingleTcpIpInterface(
   struct sockaddr *originator_address,
   const int encapsulation_session) {
 
-  EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
 
   message_router_response->data_length = 0;

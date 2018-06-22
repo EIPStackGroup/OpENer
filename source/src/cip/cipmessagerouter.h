@@ -40,7 +40,7 @@ void DeleteAllClasses(void);
  */
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
-                              struct sockaddr *originator_address,
+                              const struct sockaddr *const originator_address,
                               const int encapsulation_session);
 
 /*! Register a class at the message router.

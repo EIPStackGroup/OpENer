@@ -9,3 +9,4 @@ IMPORT_TEST_GROUP(CipConnectionManager);
 IMPORT_TEST_GROUP(CipConnectionObject);
 IMPORT_TEST_GROUP(SocketTimer);
 IMPORT_TEST_GROUP(DoublyLinkedList);
+IMPORT_TEST_GROUP(EncapsulationProtocol);
