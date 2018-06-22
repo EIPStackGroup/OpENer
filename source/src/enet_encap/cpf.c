@@ -116,6 +116,20 @@ int NotifyConnectedCommonPacketFormat(
           EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
             (EipUint32) GetIntFromMessage( (const EipUint8 **const)&buffer );
+          OPENER_TRACE_INFO(
+            "Class 3 sequence number: %d, last sequence number: %d\n",
+            g_common_packet_format_data_item.address_item.data.sequence_number,
+            connection_object->sequence_count_consuming);
+          if(connection_object->sequence_count_consuming ==
+             g_common_packet_format_data_item.address_item.data.sequence_number)
+          {
+            memcpy(outgoing_message,
+                   &(connection_object->last_reply_sent),
+                   sizeof(ENIPMessage) );
+            return outgoing_message->used_message_length;
+          }
+          connection_object->sequence_count_consuming =
+            g_common_packet_format_data_item.address_item.data.sequence_number;
 
           ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
@@ -143,6 +157,9 @@ int NotifyConnectedCommonPacketFormat(
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
             outgoing_message->current_message_position = buffer;
+            memcpy(&connection_object->last_reply_sent,
+                   outgoing_message,
+                   sizeof(ENIPMessage) );
             return_value = outgoing_message->used_message_length;
           }
         } else {

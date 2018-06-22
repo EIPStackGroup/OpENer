@@ -187,7 +187,7 @@ struct cip_connection_object {
   ConnectionSendDataFunction connection_send_data_function;
   ConnectionReceiveDataFunction connection_receive_data_function;
 
-  CipOctet last_reply_sent[OPENER_MESSAGE_DATA_REPLY_BUFFER];
+  ENIPMessage last_reply_sent;
 };
 
 DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
