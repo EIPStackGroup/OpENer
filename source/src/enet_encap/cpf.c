@@ -126,6 +126,18 @@ int NotifyConnectedCommonPacketFormat(
             memcpy(outgoing_message,
                    &(connection_object->last_reply_sent),
                    sizeof(ENIPMessage) );
+            outgoing_message->current_message_position =
+              outgoing_message->message_buffer;
+            /* Regenerate encapsulation header for new message */
+            outgoing_message->used_message_length -=
+              ENCAPSULATION_HEADER_LENGTH;
+            GenerateEncapsulationHeader(received_data,
+                                        outgoing_message->used_message_length,
+                                        received_data->session_handle,
+                                        kEncapsulationProtocolSuccess,
+                                        outgoing_message);
+            outgoing_message->current_message_position = buffer;
+            /* End regenerate encapsulation header for new message */
             return outgoing_message->used_message_length;
           }
           connection_object->sequence_count_consuming =
