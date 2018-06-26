@@ -347,9 +347,9 @@ EipStatus NetworkHandlerProcessOnce(void) {
 
   g_time_value.tv_sec = 0;
   g_time_value.tv_usec = (
-    g_network_status.elapsed_time <
-    kOpenerTimerTickInMilliSeconds ? kOpenerTimerTickInMilliSeconds -
-    g_network_status.elapsed_time : 0) * 1000;                                                                                                 /* 10 ms */
+    g_network_status.elapsed_time < kOpenerTimerTickInMilliSeconds ?
+    kOpenerTimerTickInMilliSeconds - g_network_status.elapsed_time : 0)
+                         * 1000; /* 10 ms */
 
   int ready_socket = select(highest_socket_handle + 1, &read_socket, 0, 0,
                             &g_time_value);
@@ -897,6 +897,12 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     socket_data->sin_addr.s_addr = peer_address.sin_addr.s_addr;
   }
 
+  /* add new socket to the master list                                             */
+  FD_SET(new_socket, &master_socket);
+  if (new_socket > highest_socket_handle) {
+    OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
+    highest_socket_handle = new_socket;
+  }
   return new_socket;
 }
 
