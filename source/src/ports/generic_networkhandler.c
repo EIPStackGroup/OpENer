@@ -106,7 +106,7 @@ EipStatus NetworkHandlerInitialize(void) {
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
                                                                  SOCK_DGRAM,
                                                                  IPPROTO_UDP) )
-       == -1 ) {
+       == kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -120,7 +120,7 @@ EipStatus NetworkHandlerInitialize(void) {
   /* create a new UDP socket */
   if ( ( g_network_status.udp_unicast_listener = socket(AF_INET, SOCK_DGRAM,
                                                         IPPROTO_UDP) ) ==
-       -1 ) {
+       kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error allocating UDP unicast listener socket, %d - %s\n",
@@ -487,8 +487,6 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 }
 
 void CheckAndHandleUdpUnicastSocket(void) {
-
-
   /* see if this is an unsolicited inbound UDP message */
   if ( true == CheckSocketSet(g_network_status.udp_unicast_listener) ) {
 
@@ -861,6 +859,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
     // The bind on UDP sockets is necessary as the ENIP spec wants the source port to be specified to 2222 = 0x08ae
     bind(new_socket, (struct sockaddr *) &source_addr, sizeof(source_addr) );
+
     if (socket_data->sin_addr.s_addr
         == g_multicast_configuration.starting_multicast_address) {
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
@@ -897,8 +896,11 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     socket_data->sin_addr.s_addr = peer_address.sin_addr.s_addr;
   }
 
-  /* add new socket to the master list                                             */
-  FD_SET(new_socket, &master_socket);
+  if (kUdpCommuncationDirectionConsuming == communication_direction) {
+    /* add new socket to the master list */
+    FD_SET(new_socket, &master_socket);
+  }
+
   if (new_socket > highest_socket_handle) {
     OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
     highest_socket_handle = new_socket;
@@ -916,16 +918,18 @@ void CheckAndHandleConsumingUdpSockets(void) {
     current_connection_object = (CipConnectionObject *)iterator->data;
     iterator = iterator->next; /* do this at the beginning as the close function may can make the entry invalid */
 
-    if ( (-1
+    if ( (kEipInvalidSocket
           != current_connection_object->socket[
             kUdpCommuncationDirectionConsuming])
          && ( true
               == CheckSocketSet(
                 current_connection_object->socket[
                   kUdpCommuncationDirectionConsuming]) ) ) {
+      OPENER_TRACE_INFO("Processing UDP consuming message\n");
       struct sockaddr_in from_address = {0};
       socklen_t from_address_length = sizeof(from_address);
       CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
+
       int received_size = recvfrom(
         current_connection_object->socket[kUdpCommuncationDirectionConsuming],
         incoming_message, sizeof(incoming_message), 0,
@@ -944,7 +948,6 @@ void CheckAndHandleConsumingUdpSockets(void) {
           current_connection_object);
         continue;
       }
-
 
       if (0 > received_size) {
         int error_code = GetSocketErrorNumber();
