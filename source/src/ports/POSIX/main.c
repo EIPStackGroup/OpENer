@@ -43,7 +43,10 @@ int main(int argc,
                                CipConnectionObjectListArrayAllocator,
                                CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
-    ConfigureNetworkInterface(arg[1]);
+    if (kEipStatusError == ConfigureNetworkInterface(arg[1])) {
+      printf("Network interface %s not found.\n", arg[1]);
+      exit(0);
+    }
     ConfigureDomainName();
     ConfigureHostName();
 

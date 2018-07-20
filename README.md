@@ -60,9 +60,9 @@ Compile for POSIX:
 	3. Invoke make
 	4. For invoking opener type:
 
-		./OpENer interface
+		./src/ports/POSIX/OpENer interface
 
-		e.g. ./OpENer eth1
+		e.g. ./src/ports/POSIX/OpENer eth1
  
 2. Within Eclipse
 	1. For a standard configuration invoke setup_posix.sh, otherwise start
