@@ -189,7 +189,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in global_broadcast_address = { .sin_family = AF_INET,
+  struct sockaddr_in global_broadcast_address = { .sin_family = {AF_INET},
                                                   .sin_port = htons(
                                                     kOpenerEthernetPort),
                                                   .sin_addr.s_addr = htonl(
