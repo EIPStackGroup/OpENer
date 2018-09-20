@@ -776,7 +776,8 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
   CipCommonPacketFormatData *common_packet_format_data =
-    &g_common_packet_format_data_item;                                                      /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
+    &g_common_packet_format_data_item;
+  /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
 
   connection_object->eip_level_sequence_count_producing++;
 

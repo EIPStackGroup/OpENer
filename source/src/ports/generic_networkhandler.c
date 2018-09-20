@@ -777,7 +777,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
  * @param communciation_direction Consuming or producing port
  * @param socket_data Data for socket creation
  *
- * @return the socket handle if successful, else -1 */
+ * @return the socket handle if successful, else kEipInvalidSocket */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     struct sockaddr_in *socket_data,
                     CipUsint qos_for_socket) {
@@ -786,8 +786,15 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
-  if ( ( new_socket =
-           socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == kEipInvalidSocket ) {
+  if(kUdpCommuncationDirectionConsuming == communication_direction) {
+    new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  }
+
+  if(kUdpCommuncationDirectionProducing == communication_direction) {
+    new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  }
+
+  if (new_socket == kEipInvalidSocket) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n",
