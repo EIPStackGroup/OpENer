@@ -870,7 +870,7 @@ void CloseEncapsulationSessionBySockAddr(
       struct sockaddr_in encapsulation_session_addr = { 0 };
       socklen_t addrlength = sizeof(encapsulation_session_addr);
       if (getpeername(g_registered_sessions[i],
-                      &encapsulation_session_addr, &addrlength) <= 0) {                   /* got error */
+                      &encapsulation_session_addr, &addrlength) < 0) {                   /* got error */
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(
