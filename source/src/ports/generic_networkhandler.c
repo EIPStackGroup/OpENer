@@ -23,8 +23,11 @@
 #include "ciptcpipinterface.h"
 #include "opener_user_conf.h"
 #include "cipqos.h"
+#include "udp_protocol.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
+
+extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
 /** @brief handle any connection request coming in the TCP server socket.
  *
@@ -302,7 +305,7 @@ void CheckAndHandleTcpListenerSocket(void) {
       return;
     }
 
-    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) <= 0) { /* got error */
+    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) != 0) { /* got error */
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR(
@@ -551,8 +554,23 @@ EipStatus SendUdpData(struct sockaddr_in *address,
                       EipUint8 *data,
                       EipUint16 data_length) {
 
+
+
   OPENER_TRACE_INFO("UDP port to be sent to: %x\n", ntohs(address->sin_port) );
-  int sent_length = sendto( socket, (char *) data, data_length, 0,
+  UDPHeader header = {
+    .source_port = 2222,
+    .destination_port = ntohs(address->sin_port),
+    .packet_length = kUpdHeaderLength + data_length,
+    .checksum = 0
+  };
+
+  char complete_message[data_length + kUpdHeaderLength];
+  memcpy(complete_message + kUpdHeaderLength, data, data_length);
+  UDPHeaderGenerate(&header, (char*)complete_message);
+  UDPHeaderSetChecksum(&header, htons(UDPHeaderCalculateChecksum(complete_message, 8+data_length, interface_configuration_.ip_address, address->sin_addr.s_addr)));
+  UDPHeaderGenerate(&header, (char*)complete_message);
+
+  int sent_length = sendto( socket, (char *) complete_message, data_length + kUpdHeaderLength, 0,
                             (struct sockaddr *) address, sizeof(*address) );
 
   if (sent_length < 0) {
@@ -566,7 +584,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length) {
+  if (sent_length != data_length + kUpdHeaderLength) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
@@ -791,7 +809,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   }
 
   if(kUdpCommuncationDirectionProducing == communication_direction) {
-    new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    new_socket = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
   }
 
   if (new_socket == kEipInvalidSocket) {
@@ -855,17 +873,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
                 (char *) &option_value,
                 sizeof(option_value) );
-
-    struct sockaddr_in source_addr = {
-      .sin_addr = INADDR_ANY,
-      .sin_family = AF_INET,
-      .sin_port = htons(0x08ae)
-    };
-
-    memset(source_addr.sin_zero, 0, 8 * sizeof(CipUsint) );
-
-    // The bind on UDP sockets is necessary as the ENIP spec wants the source port to be specified to 2222 = 0x08ae
-    bind(new_socket, (struct sockaddr *) &source_addr, sizeof(source_addr) );
 
     if (socket_data->sin_addr.s_addr
         == g_multicast_configuration.starting_multicast_address) {
