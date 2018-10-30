@@ -305,7 +305,7 @@ void CheckAndHandleTcpListenerSocket(void) {
       return;
     }
 
-    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) != 0) { /* got error */
+    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFFF) ) != 0) { /* got error */
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR(
@@ -830,7 +830,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     return kEipStatusError;
   }
 
-  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) <= 0) { /* got error */
+  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) != 0) { /* got error */
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
