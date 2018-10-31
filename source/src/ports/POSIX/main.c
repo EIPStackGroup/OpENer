@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/capability.h>
 
 #include "generic_networkhandler.h"
 #include "opener_api.h"
@@ -30,7 +31,33 @@ int g_end_stack = 0;
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
-  EipUint16 unique_connection_id;
+
+  cap_t capabilities;
+  cap_value_t capabilies_list[1];
+
+  capabilities = cap_get_proc();
+  if(NULL == capabilities) {
+    printf("Could not get capabilities\n");
+    exit(0);
+  }
+
+  capabilies_list[0] = CAP_NET_RAW;
+  if(-1 == cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilies_list, CAP_SET)) {
+    cap_free(capabilities);
+    printf("Could not set CAP_NET_RAW capability\n");
+    exit(0);
+  }
+
+  if(-1 == cap_set_proc(capabilities)) {
+    cap_free(capabilities);
+    printf("Could not push CAP_NET_RAW capability to process\n");
+    exit(0);
+  }
+
+  if(-1 == cap_free(capabilities)) {
+    printf("Could not free capabilites value\n");
+    exit(0);
+  }
 
   if (argc != 2) {
     printf("Wrong number of command line parameters!\n");
@@ -53,13 +80,13 @@ int main(int argc,
     ConfigureMacAddress(arg[1]);
   }
 
-  /*for a real device the serial number should be unique per device */
+  /* for a real device the serial number should be unique per device */
   SetDeviceSerialNumber(123456789);
 
-  /* nUniqueConnectionID should be sufficiently random or incremented and stored
+  /* unique_connection_id should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots.
    */
-  unique_connection_id = rand();
+  EipUint16 unique_connection_id = rand();
 
   /* Setup the CIP Layer */
   CipStackInit(unique_connection_id);
