@@ -200,9 +200,18 @@ CipConnectionObject *GetExclusiveOwnerConnection(
         }
         if(kConnectionObjectStateTimedOut ==
            ConnectionObjectGetState(exclusive_owner)
-           && EqualConnectionTriad(connection_object, exclusive_owner) ) {
-          exclusive_owner->connection_close_function(exclusive_owner);
+           && ConnectionObjectEqualOriginator(connection_object,
+                                              exclusive_owner) ) {
+          g_exlusive_owner_connections[i].connection_data.
+          connection_close_function(&(g_exlusive_owner_connections[i].
+                                      connection_data) );
           return &(g_exlusive_owner_connections[i].connection_data);
+        } else {
+          *extended_error =
+            kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
+          OPENER_TRACE_INFO(
+            "Hit an Ownership conflict with timed out connection");
+          break;
         }
       }
       return &(g_exlusive_owner_connections[i].connection_data);
@@ -237,9 +246,9 @@ CipConnectionObject *GetInputOnlyConnection(
         if (kConnectionObjectStateTimedOut
             == ConnectionObjectGetState(&(g_input_only_connections[i].
                                           connection_data[j]) )
-            && EqualConnectionTriad(connection_object,
-                                    &(g_input_only_connections[i].
-                                      connection_data[j]) ) )
+            && ConnectionObjectEqualOriginator(connection_object,
+                                               &(g_input_only_connections[i].
+                                                 connection_data[j]) ) )
         {
           g_input_only_connections[i].connection_data[j].
           connection_close_function(
@@ -305,9 +314,9 @@ CipConnectionObject *GetListenOnlyConnection(
         if (kConnectionObjectStateTimedOut
             == ConnectionObjectGetState(&(g_listen_only_connections[i].
                                           connection_data[j]) )
-            && EqualConnectionTriad(connection_object,
-                                    &(g_listen_only_connections[i].
-                                      connection_data[j]) ) )
+            && ConnectionObjectEqualOriginator(connection_object,
+                                               &(g_listen_only_connections[i].
+                                                 connection_data[j]) ) )
         {
           g_listen_only_connections[i].connection_data[j].
           connection_close_function(

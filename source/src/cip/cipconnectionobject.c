@@ -820,3 +820,10 @@ bool EqualConnectionTriad(const CipConnectionObject *const object1,
   }
   return false;
 }
+
+bool CipConnectionObjectOriginatorHasSameIP(
+  const CipConnectionObject *const connection_object,
+  const struct sockaddr *const originator_address) {
+  return ( (struct sockaddr_in *) originator_address )->sin_addr.s_addr ==
+         connection_object->originator_address.sin_addr.s_addr;
+}

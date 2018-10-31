@@ -428,4 +428,8 @@ bool ConnectionObjectEqualOriginator(const CipConnectionObject *const object1,
 bool EqualConnectionTriad(const CipConnectionObject *const object1,
                           const CipConnectionObject *const object2);
 
+bool CipConnectionObjectOriginatorHasSameIP(
+  const CipConnectionObject *const connection_object,
+  const struct sockaddr *const originator_address);
+
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */
