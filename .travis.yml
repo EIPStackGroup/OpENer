@@ -22,6 +22,7 @@ env:
 addons:
   apt:
     packages:
+      - libcap-dev
       - doxygen
       - doxygen-doc
       - doxygen-latex
