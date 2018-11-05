@@ -233,7 +233,8 @@ void ConnectionObjectSetState(CipConnectionObject *const connection_object,
         CIP_CONNECTION_OBJECT_STATE_CLOSING;
       break;
     default:
-      OPENER_ASSERT(false); /* Never get here */
+      OPENER_ASSERT(false) /* Never get here */
+      break;
   }
 }
 
@@ -277,9 +278,10 @@ CipUsint ConnectionObjectGetInstanceTypeForAttribute(
       return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
       break;
     default:
-      assert(false);
+      OPENER_ASSERT(false)
+      break;
   }
-  assert(false);         //We should never come to this point
+  OPENER_ASSERT(false) //We should never come to this point
   return 255;
 }
 
@@ -685,7 +687,8 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
       kConnectionObjectPriorityScheduled; break;
     case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: result =
       kConnectionObjectPriorityUrgent; break;
-    default: OPENER_ASSERT(false); //Not possible to get here!
+    default: OPENER_ASSERT(false) /* Not possible to get here! */
+      break;
   }
   return result;
 }

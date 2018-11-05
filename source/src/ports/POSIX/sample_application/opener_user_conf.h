@@ -6,7 +6,7 @@
 #ifndef OPENER_USER_CONF_H_
 #define OPENER_USER_CONF_H_
 
-/** @file opener_user_conf.h
+/** @file POSIX/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
  *
  * This file contains the general application specific configuration for OpENer.
@@ -127,7 +127,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 //#include <stdio.h>
 //#define OPENER_ASSERT(assertion) assert(assertion)
 #else
-#define OPENER_ASSERT(assertion) assert(assertion)
+#define OPENER_ASSERT(assertion) assert(assertion);
 #endif
 #else
 

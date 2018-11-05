@@ -22,15 +22,15 @@
 #include "opener_error.h"
 
 /*Identity data from cipidentity.c*/
-extern EipUint16 vendor_id_;
-extern EipUint16 device_type_;
-extern EipUint16 product_code_;
+extern CipUint vendor_id_;
+extern CipUint device_type_;
+extern CipUint product_code_;
 extern CipRevision revision_;
-extern EipUint16 status_;
-extern EipUint32 serial_number_;
+extern CipWord status_;
+extern CipUdint serial_number_;
 extern CipShortString product_name_;
 
-/*ip address data taken from TCPIPInterfaceObject*/
+/* IP address data taken from TCPIPInterfaceObject*/
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
 const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
@@ -338,6 +338,7 @@ void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
 
 /** @brief generate reply with "Communications Services" + compatibility Flags.
  *  @param receive_data pointer to structure with received data
+ *  @param outgoing_message The outgoing ENIP message
  */
 void HandleReceivedListServicesCommand(
   const EncapsulationData *const receive_data,
@@ -611,7 +612,8 @@ void HandleReceivedRegisterSessionCommand(int socket,
 
 }
 
-/*   INT8 UnregisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
+/*   TODO: Update and doxyfy
+ * INT8 UnregisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
  *   close all corresponding TCP connections and delete session handle.
  *      pa_S_ReceiveData pointer to unregister session request with corresponding socket handle.
  */
@@ -642,6 +644,8 @@ EipStatus HandleReceivedUnregisterSessionCommand(
 
 /** @brief Call Connection Manager.
  *  @param receive_data Pointer to structure with data and header information.
+ *  @param originator_address Address of the originator as received from socket
+ *  @param outgoing_message The outgoing ENIP message
  */
 EipStatus HandleReceivedSendUnitDataCommand(
   const EncapsulationData *const receive_data,
@@ -684,8 +688,10 @@ EipStatus HandleReceivedSendUnitDataCommand(
 
 /** @brief Call UCMM or Message Router if UCMM not implemented.
  *  @param receive_data Pointer to structure with data and header information.
- *  @return status      0 .. success.
- *                                      -1 .. error
+ *  @param originator_address Address of the originator as received from socket
+ *  @param outgoing_message The outgoing ENIP message
+ *  @return status      kEipStatusOk .. success.
+ *                      kEipStatusError .. error
  */
 EipStatus HandleReceivedSendRequestResponseDataCommand(
   const EncapsulationData *const receive_data,
@@ -755,8 +761,8 @@ int GetFreeSessionIndex(void) {
 }
 
 /** @brief copy data from pa_buf in little endian to host in structure.
- * @param receive_buffer
- * @param length Length of the data in receive_buffer. Might be more than one message
+ * @param receive_buffer Received message
+ * @param receive_buffer_length Length of the data in receive_buffer. Might be more than one message
  * @param encapsulation_data	structure to which data shall be copied
  * @return return difference between bytes in pa_buf an data_length
  *              0 .. full package received

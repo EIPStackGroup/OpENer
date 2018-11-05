@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-/** @file opener_error.c
+/** @file WIN32/opener_error.c
  *  @author Martin Melik Merkumians
  *  @brief This file includes the prototypes for error resolution functions like strerror or WSAGetLastError
  *

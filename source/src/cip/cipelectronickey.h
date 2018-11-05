@@ -59,9 +59,8 @@ ElectronicKeyFormat4 *ElectronicKeyFormat4New(
 void ElectronicKeyFormat4Delete(ElectronicKeyFormat4 **electronic_key);
 
 /** @brief Sets vendor ID in the electronic key
- *
+ *  @param electronic_key The electronic key to be set - will be modified
  *	@param vendor_id The vendor ID to be set into the electronic key
- *	@param electronic_key The electronic key to be set - will be modified
  */
 void ElectronicKeyFormat4SetVendorId(ElectronicKeyFormat4 *const electronic_key,
                                      const CipUint vendor_id);
@@ -76,8 +75,8 @@ CipUint ElectronicKeyFormat4GetVendorId(
 
 /** @brief Sets the device type in the electronic key
  *
- *	@param device_type The device type which shall be inserted into the electronic key
  *	@param electronic_key A format 4 electronic key
+ *	@param device_type The device type which shall be inserted into the electronic key
  */
 void ElectronicKeyFormat4SetDeviceType(
   ElectronicKeyFormat4 *const electronic_key,
@@ -85,7 +84,7 @@ void ElectronicKeyFormat4SetDeviceType(
 
 /** @brief Gets the device type from a format 4 electronic key
  *
- *      @param The format 4 electronic key from which the device type will be extracted
+ *      @param electronic_key The format 4 electronic key from which the device type will be extracted
  *      @return The device type
  */
 CipUint ElectronicKeyFormat4GetDeviceType(
@@ -93,8 +92,8 @@ CipUint ElectronicKeyFormat4GetDeviceType(
 
 /** @brief Set product code in the electronic key
  *
- *      @param product_code The product code to be inserted
  *      @param electronic_key The electronic key to be modified
+ *      @param product_code The product code to be inserted
  */
 void ElectronicKeyFormat4SetProductCode(
   ElectronicKeyFormat4 *const electronic_key,

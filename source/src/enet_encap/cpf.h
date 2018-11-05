@@ -12,12 +12,12 @@
 
 /** @ingroup ENCAP
  * @brief CPF is Common Packet Format
- * CPF packet := <number of items> {<items>}
- * item := <TypeID> <Length> <data>
- * <number of items> := two bytes
- * <TypeID> := two bytes
- * <Length> := two bytes
- * <data> := <the number of bytes specified by Length>
+ * CPF packet := \<number of items\> {\<items\>}
+ * item := \<TypeID\> \<Length\> \<data\>
+ * \<number of items\> := two bytes
+ * \<TypeID\> := two bytes
+ * \<Length\> := two bytes
+ * \<data\> := \<the number of bytes specified by Length\>
  */
 
 /** @brief Definition of Item ID numbers used for address and data items in CPF structures */
@@ -75,11 +75,12 @@ typedef struct {
  * Parse the CPF data from a received unconnected explicit message and
  * hand the data on to the message router
  *
- * @param  received_data pointer to the encapsulation structure with the received message
- * @param  reply_buffer reply buffer
+ * @param received_data pointer to the encapsulation structure with the received message
+ * @param originator_address Address struct of the originator
+ * @param outgoing_message The outgoing ENIP message struct
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
+int NotifyCommonPacketFormat(EncapsulationData *const received_data,
                              const struct sockaddr *const originator_address,
                              ENIPMessage *const outgoing_message);
 
@@ -88,8 +89,9 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
  * the connection status, update any timers, and hand the data on to
  * the message router
  *
- * @param  received_data pointer to the encapsulation structure with the received message
- * @param  reply_buffer reply buffer
+ * @param received_data pointer to the encapsulation structure with the received message
+ * @param originator_address Address struct of the originator
+ * @param outgoing_message The outgoing ENIP message struct
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
 int NotifyConnectedCommonPacketFormat(
@@ -113,10 +115,9 @@ EipStatus CreateCommonPacketFormatStructure(
 
 /** @ingroup ENCAP
  * Copy data from CPFDataItem into linear memory in message for transmission over in encapsulation.
- * @param  message_router_response  pointer to message router response which has to be aligned into linear memory.
  * @param  common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
- * @param  message    pointer to linear memory.
- * @return length of reply in pa_msg in bytes
+ * @param  message Modified ENIP message struct
+ * @return length of modification in bytes
  *     EIP_ERROR .. error
  */
 int AssembleIOMessage(
@@ -125,11 +126,13 @@ int AssembleIOMessage(
 
 
 /** @ingroup ENCAP
- * Copy data from MRResponse struct and CPFDataItem into linear memory in message for transmission over in encapsulation.
+ * /** @brief Copy data from message_router_response struct and common_packet_format_data_item into
+ * ENIPMessage struct outgoing_message via encapsulation.
+ *
  * @param  message_router_response	pointer to message router response which has to be aligned into linear memory.
  * @param  common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
- * @param  message		pointer to linear memory.
- * @return length of reply in pa_msg in bytes
+ * @param  outgoing_message Modified ENIP message struct
+ * @return length of modification in bytes
  *         EIP_ERROR .. error
  */
 int AssembleLinearMessage(

@@ -41,7 +41,7 @@ EipStatus GetAttributeSingleEthernetLink(
   struct sockaddr *originator_address,
   const int encapsulation_session);
 
-/** @bried Configures the MAC address of the Ethernet Link object*
+/** @brief Configures the MAC address of the Ethernet Link object*
  *
  *  @param mac_address The MAC address of the Ethernet Link
  */

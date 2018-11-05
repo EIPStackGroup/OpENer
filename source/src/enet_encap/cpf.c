@@ -23,14 +23,15 @@ const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
-int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
+int NotifyCommonPacketFormat(EncapsulationData *const received_data,
                              const struct sockaddr *const originator_address,
                              ENIPMessage *const outgoing_message) {
   int return_value = kEipStatusError;
 
   if (kEipStatusError == ( return_value = CreateCommonPacketFormatStructure(
-                             receive_data->current_communication_buffer_position,
-                             receive_data->data_length,
+                             received_data->
+                             current_communication_buffer_position,
+                             received_data->data_length,
                              &g_common_packet_format_data_item) ) ) {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
@@ -44,7 +45,7 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
           g_common_packet_format_data_item.data_item.data,
           g_common_packet_format_data_item.data_item.length,
           originator_address,
-          receive_data->session_handle);
+          received_data->session_handle);
         if (return_value != kEipStatusError) {
           SkipEncapsulationHeader(outgoing_message);
           return_value = AssembleLinearMessage(
@@ -54,9 +55,9 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
           CipOctet *buffer = outgoing_message->current_message_position;
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
-          GenerateEncapsulationHeader(receive_data,
+          GenerateEncapsulationHeader(received_data,
                                       return_value,
-                                      receive_data->session_handle,
+                                      received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
           outgoing_message->current_message_position = buffer;
@@ -66,9 +67,9 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
         /* wrong data item detected*/
         OPENER_TRACE_ERR(
           "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
-        GenerateEncapsulationHeader(receive_data,
+        GenerateEncapsulationHeader(received_data,
                                     return_value,
-                                    receive_data->session_handle,
+                                    received_data->session_handle,
                                     kEncapsulationProtocolIncorrectData,
                                     outgoing_message);
         return_value = outgoing_message->used_message_length;
@@ -76,9 +77,9 @@ int NotifyCommonPacketFormat(EncapsulationData *const receive_data,
     } else {
       OPENER_TRACE_ERR(
         "notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
-      GenerateEncapsulationHeader(receive_data,
+      GenerateEncapsulationHeader(received_data,
                                   return_value,
-                                  receive_data->session_handle,
+                                  received_data->session_handle,
                                   kEncapsulationProtocolIncorrectData,
                                   outgoing_message);
       return_value = outgoing_message->used_message_length;
@@ -210,7 +211,7 @@ EipStatus CreateCommonPacketFormatStructure(
 
   int length_count = 0;
   CipUint item_count = GetIntFromMessage(&data);
-  OPENER_ASSERT(4U >= item_count); /* Sanitizing data - probably needs to be changed for productive code */
+  OPENER_ASSERT(4U >= item_count) /* Sanitizing data - probably needs to be changed for productive code */
   common_packet_format_data->item_count = item_count;
   length_count += 2;
   if (common_packet_format_data->item_count >= 1U) {
@@ -289,8 +290,7 @@ EipStatus CreateCommonPacketFormatStructure(
 
 /**
  * @brief Encodes a Null Address Item into the message frame
- * @param message The message frame
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -306,9 +306,8 @@ int EncodeNullAddressItem(ENIPMessage *const outgoing_message) {
 
 /**
  * Encodes a Connected Address Item into the message frame
- * @param message The message frame
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -330,9 +329,8 @@ int EncodeConnectedAddressItem(
 /**
  * @brief Encodes a sequenced address item into the message
  *
- * @param message Pointer to the message memory start
  * @param common_packet_format_data_item Common Packet Format item which is used in the encoding
- * @param size Size of the message at the start of the function
+ * @param outgoing_message The outgoing message object
  *
  * @return New message size after encoding
  */
@@ -359,8 +357,7 @@ int EncodeSequencedAddressItem(
  * @brief Adds the item count to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message The message frame
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -377,8 +374,7 @@ int EncodeItemCount(
  * Adds the data item type to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message The message frame
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -395,8 +391,7 @@ int EncodeDataItemType(
  * Adds the data item section length to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message The message frame
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -413,8 +408,7 @@ int EncodeDataItemLength(
  * Adds the data items to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message Message frame to which the data is added
- * @param size The actual size of the message frame
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message frame after encoding
  */
@@ -434,8 +428,7 @@ int EncodeDataItemData(
  * @brief Encodes the Connected Data item length
  *
  * @param message_router_response The Router Response message which shall be answered
- * @param message Message frame to which the data is added
- * @param size Current size of the message buffer
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message buffer
  */
@@ -453,9 +446,8 @@ int EncodeConnectedDataItemLength(
 /**
  * @brief Encodes a sequence number into the message
  *
- * @param size The current size of the message buffer
  * @param common_packet_format_data_item
- * @param message Message frame to which the data is added
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message buffer
  *
@@ -473,9 +465,8 @@ int EncodeSequenceNumber(
 /**
  * @brief Encodes the reply service code for the requested service
  *
- * @param size The current size of the message buffer
- * @param message Message frame to which the data is added
- * @param message_rounter_response The router response message data structure to be processed
+ * @param message_router_response The router response message data structure to be processed
+ * @param outgoing_message The outgoing message object
  *
  * @return The new size of the message buffer
  */
@@ -491,9 +482,8 @@ int EncodeReplyService(
 /**
  * @brief Encodes the reserved byte in the message router response
  *
- * @param size Current size of the message buffer
- * @param message Message frame to which the data is added
  * @param message_router_response Router Response message to be processed
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -509,9 +499,8 @@ int EncodeReservedFieldOfLengthByte(
 /**
  * @brief Encodes the general status of a Router Response
  *
- * @param size Current size of the message buffer
- * @param message Message frame to which the data is added
  * @param message_router_response Router Response message to be processed
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -527,9 +516,8 @@ int EncodeGeneralStatus(
 /**
  * @brief Encodes the length of the extended status data part
  *
- * @param size Current size of the message buffer
- * @param message Message frame to which the data is added
  * @param message_router_response Router Response message to be processed
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -546,9 +534,8 @@ int EncodeExtendedStatusLength(
 /**
  * @brief Encodes the extended status data items
  *
- * @param size Current size of the message buffer
  * @param message_router_response Router Response message to be processed
- * @param message Message frame to which the data is added
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -571,9 +558,8 @@ int EncodeExtendedStatusDataItems(
  * This function uses EncodeExtendedStatusLength and EncodeExtendedStatusDataItems
  * to encode the complete extended status information into the message
  *
- * @param size Current size of the message buffer
- * @param message Message frame to which the data is added
  * @param message_router_response Router Response message to be processed
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -590,9 +576,8 @@ int EncodeExtendedStatus(
 /**
  * @brief Encode the data item length of the unconnected data segment
  *
- * @param size Current size of the message buffer
  * @param message_router_response Router Response message to be processed
- * @param message Message frame to which the data is added
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -609,9 +594,8 @@ int EncodeUnconnectedDataItemLength(
 /**
  * @brief Encodes the Message Router Response data
  *
- * @param size Current size of the message buffer
  * @param message_router_response Router Response message to be processed
- * @param message Message frame to which the data is added
+ * @param outgoing_message The outgoing message object
  */
 int EncodeMessageRouterResponseData(
   const CipMessageRouterResponse *const message_router_response,
@@ -627,10 +611,9 @@ int EncodeMessageRouterResponseData(
 /**
  * @brief Encodes the sockaddr info type id into the message
  *
- * @param size Current size of the message buffer
  * @param item_type
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message Message frame to which the encoded data is added
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -638,7 +621,7 @@ int EncodeSockaddrInfoItemTypeId(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  OPENER_ASSERT(item_type == 0 || item_type == 1);
+  OPENER_ASSERT(item_type == 0 || item_type == 1)
   outgoing_message->used_message_length += AddIntToMessage(
     common_packet_format_data_item->address_info_item[item_type].type_id,
     &outgoing_message->current_message_position);
@@ -649,10 +632,9 @@ int EncodeSockaddrInfoItemTypeId(
 /**
  * @brief Encodes the sockaddr info length into the message
  *
- * @param size Current size of the message buffer
  * @param item_type
  * @param common_packet_format_data_item The Common Packet Format data structure from which the message is constructed
- * @param message Message frame to which the encoded data is added
+ * @param outgoing_message The outgoing message object
  *
  * @return New size of the message buffer
  */
@@ -666,15 +648,6 @@ int EncodeSockaddrInfoLength(
   return outgoing_message->used_message_length;
 }
 
-/** @brief Copy data from message_router_response struct and common_packet_format_data_item into linear memory in
- * pa_msg for transmission over in encapsulation.
- *
- * @param message_router_response	pointer to message router response which has to be aligned into linear memory.
- * @param common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
- * @param message		pointer to linear memory.
- *  @return length of reply in message in bytes
- *                      -1 .. error
- */
 int AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
@@ -787,4 +760,3 @@ int AssembleIOMessage(
   return AssembleLinearMessage(0, common_packet_format_data_item,
                                outgoing_message);
 }
-

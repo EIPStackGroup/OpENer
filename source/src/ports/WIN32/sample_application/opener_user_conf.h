@@ -6,7 +6,7 @@
 #ifndef OPENER_USER_CONF_H_
 #define OPENER_USER_CONF_H_
 
-/** @file
+/** @file WIN32/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
  *
  * This file contains the general application specific configuration for OpENer.

@@ -291,7 +291,7 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
 /** @brief Gets the data for an Electronic Key of format 4 from the EPath message
  *
  * @param cip_path The start of the EPath message
- * @param Writes the data on the user provided data electronic key struct
+ * @param key Writes the data on the user provided data electronic key struct
  */
 void GetElectronicKeyFormat4FromMessage(
   const CipOctet **const cip_path,

@@ -129,9 +129,9 @@ EipStatus CheckElectronicKeyData(
  * @param connection_object pointer to the connection object structure for which the connection should
  *                      be established
  * @param message_router_request pointer to the received request structure. The position of the data stream pointer has to be at the connection length entry
- * @param extended_status the extended error code in case an error happened
+ * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
- *    - EIP_OK ... on success
+ *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
 EipUint8 ParseConnectionPath(
@@ -484,6 +484,8 @@ static const HandleForwardOpenRequestFunction
  *  @param instance	pointer to CIP object instance
  *  @param message_router_request		pointer to Message Router Request.
  *  @param message_router_response		pointer to Message Router Response.
+ *  @param originator_address address struct of the originator as received
+ *  @param encapsulation_session associated encapsulation session of the explicit message
  *      @return >0 .. success, 0 .. no reply to send back
  *              -1 .. error
  */
@@ -598,7 +600,7 @@ EipStatus ForwardClose(
            && (connection_object->originator_serial_number
                == originator_serial_number) ) {
         /* found the corresponding connection object -> close it */
-        OPENER_ASSERT(NULL != connection_object->connection_close_function);
+        OPENER_ASSERT(NULL != connection_object->connection_close_function)
         if ( ( (struct sockaddr_in *) originator_address )->sin_addr.s_addr
              == connection_object->originator_address.sin_addr.s_addr ) {
           connection_object->connection_close_function(connection_object);
@@ -666,7 +668,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
                             connection_object->connection_serial_number);
-          OPENER_ASSERT(NULL != connection_object->connection_timeout_function);
+          OPENER_ASSERT(NULL != connection_object->connection_timeout_function)
           connection_object->connection_timeout_function(connection_object);
         } else {
           connection_object->inactivity_watchdog_timer -= elapsed_time;
@@ -696,7 +698,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
 
           if (connection_object->transmission_trigger_timer <= elapsed_time) { /* need to send package */
             OPENER_ASSERT(
-              NULL != connection_object->connection_send_data_function);
+              NULL != connection_object->connection_send_data_function)
             EipStatus eip_status = connection_object
                                    ->connection_send_data_function(
               connection_object);

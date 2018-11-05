@@ -330,7 +330,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 //                        g_timestamps[i].last_update);
 //    }
 
-    OPENER_ASSERT(socket_timer != NULL);
+    OPENER_ASSERT(socket_timer != NULL)
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -405,7 +405,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
   g_last_time = g_actual_time;
   //OPENER_TRACE_INFO("Elapsed time: %u\n", g_network_status.elapsed_time);
 
-  /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
+  /* check if we had been not able to update the connection manager for several kOpenerTimerTickInMilliSeconds.
    * This should compensate the jitter of the windows timer
    */
   if (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
@@ -550,7 +550,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
 }
 
 EipStatus SendUdpData(struct sockaddr_in *address,
-                      int socket,
+                      int socket_handle,
                       EipUint8 *data,
                       EipUint16 data_length) {
 
@@ -566,12 +566,21 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 
   char complete_message[data_length + kUpdHeaderLength];
   memcpy(complete_message + kUpdHeaderLength, data, data_length);
-  UDPHeaderGenerate(&header, (char*)complete_message);
-  UDPHeaderSetChecksum(&header, htons(UDPHeaderCalculateChecksum(complete_message, 8+data_length, interface_configuration_.ip_address, address->sin_addr.s_addr)));
-  UDPHeaderGenerate(&header, (char*)complete_message);
+  UDPHeaderGenerate(&header, (char *)complete_message);
+  UDPHeaderSetChecksum(&header,
+                       htons(UDPHeaderCalculateChecksum(complete_message,
+                                                        8 + data_length,
+                                                        interface_configuration_
+                                                        .ip_address,
+                                                        address->sin_addr.s_addr) ) );
+  UDPHeaderGenerate(&header, (char *)complete_message);
 
-  int sent_length = sendto( socket, (char *) complete_message, data_length + kUpdHeaderLength, 0,
-                            (struct sockaddr *) address, sizeof(*address) );
+  int sent_length = sendto( socket,
+                            (char *) complete_message,
+                            data_length + kUpdHeaderLength,
+                            0,
+                            (struct sockaddr *) address,
+                            sizeof(*address) );
 
   if (sent_length < 0) {
     int error_code = GetSocketErrorNumber();
@@ -792,7 +801,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
 /** @brief create a new UDP socket for the connection manager
  *
- * @param communciation_direction Consuming or producing port
+ * @param communication_direction Consuming or producing port
  * @param socket_data Data for socket creation
  *
  * @return the socket handle if successful, else kEipInvalidSocket */
@@ -826,7 +835,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
     CloseSocket(new_socket);
-    OPENER_ASSERT(false); /* This should never happen! */
+    OPENER_ASSERT(false) /* This should never happen! */
     return kEipStatusError;
   }
 

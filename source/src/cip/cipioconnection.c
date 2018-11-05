@@ -132,7 +132,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     /* an assembly object should always have an attribute 3 */
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->consumed_path.attribute_id_or_connection_point);
-    OPENER_ASSERT(attribute != NULL);
+    OPENER_ASSERT(attribute != NULL)
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kConnectionObjectTransportClassTriggerTransportClass1
          == ConnectionObjectGetTransportClassTriggerTransportClass(
@@ -231,7 +231,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     io_connection_object->produced_path.attribute_id_or_connection_point = 3;
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->produced_path.attribute_id_or_connection_point);
-    OPENER_ASSERT(attribute != NULL);
+    OPENER_ASSERT(attribute != NULL)
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
     if ( kConnectionObjectTransportClassTriggerTransportClass1 ==
          ConnectionObjectGetTransportClassTriggerTransportClass(
@@ -301,7 +301,7 @@ EipStatus EstablishIoConnection(
   OPENER_ASSERT( !(originator_to_target_connection_type ==
                    kConnectionObjectConnectionTypeNull &&
                    target_to_originator_connection_type ==
-                   kConnectionObjectConnectionTypeNull) );
+                   kConnectionObjectConnectionTypeNull) )
 
   io_connection_object->consuming_instance = NULL;
   io_connection_object->consumed_connection_path_length = 0;
@@ -510,11 +510,11 @@ EipStatus OpenProducingMulticastConnection(
   return kEipStatusOk;
 }
 
-/** @brief Open a Multicast connection dependent on @var direction.
+/** @brief Open a Multicast connection dependent on @p direction.
  *
  * @param direction Flag to indicate if consuming or producing.
- * @param connection_object  pointer to registered Object in ConnectionManager.
- * @param common_packet_format_data     received CPF Data Item.
+ * @param connection_object Pointer to registered Object in ConnectionManager.
+ * @param common_packet_format_data Received CPF Data Item.
  * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus OpenMulticastConnection(
@@ -548,12 +548,10 @@ EipStatus OpenMulticastConnection(
   }
 
   if(kUdpCommuncationDirectionConsuming == direction) {
-    //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
     j = address_info_item_which_contains_o_to_t;
   }
 
   if(kUdpCommuncationDirectionProducing == direction) {
-    //OPENER_ASSERT(-1 != address_info_item_which_contains_o_to_t);
     j = address_info_item_which_contains_t_to_o;
   }
 
@@ -626,7 +624,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
     assembly_class, connection_object->configuration_path.instance_id);
 
   if (0 != g_config_data_length) {
-    OPENER_ASSERT(NULL != config_instance);
+    OPENER_ASSERT(NULL != config_instance)
     if ( ConnectionWithSameConfigPointExists(
            connection_object->configuration_path.instance_id) ) {
       /* there is a connected connection with the same config point
@@ -634,10 +632,10 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
       CipAttributeStruct *attribute_three = GetCipAttribute(
         config_instance,
         3);
-      OPENER_ASSERT(NULL != attribute_three);
-      CipByteArray *attribute_three_data =
+      OPENER_ASSERT(NULL != attribute_three)
+      CipByteArray * attribute_three_data =
         (CipByteArray *) attribute_three->data;
-      OPENER_ASSERT(NULL != attribute_three_data);
+      OPENER_ASSERT(NULL != attribute_three_data)
       if (attribute_three_data->length != g_config_data_length) {
         connection_manager_status =
           kConnectionManagerExtendedStatusCodeErrorOwnershipConflict;
