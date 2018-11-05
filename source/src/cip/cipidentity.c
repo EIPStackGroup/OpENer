@@ -37,13 +37,13 @@
 
 /* attributes in CIP Identity Object */
 
-EipUint16 vendor_id_ = OPENER_DEVICE_VENDOR_ID; /**< Attribute 1: Vendor ID */
-EipUint16 device_type_ = OPENER_DEVICE_TYPE; /**< Attribute 2: Device Type */
-EipUint16 product_code_ = OPENER_DEVICE_PRODUCT_CODE; /**< Attribute 3: Product Code */
+CipUint vendor_id_ = OPENER_DEVICE_VENDOR_ID; /**< Attribute 1: Vendor ID */
+CipUint device_type_ = OPENER_DEVICE_TYPE; /**< Attribute 2: Device Type */
+CipUint product_code_ = OPENER_DEVICE_PRODUCT_CODE; /**< Attribute 3: Product Code */
 CipRevision revision_ = { OPENER_DEVICE_MAJOR_REVISION,
                           OPENER_DEVICE_MINOR_REVISION }; /**< Attribute 4: Revision / USINT Major, USINT Minor */
-EipUint16 status_ = 0; /**< Attribute 5: Status */
-EipUint32 serial_number_ = 0; /**< Attribute 6: Serial Number, has to be set prior to OpENer initialization */
+CipWord status_ = 0; /**< Attribute 5: Status */
+CipUdint serial_number_ = 0; /**< Attribute 6: Serial Number, has to be set prior to OpENer initialization */
 CipShortString product_name_ = { sizeof(OPENER_DEVICE_NAME) - 1,
                                  OPENER_DEVICE_NAME }; /**< Attribute 7: Product Name */
 
