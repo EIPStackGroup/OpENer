@@ -189,8 +189,8 @@ void ConfigureDomainName() {
     dns1_string = strtok_r(NULL, "\n", &strtok_save);
 
     inet_pton(AF_INET, dns1_string, &interface_configuration_.name_server);
-
   }
+
   if(strstr(file_buffer, "nameserver ") ) {
     char *strtok_save = NULL;
     strtok_r(file_buffer, " ", &strtok_save);
@@ -200,7 +200,6 @@ void ConfigureDomainName() {
   }
 
   free(file_buffer);
-  fclose(file_handle);
 }
 
 void ConfigureHostName() {
