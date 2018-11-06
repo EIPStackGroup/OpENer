@@ -10,6 +10,7 @@
 
 #include "opener_api.h"
 #include "appcontype.h"
+#include "trace.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -102,6 +103,10 @@ EipStatus AfterAssemblyDataReceived(CipInstance *instance) {
        * EIP_ERROR
        */
       status = kEipStatusOk;
+      break;
+    default:
+      OPENER_TRACE_INFO(
+        "Unknown assembly instance ind AfterAssemblyDataReceived");
       break;
   }
   return status;
