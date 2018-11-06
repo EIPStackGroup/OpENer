@@ -1356,6 +1356,7 @@ EipUint8 ParseConnectionPath(
                   *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happend*/
                   return kCipErrorPathSegmentError; /*status code for invalid segment type*/
                 }
+                break;
               default:
                 OPENER_TRACE_ERR("Not allowed in connection manager");
                 break;
