@@ -18,7 +18,7 @@ set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name")
 set( OpENer_VERSION_MAJOR 2 )
 set( OpENer_VERSION_MINOR 1 )
 
-configure_file( 
+configure_file(  
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
 	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
 	)
@@ -30,7 +30,7 @@ INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 #######################################
 # Platform switches                   #
 #######################################
-set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" )
+set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "MINGW")
 
 set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
@@ -72,6 +72,9 @@ endif( OpENer_TESTS )
 # OpENer C flags                      #
 #######################################
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+# The following extra flags are needed to compile without warnings on mingw
+# TODO: Fix the root problems and remove this line
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-variable -Wno-incompatible-pointer-types -Wno-pointer-sign -Wno-format -Wno-discarded-qualifiers -Wno-unknown-pragmas" )
 
 ####################################################
 # Internal cache holding the available CIP objects #
