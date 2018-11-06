@@ -126,14 +126,14 @@ int AssembleIOMessage(
 
 
 /** @ingroup ENCAP
- * /** @brief Copy data from message_router_response struct and common_packet_format_data_item into
+ * @brief Copy data from message_router_response struct and common_packet_format_data_item into
  * ENIPMessage struct outgoing_message via encapsulation.
  *
  * @param  message_router_response	pointer to message router response which has to be aligned into linear memory.
  * @param  common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
  * @param  outgoing_message Modified ENIP message struct
  * @return length of modification in bytes
- *         EIP_ERROR .. error
+ *         kEipStatusError .. error
  */
 int AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,

@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 #include <string.h>
+#include <stdio.h>
 
 #include "cipcommon.h"
 
@@ -228,8 +229,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
   meta_class->highest_attribute_number = highest_class_attribute_number;       /* indicate which attributes are included in class getAttributeAll*/
   meta_class->number_of_services = number_of_class_services;       /* the metaclass manages the behavior of the class itself */
   meta_class->class_name = (char *) CipCalloc(1, strlen(name) + 6);       /* fabricate the name "meta<classname>"*/
-  strcpy(meta_class->class_name, "meta-");
-  strcat(meta_class->class_name, name);
+  snprintf(meta_class->class_name, strlen(name) + 6, "meta-%s", name);
 
   /* initialize the instance-specific fields of the Class struct*/
   class->class_instance.instance_number = 0;       /* the class object is instance zero of the class it describes (weird, but that's the spec)*/

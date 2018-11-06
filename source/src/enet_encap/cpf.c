@@ -679,6 +679,9 @@ int AssembleLinearMessage(
                                  outgoing_message);
       break;
     }
+    default:
+      OPENER_TRACE_INFO("Unknown CIP Item in AssembleLinearMessage");
+      return kEipStatusError;
   }
 
   /* process Data Item */

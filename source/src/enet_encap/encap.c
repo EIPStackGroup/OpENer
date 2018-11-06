@@ -145,7 +145,9 @@ void EncapsulationInit(void) {
   g_interface_information.encapsulation_protocol_version = 1;
   g_interface_information.capability_flags = kCapabilityFlagsCipTcp
                                              | kCapabilityFlagsCipUdpClass0or1;
-  strcpy( (char *) g_interface_information.name_of_service, "Communications" );
+  snprintf( (char *) g_interface_information.name_of_service,
+            sizeof(g_interface_information.name_of_service),
+            "Communications" );
 }
 
 int HandleReceivedExplictTcpData(int socket,

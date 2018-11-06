@@ -175,8 +175,12 @@ void ConfigureDomainName() {
     if(interface_configuration_.domain_name.length) {
       interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
         interface_configuration_.domain_name.length + 1,
-        sizeof(EipInt8) );
-      strcpy(interface_configuration_.domain_name.string, domain_name_string);
+        sizeof(EipByte) );
+      snprintf(interface_configuration_.domain_name.string,
+               (interface_configuration_.domain_name.length + 1) *
+               sizeof(EipByte),
+               "%s",
+               domain_name_string);
     }
     else{
       interface_configuration_.domain_name.string = NULL;
@@ -216,7 +220,8 @@ void ConfigureHostName() {
   if(hostname_.length) {
     hostname_.string =
       (EipByte *) CipCalloc(hostname_.length + 1, sizeof(EipByte) );
-    strcpy(hostname_.string, name);
+    snprintf( (char *)hostname_.string,
+              (hostname_.length + 1) * sizeof(EipByte), "%s", name );
   }
   else{
     hostname_.string = NULL;
