@@ -81,7 +81,21 @@ Compile for Windows XP/7/8:
 		OpENer interface_index
 
 		e.g. OpENer 3
- 
+		
+Compile for MinGW on Windows 10
+-------------------------------
+1. Make sure 64 bit mingw is installed. (Test with gcc --version, should show x86_64-posix-seh-rev1)
+2. Make sure Cmake is installed. (Test with cmake --version, should be version 3.xx)
+3. Change to <opener install dir>/bin/mingw
+4. Run the command `setup_mingw.bat` in a dos command line. (Not a bash shell). If tracing is desired, 
+use the following (where the cmake parameter must be enclosed in quotes) or change the ./source/CMakeList.txt file.
+    ```
+    setup_mingw.bat "-DOpENer_TRACES:BOOL=TRUE"
+    ```
+5. Run the command "make" from the same directory (./bin/mingw)
+6. The opener.exe is now found in <opener install dir>\bin\mingw\src\ports\MINGW
+7. Start it like this: "opener 192.168.250.22", where the ip address is the local computer's address on the nettwork you want to use.
+		
 Directory structure:
 --------------------
 - bin ...  The resulting binaries and make files for different ports

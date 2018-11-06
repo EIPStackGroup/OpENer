@@ -7,6 +7,7 @@
 #include "doublylinkedlist.h"
 
 #include "opener_user_conf.h"
+#include <stdio.h>  // Needed to define NULL
 
 void DoublyLinkedListInitialize(DoublyLinkedList *list,
                                 NodeMemoryAllocator allocator,
