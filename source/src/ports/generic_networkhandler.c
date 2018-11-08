@@ -575,7 +575,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
                                                         address->sin_addr.s_addr) ) );
   UDPHeaderGenerate(&header, (char *)complete_message);
 
-  int sent_length = sendto( socket,
+  int sent_length = sendto( socket_handle,
                             (char *) complete_message,
                             data_length + kUpdHeaderLength,
                             0,
