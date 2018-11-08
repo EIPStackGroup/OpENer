@@ -117,7 +117,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
     /* if instance not found, return an error reply */
     message_router_response->general_status =
       kCipErrorPathDestinationUnknown;
-    /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
+    /* according to the test tool this is the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST */
   }
 
   /* handle error replies*/
