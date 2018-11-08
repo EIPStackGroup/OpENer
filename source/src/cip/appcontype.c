@@ -348,20 +348,20 @@ CipConnectionObject *GetExistingProducerMulticastConnection(
   while (NULL != node) {
     CipConnectionObject *producer_multicast_connection = node->data;
     if ( true ==
-         ConnectionObjectIsTypeIOConnection(producer_multicast_connection) ) {
-      if ( (input_point
-            == producer_multicast_connection->produced_path.instance_id)
-           && ( kConnectionObjectConnectionTypeMulticast
-                == ConnectionObjectGetTToOConnectionType(
-                  producer_multicast_connection) )
-           && (kEipInvalidSocket
-               != producer_multicast_connection->socket[
-                 kUdpCommuncationDirectionProducing]) ) {
-        /* we have a connection that produces the same input assembly,
-         * is a multicast producer and manages the connection.
-         */
-        return producer_multicast_connection;
-      }
+         ConnectionObjectIsTypeIOConnection(producer_multicast_connection) &&
+         (input_point ==
+          producer_multicast_connection->produced_path.instance_id) &&
+         ( kConnectionObjectConnectionTypeMulticast ==
+           ConnectionObjectGetTToOConnectionType(producer_multicast_connection) )
+         &&
+         (kEipInvalidSocket !=
+          producer_multicast_connection->socket[
+            kUdpCommuncationDirectionProducing]) )
+    {
+      /* we have a connection that produces the same input assembly,
+       * is a multicast producer and manages the connection.
+       */
+      return producer_multicast_connection;
     }
     node = node->next;
   }
