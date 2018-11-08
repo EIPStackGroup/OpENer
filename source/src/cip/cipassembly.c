@@ -80,9 +80,12 @@ void ShutdownAssemblies(void) {
 CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
                                   EipByte *const data,
                                   const EipUint16 data_length) {
-  CipClass *assembly_class = NULL;
-  if( NULL == (assembly_class = GetCipClass(kCipAssemblyClassCode) ) &&
-      NULL == (assembly_class = CreateAssemblyClass() ) ) {
+  CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode);
+  if(NULL == assembly_class) {
+    assembly_class = CreateAssemblyClass();
+  }
+
+  if(NULL == assembly_class) {
     return NULL;
   }
 
