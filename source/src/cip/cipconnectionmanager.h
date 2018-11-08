@@ -107,8 +107,7 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable =
     0x0303,
   kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData
-    =
-      0x0304,
+    = 0x0304,
   kConnectionManagerExtendedStatusCodeScheduleSignatureMismatch = 0x0305,
   kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible =
     0x0306,
@@ -138,7 +137,7 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast =
     0x0813,
   kConnectionManagerExtendedStatusCodeInvalidProduceConsumeDataFormat = 0x0814,
-  kConnectionManagerExtendedStatusWrongCloser
+  kConnectionManagerExtendedStatusWrongCloser = 0xFFFF /* No a real extended error code, but needed for forward close */
 } ConnectionManagerExtendedStatusCode;
 
 /** @brief macros for comparing sequence numbers according to CIP spec vol
