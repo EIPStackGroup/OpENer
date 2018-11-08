@@ -541,7 +541,7 @@ EipStatus ForwardOpen(
   }
 
   /* Check if we have a matching or non matching request */
-  if ( ( NULL != CheckForExistingConnection(&g_dummy_connection_object) ) ) {
+  if ( NULL != CheckForExistingConnection(&g_dummy_connection_object) ) {
     OPENER_TRACE_INFO("We have a Matching request\n");
     is_matching_request = true;
 
