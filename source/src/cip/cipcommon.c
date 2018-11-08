@@ -114,9 +114,10 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
   } else {
     OPENER_TRACE_WARN("notify: instance number %d unknown\n",
                       instance_number);
-    /* if instance not found, return an error reply*/
+    /* if instance not found, return an error reply */
     message_router_response->general_status =
-      kCipErrorPathDestinationUnknown;                           /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
+      kCipErrorPathDestinationUnknown;
+    /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
   }
 
   /* handle error replies*/
