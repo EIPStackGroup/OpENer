@@ -1,12 +1,11 @@
-[![Build Status](https://travis-ci.org/EIPStackGroup/OpENer.svg?branch=master)](https://travis-ci.org/EIPStackGroup/OpENer)
-    <p><a href="https://scan.coverity.com/projects/opener">
+[![Build Status](https://travis-ci.org/EIPStackGroup/OpENer.svg?branch=master)](https://travis-ci.org/EIPStackGroup/OpENer)<a href="https://scan.coverity.com/projects/opener">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/14200/badge.svg?flat=1"/>
-</a>
- </p>
-
+</a> 
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=OpENer&metric=alert_status)](https://sonarcloud.io/dashboard?id=OpENer)
 [![Stories in Ready](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=ready&title=Ready)](http://waffle.io/EIPStackGroup/OpENer)
 [![Stories in In Progress](https://badge.waffle.io/EIPStackGroup/OpENer.svg?label=in%20progress&title=In%20Progress)](http://waffle.io/EIPStackGroup/OpENer)
+
 
 OpENer Version 2.1.0
 ====================
