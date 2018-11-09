@@ -89,16 +89,6 @@
  */
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
-/** @brief Define if RUN IDLE data is sent with consumed data
- */
-static const int kOpenerConsumedDataHasRunIdleHeader = 1;
-
-/** @brief Define if RUN IDLE data is to be sent with produced data
- *
- * Per default we don't send run idle headers with produced data
- */
-static const int kOpenerProducedDataHasRunIdleHeader = 0;
-
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide print tracing macro */
 #include <stdio.h>

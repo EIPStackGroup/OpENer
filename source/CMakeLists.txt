@@ -27,6 +27,18 @@ find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsuppo
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
+option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
+option(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER "Will consumed data from OpENer also include a run idle header?" TRUE)
+
+if(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
+  add_definitions(-DOPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
+endif()
+
+if(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
+  add_definitions(-DOPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
+endif()
+
+
 #######################################
 # Platform switches                   #
 #######################################

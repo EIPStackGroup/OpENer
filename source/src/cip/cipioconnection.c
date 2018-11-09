@@ -141,12 +141,13 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-    if ( (kOpenerConsumedDataHasRunIdleHeader) && (data_size > 0)
-         && (!is_heartbeat) ) {
+#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
+    if ( (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
+#endif
     if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size */
       connection_object->correct_originator_to_target_size =
@@ -240,12 +241,13 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-    if ( (kOpenerProducedDataHasRunIdleHeader) && (data_size > 0)
-         && (!is_heartbeat) ) {
+#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+    if ( (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
+#endif
     if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
@@ -823,9 +825,9 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   outgoing_message.current_message_position -= 2;
   common_packet_format_data->data_item.length = producing_instance_attributes
                                                 ->length;
-  if (kOpenerProducedDataHasRunIdleHeader) {
-    common_packet_format_data->data_item.length += 4;
-  }
+#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+  common_packet_format_data->data_item.length += 4;
+#endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   if (kConnectionObjectTransportClassTriggerTransportClass1 ==
       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
@@ -840,10 +842,10 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
                     &outgoing_message.current_message_position);
   }
 
-  if (kOpenerProducedDataHasRunIdleHeader) {
-    AddDintToMessage( g_run_idle_state,
-                      &(outgoing_message.current_message_position) );
-  }
+#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+  AddDintToMessage( g_run_idle_state,
+                    &(outgoing_message.current_message_position) );
+#endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   memcpy(outgoing_message.current_message_position,
          producing_instance_attributes->data,
@@ -879,14 +881,14 @@ EipStatus HandleReceivedIoConnectionData(
 
   if (data_length > 0) {
     /* we have no heartbeat connection */
-    if (kOpenerConsumedDataHasRunIdleHeader) {
-      EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
-      if (g_run_idle_state != nRunIdleBuf) {
-        RunIdleChanged(nRunIdleBuf);
-      }
-      g_run_idle_state = nRunIdleBuf;
-      data_length -= 4;
+#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
+    EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
+    if (g_run_idle_state != nRunIdleBuf) {
+      RunIdleChanged(nRunIdleBuf);
     }
+    g_run_idle_state = nRunIdleBuf;
+    data_length -= 4;
+#endif /* OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER */
 
     if (NotifyAssemblyConnectedDataReceived(
           connection_object->consuming_instance, (EipUint8 *const)data,
