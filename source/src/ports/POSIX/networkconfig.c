@@ -137,7 +137,8 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
 }
 
 void ConfigureDomainName() {
-  FILE *file_handle = fopen("/etc/resolv.conf", "r");
+  char resolv_conf_file[] = "/etc/resolv.conf";
+  FILE *file_handle = fopen(resolv_conf_file, "r");
   char *file_buffer = NULL;
   size_t file_length;
   char *domain_name_string = NULL;
@@ -154,9 +155,14 @@ void ConfigureDomainName() {
       fclose(file_handle);
     }
     else{
+      OPENER_TRACE_ERR("Could not allocate memory for reading file %s\n",
+                       resolv_conf_file);
       fclose(file_handle);
       exit(1);
     }
+  } else {
+    OPENER_TRACE_ERR("Could not open file %s\n", resolv_conf_file);
+    exit(1);
   }
 
   if(strstr(file_buffer, "domain") ) {

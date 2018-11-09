@@ -688,6 +688,7 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
     case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: result =
       kConnectionObjectPriorityUrgent; break;
     default: OPENER_ASSERT(false) /* Not possible to get here! */
+      result = kConnectionObjectPriorityLow;
       break;
   }
   return result;
