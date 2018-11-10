@@ -53,7 +53,7 @@ script:
 - make OpENer_coverage
 - chmod +x $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
 - $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
-- sonar-scanner -Dproject.settings=$TRAVIS_BUILD_DIR/sonar-project.properties -Dsonar.sources=. -Dsonar.exclusions=OpENer_coverage/** -Dsonar.cfamily.gcov.reportsPath=./gcov_results
+- sonar-scanner -Dproject.settings=$TRAVIS_BUILD_DIR/sonar-project.properties -Dsonar.sources=. -Dsonar.exclusions=OpENer_coverage/**,dependencies/**,CMakeFiles/** -Dsonar.cfamily.gcov.reportsPath=./gcov_results
 after_success:
 - cd $TRAVIS_BUILD_DIR/source
 - chmod +x $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
