@@ -16,6 +16,7 @@ addons:
   apt:
     packages:
     - libcap-dev
+    - lcov
     - doxygen
     - doxygen-doc
     - doxygen-latex
