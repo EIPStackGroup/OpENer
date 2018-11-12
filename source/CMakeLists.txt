@@ -88,9 +88,6 @@ endif( OpENer_TESTS )
 # OpENer C flags                      #
 #######################################
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
-# The following extra flags are needed to compile without warnings on mingw
-# TODO: Fix the root problems and remove this line
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-variable -Wno-incompatible-pointer-types -Wno-pointer-sign -Wno-format -Wno-discarded-qualifiers -Wno-unknown-pragmas" )
 
 ####################################################
 # Internal cache holding the available CIP objects #
