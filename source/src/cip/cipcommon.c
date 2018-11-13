@@ -883,7 +883,6 @@ int DecodePaddedEPath(CipEpath *epath,
       default:
         OPENER_TRACE_ERR("wrong path requested\n");
         return kEipStatusError;
-        break;
     }
   }
 
@@ -907,136 +906,136 @@ size_t CalculateIndex(EipUint16 attribute_number) {
 }
 
 size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
+  size_t data_type_size = 0;
   switch (attribute_struct->type) {
-
     case (kCipBool):
-      return sizeof(CipBool);
+    data_type_size = sizeof(CipBool);
       break;
     case (kCipSint):
-      return sizeof(CipSint);
+    data_type_size = sizeof(CipSint);
       break;
     case (kCipInt):
-      return sizeof(CipInt);
+    data_type_size = sizeof(CipInt);
       break;
     case (kCipDint):
-      return sizeof(CipDint);
+    data_type_size = sizeof(CipDint);
       break;
     case (kCipUsint):
-      return sizeof(CipUsint);
+    data_type_size =sizeof(CipUsint);
       break;
     case (kCipUint):
-      return sizeof(CipUint);
+    data_type_size =sizeof(CipUint);
       break;
     case (kCipUdint):
-      return sizeof(CipUdint);
+    data_type_size =sizeof(CipUdint);
       break;
     case (kCipReal):
-      return sizeof(CipReal);
-      break;
-    case (kCipLreal):
-      return sizeof(CipLreal);
+    data_type_size =sizeof(CipReal);
       break;
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
+    case (kCipLreal):
+    data_type_size = sizeof(CipLreal);
+      break;
     case (kCipUlint):
-      return sizeof(CipUlint);
+    data_type_size = sizeof(CipUlint);
       break;
     case (kCipLint):
-      return sizeof(CipLint);
+    data_type_size = sizeof(CipLint);
       break;
     case (kCipLword):
-      return sizeof(CipLword);
+    data_type_size = sizeof(CipLword);
       break;
     case (kCipLtime):
-      return sizeof(CipLint);
+    data_type_size = sizeof(CipLint);
       break;
 #endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
     case (kCipStime):
-      return sizeof(CipDint);
+    data_type_size = sizeof(CipDint);
       break;
     case (kCipDate):
-      return sizeof(CipUint);
+    data_type_size = sizeof(CipUint);
       break;
     case (kCipTimeOfDay):
-      return sizeof(CipUdint);
+    data_type_size = sizeof(CipUdint);
       break;
     case (kCipDateAndTime):
-      return sizeof(CipUdint) + sizeof(CipUint);
+    data_type_size = sizeof(CipUdint) + sizeof(CipUint);
       break;
     case (kCipString): {
       CipString *data = (CipString *) attribute_struct->data;
-      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipByte):
-      return sizeof(CipByte);
+    data_type_size = sizeof(CipByte);
       break;
     case (kCipWord):
-      return sizeof(CipWord);
+    data_type_size = sizeof(CipWord);
       break;
     case (kCipDword):
-      return sizeof(CipDword);
+    data_type_size = sizeof(CipDword);
       break;
     case (kCipString2): {
       CipString *data = (CipString *) attribute_struct->data;
-      return sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipFtime):
-      return sizeof(CipDint);
+    data_type_size = sizeof(CipDint);
       break;
     case (kCipItime):
-      return sizeof(CipInt);
+    data_type_size = sizeof(CipInt);
       break;
     case (kCipStringN): {
       CipStringN *data = (CipStringN *) attribute_struct->data;
-      return sizeof(CipUint) + sizeof(CipUint)
+      data_type_size = sizeof(CipUint) + sizeof(CipUint)
              + (size_t) (data->length) * (size_t) (data->size);
     }
     break;
     case (kCipShortString): {
       CipShortString *data = (CipShortString *) attribute_struct->data;
-      return sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipTime):
-      return sizeof(CipDint);
+    data_type_size = sizeof(CipDint);
       break;
     case (kCipEpath): {
       CipEpath *data = (CipEpath *) attribute_struct->data;
-      return 2 * (data->path_size);
+      data_type_size = 2 * (data->path_size);
     }
     break;
     case (kCipEngUnit):
-      return sizeof(CipUint);
+    data_type_size = sizeof(CipUint);
       break;
     case (kCipUsintUsint):
-      return 2 * sizeof(CipUsint);
+    data_type_size = 2 * sizeof(CipUsint);
       break;
     case (kCipUdintUdintUdintUdintUdintString): {
       CipTcpIpNetworkInterfaceConfiguration *data =
         (CipTcpIpNetworkInterfaceConfiguration *) attribute_struct->data;
-      return 5 * sizeof(CipUdint) + sizeof(CipUint)
+      data_type_size = 5 * sizeof(CipUdint) + sizeof(CipUint)
              + (data->domain_name.length) * sizeof(EipByte);
     }
     break;
     case (kCip6Usint):
-      return 6 * sizeof(CipUsint);
+    data_type_size = 6 * sizeof(CipUsint);
       break;
     case (kCipMemberList):
-      return 0;
+    data_type_size = 0;
       break;
     case (kCipByteArray): {
       CipByteArray *data = (CipByteArray *) attribute_struct->data;
-      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kInternalUint6):
-      return 6 * sizeof(CipUint);
+    data_type_size = 6 * sizeof(CipUint);
       break;
     default:
-      return 0;
+      data_type_size = 0;
       break;
-
   }
+  return data_type_size;
 }

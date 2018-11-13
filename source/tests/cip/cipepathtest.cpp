@@ -66,6 +66,54 @@ TEST(CipEpath, GetSegmentTypeReserved) {
   SegmentType segment_type = GetPathSegmentType(message);
   CHECK_EQUAL(kSegmentTypeReserved, segment_type);
 }
+/* Set Segment Type tests*/
+TEST(CipEpath, SetSegmentTypePortSegment) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypePortSegment, message);
+  CHECK_EQUAL(0x00, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeLogicalSegment) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeLogicalSegment, message);
+  CHECK_EQUAL(0x20, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeNetworkSegment) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeNetworkSegment, message);
+  CHECK_EQUAL(0x40, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeSymbolicSegment) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeSymbolicSegment, message);
+  CHECK_EQUAL(0x60, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeDataSegment) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeDataSegment, message);
+  CHECK_EQUAL(0x80, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeDataTypeConstructed) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeDataTypeConstructed, message);
+  CHECK_EQUAL(0xA0, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeDataTypeElementary) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeDataTypeElementary, message);
+  CHECK_EQUAL(0xC0, message[0]);
+}
+
+TEST(CipEpath, SetSegmentTypeReserved) {
+  unsigned char message[] = {0xFF};
+  SetPathSegmentType(kSegmentTypeReserved, message);
+  CHECK_EQUAL(0xE0, message[0]);
+}
 
 /** Port segment tests **/
 TEST(CipEpath, GetPortSegmentExtendedAddressSizeTrue) {

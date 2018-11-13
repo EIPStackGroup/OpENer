@@ -539,16 +539,14 @@ int EncodeExtendedStatusLength(
  *
  * @return New size of the message buffer
  */
-int EncodeExtendedStatusDataItems(
+size_t EncodeExtendedStatusDataItems(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  for (size_t i = 0; i < message_router_response->size_of_additional_status;
-       i++) {
+  for (size_t i = 0; i < message_router_response->size_of_additional_status && i < MAX_SIZE_OF_ADD_STATUS;i++) {
     outgoing_message->used_message_length += AddIntToMessage(
       message_router_response->additional_status[i],
       &outgoing_message->current_message_position);
   }
-
   return outgoing_message->used_message_length;
 }
 

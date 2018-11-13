@@ -114,28 +114,28 @@ void SetPathSegmentType(SegmentType segment_type,
                         unsigned char *const cip_path) {
   switch (segment_type) {
     case kSegmentTypePortSegment:
-      *cip_path |= SEGMENT_TYPE_PORT_SEGMENT;
+      *cip_path = SEGMENT_TYPE_PORT_SEGMENT;
       break;
     case kSegmentTypeLogicalSegment:
-      *cip_path |= SEGMENT_TYPE_LOGICAL_SEGMENT;
+      *cip_path = SEGMENT_TYPE_LOGICAL_SEGMENT;
       break;
     case kSegmentTypeNetworkSegment:
-      *cip_path |= SEGMENT_TYPE_NETWORK_SEGMENT;
+      *cip_path = SEGMENT_TYPE_NETWORK_SEGMENT;
       break;
     case kSegmentTypeSymbolicSegment:
-      *cip_path |= SEGMENT_TYPE_SYMBOLIC_SEGMENT;
+      *cip_path = SEGMENT_TYPE_SYMBOLIC_SEGMENT;
       break;
     case kSegmentTypeDataSegment:
-      *cip_path |= SEGMENT_TYPE_DATA_SEGMENT;
+      *cip_path = SEGMENT_TYPE_DATA_SEGMENT;
       break;
     case kSegmentTypeDataTypeConstructed:
-      *cip_path |= SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED;
+      *cip_path = SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED;
       break;
     case kSegmentTypeDataTypeElementary:
-      *cip_path |= SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY;
+      *cip_path = SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY;
       break;
     case kSegmentTypeReserved:
-      *cip_path |= SEGMENT_TYPE_SEGMENT_RESERVED;
+      *cip_path = SEGMENT_TYPE_SEGMENT_RESERVED;
       break;
     default:
       OPENER_ASSERT(
@@ -356,25 +356,24 @@ const CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
 size_t CipEpathSetLogicalValue(const CipDword logical_value,
                                const LogicalSegmentLogicalFormat logical_format,
                                CipOctet **message) {
+  size_t written_bytes = 0;
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:
-      AddSintToMessage(logical_value, message);
-      return 1; break;
+      written_bytes = AddSintToMessage(logical_value, message);
+      break;
     case kLogicalSegmentLogicalFormatSixteenBit:
-      MoveMessageNOctets(1, (const CipOctet **)message);
-      AddIntToMessage(logical_value, message);
-      return 3; break;
+      written_bytes = MoveMessageNOctets(1, (const CipOctet **)message); /* Needed for padding */
+      written_bytes += AddIntToMessage(logical_value, message);
+      break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
-      MoveMessageNOctets(1,(const CipOctet **)message);
-      AddDintToMessage(logical_value, message);
-      return 5; break;
-
+      written_bytes = MoveMessageNOctets(1,(const CipOctet **)message); /* Needed for padding */
+      written_bytes += AddDintToMessage(logical_value, message);
+      break;
     default:
       OPENER_ASSERT(false) /* This should never happen! */
-      return 0;
+      written_bytes = 0;
   }
-  OPENER_ASSERT(false) /* This should never happen! */
-  return 0;
+  return written_bytes;
 }
 
 LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
@@ -421,7 +420,6 @@ GetPathLogicalSegmentSpecialTypeLogicalType(const unsigned char *const cip_path)
       result = kLogicalSegmentSpecialTypeLogicalFormatElectronicKey; break;
     default: result = kLogicalSegmentSpecialTypeLogicalFormatReserved; break;
   }
-
   return result;
 }
 

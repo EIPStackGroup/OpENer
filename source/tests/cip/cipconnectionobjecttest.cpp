@@ -18,62 +18,107 @@ TEST_GROUP(CipConnectionObject) {
 
 };
 
-TEST(CipConnectionObject, StateNonExistent) {
+/* Get State tests */
+TEST(CipConnectionObject, GetStateNonExistent) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 0;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateNonExistent, state);
 }
 
-TEST(CipConnectionObject, StateConfiguring) {
+TEST(CipConnectionObject, GetStateConfiguring) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 1;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateConfiguring, state);
 }
 
-TEST(CipConnectionObject, StateWaitingForConnectionID) {
+TEST(CipConnectionObject, GetStateWaitingForConnectionID) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 2;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateWaitingForConnectionID, state);
 }
 
-TEST(CipConnectionObject, StateEstablished) {
+TEST(CipConnectionObject, GetStateEstablished) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 3;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateEstablished, state);
 }
 
-TEST(CipConnectionObject, StateTimedOut) {
+TEST(CipConnectionObject, GetStateTimedOut) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 4;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateTimedOut, state);
 }
 
-TEST(CipConnectionObject, StateDeferredDelete) {
+TEST(CipConnectionObject, GetStateDeferredDelete) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 5;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateDeferredDelete, state);
 }
 
-TEST(CipConnectionObject, StateClosing) {
+TEST(CipConnectionObject, GetStateClosing) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 6;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateClosing, state);
 }
 
-TEST(CipConnectionObject, StateInvalid) {
+TEST(CipConnectionObject, GetStateInvalid) {
   CipConnectionObject connection_object = { 0 };
   connection_object.state = 7;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateInvalid, state);
 }
 
+/* Set state tests */
+TEST(CipConnectionObject, SetStateNonExistent) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateNonExistent);
+  CHECK_EQUAL(0, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateConfiguring) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateConfiguring);
+  CHECK_EQUAL(1, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateWaitingForConnectionID) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateWaitingForConnectionID);
+  CHECK_EQUAL(2, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateEstablished) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateEstablished);
+  CHECK_EQUAL(3, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateTimedOut) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateTimedOut);
+  CHECK_EQUAL(4, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateDeferredDelete) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateDeferredDelete);
+  CHECK_EQUAL(5, connection_object.state);
+}
+
+TEST(CipConnectionObject, SetStateClosing) {
+  CipConnectionObject connection_object = { 0 };
+  ConnectionObjectSetState(&connection_object, kConnectionObjectStateClosing);
+  CHECK_EQUAL(6, connection_object.state);
+}
+
+/* Get InstanceType tests */
 TEST(CipConnectionObject, InstanceTypeIExplicitMessaging) {
   CipConnectionObject connection_object = { 0 };
   connection_object.instance_type =
