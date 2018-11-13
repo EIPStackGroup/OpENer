@@ -113,28 +113,28 @@ void SetPathSegmentType(SegmentType segment_type,
                         unsigned char *const cip_path) {
   switch (segment_type) {
     case kSegmentTypePortSegment:
-      *cip_path |= SEGMENT_TYPE_PORT_SEGMENT;
+      *cip_path = SEGMENT_TYPE_PORT_SEGMENT;
       break;
     case kSegmentTypeLogicalSegment:
-      *cip_path |= SEGMENT_TYPE_LOGICAL_SEGMENT;
+      *cip_path = SEGMENT_TYPE_LOGICAL_SEGMENT;
       break;
     case kSegmentTypeNetworkSegment:
-      *cip_path |= SEGMENT_TYPE_NETWORK_SEGMENT;
+      *cip_path = SEGMENT_TYPE_NETWORK_SEGMENT;
       break;
     case kSegmentTypeSymbolicSegment:
-      *cip_path |= SEGMENT_TYPE_SYMBOLIC_SEGMENT;
+      *cip_path = SEGMENT_TYPE_SYMBOLIC_SEGMENT;
       break;
     case kSegmentTypeDataSegment:
-      *cip_path |= SEGMENT_TYPE_DATA_SEGMENT;
+      *cip_path = SEGMENT_TYPE_DATA_SEGMENT;
       break;
     case kSegmentTypeDataTypeConstructed:
-      *cip_path |= SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED;
+      *cip_path = SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED;
       break;
     case kSegmentTypeDataTypeElementary:
-      *cip_path |= SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY;
+      *cip_path = SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY;
       break;
     case kSegmentTypeReserved:
-      *cip_path |= SEGMENT_TYPE_SEGMENT_RESERVED;
+      *cip_path = SEGMENT_TYPE_SEGMENT_RESERVED;
       break;
     default:
       OPENER_ASSERT(
