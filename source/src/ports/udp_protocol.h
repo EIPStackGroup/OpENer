@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#ifdef POSIX
+#ifdef OPENER_POSIX
 #include <netinet/in.h>
 #elif WIN32
 typedef uint32_t in_addr_t;
