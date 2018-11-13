@@ -932,10 +932,10 @@ size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
     case (kCipReal):
     data_type_size =sizeof(CipReal);
       break;
+#ifdef OPENER_SUPPORT_64BIT_DATATYPES
     case (kCipLreal):
     data_type_size = sizeof(CipLreal);
       break;
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
     case (kCipUlint):
     data_type_size = sizeof(CipUlint);
       break;
