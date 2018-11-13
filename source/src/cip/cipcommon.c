@@ -940,13 +940,13 @@ size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
     data_type_size = sizeof(CipUlint);
       break;
     case (kCipLint):
-      return sizeof(CipLint);
+    data_type_size = sizeof(CipLint);
       break;
     case (kCipLword):
-      return sizeof(CipLword);
+    data_type_size = sizeof(CipLword);
       break;
     case (kCipLtime):
-      return sizeof(CipLint);
+    data_type_size = sizeof(CipLint);
       break;
 #endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
