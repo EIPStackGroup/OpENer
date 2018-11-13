@@ -18,7 +18,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#ifdef POSIX
 #include <netinet/in.h>
+#elif WIN32
+typedef uint32_t in_addr_t;
+#endif
 
 static size_t kUpdHeaderLength = 8U; /**< UDP header length in bytes */
 

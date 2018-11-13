@@ -564,7 +564,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     .checksum = 0
   };
 
-  char complete_message[data_length + kUpdHeaderLength];
+  char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
   memcpy(complete_message + kUpdHeaderLength, data, data_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
   UDPHeaderSetChecksum(&header,

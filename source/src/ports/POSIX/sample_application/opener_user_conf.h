@@ -110,7 +110,7 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
                 __LINE__); \
       while(1) {  } \
     } \
-  } while(0)
+  } while(0);
 
 /* else use standard assert() */
 //#include <assert.h>

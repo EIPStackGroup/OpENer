@@ -6,6 +6,10 @@
 
 #include "udp_protocol.h"
 
+#ifdef WIN32
+#include <winsock.h>
+#endif
+
 void UDPHeaderSetSourcePort(UDPHeader *const header,
                             const uint16_t source_port) {
   header->source_port = source_port;

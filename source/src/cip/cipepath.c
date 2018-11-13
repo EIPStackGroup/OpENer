@@ -12,6 +12,7 @@
 #include "endianconv.h"
 #include "cipelectronickey.h"
 #include "trace.h"
+#include <assert.h>
 
 const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment port value, indicating the use of the extended port field */
 
