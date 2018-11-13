@@ -215,7 +215,6 @@ CipConnectionObject *GetExclusiveOwnerConnection(
         }
       }
       return &(g_exlusive_owner_connections[i].connection_data);
-      break;
     }
   }
   return NULL;

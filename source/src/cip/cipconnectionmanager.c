@@ -1370,7 +1370,6 @@ EipUint8 ParseConnectionPath(
             *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happend*/
             return
               kConnectionManagerGeneralStatusPathSegmentErrorInUnconnectedSend;
-            break;
         }
       }
     }
