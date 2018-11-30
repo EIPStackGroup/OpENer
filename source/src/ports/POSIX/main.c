@@ -125,8 +125,7 @@ int main(int argc,
     struct sched_param param;
     pthread_attr_t attr;
     pthread_t thread;
-    CipUint ret;
-    ret = pthread_attr_init(&attr);
+    CipUint ret = pthread_attr_init(&attr);
     if (ret) {
       OPENER_TRACE_ERR("init pthread attributes failed\n");
       exit(-2);
@@ -170,6 +169,8 @@ int main(int argc,
     if (ret) {
       OPENER_TRACE_ERR("join pthread failed: %m\n");
     }
+    /* Unlock memory */
+    munlockall();
 #else
     executeEventLoop();
 #endif
