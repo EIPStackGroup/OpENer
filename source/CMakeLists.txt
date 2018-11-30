@@ -61,6 +61,13 @@ if( OpENer_64_BIT_DATA_TYPES_ENABLED )
 endif( OpENer_64_BIT_DATA_TYPES_ENABLED )
 
 #######################################
+# OpENer RT patch	              #
+#######################################
+set( OpENer_RT OFF CACHE BOOL "Activate OpENer RT" )
+if(OpENer_RT)
+  add_definitions( -DOPENER_RT )
+endif(OpENer_RT)
+#######################################
 # OpENer tracer switches              #
 #######################################
 set( OpENer_TRACES OFF CACHE BOOL "Activate OpENer traces" )
