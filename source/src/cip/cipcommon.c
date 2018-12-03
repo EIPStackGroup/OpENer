@@ -689,6 +689,18 @@ int DecodeData(const EipUint8 cip_data_type,
   return number_of_decoded_bytes;
 }
 
+CipServiceStruct *GetCipService(const CipInstance *const instance, CipUsint service_number) {
+  CipServiceStruct *service = instance->cip_class->services;
+  for (size_t i = 0; i < instance->cip_class->number_of_services; i++)       /* hunt for the GET_ATTRIBUTE_SINGLE service*/
+    {
+      if (service->service_number == service_number) {
+        return service; /* found the service */
+      }
+      service++;
+    }
+  return NULL; /* didn't find the service */
+}
+
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
@@ -697,59 +709,39 @@ EipStatus GetAttributeAll(CipInstance *instance,
 
   EipUint8 *reply = message_router_response->data;       /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;       /* pointer to list of attributes*/
-  CipServiceStruct *service = instance->cip_class->services;       /* pointer to list of services*/
+  CipServiceStruct *service = GetCipService(instance, kGetAttributeSingle);       /* pointer to list of services*/
 
-  if (instance->instance_number == 2) {
-    OPENER_TRACE_INFO("GetAttributeAll: instance number 2\n");
+  if(NULL == service) {
+    /* GetAttributeAll service not found */
+    /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
+    return kEipStatusOk;
   }
 
-  for (int i = 0; i < instance->cip_class->number_of_services; i++)       /* hunt for the GET_ATTRIBUTE_SINGLE service*/
-  {
-    if (service->service_number == kGetAttributeSingle)             /* found the service */
-    {
-      if (0 == instance->cip_class->number_of_attributes) {
-        message_router_response->data_length = 0;                         /*there are no attributes to be sent back*/
-        message_router_response->reply_service = (0x80
-                                                  | message_router_request->
-                                                  service);
-        message_router_response->general_status =
-          kCipErrorServiceNotSupported;
-        message_router_response->size_of_additional_status = 0;
-      } else {
-        for (int j = 0; j < instance->cip_class->number_of_attributes;
-             j++)                                    /* for each instance attribute of this class */
-        {
-          int attrNum = attribute->attribute_number;
-          if (attrNum < 32
-              && ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                            attrNum)]) &
-                   (1 << (attrNum % 8) ) ) )                                                                /* only return attributes that are flagged as being part of GetAttributeALl */
-          {
-            message_router_request->request_path.attribute_number =
-              attrNum;
-            if (kEipStatusOkSend
-                != service->service_function(instance,
-                                             message_router_request,
-                                             message_router_response,
-                                             originator_address,
-                                             encapsulation_session) ) {
-              message_router_response->data = reply;
-              return kEipStatusError;
-            }
-            message_router_response->data +=
-              message_router_response->data_length;
-          }
-          attribute++;
+  if (0 == instance->cip_class->number_of_attributes) {
+    message_router_response->data_length = 0;                         /*there are no attributes to be sent back*/
+    message_router_response->reply_service = (0x80 | message_router_request->service);
+    message_router_response->general_status = kCipErrorServiceNotSupported;
+    message_router_response->size_of_additional_status = 0;
+  } else {
+    for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) {
+      /* for each instance attribute of this class */
+      int attribute_number = attribute->attribute_number;
+      if (attribute_number < 32 && ( (instance->cip_class->get_all_bit_mask[CalculateIndex(attribute_number)]) &
+                     (1 << (attribute_number % 8) ) )) {
+        /* only return attributes that are flagged as being part of GetAttributeALl */
+        message_router_request->request_path.attribute_number = attribute_number;
+        if (kEipStatusOkSend != service->service_function(instance, message_router_request, message_router_response, originator_address, encapsulation_session) ) {
+          message_router_response->data = reply;
+          return kEipStatusError;
         }
-        message_router_response->data_length =
-          message_router_response->data - reply;
-        message_router_response->data = reply;
+      message_router_response->data += message_router_response->data_length;
       }
-      return kEipStatusOkSend;
+      attribute++;
     }
-    service++;
+    message_router_response->data_length = message_router_response->data - reply;
+    message_router_response->data = reply;
   }
-  return kEipStatusOk;       /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
+  return kEipStatusOkSend;
 }
 
 int EncodeEPath(CipEpath *epath,
