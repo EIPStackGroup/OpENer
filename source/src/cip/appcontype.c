@@ -375,7 +375,7 @@ CipConnectionObject *GetNextNonControlMasterConnection(
   while (NULL != node) {
     CipConnectionObject *next_non_control_master_connection =
       node->data;
-    if ( true == ConnectionObjectIsTypeIOConnection(next_non_control_master_connection)
+    if ( true == ConnectionObjectIsTypeNonLOIOConnection(next_non_control_master_connection)
          && kConnectionObjectStateEstablished == ConnectionObjectGetState(next_non_control_master_connection)
          && input_point == next_non_control_master_connection->produced_path.instance_id
          &&  kConnectionObjectConnectionTypeMulticast == ConnectionObjectGetTToOConnectionType(next_non_control_master_connection)
@@ -391,14 +391,15 @@ CipConnectionObject *GetNextNonControlMasterConnection(
 }
 
 void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
-                                             const ConnectionObjectConnectionType instance_type)
+                                             const ConnectionObjectInstanceType instance_type)
 {
 
+  OPENER_TRACE_INFO("Close all instance type %d only connections\n", instance_type);
   DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
     CipConnectionObject *connection = node->data;
     node = node->next;
-    if ( (instance_type == connection->instance_type)
+    if ( (instance_type == ConnectionObjectGetInstanceType(connection))
          && (input_point == connection->produced_path.instance_id) ) {
       CipConnectionObject *connection_to_delete = connection;
       CheckIoConnectionEvent(

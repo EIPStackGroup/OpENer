@@ -674,6 +674,7 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
                          connection_object->produced_path.instance_id,
                          kIoConnectionEventClosed);
+  ConnectionObjectSetState(connection_object, kConnectionObjectStateNonExistent);
 
   if ( kConnectionObjectInstanceTypeIOExclusiveOwner ==
        ConnectionObjectGetInstanceType(connection_object)
@@ -684,12 +685,13 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
          && (kEipInvalidSocket
              != connection_object->socket[kUdpCommuncationDirectionProducing]) )
     {
+      OPENER_TRACE_INFO("Exclusive Owner or Input Only connection closed - Instance type :%d\n", ConnectionObjectGetInstanceType(connection_object));
       CipConnectionObject *next_non_control_master_connection =
         GetNextNonControlMasterConnection(
           connection_object->produced_path.instance_id);
       if (NULL != next_non_control_master_connection) {
 
-        /* Transfer socket ownership */
+        OPENER_TRACE_INFO("Transfer socket ownership\n");
         next_non_control_master_connection->socket[
           kUdpCommuncationDirectionProducing] =
           connection_object->socket[kUdpCommuncationDirectionProducing];

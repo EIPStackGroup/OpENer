@@ -289,6 +289,18 @@ CipUsint ConnectionObjectGetInstanceTypeForAttribute(
   return instance_type;
 }
 
+bool ConnectionObjectIsTypeNonLOIOConnection(
+  const CipConnectionObject *const connection_object) {
+  switch(connection_object->instance_type) {
+    case kConnectionObjectInstanceTypeIO:
+    case kConnectionObjectInstanceTypeIOExclusiveOwner:
+    case kConnectionObjectInstanceTypeIOInputOnly:
+      return true;
+    default: return false;
+  }
+  return false;
+}
+
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object) {
   switch(connection_object->instance_type) {

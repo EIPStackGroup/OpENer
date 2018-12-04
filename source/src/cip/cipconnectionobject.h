@@ -419,6 +419,9 @@ void ConnectionObjectResetProductionInhibitTimer(
 void ConnectionObjectGeneralConfiguration(
   CipConnectionObject *const connection_object);
 
+bool ConnectionObjectIsTypeNonLOIOConnection(
+  const CipConnectionObject *const connection_object);
+
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object);
 
