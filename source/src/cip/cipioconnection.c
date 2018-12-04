@@ -69,7 +69,7 @@ EipStatus HandleReceivedIoConnectionData(
 EipUint8 *g_config_data_buffer = NULL; /**< buffers for the config data coming with a forward open request. */
 unsigned int g_config_data_length = 0; /**< length of g_config_data_buffer. Initialized with 0 */
 
-EipUint32 g_run_idle_state; /**< buffer for holding the run idle information. */
+EipUint32 g_run_idle_state = 0; /**< buffer for holding the run idle information. */
 
 EipUint16 ProcessProductionInhibitTime(CipConnectionObject *io_connection_object)
 {
@@ -725,6 +725,7 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
                          connection_object->consumed_path.instance_id,
                          kIoConnectionEventTimedOut);
 
+  ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
   if(connection_object->last_package_watchdog_timer ==
      connection_object->inactivity_watchdog_timer) {
     CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,

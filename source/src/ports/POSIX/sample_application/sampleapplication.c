@@ -11,6 +11,7 @@
 #include "opener_api.h"
 #include "appcontype.h"
 #include "trace.h"
+#include "cipidentity.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -151,6 +152,12 @@ void CipFree(void *data) {
 }
 
 void RunIdleChanged(EipUint32 run_idle_value) {
+  OPENER_TRACE_INFO("Run/Idle handler triggered\n");
+  if((0x0001 & run_idle_value) == 1) {
+    CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRuneMode);
+  } else {
+    CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionEstablishedAllInIdleMode);
+  }
   (void) run_idle_value;
 }
 

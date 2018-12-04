@@ -50,4 +50,6 @@ typedef enum {
  */
 EipStatus CipIdentityInit(void);
 
+void CipIdentitySetExtendedDeviceStatus(CipIdentityExtendedStatus extended_status);
+
 #endif /* OPENER_CIPIDENTITY_H_ */

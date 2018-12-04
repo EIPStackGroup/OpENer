@@ -937,7 +937,8 @@ CipConnectionObject *GetConnectedOutputAssembly(
   DoublyLinkedListNode *iterator = connection_list.first;
 
   while(NULL != iterator) {
-    if( (kConnectionObjectStateEstablished ==
+    if( kConnectionObjectInstanceTypeIOExclusiveOwner == ConnectionObjectGetInstanceType(iterator->data) &&
+        (kConnectionObjectStateEstablished ==
          ConnectionObjectGetState(iterator->data)
          || kConnectionObjectStateTimedOut ==
          ConnectionObjectGetState(iterator->data) ) &&
@@ -947,7 +948,6 @@ CipConnectionObject *GetConnectedOutputAssembly(
     }
     iterator = iterator->next;
   }
-
   return NULL;
 }
 
