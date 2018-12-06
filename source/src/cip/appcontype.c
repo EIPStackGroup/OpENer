@@ -276,15 +276,6 @@ CipConnectionObject *GetListenOnlyConnection(
   const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
 
-  if ( kConnectionObjectConnectionTypeMulticast
-       != ConnectionObjectGetTToOConnectionType(connection_object) ) {
-    /* a listen only connection has to be a multicast connection. */
-    OPENER_TRACE_ERR("Requested Listen Only is not a multicast connection\n");
-    *extended_error =
-      kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;   /* maybe not the best error message however there is no suitable definition in the cip spec */
-    return NULL;
-  }
-
   for (size_t i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
         == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
