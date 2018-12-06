@@ -22,6 +22,8 @@
  *    - inet_addr
  */
 
+ #include "typedefs.h"
+
 typedef unsigned short in_port_t;
 
 /** @brief Identity configuration of the device */
@@ -114,7 +116,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
                 __LINE__); \
       while(1) {;} \
     } \
-  } while(0)
+  } while(0);
 
 /* else use standard assert() */
 //#include <assert.h>

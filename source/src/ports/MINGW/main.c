@@ -46,7 +46,7 @@ int main(int argc,
                                CipConnectionObjectListArrayAllocator,
                                CipConnectionObjectListArrayFree);
     /* fetch Internet address info from the platform */
-    ConfigureDomainName(arg[1] );
+    ConfigureDomainName();
     ConfigureHostName();
     ConfigureNetworkInterface(arg[1] );
   }
