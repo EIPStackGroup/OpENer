@@ -3,6 +3,14 @@ add_subdirectory(sample_application)
 set( PLATFORM_SPEC_SRC networkhandler.c opener_error.c networkconfig.c)
 
 #######################################
+# OpENer RT patch	              #
+#######################################
+set( OpENer_RT OFF CACHE BOOL "Activate OpENer RT" )
+if(OpENer_RT)
+  add_definitions( -DOPENER_RT )
+endif(OpENer_RT)
+
+#######################################
 # Add common includes                 #
 #######################################
 opener_common_includes()
