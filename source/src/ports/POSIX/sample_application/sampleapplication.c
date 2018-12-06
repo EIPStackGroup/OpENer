@@ -154,7 +154,7 @@ void CipFree(void *data) {
 void RunIdleChanged(EipUint32 run_idle_value) {
   OPENER_TRACE_INFO("Run/Idle handler triggered\n");
   if((0x0001 & run_idle_value) == 1) {
-    CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRuneMode);
+    CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
   } else {
     CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionEstablishedAllInIdleMode);
   }

@@ -34,6 +34,7 @@
 #include "ciperror.h"
 #include "endianconv.h"
 #include "opener_api.h"
+#include "trace.h"
 
 /* attributes in CIP Identity Object */
 
@@ -182,6 +183,7 @@ EipStatus CipIdentityInit() {
 }
 
 CipIdentitySetExtendedDeviceStatus(CipIdentityExtendedStatus extended_status) {
+  OPENER_TRACE_INFO("Setting extended status: %x", extended_status);
   status_ &= ~(0x70);
-  status_ &= extended_status;
+  status_ |= extended_status;
 }

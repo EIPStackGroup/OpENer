@@ -12,6 +12,7 @@
 #include "generic_networkhandler.h"
 #include "cipconnectionmanager.h"
 #include "cipassembly.h"
+#include "cipidentity.h"
 #include "ciptcpipinterface.h"
 #include "cipcommon.h"
 #include "appcontype.h"
@@ -869,6 +870,8 @@ EipStatus HandleReceivedIoConnectionData(
   EipUint16 data_length
   ) {
 
+  OPENER_TRACE_INFO("Starting data length: %d\n", data_length);
+  bool no_new_data = false;
   /* check class 1 sequence number*/
   if (kConnectionObjectTransportClassTriggerTransportClass1 ==
       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
@@ -876,22 +879,33 @@ EipStatus HandleReceivedIoConnectionData(
     EipUint16 sequence_buffer = GetIntFromMessage( &(data) );
     if ( SEQ_LEQ16(sequence_buffer,
                    connection_object->sequence_count_consuming) ) {
-      return kEipStatusOk; /* no new data for the assembly */
+      no_new_data = true;
     }
     connection_object->sequence_count_consuming = sequence_buffer;
     data_length -= 2;
   }
 
+  OPENER_TRACE_INFO("data length after sequence count: %d\n", data_length);
   if (data_length > 0) {
     /* we have no heartbeat connection */
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
     EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
+    OPENER_TRACE_INFO("Run/Idle handler: 0x%x", nRunIdleBuf);
+    const uint32_t kRunBitMask = 0x0001;
+    if((kRunBitMask & nRunIdleBuf) == 1) {
+      CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
+    } else {
+      CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionEstablishedAllInIdleMode);
+    }
     if (g_run_idle_state != nRunIdleBuf) {
       RunIdleChanged(nRunIdleBuf);
     }
     g_run_idle_state = nRunIdleBuf;
     data_length -= 4;
 #endif /* OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER */
+    if(no_new_data) {
+      return kEipStatusOk;
+    }
 
     if (NotifyAssemblyConnectedDataReceived(
           connection_object->consuming_instance, (EipUint8 *const)data,
