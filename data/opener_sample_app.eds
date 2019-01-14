@@ -16,7 +16,7 @@ $ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
         ProdTypeStr = "Communications Adapter";
         ProdCode = 65001;
         MajRev = 2;
-        MinRev = 1;
+        MinRev = 2;
         ProdName = "OpENer PC";
         Catalog = "OpENer-2.x";
 
