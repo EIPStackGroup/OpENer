@@ -22,7 +22,7 @@ typedef struct socket_timer {
  * Sets socket of a Socket Timer
  *
  * @param socket_timer Socket Timer to be set
- * @param Socket value
+ * @param socket Socket handle
  */
 void SocketTimerSetSocket(SocketTimer *const socket_timer,
                           const int socket);

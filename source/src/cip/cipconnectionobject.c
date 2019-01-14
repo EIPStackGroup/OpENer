@@ -174,31 +174,34 @@ void ConnectionObjectInitializeFromMessage(
 
 ConnectionObjectState ConnectionObjectGetState(
   const CipConnectionObject *const connection_object) {
+  ConnectionObjectState new_state = kConnectionObjectStateInvalid;
   switch (connection_object->state) {
     case CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT:
-      return kConnectionObjectStateNonExistent;
+      new_state = kConnectionObjectStateNonExistent;
       break;
     case CIP_CONNECTION_OBJECT_STATE_CONFIGURING:
-      return kConnectionObjectStateConfiguring;
+      new_state = kConnectionObjectStateConfiguring;
       break;
     case CIP_CONNECTION_OBJECT_STATE_WAITING_FOR_CONNECTION_ID:
-      return kConnectionObjectStateWaitingForConnectionID;
+      new_state = kConnectionObjectStateWaitingForConnectionID;
       break;
     case CIP_CONNECTION_OBJECT_STATE_ESTABLISHED:
-      return kConnectionObjectStateEstablished;
+      new_state = kConnectionObjectStateEstablished;
       break;
     case CIP_CONNECTION_OBJECT_STATE_TIMEOUT:
-      return kConnectionObjectStateTimedOut;
+      new_state = kConnectionObjectStateTimedOut;
       break;
     case CIP_CONNECTION_OBJECT_STATE_DEFERRED_DELETE:
-      return kConnectionObjectStateDeferredDelete;
+      new_state = kConnectionObjectStateDeferredDelete;
       break;
     case CIP_CONNECTION_OBJECT_STATE_CLOSING:
-      return kConnectionObjectStateClosing;
+      new_state = kConnectionObjectStateClosing;
       break;
     default:
-      return kConnectionObjectStateInvalid;
+      new_state = kConnectionObjectStateInvalid;
+      break;
   }
+  return new_state;
 }
 
 void ConnectionObjectSetState(CipConnectionObject *const connection_object,
@@ -233,7 +236,8 @@ void ConnectionObjectSetState(CipConnectionObject *const connection_object,
         CIP_CONNECTION_OBJECT_STATE_CLOSING;
       break;
     default:
-      OPENER_ASSERT(false); /* Never get here */
+      OPENER_ASSERT(false) /* Never get here */
+      break;
   }
 }
 
@@ -263,24 +267,38 @@ void ConnectionObjectSetInstanceType(
 
 CipUsint ConnectionObjectGetInstanceTypeForAttribute(
   const CipConnectionObject *const connection_object) {
+  CipUsint instance_type = kConnectionObjectInstanceTypeInvalid;
   switch (connection_object->instance_type) {
     case kConnectionObjectInstanceTypeExplicitMessaging:
-      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
+      instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_EXPLICIT_MESSAGING;
       break;
     case kConnectionObjectInstanceTypeIO:
     case kConnectionObjectInstanceTypeIOExclusiveOwner:
     case kConnectionObjectInstanceTypeIOInputOnly:
     case kConnectionObjectInstanceTypeIOListenOnly:
-      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
+      instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_IO;
       break;
     case kConnectionObjectInstanceTypeCipBridged:
-      return CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
+      instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
       break;
     default:
-      assert(false);
+      OPENER_ASSERT(false) /* This is a fault case */
+      instance_type = kConnectionObjectInstanceTypeInvalid;
+      break;
   }
-  assert(false);         //We should never come to this point
-  return 255;
+  return instance_type;
+}
+
+bool ConnectionObjectIsTypeNonLOIOConnection(
+  const CipConnectionObject *const connection_object) {
+  switch(connection_object->instance_type) {
+    case kConnectionObjectInstanceTypeIO:
+    case kConnectionObjectInstanceTypeIOExclusiveOwner:
+    case kConnectionObjectInstanceTypeIOInputOnly:
+      return true;
+    default: return false;
+  }
+  return false;
 }
 
 bool ConnectionObjectIsTypeIOConnection(
@@ -311,50 +329,66 @@ ConnectionObjectTransportClassTriggerProductionTrigger
 ConnectionObjectGetTransportClassTriggerProductionTrigger(
   const CipConnectionObject *const connection_object) {
   const CipByte kTransportClassTriggerProductionTriggerMask = 0x70;
+
+  ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
+    kConnectionObjectTransportClassTriggerProductionTriggerInvalid;
   switch ( (connection_object->transport_class_trigger) &
            kTransportClassTriggerProductionTriggerMask ) {
     case
       CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CYCLIC:
-      return kConnectionObjectTransportClassTriggerProductionTriggerCyclic;
+      production_trigger =
+        kConnectionObjectTransportClassTriggerProductionTriggerCyclic;
       break;
     case
       CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_CHANGE_OF_STATE
       :
-      return
+      production_trigger =
         kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState;
       break;
     case
       CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_PRODUCTION_TRIGGER_APPLICATION_OBJECT
       :
-      return
+      production_trigger =
         kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject;
       break;
     default:
-      return kConnectionObjectTransportClassTriggerProductionTriggerInvalid;
+      production_trigger =
+        kConnectionObjectTransportClassTriggerProductionTriggerInvalid;
+      break;
   }
+  return production_trigger;
 }
 
 ConnectionObjectTransportClassTriggerTransportClass
 ConnectionObjectGetTransportClassTriggerTransportClass(
   const CipConnectionObject *const connection_object) {
   const CipByte kTransportClassTriggerTransportClassMask = 0x0F;
+
+  ConnectionObjectTransportClassTriggerTransportClass transport_class_trigger =
+    kConnectionObjectTransportClassTriggerTransportClassInvalid;
   switch ( (connection_object->transport_class_trigger) &
            kTransportClassTriggerTransportClassMask ) {
     case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_0:
-      return kConnectionObjectTransportClassTriggerTransportClass0;
+      transport_class_trigger =
+        kConnectionObjectTransportClassTriggerTransportClass0;
       break;
     case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_1:
-      return kConnectionObjectTransportClassTriggerTransportClass1;
+      transport_class_trigger =
+        kConnectionObjectTransportClassTriggerTransportClass1;
       break;
     case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_2:
-      return kConnectionObjectTransportClassTriggerTransportClass2;
+      transport_class_trigger =
+        kConnectionObjectTransportClassTriggerTransportClass2;
       break;
     case CIP_CONNECTION_OBJECT_TRANSPORT_CLASS_TRIGGER_TRANSPORT_CLASS_3:
-      return kConnectionObjectTransportClassTriggerTransportClass3;
+      transport_class_trigger =
+        kConnectionObjectTransportClassTriggerTransportClass3;
       break;
     default:
-      return kConnectionObjectTransportClassTriggerTransportClassInvalid;
+      transport_class_trigger =
+        kConnectionObjectTransportClassTriggerTransportClassInvalid;
   }
+  return transport_class_trigger;
 }
 
 CipUint ConnectionObjectGetProducedConnectionSize(
@@ -376,8 +410,7 @@ CipUint ConnectionObjectGetConsumedConnectionSize(
 
 void ConnectionObjectSetConsumedConnectionSize(
   CipConnectionObject *const connection_object,
-  const CipUint
-  consumed_connection_size) {
+  const CipUint consumed_connection_size) {
   connection_object->consumed_connection_size = consumed_connection_size;
 }
 
@@ -444,23 +477,27 @@ void ConnectionObjectSetCipConsumedConnectionID(
 
 ConnectionObjectWatchdogTimeoutAction ConnectionObjectGetWatchdogTimeoutAction(
   const CipConnectionObject *const connection_object) {
+  ConnectionObjectWatchdogTimeoutAction timeout_action =
+    kConnectionObjectWatchdogTimeoutActionInvalid;
   switch (connection_object->watchdog_timeout_action) {
     case CIP_CONNECTION_OBJECT_WATCHDOG_TIMEOUT_ACTION_TRANSITION_TO_TIMED_OUT:
-      return kConnectionObjectWatchdogTimeoutActionTransitionToTimedOut;
+      timeout_action =
+        kConnectionObjectWatchdogTimeoutActionTransitionToTimedOut;
       break;
     case CIP_CONNECTION_OBJECT_WATCHDOG_TIMEOUT_ACTION_AUTO_DELETE:
-      return kConnectionObjectWatchdogTimeoutActionAutoDelete;
+      timeout_action = kConnectionObjectWatchdogTimeoutActionAutoDelete;
       break;
     case CIP_CONNECTION_OBJECT_WATCHDOG_TIMEOUT_ACTION_AUTO_RESET:
-      return kConnectionObjectWatchdogTimeoutActionAutoReset;
+      timeout_action = kConnectionObjectWatchdogTimeoutActionAutoReset;
       break;
     case CIP_CONNECTION_OBJECT_WATCHDOG_TIMEOUT_ACTION_DEFERRED_DELETE:
-      return kConnectionObjectWatchdogTimeoutActionDeferredDelete;
+      timeout_action = kConnectionObjectWatchdogTimeoutActionDeferredDelete;
       break;
     default:
-      return kConnectionObjectWatchdogTimeoutActionInvalid;
+      timeout_action = kConnectionObjectWatchdogTimeoutActionInvalid;
       break;
   }
+  return timeout_action;
 }
 
 void ConnectionObjectSetWatchdogTimeoutAction(
@@ -685,7 +722,9 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
       kConnectionObjectPriorityScheduled; break;
     case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: result =
       kConnectionObjectPriorityUrgent; break;
-    default: OPENER_ASSERT(false); //Not possible to get here!
+    default: OPENER_ASSERT(false) /* Not possible to get here! */
+      result = kConnectionObjectPriorityLow;
+      break;
   }
   return result;
 }
@@ -819,4 +858,11 @@ bool EqualConnectionTriad(const CipConnectionObject *const object1,
     return true;
   }
   return false;
+}
+
+bool CipConnectionObjectOriginatorHasSameIP(
+  const CipConnectionObject *const connection_object,
+  const struct sockaddr *const originator_address) {
+  return ( (struct sockaddr_in *) originator_address )->sin_addr.s_addr ==
+         connection_object->originator_address.sin_addr.s_addr;
 }

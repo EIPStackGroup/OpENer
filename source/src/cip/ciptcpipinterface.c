@@ -232,7 +232,6 @@ EipStatus GetAttributeSingleTcpIpInterface(
   struct sockaddr *originator_address,
   const int encapsulation_session) {
 
-  EipStatus status = kEipStatusOkSend;
   EipByte *message = message_router_response->data;
 
   message_router_response->data_length = 0;
@@ -384,8 +383,8 @@ EipStatus GetAttributeAllTcpIpInterface(
 
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
-  OPENER_ASSERT(NULL != attribute);
-  CipUint *data = (CipUint *) attribute->data;
+  OPENER_ASSERT(NULL != attribute)
+  CipUint * data = (CipUint *) attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;
 }

@@ -15,3 +15,5 @@ opener_common_includes()
 opener_platform_support("INCLUDES")
 
 add_library( ENET_ENCAP ${ENET_ENCAP_SRC} )
+
+target_link_libraries( ENET_ENCAP Utils)

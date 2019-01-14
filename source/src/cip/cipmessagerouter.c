@@ -21,17 +21,17 @@ CipMessageRouterResponse g_message_router_response;
  * memory. The size of the array could be a parameter in the platform config file.
  */
 typedef struct cip_message_router_object {
-  struct cip_message_router_object *next; /*< link */
-  CipClass *cip_class; /*< object */
+  struct cip_message_router_object *next; /**< link */
+  CipClass *cip_class; /**< object */
 } CipMessageRouterObject;
 
 /** @brief Pointer to first registered object in MessageRouter*/
 CipMessageRouterObject *g_first_object = NULL;
 
-/** @brief Register an Class to the message router
+/** @brief Register a CIP Class to the message router
  *  @param cip_class Pointer to a class object to be registered.
- *  @return status      0 .. success
- *                     -1 .. error no memory available to register more objects
+ *  @return kEipStatusOk on success
+ *          kEipStatusError on no memory available to register more objects
  */
 EipStatus RegisterCipClass(CipClass *cip_class);
 
@@ -113,7 +113,7 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
 
   while (NULL != object) /* for each entry in list*/
   {
-    OPENER_ASSERT(object->cip_class != NULL);
+    OPENER_ASSERT(NULL != object->cip_class)
     if (object->cip_class->class_id == class_id) {
       return object; /* return registration node if it matches class ID*/
     }
@@ -172,7 +172,7 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
-                              struct sockaddr *originator_address,
+                              const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   EipByte status = kCipErrorSuccess;
@@ -212,7 +212,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/
       g_message_router_response.reserved = 0;
-      OPENER_ASSERT(NULL != registered_object->cip_class);
+      OPENER_ASSERT(NULL != registered_object->cip_class)
       OPENER_TRACE_INFO(
         "NotifyMessageRouter: calling notify function of class '%s'\n",
         registered_object->cip_class->class_name);

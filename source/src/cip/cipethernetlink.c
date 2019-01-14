@@ -41,7 +41,7 @@ EipStatus GetAttributeSingleEthernetLink(
   struct sockaddr *originator_address,
   const int encapsulation_session);
 
-/** @bried Configures the MAC address of the Ethernet Link object*
+/** @brief Configures the MAC address of the Ethernet Link object*
  *
  *  @param mac_address The MAC address of the Ethernet Link
  */
@@ -66,7 +66,8 @@ CipEthernetLinkInterfaceCapability interface_capability = {
 };
 
 EipStatus CipEthernetLinkInit() {
-  CipClass *ethernet_link_class = CreateCipClass(CIP_ETHERNETLINK_CLASS_CODE, 0, /* # class attributes*/
+  CipClass *ethernet_link_class = CreateCipClass(CIP_ETHERNETLINK_CLASS_CODE,
+                                                 0, /* # class attributes*/
                                                  7, /* # highest class attribute number*/
                                                  2, /* # class services*/
                                                  11, /* # instance attributes*/
@@ -155,7 +156,7 @@ int EncodeInterfaceCapability(EipUint8 **pa_acMsg) {
     &interface_capability.speed_duplex_options.speed_duplex_array_count,
     pa_acMsg);
 
-  for (int i = 0;
+  for (CipUsint i = 0;
        i < interface_capability.speed_duplex_options.speed_duplex_array_count;
        i++) {
     return_value += EncodeData(

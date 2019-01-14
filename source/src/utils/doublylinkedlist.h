@@ -8,7 +8,7 @@
 #define SRC_UTILS_DOUBLYLINKEDLIST_H_
 
 /**
- * @file doublelinkedlist.h
+ * @file doublylinkedlist.h
  *
  * The public interface for a reference type doubly linked list
  */

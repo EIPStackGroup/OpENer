@@ -107,8 +107,7 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeNoConsumedConnectionIdFilterAvailable =
     0x0303,
   kConnectionManagerExtendedStatusCodeNotConfiguredToSendScheduledPriorityData
-    =
-      0x0304,
+    = 0x0304,
   kConnectionManagerExtendedStatusCodeScheduleSignatureMismatch = 0x0305,
   kConnectionManagerExtendedStatusCodeScheduleSignatureValidationNotPossible =
     0x0306,
@@ -138,23 +137,23 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast =
     0x0813,
   kConnectionManagerExtendedStatusCodeInvalidProduceConsumeDataFormat = 0x0814,
-  kConnectionManagerExtendedStatusWrongCloser
+  kConnectionManagerExtendedStatusWrongCloser = 0xFFFF /* No a real extended error code, but needed for forward close */
 } ConnectionManagerExtendedStatusCode;
 
 /** @brief macros for comparing sequence numbers according to CIP spec vol
  * 2 3-4.2 for int type variables
- * @define SEQ_LEQ32(a, b) Checks if sequence number a is less or equal than b
- * @define SEQ_GEQ32(a, b) Checks if sequence number a is greater or equal than
+ * @def SEQ_LEQ32(a, b) Checks if sequence number a is less or equal than b
+ * @def SEQ_GEQ32(a, b) Checks if sequence number a is greater or equal than
  *  b
- *  @define SEQ_GT32(a, b) Checks if sequence number a is greater than b
+ *  @def SEQ_GT32(a, b) Checks if sequence number a is greater than b
  */
 #define SEQ_LEQ32(a, b) ( (int)( (a) - (b) ) <= 0 )
 #define SEQ_GEQ32(a, b) ( (int)( (a) - (b) ) >= 0 )
 #define SEQ_GT32(a, b) ( (int)( (a) - (b) ) > 0 )
 
 /** @brief similar macros for comparing 16 bit sequence numbers
- * @define SEQ_LEQ16(a, b) Checks if sequence number a is less or equal than b
- * @define SEQ_GEQ16(a, b) Checks if sequence number a is greater or equal than
+ * @def SEQ_LEQ16(a, b) Checks if sequence number a is less or equal than b
+ * @def SEQ_GEQ16(a, b) Checks if sequence number a is greater or equal than
  *  b
  */
 #define SEQ_LEQ16(a, b) ( (short)( (a) - (b) ) <= 0 )
@@ -167,16 +166,16 @@ static const int g_kCipConnectionManagerClassCode = 0x06;
 
 /** @brief Initialize the data of the connection manager object
  *
- *  @param A unique connection id
+ *  @param unique_connection_id A unique connection id
  *  @return kEipStatusOk if successful, otherwise kEipStatusError
  */
 EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
 
 /** @brief Get a connected object dependent on requested ConnectionID.
  *
- *   @param connection_id  requested @var connection_id of opened connection
+ *   @param connection_id Connection ID of the Connection Object to get
  *   @return pointer to connected Object
- *           0 .. connection not present in device
+ *           NULL .. connection not present in device
  */
 CipConnectionObject *GetConnectedObject(const EipUint32 connection_id);
 

@@ -28,9 +28,6 @@ EipStatus EstablishClass3Connection(
   EipUint16 *const extended_error) {
   EipStatus eip_status = kEipStatusOk;
 
-  /*TODO add check for transport type trigger */
-  /* if (0x03 == (g_stDummyConnectionObject.TransportTypeClassTrigger & 0x03)) */
-
   CipConnectionObject *explicit_connection = GetFreeExplicitConnection();
 
   if (NULL == explicit_connection) {

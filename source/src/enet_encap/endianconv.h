@@ -105,7 +105,7 @@ int AddLintToMessage(const EipUint64 pa_unData,
  *
  * @param port Port of the socket, has to be provided in big-endian
  * @param address IP address of the socket, has to be provided in big-endian
- * @param communcation_buffer The message buffer for sending the message
+ * @param communication_buffer The message buffer for sending the message
  */
 int EncapsulateIpAddress(EipUint16 port,
                          EipUint32 address,
@@ -124,8 +124,8 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-void MoveMessageNOctets(int n,
-                        const CipOctet **message_runner);
+int MoveMessageNOctets(const int n,
+                       const CipOctet **message_runner);
 
 int FillNextNMessageOctetsWith(CipOctet value,
                                unsigned int n,

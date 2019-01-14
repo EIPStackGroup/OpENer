@@ -44,14 +44,12 @@ void ConfigureMacAddress(const char *network_interface);
  * @brief Configure the domain name of the device
  * @param domain_name the domain name to be used
  */
-void ConfigureDomainName(
-  );
+void ConfigureDomainName(void);
 /** @ingroup CIP_API
  * @brief Configure the host name of the device
  * @param host_name the host name to be used
  */
-void ConfigureHostName(
-  );
+void ConfigureHostName(void);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -121,6 +119,7 @@ CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_object,
 CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
                                     const EipUint16 attribute_number);
 
+typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CIP class initialization */
 /** @ingroup CIP_API
  * @brief Allocate memory for new CIP Class and attributes
  *
@@ -129,21 +128,15 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
  *
  *  @param class_id class ID of the new class
  *  @param number_of_class_attributes number of class attributes
- *  @param get_attribute_all_mask mask of which attributes are included in the
- *  class getAttributeAll.
- *  If the mask is 0 the getAttributeAll service will not be added as class
- *  service
+ *  @param highest_class_attribute_number Highest attribute number from the set of implemented class attributes
  *  @param number_of_class_services number of class services
- *  @param number_of_instance_attributes number of attributes of each instance
- *  @param instance_attributes_get_attributes_all_mask  mask of which attributes
- *  are included in the instance getAttributeAll
- *  If the mask is 0 the getAttributeAll service will not be added as class
- *  service
+ *  @param number_of_instance_attributes Number of implemented instance attributes
+ *  @param highest_instance_attribute_number Highest attribute number from the set of implemented instance attributes
  *  @param number_of_instance_services number of instance services
  *  @param number_of_instances number of initial instances to create
- *  @param class_name  class name (for debugging class structure)
- *  @param class_revision class revision
- *  @param (*InitializeCipClass)(CipClass*) For non-standard implementation of
+ *  @param name class name (for debugging class structure)
+ *  @param revision class revision
+ *  @param initializer For non-standard implementation of
  *  class attributes, function realizes specific implementation
  *  @return pointer to new class object
  *      0 on error
@@ -159,7 +152,8 @@ CipClass *CreateCipClass( const EipUint32 class_id,
                           const int number_of_instances,
                           char *name,
                           const EipUint16 revision,
-                          void (*InitializeCipClass)(CipClass *) );
+                          InitializeCipClass initializer );
+
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *
@@ -186,8 +180,8 @@ CipInstance *AddCipInstances(
  * @brief Create one instance of a given class with a certain instance number
  *
  * This function can be used for creating out of order instance numbers
- * @param pa_pstCIPClass the class the instance should be created for
- * @param pa_nInstanceId the instance id of the created instance
+ * @param cip_class_to_add_instance the class the instance should be created for
+ * @param instance_id the instance id of the created instance
  * @return pointer to the created instance, if an instance with the given id
  *         already exists the existing is returned an no new instance is created
  *
@@ -202,11 +196,11 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  the attributes array is not expandable if you insert an attributes that has
  *  already been defined, the previous attributes will be replaced
  *
- *  @param pa_pInstance pointer to CIP class. (may be also instance 0)
- *  @param pa_nAttributeNr number of attribute to be inserted.
- *  @param cip_data_type type of attribute to be inserted.
- *  @param cip_data pointer to data of attribute.
- *  @param cip_flags flags to indicate set-ability and get-ability of attribute.
+ *  @param cip_instance Pointer to CIP class instance (Instance 0)
+ *  @param attribute_number Number of attribute to be inserted.
+ *  @param cip_data_type Type of attribute to be inserted.
+ *  @param cip_data Pointer to data of attribute.
+ *  @param cip_flags Flags to indicate set-ability and get-ability of attribute.
  */
 
 
@@ -277,9 +271,9 @@ int EncodeData(const EipUint8 cip_data_type,
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeData(const EipUint8 cip_type,
-               void *const data,
-               const EipUint8 **const message);
+int DecodeData(const EipUint8 cip_data_type,
+               void *const cip_data,
+               const EipUint8 **const cip_message);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -432,19 +426,22 @@ void ConfigureListenOnlyConnectionPoint(
  * @brief Notify the encapsulation layer that an explicit message has been
  * received via TCP.
  *
- * @param socket_handle socket handle from which data is received.
- * @param buffer buffer that contains the received data. This buffer will also
+ * @param socket_handle Socket handle from which data is received.
+ * @param buffer Buffer that contains the received data. This buffer will also
  * contain the response if one is to be sent.
- * @param buffer length of the data in buffer.
- * @param number_of_remaining_bytes return how many bytes of the input are left
+ * @param length Length of the data in buffer.
+ * @param number_of_remaining_bytes Return how many bytes of the input are left
  * over after we're done here
+ * @param originator_address Address struct of the message originator
+ * @param outgoing_message The outgoing ENIP message
  * @return length of reply that need to be sent back
  */
-int HandleReceivedExplictTcpData(int socket,
+int HandleReceivedExplictTcpData(int socket_handle,
                                  EipUint8 *buffer,
-                                 size_t buffer_length,
+                                 size_t length,
                                  int *number_of_remaining_bytes,
-                                 struct sockaddr *originator_address);
+                                 struct sockaddr *originator_address,
+                                 ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -457,14 +454,17 @@ int HandleReceivedExplictTcpData(int socket,
  * @param buffer_length length of the data in buffer.
  * @param number_of_remaining_bytes return how many bytes of the input are left
  * over after we're done here
+ * @param unicast Was the data receieved from a multicast address
+ * @param outgoing_message Outgoing ENIP message
  * @return length of reply that need to be sent back
  */
-int HandleReceivedExplictUdpData(int socket,
-                                 struct sockaddr_in *from_address,
-                                 EipUint8 *buffer,
-                                 size_t buffer_length,
+int HandleReceivedExplictUdpData(const int socket_handle,
+                                 const struct sockaddr_in *from_address,
+                                 const EipUint8 *buffer,
+                                 const size_t buffer_length,
                                  int *number_of_remaining_bytes,
-                                 bool unicast);
+                                 bool unicast,
+                                 ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
@@ -479,7 +479,7 @@ int HandleReceivedExplictUdpData(int socket,
  *  @return EIP_OK on success
  */
 EipStatus
-HandleReceivedConnectedData(EipUint8 *received_data,
+HandleReceivedConnectedData(const EipUint8 *const received_data,
                             int received_data_length,
                             struct sockaddr_in *from_address);
 
@@ -488,8 +488,11 @@ HandleReceivedConnectedData(EipUint8 *received_data,
  * WatchdogTimeout) have timed out.
  *
  * If the a timeout occurs the function performs the necessary action. This
- * function should be called periodically once every OPENER_TIMER_TICK
- * milliseconds.
+ * function should be called periodically once every @ref kOpenerTimerTickInMilliSeconds
+ * milliseconds. In order to simplify the algorithm if more time was lapsed, the elapsed
+ * time since the last call of the function is given as a parameter.
+ *
+ * @param elapsed_time Elapsed time in milliseconds since the last call of ManageConnections
  *
  * @return EIP_OK on success
  */
@@ -527,7 +530,7 @@ TriggerConnections(unsigned int output_assembly_id,
  * the encapsulation layer.
  * @param socket_handle the handler to the socket of the closed connection
  */
-void CloseSession(int socket);
+void CloseSession(int socket_handle);
 
 /**  @defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * @ingroup CIP_API
@@ -662,7 +665,7 @@ void RunIdleChanged(EipUint32 run_idle_value);
 /** @ingroup CIP_CALLBACK_API
  * @brief create a producing or consuming UDP socket
  *
- * @param communication_direction PRODCUER or CONSUMER
+ * @param communication_direction kUdpCommunicationDirectionProducing or kUdpCommunicationDirectionConsuming
  * @param socket_data pointer to the address holding structure
  *     Attention: For producing point-to-point connection the
  *     *pa_pstAddr->sin_addr.s_addr member is set to 0 by OpENer. The network
@@ -672,6 +675,7 @@ void RunIdleChanged(EipUint32 run_idle_value);
  * pa_pstAddr->sin_addr.s_addr to the correct address of the originator.
  * FIXME add an additional parameter that can be used by the CIP stack to
  * request the originators sockaddr_in data.
+ * @param qos_for_socket CIP QoS object parameter value
  * @return socket identifier on success
  *         -1 on error
  */
@@ -680,17 +684,17 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
- * @brief create a producing or consuming UDP socket
+ * @brief Create a producing or consuming UDP socket
  *
- * @param socket_data pointer to the "send to" address
- * @param socket_handle socket descriptor to send on
- * @param data pointer to the data to send
- * @param data_length length of the data to send
- * @return  EIP_SUCCESS on success
+ * @param socket_data Pointer to the "send to" address
+ * @param socket_handle Socket descriptor to send on
+ * @param data Pointer to the data to send
+ * @param data_length Length of the data to send
+ * @return kEipStatusOk on success
  */
 EipStatus
 SendUdpData(struct sockaddr_in *socket_data,
-            int socket,
+            int socket_handle,
             EipUint8 *data,
             EipUint16 data_length);
 
@@ -699,7 +703,7 @@ SendUdpData(struct sockaddr_in *socket_data,
  *
  * @param socket_handle socket descriptor to close
  */
-void CloseSocket(const int socket);
+void CloseSocket(const int socket_handle);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
  * Documentation
@@ -757,11 +761,11 @@ void CloseSocket(const int socket);
  * @section gen_config_section General Stack Configuration
  * The general stack properties have to be defined prior to building your
  * production. This is done by providing a file called opener_user_conf.h. An
- * example file can be found in the src/ports/platform-pc directory. The
- * documentation of the example file for the necessary configuration options:
+ * example file can be found in the src/ports/POSIX or src/ports/WIN32 directory.
+ * The documentation of the example file for the necessary configuration options:
  * opener_user_conf.h
  *
- * @copydoc opener_user_conf.h
+ * @copydoc ./ports/POSIX/sample_application/opener_user_conf.h
  *
  * @section startup_sec Startup Sequence
  * During startup of your EtherNet/IP(TM) device the following steps have to be
@@ -841,7 +845,7 @@ void CloseSocket(const int socket);
  *      .
  *   - Cyclically update the connection status:\n
  *     In order that OpENer can determine when to produce new data on
- *     connections or that a connection timed out every @ref OPENER_TIMER_TICK
+ *     connections or that a connection timed out every @ref kOpenerTimerTickInMilliSeconds
  * milliseconds the
  *     function EIP_STATUS ManageConnections(void) has to be called.
  *
@@ -878,7 +882,7 @@ void CloseSocket(const int socket);
  * guarding conditions for using OpENer in own products. For this please look
  * in license text as shown below:
  *
- * @include "license.txt"
+ * @include "../license.txt"
  *
  */
 

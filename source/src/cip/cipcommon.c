@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 #include <string.h>
+#include <stdio.h>
 
 #include "cipcommon.h"
 
@@ -36,25 +37,25 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   EncapsulationInit();
   /* The message router is the first CIP object be initialized!!! */
   EipStatus eip_status = CipMessageRouterInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipIdentityInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipTcpIpInterfaceInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipEthernetLinkInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = ConnectionManagerInit(unique_connection_id);
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipAssemblyInitialize();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipQoSInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
-  OPENER_ASSERT(kEipStatusOk == eip_status);
+  OPENER_ASSERT(kEipStatusOk == eip_status)
 
   /* Shut up compiler warning with traces disabled */
-  (void) eip_status;
+    (void) eip_status;
 }
 
 void ShutdownCipStack(void) {
@@ -89,14 +90,14 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
     CipServiceStruct *service = instance->cip_class->services;             /* get pointer to array of services */
     if (NULL != service)             /* if services are defined */
     {
-      for (int i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
+      for (size_t i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
       {
         if (message_router_request->service == service->service_number)                         /* if match is found */
         {
           /* call the service, and return what it returns */
           OPENER_TRACE_INFO("notify: calling %s service\n",
                             service->name);
-          OPENER_ASSERT(NULL != service->service_function);
+          OPENER_ASSERT(NULL != service->service_function)
           return service->service_function(instance,
                                            message_router_request,
                                            message_router_response,
@@ -113,9 +114,10 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
   } else {
     OPENER_TRACE_WARN("notify: instance number %d unknown\n",
                       instance_number);
-    /* if instance not found, return an error reply*/
+    /* if instance not found, return an error reply */
     message_router_response->general_status =
-      kCipErrorPathDestinationUnknown;                           /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
+      kCipErrorPathDestinationUnknown;
+    /* according to the test tool this is the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST */
   }
 
   /* handle error replies*/
@@ -146,12 +148,12 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
     number_of_instances, sizeof(CipInstance) );                    /* allocate a block of memory for all created instances*/
   CipInstance *first_instance = current_instance;       /* allocate a block of memory for all created instances*/
 
-  OPENER_ASSERT(NULL != current_instance);
+  OPENER_ASSERT(NULL != current_instance)
   /* fail if run out of memory */
 
   cip_class->number_of_instances += number_of_instances;       /* add the number of instances just created to the total recorded by the class */
 
-  for (int i = 0; i < number_of_instances; i++)       /* initialize all the new instances */
+  for (size_t i = 0; i < number_of_instances; i++)       /* initialize all the new instances */
   {
     *next_instance = current_instance;             /* link the previous pointer to this new node */
 
@@ -199,7 +201,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
   OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
                     class_id);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_id) );      /* check if an class with the ClassID already exists */
+  OPENER_ASSERT(NULL == GetCipClass(class_id) )     /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -208,7 +210,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
      and contains a pointer to a metaclass
      CIP never explicitly addresses a metaclass*/
 
-  CipClass *const class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the class object*/
+  CipClass * const class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the class object*/
   CipClass *const meta_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
@@ -228,8 +230,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
   meta_class->highest_attribute_number = highest_class_attribute_number;       /* indicate which attributes are included in class getAttributeAll*/
   meta_class->number_of_services = number_of_class_services;       /* the metaclass manages the behavior of the class itself */
   meta_class->class_name = (char *) CipCalloc(1, strlen(name) + 6);       /* fabricate the name "meta<classname>"*/
-  strcpy(meta_class->class_name, "meta-");
-  strcat(meta_class->class_name, name);
+  snprintf(meta_class->class_name, strlen(name) + 6, "meta-%s", name);
 
   /* initialize the instance-specific fields of the Class struct*/
   class->class_instance.instance_number = 0;       /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
@@ -309,7 +310,7 @@ void InsertAttribute(CipInstance *const instance,
   CipAttributeStruct *attribute = instance->attributes;
   CipClass *class = instance->cip_class;
 
-  OPENER_ASSERT(NULL != attribute);
+  OPENER_ASSERT(NULL != attribute)
   /* adding a attribute to a class that was not declared to have any attributes is not allowed */
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
     if (attribute->data == NULL) {             /* found non set attribute */
@@ -318,7 +319,7 @@ void InsertAttribute(CipInstance *const instance,
       attribute->attribute_flags = cip_flags;
       attribute->data = data;
 
-      OPENER_ASSERT(attribute_number <= class->highest_attribute_number);
+      OPENER_ASSERT(attribute_number <= class->highest_attribute_number)
 
       size_t index = CalculateIndex(attribute_number);
 
@@ -338,7 +339,7 @@ void InsertAttribute(CipInstance *const instance,
     "Tried to insert to many attributes into class: %" PRIu32 ", instance %" PRIu32 "\n",
     instance->cip_class->class_instance.instance_number,
     instance->instance_number);
-  OPENER_ASSERT(0);
+  OPENER_ASSERT(0)
   /* trying to insert too many attributes*/
 }
 
@@ -351,7 +352,7 @@ void InsertService(const CipClass *const class,
   OPENER_TRACE_INFO("%s, number of services:%d, service number:%d\n",
                     class->class_name, class->number_of_services,
                     service_number);
-  OPENER_ASSERT(service != 0);
+  OPENER_ASSERT(service != NULL)
   /* adding a service to a class that was not declared to have services is not allowed*/
   for (int i = 0; i < class->number_of_services; i++)       /* Iterate over all service slots attached to the class */
   {
@@ -365,7 +366,7 @@ void InsertService(const CipClass *const class,
     }
     ++service;
   }
-  OPENER_ASSERT(0);
+  OPENER_ASSERT(0)
   /* adding more services than were declared is a no-no*/
 }
 
@@ -435,7 +436,7 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
         BeforeAssemblyDataSend(instance);
       }
 
-      OPENER_ASSERT(NULL != attribute);
+      OPENER_ASSERT(NULL != attribute)
       message_router_response->data_length = EncodeData(attribute->type,
                                                         attribute->data,
                                                         &message);
@@ -612,27 +613,27 @@ int EncodeData(const EipUint8 cip_type,
   return counter;
 }
 
-int DecodeData(const EipUint8 cip_type,
-               void *const data,
-               const EipUint8 **const message) {
+int DecodeData(const EipUint8 cip_data_type,
+               void *const cip_data,
+               const EipUint8 **const cip_message) {
   int number_of_decoded_bytes = -1;
 
-  switch (cip_type)
+  switch (cip_data_type)
   /* check the data type of attribute */
   {
     case (kCipBool):
     case (kCipSint):
     case (kCipUsint):
     case (kCipByte):
-      *(EipUint8 *) (data) = **message;
-      ++(*message);
+      *(EipUint8 *) (cip_data) = **cip_message;
+      ++(*cip_message);
       number_of_decoded_bytes = 1;
       break;
 
     case (kCipInt):
     case (kCipUint):
     case (kCipWord):
-      (*(EipUint16 *) (data) ) = GetIntFromMessage(message);
+      (*(EipUint16 *) (cip_data) ) = GetIntFromMessage(cip_message);
       number_of_decoded_bytes = 2;
       break;
 
@@ -640,7 +641,7 @@ int DecodeData(const EipUint8 cip_type,
     case (kCipUdint):
     case (kCipDword):
     case (kCipReal):
-      (*(EipUint32 *) (data) ) = GetDintFromMessage(message);
+      (*(EipUint32 *) (cip_data) ) = GetDintFromMessage(cip_message);
       number_of_decoded_bytes = 4;
       break;
 
@@ -648,34 +649,34 @@ int DecodeData(const EipUint8 cip_type,
     case (kCipLint):
     case (kCipUlint):
     case (kCipLword): {
-      (*(EipUint64 *) (data) ) = GetLintFromMessage(message);
+      (*(EipUint64 *) (cip_data) ) = GetLintFromMessage(cip_message);
       number_of_decoded_bytes = 8;
     }
     break;
 #endif
 
     case (kCipString): {
-      CipString *string = (CipString *) data;
-      string->length = GetIntFromMessage(message);
-      memcpy(string->string, *message, string->length);
-      *message += string->length;
+      CipString *string = (CipString *) cip_data;
+      string->length = GetIntFromMessage(cip_message);
+      memcpy(string->string, *cip_message, string->length);
+      *cip_message += string->length;
 
       number_of_decoded_bytes = string->length + 2;           /* we have a two byte length field */
       if (number_of_decoded_bytes & 0x01) {
         /* we have an odd byte count */
-        ++(*message);
+        ++(*cip_message);
         number_of_decoded_bytes++;
       }
     }
     break;
     case (kCipShortString): {
-      CipShortString *short_string = (CipShortString *) data;
+      CipShortString *short_string = (CipShortString *) cip_data;
 
-      short_string->length = **message;
-      ++(*message);
+      short_string->length = **cip_message;
+      ++(*cip_message);
 
-      memcpy(short_string->string, *message, short_string->length);
-      *message += short_string->length;
+      memcpy(short_string->string, *cip_message, short_string->length);
+      *cip_message += short_string->length;
 
       number_of_decoded_bytes = short_string->length + 1;
       break;
@@ -688,6 +689,19 @@ int DecodeData(const EipUint8 cip_type,
   return number_of_decoded_bytes;
 }
 
+CipServiceStruct *GetCipService(const CipInstance *const instance,
+                                CipUsint service_number) {
+  CipServiceStruct *service = instance->cip_class->services;
+  for (size_t i = 0; i < instance->cip_class->number_of_services; i++)       /* hunt for the GET_ATTRIBUTE_SINGLE service*/
+  {
+    if (service->service_number == service_number) {
+      return service;   /* found the service */
+    }
+    service++;
+  }
+  return NULL; /* didn't find the service */
+}
+
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
@@ -696,59 +710,49 @@ EipStatus GetAttributeAll(CipInstance *instance,
 
   EipUint8 *reply = message_router_response->data;       /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;       /* pointer to list of attributes*/
-  CipServiceStruct *service = instance->cip_class->services;       /* pointer to list of services*/
+  CipServiceStruct *service = GetCipService(instance, kGetAttributeSingle);       /* pointer to list of services*/
 
-  if (instance->instance_number == 2) {
-    OPENER_TRACE_INFO("GetAttributeAll: instance number 2\n");
+  if(NULL == service) {
+    /* GetAttributeAll service not found */
+    /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
+    return kEipStatusOk;
   }
 
-  for (int i = 0; i < instance->cip_class->number_of_services; i++)       /* hunt for the GET_ATTRIBUTE_SINGLE service*/
-  {
-    if (service->service_number == kGetAttributeSingle)             /* found the service */
-    {
-      if (0 == instance->cip_class->number_of_attributes) {
-        message_router_response->data_length = 0;                         /*there are no attributes to be sent back*/
-        message_router_response->reply_service = (0x80
-                                                  | message_router_request->
-                                                  service);
-        message_router_response->general_status =
-          kCipErrorServiceNotSupported;
-        message_router_response->size_of_additional_status = 0;
-      } else {
-        for (int j = 0; j < instance->cip_class->number_of_attributes;
-             j++)                                    /* for each instance attribute of this class */
-        {
-          int attrNum = attribute->attribute_number;
-          if (attrNum < 32
-              && ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                            attrNum)]) &
-                   (1 << (attrNum % 8) ) ) )                                                                /* only return attributes that are flagged as being part of GetAttributeALl */
-          {
-            message_router_request->request_path.attribute_number =
-              attrNum;
-            if (kEipStatusOkSend
-                != service->service_function(instance,
-                                             message_router_request,
-                                             message_router_response,
-                                             originator_address,
-                                             encapsulation_session) ) {
-              message_router_response->data = reply;
-              return kEipStatusError;
-            }
-            message_router_response->data +=
-              message_router_response->data_length;
-          }
-          attribute++;
+  if (0 == instance->cip_class->number_of_attributes) {
+    message_router_response->data_length = 0;                         /*there are no attributes to be sent back*/
+    message_router_response->reply_service =
+      (0x80 | message_router_request->service);
+    message_router_response->general_status = kCipErrorServiceNotSupported;
+    message_router_response->size_of_additional_status = 0;
+  } else {
+    for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) {
+      /* for each instance attribute of this class */
+      int attribute_number = attribute->attribute_number;
+      if (attribute_number < 32 &&
+          ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                     attribute_number)])
+            &
+            (1 << (attribute_number % 8) ) ) ) {
+        /* only return attributes that are flagged as being part of GetAttributeALl */
+        message_router_request->request_path.attribute_number =
+          attribute_number;
+        if (kEipStatusOkSend !=
+            service->service_function(instance, message_router_request,
+                                      message_router_response,
+                                      originator_address,
+                                      encapsulation_session) ) {
+          message_router_response->data = reply;
+          return kEipStatusError;
         }
-        message_router_response->data_length =
-          message_router_response->data - reply;
-        message_router_response->data = reply;
+        message_router_response->data += message_router_response->data_length;
       }
-      return kEipStatusOkSend;
+      attribute++;
     }
-    service++;
+    message_router_response->data_length = message_router_response->data -
+                                           reply;
+    message_router_response->data = reply;
   }
-  return kEipStatusOk;       /* Return kEipStatusOk if cannot find GET_ATTRIBUTE_SINGLE service*/
+  return kEipStatusOkSend;
 }
 
 int EncodeEPath(CipEpath *epath,
@@ -882,7 +886,6 @@ int DecodePaddedEPath(CipEpath *epath,
       default:
         OPENER_TRACE_ERR("wrong path requested\n");
         return kEipStatusError;
-        break;
     }
   }
 
@@ -906,136 +909,136 @@ size_t CalculateIndex(EipUint16 attribute_number) {
 }
 
 size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct) {
+  size_t data_type_size = 0;
   switch (attribute_struct->type) {
-
     case (kCipBool):
-      return sizeof(CipBool);
+      data_type_size = sizeof(CipBool);
       break;
     case (kCipSint):
-      return sizeof(CipSint);
+      data_type_size = sizeof(CipSint);
       break;
     case (kCipInt):
-      return sizeof(CipInt);
+      data_type_size = sizeof(CipInt);
       break;
     case (kCipDint):
-      return sizeof(CipDint);
+      data_type_size = sizeof(CipDint);
       break;
     case (kCipUsint):
-      return sizeof(CipUsint);
+      data_type_size = sizeof(CipUsint);
       break;
     case (kCipUint):
-      return sizeof(CipUint);
+      data_type_size = sizeof(CipUint);
       break;
     case (kCipUdint):
-      return sizeof(CipUdint);
+      data_type_size = sizeof(CipUdint);
       break;
     case (kCipReal):
-      return sizeof(CipReal);
-      break;
-    case (kCipLreal):
-      return sizeof(CipLreal);
+      data_type_size = sizeof(CipReal);
       break;
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
+    case (kCipLreal):
+      data_type_size = sizeof(CipLreal);
+      break;
     case (kCipUlint):
-      return sizeof(CipUlint);
+      data_type_size = sizeof(CipUlint);
       break;
     case (kCipLint):
-      return sizeof(CipLint);
+      data_type_size = sizeof(CipLint);
       break;
     case (kCipLword):
-      return sizeof(CipLword);
+      data_type_size = sizeof(CipLword);
       break;
     case (kCipLtime):
-      return sizeof(CipLint);
+      data_type_size = sizeof(CipLint);
       break;
 #endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
     case (kCipStime):
-      return sizeof(CipDint);
+      data_type_size = sizeof(CipDint);
       break;
     case (kCipDate):
-      return sizeof(CipUint);
+      data_type_size = sizeof(CipUint);
       break;
     case (kCipTimeOfDay):
-      return sizeof(CipUdint);
+      data_type_size = sizeof(CipUdint);
       break;
     case (kCipDateAndTime):
-      return sizeof(CipUdint) + sizeof(CipUint);
+      data_type_size = sizeof(CipUdint) + sizeof(CipUint);
       break;
     case (kCipString): {
       CipString *data = (CipString *) attribute_struct->data;
-      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipByte):
-      return sizeof(CipByte);
+      data_type_size = sizeof(CipByte);
       break;
     case (kCipWord):
-      return sizeof(CipWord);
+      data_type_size = sizeof(CipWord);
       break;
     case (kCipDword):
-      return sizeof(CipDword);
+      data_type_size = sizeof(CipDword);
       break;
     case (kCipString2): {
       CipString *data = (CipString *) attribute_struct->data;
-      return sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + 2 * (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipFtime):
-      return sizeof(CipDint);
+      data_type_size = sizeof(CipDint);
       break;
     case (kCipItime):
-      return sizeof(CipInt);
+      data_type_size = sizeof(CipInt);
       break;
     case (kCipStringN): {
       CipStringN *data = (CipStringN *) attribute_struct->data;
-      return sizeof(CipUint) + sizeof(CipUint)
-             + (size_t) (data->length) * (size_t) (data->size);
+      data_type_size = sizeof(CipUint) + sizeof(CipUint)
+                       + (size_t) (data->length) * (size_t) (data->size);
     }
     break;
     case (kCipShortString): {
       CipShortString *data = (CipShortString *) attribute_struct->data;
-      return sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUsint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kCipTime):
-      return sizeof(CipDint);
+      data_type_size = sizeof(CipDint);
       break;
     case (kCipEpath): {
       CipEpath *data = (CipEpath *) attribute_struct->data;
-      return 2 * (data->path_size);
+      data_type_size = 2 * (data->path_size);
     }
     break;
     case (kCipEngUnit):
-      return sizeof(CipUint);
+      data_type_size = sizeof(CipUint);
       break;
     case (kCipUsintUsint):
-      return 2 * sizeof(CipUsint);
+      data_type_size = 2 * sizeof(CipUsint);
       break;
     case (kCipUdintUdintUdintUdintUdintString): {
       CipTcpIpNetworkInterfaceConfiguration *data =
         (CipTcpIpNetworkInterfaceConfiguration *) attribute_struct->data;
-      return 5 * sizeof(CipUdint) + sizeof(CipUint)
-             + (data->domain_name.length) * sizeof(EipByte);
+      data_type_size = 5 * sizeof(CipUdint) + sizeof(CipUint)
+                       + (data->domain_name.length) * sizeof(EipByte);
     }
     break;
     case (kCip6Usint):
-      return 6 * sizeof(CipUsint);
+      data_type_size = 6 * sizeof(CipUsint);
       break;
     case (kCipMemberList):
-      return 0;
+      data_type_size = 0;
       break;
     case (kCipByteArray): {
       CipByteArray *data = (CipByteArray *) attribute_struct->data;
-      return sizeof(CipUint) + (data->length) * sizeof(CipOctet);
+      data_type_size = sizeof(CipUint) + (data->length) * sizeof(CipOctet);
     }
     break;
     case (kInternalUint6):
-      return 6 * sizeof(CipUint);
+      data_type_size = 6 * sizeof(CipUint);
       break;
     default:
-      return 0;
+      data_type_size = 0;
       break;
-
   }
+  return data_type_size;
 }

@@ -56,7 +56,7 @@ CipConnectionObject *GetNextNonControlMasterConnection(
  * @param instance_type the connection application type
  */
 void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
-                                             const ConnectionObjectConnectionType instance_type);
+                                             const ConnectionObjectInstanceType instance_type);
 
 /**@ brief close all open connections.
  *

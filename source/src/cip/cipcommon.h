@@ -25,9 +25,11 @@ static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT 
 
 /** @brief Check if requested service present in class/instance and call appropriate service.
  *
- * @param class class receiving the message
+ * @param cip_class class receiving the message
  * @param message_router_request request message
  * @param message_router_response reply message
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
  * @return
  *     - kEipStatusOkSend ... success
  *     - kEipStatusOk ... no reply to send back
@@ -46,6 +48,8 @@ EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
  * @param instance pointer to instance.
  * @param message_router_request pointer to request.
  * @param message_router_response pointer to response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
  * @return status  >0 .. success
  *          -1 .. requested attribute not available
  */
@@ -64,6 +68,8 @@ EipStatus GetAttributeSingle(
  * @param instance pointer to object instance with data.
  * @param message_router_request pointer to MR request.
  * @param message_router_response pointer for MR response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
  * @return length of data stream >0 .. success
  *              0 .. no reply to send
  */
@@ -74,11 +80,13 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           const int encapsulation_session);
 
 /** @brief Decodes padded EPath
- *  @param epath EPath to the receiving element
- *  @param message CIP Message to decode
+ *  @param epath EPath object to the receiving element
+ *  @param message pointer to the message to decode
  *  @return Number of decoded bytes
  */
 int DecodePaddedEPath(CipEpath *epath,
-                      const EipUint8 **data);
+                      const EipUint8 **message);
+
 size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct);
+
 #endif /* OPENER_CIPCOMMON_H_ */

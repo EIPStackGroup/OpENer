@@ -35,12 +35,14 @@ void DeleteAllClasses(void);
  *  g_stCPFDataItem.
  *  @param data pointer to the data buffer of the message directly at the beginning of the CIP part.
  *  @param data_length number of bytes in the data buffer
- *  @return  EIP_ERROR on fault
- *           EIP_OK on success
+ *  @param originator_address The address of the originator as received
+ *  @param encapsulation_session The associated encapsulation session of the explicit message
+ *  @return  kEipStatusError on fault
+ *           kEipStatusOk on success
  */
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
-                              struct sockaddr *originator_address,
+                              const struct sockaddr *const originator_address,
                               const int encapsulation_session);
 
 /*! Register a class at the message router.
@@ -48,9 +50,9 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
  *  explicit messages each class has to register.
  *  Will be automatically done when invoking create
  *  createCIPClass.
- *  @param object CIP class to be registered
- *  @return EIP_OK on success
+ *  @param cip_class CIP class to be registered
+ *  @return kEipStatusOk on success
  */
-EipStatus RegisterCipClass(CipClass *object);
+EipStatus RegisterCipClass(CipClass *cip_class);
 
 #endif /* OPENER_CIPMESSAGEROUTER_H_ */

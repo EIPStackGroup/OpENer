@@ -89,32 +89,29 @@ EipStatus SetAttributeSingleQoS(
 }
 
 CipUsint GetPriorityForSocket(ConnectionObjectPriority priority) {
+
+  CipUsint priority_value = dscp_explicit;
   switch (priority) {
-    case kConnectionObjectPriorityLow: {
-      return dscp_low;
+    case kConnectionObjectPriorityLow:
+      priority_value = dscp_low;
       break;
-    }
-    case kConnectionObjectPriorityHigh: {
-      return dscp_high;
+    case kConnectionObjectPriorityHigh:
+      priority_value = dscp_high;
       break;
-    }
-    case kConnectionObjectPriorityScheduled: {
-      return dscp_scheduled;
+    case kConnectionObjectPriorityScheduled:
+      priority_value = dscp_scheduled;
       break;
-    }
-    case kConnectionObjectPriorityUrgent: {
-      return dscp_urgent;
+    case kConnectionObjectPriorityUrgent:
+      priority_value = dscp_urgent;
       break;
-    }
-    default: {
-      return dscp_explicit;
+    default:
+      priority_value = dscp_explicit;
       break;
-    }
   }
+  return priority_value;
 }
 
 void InitializeCipQos(CipClass *class) {
-
   CipClass *meta_class = class->class_instance.cip_class;
 }
 

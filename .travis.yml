@@ -1,67 +1,60 @@
-# This will run on Travis' 'new' container-based infrastructure
 sudo: false
 os: linux
 dist: trusty
-
 language: c
-
-# Blacklist
 branches:
   except:
-    - gh-pages
-
-# Environment variables
+  - gh-pages
 env:
   global:
-    - GH_REPO_NAME: OpENer
-    - DOXYFILE: opener.doxyfile
-    - GH_REPO_REF: github.com/EIPStackGroup/OpENer.git
-    - secure: "h1vuX5cGZd5W7f5TitD+EamJIsvG2qq8aBpO9MUGIOj3bShwTaR0S0qbcpCyltXiZ9DJklLc7kP5kB0XtX1o6vZMelQsqBjiHQK5yFW0vHmFAg1sLMpVBbsAN0lMWgeGJEmyRstA1KYBixwExtc5GpcgMBvS/mnJQ10zboZNcRU="
-
-# Install dependencies
+  - GH_REPO_NAME: OpENer
+  - DOXYFILE: opener.doxyfile
+  - GH_REPO_REF: github.com/EIPStackGroup/OpENer.git
+  - secure: h1vuX5cGZd5W7f5TitD+EamJIsvG2qq8aBpO9MUGIOj3bShwTaR0S0qbcpCyltXiZ9DJklLc7kP5kB0XtX1o6vZMelQsqBjiHQK5yFW0vHmFAg1sLMpVBbsAN0lMWgeGJEmyRstA1KYBixwExtc5GpcgMBvS/mnJQ10zboZNcRU=
+  - secure: CN1E5LJZwa7PLJOcst1MNb1c5Nx1rM9ifrc4llevRyTRyHxJ2S15mVQdnCvMcdPFK+ranBdsl1WcIxP3BQtI4zDwj0UWjj44EHz67VTp1o3zuaCa0fExYUwbe0D8uGRP4XbX+B4+HQWneGbabOLAZcS3Gc/pUpC3WEJO2pO2BHg=
 addons:
   apt:
     packages:
-      - doxygen
-      - doxygen-doc
-      - doxygen-latex
-      - doxygen-gui
-      - graphviz
-
+    - libcap-dev
+    - lcov
+    - doxygen
+    - doxygen-doc
+    - doxygen-latex
+    - doxygen-gui
+    - graphviz
+  sonarcloud:
+    organization: eipstackgroup
+    token: $SONAR_TOKEN
 install:
-  ############################################################################
-  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
-  ############################################################################
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  ############################################################################
-  # Install a recent CMake (unless already installed on OS X)
-  ############################################################################
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    else
-      brew upgrade cmake || brew install cmake
-    fi
-    cmake --version
-
-#Prepare CppUTest from source, as package is not available
+- git fetch --unshallow --tags
+- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+- mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
+    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+  else
+    brew upgrade cmake || brew install cmake
+  fi
+  cmake --version
 before_script:
-  - cd $TRAVIS_BUILD_DIR/source
-  - chmod +x $TRAVIS_BUILD_DIR/travis_scripts/installCppUTestDependency.sh
-  - $TRAVIS_BUILD_DIR/travis_scripts/installCppUTestDependency.sh
-
-# Build your code e.g. by calling make
+- cd $TRAVIS_BUILD_DIR/source
+- chmod +x $TRAVIS_BUILD_DIR/travis_scripts/installCppUTestDependency.sh
+- "$TRAVIS_BUILD_DIR/travis_scripts/installCppUTestDependency.sh"
 script:
-  - cd $TRAVIS_BUILD_DIR/bin/posix
-  - cmake -DOpENer_PLATFORM:STRING="POSIX" -DCMAKE_BUILD_TYPE:STRING="" -DOpENer_64_BIT_DATA_TYPES_ENABLED:BOOL=ON -DOpENer_TESTS:BOOL=ON -DCPPUTEST_HOME:PATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest -DCPPUTEST_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTest/libCppUTest.a -DCPPUTESTEXT_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTestExt/libCppUTestExt.a ../../source
-  - make
-  - make test
-
-# Generate and deploy documentation
+- cd $TRAVIS_BUILD_DIR/source
+- cmake -DOpENer_PLATFORM:STRING="POSIX" -DCMAKE_BUILD_TYPE:STRING="Debug" -DOpENer_64_BIT_DATA_TYPES_ENABLED:BOOL=ON
+  -DOpENer_TESTS:BOOL=ON -DCPPUTEST_HOME:PATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest
+  -DCPPUTEST_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTest/libCppUTest.a
+  -DCPPUTESTEXT_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTestExt/libCppUTestExt.a .
+- build-wrapper-linux-x86-64 --out-dir bw-output make all
+- make test
+- make OpENer_coverage
+- chmod +x $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
+- $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
+- sonar-scanner -Dproject.settings=$TRAVIS_BUILD_DIR/sonar-project.properties -Dsonar.sources=. -Dsonar.exclusions=OpENer_coverage/**,dependencies/**,CMakeFiles/** -Dsonar.cfamily.gcov.reportsPath=./gcov_results
 after_success:
-  - cd $TRAVIS_BUILD_DIR/source
-  - chmod +x $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
-  - $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
+- cd $TRAVIS_BUILD_DIR/source
+- chmod +x $TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh
+- "$TRAVIS_BUILD_DIR/travis_scripts/generateDocumentationAndDeploy.sh"

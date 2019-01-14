@@ -6,7 +6,7 @@
 #ifndef OPENER_USER_CONF_H_
 #define OPENER_USER_CONF_H_
 
-/** @file
+/** @file WIN32/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
  *
  * This file contains the general application specific configuration for OpENer.
@@ -26,6 +26,8 @@ typedef unsigned short in_port_t;
 
 /** @brief Identity configuration of the device */
 #include "devicedata.h"
+
+#include "typedefs.h"
 
 /** @brief Define the number of objects that may be used in connections
  *
@@ -84,16 +86,6 @@ typedef unsigned short in_port_t;
  */
 static const int kOpenerTimerTickInMilliSeconds = 10;
 
-/** @brief Define if RUN IDLE data is sent with consumed data
- */
-static const int kOpenerConsumedDataHasRunIdleHeader = 1;
-
-/** @brief Define if RUN IDLE data is to be sent with produced data
- *
- * Per default we don't send run idle headers with produced data
- */
-static const int kOpenerProducedDataHasRunIdleHeader = 0;
-
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide print tracing macro */
 #include <stdio.h>
@@ -105,6 +97,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 /** @brief A specialized assertion command that will log the assertion and block
  *  further execution in an while(1) loop.
  */
+#ifdef IDLING_ASSERT
 #define OPENER_ASSERT(assertion) \
   do { \
     if( !(assertion) ) { \
@@ -114,8 +107,10 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
                 __LINE__); \
       while(1) {;} \
     } \
-  } while(0)
-
+  } while(0);
+#else
+#define OPENER_ASSERT(assertion) assert(assertion);
+#endif
 /* else use standard assert() */
 //#include <assert.h>
 //#include <stdio.h>
@@ -123,7 +118,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 #else
 
 /* for release builds execute the assertion, but don't test it */
-#define OPENER_ASSERT(assertion) (assertion)
+#define OPENER_ASSERT(assertion) (assertion);
 
 /* the above may result in "statement with no effect" warnings.
  *  If you do not use assert()s to run functions, the an empty

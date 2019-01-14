@@ -8,6 +8,9 @@
 
 #include "typedefs.h"
 #include "networkhandler.h"
+#include "enipmessage.h"
+
+#include "opener_user_conf.h"
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */
@@ -255,18 +258,20 @@ typedef struct cip_class {
 } CipClass;
 
 /** @ingroup CIP_API
- *  @typedef  EIP_STATUS (*TCIPServiceFunc)(S_CIP_Instance *pa_pstInstance,
- *   S_CIP_MR_Request *pa_MRRequest, S_CIP_MR_Response *pa_MRResponse)
+ *  @typedef  EipStatus (*CipServiceFunction)(CipInstance *const instance,
+ *    CipMessageRouterRequest *const message_router_request,
+ *    CipMessageRouterResponse *const message_router_response,
+ *    struct sockaddr *originator_address, const int encapsulation_session)
  *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly
  *   by the stack.
- *  @param pa_pstInstance the instance which was referenced in the service
+ *  @param instance the instance which was referenced in the service
  *   request
- *  @param pa_MRRequest request data
- *  @param pa_MRResponse storage for the response data, including a buffer for
+ *  @param message_router_request request data
+ *  @param message_router_response storage for the response data, including a buffer for
  *   extended data
- *  @return EIP_OK_SEND if service could be executed successfully and a response
+ *  @return kEipOkSend if service could be executed successfully and a response
  *   should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
@@ -312,12 +317,6 @@ typedef struct {
   void *data;
 } CipUnconnectedSendParameter;
 
-/** @brief Data of an CIP Ethernet Link object */
-//typedef struct {
-//  EipUint32 interface_speed; /**< 10/100/1000 Mbit/sec */
-//  EipUint32 interface_flags; /**< Inferface flags as defined in the CIP specification */
-//  EipUint8 physical_address[6]; /**< MAC address of the Ethernet link */
-//} CipEthernetLinkObject;
 typedef struct {
   CipUint num_conn_entries;
   CipBool *conn_open_bits;

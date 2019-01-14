@@ -6,7 +6,7 @@
 #ifndef OPENER_USER_CONF_H_
 #define OPENER_USER_CONF_H_
 
-/** @file opener_user_conf.h
+/** @file POSIX/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
  *
  * This file contains the general application specific configuration for OpENer.
@@ -89,16 +89,6 @@
  */
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
-/** @brief Define if RUN IDLE data is sent with consumed data
- */
-static const int kOpenerConsumedDataHasRunIdleHeader = 1;
-
-/** @brief Define if RUN IDLE data is to be sent with produced data
- *
- * Per default we don't send run idle headers with produced data
- */
-static const int kOpenerProducedDataHasRunIdleHeader = 0;
-
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide print tracing macro */
 #include <stdio.h>
@@ -120,14 +110,14 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
                 __LINE__); \
       while(1) {  } \
     } \
-  } while(0)
+  } while(0);
 
 /* else use standard assert() */
 //#include <assert.h>
 //#include <stdio.h>
 //#define OPENER_ASSERT(assertion) assert(assertion)
 #else
-#define OPENER_ASSERT(assertion) assert(assertion)
+#define OPENER_ASSERT(assertion) assert(assertion);
 #endif
 #else
 

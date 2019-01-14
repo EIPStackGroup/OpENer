@@ -23,8 +23,11 @@
 #include "ciptcpipinterface.h"
 #include "opener_user_conf.h"
 #include "cipqos.h"
+#include "udp_protocol.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
+
+extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
 /** @brief handle any connection request coming in the TCP server socket.
  *
@@ -106,7 +109,7 @@ EipStatus NetworkHandlerInitialize(void) {
   if ( ( g_network_status.udp_global_broadcast_listener = socket(AF_INET,
                                                                  SOCK_DGRAM,
                                                                  IPPROTO_UDP) )
-       == -1 ) {
+       == kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -120,7 +123,7 @@ EipStatus NetworkHandlerInitialize(void) {
   /* create a new UDP socket */
   if ( ( g_network_status.udp_unicast_listener = socket(AF_INET, SOCK_DGRAM,
                                                         IPPROTO_UDP) ) ==
-       -1 ) {
+       kEipInvalidSocket ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error allocating UDP unicast listener socket, %d - %s\n",
@@ -189,7 +192,7 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in global_broadcast_address = { .sin_family = AF_INET,
+  struct sockaddr_in global_broadcast_address = { .sin_family = {AF_INET},
                                                   .sin_port = htons(
                                                     kOpenerEthernetPort),
                                                   .sin_addr.s_addr = htonl(
@@ -302,7 +305,7 @@ void CheckAndHandleTcpListenerSocket(void) {
       return;
     }
 
-    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFF) ) <= 0) { /* got error */
+    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFFF) ) != 0) { /* got error */
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR(
@@ -327,7 +330,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 //                        g_timestamps[i].last_update);
 //    }
 
-    OPENER_ASSERT(socket_timer != NULL);
+    OPENER_ASSERT(socket_timer != NULL)
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -402,7 +405,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
   g_last_time = g_actual_time;
   //OPENER_TRACE_INFO("Elapsed time: %u\n", g_network_status.elapsed_time);
 
-  /* check if we had been not able to update the connection manager for several OPENER_TIMER_TICK.
+  /* check if we had been not able to update the connection manager for several kOpenerTimerTickInMilliSeconds.
    * This should compensate the jitter of the windows timer
    */
   if (g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
@@ -432,9 +435,10 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
       "networkhandler: unsolicited UDP message on EIP global broadcast socket\n");
 
     /* Handle UDP broadcast messages */
+    CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
     int received_size = recvfrom(g_network_status.udp_global_broadcast_listener,
-                                 g_ethernet_communication_buffer,
-                                 PC_OPENER_ETHERNET_BUFFER_SIZE,
+                                 incoming_message,
+                                 sizeof(incoming_message),
                                  0, (struct sockaddr *) &from_address,
                                  &from_address_length);
 
@@ -451,12 +455,19 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
     OPENER_TRACE_INFO("Data received on global broadcast UDP:\n");
 
-    EipUint8 *receive_buffer = &g_ethernet_communication_buffer[0];
+    const EipUint8 *receive_buffer = &incoming_message[0];
     int remaining_bytes = 0;
     do {
+      ENIPMessage outgoing_message;
+      InitializeENIPMessage(&outgoing_message);
       int reply_length = HandleReceivedExplictUdpData(
-        g_network_status.udp_global_broadcast_listener, &from_address,
-        receive_buffer, received_size, &remaining_bytes, false);
+        g_network_status.udp_global_broadcast_listener,
+        &from_address,
+        receive_buffer,
+        received_size,
+        &remaining_bytes,
+        false,
+        &outgoing_message);
 
       receive_buffer += received_size - remaining_bytes;
       received_size = remaining_bytes;
@@ -466,7 +477,8 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
         if (sendto( g_network_status.udp_global_broadcast_listener,
-                    (char *) g_ethernet_communication_buffer, reply_length, 0,
+                    (char *) outgoing_message.message_buffer,
+                    outgoing_message.used_message_length, 0,
                     (struct sockaddr *) &from_address, sizeof(from_address) )
             != reply_length) {
           OPENER_TRACE_INFO(
@@ -478,8 +490,6 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 }
 
 void CheckAndHandleUdpUnicastSocket(void) {
-
-
   /* see if this is an unsolicited inbound UDP message */
   if ( true == CheckSocketSet(g_network_status.udp_unicast_listener) ) {
 
@@ -490,9 +500,10 @@ void CheckAndHandleUdpUnicastSocket(void) {
       "networkhandler: unsolicited UDP message on EIP unicast socket\n");
 
     /* Handle UDP broadcast messages */
+    CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
     int received_size = recvfrom(g_network_status.udp_unicast_listener,
-                                 g_ethernet_communication_buffer,
-                                 PC_OPENER_ETHERNET_BUFFER_SIZE,
+                                 incoming_message,
+                                 sizeof(incoming_message),
                                  0, (struct sockaddr *) &from_address,
                                  &from_address_length);
 
@@ -509,12 +520,14 @@ void CheckAndHandleUdpUnicastSocket(void) {
 
     OPENER_TRACE_INFO("Data received on UDP unicast:\n");
 
-    EipUint8 *receive_buffer = &g_ethernet_communication_buffer[0];
+    EipUint8 *receive_buffer = &incoming_message[0];
     int remaining_bytes = 0;
+    ENIPMessage outgoing_message;
+    InitializeENIPMessage(&outgoing_message);
     do {
       int reply_length = HandleReceivedExplictUdpData(
         g_network_status.udp_unicast_listener, &from_address, receive_buffer,
-        received_size, &remaining_bytes, true);
+        received_size, &remaining_bytes, true, &outgoing_message);
 
       receive_buffer += received_size - remaining_bytes;
       received_size = remaining_bytes;
@@ -524,7 +537,8 @@ void CheckAndHandleUdpUnicastSocket(void) {
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
         if (sendto( g_network_status.udp_unicast_listener,
-                    (char *) g_ethernet_communication_buffer, reply_length, 0,
+                    (char *) outgoing_message.message_buffer,
+                    outgoing_message.used_message_length, 0,
                     (struct sockaddr *) &from_address, sizeof(from_address) )
             != reply_length) {
           OPENER_TRACE_INFO(
@@ -536,12 +550,37 @@ void CheckAndHandleUdpUnicastSocket(void) {
 }
 
 EipStatus SendUdpData(struct sockaddr_in *address,
-                      int socket,
+                      int socket_handle,
                       EipUint8 *data,
                       EipUint16 data_length) {
 
-  int sent_length = sendto( socket, (char *) data, data_length, 0,
-                            (struct sockaddr *) address, sizeof(*address) );
+
+
+  OPENER_TRACE_INFO("UDP port to be sent to: %x\n", ntohs(address->sin_port) );
+  UDPHeader header = {
+    .source_port = 2222,
+    .destination_port = ntohs(address->sin_port),
+    .packet_length = kUpdHeaderLength + data_length,
+    .checksum = 0
+  };
+
+  char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
+  memcpy(complete_message + kUpdHeaderLength, data, data_length);
+  UDPHeaderGenerate(&header, (char *)complete_message);
+  UDPHeaderSetChecksum(&header,
+                       htons(UDPHeaderCalculateChecksum(complete_message,
+                                                        8 + data_length,
+                                                        interface_configuration_
+                                                        .ip_address,
+                                                        address->sin_addr.s_addr) ) );
+  UDPHeaderGenerate(&header, (char *)complete_message);
+
+  int sent_length = sendto( socket_handle,
+                            (char *) complete_message,
+                            data_length + kUpdHeaderLength,
+                            0,
+                            (struct sockaddr *) address,
+                            sizeof(*address) );
 
   if (sent_length < 0) {
     int error_code = GetSocketErrorNumber();
@@ -554,7 +593,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length) {
+  if (sent_length != data_length + kUpdHeaderLength) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
@@ -577,7 +616,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
      fit*/
 
   /*Check how many data is here -- read the first four bytes from the connection */
-  long number_of_read_bytes = recv(socket, g_ethernet_communication_buffer, 4,
+  CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
+
+  long number_of_read_bytes = recv(socket, incoming_message, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
   SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
@@ -610,7 +651,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusError;
   }
 
-  const EipUint8 *read_buffer = &g_ethernet_communication_buffer[2]; /* at this place EIP stores the data length */
+  const EipUint8 *read_buffer = &incoming_message[2]; /* at this place EIP stores the data length */
   size_t data_size = GetIntFromMessage(&read_buffer)
                      + ENCAPSULATION_HEADER_LENGTH - 4; /* -4 is for the 4 bytes we have already read*/
   /* (NOTE this advances the buffer pointer) */
@@ -623,7 +664,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO(
         "Entering consumption loop, remaining data to receive: %zu\n",
         data_sent);
-      number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[0],
+      number_of_read_bytes = recv(socket, &incoming_message[0],
                                   data_sent, 0);
 
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
@@ -660,7 +701,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusOk;
   }
 
-  number_of_read_bytes = recv(socket, &g_ethernet_communication_buffer[4],
+  number_of_read_bytes = recv(socket, &incoming_message[4],
                               data_size, 0);
 
   if (0 == number_of_read_bytes) /* got error or connection closed by client */
@@ -710,9 +751,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       FreeErrorMessage(error_message);
     }
 
-    number_of_read_bytes = HandleReceivedExplictTcpData(
-      socket, g_ethernet_communication_buffer, data_size, &remaining_bytes,
-      &sender_address);
+    ENIPMessage outgoing_message = {0};
+    InitializeENIPMessage(&outgoing_message);
+    int number_of_bytes_to_send = HandleReceivedExplictTcpData(
+      socket, incoming_message, data_size, &remaining_bytes,
+      &sender_address, &outgoing_message);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
@@ -729,17 +772,17 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         remaining_bytes);
     }
 
-    if (number_of_read_bytes > 0) {
+    if (number_of_bytes_to_send > 0) {
       OPENER_TRACE_INFO("TCP reply sent:\n");
 
-      data_sent = send(socket, (char *) &g_ethernet_communication_buffer[0],
-                       number_of_read_bytes, 0);
+      data_sent = send(socket, (char *) outgoing_message.message_buffer,
+                       outgoing_message.used_message_length, 0);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
         g_timestamps,
         OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
         socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-      if (data_sent != number_of_read_bytes) {
+      if (data_sent != number_of_bytes_to_send) {
         OPENER_TRACE_WARN("TCP response was not fully sent\n");
       }
     }
@@ -758,10 +801,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
 /** @brief create a new UDP socket for the connection manager
  *
- * @param communciation_direction Consuming or producing port
+ * @param communication_direction Consuming or producing port
  * @param socket_data Data for socket creation
  *
- * @return the socket handle if successful, else -1 */
+ * @return the socket handle if successful, else kEipInvalidSocket */
 int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     struct sockaddr_in *socket_data,
                     CipUsint qos_for_socket) {
@@ -770,8 +813,15 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
-  if ( ( new_socket =
-           socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == kEipInvalidSocket ) {
+  if(kUdpCommuncationDirectionConsuming == communication_direction) {
+    new_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  }
+
+  if(kUdpCommuncationDirectionProducing == communication_direction) {
+    new_socket = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
+  }
+
+  if (new_socket == kEipInvalidSocket) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: cannot create UDP socket: %d- %s\n",
@@ -785,11 +835,11 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
     CloseSocket(new_socket);
-    OPENER_ASSERT(false); /* This should never happen! */
+    OPENER_ASSERT(false) /* This should never happen! */
     return kEipStatusError;
   }
 
-  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) <= 0) { /* got error */
+  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) != 0) { /* got error */
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -828,6 +878,11 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", new_socket);
   } else { /* we have a producing udp socket */
 
+    int option_value = 1;
+    setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
+                (char *) &option_value,
+                sizeof(option_value) );
+
     if (socket_data->sin_addr.s_addr
         == g_multicast_configuration.starting_multicast_address) {
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
@@ -864,8 +919,11 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     socket_data->sin_addr.s_addr = peer_address.sin_addr.s_addr;
   }
 
-  /* add new socket to the master list                                             */
-  FD_SET(new_socket, &master_socket);
+  if (kUdpCommuncationDirectionConsuming == communication_direction) {
+    /* add new socket to the master list */
+    FD_SET(new_socket, &master_socket);
+  }
+
   if (new_socket > highest_socket_handle) {
     OPENER_TRACE_INFO("New highest socket: %d\n", new_socket);
     highest_socket_handle = new_socket;
@@ -883,18 +941,21 @@ void CheckAndHandleConsumingUdpSockets(void) {
     current_connection_object = (CipConnectionObject *)iterator->data;
     iterator = iterator->next; /* do this at the beginning as the close function may can make the entry invalid */
 
-    if ( (-1
+    if ( (kEipInvalidSocket
           != current_connection_object->socket[
             kUdpCommuncationDirectionConsuming])
          && ( true
               == CheckSocketSet(
                 current_connection_object->socket[
                   kUdpCommuncationDirectionConsuming]) ) ) {
+      OPENER_TRACE_INFO("Processing UDP consuming message\n");
       struct sockaddr_in from_address = {0};
       socklen_t from_address_length = sizeof(from_address);
+      CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
+
       int received_size = recvfrom(
         current_connection_object->socket[kUdpCommuncationDirectionConsuming],
-        g_ethernet_communication_buffer, PC_OPENER_ETHERNET_BUFFER_SIZE, 0,
+        incoming_message, sizeof(incoming_message), 0,
         (struct sockaddr *) &from_address, &from_address_length);
       if (0 == received_size) {
         int error_code = GetSocketErrorNumber();
@@ -911,7 +972,6 @@ void CheckAndHandleConsumingUdpSockets(void) {
         continue;
       }
 
-
       if (0 > received_size) {
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
@@ -927,7 +987,7 @@ void CheckAndHandleConsumingUdpSockets(void) {
         continue;
       }
 
-      HandleReceivedConnectedData(g_ethernet_communication_buffer,
+      HandleReceivedConnectedData(incoming_message,
                                   received_size, &from_address);
 
     }

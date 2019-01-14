@@ -37,7 +37,7 @@ typedef enum {
   kNoIoConnectionsEstablished = 0x0030,
   kNonVolatileConfigurationBad = 0x0040,
   kMajorFault = 0x0050,
-  kAtLeastOneIoConnectionInRuneMode = 0x0060,
+  kAtLeastOneIoConnectionInRunMode = 0x0060,
   kAtLeastOneIoConnectionEstablishedAllInIdleMode = 0x0070
 } CipIdentityExtendedStatus;
 
@@ -49,5 +49,8 @@ typedef enum {
  * @returns kEipStatusError if the class could not be created, otherwise kEipStatusOk
  */
 EipStatus CipIdentityInit(void);
+
+void CipIdentitySetExtendedDeviceStatus(
+  CipIdentityExtendedStatus extended_status);
 
 #endif /* OPENER_CIPIDENTITY_H_ */

@@ -7,6 +7,7 @@
 #######################################
 add_test_includes()
 
+opener_common_includes()
 
 ###################################################
 # Copy custom test output file to binary location #
@@ -17,12 +18,13 @@ add_subdirectory( cip )
 add_subdirectory( ports )
 add_subdirectory( enet_encap )
 add_subdirectory( utils )
+
 add_executable( OpENer_Tests OpENerTests.cpp )
 
 find_library ( CPPUTEST_LIBRARY CppUTest ${CPPUTEST_HOME}/cpputest_build/lib )
 find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/lib )
 
-target_link_libraries( OpENer_Tests CIP ENET_ENCAP PLATFORM_GENERIC SAMPLE_APP ${OpENer_PLATFORM}PLATFORM rt )
+target_link_libraries( OpENer_Tests rt )
 
 target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )
 target_link_libraries( OpENer_Tests UtilsTest Utils ) 

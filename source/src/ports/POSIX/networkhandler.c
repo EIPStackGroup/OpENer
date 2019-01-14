@@ -19,7 +19,7 @@ MicroSeconds GetMicroSeconds(void) {
   struct timespec now = { .tv_nsec = 0, .tv_sec = 0 };
 
   int error = clock_gettime( CLOCK_MONOTONIC, &now );
-  OPENER_ASSERT(-1 != error);
+  OPENER_ASSERT(-1 != error)
   MicroSeconds micro_seconds =  (MicroSeconds)now.tv_nsec / 1000ULL +
                                now.tv_sec * 1000000ULL;
   return micro_seconds;
@@ -53,10 +53,8 @@ int SetSocketToNonBlocking(int socket_handle) {
                                              0) | O_NONBLOCK);
 }
 
-//TODO: Return setsocket return value
-int SetQosOnSocket(int socket,
+int SetQosOnSocket(const int socket,
                    CipUsint qos_value) {
-
   int set_tos = qos_value;
   return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

@@ -109,8 +109,8 @@ struct cip_connection_object {
   CipUint produced_connection_size; /*< Attribute 7 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint consumed_connection_size; /*< Attribute 8 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
-  CipUint cip_produced_connection_id; /*< Attribute 10 */
-  CipUint cip_consumed_connection_id; /*< Attribute 11 */
+  CipUdint cip_produced_connection_id; /*< Attribute 10 */
+  CipUdint cip_consumed_connection_id; /*< Attribute 11 */
   CipUsint watchdog_timeout_action; /*< Attribute 12 */
   CipUint produced_connection_path_length; /*< Attribute 13 */
   CipOctet *produced_connection_path; /*< Attribute 14 */
@@ -186,6 +186,8 @@ struct cip_connection_object {
   ConnectionTimeoutFunction connection_timeout_function;
   ConnectionSendDataFunction connection_send_data_function;
   ConnectionReceiveDataFunction connection_receive_data_function;
+
+  ENIPMessage last_reply_sent;
 };
 
 DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
@@ -417,6 +419,9 @@ void ConnectionObjectResetProductionInhibitTimer(
 void ConnectionObjectGeneralConfiguration(
   CipConnectionObject *const connection_object);
 
+bool ConnectionObjectIsTypeNonLOIOConnection(
+  const CipConnectionObject *const connection_object);
+
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object);
 
@@ -425,5 +430,9 @@ bool ConnectionObjectEqualOriginator(const CipConnectionObject *const object1,
 
 bool EqualConnectionTriad(const CipConnectionObject *const object1,
                           const CipConnectionObject *const object2);
+
+bool CipConnectionObjectOriginatorHasSameIP(
+  const CipConnectionObject *const connection_object,
+  const struct sockaddr *const originator_address);
 
 #endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */

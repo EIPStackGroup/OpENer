@@ -18,7 +18,7 @@ set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name")
 set( OpENer_VERSION_MAJOR 2 )
 set( OpENer_VERSION_MINOR 1 )
 
-configure_file( 
+configure_file(  
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
 	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
 	)
@@ -27,10 +27,22 @@ find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsuppo
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
+option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
+option(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER "Will consumed data from OpENer also include a run idle header?" TRUE)
+
+if(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
+  add_definitions(-DOPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
+endif()
+
+if(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
+  add_definitions(-DOPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER)
+endif()
+
+
 #######################################
 # Platform switches                   #
 #######################################
-set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" )
+set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "MINGW")
 
 set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
@@ -65,6 +77,10 @@ if( OpENer_TESTS )
   enable_language( CXX )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
+  INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/CodeCoverage.cmake )
+  set(COVERAGE_LCOV_EXCLUDES 'tests/*' 'usr/*' 'ports/POSIX/sample_application/*')
+  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests DEPENDENCIES OpENer_Tests)
+  add_test_includes()
   add_subdirectory( tests )
 endif( OpENer_TESTS )
 
