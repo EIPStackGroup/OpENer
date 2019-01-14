@@ -7,7 +7,9 @@ set( PLATFORM_SPEC_SRC networkhandler.c opener_error.c networkconfig.c)
 #######################################
 set( OpENer_RT OFF CACHE BOOL "Activate OpENer RT" )
 if(OpENer_RT)
+  set( OpENer_RT_Additional_Stacksize "10240" CACHE STRING "Additional stack size above the defined minimum")
   add_definitions( -DOPENER_RT )
+  add_definitions(-DOPENER_RT_THREAD_SIZE=${OpENer_RT_Additional_Stacksize})
 endif(OpENer_RT)
 
 #######################################

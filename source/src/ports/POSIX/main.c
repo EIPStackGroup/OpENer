@@ -132,7 +132,8 @@ int main(int argc,
     }
 
     /* Set stack size  */
-    ret = pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
+    ret = pthread_attr_setstacksize(&attr,
+                                    PTHREAD_STACK_MIN + OPENER_RT_THREAD_SIZE);
     if (ret) {
       OPENER_TRACE_ERR("setstacksize failed\n");
       exit(-2);
