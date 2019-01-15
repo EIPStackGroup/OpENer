@@ -1,4 +1,4 @@
-$ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
+$ EZ-EDS Version 3.23.1.20171205 Generated Electronic Data Sheet
 
 [File]
         DescText = "EDS file for the sample application of OpENer";
@@ -6,7 +6,7 @@ $ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
         CreateTime = 13:15:23;
         ModDate = 02-06-2018;
         ModTime = 14:05:38;
-        Revision = 2.1;
+        Revision = 2.2;
         HomeURL = "https://github.com/EIPStackGroup/OpENer";
 
 [Device]
@@ -238,7 +238,7 @@ $ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
                                         $ 27      = transport type: redundant-owner
                                         $ 28-30   = reserved
                                         $ 31      = Client = 0 / Server = 1
-                0x44640005,             $ 0       = O->T fixed size supported
+                0x44640305,             $ 0       = O->T fixed size supported
                                         $ 1       = O->T variable size supported
                                         $ 2       = T->O fixed size supported
                                         $ 3       = T->O variable size supported
@@ -283,7 +283,7 @@ $ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
                                         $ 27      = transport type: redundant-owner
                                         $ 28-30   = reserved
                                         $ 31      = Client = 0 / Server = 1
-                0x44240005,             $ 0       = O->T fixed size supported
+                0x44240305,             $ 0       = O->T fixed size supported
                                         $ 1       = O->T variable size supported
                                         $ 2       = T->O fixed size supported
                                         $ 3       = T->O variable size supported
@@ -342,7 +342,7 @@ $ EZ-EDS Version 3.21.1.20161208 Generated Electronic Data Sheet
         Max_Number_Of_Dynamic_Instances = 0;
 
 [Identity Class]
-        Revision = 2;
+        Revision = 1;
         Object_Name = "Identity Object";
         Object_Class_Code = 0x01;
         MaxInst = 1;
