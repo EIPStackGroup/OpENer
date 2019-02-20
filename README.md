@@ -81,11 +81,13 @@ Compile for Windows XP/7/8 via Visual Studio:
 
 In order to get the correct interface index enter the command ``route print`` in a command promt and search for the MAC address of your chosen network interface at the beginning of the output. The leftmost number is the corresponding interface index.
 		
-Compile for Windows XP/7/8 via Cygwin:
+Compile for Windows XP/7/8/10 via Cygwin:
 --------------------------------------
-This should work like the procedure for Linux, with the exception, that RT mode will not work for Cygwin.
+The POSIX setup file can be reused for Cygwin. Please note, that you cannot use RT mode and you will have to remove the code responsible for checking and getting the needed capabilities, as libcap is not available in Cygwin. The easier and more supported way to build OpENer for Windows is to either use MinGW or Visual Studio.
 
-Compile for MinGW on Windows 10
+In order to run OpENer, it has to be run as privileged process, as it needs the rights to use raw sockets.
+
+Compile for MinGW on Windows XP/7/8/10
 -------------------------------
 1. Make sure 64 bit mingw is installed. (Test with gcc --version, should show x86_64-posix-seh-rev1)
 2. Make sure CMake is installed. (Test with cmake --version, should be version 3.xx)
