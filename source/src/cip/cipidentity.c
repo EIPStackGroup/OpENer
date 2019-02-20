@@ -182,7 +182,7 @@ EipStatus CipIdentityInit() {
   return kEipStatusOk;
 }
 
-CipIdentitySetExtendedDeviceStatus(CipIdentityExtendedStatus extended_status) {
+void CipIdentitySetExtendedDeviceStatus(CipIdentityExtendedStatus extended_status) {
   OPENER_TRACE_INFO("Setting extended status: %x", extended_status);
   status_ &= ~(0x70);
   status_ |= extended_status;
