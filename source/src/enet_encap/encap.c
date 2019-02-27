@@ -42,6 +42,17 @@ const int kEncapsulationHeaderSessionHandlePosition = 4; /**< the position of th
 const int kListIdentityDefaultDelayTime = 2000; /**< Default delay time for List Identity response */
 const int kListIdentityMinimumDelayTime = 500; /**< Minimum delay time for List Identity response */
 
+/**< Default trasmit time for List Identity response */
+/* Transmit buffer time (set to default 90%, application can change as per their usecase). 
+ * This is done to ensure that the response is received to sender within 
+ * the maximum_delay_time sent by the requester.
+ * While computing the response delay time, 90% of maximum_delay_time is taken.
+ * So, max computed delay would be 90% of maximum_delay_time requester has sent.
+ * In case we set it to 100% then max computed delay can be 1200ms for a request having 1200ms max delay
+ * and in that case sender would receive response >= 1200ms which might be rejected by the sender
+ */
+const int kListIdentityDelayXmitBuffer  = 90;
+
 typedef enum {
   kSessionStatusInvalid = -1, kSessionStatusValid = 0
 } SessionStatus;
@@ -77,8 +88,7 @@ typedef struct {
   EipInt32 time_out;       /**< time out in milli seconds */
   int socket;       /**< associated socket */
   struct sockaddr_in receiver;
-  EipByte message[ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE];
-  size_t message_size;
+  ENIPMessage outgoing_message;
 } DelayedEncapsulationMessage;
 
 EncapsulationInterfaceInformation g_interface_information;
@@ -407,11 +417,15 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const EncapsulationData *const receive_data,
                                           ENIPMessage *const outgoing_message) {
   DelayedEncapsulationMessage *delayed_message_buffer = NULL;
+  ENIPMessage* p_outgoing_message = NULL;
 
   for (size_t i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES;
        i++) {
     if (kEipInvalidSocket == g_delayed_encapsulation_messages[i].socket) {
       delayed_message_buffer = &(g_delayed_encapsulation_messages[i]);
+
+      p_outgoing_message = &(delayed_message_buffer->outgoing_message);
+      InitializeENIPMessage(p_outgoing_message);
       break;
     }
   }
@@ -424,12 +438,7 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
     DetermineDelayTime(receive_data->communication_buffer_start,
                        delayed_message_buffer);
 
-    memcpy(&(delayed_message_buffer->message[0]),
-           receive_data->communication_buffer_start,
-           ENCAPSULATION_HEADER_LENGTH);
-
-    EncapsulateListIdentityResponseMessage(
-      receive_data, outgoing_message);
+    EncapsulateListIdentityResponseMessage(receive_data, p_outgoing_message);
   }
 }
 
@@ -523,7 +532,11 @@ void DetermineDelayTime(const EipByte *const buffer_start,
   } else if (kListIdentityMinimumDelayTime > maximum_delay_time) {       /* if maximum_delay_time is between 1 and 500ms set it to 500ms */
     maximum_delay_time = kListIdentityMinimumDelayTime;
   }
-  delayed_message_buffer->time_out = (maximum_delay_time * rand() ) / RAND_MAX;      /* Sets delay time between 0 and maximum_delay_time */
+  /* Sets delay time between 0 and 90% of maximum_delay_time */
+  /* 90% is taken to have some room for response to reach the requester 
+   * within maximum_delay_time sent by requester
+   */
+  delayed_message_buffer->time_out = rand() % ((maximum_delay_time * kListIdentityDelayXmitBuffer)/100);
 }
 
 void EncapsulateRegisterSessionCommandResponseMessage(
@@ -861,10 +874,11 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
       g_delayed_encapsulation_messages[i].time_out -= elapsed_time;
       if (0 >= g_delayed_encapsulation_messages[i].time_out) {
         /* If delay is reached or passed, send the UDP message */
-        SendUdpData(&(g_delayed_encapsulation_messages[i].receiver),
-                    g_delayed_encapsulation_messages[i].socket,
-                    &(g_delayed_encapsulation_messages[i].message[0]),
-                    g_delayed_encapsulation_messages[i].message_size);
+        sendto(g_delayed_encapsulation_messages[i].socket,
+                    (char *) g_delayed_encapsulation_messages[i].outgoing_message.message_buffer,
+                    g_delayed_encapsulation_messages[i].outgoing_message.used_message_length, 0,
+                    (struct sockaddr *) &(g_delayed_encapsulation_messages[i].receiver), 
+                    sizeof(struct sockaddr));
         g_delayed_encapsulation_messages[i].socket = kEipInvalidSocket;
       }
     }
