@@ -16,4 +16,16 @@ opener_platform_support("INCLUDES")
 
 add_library( ENET_ENCAP ${ENET_ENCAP_SRC} )
 
+if( BUILD_SHARED_LIBS )
+  install(TARGETS ENET_ENCAP
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
+  )
+  install(DIRECTORY ${ENET_ENCAP_SRC_DIR}
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
+   )
+endif( BUILD_SHARED_LIBS )
+
 target_link_libraries( ENET_ENCAP Utils)

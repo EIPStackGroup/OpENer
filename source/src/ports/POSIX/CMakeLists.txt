@@ -23,6 +23,7 @@ opener_common_includes()
 opener_platform_support("INCLUDES")
 
 add_library( ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_SRC})
+# Mark executables and/or libraries for installation
 
 add_executable(OpENer main.c)
 

@@ -17,3 +17,16 @@ opener_platform_support("INCLUDES")
 set( PLATFORM_GENERIC_SRC generic_networkhandler.c socket_timer.c  udp_protocol.c)
 
 add_library( PLATFORM_GENERIC ${PLATFORM_GENERIC_SRC})
+
+if( BUILD_SHARED_LIBS )
+  install(TARGETS PLATFORM_GENERIC
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
+  )
+  install(DIRECTORY ${PORTS_SRC_DIR}
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.h.in"
+   )
+endif( BUILD_SHARED_LIBS )
+
