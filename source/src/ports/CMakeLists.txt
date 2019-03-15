@@ -29,7 +29,6 @@ if( BUILD_SHARED_LIBS )
     USE_SOURCE_PERMISSIONS
     FILES_MATCHING
       PATTERN "*.h"
-      PATTERN "*.h.in"
       PATTERN "sample_application" EXCLUDE
    )
 endif( BUILD_SHARED_LIBS )
