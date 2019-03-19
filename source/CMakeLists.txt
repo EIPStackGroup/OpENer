@@ -23,15 +23,6 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
 	)
 
-if( BUILD_SHARED_LIBS )
-  install(DIRECTORY "${PROJECT_BINARY_DIR}/src/ports"
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    USE_SOURCE_PERMISSIONS
-    FILES_MATCHING
-      PATTERN "*.h"
-   )
-endif( BUILD_SHARED_LIBS )
-
 find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsupport )
  
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
