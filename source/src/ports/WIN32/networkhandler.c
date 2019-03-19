@@ -13,7 +13,7 @@
 
 #include "generic_networkhandler.h"
 
-MicroSeconds getMicroSeconds() {
+MicroSeconds GetMicroSeconds() {
   LARGE_INTEGER performance_counter;
   LARGE_INTEGER performance_frequency;
 
