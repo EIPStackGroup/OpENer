@@ -11,12 +11,18 @@ project( OpENer C )
 #######################################
 # Project version                     #
 #######################################
-set( OpENer_Device_Config_Vendor_Id 1 CACHE STRING "Device Vendor ID")
-set( OpENer_Device_Config_Device_Type 12 CACHE STRING "Device Type ID")
-set( OpENer_Device_Config_Product_Code 65001 CACHE STRING "Device Product Code")
-set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name")
-set( OpENer_VERSION_MAJOR 2 )
-set( OpENer_VERSION_MINOR 3 )
+if( DEFINED OpENer_Device_Config_Vendor_Id )
+  message("!!!! OpENer_Device_Config_Vendor_Id IS DEFINED !!!!:" ${OpENer_Device_Config_Vendor_Id})
+else()
+  set( OpENer_Device_Config_Vendor_Id 1 CACHE STRING "Device Vendor ID" )
+  set( OpENer_Device_Config_Device_Type 12 CACHE STRING "Device Type ID" )
+  set( OpENer_Device_Config_Product_Code 65001 CACHE STRING "Device Product Code" )
+  set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name" )
+  set( OpENer_VERSION_MAJOR 2 CACHE STRING "Major Version" )
+  set( OpENer_VERSION_MINOR 3 CACHE STRING "Minor Version" )
+endif()
+
+message("!!!! OpENer_VERSION_MAJOR:" ${OpENer_VERSION_MAJOR})
 
 configure_file(  
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
