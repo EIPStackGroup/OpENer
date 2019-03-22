@@ -23,7 +23,6 @@
 #include "cipassembly.h"
 #include "cpf.h"
 #include "appcontype.h"
-#include "encap.h"
 #include "generic_networkhandler.h"
 #include "cipepath.h"
 #include "cipelectronickey.h"
