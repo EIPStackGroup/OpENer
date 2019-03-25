@@ -42,17 +42,6 @@ const int kEncapsulationHeaderSessionHandlePosition = 4; /**< the position of th
 const int kListIdentityDefaultDelayTime = 2000; /**< Default delay time for List Identity response */
 const int kListIdentityMinimumDelayTime = 500; /**< Minimum delay time for List Identity response */
 
-/**< Default trasmit time for List Identity response */
-/* Transmit buffer time (set to default 90%, application can change as per their usecase). 
- * This is done to ensure that the response is received to sender within 
- * the maximum_delay_time sent by the requester.
- * While computing the response delay time, 90% of maximum_delay_time is taken.
- * So, max computed delay would be 90% of maximum_delay_time requester has sent.
- * In case we set it to 100% then max computed delay can be 1200ms for a request having 1200ms max delay
- * and in that case sender would receive response >= 1200ms which might be rejected by the sender
- */
-const int kListIdentityDelayXmitBuffer  = 90;
-
 typedef enum {
   kSessionStatusInvalid = -1, kSessionStatusValid = 0
 } SessionStatus;
@@ -532,11 +521,8 @@ void DetermineDelayTime(const EipByte *const buffer_start,
   } else if (kListIdentityMinimumDelayTime > maximum_delay_time) {       /* if maximum_delay_time is between 1 and 500ms set it to 500ms */
     maximum_delay_time = kListIdentityMinimumDelayTime;
   }
-  /* Sets delay time between 0 and 90% of maximum_delay_time */
-  /* 90% is taken to have some room for response to reach the requester 
-   * within maximum_delay_time sent by requester
-   */
-  delayed_message_buffer->time_out = rand() % ((maximum_delay_time * kListIdentityDelayXmitBuffer)/100);
+
+  delayed_message_buffer->time_out = rand() % maximum_delay_time ;
 }
 
 void EncapsulateRegisterSessionCommandResponseMessage(
