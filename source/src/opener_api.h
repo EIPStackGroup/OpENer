@@ -12,7 +12,7 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 #include "ciperror.h"
-#include "opener_user_conf.h"
+//#include "opener_user_conf.h"
 
 /**  @defgroup CIP_API OpENer User interface
  * @brief This is the public interface of the OpENer. It provides all function

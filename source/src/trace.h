@@ -6,7 +6,7 @@
 #ifndef OPENER_TRACE_H_
 #define OPENER_TRACE_H_
 
-#include <opener_user_conf.h>
+//#include <opener_user_conf.h>
 
 /** @file trace.h
  * @brief Tracing infrastructure for OpENer

@@ -23,6 +23,22 @@ opener_common_includes()
 opener_platform_support("INCLUDES")
 
 add_library( ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_SRC})
+# Mark executables and/or libraries for installation
+
+if( BUILD_SHARED_LIBS )
+  install(TARGETS ${OpENer_PLATFORM}PLATFORM
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+  install(DIRECTORY ${PORTS_SRC_DIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    USE_SOURCE_PERMISSIONS
+    FILES_MATCHING
+      PATTERN "*.h"
+      PATTERN "sample_application" EXCLUDE
+   )
+endif( BUILD_SHARED_LIBS )
 
 add_executable(OpENer main.c)
 
