@@ -1,9 +1,9 @@
 #######################################
 # Add subdirectories                  #
 #######################################
+add_subdirectory( enet_encap )
 add_subdirectory( cip )
 add_subdirectory( cip_objects )
-add_subdirectory( enet_encap )
 add_subdirectory( ports )
 add_subdirectory( utils )
 
@@ -17,3 +17,10 @@ opener_common_includes()
 #######################################
 
 opener_platform_support( "INCLUDES" )
+
+if( BUILD_SHARED_LIBS )
+  install(DIRECTORY .
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.h"
+   )
+endif( BUILD_SHARED_LIBS )

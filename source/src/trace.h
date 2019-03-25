@@ -6,13 +6,15 @@
 #ifndef OPENER_TRACE_H_
 #define OPENER_TRACE_H_
 
-#include <opener_user_conf.h>
-
 /** @file trace.h
  * @brief Tracing infrastructure for OpENer
  */
 
 #ifdef OPENER_WITH_TRACES
+
+#ifndef BUILD_SHARED_LIBS
+#include "opener_user_conf.h"
+#endif
 
 /** @def OPENER_TRACE_LEVEL_ERROR Enable tracing of error messages. This is the
  *  default if no trace level is given.
