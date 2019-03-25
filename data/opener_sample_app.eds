@@ -6,7 +6,7 @@ $ EZ-EDS Version 3.23.1.20171205 Generated Electronic Data Sheet
         CreateTime = 13:15:23;
         ModDate = 02-06-2018;
         ModTime = 14:05:38;
-        Revision = 2.2;
+        Revision = 2.3;
         HomeURL = "https://github.com/EIPStackGroup/OpENer";
 
 [Device]
@@ -16,7 +16,7 @@ $ EZ-EDS Version 3.23.1.20171205 Generated Electronic Data Sheet
         ProdTypeStr = "Communications Adapter";
         ProdCode = 65001;
         MajRev = 2;
-        MinRev = 2;
+        MinRev = 3;
         ProdName = "OpENer PC";
         Catalog = "OpENer-2.x";
 

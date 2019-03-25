@@ -1,14 +1,14 @@
- StcRev Data |1.23|CT-14|OpENerPC|1517911412| DevData |255|0|500|500|500,500|X||ENet|
+ StcRev Data |1.24|CT-15|OpENerPC|1553517278| DevData |255|0|500|500|500,500|X||ENet|
 [<00>]-------|OpENer PC||
-  General    |3.21|EtherNet/IP Vol 2, Ed 1.22||2.2|Rockwell Automation/Allen-Bradley|1|65001|
-  DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72,77,84,85,86,87,69,81,78,79,80,83,92|
+  General    |3.23|EtherNet/IP Vol 2, Ed 1.23||2.3|Rockwell Automation/Allen-Bradley|1|65001|
+  DevProfile |12|Communications Adapter|,04,05,06,07,08,09,10,11,15,16,29,30,32,33,43,55,243,244,245,246,67,71,72,77,84,85,86,87,69,81,68,70,82,78,79,80,83,92|
   PhysConf   ||X| |X| | | | | |0|X| | |
   LEDs       | | | | | |
-  IP MAC Set | |X| |192.168.56.101| | ||08:00:27:f0:74:38| | | |
+  IP MAC Set | |X| |192.168.56.105| | ||08:00:27:cd:1e:68| | | |
   CRate Set  |X| | |X| | ||
   CRate Sup  |X|X| |X|X|
   Net Behavi | | ||| | | | | | | |
-  Cxn Behavi | | | |X| | | | | | ||| | |-1|1000|1000| |511|
+  Cxn Behavi | | | |X| | | | | | ||| | |-1|1000|1000| |511| |
   FO Path    ||||||||||||| |
   FO-IO Data | | | | | | | | | | | || | | | | | || | | |
   Cfg-IO Dat ||||
@@ -26,7 +26,7 @@
   CSP        |||||||||||||
   IAG        |X|X|X|X|X|X|X| | | | | | | | | | | | |
   IAS        | | | | | | | | | | | | | | | | | | | |
-  IAL        | =(1)| =(12)| =(65001)| =(2.2)| | | =(OpENer PC)| | | | | | | | | | | | |
+  IAL        | =(1)| =(12)| =(65001)| =(2.3)| | | =(OpENer PC)| | | | | | | | | | | | |
   IS         |X|X|X| | | | | | | | | |
   ISP        ||0,1|||||||||||
   VSA        | |
@@ -135,7 +135,7 @@
   CSP        |||||||||||
   IAG        |X|X|X| | | | | | | |X| | | | |
   IAS        | | | | | | | | | | | | | | | |
-  IAL        | =(0,10,100)| |MAC address (008:00:27:f0:74:38)| | | | | | | | | | | | |
+  IAL        | =(0,10,100)| |MAC address (08:00:27:cd:1e:68)| | | | | | | | | | | | |
   IS         |X|X| | | | | | | | | |
   ISP        ||||||||||||
   VSA        | |
