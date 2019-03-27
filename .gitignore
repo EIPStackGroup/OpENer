@@ -11,3 +11,7 @@ source/src/cip_objects/
 CMakeCache.txt
 *.patch
 .idea/
+.a
+*.cmake
+Makefile
+devicedata.h
