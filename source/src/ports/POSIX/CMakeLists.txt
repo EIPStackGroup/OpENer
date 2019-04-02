@@ -25,7 +25,7 @@ opener_platform_support("INCLUDES")
 add_library( ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_SRC})
 # Mark executables and/or libraries for installation
 
-if( BUILD_SHARED_LIBS )
+if( OPENER_BUILD_SHARED_LIBS )
   install(TARGETS ${OpENer_PLATFORM}PLATFORM
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -38,7 +38,7 @@ if( BUILD_SHARED_LIBS )
       PATTERN "*.h"
       PATTERN "sample_application" EXCLUDE
    )
-endif( BUILD_SHARED_LIBS )
+endif()
 
 add_executable(OpENer main.c)
 

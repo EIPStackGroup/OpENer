@@ -11,3 +11,10 @@ source/src/cip_objects/
 CMakeCache.txt
 *.patch
 .idea/
+*.a
+*.cmake
+Makefile
+CMakeFiles
+devicedata.h
+source/src/ports/POSIX/OpENer
+source/cip_objects/
