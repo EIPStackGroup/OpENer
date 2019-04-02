@@ -76,6 +76,11 @@ if(OpENer_TRACES)
 endif(OpENer_TRACES)
 
 #######################################
+# OpENer library mode switch          #
+#######################################
+set( OPENER_BUILD_SHARED_LIBS OFF CACHE BOOL "Builds OpENer as separate lib and sample application" )
+
+#######################################
 # Test switch                         #
 #######################################
 set( OpENer_TESTS OFF CACHE BOOL "Enable tests to be built" )
