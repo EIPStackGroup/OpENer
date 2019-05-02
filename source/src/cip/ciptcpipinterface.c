@@ -226,9 +226,9 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *RESTRICT const message_router_request,
-  CipMessageRouterResponse *RESTRICT const message_router_response,
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
   struct sockaddr *originator_address,
   const int encapsulation_session) {
 
