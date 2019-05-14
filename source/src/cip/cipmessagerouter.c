@@ -286,8 +286,13 @@ void DeleteAllClasses(void) {
       { /* then free storage for the attribute array */
         CipFree(instance_to_delete->attributes);
       }
-      CipFree(instance_to_delete);
     }
+
+	/*All instances memory are allocated in cip_class->instances pointer,so we have to free them in one go*/
+      if( message_router_object_to_delete->cip_class->instances != NULL)
+      {
+        CipFree(message_router_object_to_delete->cip_class->instances);
+      }
 
     /*clear meta class data*/
     CipFree(
