@@ -25,7 +25,7 @@ MicroSeconds GetMicroSeconds() {
 }
 
 MilliSeconds GetMilliSeconds(void) {
-  return (MilliSeconds) (getMicroSeconds() / 1000ULL);
+  return (MilliSeconds) (GetMicroSeconds() / 1000ULL);
 }
 
 EipStatus NetworkHandlerInitializePlatform(void) {
