@@ -59,20 +59,22 @@ void ConfigureIpMacAddress(const CipUint interface_index) {
                  6 * sizeof(CipUsint) );
         }
 
-        interface_configuration_.ip_address = inet_addr(
-          pAdapter->IpAddressList.IpAddress.String);
-        interface_configuration_.network_mask = inet_addr(
-          pAdapter->IpAddressList.IpMask.String);
-        interface_configuration_.gateway = inet_addr(
-          pAdapter->GatewayList.IpAddress.String);
+        inet_pton(AF_INET, pAdapter->IpAddressList.IpAddress.String,
+                  &interface_configuration_.ip_address);
+        inet_pton(AF_INET, pAdapter->IpAddressList.IpMask.String,
+                  &interface_configuration_.network_mask);
+        inet_pton(AF_INET, pAdapter->GatewayList.IpAddress.String,
+                  &interface_configuration_.gateway);
 
         CipUdint host_id = ntohl(interface_configuration_.ip_address)
                            & ~ntohl(interface_configuration_.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
         host_id -= 1;
         host_id &= 0x3ff;
 
+        CipUdint multicast_base;
+        inet_pton(AF_INET, "239.192.1.0", &multicast_base);
         g_multicast_configuration.starting_multicast_address = htonl(
-          ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
+          ntohl(multicast_base) + (host_id << 5) );
       }
       pAdapter = pAdapter->Next;
     }
