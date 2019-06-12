@@ -155,11 +155,14 @@ void ConfigureDomainName(const CipUint interface_index) {
           interface_configuration_.domain_name.length = strlen(
             pCurrAddresses->DnsSuffix);
           if (interface_configuration_.domain_name.length) {
+            /* Storage space for the string must include NULL termination. */
+            size_t buf_length = interface_configuration_.domain_name.length + 1;
             interface_configuration_.domain_name.string = (CipByte *)CipCalloc(
-              interface_configuration_.domain_name.length + 1,
+              buf_length,
               sizeof(CipUsint) );
-            strcpy(interface_configuration_.domain_name.string,
-                   pCurrAddresses->DnsSuffix);
+            strcpy_s(interface_configuration_.domain_name.string,
+                     buf_length,
+                     pCurrAddresses->DnsSuffix);
           }
           else {
             interface_configuration_.domain_name.string = NULL;
@@ -246,9 +249,11 @@ void ConfigureHostName(const CipUint interface_index) {
   }
   hostname_.length = strlen(hostname);
   if (hostname_.length) {
-    hostname_.string = (CipByte *) CipCalloc( hostname_.length + 1,
+    /* Storage space for the string must include NULL termination. */
+    size_t buf_length = hostname_.length + 1;
+    hostname_.string = (CipByte *) CipCalloc( buf_length,
                                               sizeof(CipByte) );
-    strcpy(hostname_.string, hostname);
+    strcpy_s(hostname_.string, buf_length, hostname);
   } else {
     hostname_.string = NULL;
   }
