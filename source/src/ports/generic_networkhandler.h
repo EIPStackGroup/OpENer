@@ -57,12 +57,6 @@ typedef struct {
 
 NetworkStatus g_network_status; /**< Global variable holding the current network status */
 
-/** @brief The platform independent part of network handler initialization routine
- *
- *  @return Returns the OpENer status after the initialization routine
- */
-EipStatus NetworkHandlerInitialize(void);
-
 void CloseUdpSocket(int socket_handle);
 
 void CloseTcpSocket(int socket_handle);
