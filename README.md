@@ -35,7 +35,8 @@ installed. You will need to have the following installed:
 * CMake
 * gcc
 * make
-* binutils 
+* binutils
+* the development library of libcap (libcap-dev or equivalient)
  
 for normal building. These should be installed on most Linux installations and
 are part of the development packages of Cygwin.
