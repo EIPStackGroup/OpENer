@@ -7,7 +7,7 @@
 #include "udp_protocol.h"
 
 #ifdef WIN32
-#include <winsock.h>
+#include <winsock2.h>
 #endif
 
 void UDPHeaderSetSourcePort(UDPHeader *const header,
