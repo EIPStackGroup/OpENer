@@ -10,6 +10,7 @@
 #include "encap.h"
 
 #include "opener_api.h"
+#include "opener_user_conf.h"
 #include "cpf.h"
 #include "endianconv.h"
 #include "cipcommon.h"
