@@ -290,6 +290,8 @@ typedef struct cip_service_struct {
 
 /**
  * @brief Struct for saving TCP/IP interface information
+ *
+ * All addresses are stored in network byte order.
  */
 typedef struct {
   CipUdint ip_address;

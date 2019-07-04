@@ -26,6 +26,10 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 
+static CipUdint GetDnsServerAddress(
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP const * RESTRICT in);
+
+
 void ConfigureIpMacAddress(const CipUint interface_index) {
 
   PIP_ADAPTER_INFO pAdapterInfo;
@@ -165,14 +169,13 @@ void ConfigureDomainName(const CipUint interface_index) {
             interface_configuration_.domain_name.string = NULL;
           }
 
-          InetNtop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server,
-                   sizeof(interface_configuration_.name_server) );
-          InetNtop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Next->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server_2,
-                   sizeof(interface_configuration_.name_server_2) );
+          interface_configuration_.name_server =
+              GetDnsServerAddress(pCurrAddresses->FirstDnsServerAddress);
+          interface_configuration_.name_server_2 =
+              (pCurrAddresses->FirstDnsServerAddress != NULL)
+                  ? GetDnsServerAddress(
+                        pCurrAddresses->FirstDnsServerAddress->Next)
+                  : 0;
         }
         else{ interface_configuration_.domain_name.length = 0;}
 
@@ -212,6 +215,21 @@ void ConfigureDomainName(const CipUint interface_index) {
 
 
 }
+
+
+/** @brief Extracts a DNS server IP address.
+*
+* @param in DNS server address structure from GetAdapterAddresses().
+*
+* @return The IPv4 address in network byte order.
+*/
+static CipUdint GetDnsServerAddress(
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP const * RESTRICT in) {
+  return (in != NULL)
+             ? ((SOCKADDR_IN *)in->Address.lpSockaddr)->sin_addr.S_un.S_addr
+             : 0;
+}
+
 
 void ConfigureHostName(const CipUint interface_index) {
   CipWord wVersionRequested;
