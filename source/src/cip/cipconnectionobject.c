@@ -683,8 +683,8 @@ CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
 }
 
 void ConnectionObjectSetConnectionTimeoutMultiplier(
-  CipConnectionObject *connection_object,
-  CipUsint connection_timeout_multiplier) {
+  CipConnectionObject *const connection_object,
+  const CipUsint connection_timeout_multiplier) {
   connection_object->connection_timeout_multiplier =
     connection_timeout_multiplier;
 }
