@@ -27,7 +27,7 @@
 
 
 static CipUdint GetDnsServerAddress(
-    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP const * RESTRICT in);
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in);
 
 
 void ConfigureIpMacAddress(const CipUint interface_index) {
@@ -224,7 +224,7 @@ void ConfigureDomainName(const CipUint interface_index) {
 * @return The IPv4 address in network byte order.
 */
 static CipUdint GetDnsServerAddress(
-    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP const * RESTRICT in) {
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in) {
   return (in != NULL)
              ? ((SOCKADDR_IN *)in->Address.lpSockaddr)->sin_addr.S_un.S_addr
              : 0;
