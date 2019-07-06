@@ -25,6 +25,8 @@
 #pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Ws2_32.lib")
 
+static EipStatus WideToCipString(const WCHAR *const src,
+    CipString *const dest);
 
 static CipUdint GetDnsServerAddress(
     const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in);
@@ -149,25 +151,8 @@ void ConfigureDomainName(const CipUint interface_index) {
 
         char pStringBuf[INET_ADDRSTRLEN];
         if (i != 0) {
-
-          if (NULL != interface_configuration_.domain_name.string) {
-            /* if the string is already set to a value we have to free the resources
-             * before we can set the new value in order to avoid memory leaks.
-             */
-            CipFree(interface_configuration_.domain_name.string);
-          }
-          interface_configuration_.domain_name.length = strlen(
-            pCurrAddresses->DnsSuffix);
-          if (interface_configuration_.domain_name.length) {
-            interface_configuration_.domain_name.string = (CipByte *)CipCalloc(
-              interface_configuration_.domain_name.length + 1,
-              sizeof(CipUsint) );
-            strcpy(interface_configuration_.domain_name.string,
-                   pCurrAddresses->DnsSuffix);
-          }
-          else {
-            interface_configuration_.domain_name.string = NULL;
-          }
+          WideToCipString(pCurrAddresses->DnsSuffix,
+                          &interface_configuration_.domain_name);
 
           interface_configuration_.name_server =
               GetDnsServerAddress(pCurrAddresses->FirstDnsServerAddress);
@@ -212,8 +197,72 @@ void ConfigureDomainName(const CipUint interface_index) {
   if (pAddresses) {
     CipFree(pAddresses);
   }
+}
 
 
+/** @brief Converts a wide-character string to a CIP string.
+ *
+ * @param src Source wide-character string.
+ *
+ * @param dest Destination CIP string.
+ *
+ * @return kEipStatusOk if the conversion was successful;
+ *         kEipStatusError if a memory allocation error occurred or
+ *         the source string was too large.
+ */
+static EipStatus WideToCipString(const WCHAR *const src,
+                                 CipString *const dest) {
+  void *buf = NULL;
+
+  OPENER_ASSERT(src != NULL);
+  OPENER_ASSERT(dest != NULL);
+
+  /*
+  * Evaluate the source string, ensuring the number of characters fit in
+  * EipUint16, excluding the null terminator.
+  */
+  const size_t num_chars = wcslen(src);
+  if (num_chars >= UINT16_MAX) {
+    return kEipStatusError;
+  }
+
+  /* New buffer includes null termination. */
+  const size_t buffer_size = num_chars + 1;
+
+  if (num_chars) {
+    /* Allocate a new destination buffer. */
+    buf = CipCalloc(buffer_size, 1);
+    if (buf == NULL) {
+      return kEipStatusError;
+    }
+
+    /* Transfer the string to the new buffer. */
+    size_t converted_chars;
+    const errno_t result =
+        wcstombs_s(&converted_chars, buf, buffer_size, src, num_chars);
+    OPENER_ASSERT(result == 0);
+  }
+
+  /* Release the any previous string content. */
+  if (dest->string != NULL) {
+    CipFree(dest->string);
+  }
+
+  /* Transfer the new content to the destination. */
+  dest->length = num_chars;
+  dest->string = buf;
+
+  /* Output sanity checks. */
+  if (dest->length) {
+    const size_t len = strnlen_s(dest->string, buffer_size);
+    OPENER_ASSERT(len < buffer_size);
+    OPENER_ASSERT(dest->length == len);
+    OPENER_ASSERT(dest->string != NULL);
+  } else {
+    OPENER_ASSERT(dest->string == NULL);
+  }
+
+  return kEipStatusOk;
 }
 
 
