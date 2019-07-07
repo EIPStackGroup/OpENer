@@ -49,7 +49,7 @@ void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
 }
 
 void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
-                                  void *data) {
+                                  const void *const data) {
   OPENER_ASSERT(list->allocator != NULL)
   DoublyLinkedListNode * new_node = DoublyLinkedListNodeCreate(data,
                                                                list->allocator);
