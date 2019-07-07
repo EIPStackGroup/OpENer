@@ -48,7 +48,7 @@ void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
                                  DoublyLinkedListNode **node);
 
 void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
-                                  void *data);
+                                  const void *const data);
 
 void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
                                   const void *const data);
