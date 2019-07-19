@@ -21,6 +21,8 @@
  *    - ntohl
  *    - inet_addr
  */
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
 typedef unsigned short in_port_t;
 

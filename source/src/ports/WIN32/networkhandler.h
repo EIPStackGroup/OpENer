@@ -10,8 +10,6 @@
 
 #define OPENER_SOCKET_WOULD_BLOCK WSAEWOULDBLOCK
 
-typedef unsigned long socklen_t;
-
 EipStatus NetworkHandlerInitializePlatform(void);
 
 /** @brief Platform dependent code to close a socket
