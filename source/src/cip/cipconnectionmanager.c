@@ -1403,7 +1403,7 @@ void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 }
 
 
-void AddNewActiveConnection(const CipConnectionObject *const connection_object)
+void AddNewActiveConnection(CipConnectionObject *const connection_object)
 {
   DoublyLinkedListInsertAtHead(&connection_list, connection_object);
   ConnectionObjectSetState(connection_object,

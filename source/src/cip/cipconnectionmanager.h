@@ -210,7 +210,7 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
  *
  * @param connection_object pointer to the connection object to be added.
  */
-void AddNewActiveConnection(const CipConnectionObject *const connection_object);
+void AddNewActiveConnection(CipConnectionObject *const connection_object);
 
 /** @brief Removes connection from the list of active connections
  *

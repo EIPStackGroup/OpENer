@@ -64,9 +64,9 @@ CipUint g_encapsulation_inactivity_timeout = 120;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
+  CipInstance *const RESTRICT instance,
+  CipMessageRouterRequest *const RESTRICT message_router_request,
+  CipMessageRouterResponse *const RESTRICT message_router_response,
   struct sockaddr *originator_address,
   const int encapsulation_session);
 
@@ -227,8 +227,8 @@ void ShutdownTcpIpInterface(void) {
 
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *RESTRICT const message_router_request,
-  CipMessageRouterResponse *RESTRICT const message_router_response,
+  CipMessageRouterRequest *const RESTRICT message_router_request,
+  CipMessageRouterResponse *const RESTRICT message_router_response,
   struct sockaddr *originator_address,
   const int encapsulation_session) {
 

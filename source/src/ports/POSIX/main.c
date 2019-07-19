@@ -35,7 +35,7 @@ void LeaveStack(int signal);
  *
  * @param signal the signal we received
  */
-void *executeEventLoop(
+void executeEventLoop(
   );
 
 /*****************************************************************************/
@@ -190,7 +190,7 @@ void LeaveStack(int signal) {
   g_end_stack = 1;
 }
 
-void *executeEventLoop() {
+void executeEventLoop() {
   /* The event loop. Put other processing you need done continually in here */
   while (1 != g_end_stack) {
     if (kEipStatusOk != NetworkHandlerProcessOnce() ) {
