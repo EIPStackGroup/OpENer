@@ -67,13 +67,6 @@ void CloseUdpSocket(int socket_handle);
 
 void CloseTcpSocket(int socket_handle);
 
-
-/** @brief Initializes the network handler, shall be implemented by a port-specific networkhandler
- *
- *  @return EipStatus, if initialization failed EipError is returned
- */
-EipStatus NetworkHandlerInitialize(void);
-
 EipStatus NetworkHandlerProcessOnce(void);
 
 EipStatus NetworkHandlerFinish(void);
