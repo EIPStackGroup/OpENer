@@ -25,6 +25,12 @@
 #pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Ws2_32.lib")
 
+static EipStatus WideToCipString(const WCHAR *const src,
+    CipString *const dest);
+
+static CipUdint GetDnsServerAddress(
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in);
+
 
 void ConfigureIpMacAddress(const CipUint interface_index) {
 
@@ -147,37 +153,16 @@ void ConfigureDomainName(const CipUint interface_index) {
 
         char pStringBuf[INET_ADDRSTRLEN];
         if (i != 0) {
+          WideToCipString(pCurrAddresses->DnsSuffix,
+                          &interface_configuration_.domain_name);
 
-          if (NULL != interface_configuration_.domain_name.string) {
-            /* if the string is already set to a value we have to free the resources
-             * before we can set the new value in order to avoid memory leaks.
-             */
-            CipFree(interface_configuration_.domain_name.string);
-          }
-          interface_configuration_.domain_name.length = strlen(
-            pCurrAddresses->DnsSuffix);
-          if (interface_configuration_.domain_name.length) {
-            /* Storage space for the string must include NULL termination. */
-            size_t buf_length = interface_configuration_.domain_name.length + 1;
-            interface_configuration_.domain_name.string = (CipByte *)CipCalloc(
-              buf_length,
-              sizeof(CipUsint) );
-            strcpy_s(interface_configuration_.domain_name.string,
-                     buf_length,
-                     pCurrAddresses->DnsSuffix);
-          }
-          else {
-            interface_configuration_.domain_name.string = NULL;
-          }
-
-          InetNtop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server,
-                   sizeof(interface_configuration_.name_server) );
-          InetNtop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Next->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server_2,
-                   sizeof(interface_configuration_.name_server_2) );
+          interface_configuration_.name_server =
+              GetDnsServerAddress(pCurrAddresses->FirstDnsServerAddress);
+          interface_configuration_.name_server_2 =
+              (pCurrAddresses->FirstDnsServerAddress != NULL)
+                  ? GetDnsServerAddress(
+                        pCurrAddresses->FirstDnsServerAddress->Next)
+                  : 0;
         }
         else{ interface_configuration_.domain_name.length = 0;}
 
@@ -214,9 +199,88 @@ void ConfigureDomainName(const CipUint interface_index) {
   if (pAddresses) {
     CipFree(pAddresses);
   }
-
-
 }
+
+
+/** @brief Converts a wide-character string to a CIP string.
+ *
+ * @param src Source wide-character string.
+ *
+ * @param dest Destination CIP string.
+ *
+ * @return kEipStatusOk if the conversion was successful;
+ *         kEipStatusError if a memory allocation error occurred or
+ *         the source string was too large.
+ */
+static EipStatus WideToCipString(const WCHAR *const src,
+                                 CipString *const dest) {
+  void *buf = NULL;
+
+  OPENER_ASSERT(src != NULL);
+  OPENER_ASSERT(dest != NULL);
+
+  /*
+  * Evaluate the source string, ensuring the number of characters fit in
+  * EipUint16, excluding the null terminator.
+  */
+  const size_t num_chars = wcslen(src);
+  if (num_chars >= UINT16_MAX) {
+    return kEipStatusError;
+  }
+
+  /* New buffer includes null termination. */
+  const size_t buffer_size = num_chars + 1;
+
+  if (num_chars) {
+    /* Allocate a new destination buffer. */
+    buf = CipCalloc(buffer_size, 1);
+    if (buf == NULL) {
+      return kEipStatusError;
+    }
+
+    /* Transfer the string to the new buffer. */
+    size_t converted_chars;
+    const errno_t result =
+        wcstombs_s(&converted_chars, buf, buffer_size, src, num_chars);
+    OPENER_ASSERT(result == 0);
+  }
+
+  /* Release the any previous string content. */
+  if (dest->string != NULL) {
+    CipFree(dest->string);
+  }
+
+  /* Transfer the new content to the destination. */
+  dest->length = num_chars;
+  dest->string = buf;
+
+  /* Output sanity checks. */
+  if (dest->length) {
+    const size_t len = strnlen_s(dest->string, buffer_size);
+    OPENER_ASSERT(len < buffer_size);
+    OPENER_ASSERT(dest->length == len);
+    OPENER_ASSERT(dest->string != NULL);
+  } else {
+    OPENER_ASSERT(dest->string == NULL);
+  }
+
+  return kEipStatusOk;
+}
+
+
+/** @brief Extracts a DNS server IP address.
+*
+* @param in DNS server address structure from GetAdapterAddresses().
+*
+* @return The IPv4 address in network byte order.
+*/
+static CipUdint GetDnsServerAddress(
+    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in) {
+  return (in != NULL)
+             ? ((SOCKADDR_IN *)in->Address.lpSockaddr)->sin_addr.S_un.S_addr
+             : 0;
+}
+
 
 void ConfigureHostName(const CipUint interface_index) {
   CipWord wVersionRequested;
