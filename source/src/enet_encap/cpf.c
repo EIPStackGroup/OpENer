@@ -23,7 +23,7 @@ const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
-int NotifyCommonPacketFormat(EncapsulationData *const received_data,
+int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
                              const struct sockaddr *const originator_address,
                              ENIPMessage *const outgoing_message) {
   int return_value = kEipStatusError;

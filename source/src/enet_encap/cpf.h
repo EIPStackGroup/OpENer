@@ -80,7 +80,7 @@ typedef struct {
  * @param outgoing_message The outgoing ENIP message struct
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int NotifyCommonPacketFormat(EncapsulationData *const received_data,
+int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
                              const struct sockaddr *const originator_address,
                              ENIPMessage *const outgoing_message);
 

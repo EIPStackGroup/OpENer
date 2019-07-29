@@ -4,6 +4,8 @@
  *
  ******************************************************************************/
 
+#include <string.h>
+
 #include "cipconnectionobject.h"
 
 #include "endianconv.h"

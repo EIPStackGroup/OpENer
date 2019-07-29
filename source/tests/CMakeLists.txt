@@ -7,7 +7,16 @@
 #######################################
 add_test_includes()
 
+
+#######################################
+# Add common includes                 #
+#######################################
 opener_common_includes()
+
+#######################################
+# Add platform-specific includes      #
+#######################################
+opener_platform_support("INCLUDES")
 
 ###################################################
 # Copy custom test output file to binary location #

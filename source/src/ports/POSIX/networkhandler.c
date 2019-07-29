@@ -7,6 +7,10 @@
 #include <sys/time.h>
 #include <time.h>
 #include <fcntl.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #include "networkhandler.h"
 

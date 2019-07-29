@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "platform_network_includes.h"
+
 /** @file typedefs.h
    Do not use interface types for internal variables, such as "int i;", which is
    commonly used for loop counters or counting things.
