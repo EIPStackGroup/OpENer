@@ -753,7 +753,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
     ENIPMessage outgoing_message = {0};
     InitializeENIPMessage(&outgoing_message);
-    int number_of_bytes_to_send = HandleReceivedExplictTcpData(
+    int need_to_send = HandleReceivedExplictTcpData(
       socket, incoming_message, data_size, &remaining_bytes,
       &sender_address, &outgoing_message);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
@@ -772,8 +772,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         remaining_bytes);
     }
 
-    if (number_of_bytes_to_send > 0) {
-      OPENER_TRACE_INFO("TCP reply sent:\n");
+    if (need_to_send > 0) {
+      OPENER_TRACE_INFO("TCP reply to send\n");
 
       data_sent = send(socket, (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length, 0);
@@ -782,8 +782,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
         socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-      if (data_sent != number_of_bytes_to_send) {
-        OPENER_TRACE_WARN("TCP response was not fully sent\n");
+      if (data_sent != outgoing_message.used_message_length) {
+          OPENER_TRACE_WARN("TCP response was not fully sent: exp %zu, sent %ld\n",
+                            outgoing_message.used_message_length, data_sent);
       }
     }
 
