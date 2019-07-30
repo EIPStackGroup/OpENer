@@ -1,5 +1,7 @@
 sudo: false
-os: linux
+os:
+  - linux
+  - windows
 language: c
 branches:
   except:
@@ -41,5 +43,6 @@ before_script:
 - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxBeforeScript.sh ; fi
 script:
 - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxScript.sh ; fi
+- if [[ "${TRAVIS_OS_NAME}" == "windows" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh ; fi
 after_success:
 - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxAfterSuccessScript.sh ; fi
