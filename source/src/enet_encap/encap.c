@@ -383,9 +383,8 @@ void HandleReceivedListInterfacesCommand(
   ENIPMessage *const outgoing_message) {
 
   /* Encapsulation header */
-  const size_t kListInterfacesCommandSpecificDataLength = sizeof(CipUint)
-                                                          + sizeof(
-    g_interface_information);
+  const size_t kListInterfacesCommandSpecificDataLength = sizeof(CipUint);
+
   GenerateEncapsulationHeader(receive_data,
                               kListInterfacesCommandSpecificDataLength,
                               0, /* Session handle will be ignored */
@@ -393,7 +392,7 @@ void HandleReceivedListInterfacesCommand(
                               outgoing_message);
   /* Command specific data */
   outgoing_message->used_message_length += AddIntToMessage(0x0000,
-                                                           &outgoing_message->current_message_position); /* Reply 0 for no information being returned */
+                                                           &outgoing_message->current_message_position); /* Set Item Count to 0: no Target Items follow. */
 }
 
 void HandleReceivedListIdentityCommandTcp(
@@ -864,7 +863,7 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
         sendto(g_delayed_encapsulation_messages[i].socket,
                     (char *) g_delayed_encapsulation_messages[i].outgoing_message.message_buffer,
                     g_delayed_encapsulation_messages[i].outgoing_message.used_message_length, 0,
-                    (struct sockaddr *) &(g_delayed_encapsulation_messages[i].receiver), 
+                    (struct sockaddr *) &(g_delayed_encapsulation_messages[i].receiver),
                     sizeof(struct sockaddr));
         g_delayed_encapsulation_messages[i].socket = kEipInvalidSocket;
       }
