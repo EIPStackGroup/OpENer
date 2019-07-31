@@ -1,7 +1,4 @@
 sudo: false
-os:
-  - linux
-  - windows
 language: c
 branches:
   except:
@@ -26,23 +23,28 @@ addons:
   sonarcloud:
     organization: eipstackgroup
     token: $SONAR_TOKEN
-install:
-- git fetch --unshallow --tags
-- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-- mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-- |
-  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
-    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-  else
-    brew upgrade cmake || brew install cmake
-  fi
-  cmake --version
-before_script:
-- if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxBeforeScript.sh ; fi
-script:
-- if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxScript.sh ; fi
-- if [[ "${TRAVIS_OS_NAME}" == "windows" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh ; fi
-after_success:
-- if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then $TRAVIS_BUILD_DIR/travis_scripts/linuxAfterSuccessScript.sh ; fi
+
+matrix:
+  include:
+    - name: "GCC on Linux"
+      os: linux
+      env: CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
+
+      install:
+        - git fetch --unshallow --tags
+        - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+        - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+        - |
+          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+          cmake --version
+      before_script:
+        - $TRAVIS_BUILD_DIR/travis_scripts/linuxBeforeScript.sh
+      script:
+        - $TRAVIS_BUILD_DIR/travis_scripts/linuxScript.sh
+      after_success:
+        - $TRAVIS_BUILD_DIR/travis_scripts/linuxAfterSuccessScript.sh
+    - name: "MSVC on Windows"
+      os: windows
+      script:
+        - $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh
