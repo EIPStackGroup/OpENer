@@ -48,3 +48,10 @@ matrix:
       os: windows
       script:
         - $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh
+    - name: "MinGW on Windows"
+      os: windows
+      env:
+        - CC="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-gcc"
+        - CXX="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-g++"
+      script:
+        - $TRAVIS_BUILD_DIR/travis_scripts/windowsMinGWScript.sh
