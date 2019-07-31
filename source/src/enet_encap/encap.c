@@ -81,7 +81,7 @@ typedef struct {
   ENIPMessage outgoing_message;
 } DelayedEncapsulationMessage;
 
-EncapsulationInterfaceInformation g_interface_information;
+EncapsulationServiceInformation g_service_information;
 
 int g_registered_sessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
@@ -138,15 +138,15 @@ void EncapsulationInit(void) {
     g_delayed_encapsulation_messages[i].socket = kEipInvalidSocket;
   }
 
-  /*TODO make the interface information configurable*/
-  /* initialize interface information */
-  g_interface_information.type_code = kCipItemIdListServiceResponse;
-  g_interface_information.length = sizeof(g_interface_information);
-  g_interface_information.encapsulation_protocol_version = 1;
-  g_interface_information.capability_flags = kCapabilityFlagsCipTcp
+  /*TODO make the service information configurable*/
+  /* initialize service information */
+  g_service_information.type_code = kCipItemIdListServiceResponse;
+  g_service_information.length = sizeof(g_service_information);
+  g_service_information.encapsulation_protocol_version = 1;
+  g_service_information.capability_flags = kCapabilityFlagsCipTcp
                                              | kCapabilityFlagsCipUdpClass0or1;
-  snprintf( (char *) g_interface_information.name_of_service,
-            sizeof(g_interface_information.name_of_service),
+  snprintf( (char *) g_service_information.name_of_service,
+            sizeof(g_service_information.name_of_service),
             "Communications" );
 }
 
@@ -349,7 +349,7 @@ void HandleReceivedListServicesCommand(
   /* Create encapsulation header */
   const size_t kListServicesCommandSpecificDataLength = sizeof(CipUint)
                                                         + sizeof(
-    g_interface_information);
+    g_service_information);
   GenerateEncapsulationHeader(receive_data,
                               kListServicesCommandSpecificDataLength,
                               0, /* Session handle will be ignored */
@@ -360,22 +360,22 @@ void HandleReceivedListServicesCommand(
   outgoing_message->used_message_length += AddIntToMessage(1,
                                                            &outgoing_message->current_message_position); // Item count
   outgoing_message->used_message_length += AddIntToMessage(
-    g_interface_information.type_code,
+    g_service_information.type_code,
     &outgoing_message->current_message_position);
   outgoing_message->used_message_length += AddIntToMessage(
-    (EipUint16) (g_interface_information.length - 4),
+    (EipUint16) (g_service_information.length - 4),
     &outgoing_message->current_message_position);
   outgoing_message->used_message_length += AddIntToMessage(
-    g_interface_information.encapsulation_protocol_version,
+    g_service_information.encapsulation_protocol_version,
     &outgoing_message->current_message_position);
   outgoing_message->used_message_length += AddIntToMessage(
-    g_interface_information.capability_flags,
+    g_service_information.capability_flags,
     &outgoing_message->current_message_position);
   memcpy(outgoing_message->current_message_position,
-         g_interface_information.name_of_service,
-         sizeof(g_interface_information.name_of_service) );
+         g_service_information.name_of_service,
+         sizeof(g_service_information.name_of_service) );
   outgoing_message->used_message_length +=
-    sizeof(g_interface_information.name_of_service);
+    sizeof(g_service_information.name_of_service);
 }
 
 void HandleReceivedListInterfacesCommand(

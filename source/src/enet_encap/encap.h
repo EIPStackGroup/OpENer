@@ -49,13 +49,13 @@ typedef struct encapsulation_data {
   const EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
 } EncapsulationData;
 
-typedef struct encapsulation_interface_information {
+typedef struct encapsulation_service_information {
   EipUint16 type_code;
   EipUint16 length;
   EipUint16 encapsulation_protocol_version;
   EipUint16 capability_flags;
   EipInt8 name_of_service[16];
-} EncapsulationInterfaceInformation;
+} EncapsulationServiceInformation;
 
 /*** global variables (public) ***/
 
