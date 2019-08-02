@@ -735,7 +735,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     /*we got the right amount of data */
     data_size += 4;
     /*TODO handle partial packets*/
-    OPENER_TRACE_INFO("Data received on tcp:\n");
+    OPENER_TRACE_INFO("Data received on TCP: %zu\n", data_size);
 
     g_current_active_tcp_socket = socket;
 
@@ -773,7 +773,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     }
 
     if (need_to_send > 0) {
-      OPENER_TRACE_INFO("TCP reply to send\n");
+      OPENER_TRACE_INFO("TCP reply: send %zu bytes on %d\n", outgoing_message.used_message_length, socket);
 
       data_sent = send(socket, (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length, 0);
