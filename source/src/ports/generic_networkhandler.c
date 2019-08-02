@@ -793,7 +793,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     /* we got a fragmented packet currently we cannot handle this will
      * for this we would need a network buffer per TCP socket
      *
-     * However with typical packet sizes of EIP this should't be a big issue.
+     * However with typical packet sizes of EIP this shouldn't be a big issue.
      */
     /*TODO handle fragmented packets */
   }

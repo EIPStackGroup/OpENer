@@ -1353,7 +1353,7 @@ EipUint8 ParseConnectionPath(
                   message += 2;
                   remaining_path -= 2;
                 } else {
-                  *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happend*/
+                  *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happened*/
                   return kCipErrorPathSegmentError; /*status code for invalid segment type*/
                 }
                 break;
@@ -1367,7 +1367,7 @@ EipUint8 ParseConnectionPath(
           default:
             OPENER_TRACE_WARN(
               "No data segment identifier found for the configuration data\n");
-            *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happend*/
+            *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happened*/
             return
               kConnectionManagerGeneralStatusPathSegmentErrorInUnconnectedSend;
         }

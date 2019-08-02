@@ -96,7 +96,7 @@ EipStatus CipMessageRouterInit() {
 
   /* reserved for future use -> set to zero */
   g_message_router_response.reserved = 0;
-  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (about 100 bytes) */
+  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (OPENER_MESSAGE_DATA_REPLY_BUFFER bytes) */
 
   return kEipStatusOk;
 }
@@ -177,7 +177,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
   EipStatus eip_status = kEipStatusOkSend;
   EipByte status = kCipErrorSuccess;
 
-  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (about 100 bytes) */
+  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (OPENER_MESSAGE_DATA_REPLY_BUFFER bytes) */
 
   OPENER_TRACE_INFO("NotifyMessageRouter: routing unconnected message\n");
   if ( kCipErrorSuccess
