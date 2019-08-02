@@ -31,12 +31,15 @@
 void LeaveStack(int signal);
 
 /******************************************************************************/
-/** @brief Signal handler function for ending stack execution
+/** @brief Execute OpENer stack loop function
  *
- * @param signal the signal we received
+ * @param   pthread_arg dummy argument
+ * @returns             pointer to internal dummy return value
+ *
+ *  The call signature is chosen to be able to pass this function directly as
+ *  parameter for pthread_create().
  */
-void executeEventLoop(
-  );
+static void *executeEventLoop(void *pthread_arg);
 
 /*****************************************************************************/
 /** @brief Flag indicating if the stack should end its execution
@@ -145,7 +148,7 @@ int main(int argc,
       OPENER_TRACE_ERR("setschedpolicy failed\n");
       exit(-2);
     }
-    param.sched_priority = 80;
+    param.sched_priority = 25;
     ret = pthread_attr_setschedparam(&attr, &param);
     if (ret) {
       OPENER_TRACE_ERR("pthread setschedparam failed\n");
@@ -173,12 +176,12 @@ int main(int argc,
     /* Unlock memory */
     munlockall();
 #else
-    executeEventLoop();
+    (void)executeEventLoop(NULL);
 #endif
     /* clean up network state */
     NetworkHandlerFinish();
   }
-  /* close remaining sessions and connections, cleanup used data */
+  /* close remaining sessions and connections, clean up used data */
   ShutdownCipStack();
 
   return -1;
@@ -190,7 +193,10 @@ void LeaveStack(int signal) {
   g_end_stack = 1;
 }
 
-void executeEventLoop() {
+void *executeEventLoop(void *pthread_arg) {
+  static int pthread_dummy_ret;
+  (void) pthread_arg;
+
   /* The event loop. Put other processing you need done continually in here */
   while (1 != g_end_stack) {
     if (kEipStatusOk != NetworkHandlerProcessOnce() ) {
@@ -198,4 +204,6 @@ void executeEventLoop() {
       break;
     }
   }
+
+  return &pthread_dummy_ret;
 }
