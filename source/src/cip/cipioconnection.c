@@ -893,7 +893,7 @@ EipStatus HandleReceivedIoConnectionData(
     /* we have no heartbeat connection */
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
     EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
-    OPENER_TRACE_INFO("Run/Idle handler: 0x%x", nRunIdleBuf);
+    OPENER_TRACE_INFO("Run/Idle handler: 0x%x\n", nRunIdleBuf);
     const uint32_t kRunBitMask = 0x0001;
     if( (kRunBitMask & nRunIdleBuf) == 1 ) {
       CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
