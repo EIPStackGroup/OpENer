@@ -22,7 +22,7 @@ typedef enum {
   kMinorUncoverableFault = 0x0200, /**< Indicates that the device detected a
                                       fault with itself, which was thought to be recoverable. The device did not
                                       switch to a faulted state. */
-  kMajorRecoveralbeFault = 0x0400, /**< Indicates that the device detected a
+  kMajorRecoverableFault = 0x0400, /**< Indicates that the device detected a
                                       fault with itself,which was thought to be recoverable. The device changed
                                       to the "Major Recoverable Fault" state */
   kMajorUnrecoverableFault = 0x0800 /**< Indicates that the device detected a
