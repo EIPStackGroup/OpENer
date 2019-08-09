@@ -300,18 +300,6 @@ EipStatus GetAttributeSingleTcpIpInterface(
         return kEipStatusOkSend;
       }
 
-      /*TODO think if it is better to put this code in an own
-       * getAssemblyAttributeSingle functions which will call get attribute
-       * single.
-       */
-
-      if (attribute->type == kCipByteArray
-          && instance->cip_class->class_id == kCipAssemblyClassCode) {
-        /* we are getting a byte array of a assembly object, kick out to the app callback */
-        OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
-        BeforeAssemblyDataSend(instance);
-      }
-
       message_router_response->data_length = EncodeData(attribute->type,
                                                         attribute->data,
                                                         &message);
