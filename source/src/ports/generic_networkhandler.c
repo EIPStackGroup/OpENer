@@ -163,11 +163,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
-                                      kOpenerEthernetPort),
-                                    .sin_addr.s_addr = interface_configuration_
-                                                       .
-                                                       ip_address };
+  struct sockaddr_in my_address = {
+    .sin_family = AF_INET,
+    .sin_port = htons(kOpenerEthernetPort),
+    .sin_addr.s_addr = interface_configuration_.ip_address
+  };
 
   /* bind the new socket to port 0xAF12 (CIP) */
   if ( ( bind( g_network_status.tcp_listener, (struct sockaddr *) &my_address,
@@ -192,11 +192,11 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in global_broadcast_address = { .sin_family = {AF_INET},
-                                                  .sin_port = htons(
-                                                    kOpenerEthernetPort),
-                                                  .sin_addr.s_addr = htonl(
-                                                    INADDR_ANY) };
+  struct sockaddr_in global_broadcast_address = {
+    .sin_family = AF_INET,
+    .sin_port = htons(kOpenerEthernetPort),
+    .sin_addr.s_addr = htonl(INADDR_ANY)
+  };
 
   /* enable the UDP socket to receive broadcast messages */
   if ( 0
@@ -859,7 +859,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                     (char *) &option_value,
                     sizeof(option_value) ) == -1) {
       OPENER_TRACE_ERR(
-        "error setting socket option SO_REUSEADDR on consuming udp socket\n");
+        "error setting socket option SO_REUSEADDR on consuming UDP socket\n");
       CloseSocket(new_socket);
       return kEipStatusError;
     }
@@ -869,7 +869,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                  sizeof(struct sockaddr) ) ) == -1 ) {
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
-      OPENER_TRACE_ERR("error on bind udp: %d - %s\n", error_code,
+      OPENER_TRACE_ERR("error on bind UDP: %d - %s\n", error_code,
                        error_message);
       FreeErrorMessage(error_message);
       CloseSocket(new_socket);
@@ -877,7 +877,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     }
 
     OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", new_socket);
-  } else { /* we have a producing udp socket */
+  } else { /* we have a producing UDP socket */
 
     int option_value = 1;
     setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
