@@ -899,6 +899,22 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
           return new_socket;
         }
       }
+      {
+        /* Need to specify the interface for outgoing multicast packets on a device
+            with multiple interfaces. */
+        struct in_addr my_addr = { .s_addr = interface_configuration_.ip_address };
+        if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
+                        &my_addr.s_addr,
+                        sizeof my_addr.s_addr ) < 0 ) {
+          int error_code = GetSocketErrorNumber();
+          char *error_message = GetErrorMessage(error_code);
+          OPENER_TRACE_ERR(
+            "networkhandler: could not set the multicast interface, error: %d - %s\n",
+            error_code, error_message);
+          FreeErrorMessage(error_message);
+          return kEipInvalidSocket;
+        }
+      }
     }
   }
 
