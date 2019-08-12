@@ -829,7 +829,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
-    return new_socket;
+    return kEipInvalidSocket;
   }
 
   if (SetSocketToNonBlocking(new_socket) < 0) {
@@ -837,7 +837,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       "error setting socket to non-blocking on new socket\n");
     CloseSocket(new_socket);
     OPENER_ASSERT(false) /* This should never happen! */
-    return kEipStatusError;
+    return kEipInvalidSocket;
   }
 
   if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) != 0) { /* got error */
@@ -852,38 +852,39 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
-  /* check if it is sending or receiving */
-  if (communication_direction == kUdpCommuncationDirectionConsuming) {
+  {
     int option_value = 1;
     if (setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
                     (char *) &option_value,
-                    sizeof(option_value) ) == -1) {
+                    sizeof(option_value) ) < 0) {
       OPENER_TRACE_ERR(
-        "error setting socket option SO_REUSEADDR on consuming UDP socket\n");
+        "error setting socket option SO_REUSEADDR on %s UDP socket\n",
+        (communication_direction == kUdpCommuncationDirectionConsuming) ?
+                       "consuming" : "producing");
       CloseSocket(new_socket);
-      return kEipStatusError;
+      return kEipInvalidSocket;
     }
+  }
+
+  /* check if it is sending or receiving */
+  if (communication_direction == kUdpCommuncationDirectionConsuming) {
 
     /* bind is only for consuming necessary */
     if ( ( bind( new_socket, (struct sockaddr *) socket_data,
-                 sizeof(struct sockaddr) ) ) == -1 ) {
+                 sizeof(struct sockaddr) ) ) < 0 ) {
       int error_code = GetSocketErrorNumber();
       char *error_message = GetErrorMessage(error_code);
       OPENER_TRACE_ERR("error on bind UDP: %d - %s\n", error_code,
                        error_message);
       FreeErrorMessage(error_message);
       CloseSocket(new_socket);
-      return new_socket;
+      return kEipInvalidSocket;
     }
 
     OPENER_TRACE_INFO("networkhandler: bind UDP socket %d\n", new_socket);
   } else { /* we have a producing UDP socket */
 
-    int option_value = 1;
-    setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
-                (char *) &option_value,
-                sizeof(option_value) );
-
+    /* For multicast socket setup the TTL and specify interface to send on. */
     if (socket_data->sin_addr.s_addr
         == g_multicast_configuration.starting_multicast_address) {
       if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
@@ -896,7 +897,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
             g_time_to_live_value, error_code, error_message);
           FreeErrorMessage(error_message);
-          return new_socket;
+          return kEipInvalidSocket;
         }
       }
       {
@@ -930,7 +931,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_code,
                        error_message);
       FreeErrorMessage(error_message);
-      return new_socket;
+      return kEipInvalidSocket;
     }
     /* store the originators address */
     socket_data->sin_addr.s_addr = peer_address.sin_addr.s_addr;
