@@ -45,7 +45,7 @@ void ConfigureMacAddress(const char *interface) {
     memcpy(&(g_ethernet_link.physical_address), &ifr.ifr_hwaddr.sa_data,
            sizeof(g_ethernet_link.physical_address) );
   }
-  CloseSocket(fd);
+  close(fd);
 }
 
 EipStatus ConfigureNetworkInterface(const char *const network_interface) {
@@ -60,23 +60,27 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
     OPENER_TRACE_INFO("interface name is too long\n");
   }
 
-  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-  int ipaddr = 0;
-  int netaddr = 0;
-  if(ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
-    ipaddr = ( (struct sockaddr_in *) &ifr.ifr_addr )->sin_addr.s_addr;
-  } else {
-    return kEipStatusError;
-  }
+  {
+    int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    int ipaddr = 0;
+    int netaddr = 0;
+    if(ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
+      ipaddr = ( (struct sockaddr_in *) &ifr.ifr_addr )->sin_addr.s_addr;
+    } else {
+      return kEipStatusError;
+    }
 
-  if(ioctl(fd, SIOCGIFNETMASK, &ifr) == 0) {
-    netaddr = ( (struct sockaddr_in *) &ifr.ifr_netmask )->sin_addr.s_addr;
-  } else {
-    return kEipStatusError;
-  }
+    if(ioctl(fd, SIOCGIFNETMASK, &ifr) == 0) {
+      netaddr = ( (struct sockaddr_in *) &ifr.ifr_netmask )->sin_addr.s_addr;
+    } else {
+      return kEipStatusError;
+    }
 
-  interface_configuration_.ip_address = ipaddr;
-  interface_configuration_.network_mask = netaddr;
+    interface_configuration_.ip_address = ipaddr;
+    interface_configuration_.network_mask = netaddr;
+
+    close(fd);
+  }
 
   char route_location[] = "/proc/net/route";
 
@@ -128,7 +132,6 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   g_multicast_configuration.starting_multicast_address =
     htonl(ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
 
-  CloseSocket(fd);
   fclose(file_handle);
 
   return kEipStatusOk;
