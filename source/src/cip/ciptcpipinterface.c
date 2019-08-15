@@ -50,7 +50,7 @@ EipUint8 g_time_to_live_value = 1;
  * Currently we implement it non set-able and use the default
  * allocation algorithm
  */
-MulticastAddressConfiguration g_multicast_configuration = { 0, /* us the default allocation algorithm */
+MulticastAddressConfiguration g_multicast_configuration = { 0, /* use the default allocation algorithm */
                                                             0, /* reserved */
                                                             1, /* we currently use only one multicast address */
                                                             0 /* the multicast address will be allocated on ip address configuration */
@@ -232,20 +232,25 @@ EipStatus GetAttributeSingleTcpIpInterface(
   struct sockaddr *originator_address,
   const int encapsulation_session) {
 
-  EipByte *message = message_router_response->data;
-
-  message_router_response->data_length = 0;
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
-  message_router_response->size_of_additional_status = 0;
-
   EipUint16 attribute_number = message_router_request->request_path
-                               .attribute_number;
-  uint8_t get_bit_mask = 0;
+                              .attribute_number;
 
-  message_router_response->general_status = kCipErrorAttributeNotSupported;
+  /* Use common handler for all attributes except attribute 9. */
+  if (9 != attribute_number) {
+    return GetAttributeSingle(instance, message_router_request, message_router_response,
+                              originator_address, encapsulation_session);
+  }
 
-  if (9 == message_router_request->request_path.attribute_number) { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+  { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
+    EipByte *message = message_router_response->data;
+
+    message_router_response->data_length = 0;
+    message_router_response->reply_service = (0x80
+                                            | message_router_request->service);
+    message_router_response->size_of_additional_status = 0;
+    message_router_response->general_status = kCipErrorAttributeNotSupported;
+
+    uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
                                                               attribute_number)]);
@@ -256,53 +261,27 @@ EipStatus GetAttributeSingleTcpIpInterface(
                       ]);
     }
 
-    if ( 0 == ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-      return kEipStatusOkSend;
-    }
-    message_router_response->general_status = kCipErrorSuccess;
-
-    message_router_response->data_length += EncodeData(
-      kCipUsint, &(g_multicast_configuration.alloc_control), &message);
-    message_router_response->data_length += EncodeData(
-      kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
-      &message);
-    message_router_response->data_length += EncodeData(
-      kCipUint,
-      &(g_multicast_configuration.number_of_allocated_multicast_addresses),
-      &message);
-
-    EipUint32 multicast_address = ntohl(
-      g_multicast_configuration.starting_multicast_address);
-
-    message_router_response->data_length += EncodeData(kCipUdint,
-                                                       &multicast_address,
-                                                       &message);
-  } else {
-    CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
-
-    if ( (NULL != attribute) && ( NULL != attribute->data) ) {
-
+    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
-                        message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
+                        message_router_request->request_path.attribute_number);
 
-      if (kGetAttributeAll == message_router_request->service) {
-        get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                                attribute_number)
-                        ]);
-        message_router_response->general_status = kCipErrorSuccess;
-      } else {
-        get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                                   attribute_number)
-                        ]);
-      }
+      /* create a reply message containing the data*/
+      message_router_response->data_length += EncodeData(
+        kCipUsint, &(g_multicast_configuration.alloc_control), &message);
+      message_router_response->data_length += EncodeData(
+        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
+        &message);
+      message_router_response->data_length += EncodeData(
+        kCipUint,
+        &(g_multicast_configuration.number_of_allocated_multicast_addresses),
+        &message);
 
-      if ( 0 == ( get_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
-        return kEipStatusOkSend;
-      }
+      EipUint32 multicast_address = ntohl(
+        g_multicast_configuration.starting_multicast_address);
 
-      message_router_response->data_length = EncodeData(attribute->type,
-                                                        attribute->data,
-                                                        &message);
+      message_router_response->data_length += EncodeData(kCipUdint,
+                                                         &multicast_address,
+                                                         &message);
       message_router_response->general_status = kCipErrorSuccess;
     }
   }
