@@ -59,6 +59,9 @@ int SetSocketToNonBlocking(int socket_handle) {
 
 int SetQosOnSocket(const int socket,
                    CipUsint qos_value) {
-  int set_tos = qos_value;
+  /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
+   *  Note that the DSCP value, if placed directly in the ToS field
+   *  in the IP header, must be shifted left 2 bits. */
+  int set_tos = qos_value << 2;
   return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }
