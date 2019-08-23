@@ -192,6 +192,20 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
+  /* have QoS DSCP explicit appear on UDP responses to unicast messages */
+  if (SetQosOnSocket( g_network_status.udp_unicast_listener,
+                     GetPriorityForSocket(0xFFFF) ) != 0) {
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
+      "networkhandler: error set QoS on UDP unicast socket %d: %d - %s\n",
+      g_network_status.udp_unicast_listener,
+      error_code,
+      error_message);
+    FreeErrorMessage(error_message);
+    /* print message but don't abort by intent */
+  }
+
   struct sockaddr_in global_broadcast_address = {
     .sin_family = AF_INET,
     .sin_port = htons(kOpenerEthernetPort),
@@ -222,6 +236,36 @@ EipStatus NetworkHandlerInitialize(void) {
                      error_message);
     FreeErrorMessage(error_message);
     return kEipStatusError;
+  }
+
+  /* have QoS DSCP explicit appear on UDP responses to broadcast messages */
+  if (SetQosOnSocket( g_network_status.udp_global_broadcast_listener,
+                     GetPriorityForSocket(0xFFFF) ) != 0) {
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
+      "networkhandler: error set QoS on UDP broadcast socket %d: %d - %s\n",
+      g_network_status.udp_global_broadcast_listener,
+      error_code,
+      error_message);
+    FreeErrorMessage(error_message);
+    /* print message but don't abort by intent */
+  }
+
+  /* Make QoS DSCP explicit already appear on SYN connection establishment.
+   * A newly accept()ed TCP socket inherits the setting from this socket.
+   */
+  if (SetQosOnSocket( g_network_status.tcp_listener,
+                     GetPriorityForSocket(0xFFFF) ) != 0) {
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
+      "networkhandler: error set QoS on listen socket %d: %d - %s\n",
+      g_network_status.tcp_listener,
+      error_code,
+      error_message);
+    FreeErrorMessage(error_message);
+    /* print message but don't abort by intent */
   }
 
   /* switch socket in listen mode */
@@ -304,18 +348,6 @@ void CheckAndHandleTcpListenerSocket(void) {
       FreeErrorMessage(error_message);
       return;
     }
-
-    if (SetQosOnSocket( new_socket, GetPriorityForSocket(0xFFFF) ) != 0) { /* got error */
-      int error_code = GetSocketErrorNumber();
-      char *error_message = GetErrorMessage(error_code);
-      OPENER_TRACE_ERR(
-        "networkhandler: error on set QoS on on new socket %d: %d - %s\n",
-        new_socket,
-        error_code,
-        error_message);
-      FreeErrorMessage(error_message);
-    }
-
     OPENER_TRACE_INFO(">>> network handler: accepting new TCP socket: %d \n",
                       new_socket);
 
