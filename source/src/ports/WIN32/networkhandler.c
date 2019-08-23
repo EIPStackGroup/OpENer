@@ -36,6 +36,10 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
+void ShutdownSocketPlatform(int socket_handle) {
+#pragma message "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
+}
+
 void CloseSocketPlatform(int socket_handle) {
   closesocket(socket_handle);
 }

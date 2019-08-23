@@ -16,6 +16,12 @@
  */
 EipStatus NetworkHandlerInitializePlatform(void);
 
+/** @brief Platform dependent code to shutdown a stream socket
+ *
+ *  @param socket_handle The socket to shut down
+ */
+void ShutdownSocketPlatform(int socket_handle);
+
 /** @brief Platform dependent code to close a socket
  *
  *  @param socket_handle The socket handle to be closed

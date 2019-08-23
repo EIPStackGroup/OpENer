@@ -303,6 +303,7 @@ void CloseUdpSocket(int socket_handle) {
 }
 
 void CloseTcpSocket(int socket_handle) {
+  ShutdownSocketPlatform(socket_handle);
   RemoveSocketTimerFromList(socket_handle);
   CloseSocket(socket_handle);
 }
@@ -449,9 +450,9 @@ EipStatus NetworkHandlerProcessOnce(void) {
 }
 
 EipStatus NetworkHandlerFinish(void) {
-  CloseSocket(g_network_status.tcp_listener);
-  CloseSocket(g_network_status.udp_unicast_listener);
-  CloseSocket(g_network_status.udp_global_broadcast_listener);
+  CloseTcpSocket(g_network_status.tcp_listener);
+  CloseUdpSocket(g_network_status.udp_unicast_listener);
+  CloseUdpSocket(g_network_status.udp_global_broadcast_listener);
   return kEipStatusOk;
 }
 
@@ -867,7 +868,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
   if (SetSocketToNonBlocking(new_socket) < 0) {
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
-    CloseSocket(new_socket);
+    CloseUdpSocket(new_socket);
     OPENER_ASSERT(false) /* This should never happen! */
     return kEipInvalidSocket;
   }
@@ -893,7 +894,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         "error setting socket option SO_REUSEADDR on %s UDP socket\n",
         (communication_direction == kUdpCommuncationDirectionConsuming) ?
                        "consuming" : "producing");
-      CloseSocket(new_socket);
+      CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
   }
@@ -909,7 +910,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       OPENER_TRACE_ERR("error on bind UDP: %d - %s\n", error_code,
                        error_message);
       FreeErrorMessage(error_message);
-      CloseSocket(new_socket);
+      CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
 
@@ -929,6 +930,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
             g_time_to_live_value, error_code, error_message);
           FreeErrorMessage(error_message);
+          CloseUdpSocket(new_socket);
           return kEipInvalidSocket;
         }
       }
@@ -945,6 +947,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
             "networkhandler: could not set the multicast interface, error: %d - %s\n",
             error_code, error_message);
           FreeErrorMessage(error_message);
+          CloseUdpSocket(new_socket);
           return kEipInvalidSocket;
         }
       }
@@ -963,6 +966,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
                        error_code,
                        error_message);
       FreeErrorMessage(error_message);
+      CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
     /* store the originators address */

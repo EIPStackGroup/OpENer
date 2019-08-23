@@ -38,16 +38,19 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void ShutdownSocketPlatform(int socket_handle) {
   if(0 != shutdown(socket_handle, SHUT_RDWR) ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR("Could not close socket %d - Error Code: %d - %s\n",
+    OPENER_TRACE_ERR("Failed shutdown() socket %d - Error Code: %d - %s\n",
                      socket_handle,
                      error_code,
                      error_message);
     FreeErrorMessage(error_message);
   }
+}
+
+void CloseSocketPlatform(int socket_handle) {
   close(socket_handle);
 }
 
