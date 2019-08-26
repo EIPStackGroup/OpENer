@@ -249,8 +249,6 @@ typedef struct cip_class {
   uint8_t *set_bit_mask; /**< Bitmask for SetAttributeSingle*/
   uint8_t *get_all_bit_mask; /**< Bitmask for GetAttributeAll*/
 
-  EipUint32 get_attribute_all_mask; /**< mask indicating which attributes are
-                                       returned by getAttributeAll*/
   EipUint16 number_of_services; /**< number of services supported*/
   CipInstance *instances; /**< pointer to the list of instances*/
   struct cip_service_struct *services; /**< pointer to the array of services*/
