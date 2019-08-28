@@ -302,8 +302,20 @@ void DeleteAllClasses(void) {
       message_router_object_to_delete->cip_class->class_instance.cip_class
       ->services);
     CipFree(
+      message_router_object_to_delete->cip_class->class_instance.cip_class
+      ->get_single_bit_mask);
+    CipFree(
+      message_router_object_to_delete->cip_class->class_instance.cip_class
+      ->set_bit_mask);
+    CipFree(
+      message_router_object_to_delete->cip_class->class_instance.cip_class
+      ->get_all_bit_mask);
+    CipFree(
       message_router_object_to_delete->cip_class->class_instance.cip_class);
     /*clear class data*/
+    CipFree(message_router_object_to_delete->cip_class->get_single_bit_mask);
+    CipFree(message_router_object_to_delete->cip_class->set_bit_mask);
+    CipFree(message_router_object_to_delete->cip_class->get_all_bit_mask);
     CipFree(
       message_router_object_to_delete->cip_class->class_instance.attributes);
     CipFree(message_router_object_to_delete->cip_class->services);
