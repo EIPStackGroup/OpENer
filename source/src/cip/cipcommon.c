@@ -149,9 +149,10 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
   /* Allocate and initialize all needed instances one by one. */
   for (new_instances = 0; new_instances < number_of_instances; new_instances++)
   {
-    CipInstance *current_instance = (CipInstance *) CipCalloc(1, sizeof(CipInstance) );
+    CipInstance *current_instance =
+      (CipInstance *) CipCalloc(1, sizeof(CipInstance) );
     OPENER_ASSERT(NULL != current_instance);              /* fail if run out of memory */
-    if (NULL == current_instance) break;
+    if (NULL == current_instance) {break;}
     if (NULL == first_instance)
     {
       first_instance = current_instance;                  /* remember the first allocated instance */
@@ -165,7 +166,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
       current_instance->attributes = (CipAttributeStruct *) CipCalloc(
         cip_class->number_of_attributes, sizeof(CipAttributeStruct) );
       OPENER_ASSERT(NULL != current_instance->attributes);/* fail if run out of memory */
-      if (NULL == current_instance->attributes) break;
+      if (NULL == current_instance->attributes) {break;}
     }
 
     *next_instance = current_instance;        /* link the previous pointer to this new node */
@@ -177,8 +178,11 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
   if (new_instances != number_of_instances)
   {
     /* TODO: Free again all attributes and instances allocated so far in this call. */
-    OPENER_TRACE_ERR("ERROR: Allocated only %d instances of requested %d for class %s\n",
-                     new_instances, number_of_instances, cip_class->class_name);
+    OPENER_TRACE_ERR(
+      "ERROR: Allocated only %d instances of requested %d for class %s\n",
+      new_instances,
+      number_of_instances,
+      cip_class->class_name);
     first_instance = NULL;  /* failed to allocate all instances / attributes */
   }
   return first_instance;
