@@ -286,28 +286,28 @@ void DeleteAllClasses(void) {
       { /* then free storage for the attribute array */
         CipFree(instance_to_delete->attributes);
       }
+      CipFree(instance_to_delete);
     }
 
-	/*All instances memory are allocated in cip_class->instances pointer,so we have to free them in one go*/
-      if( message_router_object_to_delete->cip_class->instances != NULL)
-      {
-        CipFree(message_router_object_to_delete->cip_class->instances);
-      }
+    /* free meta class data*/
+    CipClass *meta_class =
+      message_router_object_to_delete->cip_class->class_instance.cip_class;
+    CipFree(meta_class->class_name);
+    CipFree(meta_class->services);
+    CipFree(meta_class->get_single_bit_mask);
+    CipFree(meta_class->set_bit_mask);
+    CipFree(meta_class->get_all_bit_mask);
+    CipFree(meta_class);
 
-    /*clear meta class data*/
-    CipFree(
-      message_router_object_to_delete->cip_class->class_instance.cip_class
-      ->class_name);
-    CipFree(
-      message_router_object_to_delete->cip_class->class_instance.cip_class
-      ->services);
-    CipFree(
-      message_router_object_to_delete->cip_class->class_instance.cip_class);
-    /*clear class data*/
-    CipFree(
-      message_router_object_to_delete->cip_class->class_instance.attributes);
-    CipFree(message_router_object_to_delete->cip_class->services);
-    CipFree(message_router_object_to_delete->cip_class);
+    /* free class data*/
+    CipClass *cip_class = message_router_object_to_delete->cip_class;
+    CipFree(cip_class->get_single_bit_mask);
+    CipFree(cip_class->set_bit_mask);
+    CipFree(cip_class->get_all_bit_mask);
+    CipFree(cip_class->class_instance.attributes);
+    CipFree(cip_class->services);
+    CipFree(cip_class);
+    /* free message router object */
     CipFree(message_router_object_to_delete);
   }
   g_first_object = NULL;

@@ -132,7 +132,9 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
 CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
                              const int number_of_instances) {
   CipInstance **next_instance = NULL;
-  EipUint32 instance_number = 1;       /* the first instance is number 1 */
+  CipInstance *first_instance = NULL; /* Initialize to error result */
+  EipUint32 instance_number = 1;      /* the first instance is number 1 */
+  int new_instances   = 0;
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n", number_of_instances,
                     cip_class->class_name);
@@ -140,38 +142,45 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
   next_instance = &cip_class->instances;       /* get address of pointer to head of chain */
   while (*next_instance)       /* as long as what pp points to is not zero */
   {
-    next_instance = &(*next_instance)->next;             /*    follow the chain until pp points to pointer that contains a zero */
-    instance_number++;             /*    keep track of what the first new instance number will be */
+    next_instance = &(*next_instance)->next;              /* follow the chain until pp points to pointer that contains a zero */
+    instance_number++;                                    /* keep track of what the first new instance number will be */
   }
 
-  CipInstance *current_instance = (CipInstance *) CipCalloc(
-    number_of_instances, sizeof(CipInstance) );                    /* allocate a block of memory for all created instances*/
-  CipInstance *first_instance = current_instance;       /* allocate a block of memory for all created instances*/
-
-  OPENER_ASSERT(NULL != current_instance)
-  /* fail if run out of memory */
-
-  cip_class->number_of_instances += number_of_instances;       /* add the number of instances just created to the total recorded by the class */
-
-  for (size_t i = 0; i < number_of_instances; i++)       /* initialize all the new instances */
+  /* Allocate and initialize all needed instances one by one. */
+  for (new_instances = 0; new_instances < number_of_instances; new_instances++)
   {
-    *next_instance = current_instance;             /* link the previous pointer to this new node */
-
-    current_instance->instance_number = instance_number;             /* assign the next sequential instance number */
-    current_instance->cip_class = cip_class;             /* point each instance to its class */
-
-    if (cip_class->number_of_attributes)             /* if the class calls for instance attributes */
-    {             /* then allocate storage for the attribute array */
-      current_instance->attributes = (CipAttributeStruct *) CipCalloc(
-        cip_class->number_of_attributes,
-        sizeof(CipAttributeStruct) );
+    CipInstance *current_instance = (CipInstance *) CipCalloc(1, sizeof(CipInstance) );
+    OPENER_ASSERT(NULL != current_instance);              /* fail if run out of memory */
+    if (NULL == current_instance) break;
+    if (NULL == first_instance)
+    {
+      first_instance = current_instance;                  /* remember the first allocated instance */
     }
 
-    next_instance = &current_instance->next;             /* update pp to point to the next link of the current node */
-    instance_number++;             /* update to the number of the next node*/
-    current_instance++;             /* point to the next node in the calloc'ed array*/
+    current_instance->instance_number = instance_number;  /* assign the next sequential instance number */
+    current_instance->cip_class = cip_class;              /* point each instance to its class */
+
+    if (cip_class->number_of_attributes)                  /* if the class calls for instance attributes */
+    {                                                     /* then allocate storage for the attribute array */
+      current_instance->attributes = (CipAttributeStruct *) CipCalloc(
+        cip_class->number_of_attributes, sizeof(CipAttributeStruct) );
+      OPENER_ASSERT(NULL != current_instance->attributes);/* fail if run out of memory */
+      if (NULL == current_instance->attributes) break;
+    }
+
+    *next_instance = current_instance;        /* link the previous pointer to this new node */
+    next_instance = &current_instance->next;  /* update pp to point to the next link of the current node */
+    cip_class->number_of_instances += 1;      /* update the total number of instances recorded by the class */
+    instance_number++;                        /* update to the number of the next node*/
   }
 
+  if (new_instances != number_of_instances)
+  {
+    /* TODO: Free again all attributes and instances allocated so far in this call. */
+    OPENER_TRACE_ERR("ERROR: Allocated only %d instances of requested %d for class %s\n",
+                     new_instances, number_of_instances, cip_class->class_name);
+    first_instance = NULL;  /* failed to allocate all instances / attributes */
+  }
   return first_instance;
 }
 
