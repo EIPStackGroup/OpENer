@@ -311,7 +311,7 @@ int HandleReceivedExplictUdpData(const int socket,
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
   MoveMessageNOctets(ENCAPSULATION_HEADER_LENGTH,
-                     &outgoing_message->current_message_position);
+                     (const CipOctet **)&outgoing_message->current_message_position);
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
@@ -880,7 +880,8 @@ void CloseEncapsulationSessionBySockAddr(
       struct sockaddr_in encapsulation_session_addr = { 0 };
       socklen_t addrlength = sizeof(encapsulation_session_addr);
       if (getpeername(g_registered_sessions[i],
-                      &encapsulation_session_addr, &addrlength) < 0) {                   /* got error */
+                      (struct sockaddr *)&encapsulation_session_addr,
+                      &addrlength) < 0) {                   /* got error */
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(
