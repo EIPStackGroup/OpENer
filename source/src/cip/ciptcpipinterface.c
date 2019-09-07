@@ -67,21 +67,21 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *const RESTRICT message_router_request,
   CipMessageRouterResponse *const RESTRICT message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 EipStatus SetAttributeSingleTcp(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
@@ -229,7 +229,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *const RESTRICT message_router_request,
   CipMessageRouterResponse *const RESTRICT message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
   EipUint16 attribute_number = message_router_request->request_path
@@ -293,7 +293,7 @@ EipStatus GetAttributeAllTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
   EipUint8 *response = message_router_response->data; /* pointer into the reply */

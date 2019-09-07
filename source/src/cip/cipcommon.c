@@ -75,7 +75,7 @@ void ShutdownCipStack(void) {
 EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address,
+                      const struct sockaddr *originator_address,
                       const int encapsulation_session) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
@@ -404,7 +404,7 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
 EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
-                             struct sockaddr *originator_address,
+                             const struct sockaddr *originator_address,
                              const int encapsulation_session) {
   /* Mask for filtering get-ability */
 
@@ -718,7 +718,7 @@ CipServiceStruct *GetCipService(const CipInstance *const instance,
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address,
+                          const struct sockaddr *originator_address,
                           const int encapsulation_session) {
 
   EipUint8 *reply = message_router_response->data;       /* pointer into the reply */

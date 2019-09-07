@@ -30,7 +30,7 @@ EipStatus GetAttributeSingleQoS(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *RESTRICT const message_router_request,
   CipMessageRouterResponse *RESTRICT const message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
   return GetAttributeSingle(instance, message_router_request,
@@ -42,7 +42,7 @@ EipStatus SetAttributeSingleQoS(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
   CipAttributeStruct *attribute = GetCipAttribute(
