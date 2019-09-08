@@ -493,7 +493,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
     do {
       ENIPMessage outgoing_message;
       InitializeENIPMessage(&outgoing_message);
-      int reply_length = HandleReceivedExplictUdpData(
+      EipStatus need_to_send = HandleReceivedExplictUdpData(
         g_network_status.udp_global_broadcast_listener,
         &from_address,
         receive_buffer,
@@ -505,7 +505,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
       receive_buffer += received_size - remaining_bytes;
       received_size = remaining_bytes;
 
-      if (reply_length > 0) {
+      if (need_to_send > 0) {
         OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
@@ -513,7 +513,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
                     (char *) outgoing_message.message_buffer,
                     outgoing_message.used_message_length, 0,
                     (struct sockaddr *) &from_address, sizeof(from_address) )
-            != reply_length) {
+            != outgoing_message.used_message_length) {
           OPENER_TRACE_INFO(
             "networkhandler: UDP response was not fully sent\n");
         }
@@ -558,14 +558,14 @@ void CheckAndHandleUdpUnicastSocket(void) {
     ENIPMessage outgoing_message;
     InitializeENIPMessage(&outgoing_message);
     do {
-      int reply_length = HandleReceivedExplictUdpData(
+      EipStatus need_to_send = HandleReceivedExplictUdpData(
         g_network_status.udp_unicast_listener, &from_address, receive_buffer,
         received_size, &remaining_bytes, true, &outgoing_message);
 
       receive_buffer += received_size - remaining_bytes;
       received_size = remaining_bytes;
 
-      if (reply_length > 0) {
+      if (need_to_send > 0) {
         OPENER_TRACE_INFO("UDP unicast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
@@ -573,7 +573,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
                     (char *) outgoing_message.message_buffer,
                     outgoing_message.used_message_length, 0,
                     (struct sockaddr *) &from_address, sizeof(from_address) )
-            != reply_length) {
+            != outgoing_message.used_message_length) {
           OPENER_TRACE_INFO(
             "networkhandler: UDP unicast response was not fully sent\n");
         }
@@ -786,7 +786,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
     ENIPMessage outgoing_message = {0};
     InitializeENIPMessage(&outgoing_message);
-    int need_to_send = HandleReceivedExplictTcpData(
+    EipStatus need_to_send = HandleReceivedExplictTcpData(
       socket, incoming_message, data_size, &remaining_bytes,
       &sender_address, &outgoing_message);
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
