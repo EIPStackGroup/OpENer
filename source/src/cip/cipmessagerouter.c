@@ -175,7 +175,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
                               const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
-  EipByte status = kCipErrorSuccess;
+  CipError status = kCipErrorSuccess;
 
   g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (OPENER_MESSAGE_DATA_REPLY_BUFFER bytes) */
 

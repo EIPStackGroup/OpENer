@@ -329,7 +329,7 @@ void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
   }
 }
 
-const CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
+CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   LogicalSegmentLogicalFormat logical_format =
     GetPathLogicalSegmentLogicalFormat(*message);
   CipDword data = 0;

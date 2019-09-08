@@ -257,7 +257,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
 void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
                                         CipOctet *const cip_path);
 
-const CipDword CipEpathGetLogicalValue(const EipUint8 **message);
+CipDword CipEpathGetLogicalValue(const EipUint8 **message);
 
 size_t CipEpathSetLogicalValue(const CipDword logical_value,
                                const LogicalSegmentLogicalFormat logical_format,
