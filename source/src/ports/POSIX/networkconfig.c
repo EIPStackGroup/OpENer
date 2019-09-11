@@ -3,9 +3,17 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#include <errno.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #include "ciptcpipinterface.h"
 #include "networkconfig.h"
@@ -14,18 +22,6 @@
 #include "trace.h"
 #include "opener_api.h"
 
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <netinet/in.h>
-
-#include <errno.h>
-#include <string.h>
-#include <stdio.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#define LOOPBACK_BINARY 0x7f000001
 
 void ConfigureMacAddress(const char *interface) {
   struct ifreq ifr;
@@ -111,7 +107,7 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   }
 
   if(inet_pton(AF_INET, gateway_string, &gateway) == 1) {
-    if(LOOPBACK_BINARY != gateway) {
+    if(INADDR_LOOPBACK != gateway) {
       interface_configuration_.gateway = gateway;
     }
     else{
@@ -151,8 +147,12 @@ void ConfigureDomainName() {
     fseek(file_handle, 0, SEEK_SET);
     file_buffer = malloc(file_length);
     if(file_buffer) {
-      fread(file_buffer, 1, file_length, file_handle);
+      size_t rd_sz = fread(file_buffer, 1, file_length, file_handle);
       fclose(file_handle);
+      if (rd_sz != file_length) {
+        OPENER_TRACE_ERR("Read error on file %s\n", resolv_conf_file);
+        exit(1);
+      }
     }
     else{
       OPENER_TRACE_ERR("Could not allocate memory for reading file %s\n",
@@ -182,11 +182,11 @@ void ConfigureDomainName() {
       interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
         interface_configuration_.domain_name.length + 1,
         sizeof(EipByte) );
-      snprintf(interface_configuration_.domain_name.string,
-               (interface_configuration_.domain_name.length + 1) *
-               sizeof(EipByte),
-               "%s",
-               domain_name_string);
+      /* *.domain_name.string was calloced with *.domain_name.length+1 which
+       *    provides a trailing '\0' when memcpy( , , *.length) is done!
+       */
+      memcpy(interface_configuration_.domain_name.string, domain_name_string,
+             interface_configuration_.domain_name.length);
     }
     else{
       interface_configuration_.domain_name.string = NULL;
