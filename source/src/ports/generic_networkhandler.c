@@ -194,7 +194,7 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* have QoS DSCP explicit appear on UDP responses to unicast messages */
   if (SetQosOnSocket( g_network_status.udp_unicast_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                     CipQosGetDscpPriority(0xFFFF) ) != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -240,7 +240,7 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* have QoS DSCP explicit appear on UDP responses to broadcast messages */
   if (SetQosOnSocket( g_network_status.udp_global_broadcast_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                     CipQosGetDscpPriority(0xFFFF) ) != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -256,7 +256,7 @@ EipStatus NetworkHandlerInitialize(void) {
    * A newly accept()ed TCP socket inherits the setting from this socket.
    */
   if (SetQosOnSocket( g_network_status.tcp_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                     CipQosGetDscpPriority(0xFFFF) ) != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -873,7 +873,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     return kEipInvalidSocket;
   }
 
-  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) != 0) { /* got error */
+  if (SetQosOnSocket(new_socket, CipQosGetDscpPriority(qos_for_socket) ) != 0) { /* got error */
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(

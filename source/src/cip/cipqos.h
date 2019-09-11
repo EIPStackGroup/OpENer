@@ -22,7 +22,7 @@ static const EipUint16 kCipQoSClassId = 0x48u;
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object
  */
-CipUsint GetPriorityForSocket(ConnectionObjectPriority priority);
+CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority);
 EipStatus CipQoSInit(void);
 
 #endif  /* OPENER_CIPQOS_H_*/

@@ -25,6 +25,24 @@ CipUsint dscp_low = 31; /**< DSCP value for CIP transport class 0/1 low priority
 CipUsint dscp_explicit = 27; /**< DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
                                 and all other EtherNet/IP encapsulation messages */
 
+/** @brief Hidden copy of data that need to be frozen on boot-up
+ *
+ *  The QoS DSCP values can be changed from the EIP network but the changes should come
+ *  into effect only after a restart. Therefore we take a copy here when the network is
+ *  initialized in NetworkHandlerInitialize() and CipQosGetDscpPriority() is called the
+ *  first time.
+ */
+static bool s_is_frozen = false;
+static struct {
+  CipUsint dscp_event;
+  CipUsint dscp_general;
+  CipUsint dscp_urgent;
+  CipUsint dscp_scheduled;
+  CipUsint dscp_high;
+  CipUsint dscp_low;
+  CipUsint dscp_explicit;
+} s_frozen;
+
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleQoS(
   CipInstance *const RESTRICT instance,
@@ -88,31 +106,44 @@ EipStatus SetAttributeSingleQoS(
   return kEipStatusOkSend;
 }
 
-CipUsint GetPriorityForSocket(ConnectionObjectPriority priority) {
+CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 
-  CipUsint priority_value = dscp_explicit;
+  CipUsint priority_value;
+
+  if (!s_is_frozen) {
+    s_is_frozen = true;
+    s_frozen.dscp_event = dscp_event;
+    s_frozen.dscp_general = dscp_general;
+    s_frozen.dscp_urgent = dscp_urgent;
+    s_frozen.dscp_scheduled = dscp_scheduled;
+    s_frozen.dscp_high = dscp_high;
+    s_frozen.dscp_low = dscp_low;
+    s_frozen.dscp_explicit = dscp_explicit;
+  }
+
+  priority_value = s_frozen.dscp_explicit;
   switch (priority) {
     case kConnectionObjectPriorityLow:
-      priority_value = dscp_low;
+      priority_value = s_frozen.dscp_low;
       break;
     case kConnectionObjectPriorityHigh:
-      priority_value = dscp_high;
+      priority_value = s_frozen.dscp_high;
       break;
     case kConnectionObjectPriorityScheduled:
-      priority_value = dscp_scheduled;
+      priority_value = s_frozen.dscp_scheduled;
       break;
     case kConnectionObjectPriorityUrgent:
-      priority_value = dscp_urgent;
+      priority_value = s_frozen.dscp_urgent;
       break;
     default:
-      priority_value = dscp_explicit;
+      priority_value = s_frozen.dscp_explicit;
       break;
   }
   return priority_value;
 }
 
 void InitializeCipQos(CipClass *class) {
-  CipClass *meta_class = class->class_instance.cip_class;
+  /* avoid compiler  warning: CipClass *meta_class = class->class_instance.cip_class; */
 }
 
 EipStatus CipQoSInit() {
