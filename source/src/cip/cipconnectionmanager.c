@@ -207,7 +207,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InitializeConnectionManagerData();
 
   CipClass *connection_manager = CreateCipClass(
-    g_kCipConnectionManagerClassCode,   /* class ID */
+    kCipConnectionManagerClassId,   /* class ID */
     0,   /* # of class attributes */
     7,   /* # highest class attribute number*/
     2,   /* # of class services */
@@ -233,8 +233,8 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
 
-  AddConnectableObject(kCipMessageRouterClassCode, EstablishClass3Connection);
-  AddConnectableObject(kCipAssemblyClassCode, EstablishIoConnection);
+  AddConnectableObject(kCipMessageRouterClassId, EstablishClass3Connection);
+  AddConnectableObject(kCipAssemblyClassId, EstablishIoConnection);
 
   return kEipStatusOk;
 }
@@ -1213,7 +1213,7 @@ EipUint8 ParseConnectionPath(
       }
 
       /* connection end point has to be the message router instance 1 */
-      if ( (class_id != kCipMessageRouterClassCode)
+      if ( (class_id != kCipMessageRouterClassId)
            || (1 != instance_id) ) {
         *extended_error =
           kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;

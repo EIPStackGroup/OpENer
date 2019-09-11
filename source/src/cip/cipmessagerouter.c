@@ -77,7 +77,7 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
 
 EipStatus CipMessageRouterInit() {
 
-  CipClass *message_router = CreateCipClass(kCipMessageRouterClassCode, /* class ID*/
+  CipClass *message_router = CreateCipClass(kCipMessageRouterClassId, /* class ID*/
                                             0, /* # of class attributes */
                                             7, /* # highest class attribute number*/
                                             2, /* # of class services*/

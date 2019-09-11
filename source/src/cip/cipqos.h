@@ -16,7 +16,8 @@
 #include "ciptypes.h"
 #include "cipconnectionmanager.h"
 
-static const EipUint16 kCipQoSClassCode = 0x48; /**< QoS Object class code */
+/** @brief QoS Object class id */
+static const EipUint16 kCipQoSClassId = 0x48u;
 
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object

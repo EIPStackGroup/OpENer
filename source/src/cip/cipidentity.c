@@ -147,7 +147,7 @@ void InitializeCipIdentiy(CipClass *class) {
 
 EipStatus CipIdentityInit() {
 
-  CipClass *class = CreateCipClass(kIdentityClassCode,
+  CipClass *class = CreateCipClass(kIdentityClassId,
                                    0, /* # of non-default class attributes */
                                    7, /* # highest class attribute number*/
                                    2, /* # of class services*/

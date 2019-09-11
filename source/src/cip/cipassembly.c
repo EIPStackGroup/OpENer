@@ -31,7 +31,7 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
  */
 CipClass *CreateAssemblyClass(void) {
   /* create the CIP Assembly object with zero instances */
-  CipClass *assembly_class = CreateCipClass(kCipAssemblyClassCode, 0, /* # class attributes*/
+  CipClass *assembly_class = CreateCipClass(kCipAssemblyClassId, 0, /* # class attributes*/
                                             7, /* # highest class attribute number*/
                                             1, /* # class services*/
                                             2, /* # instance attributes*/
@@ -63,7 +63,7 @@ EipStatus CipAssemblyInitialize(void) {
 }
 
 void ShutdownAssemblies(void) {
-  CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *assembly_class = GetCipClass(kCipAssemblyClassId);
 
   if(NULL != assembly_class) {
     CipInstance *instance = assembly_class->instances;
@@ -80,7 +80,7 @@ void ShutdownAssemblies(void) {
 CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
                                   EipByte *const data,
                                   const EipUint16 data_length) {
-  CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *assembly_class = GetCipClass(kCipAssemblyClassId);
   if(NULL == assembly_class) {
     assembly_class = CreateAssemblyClass();
   }

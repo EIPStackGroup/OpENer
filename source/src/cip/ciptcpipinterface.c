@@ -22,7 +22,7 @@ CipDword configuration_capability_ = 0x04; /**< #2  This is a default value mean
 CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
 CipEpath physical_link_object_ = /**< #4 */
 { 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
-  CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID*/
+  CIP_ETHERNETLINK_CLASS_ID, /**< EIP_UINT16 ClassID*/
   1, /**< EIP_UINT16 InstanceNr*/
   0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object)*/
 };
@@ -165,7 +165,8 @@ EipStatus SetAttributeSingleTcp(
 EipStatus CipTcpIpInterfaceInit() {
   CipClass *tcp_ip_class = NULL;
 
-  if ( ( tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
+  if ( ( tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassId, /* class ID*/
+                                       0, /* # class attributes*/
                                        7, /* # highest class attribute number*/
                                        2, /* # class services*/
                                        9, /* # instance attributes*/

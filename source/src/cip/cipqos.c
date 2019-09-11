@@ -119,7 +119,7 @@ EipStatus CipQoSInit() {
 
   CipClass *qos_class = NULL;
 
-  if( ( qos_class = CreateCipClass(kCipQoSClassCode,
+  if( ( qos_class = CreateCipClass(kCipQoSClassId,
                                    0, /* # class attributes*/
                                    7, /* # highest class attribute number*/
                                    0, /* # class services*/

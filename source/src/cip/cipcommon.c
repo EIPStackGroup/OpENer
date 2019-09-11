@@ -443,7 +443,7 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
        */
 
       if (attribute->type == kCipByteArray
-          && instance->cip_class->class_id == kCipAssemblyClassCode) {
+          && instance->cip_class->class_id == kCipAssemblyClassId) {
         /* we are getting a byte array of a assembly object, kick out to the app callback */
         OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
         BeforeAssemblyDataSend(instance);

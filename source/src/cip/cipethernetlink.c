@@ -66,7 +66,7 @@ CipEthernetLinkInterfaceCapability interface_capability = {
 };
 
 EipStatus CipEthernetLinkInit() {
-  CipClass *ethernet_link_class = CreateCipClass(CIP_ETHERNETLINK_CLASS_CODE,
+  CipClass *ethernet_link_class = CreateCipClass(kCipEthernetLinkClassId,
                                                  0, /* # class attributes*/
                                                  7, /* # highest class attribute number*/
                                                  2, /* # class services*/

@@ -111,7 +111,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
   CipConnectionObject *const io_connection_object,
   CipConnectionObject *const RESTRICT connection_object
   ) {
-  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassId);
   CipInstance *instance = NULL;
   if ( NULL
        != ( instance =
@@ -218,7 +218,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   }
 
   /*setup producer side*/
-  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassId);
   CipInstance *instance = NULL;
   if ( NULL
        != ( instance =
@@ -621,7 +621,7 @@ EipStatus OpenMulticastConnection(
 
 EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
 
-  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass *const assembly_class = GetCipClass(kCipAssemblyClassId);
   EipUint16 connection_manager_status = 0;
   CipInstance *config_instance = GetCipInstance(
     assembly_class, connection_object->configuration_path.instance_id);
