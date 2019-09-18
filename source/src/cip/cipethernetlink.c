@@ -38,7 +38,7 @@ EipStatus GetAttributeSingleEthernetLink(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 /** @brief Configures the MAC address of the Ethernet Link object*
@@ -177,7 +177,7 @@ EipStatus GetAttributeSingleEthernetLink(
   CipInstance *RESTRICT const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
   /* Mask for filtering get-ability */
 

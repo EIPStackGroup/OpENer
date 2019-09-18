@@ -150,12 +150,15 @@ void EncapsulationInit(void) {
             "Communications" );
 }
 
-int HandleReceivedExplictTcpData(int socket,
-                                 EipUint8 *buffer,
-                                 size_t length,
-                                 int *remaining_bytes,
-                                 struct sockaddr *originator_address,
-                                 ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedExplictTcpData
+(
+  int socket,
+  EipUint8 *buffer,
+  size_t length,
+  int *remaining_bytes,
+  struct sockaddr *originator_address,
+  ENIPMessage *const outgoing_message)
+{
   OPENER_TRACE_INFO("Handles data for TCP socket: %d\n", socket);
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
@@ -234,14 +237,17 @@ int HandleReceivedExplictTcpData(int socket,
   return return_value;
 }
 
-int HandleReceivedExplictUdpData(const int socket,
-                                 const struct sockaddr_in *from_address,
-                                 const EipUint8 *buffer,
-                                 const size_t buffer_length,
-                                 int *number_of_remaining_bytes,
-                                 bool unicast,
-                                 ENIPMessage *const outgoing_message) {
-  EipStatus status = kEipStatusOk;
+EipStatus HandleReceivedExplictUdpData
+(
+  const int socket,
+  const struct sockaddr_in *from_address,
+  const EipUint8 *buffer,
+  const size_t buffer_length,
+  int *number_of_remaining_bytes,
+  bool unicast,
+  ENIPMessage *const outgoing_message)
+{
+  EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
@@ -256,7 +262,7 @@ int HandleReceivedExplictUdpData(const int socket,
     {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
-      status = kEipStatusOkSend;
+      return_value = kEipStatusOkSend;
       /* most of these functions need a reply to be send */
       switch (encapsulation_data.command_code) {
         case (kEncapsulationCommandListServices):
@@ -275,8 +281,9 @@ int HandleReceivedExplictUdpData(const int socket,
                                                  from_address,
                                                  &encapsulation_data,
                                                  outgoing_message);
-            status = kEipStatusOk;
-          }                       /* as the response has to be delayed do not send it now */
+            /* as the response has to be delayed do not send it now */
+            return_value = kEipStatusOk;
+          }
           break;
 
         case (kEncapsulationCommandListInterfaces):
@@ -299,19 +306,14 @@ int HandleReceivedExplictUdpData(const int socket,
           encapsulation_data.data_length = 0;
           break;
       }
-
-      if (kEipStatusOk < status) {
-        /* if status is greater than 0 data has to be sent */
-        //status = EncapsulateData(&encapsulation_data);
-      }
     }
   }
-  return outgoing_message->used_message_length;
+  return return_value;
 }
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
   MoveMessageNOctets(ENCAPSULATION_HEADER_LENGTH,
-                     &outgoing_message->current_message_position);
+                     (const CipOctet **)&outgoing_message->current_message_position);
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
@@ -613,11 +615,13 @@ void HandleReceivedRegisterSessionCommand(int socket,
 
 }
 
-/*   TODO: Update and doxyfy
- * INT8 UnregisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
- *   close all corresponding TCP connections and delete session handle.
- *      pa_S_ReceiveData pointer to unregister session request with corresponding socket handle.
- */
+/** @brief Unregister encapsulation session
+* @param receive_data Pointer to structure with data and header information.
+* @param outgoing_message The outgoing ENIP message
+* @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+*
+* Close all corresponding TCP connections and delete session handle.
+*/
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {
@@ -653,6 +657,7 @@ EipStatus HandleReceivedSendUnitDataCommand(
   const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
+  /*EipStatus*/ return_value = kEipStatusOk;    /* TODO: Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6? */
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
@@ -665,16 +670,9 @@ EipStatus HandleReceivedSendUnitDataCommand(
 
     if (kSessionStatusValid == CheckRegisteredSessions(receive_data) )            /* see if the EIP session is registered*/
     {
-      EipInt16 send_size =
-        NotifyConnectedCommonPacketFormat(receive_data,
-                                          originator_address,
-                                          outgoing_message);
-
-      return_value = send_size;
-
-      if (send_size < 0) {                   /* need to send reply */
-        return_value = kEipStatusError;
-      }
+      return_value = NotifyConnectedCommonPacketFormat(receive_data,
+                                                       originator_address,
+                                                       outgoing_message);
     } else {             /* received a package with non registered session handle */
       InitializeENIPMessage(outgoing_message);
       GenerateEncapsulationHeader(receive_data,
@@ -682,6 +680,7 @@ EipStatus HandleReceivedSendUnitDataCommand(
                                   receive_data->session_handle,
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
+      return_value = kEipStatusOkSend;  /* TODO: Needs to be here if line with first TODO of this function is adjusted. */
     }
   }
   return return_value;
@@ -692,6 +691,7 @@ EipStatus HandleReceivedSendUnitDataCommand(
  *  @param originator_address Address of the originator as received from socket
  *  @param outgoing_message The outgoing ENIP message
  *  @return status      kEipStatusOk .. success.
+ *                      kEipStatusOkSend .. success & need to send response
  *                      kEipStatusError .. error
  */
 EipStatus HandleReceivedSendRequestResponseDataCommand(
@@ -699,6 +699,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
   const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
+  /* EipStatus*/ return_value = kEipStatusOk;   /* TODO: Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6? */
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
@@ -711,15 +712,9 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
 
     if (kSessionStatusValid == CheckRegisteredSessions(receive_data) )            /* see if the EIP session is registered*/
     {
-      EipInt16 send_size =
-        NotifyCommonPacketFormat(receive_data,
-                                 originator_address,
-                                 outgoing_message);
-      return_value = send_size;
-
-      if (send_size < 0) {                   /* need to send reply */
-        return_value = kEipStatusError;
-      }
+      return_value = NotifyCommonPacketFormat(receive_data,
+                                              originator_address,
+                                              outgoing_message);
     } else {             /* received a package with non registered session handle */
       InitializeENIPMessage(outgoing_message);
       GenerateEncapsulationHeader(receive_data,
@@ -727,6 +722,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
                                   receive_data->session_handle,
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
+      return_value = kEipStatusOkSend;  /* TODO: Needs to be here if line with first TODO of this function is adjusted. */
     }
   }
   return return_value;
@@ -742,7 +738,7 @@ EipStatus HandleReceivedInvalidCommand(
                               receive_data->session_handle,
                               kEncapsulationProtocolInvalidCommand,
                               outgoing_message);
-  return outgoing_message->used_message_length;
+  return kEipStatusOkSend;
 
 }
 
@@ -880,7 +876,8 @@ void CloseEncapsulationSessionBySockAddr(
       struct sockaddr_in encapsulation_session_addr = { 0 };
       socklen_t addrlength = sizeof(encapsulation_session_addr);
       if (getpeername(g_registered_sessions[i],
-                      &encapsulation_session_addr, &addrlength) < 0) {                   /* got error */
+                      (struct sockaddr *)&encapsulation_session_addr,
+                      &addrlength) < 0) {                   /* got error */
         int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(

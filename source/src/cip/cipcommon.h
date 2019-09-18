@@ -38,7 +38,7 @@ static const EipUint16 kCipUintZero = 0; /**< Zero value for returning the UINT 
 EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
-                      struct sockaddr *originator_address,
+                      const struct sockaddr *originator_address,
                       const int encapsulation_session);
 
 /** @brief Generic implementation of the GetAttributeSingle CIP service
@@ -59,7 +59,7 @@ EipStatus GetAttributeSingle(
   message_router_request,
   CipMessageRouterResponse *const
   message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
@@ -76,7 +76,7 @@ EipStatus GetAttributeSingle(
 EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
-                          struct sockaddr *originator_address,
+                          const struct sockaddr *originator_address,
                           const int encapsulation_session);
 
 /** @brief Decodes padded EPath

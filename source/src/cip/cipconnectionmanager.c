@@ -65,21 +65,21 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 EipStatus AssembleForwardOpenResponse(
@@ -492,7 +492,7 @@ EipStatus ForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session
   ) {
   (void) instance; /*suppress compiler warning */
@@ -560,7 +560,7 @@ EipStatus ForwardClose(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
@@ -636,7 +636,7 @@ EipStatus GetConnectionOwner(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session) {
   /* suppress compiler warnings */
   (void) instance;

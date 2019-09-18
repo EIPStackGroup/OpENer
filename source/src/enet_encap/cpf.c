@@ -23,10 +23,13 @@ const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
-int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
-                             const struct sockaddr *const originator_address,
-                             ENIPMessage *const outgoing_message) {
-  int return_value = kEipStatusError;
+EipStatus NotifyCommonPacketFormat
+(
+  const EncapsulationData *const received_data,
+  const struct sockaddr *const originator_address,
+  ENIPMessage *const outgoing_message)
+{
+  EipStatus return_value = kEipStatusError;
 
   if (kEipStatusError == ( return_value = CreateCommonPacketFormatStructure(
                              received_data->
@@ -35,7 +38,7 @@ int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
                              &g_common_packet_format_data_item) ) ) {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
-    return_value = kEipStatusOk; /* In cases of errors we normally need to send an error response */
+    return_value = kEipStatusOkSend;  /* In cases of errors we normally need to send an error response */
     if (g_common_packet_format_data_item.address_item.type_id
         == kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise it is no unconnected message and should not be here*/
     {     /* found null address item*/
@@ -48,7 +51,9 @@ int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
           received_data->session_handle);
         if (return_value != kEipStatusError) {
           SkipEncapsulationHeader(outgoing_message);
-          return_value = AssembleLinearMessage(
+          /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
+           *  Its not clear how to transport this error information to the requester. */
+          int response_len = AssembleLinearMessage(
             &g_message_router_response, &g_common_packet_format_data_item,
             outgoing_message);
 
@@ -56,44 +61,44 @@ int NotifyCommonPacketFormat(const EncapsulationData *const received_data,
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
           GenerateEncapsulationHeader(received_data,
-                                      return_value,
+                                      response_len,
                                       received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
           outgoing_message->current_message_position = buffer;
-          return_value = outgoing_message->used_message_length;
+          return_value = kEipStatusOkSend;
         }
       } else {
         /* wrong data item detected*/
         OPENER_TRACE_ERR(
           "notifyCPF: got something besides the expected CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
         GenerateEncapsulationHeader(received_data,
-                                    return_value,
+                                    0,
                                     received_data->session_handle,
                                     kEncapsulationProtocolIncorrectData,
                                     outgoing_message);
-        return_value = outgoing_message->used_message_length;
+        return_value = kEipStatusOkSend;
       }
     } else {
       OPENER_TRACE_ERR(
         "notifyCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
       GenerateEncapsulationHeader(received_data,
-                                  return_value,
+                                  0,
                                   received_data->session_handle,
                                   kEncapsulationProtocolIncorrectData,
                                   outgoing_message);
-      return_value = outgoing_message->used_message_length;
+      return_value = kEipStatusOkSend;
     }
   }
   return return_value;
 }
 
-int NotifyConnectedCommonPacketFormat(
+EipStatus NotifyConnectedCommonPacketFormat(
   const EncapsulationData *const received_data,
   const struct sockaddr *const originator_address,
   ENIPMessage *const outgoing_message) {
 
-  int return_value = CreateCommonPacketFormatStructure(
+  EipStatus return_value = CreateCommonPacketFormatStructure(
     received_data->current_communication_buffer_position,
     received_data->data_length, &g_common_packet_format_data_item);
 
@@ -139,7 +144,7 @@ int NotifyConnectedCommonPacketFormat(
                                         outgoing_message);
             outgoing_message->current_message_position = buffer;
             /* End regenerate encapsulation header for new message */
-            return outgoing_message->used_message_length;
+            return kEipStatusOkSend;
           }
           connection_object->sequence_count_consuming =
             g_common_packet_format_data_item.address_item.data.sequence_number;
@@ -157,7 +162,9 @@ int NotifyConnectedCommonPacketFormat(
             .connection_identifier = connection_object
                                      ->cip_produced_connection_id;
             SkipEncapsulationHeader(outgoing_message);
-            return_value = AssembleLinearMessage(
+            /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
+             *  Its not clear how to transport this error information to the requester. */
+            int response_len = AssembleLinearMessage(
               &g_message_router_response, &g_common_packet_format_data_item,
               outgoing_message);
 
@@ -165,7 +172,7 @@ int NotifyConnectedCommonPacketFormat(
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
             GenerateEncapsulationHeader(received_data,
-                                        return_value,
+                                        response_len,
                                         received_data->session_handle,
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
@@ -173,7 +180,7 @@ int NotifyConnectedCommonPacketFormat(
             memcpy(&connection_object->last_reply_sent,
                    outgoing_message,
                    sizeof(ENIPMessage) );
-            return_value = outgoing_message->used_message_length;
+            return_value = kEipStatusOkSend;
           }
         } else {
           /* wrong data item detected*/
@@ -189,7 +196,8 @@ int NotifyConnectedCommonPacketFormat(
         "notifyConnectedCPF: got something besides the expected CIP_ITEM_ID_NULL\n");
     }
   }
-  return outgoing_message->used_message_length;
+  // return outgoing_message->used_message_length;
+  return (0 != outgoing_message->used_message_length ? kEipStatusOkSend : kEipStatusOk); /* TODO: What would the right EipStatus to return? */
 }
 
 /**

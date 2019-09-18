@@ -156,8 +156,8 @@ CipClass *CreateCipClass( const EipUint32 class_id,
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
  *
- * The required number of instances are created in a block, but are attached to
- * the class as a linked list.
+ * The required number of instances are attached to the class as a linked list.
+ *
  * The instances are numbered sequentially -- i.e. the first node in the chain
  * is instance 1, the second is 2, and so on.
  * You can add new instances at any time (you do not have to create all the
@@ -188,6 +188,7 @@ CipInstance *AddCipInstances(
 CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
                             const EipUint32 instance_id);
 
+
 /** @ingroup CIP_API
  * @brief Insert an attribute in an instance of a CIP class
  *
@@ -201,14 +202,13 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param cip_data Pointer to data of attribute.
  *  @param cip_flags Flags to indicate set-ability and get-ability of attribute.
  */
-
-
-
 void InsertAttribute(CipInstance *const cip_instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_data_type,
                      void *const cip_data,
                      const EipByte cip_flags);
+
+
 /** @ingroup CIP_API
  * @brief Allocates Attribute bitmasks
  *
@@ -433,14 +433,17 @@ void ConfigureListenOnlyConnectionPoint(
  * over after we're done here
  * @param originator_address Address struct of the message originator
  * @param outgoing_message The outgoing ENIP message
- * @return length of reply that need to be sent back
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-int HandleReceivedExplictTcpData(int socket_handle,
-                                 EipUint8 *buffer,
-                                 size_t length,
-                                 int *number_of_remaining_bytes,
-                                 struct sockaddr *originator_address,
-                                 ENIPMessage *const outgoing_message);
+EipStatus HandleReceivedExplictTcpData
+(
+  int socket_handle,
+  EipUint8 *buffer,
+  size_t length,
+  int *number_of_remaining_bytes,
+  struct sockaddr *originator_address,
+  ENIPMessage *const outgoing_message);
+
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -453,17 +456,20 @@ int HandleReceivedExplictTcpData(int socket_handle,
  * @param buffer_length length of the data in buffer.
  * @param number_of_remaining_bytes return how many bytes of the input are left
  * over after we're done here
- * @param unicast Was the data receieved from a multicast address
+ * @param unicast Was the data received as unicast message?
  * @param outgoing_message Outgoing ENIP message
- * @return length of reply that need to be sent back
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-int HandleReceivedExplictUdpData(const int socket_handle,
-                                 const struct sockaddr_in *from_address,
-                                 const EipUint8 *buffer,
-                                 const size_t buffer_length,
-                                 int *number_of_remaining_bytes,
-                                 bool unicast,
-                                 ENIPMessage *const outgoing_message);
+EipStatus HandleReceivedExplictUdpData
+(
+  const int socket_handle,
+  const struct sockaddr_in *from_address,
+  const EipUint8 *buffer,
+  const size_t buffer_length,
+  int *number_of_remaining_bytes,
+  bool unicast,
+  ENIPMessage *const outgoing_message);
+
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been

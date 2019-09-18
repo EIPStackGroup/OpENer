@@ -259,7 +259,7 @@ typedef struct cip_class {
  *  @typedef  EipStatus (*CipServiceFunction)(CipInstance *const instance,
  *    CipMessageRouterRequest *const message_router_request,
  *    CipMessageRouterResponse *const message_router_response,
- *    struct sockaddr *originator_address, const int encapsulation_session)
+ *    const struct sockaddr *originator_address, const int encapsulation_session)
  *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly
@@ -269,6 +269,8 @@ typedef struct cip_class {
  *  @param message_router_request request data
  *  @param message_router_response storage for the response data, including a buffer for
  *   extended data
+ *  @param originator_address  address of the originator as received from socket
+ *  @param encapsulation_session associated encapsulation session of the explicit message
  *  @return kEipOkSend if service could be executed successfully and a response
  *   should be sent
  */
@@ -276,7 +278,7 @@ typedef EipStatus (*CipServiceFunction)(
   CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
-  struct sockaddr *originator_address,
+  const struct sockaddr *originator_address,
   const int encapsulation_session);
 
 /** @brief Service descriptor. These are stored in an array */
