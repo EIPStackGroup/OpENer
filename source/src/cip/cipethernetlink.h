@@ -9,7 +9,7 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-/** @brief This Ethernet Link class id as #define is still needed for a static
+/** @brief This Ethernet Link class code as #define is still needed for a static
  *  initialization. */
 #define CIP_ETHERNETLINK_CLASS_CODE   0xF6u
 /** @brief Ethernet Link class code */
