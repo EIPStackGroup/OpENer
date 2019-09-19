@@ -117,6 +117,7 @@ int main(int argc,
 #ifndef WIN32
     /* register for closing signals so that we can trigger the stack to end */
     signal(SIGHUP, LeaveStack);
+    signal(SIGINT, LeaveStack); /* needed to be able to abort with ^C */
 #endif
 #ifdef OPENER_RT
     /* Memory lock all*/
@@ -189,7 +190,7 @@ int main(int argc,
 
 void LeaveStack(int signal) {
   (void) signal;       /* kill unused parameter warning */
-  OPENER_TRACE_STATE("got signal HUP\n");
+  OPENER_TRACE_STATE("got signal %d\n",signal);
   g_end_stack = 1;
 }
 
