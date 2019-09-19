@@ -77,17 +77,17 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
 
 EipStatus CipMessageRouterInit() {
 
-  CipClass *message_router = CreateCipClass(kCipMessageRouterClassId, /* class ID*/
+  CipClass *message_router = CreateCipClass(kCipMessageRouterClassCode, /* class code */
                                             0, /* # of class attributes */
-                                            7, /* # highest class attribute number*/
-                                            2, /* # of class services*/
-                                            0, /* # of instance attributes*/
-                                            0, /* # highest instance attribute number*/
-                                            1, /* # of instance services*/
-                                            1, /* # of instances*/
-                                            "message router", /* class name*/
+                                            7, /* # highest class attribute number */
+                                            2, /* # of class services */
+                                            0, /* # of instance attributes */
+                                            0, /* # highest instance attribute number */
+                                            1, /* # of instance services */
+                                            1, /* # of instances */
+                                            "message router", /* class name */
                                             1, /* # class revision*/
-                                            InitializeCipMessageRouterClass);                                             /* # function pointer for initialization*/
+                                            InitializeCipMessageRouterClass); /* # function pointer for initialization*/
   if (NULL == message_router) {
     return kEipStatusError;
   }
@@ -114,7 +114,7 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
   while (NULL != object) /* for each entry in list*/
   {
     OPENER_ASSERT(NULL != object->cip_class)
-    if (object->cip_class->class_id == class_id) {
+    if (object->cip_class->class_code == class_id) {
       return object; /* return registration node if it matches class ID*/
     }
     object = object->next;
@@ -122,8 +122,9 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
   return NULL;
 }
 
-CipClass *GetCipClass(const EipUint32 class_id) {
-  CipMessageRouterObject *message_router_object = GetRegisteredObject(class_id);
+CipClass *GetCipClass(const CipUdint class_code) {
+  CipMessageRouterObject *message_router_object =
+    GetRegisteredObject(class_code);
 
   if (message_router_object) {
     return message_router_object->cip_class;

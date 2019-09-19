@@ -10,7 +10,7 @@
 #include "ciptypes.h"
 
 /** @brief Assembly class id */
-static const EipUint16 kCipAssemblyClassId = 0x04u;
+static const CipUint kCipAssemblyClassCode = 0x04u;
 
 /* public functions */
 

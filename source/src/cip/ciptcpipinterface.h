@@ -18,8 +18,8 @@ extern CipString hostname_;
 
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
 
-/** @brief TCP/IP Interface class id */
-static const EipUint16 kCipTcpIpInterfaceClassId = 0xF5u;
+/** @brief TCP/IP Interface class code */
+static const CipUint kCipTcpIpInterfaceClassCode = 0xF5u;
 
 /** @brief Multicast Configuration struct, called Mcast config
  *

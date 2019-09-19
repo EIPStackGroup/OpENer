@@ -11,9 +11,9 @@
 
 /** @brief This Ethernet Link class id as #define is still needed for a static
  *  initialization. */
-#define CIP_ETHERNETLINK_CLASS_ID   0xF6u
-/** @brief Ethernet Link class id */
-static const EipUint16 kCipEthernetLinkClassId = CIP_ETHERNETLINK_CLASS_ID;
+#define CIP_ETHERNETLINK_CLASS_CODE   0xF6u
+/** @brief Ethernet Link class code */
+static const CipUint kCipEthernetLinkClassCode = CIP_ETHERNETLINK_CLASS_CODE;
 
 /* public functions */
 /** @brief Initialize the Ethernet Link Objects data

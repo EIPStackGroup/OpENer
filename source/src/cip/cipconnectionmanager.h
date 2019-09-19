@@ -159,8 +159,8 @@ typedef enum {
 #define SEQ_LEQ16(a, b) ( (short)( (a) - (b) ) <= 0 )
 #define SEQ_GEQ16(a, b) ( (short)( (a) - (b) ) >= 0 )
 
-/** @brief Connection Manager class id */
-static const EipUint16 kCipConnectionManagerClassId = 0x06u;
+/** @brief Connection Manager class code */
+static const CipUint kCipConnectionManagerClassCode = 0x06u;
 
 /* public functions */
 

@@ -148,6 +148,8 @@ typedef struct {
 
 /** @brief Struct for padded EPATHs
  *
+ * Here the class code is referenced as class ID - see Vol. 1 C-1.4.2
+ *
  */
 typedef struct {
   EipUint8 path_size; /**< Path size in 16 bit words (path_size * 16 bit) */
@@ -164,6 +166,8 @@ typedef enum connection_point_type {
 } ConnectionPointType;
 
 /** @brief CIP Connection Path
+ *
+ * As an EPath the naming scheme of Vol. 1 C-1.4.2. has been used
  *
  */
 typedef struct {
@@ -237,7 +241,7 @@ typedef struct cip_instance {
 typedef struct cip_class {
   CipInstance class_instance;
   /* the rest of these are specific to the Class class only. */
-  EipUint32 class_id; /**< class ID */
+  CipUdint class_code; /**< class code */
   EipUint16 revision; /**< class revision*/
   EipUint16 number_of_instances; /**< number of instances in the class (not
                                     including instance 0)*/

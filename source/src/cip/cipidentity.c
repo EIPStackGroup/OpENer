@@ -147,7 +147,7 @@ void InitializeCipIdentiy(CipClass *class) {
 
 EipStatus CipIdentityInit() {
 
-  CipClass *class = CreateCipClass(kIdentityClassId,
+  CipClass *class = CreateCipClass(kCipIdentityClassCode,
                                    0, /* # of non-default class attributes */
                                    7, /* # highest class attribute number*/
                                    2, /* # of class services*/
@@ -182,7 +182,8 @@ EipStatus CipIdentityInit() {
   return kEipStatusOk;
 }
 
-void CipIdentitySetExtendedDeviceStatus(CipIdentityExtendedStatus extended_status) {
+void CipIdentitySetExtendedDeviceStatus(
+  CipIdentityExtendedStatus extended_status) {
   OPENER_TRACE_INFO("Setting extended status: %x\n", extended_status);
   status_ &= ~(0x70);
   status_ |= extended_status;
