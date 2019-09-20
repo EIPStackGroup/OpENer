@@ -41,5 +41,5 @@ if( OPENER_BUILD_SHARED_LIBS )
 endif()
 
 add_executable(OpENer main.c)
-
+message(STATUS "All additional activated objects ${OpENer_ADD_CIP_OBJECTS}")
 target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} ${OpENer_ADD_CIP_OBJECTS} rt cap pthread)
