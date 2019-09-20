@@ -31,7 +31,8 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
  */
 CipClass *CreateAssemblyClass(void) {
   /* create the CIP Assembly object with zero instances */
-  CipClass *assembly_class = CreateCipClass(kCipAssemblyClassCode, 0, /* # class attributes*/
+  CipClass *assembly_class = CreateCipClass(kCipAssemblyClassCode,
+                                            0,             /* # class attributes*/
                                             7, /* # highest class attribute number*/
                                             1, /* # class services*/
                                             2, /* # instance attributes*/
@@ -89,7 +90,7 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
     return NULL;
   }
 
-  CipInstance *const instance = AddCIPInstance(assembly_class, instance_id);  /* add instances (always succeeds (or asserts))*/
+  CipInstance *const instance = AddCipInstance(assembly_class, instance_id);  /* add instances (always succeeds (or asserts))*/
 
   CipByteArray *const assembly_byte_array = (CipByteArray *) CipCalloc(1,
                                                                        sizeof(

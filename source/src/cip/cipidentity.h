@@ -9,7 +9,8 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-static const int kIdentityClassCode = 0x01;
+/** @brief Identity class code */
+static const CipUint kCipIdentityClassCode = 0x01u;
 
 /** @brief Status of the CIP Identity object */
 typedef enum {

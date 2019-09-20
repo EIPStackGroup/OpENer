@@ -161,7 +161,7 @@ typedef enum symbolic_segment_extended_format {
 
 /* Start - Often used types of EPaths */
 typedef struct connection_path_epath {
-  CipDword class_id;
+  CipDword class_id; /**< here in accordance with Vol. 1 C-1.4.2 */
   CipDword instance_id;
   CipDword attribute_id_or_connection_point;
 } CipConnectionPathEpath;

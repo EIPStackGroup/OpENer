@@ -16,12 +16,24 @@
 #include "ciptypes.h"
 #include "cipconnectionmanager.h"
 
-static const EipUint16 kCipQoSClassCode = 0x48; /**< QoS Object class code */
+/** @brief QoS Object class code */
+static const CipUint kCipQoSClassCode = 0x48u;
 
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object
  */
-CipUsint GetPriorityForSocket(ConnectionObjectPriority priority);
+CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority);
+
 EipStatus CipQoSInit(void);
+
+/** @brief Updates the currently used set of DSCP priority values
+ *
+ */
+void CipQosUpdateUsedSetQosValues(
+  );
+
+/** @brief Reset attribute values to default. Does not update currently used set */
+void CipQosResetAttributesToDefaultValues(
+  );
 
 #endif  /* OPENER_CIPQOS_H_*/

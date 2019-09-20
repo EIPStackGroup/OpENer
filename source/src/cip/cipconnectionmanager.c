@@ -207,7 +207,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InitializeConnectionManagerData();
 
   CipClass *connection_manager = CreateCipClass(
-    g_kCipConnectionManagerClassCode,   /* class ID */
+    kCipConnectionManagerClassCode,   /* class code */
     0,   /* # of class attributes */
     7,   /* # highest class attribute number*/
     2,   /* # of class services */
@@ -1403,8 +1403,7 @@ void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 }
 
 
-void AddNewActiveConnection(CipConnectionObject *const connection_object)
-{
+void AddNewActiveConnection(CipConnectionObject *const connection_object) {
   DoublyLinkedListInsertAtHead(&connection_list, connection_object);
   ConnectionObjectSetState(connection_object,
                            kConnectionObjectStateEstablished);
@@ -1441,7 +1440,7 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
 }
 
 EipStatus AddConnectableObject(
-  const EipUint32 class_id,
+  const CipUdint class_code,
   OpenConnectionFunction open_connection_function
   ) {
   EipStatus status = kEipStatusError;
@@ -1449,8 +1448,8 @@ EipStatus AddConnectableObject(
   /*parsing is now finished all data is available and check now establish the connection */
   for (size_t i = 0; i < g_kNumberOfConnectableObjects; ++i) {
     if ( (0 == g_connection_management_list[i].class_id)
-         || (class_id == g_connection_management_list[i].class_id) ) {
-      g_connection_management_list[i].class_id = class_id;
+         || (class_code == g_connection_management_list[i].class_id) ) {
+      g_connection_management_list[i].class_id = class_code;
       g_connection_management_list[i].open_connection_function =
         open_connection_function;
       status = kEipStatusOk;

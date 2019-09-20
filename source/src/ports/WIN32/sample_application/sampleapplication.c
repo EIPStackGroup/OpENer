@@ -4,9 +4,11 @@
  *
  ******************************************************************************/
 
-#include "opener_api.h"
 #include <string.h>
 #include <stdlib.h>
+
+#include "opener_api.h"
+#include "cipqos.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -121,12 +123,14 @@ EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
 EipStatus ResetDevice(void) {
   /* add reset code here*/
   CloseAllConnections();
+  CipQosUpdateUsedSetQosValues();
   return kEipStatusOk;
 }
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
   /*rest the parameters */
   g_encapsulation_inactivity_timeout = 120;
+  CipQosResetAttributesToDefaultValues();
   /*than perform device reset*/
   ResetDevice();
   return kEipStatusOk;

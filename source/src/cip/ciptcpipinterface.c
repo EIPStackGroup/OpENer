@@ -22,7 +22,7 @@ CipDword configuration_capability_ = 0x04; /**< #2  This is a default value mean
 CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
 CipEpath physical_link_object_ = /**< #4 */
 { 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
-  CIP_ETHERNETLINK_CLASS_CODE, /**< EIP_UINT16 ClassID*/
+  CIP_ETHERNETLINK_CLASS_CODE, /**< Class Code*/
   1, /**< EIP_UINT16 InstanceNr*/
   0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object)*/
 };
@@ -165,20 +165,21 @@ EipStatus SetAttributeSingleTcp(
 EipStatus CipTcpIpInterfaceInit() {
   CipClass *tcp_ip_class = NULL;
 
-  if ( ( tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, 0, /* # class attributes*/
-                                       7, /* # highest class attribute number*/
-                                       2, /* # class services*/
-                                       9, /* # instance attributes*/
-                                       13, /* # highest instance attribute number*/
-                                       3, /* # instance services*/
-                                       1, /* # instances*/
-                                       "TCP/IP interface", 4, /* # class revision*/
-                                       NULL /* # function pointer for initialization*/
+  if ( ( tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */
+                                       0, /* # class attributes */
+                                       7, /* # highest class attribute number */
+                                       2, /* # class services */
+                                       9, /* # instance attributes */
+                                       13, /* # highest instance attribute number */
+                                       3, /* # instance services */
+                                       1, /* # instances */
+                                       "TCP/IP interface", 4, /* # class revision */
+                                       NULL /* # function pointer for initialization */
                                        ) ) == 0 ) {
     return kEipStatusError;
   }
 
-  CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above*/
+  CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
   InsertAttribute(instance, 1, kCipDword, (void *) &tcp_status_,
                   kGetableSingleAndAll);
@@ -233,12 +234,15 @@ EipStatus GetAttributeSingleTcpIpInterface(
   const int encapsulation_session) {
 
   EipUint16 attribute_number = message_router_request->request_path
-                              .attribute_number;
+                               .attribute_number;
 
   /* Use common handler for all attributes except attribute 9. */
   if (9 != attribute_number) {
-    return GetAttributeSingle(instance, message_router_request, message_router_response,
-                              originator_address, encapsulation_session);
+    return GetAttributeSingle(instance,
+                              message_router_request,
+                              message_router_response,
+                              originator_address,
+                              encapsulation_session);
   }
 
   { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
@@ -246,7 +250,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
     message_router_response->data_length = 0;
     message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+                                              | message_router_request->service);
     message_router_response->size_of_additional_status = 0;
     message_router_response->general_status = kCipErrorAttributeNotSupported;
 

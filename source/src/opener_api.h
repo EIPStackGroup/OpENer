@@ -88,11 +88,11 @@ void ShutdownCipStack(void);
 /** @ingroup CIP_API
  * @brief Get a pointer to a CIP object with given class code
  *
- * @param class_id class ID of the object to retrieve
+ * @param class_code class code of the object to retrieve
  * @return pointer to CIP Object
  *          0 if object is not present in the stack
  */
-CipClass *GetCipClass(const EipUint32 class_id);
+CipClass *GetCipClass(const CipUdint class_code);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance
@@ -119,13 +119,14 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
                                     const EipUint16 attribute_number);
 
 typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CIP class initialization */
+
 /** @ingroup CIP_API
  * @brief Allocate memory for new CIP Class and attributes
  *
  *  The new CIP class will be registered at the stack to be able
  *  for receiving explicit messages.
  *
- *  @param class_id class ID of the new class
+ *  @param class_code class code of the new class
  *  @param number_of_class_attributes number of class attributes
  *  @param highest_class_attribute_number Highest attribute number from the set of implemented class attributes
  *  @param number_of_class_services number of class services
@@ -140,8 +141,7 @@ typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CI
  *  @return pointer to new class object
  *      0 on error
  */
-
-CipClass *CreateCipClass( const EipUint32 class_id,
+CipClass *CreateCipClass( const CipUdint class_code,
                           const int number_of_class_attributes,
                           const EipUint32 highest_class_attribute_number,
                           const int number_of_class_services,
@@ -185,7 +185,7 @@ CipInstance *AddCipInstances(
  *         already exists the existing is returned an no new instance is created
  *
  */
-CipInstance *AddCIPInstance(CipClass *RESTRICT const cip_class_to_add_instance,
+CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
                             const EipUint32 instance_id);
 
 
@@ -355,13 +355,13 @@ typedef EipStatus (*ConnectionReceiveDataFunction)(
  *
  * With this function any object can be enabled to be a target for forward
  * open/close request.
- * @param class_id The class ID
+ * @param class_code The class code
  * @param open_connection_function Pointer to the function handling the open
  * process
  * @return EIP_OK on success
  */
 EipStatus
-AddConnectableObject(const EipUint32 class_id,
+AddConnectableObject(const CipUdint class_code,
                      OpenConnectionFunction open_connection_function);
 
 /** @ingroup CIP_API
@@ -867,19 +867,30 @@ void CloseSocket(const int socket_handle);
  * specific services and attributes. Therefore OpENer can be easily adapted to
  * support different device profiles and specific CIP objects needed for your
  * device. The functions to be used are:
- *   - S_CIP_Class *CreateCIPClass(EIP_UINT32 class_id, int
- * number_of_class_attributes, EIP_UINT32 class_get_attribute_all_mask, int
- * number_of_class_services, int number_of_instance_attributes, EIP_UINT32
- * instance_get_attribute_all_mask, int number_of_instance_services, int
- * number_of_instances, char *class_name, EIP_UINT16 revision);
- *   - S_CIP_Instance *AddCIPInstances(S_CIP_Class *cip_object, int
- * number_of_instances);
- *   - S_CIP_Instance *AddCIPInstance(S_CIP_Class * cip_class, EIP_UINT32
- * instance_id);
- *   - void InsertAttribute(S_CIP_Instance *instance, EIP_UINT16
- * attribute_number, EIP_UINT8 cip_type, void* data);
- *   - void InsertService(S_CIP_Class *class, EIP_UINT8 service_number,
- * CipServiceFunction service_function, char *service_name);
+ *   - CipClass *CreateCipClass( const CipUdint class_code,
+                          const int number_of_class_attributes,
+                          const EipUint32 highest_class_attribute_number,
+                          const int number_of_class_services,
+                          const int number_of_instance_attributes,
+                          const EipUint32 highest_instance_attribute_number,
+                          const int number_of_instance_services,
+                          const int number_of_instances,
+                          char *name,
+                          const EipUint16 revision,
+                          InitializeCipClass initializer );
+ *   - CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
+                             const int number_of_instances)
+ *   - CipInstance *AddCipInstance(CipClass *RESTRICT const class,
+                            const EipUint32 instance_id)
+ *   - void InsertAttribute(CipInstance *const cip_instance,
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipByte cip_flags);
+ *   - void InsertService(const CipClass *const cip_class_to_add_service,
+                   const EipUint8 service_code,
+                   const CipServiceFunction service_function,
+                   char *const service_name);
  *
  * @page license OpENer Open Source License
  * The OpENer Open Source License is an adapted BSD style license. The

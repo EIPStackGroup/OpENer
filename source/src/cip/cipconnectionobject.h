@@ -82,7 +82,8 @@ typedef enum {
   kConnectionObjectPriorityLow = 0,
   kConnectionObjectPriorityHigh,
   kConnectionObjectPriorityScheduled,
-  kConnectionObjectPriorityUrgent
+  kConnectionObjectPriorityUrgent,
+  kConnectionObjectPriorityExplicit
 } ConnectionObjectPriority;
 
 typedef enum {

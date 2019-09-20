@@ -133,6 +133,7 @@ EipStatus NetworkHandlerInitialize(void) {
   }
 
   /* Activates address reuse */
+  set_socket_option_value = 1;
   if (setsockopt( g_network_status.udp_global_broadcast_listener, SOL_SOCKET,
                   SO_REUSEADDR, (char *) &set_socket_option_value,
                   sizeof(set_socket_option_value) ) == -1) {
@@ -149,6 +150,7 @@ EipStatus NetworkHandlerInitialize(void) {
   }
 
   /* Activates address reuse */
+  set_socket_option_value = 1;
   if (setsockopt( g_network_status.udp_unicast_listener, SOL_SOCKET,
                   SO_REUSEADDR, (char *) &set_socket_option_value,
                   sizeof(set_socket_option_value) ) == -1) {
@@ -194,7 +196,8 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* have QoS DSCP explicit appear on UDP responses to unicast messages */
   if (SetQosOnSocket( g_network_status.udp_unicast_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                      CipQosGetDscpPriority(kConnectionObjectPriorityExplicit) )
+      != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -213,6 +216,7 @@ EipStatus NetworkHandlerInitialize(void) {
   };
 
   /* enable the UDP socket to receive broadcast messages */
+  set_socket_option_value = 1;
   if ( 0
        > setsockopt( g_network_status.udp_global_broadcast_listener, SOL_SOCKET,
                      SO_BROADCAST,
@@ -240,7 +244,8 @@ EipStatus NetworkHandlerInitialize(void) {
 
   /* have QoS DSCP explicit appear on UDP responses to broadcast messages */
   if (SetQosOnSocket( g_network_status.udp_global_broadcast_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                      CipQosGetDscpPriority(kConnectionObjectPriorityExplicit) )
+      != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -256,7 +261,8 @@ EipStatus NetworkHandlerInitialize(void) {
    * A newly accept()ed TCP socket inherits the setting from this socket.
    */
   if (SetQosOnSocket( g_network_status.tcp_listener,
-                     GetPriorityForSocket(0xFFFF) ) != 0) {
+                      CipQosGetDscpPriority(kConnectionObjectPriorityExplicit) )
+      != 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -457,7 +463,6 @@ EipStatus NetworkHandlerFinish(void) {
 }
 
 void CheckAndHandleUdpGlobalBroadcastSocket(void) {
-
   /* see if this is an unsolicited inbound UDP message */
   if ( true ==
        CheckSocketSet(g_network_status.udp_global_broadcast_listener) ) {
@@ -806,7 +811,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     }
 
     if (need_to_send > 0) {
-      OPENER_TRACE_INFO("TCP reply: send %zu bytes on %d\n", outgoing_message.used_message_length, socket);
+      OPENER_TRACE_INFO("TCP reply: send %zu bytes on %d\n",
+                        outgoing_message.used_message_length,
+                        socket);
 
       data_sent = send(socket, (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length, 0);
@@ -816,8 +823,10 @@ EipStatus HandleDataOnTcpSocket(int socket) {
         socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != outgoing_message.used_message_length) {
-          OPENER_TRACE_WARN("TCP response was not fully sent: exp %zu, sent %ld\n",
-                            outgoing_message.used_message_length, data_sent);
+        OPENER_TRACE_WARN(
+          "TCP response was not fully sent: exp %zu, sent %ld\n",
+          outgoing_message.used_message_length,
+          data_sent);
       }
     }
 
@@ -873,7 +882,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     return kEipInvalidSocket;
   }
 
-  if (SetQosOnSocket(new_socket, GetPriorityForSocket(qos_for_socket) ) != 0) { /* got error */
+  if (SetQosOnSocket(new_socket, CipQosGetDscpPriority(qos_for_socket) ) != 0) { /* got error */
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -893,7 +902,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       OPENER_TRACE_ERR(
         "error setting socket option SO_REUSEADDR on %s UDP socket\n",
         (communication_direction == kUdpCommuncationDirectionConsuming) ?
-                       "consuming" : "producing");
+        "consuming" : "producing");
       CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
@@ -937,7 +946,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       {
         /* Need to specify the interface for outgoing multicast packets on a device
             with multiple interfaces. */
-        struct in_addr my_addr = { .s_addr = interface_configuration_.ip_address };
+        struct in_addr my_addr =
+        { .s_addr = interface_configuration_.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
                         &my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
@@ -945,7 +955,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
           char *error_message = GetErrorMessage(error_code);
           OPENER_TRACE_ERR(
             "networkhandler: could not set the multicast interface, error: %d - %s\n",
-            error_code, error_message);
+            error_code,
+            error_message);
           FreeErrorMessage(error_message);
           CloseUdpSocket(new_socket);
           return kEipInvalidSocket;

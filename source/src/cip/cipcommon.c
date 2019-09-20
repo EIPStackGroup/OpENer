@@ -188,7 +188,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
   return first_instance;
 }
 
-CipInstance *AddCIPInstance(CipClass *RESTRICT const class,
+CipInstance *AddCipInstance(CipClass *RESTRICT const class,
                             const EipUint32 instance_id) {
   CipInstance *instance = GetCipInstance(class, instance_id);
 
@@ -199,7 +199,7 @@ CipInstance *AddCIPInstance(CipClass *RESTRICT const class,
   return instance;
 }
 
-CipClass *CreateCipClass(const EipUint32 class_id,
+CipClass *CreateCipClass(const CipUdint class_code,
                          const int number_of_class_attributes,
                          const EipUint32 highest_class_attribute_number,
                          const int number_of_class_services,
@@ -211,10 +211,10 @@ CipClass *CreateCipClass(const EipUint32 class_id,
                          const EipUint16 revision,
                          void (*InitializeCipClass)(CipClass *) ) {
 
-  OPENER_TRACE_INFO("creating class '%s' with id: 0x%" PRIX32 "\n", name,
-                    class_id);
+  OPENER_TRACE_INFO("creating class '%s' with code: 0x%" PRIX32 "\n", name,
+                    class_code);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_id) )     /* check if an class with the ClassID already exists */
+  OPENER_ASSERT(NULL == GetCipClass(class_code) )     /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -227,7 +227,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
   CipClass *const meta_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
-  class->class_id = class_id;       /* the class remembers the class ID */
+  class->class_code = class_code;       /* the class remembers the class ID */
   class->revision = revision;       /* the class remembers the class ID */
   class->number_of_instances = 0;       /* the number of instances initially zero (more created below) */
   class->instances = 0;
@@ -236,7 +236,7 @@ CipClass *CreateCipClass(const EipUint32 class_id,
   class->number_of_services = number_of_instance_services;       /* the class manages the behavior of the instances */
   class->services = 0;
   class->class_name = name;       /* initialize the class-specific fields of the metaClass struct */
-  meta_class->class_id = 0xffffffff;       /* set metaclass ID (this should never be referenced) */
+  meta_class->class_code = 0xffffffff;       /* set metaclass ID (this should never be referenced) */
   meta_class->number_of_instances = 1;       /* the class object is the only instance of the metaclass */
   meta_class->instances = (CipInstance *) class;
   meta_class->number_of_attributes = number_of_class_attributes + 7;       /* the metaclass remembers how many class attributes exist*/
@@ -443,7 +443,7 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
        */
 
       if (attribute->type == kCipByteArray
-          && instance->cip_class->class_id == kCipAssemblyClassCode) {
+          && instance->cip_class->class_code == kCipAssemblyClassCode) {
         /* we are getting a byte array of a assembly object, kick out to the app callback */
         OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
         BeforeAssemblyDataSend(instance);
