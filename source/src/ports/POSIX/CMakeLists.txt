@@ -42,4 +42,12 @@ endif()
 
 add_executable(OpENer main.c)
 message(STATUS "All additional activated objects ${OpENer_ADD_CIP_OBJECTS}")
-target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} ${OpENer_ADD_CIP_OBJECTS} rt cap pthread)
+
+string(REPLACE " " ";" OpENer_ADD_CIP_OBJECTS_LIST ${OpENer_ADD_CIP_OBJECTS} )
+
+target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} rt cap pthread)
+
+# Add additional CIP Objects
+foreach(CIP_OBJECT IN LISTS OpENer_ADD_CIP_OBJECTS_LIST)
+  target_link_libraries( OpENer ${CIP_OBJECT} )
+endforeach()

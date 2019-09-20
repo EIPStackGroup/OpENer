@@ -105,6 +105,7 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
 # Internal cache holding the available CIP objects #
 ####################################################
 set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
+set( OpENer_ADD_CIP_OBJECTS_INCLUDES "" CACHE INTERNAL STRING )
 
 #######################################
 # Add custom CIP objects              #
