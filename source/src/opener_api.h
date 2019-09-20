@@ -60,9 +60,9 @@ void SetDeviceSerialNumber(const EipUint32 serial_number);
 /** @ingroup CIP_API
  * @brief Set the current status of the device.
  *
- * @param device_status the new status value
+ * @param status new Identity object's Status value
  */
-void SetDeviceStatus(const EipUint16 device_status);
+void SetDeviceStatus(const EipUint16 status);
 
 /** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
