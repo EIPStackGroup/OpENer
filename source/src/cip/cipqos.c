@@ -23,47 +23,35 @@
 #define DEFAULT_DSCP_LOW 31u
 #define DEFAULT_DSCP_EXPLICIT 27u
 
-typedef struct cip_qos_dscp_values {
-  CipUsint dscp_event; /**< DSCP value for event messages*/
-  CipUsint dscp_general; /**< DSCP value for general messages*/
-  CipUsint dscp_urgent; /**< DSCP value for CIP transport class 0/1 Urgent priority messages */
-  CipUsint dscp_scheduled; /**< DSCP value for CIP transport class 0/1 Scheduled priority messages*/
-  CipUsint dscp_high; /**< DSCP value for CIP transport class 0/1 High priority messages */
-  CipUsint dscp_low; /**< DSCP value for CIP transport class 0/1 low priority messages */
-  CipUsint dscp_explicit; /**< DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
-                                        and all other EtherNet/IP encapsulation messages */
-} CipQosDscpValues;
-
-typedef struct {
-  CipUsint q_frames_enable; /**< Enables or disable sending 802.1Q frames on CIP and IEEE 1588 messages */
-  CipQosDscpValues dscp_values; /**< Attribute set of DSCP values - beware! must not be the used set */
-} CipQosInstanceAttributes;
-
-static CipQosInstanceAttributes s_instance_1_attributes = {
+/** @brief The QoS object
+ *
+ *  The global instance of the QoS object
+ */
+CipQosObject g_qos = {
   .q_frames_enable = false,
-  .dscp_values.dscp_event = DEFAULT_DSCP_EVENT,
-  .dscp_values.dscp_general = DEFAULT_DSCP_GENERAL,
-  .dscp_values.dscp_urgent = DEFAULT_DSCP_URGENT,
-  .dscp_values.dscp_scheduled = DEFAULT_DSCP_SCHEDULED,
-  .dscp_values.dscp_high = DEFAULT_DSCP_HIGH,
-  .dscp_values.dscp_low = DEFAULT_DSCP_LOW,
-  .dscp_values.dscp_explicit = DEFAULT_DSCP_EXPLICIT
+  .dscp.event = DEFAULT_DSCP_EVENT,
+  .dscp.general = DEFAULT_DSCP_GENERAL,
+  .dscp.urgent = DEFAULT_DSCP_URGENT,
+  .dscp.scheduled = DEFAULT_DSCP_SCHEDULED,
+  .dscp.high = DEFAULT_DSCP_HIGH,
+  .dscp.low = DEFAULT_DSCP_LOW,
+  .dscp.explicit = DEFAULT_DSCP_EXPLICIT
 };
 
-/** @brief Hidden copy of data that need to be frozen on boot-up
+/** @brief Active set of DSCP data inherits its data from the QoS object on boot-up
  *
  *  The QoS DSCP values can be changed from the EIP network but the changes should come
  *  into effect only after a restart. Values are initialized with the default values.
  *  Changes are activated via the Identity Reset function
  */
-static CipQosDscpValues s_currently_used_dscp_values = {
-  .dscp_event = DEFAULT_DSCP_EVENT,
-  .dscp_general = DEFAULT_DSCP_GENERAL,
-  .dscp_urgent = DEFAULT_DSCP_URGENT,
-  .dscp_scheduled = DEFAULT_DSCP_SCHEDULED,
-  .dscp_high = DEFAULT_DSCP_HIGH,
-  .dscp_low = DEFAULT_DSCP_LOW,
-  .dscp_explicit = DEFAULT_DSCP_EXPLICIT
+static CipQosDscpValues s_active_dscp = {
+  .event = DEFAULT_DSCP_EVENT,
+  .general = DEFAULT_DSCP_GENERAL,
+  .urgent = DEFAULT_DSCP_URGENT,
+  .scheduled = DEFAULT_DSCP_SCHEDULED,
+  .high = DEFAULT_DSCP_HIGH,
+  .low = DEFAULT_DSCP_LOW,
+  .explicit = DEFAULT_DSCP_EXPLICIT
 };
 
 /************** Functions ****************************************/
@@ -131,23 +119,23 @@ EipStatus SetAttributeSingleQoS(
 
 CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 
-  CipUsint priority_value = s_currently_used_dscp_values.dscp_explicit;
+  CipUsint priority_value = s_active_dscp.explicit;
   switch (priority) {
     case kConnectionObjectPriorityLow:
-      priority_value = s_currently_used_dscp_values.dscp_low;
+      priority_value = s_active_dscp.low;
       break;
     case kConnectionObjectPriorityHigh:
-      priority_value = s_currently_used_dscp_values.dscp_high;
+      priority_value = s_active_dscp.high;
       break;
     case kConnectionObjectPriorityScheduled:
-      priority_value = s_currently_used_dscp_values.dscp_scheduled;
+      priority_value = s_active_dscp.scheduled;
       break;
     case kConnectionObjectPriorityUrgent:
-      priority_value = s_currently_used_dscp_values.dscp_urgent;
+      priority_value = s_active_dscp.urgent;
       break;
     case kConnectionObjectPriorityExplicit: /* Fall-through wanted here */
     default:
-      priority_value = s_currently_used_dscp_values.dscp_explicit;
+      priority_value = s_active_dscp.explicit;
       break;
   }
   return priority_value;
@@ -181,42 +169,42 @@ EipStatus CipQoSInit() {
   InsertAttribute(instance,
                   1,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.q_frames_enable,
+                  (void *) &g_qos.q_frames_enable,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   2,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_event,
+                  (void *) &g_qos.dscp.event,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   3,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_general,
+                  (void *) &g_qos.dscp.general,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   4,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_urgent,
+                  (void *) &g_qos.dscp.urgent,
                   kGetableSingle | kSetable);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_scheduled,
+                  (void *) &g_qos.dscp.scheduled,
                   kGetableSingle | kSetable);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_high,
+                  (void *) &g_qos.dscp.high,
                   kGetableSingle | kSetable);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_low,
+                  (void *) &g_qos.dscp.low,
                   kGetableSingle | kSetable);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
-                  (void *) &s_instance_1_attributes.dscp_values.dscp_explicit,
+                  (void *) &g_qos.dscp.explicit,
                   kGetableSingle | kSetable);
 
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingleQoS,
@@ -227,19 +215,20 @@ EipStatus CipQoSInit() {
   return kEipStatusOk;
 }
 
-void CipQosUpdateUsedSetQosValues() {
-  s_currently_used_dscp_values = s_instance_1_attributes.dscp_values;
+void CipQosUpdateUsedSetQosValues(void) {
+  s_active_dscp = g_qos.dscp;
 }
 
-void CipQosResetAttributesToDefaultValues() {
-  const CipQosDscpValues kDefaultValues = {
-    .dscp_event = DEFAULT_DSCP_EVENT,
-    .dscp_general = DEFAULT_DSCP_GENERAL,
-    .dscp_urgent = DEFAULT_DSCP_URGENT,
-    .dscp_scheduled = DEFAULT_DSCP_SCHEDULED,
-    .dscp_high = DEFAULT_DSCP_HIGH,
-    .dscp_low = DEFAULT_DSCP_LOW,
-    .dscp_explicit = DEFAULT_DSCP_EXPLICIT
+void CipQosResetAttributesToDefaultValues(void) {
+  static const CipQosDscpValues kDefaultValues = {
+    .event = DEFAULT_DSCP_EVENT,
+    .general = DEFAULT_DSCP_GENERAL,
+    .urgent = DEFAULT_DSCP_URGENT,
+    .scheduled = DEFAULT_DSCP_SCHEDULED,
+    .high = DEFAULT_DSCP_HIGH,
+    .low = DEFAULT_DSCP_LOW,
+    .explicit = DEFAULT_DSCP_EXPLICIT
   };
-  s_instance_1_attributes.dscp_values = kDefaultValues;
+  g_qos.q_frames_enable = false;
+  g_qos.dscp = kDefaultValues;
 }

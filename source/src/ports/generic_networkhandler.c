@@ -71,6 +71,8 @@ EipStatus NetworkHandlerInitialize(void) {
   }
 
   SocketTimerArrayInitialize(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
+  /* Activate the current DSCP values to become the used set of values. */
+  CipQosUpdateUsedSetQosValues();
 
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
