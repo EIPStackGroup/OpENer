@@ -43,7 +43,6 @@ endif()
 add_executable(OpENer main.c)
 target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} rt cap pthread)
 
-message(STATUS "Debug activated objects:${OpENer_ADD_CIP_OBJECTS}!")
 # Add additional CIP Objects
 string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT )
 if( OpENer_HAS_ADDITIONAL_OBJECT )
