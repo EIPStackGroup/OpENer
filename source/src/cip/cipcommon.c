@@ -741,11 +741,9 @@ EipStatus GetAttributeAll(CipInstance *instance,
     for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) {
       /* for each instance attribute of this class */
       int attribute_number = attribute->attribute_number;
-      if (attribute_number < 32 &&
-          ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                     attribute_number)])
-            &
-            (1 << (attribute_number % 8) ) ) ) {
+      if ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
+                                                    attribute_number)]) &
+           (1 << (attribute_number % 8) ) ) {
         /* only return attributes that are flagged as being part of GetAttributeALl */
         message_router_request->request_path.attribute_number =
           attribute_number;
