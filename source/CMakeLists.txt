@@ -84,6 +84,44 @@ endif(OpENer_TRACES)
 set( OPENER_BUILD_SHARED_LIBS OFF CACHE BOOL "Builds OpENer as separate lib and sample application" )
 
 #######################################
+# OpENer documentation target "doc"   #
+#######################################
+
+# check if Doxygen is installed
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+    # set input and output files
+    set(DOXYGEN_IN ${OpENer_SOURCE_DIR}/opener.doxyfile.in)
+    set(DOXYGEN_OUT ${OpENer_BINARY_DIR}/opener.doxyfile)
+
+    # exclude subdirectories of non active platforms depending on OpENer_PLATFORM
+    set(OpENer_EXCLUDE_PATTERNS "")
+    if (NOT (${OpENer_PLATFORM} STREQUAL "POSIX"))
+        set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/POSIX/*")
+    endif ()
+    if (NOT (${OpENer_PLATFORM} STREQUAL "WIN32"))
+        set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/WIN32/*")
+    endif ()
+    if (NOT (${OpENer_PLATFORM} STREQUAL "MINGW"))
+        set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/MINGW/*")
+    endif ()
+
+    # request to configure the file
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+    # note the option ALL which will build the docs always with the default target
+    add_custom_target( doc # ALL
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+        WORKING_DIRECTORY ${OpENer_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM )
+    message("-- Doxygen setup done")
+else (DOXYGEN_FOUND)
+  message("Doxygen needs to be installed to generate the Doxygen documentation")
+endif (DOXYGEN_FOUND)
+
+
+#######################################
 # Test switch                         #
 #######################################
 set( OpENer_TESTS OFF CACHE BOOL "Enable tests to be built" )
