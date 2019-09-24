@@ -495,9 +495,9 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
     const EipUint8 *receive_buffer = &incoming_message[0];
     int remaining_bytes = 0;
+    ENIPMessage outgoing_message;
+    InitializeENIPMessage(&outgoing_message);
     do {
-      ENIPMessage outgoing_message;
-      InitializeENIPMessage(&outgoing_message);
       EipStatus need_to_send = HandleReceivedExplictUdpData(
         g_network_status.udp_global_broadcast_listener,
         &from_address,
