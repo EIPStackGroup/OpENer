@@ -148,11 +148,26 @@ typedef struct {
   EipByte *string; /**< Pointer to the string data */
 } CipString;
 
+/** @brief CIP String with variable symbol size
+ *
+ */
 typedef struct {
-  EipUint16 size;
+  EipUint16 size; /**< Amount of bytes per symbol */
   EipUint16 length; /**< Length of the String (16 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipStringN;
+
+/** @brief STRINGI definition
+ *
+ */
+typedef struct {
+  CipUsint language_char_1;
+  CipUsint language_char_2;
+  CipUsint language_char_3;
+  CipUsint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
+  CipUint character_set;   /**< Character set of the string */
+  CipOctet *string;   /**< Pointer to the string data */
+} CipStringI;
 
 /** @brief Struct for padded EPATHs
  *
