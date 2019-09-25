@@ -157,8 +157,7 @@ EipStatus HandleReceivedExplictTcpData
   size_t length,
   int *remaining_bytes,
   struct sockaddr *originator_address,
-  ENIPMessage *const outgoing_message)
-{
+  ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO("Handles data for TCP socket: %d\n", socket);
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
@@ -245,8 +244,7 @@ EipStatus HandleReceivedExplictUdpData
   const size_t buffer_length,
   int *number_of_remaining_bytes,
   bool unicast,
-  ENIPMessage *const outgoing_message)
-{
+  ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
   /* eat the encapsulation header*/
@@ -616,12 +614,12 @@ void HandleReceivedRegisterSessionCommand(int socket,
 }
 
 /** @brief Unregister encapsulation session
-* @param receive_data Pointer to structure with data and header information.
-* @param outgoing_message The outgoing ENIP message
-* @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
-*
-* Close all corresponding TCP connections and delete session handle.
-*/
+ * @param receive_data Pointer to structure with data and header information.
+ * @param outgoing_message The outgoing ENIP message
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+ *
+ * Close all corresponding TCP connections and delete session handle.
+ */
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {
