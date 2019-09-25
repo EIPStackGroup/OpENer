@@ -19,3 +19,15 @@ add_library( ${PLATFORMLIBNAME} ${PLATFORM_SPEC_SRC})
 add_executable(OpENer main.c)
 
 target_link_libraries( OpENer PLATFORM_GENERIC ${PLATFORMLIBNAME} CIP Utils  SAMPLE_APP ENET_ENCAP ws2_32 ${OpENer_CIP_OBJECTS} )
+
+# Add additional CIP Objects
+string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT )
+if( OpENer_HAS_ADDITIONAL_OBJECT )
+  message(STATUS "Additional activated objects: ${OpENer_ADD_CIP_OBJECTS}")
+  string(REPLACE " " ";" OpENer_ADD_CIP_OBJECTS_LIST ${OpENer_ADD_CIP_OBJECTS} )
+  foreach(CIP_OBJECT IN LISTS OpENer_ADD_CIP_OBJECTS_LIST)
+    target_link_libraries( OpENer ${CIP_OBJECT} )
+  endforeach()
+else()
+  message(STATUS "No additional activated objects")
+endif()
