@@ -30,6 +30,7 @@ extern CipRevision revision_;
 extern CipWord status_;
 extern CipUdint serial_number_;
 extern CipShortString product_name_;
+extern CipUsint g_state;
 
 /* IP address data taken from TCPIPInterfaceObject*/
 extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
@@ -431,32 +432,15 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
   }
 }
 
-void EncapsulateListIdentityResponseMessage(
-  const EncapsulationData *const receive_data,
-  ENIPMessage *const outgoing_message) {
+CipUint ListIdentityGetCipIdentityItemLength() {
+  return sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) +
+         sizeof(CipUdint) + 8 * sizeof(CipUsint) + sizeof(CipUint) +
+         sizeof(CipUint) + sizeof(CipUint) + 2 * sizeof(CipUsint) +
+         sizeof(CipWord) + sizeof(CipUdint) + sizeof(CipUsint) +
+         product_name_.length + sizeof(CipUsint);
+}
 
-
-  const CipUint kEncapsulationCommandListIdentityCommandSpecificLength =
-    sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) + sizeof(CipUdint) +
-    8 *
-    sizeof(CipUsint) + sizeof(CipUint) + sizeof(CipUint) + sizeof(CipUint) + 2 *
-    sizeof(CipUsint) + sizeof(CipWord) + sizeof(CipUdint) +
-    sizeof(
-      CipUsint) + product_name_.length + sizeof(CipUsint);
-  const CipUint kEncapsulationCommandListIdentityLength =
-    kEncapsulationCommandListIdentityCommandSpecificLength + sizeof(CipUint) +
-    sizeof(CipUint)
-    + sizeof(CipUint);               /* Last element is item count */
-
-  GenerateEncapsulationHeader(receive_data,
-                              kEncapsulationCommandListIdentityLength,
-                              0,   /* Session handle will be ignored by receiver */
-                              kEncapsulationProtocolSuccess,
-                              outgoing_message);
-
-  outgoing_message->used_message_length += AddIntToMessage(1,
-                                                           &outgoing_message->current_message_position); /* Item count: one item */
-
+void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   /* Item ID*/
   const CipUint kItemIDCipIdentity = 0x0C;
   outgoing_message->used_message_length += AddIntToMessage(
@@ -464,7 +448,7 @@ void EncapsulateListIdentityResponseMessage(
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += AddIntToMessage(
-    kEncapsulationCommandListIdentityCommandSpecificLength,
+    ListIdentityGetCipIdentityItemLength(),
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += AddIntToMessage(
@@ -503,8 +487,29 @@ void EncapsulateListIdentityResponseMessage(
   outgoing_message->current_message_position += product_name_.length;
   outgoing_message->used_message_length += product_name_.length;
 
-  *outgoing_message->current_message_position++ = 0xFF;
+  *outgoing_message->current_message_position++ = g_state;
   outgoing_message->used_message_length++;
+
+}
+
+void EncapsulateListIdentityResponseMessage(
+  const EncapsulationData *const receive_data,
+  ENIPMessage *const outgoing_message) {
+
+  const CipUint kEncapsulationCommandListIdentityLength =
+    ListIdentityGetCipIdentityItemLength() + sizeof(CipUint) +
+    sizeof(CipUint)
+    + sizeof(CipUint);               /* Last element is item count */
+
+  GenerateEncapsulationHeader(receive_data,
+                              kEncapsulationCommandListIdentityLength,
+                              0,   /* Session handle will be ignored by receiver */
+                              kEncapsulationProtocolSuccess,
+                              outgoing_message);
+
+  outgoing_message->used_message_length += AddIntToMessage(1,
+                                                           &outgoing_message->current_message_position); /* Item count: one item */
+  EncodeListIdentityCipIdentityItem(outgoing_message);
 
 }
 
