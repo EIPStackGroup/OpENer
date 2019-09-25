@@ -23,16 +23,6 @@
 #include "socket_timer.h"
 #include "opener_error.h"
 
-/*Identity data from cipidentity.c*/
-extern CipUint vendor_id_;
-extern CipUint device_type_;
-extern CipUint product_code_;
-extern CipRevision revision_;
-extern CipWord status_;
-extern CipUdint serial_number_;
-extern CipShortString product_name_;
-extern CipUsint g_state;
-
 /* IP address data taken from TCPIPInterfaceObject*/
 const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
@@ -436,7 +426,7 @@ CipUint ListIdentityGetCipIdentityItemLength() {
          sizeof(CipUdint) + 8 * sizeof(CipUsint) + sizeof(CipUint) +
          sizeof(CipUint) + sizeof(CipUint) + 2 * sizeof(CipUsint) +
          sizeof(CipWord) + sizeof(CipUdint) + sizeof(CipUsint) +
-         product_name_.length + sizeof(CipUsint);
+         g_identity.product_name.length + sizeof(CipUsint);
 }
 
 void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
@@ -463,30 +453,30 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += MoveMessageNOctets(8,
                                                               (const CipOctet **) &outgoing_message->current_message_position);
 
-  outgoing_message->used_message_length += AddIntToMessage(vendor_id_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.vendor_id,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(device_type_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.device_type,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(product_code_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.product_code,
                                                            &outgoing_message->current_message_position);
-  *(outgoing_message->current_message_position)++ = revision_.major_revision;
+  *(outgoing_message->current_message_position)++ = g_identity.revision.major_revision;
   outgoing_message->used_message_length++;
-  *(outgoing_message->current_message_position)++ = revision_.minor_revision;
+  *(outgoing_message->current_message_position)++ = g_identity.revision.minor_revision;
   outgoing_message->used_message_length++;
-  outgoing_message->used_message_length += AddIntToMessage(status_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.status,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddDintToMessage(serial_number_,
+  outgoing_message->used_message_length += AddDintToMessage(g_identity.serial_number,
                                                             &outgoing_message->current_message_position);
   *outgoing_message->current_message_position++ =
-    (unsigned char) product_name_.length;
+    (unsigned char) g_identity.product_name.length;
   outgoing_message->used_message_length++;
 
-  memcpy(outgoing_message->current_message_position, product_name_.string,
-         product_name_.length);
-  outgoing_message->current_message_position += product_name_.length;
-  outgoing_message->used_message_length += product_name_.length;
+  memcpy(outgoing_message->current_message_position, g_identity.product_name.string,
+         g_identity.product_name.length);
+  outgoing_message->current_message_position += g_identity.product_name.length;
+  outgoing_message->used_message_length += g_identity.product_name.length;
 
-  *outgoing_message->current_message_position++ = g_state;
+  *outgoing_message->current_message_position++ = g_identity.state;
   outgoing_message->used_message_length++;
 
 }
@@ -618,12 +608,12 @@ void HandleReceivedRegisterSessionCommand(int socket,
 }
 
 /** @brief Unregister encapsulation session
- * @param receive_data Pointer to structure with data and header information.
- * @param outgoing_message The outgoing ENIP message
- * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
- *
- * Close all corresponding TCP connections and delete session handle.
- */
+* @param receive_data Pointer to structure with data and header information.
+* @param outgoing_message The outgoing ENIP message
+* @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+*
+* Close all corresponding TCP connections and delete session handle.
+*/
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {

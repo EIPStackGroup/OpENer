@@ -27,8 +27,7 @@ typedef struct multicast_address_configuration {
   CipUdint starting_multicast_address; /**< Starting multicast address from which Num Mcast addresses are allocated */
 } MulticastAddressConfiguration;
 
-/** @brief Declaration of the TCP/IP object's data
- *
+/** @brief Declaration of the TCP/IP object's structure type
  */
 typedef struct {
   CipDword status;            /**< attribute #1  TCP status */

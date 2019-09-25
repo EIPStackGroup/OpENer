@@ -3,9 +3,9 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <string.h>
-
 #include "ciptcpipinterface.h"
+
+#include <string.h>
 
 #include "opener_user_conf.h"
 #include "cipcommon.h"

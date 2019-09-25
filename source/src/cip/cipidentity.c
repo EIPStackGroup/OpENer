@@ -25,9 +25,9 @@
  * --------------------
  */
 
-#include <string.h>
-
 #include "cipidentity.h"
+
+#include <string.h>
 
 #include "opener_user_conf.h"
 #include "cipcommon.h"
@@ -37,31 +37,39 @@
 #include "opener_api.h"
 #include "trace.h"
 
-/* attributes in CIP Identity Object */
 
-CipUint vendor_id_ = OPENER_DEVICE_VENDOR_ID; /**< Attribute 1: Vendor ID */
-CipUint device_type_ = OPENER_DEVICE_TYPE; /**< Attribute 2: Device Type */
-CipUint product_code_ = OPENER_DEVICE_PRODUCT_CODE; /**< Attribute 3: Product Code */
-CipRevision revision_ = { OPENER_DEVICE_MAJOR_REVISION,
-                          OPENER_DEVICE_MINOR_REVISION }; /**< Attribute 4: Revision / USINT Major, USINT Minor */
-CipWord status_ = 0; /**< Attribute 5: Status */
-CipUdint serial_number_ = 0; /**< Attribute 6: Serial Number, has to be set prior to OpENer initialization */
-CipShortString product_name_ = { sizeof(OPENER_DEVICE_NAME) - 1,
-                                (EipByte *)OPENER_DEVICE_NAME }; /**< Attribute 7: Product Name */
-CipUsint g_state = 255;
+/** @brief Definition of the global Identity Object */
+CipIdentityObject g_identity =
+{
+  .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attribute 1: Vendor ID */
+  .device_type = OPENER_DEVICE_TYPE, /* Attribute 2: Device Type */
+  .product_code = OPENER_DEVICE_PRODUCT_CODE, /* Attribute 3: Product Code */
+  .revision = { /* Attribute 4: Revision / USINT Major, USINT Minor */
+    OPENER_DEVICE_MAJOR_REVISION,
+    OPENER_DEVICE_MINOR_REVISION
+  },
+  .status = 0, /* Attribute 5: Status */
+  .serial_number = 0, /* Attribute 6: Serial Number */
+  .product_name = { /* Attribute 7: Product Name */
+    sizeof(OPENER_DEVICE_NAME) - 1,
+    (EipByte *)OPENER_DEVICE_NAME
+  },
+  .state = 255,
+};
+
 
 /** Private functions, sets the devices serial number
  * @param serial_number The serial number of the device
  */
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
-  serial_number_ = serial_number;
+  g_identity.serial_number = serial_number;
 }
 
 /** @brief Private function, sets the devices status
  * @param status The serial number of the device
  */
 void SetDeviceStatus(const EipUint16 status) {
-  status_ = status;
+  g_identity.status = status;
 }
 
 /** @brief Reset service
@@ -122,7 +130,7 @@ static EipStatus Reset(CipInstance *instance,
   return eip_status;
 }
 
-void InitializeCipIdentiy(CipClass *class) {
+void InitializeCipIdentity(CipClass *class) {
 
 
   CipClass *meta_class = class->class_instance.cip_class;
@@ -159,22 +167,38 @@ EipStatus CipIdentityInit() {
                                    1, /* # of instances*/
                                    "identity", /* # class name (for debug)*/
                                    1, /* # class revision*/
-                                   &InitializeCipIdentiy); /* # function pointer for initialization*/
+                                   &InitializeCipIdentity); /* # function pointer for initialization*/
 
   if (class == 0) {
     return kEipStatusError;
   }
 
   CipInstance *instance = GetCipInstance(class, 1);
-  InsertAttribute(instance, 1, kCipUint, &vendor_id_, kGetableSingleAndAll);
-  InsertAttribute(instance, 2, kCipUint, &device_type_, kGetableSingleAndAll);
-  InsertAttribute(instance, 3, kCipUint, &product_code_, kGetableSingleAndAll);
-  InsertAttribute(instance, 4, kCipUsintUsint, &revision_,
+  InsertAttribute(instance,
+                  1,
+                  kCipUint,
+                  &g_identity.vendor_id,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 5, kCipWord, &status_, kGetableSingleAndAll);
-  InsertAttribute(instance, 6, kCipUdint, &serial_number_,
+  InsertAttribute(instance,
+                  2,
+                  kCipUint,
+                  &g_identity.device_type,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 7, kCipShortString, &product_name_,
+  InsertAttribute(instance,
+                  3,
+                  kCipUint,
+                  &g_identity.product_code,
+                  kGetableSingleAndAll);
+  InsertAttribute(instance, 4, kCipUsintUsint, &g_identity.revision,
+                  kGetableSingleAndAll);
+  InsertAttribute(instance,
+                  5,
+                  kCipWord,
+                  &g_identity.status,
+                  kGetableSingleAndAll);
+  InsertAttribute(instance, 6, kCipUdint, &g_identity.serial_number,
+                  kGetableSingleAndAll);
+  InsertAttribute(instance, 7, kCipShortString, &g_identity.product_name,
                   kGetableSingleAndAll);
   InsertService(class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
@@ -187,6 +211,6 @@ EipStatus CipIdentityInit() {
 void CipIdentitySetExtendedDeviceStatus(
   CipIdentityExtendedStatus extended_status) {
   OPENER_TRACE_INFO("Setting extended status: %x\n", extended_status);
-  status_ &= ~(0x70);
-  status_ |= extended_status;
+  g_identity.status &= ~(0x70);
+  g_identity.status |= extended_status;
 }

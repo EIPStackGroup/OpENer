@@ -28,11 +28,6 @@
 #include "cipelectronickey.h"
 #include "cipqos.h"
 
-/* values needed from the CIP identity object */
-extern EipUint16 vendor_id_;
-extern EipUint16 device_type_;
-extern EipUint16 product_code_;
-extern CipRevision revision_;
 
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 
@@ -988,9 +983,9 @@ EipStatus CheckElectronicKeyData(
     key_data);
 
   /* Check VendorID and ProductCode, must match, or 0 */
-  if ( ( (ElectronicKeyFormat4GetVendorId(key_data) != vendor_id_) &&
+  if ( ( (ElectronicKeyFormat4GetVendorId(key_data) != g_identity.vendor_id) &&
          (ElectronicKeyFormat4GetVendorId(key_data) != 0) )
-       || ( (ElectronicKeyFormat4GetProductCode(key_data) != product_code_)
+       || ( (ElectronicKeyFormat4GetProductCode(key_data) != g_identity.product_code)
             && (ElectronicKeyFormat4GetProductCode(key_data) != 0) ) ) {
     *extended_status =
       kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError;
@@ -999,7 +994,7 @@ EipStatus CheckElectronicKeyData(
     /* VendorID and ProductCode are correct */
 
     /* Check DeviceType, must match or 0 */
-    if ( (ElectronicKeyFormat4GetDeviceType(key_data) != device_type_)
+    if ( (ElectronicKeyFormat4GetDeviceType(key_data) != g_identity.device_type)
          && (ElectronicKeyFormat4GetDeviceType(key_data) != 0) ) {
       *extended_status =
         kConnectionManagerExtendedStatusCodeErrorDeviceTypeError;
@@ -1015,9 +1010,9 @@ EipStatus CheckElectronicKeyData(
 
         /* Check Major / Minor Revision, Major must match, Minor match or 0 */
         if ( (ElectronicKeyFormat4GetMajorRevision(key_data) !=
-              revision_.major_revision)
+              g_identity.revision.major_revision)
              || ( (ElectronicKeyFormat4GetMinorRevision(key_data) !=
-                   revision_.minor_revision)
+                   g_identity.revision.minor_revision)
                   && (ElectronicKeyFormat4GetMinorRevision(key_data) != 0) ) ) {
           *extended_status =
             kConnectionManagerExtendedStatusCodeErrorRevisionMismatch;
@@ -1028,10 +1023,10 @@ EipStatus CheckElectronicKeyData(
 
         /* Major must match, Minor != 0 and <= MinorRevision */
         if ( (ElectronicKeyFormat4GetMajorRevision(key_data) ==
-              revision_.major_revision)
+              g_identity.revision.major_revision)
              && (ElectronicKeyFormat4GetMinorRevision(key_data) > 0)
              && (ElectronicKeyFormat4GetMinorRevision(key_data) <=
-                 revision_.minor_revision) ) {
+                 g_identity.revision.minor_revision) ) {
           return kEipStatusOk;
         } else {
           *extended_status =
