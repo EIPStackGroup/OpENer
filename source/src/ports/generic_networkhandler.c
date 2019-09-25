@@ -499,7 +499,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
     InitializeENIPMessage(&outgoing_message);
     do {
       EipStatus need_to_send = HandleReceivedExplictUdpData(
-        g_network_status.udp_global_broadcast_listener,
+        g_network_status.udp_unicast_listener, /* sending from unicast port, due to strange behavior of the broadcast port */
         &from_address,
         receive_buffer,
         received_size,
@@ -514,7 +514,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
         OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if (sendto( g_network_status.udp_global_broadcast_listener,
+        if (sendto( g_network_status.udp_unicast_listener, /* sending from unicast port, due to strange behavior of the broadcast port */
                     (char *) outgoing_message.message_buffer,
                     outgoing_message.used_message_length, 0,
                     (struct sockaddr *) &from_address, sizeof(from_address) )
