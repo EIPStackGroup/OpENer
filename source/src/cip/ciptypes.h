@@ -304,7 +304,7 @@ typedef struct {
   CipUdint name_server;
   CipUdint name_server_2;
   CipString domain_name;
-} CipTcpIpNetworkInterfaceConfiguration;
+} CipTcpIpInterfaceConfiguration;
 
 typedef struct {
   EipUint8 path_size;

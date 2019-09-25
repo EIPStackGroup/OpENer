@@ -71,8 +71,8 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
       return kEipStatusError;
     }
 
-    interface_configuration_.ip_address = ipaddr;
-    interface_configuration_.network_mask = netaddr;
+    g_tcpip.interface_configuration.ip_address = ipaddr;
+    g_tcpip.interface_configuration.network_mask = netaddr;
 
     close(fd);
   }
@@ -108,23 +108,23 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
 
   if(inet_pton(AF_INET, gateway_string, &gateway) == 1) {
     if(INADDR_LOOPBACK != gateway) {
-      interface_configuration_.gateway = gateway;
+      g_tcpip.interface_configuration.gateway = gateway;
     }
     else{
-      interface_configuration_.gateway = 0;
+      g_tcpip.interface_configuration.gateway = 0;
     }
   }
   else{
-    interface_configuration_.gateway = 0;
+    g_tcpip.interface_configuration.gateway = 0;
   }
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  EipUint32 host_id = ntohl(interface_configuration_.ip_address) & ~ntohl(
-    interface_configuration_.network_mask);                                                                       /* see CIP spec 3-5.3 for multicast address algorithm*/
+  EipUint32 host_id = ntohl(g_tcpip.interface_configuration.ip_address) & ~ntohl(
+    g_tcpip.interface_configuration.network_mask);                                                                       /* see CIP spec 3-5.3 for multicast address algorithm*/
   host_id -= 1;
   host_id &= 0x3ff;
 
-  g_multicast_configuration.starting_multicast_address =
+  g_tcpip.mcast_config.starting_multicast_address =
     htonl(ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
 
   fclose(file_handle);
@@ -170,26 +170,26 @@ void ConfigureDomainName() {
     strtok_r(file_buffer, " ", &strtok_save);
     domain_name_string = strtok_r(file_buffer, "\n", &strtok_save);
 
-    if(NULL != interface_configuration_.domain_name.string) {
+    if(NULL != g_tcpip.interface_configuration.domain_name.string) {
       /* if the string is already set to a value we have to free the resources
        * before we can set the new value in order to avoid memory leaks.
        */
-      CipFree(interface_configuration_.domain_name.string);
+      CipFree(g_tcpip.interface_configuration.domain_name.string);
     }
-    interface_configuration_.domain_name.length = strlen(domain_name_string);
+    g_tcpip.interface_configuration.domain_name.length = strlen(domain_name_string);
 
-    if(interface_configuration_.domain_name.length) {
-      interface_configuration_.domain_name.string = (EipByte *) CipCalloc(
-        interface_configuration_.domain_name.length + 1,
+    if(g_tcpip.interface_configuration.domain_name.length) {
+      g_tcpip.interface_configuration.domain_name.string = (EipByte *) CipCalloc(
+        g_tcpip.interface_configuration.domain_name.length + 1,
         sizeof(EipByte) );
       /* *.domain_name.string was calloced with *.domain_name.length+1 which
        *    provides a trailing '\0' when memcpy( , , *.length) is done!
        */
-      memcpy(interface_configuration_.domain_name.string, domain_name_string,
-             interface_configuration_.domain_name.length);
+      memcpy(g_tcpip.interface_configuration.domain_name.string, domain_name_string,
+             g_tcpip.interface_configuration.domain_name.length);
     }
     else{
-      interface_configuration_.domain_name.string = NULL;
+      g_tcpip.interface_configuration.domain_name.string = NULL;
     }
   }
 
@@ -198,7 +198,7 @@ void ConfigureDomainName() {
     strtok_r(file_buffer, " ", &strtok_save);
     dns1_string = strtok_r(NULL, "\n", &strtok_save);
 
-    inet_pton(AF_INET, dns1_string, &interface_configuration_.name_server);
+    inet_pton(AF_INET, dns1_string, &g_tcpip.interface_configuration.name_server);
   }
 
   if(strstr(file_buffer, "nameserver ") ) {
@@ -206,7 +206,7 @@ void ConfigureDomainName() {
     strtok_r(file_buffer, " ", &strtok_save);
     dns2_string = strtok_r(file_buffer, "\n", &strtok_save);
 
-    inet_pton(AF_INET, dns2_string, &interface_configuration_.name_server_2);
+    inet_pton(AF_INET, dns2_string, &g_tcpip.interface_configuration.name_server_2);
   }
 
   free(file_buffer);
@@ -216,20 +216,20 @@ void ConfigureHostName() {
   char name[1024] = { 0 };
   gethostname(name, sizeof(name) );
 
-  if(NULL != hostname_.string) {
+  if(NULL != g_tcpip.hostname.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
      */
-    CipFree(hostname_.string);
+    CipFree(g_tcpip.hostname.string);
   }
-  hostname_.length = strlen(name);
-  if(hostname_.length) {
-    hostname_.string =
-      (EipByte *) CipCalloc(hostname_.length + 1, sizeof(EipByte) );
-    snprintf( (char *)hostname_.string,
-              (hostname_.length + 1) * sizeof(EipByte), "%s", name );
+  g_tcpip.hostname.length = strlen(name);
+  if(g_tcpip.hostname.length) {
+    g_tcpip.hostname.string =
+      (EipByte *) CipCalloc(g_tcpip.hostname.length + 1, sizeof(EipByte) );
+    snprintf( (char *)g_tcpip.hostname.string,
+              (g_tcpip.hostname.length + 1) * sizeof(EipByte), "%s", name );
   }
   else{
-    hostname_.string = NULL;
+    g_tcpip.hostname.string = NULL;
   }
 }

@@ -17,6 +17,7 @@
 #include "cipmessagerouter.h"
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
+#include "ciptcpipinterface.h"
 #include "generic_networkhandler.h"
 #include "trace.h"
 #include "socket_timer.h"
@@ -33,8 +34,6 @@ extern CipShortString product_name_;
 extern CipUsint g_state;
 
 /* IP address data taken from TCPIPInterfaceObject*/
-extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
-
 const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
 const int kEncapsulationHeaderOptionsFlag = 0x00; /**< Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.*/
@@ -127,7 +126,7 @@ void EncapsulationInit(void) {
 
   /*initialize random numbers for random delayed response message generation
    * we use the ip address as seed as suggested in the spec */
-  srand(interface_configuration_.ip_address);
+  srand(g_tcpip.interface_configuration.ip_address);
 
   /* initialize Sessions to invalid == free session */
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
@@ -456,7 +455,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += EncapsulateIpAddress(
-    htons(kOpenerEthernetPort), interface_configuration_.ip_address,
+    htons(kOpenerEthernetPort), g_tcpip.interface_configuration.ip_address,
     &outgoing_message->current_message_position);
 
   /** Array of USINT - length 8 shall be set to zero */

@@ -9,6 +9,7 @@
 
 #include "opener_api.h"
 #include "appcontype.h"
+#include "ciptcpipinterface.h"
 #include "cipqos.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
@@ -19,8 +20,6 @@
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
 
 /* global variables for demo application (4 assembly data fields)  ************/
-
-extern CipUint g_encapsulation_inactivity_timeout;
 
 EipUint8 g_assembly_data064[40]; /* Input */
 EipUint8 g_assembly_data096[40]; /* Output */
@@ -130,7 +129,7 @@ EipStatus ResetDevice(void) {
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
   /*rest the parameters */
-  g_encapsulation_inactivity_timeout = 120;
+  g_tcpip.encapsulation_inactivity_timeout = 120;
   CipQosResetAttributesToDefaultValues();
   /*than perform device reset*/
   ResetDevice();

@@ -504,9 +504,8 @@ EipStatus OpenProducingMulticastConnection(
   connection_object->remote_address.sin_addr.s_addr = common_packet_format_data
                                                       ->address_info_item[j].
                                                       sin_addr =
-                                                        g_multicast_configuration
-                                                        .
-                                                        starting_multicast_address;
+                                                      g_tcpip.mcast_config.
+                                                      starting_multicast_address;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
@@ -577,7 +576,7 @@ EipStatus OpenMulticastConnection(
     common_packet_format_data->address_info_item[j].sin_port = htons(
       kOpenerEipIoUdpPort);
     common_packet_format_data->address_info_item[j].sin_addr =
-      g_multicast_configuration.starting_multicast_address;
+      g_tcpip.mcast_config.starting_multicast_address;
     memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
     common_packet_format_data->address_info_item[j].length = 16;
   }
