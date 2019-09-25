@@ -423,6 +423,24 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
   }
 }
 
+void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
+  const CipUint kCipSecurityItemId = 0x86;
+  const CipUint kCipSecurityItemLength = 5u; /* WORD + USINT + USINT + BYTE*/
+  outgoing_message->used_message_length += AddIntToMessage(kCipSecurityItemId,
+                                                           outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddIntToMessage(
+    kCipSecurityItemLength,
+    outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddIntToMessage(0,
+                                                           outgoing_message->current_message_position);    /* TODO: Security Profiles */
+  outgoing_message->used_message_length += AddSintToMessage(0,
+                                                            outgoing_message->current_message_position);    /* TODO: CIP Security State */
+  outgoing_message->used_message_length += AddSintToMessage(0,
+                                                            outgoing_message->current_message_position);    /* TODO: EtherNet/IP Security State */
+  outgoing_message->used_message_length += AddSintToMessage(0,
+                                                            outgoing_message->current_message_position);    /* TODO: IANA Port State */
+}
+
 CipUint ListIdentityGetCipIdentityItemLength() {
   return sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) + sizeof(CipUdint) +
          8 * sizeof(CipUsint) + sizeof(CipUint) + sizeof(CipUint) +
