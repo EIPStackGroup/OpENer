@@ -44,7 +44,7 @@ CipIdentityObject g_identity =
   .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attribute 1: Vendor ID */
   .device_type = OPENER_DEVICE_TYPE, /* Attribute 2: Device Type */
   .product_code = OPENER_DEVICE_PRODUCT_CODE, /* Attribute 3: Product Code */
-  .revision = { /* Attribute 4: Revision / USINT Major, USINT Minor */
+  .revision = { /* Attribute 4: Revision / CipUsint Major, CipUsint Minor */
     OPENER_DEVICE_MAJOR_REVISION,
     OPENER_DEVICE_MINOR_REVISION
   },

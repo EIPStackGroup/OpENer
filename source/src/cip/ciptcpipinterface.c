@@ -19,17 +19,18 @@
 
 
 /** definition of TCP/IP object instance 1 data */
-CipTcpIpObject g_tcpip = {
-  0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
-  0x04, /* attribute #2 config_capability: This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification. */
-  0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
-  {     /* attribute #4 physical link object */
+CipTcpIpObject g_tcpip =
+{
+  .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
+  .config_capability = 0x04, /* attribute #2 config_capability: This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification. */
+  .config_control = 0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
+  .physical_link_object = {     /* attribute #4 physical link object */
     2,  /* PathSize in 16 Bit chunks */
     CIP_ETHERNETLINK_CLASS_CODE, /* Class Code */
     1,  /* Instance # */
     0   /* Attribute # (not used as this is the EPATH to the EthernetLink object)*/
   },
-  { /* attribute #5 interface_configuration */
+  .interface_configuration = { /* attribute #5 interface_configuration */
     0, /* IP address */
     0, /* NetworkMask */
     0, /* Gateway */
@@ -39,18 +40,18 @@ CipTcpIpObject g_tcpip = {
       0, NULL,
     }
   },
-  { /* attribute #6 hostname */
+  .hostname = { /* attribute #6 hostname */
     0,
     NULL
   },
-  1,  /* attribute #8 mcast TTL value */
-  {   /* attribute #9 multicast configuration */
+  .mcast_ttl_value = 1,  /* attribute #8 mcast TTL value */
+  .mcast_config = {   /* attribute #9 multicast configuration */
     0,  /* use the default allocation algorithm */
     0,  /* reserved */
     1,  /* we currently use only one multicast address */
     0   /* the multicast address will be allocated on IP address configuration */
   },
-  120 /* attribute #13 encapsulation_inactivity_timeout, use a default value of 120 */
+  .encapsulation_inactivity_timeout = 120 /* attribute #13 encapsulation_inactivity_timeout, use a default value of 120 */
 };
 
 
