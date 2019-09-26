@@ -112,7 +112,7 @@ if (DOXYGEN_FOUND)
     # note the option ALL which will build the docs always with the default target
     add_custom_target( doc # ALL
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        WORKING_DIRECTORY ${OpENer_BINARY_DIR}
+        WORKING_DIRECTORY ${OpENer_SOURCE_DIR}
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM )
     message("-- Doxygen setup done")
