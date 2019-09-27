@@ -85,16 +85,15 @@ EipStatus SetAttributeSingleQoS(
 
   if( NULL != attribute &&
       ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
-    CipUint attribute_value_recieved = GetDintFromMessage(
+    CipUsint attribute_value_received = GetUsintFromMessage(
       &(message_router_request->data) );
 
-    if( !( (attribute_value_recieved <= 0) ||
-           (attribute_value_recieved >= 63) ) ) {
+    if( attribute_value_received < 64u ) {
       OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
       if(NULL != attribute->data) {
         CipUsint *data = (CipUsint *) attribute->data;
-        *(data) = attribute_value_recieved;
+        *(data) = attribute_value_received;
 
         message_router_response->general_status = kCipErrorSuccess;
       } else {
