@@ -307,20 +307,20 @@ void ConfigureHostName(const CipUint interface_index) {
 
 
 
-  if (NULL != hostname_.string) {
+  if (NULL != g_tcpip.hostname.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
      */
-    CipFree(hostname_.string);
+    CipFree(g_tcpip.hostname.string);
   }
-  hostname_.length = strlen(hostname);
-  if (hostname_.length) {
+  g_tcpip.hostname.length = strlen(hostname);
+  if (g_tcpip.hostname.length) {
     /* Storage space for the string must include NULL termination. */
-    size_t buf_length = hostname_.length + 1;
-    hostname_.string = (CipByte *) CipCalloc( buf_length,
-                                              sizeof(CipByte) );
-    strcpy_s(hostname_.string, buf_length, hostname);
+    size_t buf_length = g_tcpip.hostname.length + 1;
+    g_tcpip.hostname.string = (CipByte *) CipCalloc( buf_length,
+                                                     sizeof(CipByte) );
+    strcpy_s(g_tcpip.hostname.string, buf_length, hostname);
   } else {
-    hostname_.string = NULL;
+    g_tcpip.hostname.string = NULL;
   }
 }

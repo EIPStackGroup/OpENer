@@ -231,18 +231,19 @@ void ConfigureHostName(void) {
 
 
 
-  if (NULL != hostname_.string) {
+  if (NULL != g_tcpip.hostname.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
      */
-    CipFree(hostname_.string);
+    CipFree(g_tcpip.hostname.string);
   }
-  hostname_.length = strlen(hostname);
-  if (hostname_.length) {
-    hostname_.string = (CipByte *) CipCalloc( hostname_.length + 1,
-                                              sizeof(CipByte) );
-    strcpy(hostname_.string, hostname);
+  g_tcpip.hostname.length = strlen(hostname);
+  if (g_tcpip.hostname.length) {
+    g_tcpip.hostname.string = (CipByte *) CipCalloc(
+      g_tcpip.hostname.length + 1,
+      sizeof(CipByte) );
+    strcpy(g_tcpip.hostname.string, hostname);
   } else {
-    hostname_.string = NULL;
+    g_tcpip.hostname.string = NULL;
   }
 }
