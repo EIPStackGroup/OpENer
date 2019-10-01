@@ -119,7 +119,8 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   }
 
   /* calculate the CIP multicast address. The multicast address is calculated, not input*/
-  EipUint32 host_id = ntohl(g_tcpip.interface_configuration.ip_address) & ~ntohl(
+  EipUint32 host_id = ntohl(g_tcpip.interface_configuration.ip_address) &
+                      ~ntohl(
     g_tcpip.interface_configuration.network_mask);                                                                       /* see CIP spec 3-5.3 for multicast address algorithm*/
   host_id -= 1;
   host_id &= 0x3ff;
@@ -176,16 +177,19 @@ void ConfigureDomainName() {
        */
       CipFree(g_tcpip.interface_configuration.domain_name.string);
     }
-    g_tcpip.interface_configuration.domain_name.length = strlen(domain_name_string);
+    g_tcpip.interface_configuration.domain_name.length = strlen(
+      domain_name_string);
 
     if(g_tcpip.interface_configuration.domain_name.length) {
-      g_tcpip.interface_configuration.domain_name.string = (EipByte *) CipCalloc(
-        g_tcpip.interface_configuration.domain_name.length + 1,
-        sizeof(EipByte) );
+      g_tcpip.interface_configuration.domain_name.string =
+        (EipByte *) CipCalloc(
+          g_tcpip.interface_configuration.domain_name.length + 1,
+          sizeof(EipByte) );
       /* *.domain_name.string was calloced with *.domain_name.length+1 which
        *    provides a trailing '\0' when memcpy( , , *.length) is done!
        */
-      memcpy(g_tcpip.interface_configuration.domain_name.string, domain_name_string,
+      memcpy(g_tcpip.interface_configuration.domain_name.string,
+             domain_name_string,
              g_tcpip.interface_configuration.domain_name.length);
     }
     else{
@@ -198,7 +202,8 @@ void ConfigureDomainName() {
     strtok_r(file_buffer, " ", &strtok_save);
     dns1_string = strtok_r(NULL, "\n", &strtok_save);
 
-    inet_pton(AF_INET, dns1_string, &g_tcpip.interface_configuration.name_server);
+    inet_pton(AF_INET, dns1_string,
+              &g_tcpip.interface_configuration.name_server);
   }
 
   if(strstr(file_buffer, "nameserver ") ) {
@@ -206,7 +211,9 @@ void ConfigureDomainName() {
     strtok_r(file_buffer, " ", &strtok_save);
     dns2_string = strtok_r(file_buffer, "\n", &strtok_save);
 
-    inet_pton(AF_INET, dns2_string, &g_tcpip.interface_configuration.name_server_2);
+    inet_pton(AF_INET,
+              dns2_string,
+              &g_tcpip.interface_configuration.name_server_2);
   }
 
   free(file_buffer);

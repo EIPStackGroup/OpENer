@@ -608,7 +608,8 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
                                                         8 + data_length,
-                                                        g_tcpip.interface_configuration
+                                                        g_tcpip.
+                                                        interface_configuration
                                                         .ip_address,
                                                         address->sin_addr.s_addr) ) );
   UDPHeaderGenerate(&header, (char *)complete_message);
@@ -1104,7 +1105,8 @@ void CheckEncapsulationInactivity(int socket_handle) {
         socket_timer);
 
       if ( diff_milliseconds >=
-           (MilliSeconds) (1000UL * g_tcpip.encapsulation_inactivity_timeout) ) {
+           (MilliSeconds) (1000UL *
+                           g_tcpip.encapsulation_inactivity_timeout) ) {
 
         size_t encapsulation_session_handle =
           GetSessionFromSocket(socket_handle);

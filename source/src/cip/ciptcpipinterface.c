@@ -192,8 +192,11 @@ EipStatus CipTcpIpInterfaceInit() {
                   kGetableSingleAndAll);
   InsertAttribute(instance, 9, kCipAny, (void *) &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 13, kCipUint,
-                  (void *) &g_tcpip.encapsulation_inactivity_timeout, kSetAndGetAble);
+  InsertAttribute(instance,
+                  13,
+                  kCipUint,
+                  (void *) &g_tcpip.encapsulation_inactivity_timeout,
+                  kSetAndGetAble);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,

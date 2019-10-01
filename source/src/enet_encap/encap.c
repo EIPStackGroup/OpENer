@@ -455,23 +455,29 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
 
   outgoing_message->used_message_length += AddIntToMessage(g_identity.vendor_id,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(g_identity.device_type,
-                                                           &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(g_identity.product_code,
-                                                           &outgoing_message->current_message_position);
-  *(outgoing_message->current_message_position)++ = g_identity.revision.major_revision;
+  outgoing_message->used_message_length += AddIntToMessage(
+    g_identity.device_type,
+    &outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddIntToMessage(
+    g_identity.product_code,
+    &outgoing_message->current_message_position);
+  *(outgoing_message->current_message_position)++ =
+    g_identity.revision.major_revision;
   outgoing_message->used_message_length++;
-  *(outgoing_message->current_message_position)++ = g_identity.revision.minor_revision;
+  *(outgoing_message->current_message_position)++ =
+    g_identity.revision.minor_revision;
   outgoing_message->used_message_length++;
   outgoing_message->used_message_length += AddIntToMessage(g_identity.status,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddDintToMessage(g_identity.serial_number,
-                                                            &outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddDintToMessage(
+    g_identity.serial_number,
+    &outgoing_message->current_message_position);
   *outgoing_message->current_message_position++ =
     (unsigned char) g_identity.product_name.length;
   outgoing_message->used_message_length++;
 
-  memcpy(outgoing_message->current_message_position, g_identity.product_name.string,
+  memcpy(outgoing_message->current_message_position,
+         g_identity.product_name.string,
          g_identity.product_name.length);
   outgoing_message->current_message_position += g_identity.product_name.length;
   outgoing_message->used_message_length += g_identity.product_name.length;
@@ -608,12 +614,12 @@ void HandleReceivedRegisterSessionCommand(int socket,
 }
 
 /** @brief Unregister encapsulation session
-* @param receive_data Pointer to structure with data and header information.
-* @param outgoing_message The outgoing ENIP message
-* @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
-*
-* Close all corresponding TCP connections and delete session handle.
-*/
+ * @param receive_data Pointer to structure with data and header information.
+ * @param outgoing_message The outgoing ENIP message
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+ *
+ * Close all corresponding TCP connections and delete session handle.
+ */
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {

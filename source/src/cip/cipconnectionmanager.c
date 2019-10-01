@@ -985,7 +985,8 @@ EipStatus CheckElectronicKeyData(
   /* Check VendorID and ProductCode, must match, or 0 */
   if ( ( (ElectronicKeyFormat4GetVendorId(key_data) != g_identity.vendor_id) &&
          (ElectronicKeyFormat4GetVendorId(key_data) != 0) )
-       || ( (ElectronicKeyFormat4GetProductCode(key_data) != g_identity.product_code)
+       || ( (ElectronicKeyFormat4GetProductCode(key_data) !=
+             g_identity.product_code)
             && (ElectronicKeyFormat4GetProductCode(key_data) != 0) ) ) {
     *extended_status =
       kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError;
