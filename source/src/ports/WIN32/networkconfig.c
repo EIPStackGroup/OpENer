@@ -79,7 +79,7 @@ void ConfigureIpMacAddress(const CipUint interface_index) {
 
         CipUdint multicast_base;
         inet_pton(AF_INET, "239.192.1.0", &multicast_base);
-        g_multicast_configuration.starting_multicast_address = htonl(
+        g_tcpip.mcast_config.starting_multicast_address = htonl(
           ntohl(multicast_base) + (host_id << 5) );
       }
       pAdapter = pAdapter->Next;

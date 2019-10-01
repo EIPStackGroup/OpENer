@@ -70,7 +70,7 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
         host_id -= 1;
         host_id &= 0x3ff;
 
-        g_multicast_configuration.starting_multicast_address = htonl(
+        g_tcpip.mcast_config.starting_multicast_address = htonl(
           ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
       }
       pAdapter = pAdapter->Next;
