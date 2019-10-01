@@ -27,8 +27,6 @@
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
-extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
-
 /** @brief handle any connection request coming in the TCP server socket.
  *
  */
@@ -71,6 +69,8 @@ EipStatus NetworkHandlerInitialize(void) {
   }
 
   SocketTimerArrayInitialize(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
+  /* Activate the current DSCP values to become the used set of values. */
+  CipQosUpdateUsedSetQosValues();
 
   /* clear the master an temp sets */
   FD_ZERO(&master_socket);
@@ -168,7 +168,7 @@ EipStatus NetworkHandlerInitialize(void) {
   struct sockaddr_in my_address = {
     .sin_family = AF_INET,
     .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = interface_configuration_.ip_address
+    .sin_addr.s_addr = g_tcpip.interface_configuration.ip_address
   };
 
   /* bind the new socket to port 0xAF12 (CIP) */
@@ -608,7 +608,8 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
                                                         8 + data_length,
-                                                        interface_configuration_
+                                                        g_tcpip.
+                                                        interface_configuration
                                                         .ip_address,
                                                         address->sin_addr.s_addr) ) );
   UDPHeaderGenerate(&header, (char *)complete_message);
@@ -700,7 +701,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
     do {
       OPENER_TRACE_INFO(
-        "Entering consumption loop, remaining data to receive: %zu\n",
+        "Entering consumption loop, remaining data to receive: %ld\n",
         data_sent);
       number_of_read_bytes = recv(socket, &incoming_message[0],
                                   data_sent, 0);
@@ -928,16 +929,16 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
     /* For multicast socket setup the TTL and specify interface to send on. */
     if (socket_data->sin_addr.s_addr
-        == g_multicast_configuration.starting_multicast_address) {
-      if (1 != g_time_to_live_value) { /* we need to set a TTL value for the socket */
+        == g_tcpip.mcast_config.starting_multicast_address) {
+      if (1 != g_tcpip.mcast_ttl_value) { /* we need to set a TTL value for the socket */
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
-                        &g_time_to_live_value,
-                        sizeof(g_time_to_live_value) ) < 0 ) {
+                        &g_tcpip.mcast_ttl_value,
+                        sizeof(g_tcpip.mcast_ttl_value) ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
           OPENER_TRACE_ERR(
             "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
-            g_time_to_live_value, error_code, error_message);
+            g_tcpip.mcast_ttl_value, error_code, error_message);
           FreeErrorMessage(error_message);
           CloseUdpSocket(new_socket);
           return kEipInvalidSocket;
@@ -947,7 +948,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         /* Need to specify the interface for outgoing multicast packets on a device
             with multiple interfaces. */
         struct in_addr my_addr =
-        { .s_addr = interface_configuration_.ip_address };
+        { .s_addr = g_tcpip.interface_configuration.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
                         &my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
@@ -1090,7 +1091,7 @@ int GetMaxSocket(int socket1,
 }
 
 void CheckEncapsulationInactivity(int socket_handle) {
-  if (0 < g_encapsulation_inactivity_timeout) { //*< Encapsulation inactivity timeout is enabled
+  if (0 < g_tcpip.encapsulation_inactivity_timeout) { //*< Encapsulation inactivity timeout is enabled
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
@@ -1104,7 +1105,8 @@ void CheckEncapsulationInactivity(int socket_handle) {
         socket_timer);
 
       if ( diff_milliseconds >=
-           (MilliSeconds) (1000UL * g_encapsulation_inactivity_timeout) ) {
+           (MilliSeconds) (1000UL *
+                           g_tcpip.encapsulation_inactivity_timeout) ) {
 
         size_t encapsulation_session_handle =
           GetSessionFromSocket(socket_handle);

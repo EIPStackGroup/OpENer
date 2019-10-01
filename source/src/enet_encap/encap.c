@@ -17,24 +17,13 @@
 #include "cipmessagerouter.h"
 #include "cipconnectionmanager.h"
 #include "cipidentity.h"
+#include "ciptcpipinterface.h"
 #include "generic_networkhandler.h"
 #include "trace.h"
 #include "socket_timer.h"
 #include "opener_error.h"
 
-/*Identity data from cipidentity.c*/
-extern CipUint vendor_id_;
-extern CipUint device_type_;
-extern CipUint product_code_;
-extern CipRevision revision_;
-extern CipWord status_;
-extern CipUdint serial_number_;
-extern CipShortString product_name_;
-extern CipUsint g_state;
-
 /* IP address data taken from TCPIPInterfaceObject*/
-extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
-
 const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
 const int kEncapsulationHeaderOptionsFlag = 0x00; /**< Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.*/
@@ -127,7 +116,7 @@ void EncapsulationInit(void) {
 
   /*initialize random numbers for random delayed response message generation
    * we use the ip address as seed as suggested in the spec */
-  srand(interface_configuration_.ip_address);
+  srand(g_tcpip.interface_configuration.ip_address);
 
   /* initialize Sessions to invalid == free session */
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
@@ -437,7 +426,7 @@ CipUint ListIdentityGetCipIdentityItemLength() {
          sizeof(CipUdint) + 8 * sizeof(CipUsint) + sizeof(CipUint) +
          sizeof(CipUint) + sizeof(CipUint) + 2 * sizeof(CipUsint) +
          sizeof(CipWord) + sizeof(CipUdint) + sizeof(CipUsint) +
-         product_name_.length + sizeof(CipUsint);
+         g_identity.product_name.length + sizeof(CipUsint);
 }
 
 void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
@@ -456,7 +445,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += EncapsulateIpAddress(
-    htons(kOpenerEthernetPort), interface_configuration_.ip_address,
+    htons(kOpenerEthernetPort), g_tcpip.interface_configuration.ip_address,
     &outgoing_message->current_message_position);
 
   /** Array of USINT - length 8 shall be set to zero */
@@ -464,30 +453,36 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += MoveMessageNOctets(8,
                                                               (const CipOctet **) &outgoing_message->current_message_position);
 
-  outgoing_message->used_message_length += AddIntToMessage(vendor_id_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.vendor_id,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(device_type_,
-                                                           &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(product_code_,
-                                                           &outgoing_message->current_message_position);
-  *(outgoing_message->current_message_position)++ = revision_.major_revision;
+  outgoing_message->used_message_length += AddIntToMessage(
+    g_identity.device_type,
+    &outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddIntToMessage(
+    g_identity.product_code,
+    &outgoing_message->current_message_position);
+  *(outgoing_message->current_message_position)++ =
+    g_identity.revision.major_revision;
   outgoing_message->used_message_length++;
-  *(outgoing_message->current_message_position)++ = revision_.minor_revision;
+  *(outgoing_message->current_message_position)++ =
+    g_identity.revision.minor_revision;
   outgoing_message->used_message_length++;
-  outgoing_message->used_message_length += AddIntToMessage(status_,
+  outgoing_message->used_message_length += AddIntToMessage(g_identity.status,
                                                            &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddDintToMessage(serial_number_,
-                                                            &outgoing_message->current_message_position);
+  outgoing_message->used_message_length += AddDintToMessage(
+    g_identity.serial_number,
+    &outgoing_message->current_message_position);
   *outgoing_message->current_message_position++ =
-    (unsigned char) product_name_.length;
+    (unsigned char) g_identity.product_name.length;
   outgoing_message->used_message_length++;
 
-  memcpy(outgoing_message->current_message_position, product_name_.string,
-         product_name_.length);
-  outgoing_message->current_message_position += product_name_.length;
-  outgoing_message->used_message_length += product_name_.length;
+  memcpy(outgoing_message->current_message_position,
+         g_identity.product_name.string,
+         g_identity.product_name.length);
+  outgoing_message->current_message_position += g_identity.product_name.length;
+  outgoing_message->used_message_length += g_identity.product_name.length;
 
-  *outgoing_message->current_message_position++ = g_state;
+  *outgoing_message->current_message_position++ = g_identity.state;
   outgoing_message->used_message_length++;
 
 }

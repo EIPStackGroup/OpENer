@@ -3,9 +3,9 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <string.h>
-
 #include "ciptcpipinterface.h"
+
+#include <string.h>
 
 #include "opener_user_conf.h"
 #include "cipcommon.h"
@@ -17,50 +17,44 @@
 #include "trace.h"
 #include "cipassembly.h"
 
-CipDword tcp_status_ = 0x1; /**< #1  TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
-CipDword configuration_capability_ = 0x04; /**< #2  This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification*/
-CipDword configuration_control_ = 0x02; /**< #3  This is a TCP/IP object attribute. 0x02 means that the device shall obtain its interface configuration values via DHCP. */
-CipEpath physical_link_object_ = /**< #4 */
-{ 2, /**< EIP_UINT16 (UINT) PathSize in 16 Bit chunks*/
-  CIP_ETHERNETLINK_CLASS_CODE, /**< Class Code*/
-  1, /**< EIP_UINT16 InstanceNr*/
-  0 /**< EIP_UINT16 AttributNr (not used as this is the EPATH the EthernetLink object)*/
+
+/** definition of TCP/IP object instance 1 data */
+CipTcpIpObject g_tcpip =
+{
+  .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
+  .config_capability = 0x04, /* attribute #2 config_capability: This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification. */
+  .config_control = 0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
+  .physical_link_object = {     /* attribute #4 physical link object */
+    2,  /* PathSize in 16 Bit chunks */
+    CIP_ETHERNETLINK_CLASS_CODE, /* Class Code */
+    1,  /* Instance # */
+    0   /* Attribute # (not used as this is the EPATH to the EthernetLink object)*/
+  },
+  .interface_configuration = { /* attribute #5 interface_configuration */
+    0, /* IP address */
+    0, /* NetworkMask */
+    0, /* Gateway */
+    0, /* NameServer */
+    0, /* NameServer2 */
+    { /* DomainName */
+      0, NULL,
+    }
+  },
+  .hostname = { /* attribute #6 hostname */
+    0,
+    NULL
+  },
+  .mcast_ttl_value = 1,  /* attribute #8 mcast TTL value */
+  .mcast_config = {   /* attribute #9 multicast configuration */
+    0,  /* use the default allocation algorithm */
+    0,  /* reserved */
+    1,  /* we currently use only one multicast address */
+    0   /* the multicast address will be allocated on IP address configuration */
+  },
+  .encapsulation_inactivity_timeout = 120 /* attribute #13 encapsulation_inactivity_timeout, use a default value of 120 */
 };
 
-CipTcpIpNetworkInterfaceConfiguration interface_configuration_ = /**< #5 IP, network mask, gateway, name server 1 & 2, domain name*/
-{ 0, /* default IP address */
-  0, /* NetworkMask */
-  0, /* Gateway */
-  0, /* NameServer */
-  0, /* NameServer2 */
-  { /* DomainName */
-    0, NULL,
-  } };
 
-CipString hostname_ = /**< #6 Hostname*/
-{ 0, NULL };
-/** @brief #8 the time to live value to be used for multi-cast connections
- *
- * Currently we implement it non set-able and with the default value of 1.
- */
-EipUint8 g_time_to_live_value = 1;
-
-/** @brief #9 The multicast configuration for this device
- *
- * Currently we implement it non set-able and use the default
- * allocation algorithm
- */
-MulticastAddressConfiguration g_multicast_configuration = { 0, /* use the default allocation algorithm */
-                                                            0, /* reserved */
-                                                            1, /* we currently use only one multicast address */
-                                                            0 /* the multicast address will be allocated on ip address configuration */
-};
-
-/** @brief #13 Number of seconds of inactivity before TCP connection is closed
- *
- * Currently we implemented with the default value of 120 seconds.
- */
-CipUint g_encapsulation_inactivity_timeout = 120;
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
@@ -181,25 +175,28 @@ EipStatus CipTcpIpInterfaceInit() {
 
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute(instance, 1, kCipDword, (void *) &tcp_status_,
+  InsertAttribute(instance, 1, kCipDword, (void *) &g_tcpip.status,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 2, kCipDword, (void *) &configuration_capability_,
+  InsertAttribute(instance, 2, kCipDword, (void *) &g_tcpip.config_capability,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 3, kCipDword, (void *) &configuration_control_,
+  InsertAttribute(instance, 3, kCipDword, (void *) &g_tcpip.config_control,
                   kSetAndGetAble);
-  InsertAttribute(instance, 4, kCipEpath, &physical_link_object_,
+  InsertAttribute(instance, 4, kCipEpath, &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
-                  &interface_configuration_, kGetableSingleAndAll);
-  InsertAttribute(instance, 6, kCipString, (void *) &hostname_,
+                  &g_tcpip.interface_configuration, kGetableSingleAndAll);
+  InsertAttribute(instance, 6, kCipString, (void *) &g_tcpip.hostname,
                   kGetableSingleAndAll);
 
-  InsertAttribute(instance, 8, kCipUsint, (void *) &g_time_to_live_value,
+  InsertAttribute(instance, 8, kCipUsint, (void *) &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 9, kCipAny, (void *) &g_multicast_configuration,
+  InsertAttribute(instance, 9, kCipAny, (void *) &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 13, kCipUint,
-                  (void *) &g_encapsulation_inactivity_timeout, kSetAndGetAble);
+  InsertAttribute(instance,
+                  13,
+                  kCipUint,
+                  (void *) &g_tcpip.encapsulation_inactivity_timeout,
+                  kSetAndGetAble);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,
@@ -215,14 +212,14 @@ EipStatus CipTcpIpInterfaceInit() {
 
 void ShutdownTcpIpInterface(void) {
   /*Only free the resources if they are initialized */
-  if (NULL != hostname_.string) {
-    CipFree(hostname_.string);
-    hostname_.string = NULL;
+  if (NULL != g_tcpip.hostname.string) {
+    CipFree(g_tcpip.hostname.string);
+    g_tcpip.hostname.string = NULL;
   }
 
-  if (NULL != interface_configuration_.domain_name.string) {
-    CipFree(interface_configuration_.domain_name.string);
-    interface_configuration_.domain_name.string = NULL;
+  if (NULL != g_tcpip.interface_configuration.domain_name.string) {
+    CipFree(g_tcpip.interface_configuration.domain_name.string);
+    g_tcpip.interface_configuration.domain_name.string = NULL;
   }
 }
 
@@ -271,17 +268,17 @@ EipStatus GetAttributeSingleTcpIpInterface(
 
       /* create a reply message containing the data*/
       message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.alloc_control), &message);
+        kCipUsint, &(g_tcpip.mcast_config.alloc_control), &message);
       message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_multicast_configuration.reserved_shall_be_zero),
+        kCipUsint, &(g_tcpip.mcast_config.reserved_shall_be_zero),
         &message);
       message_router_response->data_length += EncodeData(
         kCipUint,
-        &(g_multicast_configuration.number_of_allocated_multicast_addresses),
+        &(g_tcpip.mcast_config.number_of_allocated_multicast_addresses),
         &message);
 
       EipUint32 multicast_address = ntohl(
-        g_multicast_configuration.starting_multicast_address);
+        g_tcpip.mcast_config.starting_multicast_address);
 
       message_router_response->data_length += EncodeData(kCipUdint,
                                                          &multicast_address,

@@ -68,6 +68,7 @@ int main(int argc,
 #ifndef WIN32
     /* register for closing signals so that we can trigger the stack to end */
     signal(SIGHUP, LeaveStack);
+    signal(SIGINT, LeaveStack); /* needed to be able to abort with ^C */
 #endif
 
     /* The event loop. Put other processing you need done continually in here */
@@ -88,6 +89,6 @@ int main(int argc,
 
 void LeaveStack(int pa_nSig) {
   (void) pa_nSig; /* kill unused parameter warning */
-  OPENER_TRACE_STATE("got signal HUP\n");
+  OPENER_TRACE_STATE("got signal %d\n",pa_nSig);
   g_end_stack = 1;
 }

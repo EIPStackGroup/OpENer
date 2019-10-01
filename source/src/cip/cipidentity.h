@@ -31,6 +31,7 @@ typedef enum {
                                        to the "Major Unrecoverable Fault" state */
 } CipIdentityStatus;
 
+/** @brief Constants for the extended status field in the Status word */
 typedef enum {
   kSelftestingUnknown = 0x0000,
   kFirmwareUpdateInProgress = 0x0010,
@@ -42,7 +43,23 @@ typedef enum {
   kAtLeastOneIoConnectionEstablishedAllInIdleMode = 0x0070
 } CipIdentityExtendedStatus;
 
+/** @brief Declaration of the Identity object's structure type
+ */
+typedef struct {
+  CipUint vendor_id; /**< Attribute 1: Vendor ID */
+  CipUint device_type; /**< Attribute 2: Device Type */
+  CipUint product_code; /**< Attribute 3: Product Code */
+  CipRevision revision; /**< Attribute 4: Revision / CipUsint Major, CipUsint Minor */
+  CipWord status; /**< Attribute 5: Status */
+  CipUdint serial_number; /**< Attribute 6: Serial Number, has to be set prior to OpENer's network initialization */
+  CipShortString product_name; /**< Attribute 7: Product Name */
+  CipUsint state; /** Attribute 8: state */
+} CipIdentityObject;
+
+
 /* global public variables */
+CipIdentityObject g_identity;
+
 
 /* public functions */
 /** @brief CIP Identity object constructor

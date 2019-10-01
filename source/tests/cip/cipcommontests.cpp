@@ -221,7 +221,7 @@ TEST(CipCommon, GetSizeOfAttributeCipUsintUsint) {
 }
 
 TEST(CipCommon, GetSizeOfAttributeCipUdintUdintUdintUdintUdintString) {
-  CipTcpIpNetworkInterfaceConfiguration config;
+  CipTcpIpInterfaceConfiguration config;
   char domain_name[] = "www.github.com/EIPStackGroup/OpENer";
   config.domain_name.length = sizeof(domain_name);
   config.domain_name.string = (EipByte *)domain_name;

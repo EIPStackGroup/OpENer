@@ -58,19 +58,19 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
                  6 * sizeof(CipUsint) );
         }
 
-        interface_configuration_.ip_address = inet_addr(
+        g_tcpip.interface_configuration.ip_address = inet_addr(
           pAdapter->IpAddressList.IpAddress.String);
-        interface_configuration_.network_mask = inet_addr(
+        g_tcpip.interface_configuration.network_mask = inet_addr(
           pAdapter->IpAddressList.IpMask.String);
-        interface_configuration_.gateway = inet_addr(
+        g_tcpip.interface_configuration.gateway = inet_addr(
           pAdapter->GatewayList.IpAddress.String);
 
-        CipUdint host_id = ntohl(interface_configuration_.ip_address)
-                           & ~ntohl(interface_configuration_.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
+        CipUdint host_id = ntohl(g_tcpip.interface_configuration.ip_address)
+                           & ~ntohl(g_tcpip.interface_configuration.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
         host_id -= 1;
         host_id &= 0x3ff;
 
-        g_multicast_configuration.starting_multicast_address = htonl(
+        g_tcpip.mcast_config.starting_multicast_address = htonl(
           ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
       }
       pAdapter = pAdapter->Next;
@@ -148,36 +148,27 @@ void ConfigureDomainName() {
         char pStringBuf[INET_ADDRSTRLEN];
         if (i != 0) {
 
-          if (NULL != interface_configuration_.domain_name.string) {
+          if (NULL != g_tcpip.interface_configuration.domain_name.string) {
             /* if the string is already set to a value we have to free the resources
              * before we can set the new value in order to avoid memory leaks.
              */
-            CipFree(interface_configuration_.domain_name.string);
+            CipFree(g_tcpip.interface_configuration.domain_name.string);
           }
-          interface_configuration_.domain_name.length = strlen(
+          g_tcpip.interface_configuration.domain_name.length = strlen(
             pCurrAddresses->DnsSuffix);
-          if (interface_configuration_.domain_name.length) {
-            interface_configuration_.domain_name.string = (CipByte *)CipCalloc(
-              interface_configuration_.domain_name.length + 1,
-              sizeof(CipUsint) );
-            strcpy(interface_configuration_.domain_name.string,
+          if (g_tcpip.interface_configuration.domain_name.length) {
+            g_tcpip.interface_configuration.domain_name.string =
+              (CipByte *)CipCalloc(
+                g_tcpip.interface_configuration.domain_name.length + 1,
+                sizeof(CipUsint) );
+            strcpy(g_tcpip.interface_configuration.domain_name.string,
                    pCurrAddresses->DnsSuffix);
           }
           else {
-            interface_configuration_.domain_name.string = NULL;
+            g_tcpip.interface_configuration.domain_name.string = NULL;
           }
-/*
-          inet_ntop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server,
-                   sizeof(interface_configuration_.name_server) );
-          inet_ntop(AF_INET,
-                   pCurrAddresses->FirstDnsServerAddress->Next->Address.lpSockaddr->sa_data + 2,
-                   interface_configuration_.name_server_2,
-                   sizeof(interface_configuration_.name_server_2) );
- */
         }
-        else{ interface_configuration_.domain_name.length = 0;}
+        else{ g_tcpip.interface_configuration.domain_name.length = 0;}
 
       }
       pCurrAddresses = pCurrAddresses->Next;
@@ -240,18 +231,19 @@ void ConfigureHostName(void) {
 
 
 
-  if (NULL != hostname_.string) {
+  if (NULL != g_tcpip.hostname.string) {
     /* if the string is already set to a value we have to free the resources
      * before we can set the new value in order to avoid memory leaks.
      */
-    CipFree(hostname_.string);
+    CipFree(g_tcpip.hostname.string);
   }
-  hostname_.length = strlen(hostname);
-  if (hostname_.length) {
-    hostname_.string = (CipByte *) CipCalloc( hostname_.length + 1,
-                                              sizeof(CipByte) );
-    strcpy(hostname_.string, hostname);
+  g_tcpip.hostname.length = strlen(hostname);
+  if (g_tcpip.hostname.length) {
+    g_tcpip.hostname.string = (CipByte *) CipCalloc(
+      g_tcpip.hostname.length + 1,
+      sizeof(CipByte) );
+    strcpy(g_tcpip.hostname.string, hostname);
   } else {
-    hostname_.string = NULL;
+    g_tcpip.hostname.string = NULL;
   }
 }

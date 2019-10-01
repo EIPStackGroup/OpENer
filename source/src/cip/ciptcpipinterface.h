@@ -14,10 +14,6 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-extern CipString hostname_;
-
-extern CipTcpIpNetworkInterfaceConfiguration interface_configuration_;
-
 /** @brief TCP/IP Interface class code */
 static const CipUint kCipTcpIpInterfaceClassCode = 0xF5u;
 
@@ -31,12 +27,27 @@ typedef struct multicast_address_configuration {
   CipUdint starting_multicast_address; /**< Starting multicast address from which Num Mcast addresses are allocated */
 } MulticastAddressConfiguration;
 
+/** @brief Declaration of the TCP/IP object's structure type
+ */
+typedef struct {
+  CipDword status;            /**< attribute #1  TCP status */
+  CipDword config_capability; /**< attribute #2 bitmap of capability flags */
+  CipDword config_control;    /**< attribute #3 bitmap: control the interface configuration method: static / BOOTP / DHCP */
+  CipEpath physical_link_object;  /**< attribute #4 references the Ethernet Link object for this  interface */
+  CipTcpIpInterfaceConfiguration interface_configuration;/**< attribute #5 IP, network mask, gateway, name server 1 & 2, domain name*/
+  CipString hostname; /**< #6 host name*/
+  CipUsint mcast_ttl_value; /**< #8 the time to live value to be used for multi-cast connections */
+
+  /** #9 The multicast configuration for this device */
+  MulticastAddressConfiguration mcast_config;
+
+  /** #13 Number of seconds of inactivity before TCP connection is closed */
+  CipUint encapsulation_inactivity_timeout;
+} CipTcpIpObject;
+
+
 /* global public variables */
-extern CipUsint g_time_to_live_value; /**< Time-to-live value for IP multicast packets. Default is 1; Minimum is 1; Maximum is 255 */
-
-extern CipUint g_encapsulation_inactivity_timeout; /**< Number of seconds of inactivity before TCP connection is closed, Default is 120 */
-
-extern MulticastAddressConfiguration g_multicast_configuration; /**< Multicast configuration */
+extern CipTcpIpObject g_tcpip;  /**< declaration of TCP/IP object instance 1 data */
 
 /* public functions */
 /** @brief Initializing the data structures of the TCP/IP interface object
