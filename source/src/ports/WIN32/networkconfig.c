@@ -26,10 +26,10 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 static EipStatus WideToCipString(const WCHAR *const src,
-    CipString *const dest);
+                                 CipString *const dest);
 
 static CipUdint GetDnsServerAddress(
-    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in);
+  const IP_ADAPTER_DNS_SERVER_ADDRESS_XP *const RESTRICT in);
 
 
 void ConfigureIpMacAddress(const CipUint interface_index) {
@@ -66,14 +66,14 @@ void ConfigureIpMacAddress(const CipUint interface_index) {
         }
 
         inet_pton(AF_INET, pAdapter->IpAddressList.IpAddress.String,
-                  &interface_configuration_.ip_address);
+                  &g_tcpip.interface_configuration.ip_address);
         inet_pton(AF_INET, pAdapter->IpAddressList.IpMask.String,
-                  &interface_configuration_.network_mask);
+                  &g_tcpip.interface_configuration.network_mask);
         inet_pton(AF_INET, pAdapter->GatewayList.IpAddress.String,
-                  &interface_configuration_.gateway);
+                  &g_tcpip.interface_configuration.gateway);
 
-        CipUdint host_id = ntohl(interface_configuration_.ip_address)
-                           & ~ntohl(interface_configuration_.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
+        CipUdint host_id = ntohl(g_tcpip.interface_configuration.ip_address)
+                           & ~ntohl(g_tcpip.interface_configuration.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
         host_id -= 1;
         host_id &= 0x3ff;
 
@@ -154,17 +154,17 @@ void ConfigureDomainName(const CipUint interface_index) {
         char pStringBuf[INET_ADDRSTRLEN];
         if (i != 0) {
           WideToCipString(pCurrAddresses->DnsSuffix,
-                          &interface_configuration_.domain_name);
+                          &g_tcpip.interface_configuration.domain_name);
 
-          interface_configuration_.name_server =
-              GetDnsServerAddress(pCurrAddresses->FirstDnsServerAddress);
-          interface_configuration_.name_server_2 =
-              (pCurrAddresses->FirstDnsServerAddress != NULL)
-                  ? GetDnsServerAddress(
-                        pCurrAddresses->FirstDnsServerAddress->Next)
-                  : 0;
+          g_tcpip.interface_configuration.name_server =
+            GetDnsServerAddress(pCurrAddresses->FirstDnsServerAddress);
+          g_tcpip.interface_configuration.name_server_2 =
+            (pCurrAddresses->FirstDnsServerAddress != NULL)
+            ? GetDnsServerAddress(
+              pCurrAddresses->FirstDnsServerAddress->Next)
+            : 0;
         }
-        else{ interface_configuration_.domain_name.length = 0;}
+        else{ g_tcpip.interface_configuration.domain_name.length = 0;}
 
       }
       pCurrAddresses = pCurrAddresses->Next;
@@ -220,9 +220,9 @@ static EipStatus WideToCipString(const WCHAR *const src,
   OPENER_ASSERT(dest != NULL);
 
   /*
-  * Evaluate the source string, ensuring the number of characters fit in
-  * EipUint16, excluding the null terminator.
-  */
+   * Evaluate the source string, ensuring the number of characters fit in
+   * EipUint16, excluding the null terminator.
+   */
   const size_t num_chars = wcslen(src);
   if (num_chars >= UINT16_MAX) {
     return kEipStatusError;
@@ -241,7 +241,7 @@ static EipStatus WideToCipString(const WCHAR *const src,
     /* Transfer the string to the new buffer. */
     size_t converted_chars;
     const errno_t result =
-        wcstombs_s(&converted_chars, buf, buffer_size, src, num_chars);
+      wcstombs_s(&converted_chars, buf, buffer_size, src, num_chars);
     OPENER_ASSERT(result == 0);
   }
 
@@ -269,16 +269,16 @@ static EipStatus WideToCipString(const WCHAR *const src,
 
 
 /** @brief Extracts a DNS server IP address.
-*
-* @param in DNS server address structure from GetAdapterAddresses().
-*
-* @return The IPv4 address in network byte order.
-*/
+ *
+ * @param in DNS server address structure from GetAdapterAddresses().
+ *
+ * @return The IPv4 address in network byte order.
+ */
 static CipUdint GetDnsServerAddress(
-    const IP_ADAPTER_DNS_SERVER_ADDRESS_XP * const RESTRICT in) {
+  const IP_ADAPTER_DNS_SERVER_ADDRESS_XP *const RESTRICT in) {
   return (in != NULL)
-             ? ((SOCKADDR_IN *)in->Address.lpSockaddr)->sin_addr.S_un.S_addr
-             : 0;
+         ? ( (SOCKADDR_IN *)in->Address.lpSockaddr )->sin_addr.S_un.S_addr
+         : 0;
 }
 
 
