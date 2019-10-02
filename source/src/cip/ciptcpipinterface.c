@@ -71,7 +71,7 @@ EipStatus GetAttributeAllTcpIpInterface(
   const struct sockaddr *originator_address,
   const int encapsulation_session);
 
-EipStatus SetAttributeSingleTcp(
+EipStatus SetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
@@ -175,27 +175,27 @@ EipStatus CipTcpIpInterfaceInit() {
 
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute(instance, 1, kCipDword, (void *) &g_tcpip.status,
+  InsertAttribute(instance, 1, kCipDword, &g_tcpip.status,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 2, kCipDword, (void *) &g_tcpip.config_capability,
+  InsertAttribute(instance, 2, kCipDword, &g_tcpip.config_capability,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 3, kCipDword, (void *) &g_tcpip.config_control,
+  InsertAttribute(instance, 3, kCipDword, &g_tcpip.config_control,
                   kSetAndGetAble);
   InsertAttribute(instance, 4, kCipEpath, &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
                   &g_tcpip.interface_configuration, kGetableSingleAndAll);
-  InsertAttribute(instance, 6, kCipString, (void *) &g_tcpip.hostname,
+  InsertAttribute(instance, 6, kCipString, &g_tcpip.hostname,
                   kGetableSingleAndAll);
 
-  InsertAttribute(instance, 8, kCipUsint, (void *) &g_tcpip.mcast_ttl_value,
+  InsertAttribute(instance, 8, kCipUsint, &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 9, kCipAny, (void *) &g_tcpip.mcast_config,
+  InsertAttribute(instance, 9, kCipAny, &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   13,
                   kCipUint,
-                  (void *) &g_tcpip.encapsulation_inactivity_timeout,
+                  &g_tcpip.encapsulation_inactivity_timeout,
                   kSetAndGetAble);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
@@ -205,8 +205,10 @@ EipStatus CipTcpIpInterfaceInit() {
   InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAllTcpIpInterface,
                 "GetAttributeAllTCPIPInterface");
 
-  InsertService(tcp_ip_class, kSetAttributeSingle, &SetAttributeSingleTcp,
-                "SetAttributeSingle");
+  InsertService(tcp_ip_class, kSetAttributeSingle,
+                &SetAttributeSingleTcpIpInterface,
+                "SetAttributeSingleTcpIpInterface");
+
   return kEipStatusOk;
 }
 
