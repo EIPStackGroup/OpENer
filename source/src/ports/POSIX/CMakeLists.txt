@@ -3,7 +3,7 @@ add_subdirectory(sample_application)
 set( PLATFORM_SPEC_SRC networkhandler.c opener_error.c networkconfig.c)
 
 #######################################
-# OpENer RT patch	              #
+# OpENer RT patch	                    #
 #######################################
 set( OpENer_RT OFF CACHE BOOL "Activate OpENer RT" )
 if(OpENer_RT)
@@ -41,7 +41,7 @@ if( OPENER_BUILD_SHARED_LIBS )
 endif()
 
 add_executable(OpENer main.c)
-target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} rt cap pthread)
+target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP NVDATA PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} rt cap pthread)
 
 # Add additional CIP Objects
 string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT )

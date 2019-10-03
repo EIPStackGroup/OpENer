@@ -24,6 +24,20 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
                                      const struct sockaddr *originator_address,
                                      const int encapsulation_session);
 
+static EipStatus AssemblyPreGetCallback
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+);
+
+static EipStatus AssemblyPostSetCallback
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+);
+
 /** @brief Constructor for the assembly object class
  *
  *  Creates an initializes Assembly class or object instances
@@ -51,6 +65,8 @@ CipClass *CreateAssemblyClass(void) {
                   kSetAttributeSingle,
                   &SetAssemblyAttributeSingle,
                   "SetAssemblyAttributeSingle");
+    InsertGetSetCallback(assembly_class, AssemblyPreGetCallback, kPreGetFunc);
+    InsertGetSetCallback(assembly_class, AssemblyPostSetCallback, kPostSetFunc);
   }
 
   return assembly_class;
@@ -105,7 +121,7 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
                   3,
                   kCipByteArray,
                   assembly_byte_array,
-                  kSetAndGetAble);
+                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
   InsertAttribute(instance,
                   4,
@@ -178,6 +194,13 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
             message_router_response->general_status = kCipErrorTooMuchData;
           }
           else{
+            if (attribute->attribute_flags & kPreSetFunc
+                && instance->cip_class->PreSetCallback) {
+                instance->cip_class->PreSetCallback(instance,
+                                                    attribute,
+                                                    message_router_request->service);
+            }
+
             memcpy(data->data, router_request_data, data->length);
 
             if(AfterAssemblyDataReceived(instance) != kEipStatusOk) {
@@ -211,4 +234,34 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
   }
 
   return kEipStatusOkSend;
+}
+
+static EipStatus AssemblyPreGetCallback
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+)
+{
+  int rc;
+  (void) attribute; (void) service; /* no unused parameter warnings */
+
+  rc = BeforeAssemblyDataSend(instance);
+
+  return rc;
+}
+
+static EipStatus AssemblyPostSetCallback
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+)
+{
+  int rc;
+  (void) attribute; (void) service; /* no unused parameter warnings */
+
+  rc = AfterAssemblyDataReceived(instance);
+
+  return rc;
 }

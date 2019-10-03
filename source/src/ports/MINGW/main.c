@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include "nvdata.h"
 
 extern int newfd;
 
@@ -61,6 +62,14 @@ int main(int argc,
 
   /* Setup the CIP Layer */
   CipStackInit(nUniqueConnectionID);
+
+  /* The CIP objects are now created and initialized with their default values.
+   *  Now any NV data values are loaded to change the data to the stored
+   *  configuration.
+   */
+  if (kEipStatusError == NvdataLoad()) {
+    OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
+  }
 
   /* Setup Network Handles */
   if ( kEipStatusOk == NetworkHandlerInitialize() ) {

@@ -107,7 +107,13 @@ typedef enum { /* TODO: Rework */
   kSetable = 0x04, /**< Set-able via Set Attribute */
   /* combined for convenience */
   kSetAndGetAble = 0x07, /**< both set and get-able */
-  kGetableSingleAndAll = 0x03 /**< both single and all */
+  kGetableSingleAndAll = 0x03, /**< both single and all */
+  /* Flags to control the usage of callbacks per attribute from the Get* and Set* services */
+  kPreGetFunc = 0x10, /**< enable pre get callback */
+  kPostGetFunc = 0x20,  /**< enable post get callback */
+  kPreSetFunc = 0x40, /**< enable pre set callback */
+  kPostSetFunc = 0x80,  /**< enable post set callback */
+  kNvDataFunc = 0x80, /**< enable Non Volatile data callback, is the same as @ref kPostSetFunc */
 } CIPAttributeFlag;
 
 typedef enum {
@@ -216,18 +222,21 @@ typedef struct {
                      request */
 } CipMessageRouterResponse;
 
+/** @brief Structure to describe a single CIP attribute of an object
+*/
 typedef struct {
-  EipUint16 attribute_number;
-  EipUint8 type;
-  CIPAttributeFlag attribute_flags; /*< 0 => getable_all, 1 => getable_single; 2 =>
-                                       setable_single; 3 => get and setable; all other
-                                       values reserved */
+  EipUint16 attribute_number; /**< The attribute number of this attribute. */
+  EipUint8 type;  /**< The @ref CipDataType of this attribute. */
+  CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration for valid values. */
   void *data;
 } CipAttributeStruct;
 
-/* type definition of CIP service structure */
 
-/* instances are stored in a linked list*/
+/** @brief Type definition of one instance of an Ethernet/IP object
+ *
+ *  All instances are stored in a linked list that originates from the CipClass::instances
+ *  pointer of the @ref CipClass structure.
+ */
 typedef struct cip_instance {
   EipUint32 instance_number; /**< this instance's number (unique within the class) */
   CipAttributeStruct *attributes; /**< pointer to an array of attributes which
@@ -237,26 +246,58 @@ typedef struct cip_instance {
                                 in a linked list */
 } CipInstance;
 
-/** @brief Class is a subclass of Instance */
+/** @ingroup CIP_API
+ *  @typedef EipStatus (*CipGetSetCallback)(
+ *    CipInstance *const instance,
+ *    CipAttributeStruct *const attribute,
+ *    CipByte service
+ *  )
+ *  @brief Signature definition of callback functions for Set and Get services
+ *
+ *  @param  instance  CIP instance involved in the Set or Get service
+ *  @param  attribute CIP attribute involved in the Set or Get service
+ *  @param  service   service code of currently executed service
+ *  @return           status of kEipStatusOk or kEipStatusError on failure
+ */
+typedef EipStatus (*CipGetSetCallback)
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+);
+
+/** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {
-  CipInstance class_instance;
+  CipInstance class_instance; /**< This is the instance that contains the
+                                  class attributes of this class. */
   /* the rest of these are specific to the Class class only. */
   CipUdint class_code; /**< class code */
   EipUint16 revision; /**< class revision*/
   EipUint16 number_of_instances; /**< number of instances in the class (not
-                                    including instance 0)*/
-  EipUint16 number_of_attributes; /**< number of attributes of each instance*/
+                                    including instance 0) */
+  EipUint16 number_of_attributes; /**< number of attributes of each instance */
   EipUint16 highest_attribute_number; /**< highest defined attribute number
                                          (attribute numbers are not necessarily
-                                         consecutive)*/
-  uint8_t *get_single_bit_mask; /**< Bitmask for GetAttributeSingle*/
-  uint8_t *set_bit_mask; /**< Bitmask for SetAttributeSingle*/
-  uint8_t *get_all_bit_mask; /**< Bitmask for GetAttributeAll*/
+                                         consecutive) */
+  uint8_t *get_single_bit_mask; /**< bit mask for GetAttributeSingle */
+  uint8_t *set_bit_mask; /**< bit mask for SetAttributeSingle */
+  uint8_t *get_all_bit_mask; /**< bit mask for GetAttributeAll */
 
-  EipUint16 number_of_services; /**< number of services supported*/
-  CipInstance *instances; /**< pointer to the list of instances*/
-  struct cip_service_struct *services; /**< pointer to the array of services*/
+  EipUint16 number_of_services; /**< number of services supported */
+  CipInstance *instances; /**< pointer to the list of instances */
+  struct cip_service_struct *services; /**< pointer to the array of services */
   char *class_name; /**< class name */
+  /** Is called in GetAttributeSingle* before the response is assembled from
+  * the object's attributes */
+  CipGetSetCallback PreGetCallback;
+  /** Is called in GetAttributeSingle* after the response has been sent. */
+  CipGetSetCallback PostGetCallback;
+  /** Is called in SetAttributeSingle* before the received data is moved
+  * to the object's attributes */
+  CipGetSetCallback PreSetCallback;
+  /** Is called in SetAttributeSingle* after the received data was set
+  * in the object's attributes. */
+  CipGetSetCallback PostSetCallback;
 } CipClass;
 
 /** @ingroup CIP_API

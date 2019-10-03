@@ -81,7 +81,7 @@ typedef unsigned long long MicroSeconds;
    0 ..  success and there is no reply to send
    1 ... success and there is a reply to send
 
-   For both of these cases EIP_STATUS is the return type.
+   For both of these cases EipStatus is the return type.
 
    Other return type are:
    -- return pointer to thing, 0 if error (return type is "pointer to thing")

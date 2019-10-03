@@ -249,7 +249,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   class->class_instance.instance_number = 0;       /* the class object is instance zero of the class it describes (weird, but that's the spec)*/
   class->class_instance.attributes = 0;       /* this will later point to the class attibutes*/
   class->class_instance.cip_class = meta_class;       /* the class's class is the metaclass (like SmallTalk)*/
-  class->class_instance.next = 0;       /* the next link will always be zero, sinc there is only one instance of any particular class object */
+  class->class_instance.next = 0;       /* the next link will always be zero, since there is only one instance of any particular class object */
 
   meta_class->class_instance.instance_number = 0xffffffff;       /*the metaclass object does not really have a valid instance number*/
   meta_class->class_instance.attributes = 0;       /* the metaclass has no attributes*/
@@ -383,6 +383,28 @@ void InsertService(const CipClass *const class,
   /* adding more services than were declared is a no-no*/
 }
 
+void InsertGetSetCallback
+(
+  CipClass *const cip_class,
+  CipGetSetCallback callback_function,
+  CIPAttributeFlag  callbacks_to_install
+) {
+  if (0 != (kPreGetFunc & callbacks_to_install)) {
+    cip_class->PreGetCallback = callback_function;
+  }
+  if (0 != (kPostGetFunc & callbacks_to_install)) {
+    cip_class->PostGetCallback = callback_function;
+  }
+  if (0 != (kPreSetFunc & callbacks_to_install)) {
+    cip_class->PreSetCallback = callback_function;
+  }
+  /* The PostSetCallback is used for both, the after set action and the storage
+   * of non volatile data. Therefore check for both flags set. */
+  if (0 != ((kPostSetFunc | kNvDataFunc) & callbacks_to_install)) {
+    cip_class->PostSetCallback = callback_function;
+  }
+}
+
 CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
                                     const EipUint16 attribute_number) {
 
@@ -437,16 +459,9 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number);                 /* create a reply message containing the data*/
 
-      /*TODO think if it is better to put this code in an own
-       * getAssemblyAttributeSingle functions which will call get attribute
-       * single.
-       */
-
-      if (attribute->type == kCipByteArray
-          && instance->cip_class->class_code == kCipAssemblyClassCode) {
-        /* we are getting a byte array of a assembly object, kick out to the app callback */
-        OPENER_TRACE_INFO(" -> getAttributeSingle CIP_BYTE_ARRAY\r\n");
-        BeforeAssemblyDataSend(instance);
+      /* Call the PreGetCallback if enabled for this attribute and the class provides one. */
+      if (attribute->attribute_flags & kPreGetFunc && NULL != instance->cip_class->PreGetCallback) {
+        instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
       }
 
       OPENER_ASSERT(NULL != attribute)
@@ -454,6 +469,11 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                                                         attribute->data,
                                                         &message);
       message_router_response->general_status = kCipErrorSuccess;
+
+      /* Call the PostGetCallback if enabled for this attribute and the class provides one. */
+      if (attribute->attribute_flags & kPostGetFunc && NULL != instance->cip_class->PostGetCallback) {
+        instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
+      }
     }
   }
 

@@ -1,9 +1,8 @@
 #######################################
-# OpENer ports			              #
+# Non Volatile data storage library   #
 #######################################
 
-add_subdirectory( ${OpENer_PLATFORM} )
-add_subdirectory( nvdata )
+set( NVDATA_SRC nvdata.c conffile.c nvqos.c )
 
 #######################################
 # Add common includes                 #
@@ -15,22 +14,17 @@ opener_common_includes()
 #######################################
 opener_platform_support("INCLUDES")
 
-set( PLATFORM_GENERIC_SRC generic_networkhandler.c socket_timer.c  udp_protocol.c )
-
-add_library( PLATFORM_GENERIC ${PLATFORM_GENERIC_SRC} )
+add_library( NVDATA ${NVDATA_SRC} )
 
 if( OPENER_BUILD_SHARED_LIBS )
-  install(TARGETS PLATFORM_GENERIC
+  install(TARGETS NVDATA
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  install(DIRECTORY ${PORTS_SRC_DIR}
+  install(DIRECTORY ${NVDATA_SRC_DIR}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    USE_SOURCE_PERMISSIONS
-    FILES_MATCHING
-      PATTERN "*.h"
-      PATTERN "sample_application" EXCLUDE
+    FILES_MATCHING PATTERN "*.h"
    )
 endif()
 
