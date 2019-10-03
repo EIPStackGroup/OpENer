@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "trace.h"
 #include "opener_api.h"
 #include "ciptcpipinterface.h"
 #include "cipqos.h"
