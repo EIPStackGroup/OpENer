@@ -24,4 +24,11 @@ EipStatus NvQosSetCallback
   CipByte service
 );
 
+EipStatus NvTcpipSetCallback
+(
+    CipInstance *const instance,
+    CipAttributeStruct *const attribute,
+    CipByte service
+);
+
 #endif  /* ifndef NVDATA_H_ */

@@ -2,7 +2,7 @@
 # Non Volatile data storage library   #
 #######################################
 
-set( NVDATA_SRC nvdata.c conffile.c nvqos.c )
+set( NVDATA_SRC nvdata.c conffile.c nvqos.c nvtcpip.c )
 
 #######################################
 # Add common includes                 #
