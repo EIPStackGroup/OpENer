@@ -12,7 +12,7 @@
 #include "trace.h"
 #include "ciptcpipinterface.h"
 #include "cipqos.h"
-#include "nvqos.h"
+#include "nvdata.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -22,37 +22,6 @@
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
 
 /* local functions */
-/** Implementation of the PostSetCallback for QoS class
-*
-* @param  instance  pointer to instance of QoS class
-* @param  attribute pointer to attribute structure
-* @param  service   the CIP service code of current request
-*
-* This function implements the PostSetCallback for the QoS class. The
-* purpose of this function is to save the NV attributes of the QoS
-* class instance to external storage.
-*
-* This application specific implementation chose to save all attributes
-* at once using a single NvQosStore() call.
-*/
-static EipStatus QosSetCallback
-(
-  CipInstance *const instance,
-  CipAttributeStruct *const attribute,
-  CipByte service
-)
-{
-  EipStatus status = kEipStatusOk;
-
-  if (0 != (kNvDataFunc & attribute->attribute_flags)) {
-    OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
-                      instance->cip_class->class_name,
-                      instance->instance_number,
-                      attribute->attribute_number);
-    status = NvQosStore(&g_qos);
-  }
-  return status;
-}
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
@@ -100,7 +69,7 @@ EipStatus ApplicationInitialization(void) {
   /* For NV data support connect callback functions for each object class with
    *  NV data.
    */
-  InsertGetSetCallback(GetCipClass(kCipQoSClassCode), QosSetCallback,
+  InsertGetSetCallback(GetCipClass(kCipQoSClassCode), NvQosSetCallback,
                        kNvDataFunc);
 
   return kEipStatusOk;

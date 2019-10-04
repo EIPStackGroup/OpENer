@@ -13,7 +13,15 @@
 #define NVDATA_H_
 
 #include "typedefs.h"
+#include "ciptypes.h"
 
 EipStatus NvdataLoad(void);
+
+EipStatus NvQosSetCallback
+(
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
+);
 
 #endif  /* ifndef NVDATA_H_ */
