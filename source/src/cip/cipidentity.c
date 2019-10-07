@@ -37,6 +37,8 @@
 #include "opener_api.h"
 #include "trace.h"
 
+/** @brief The device's configuration data for the Identity Object */
+#include "devicedata.h"
 
 /** @brief Definition of the global Identity Object */
 CipIdentityObject g_identity =

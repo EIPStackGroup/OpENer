@@ -29,9 +29,6 @@
 
 #include "typedefs.h"
 
-/** @brief Identity configuration of the device */
-#include "devicedata.h"
-
 /** @brief Define the number of objects that may be used in connections
  *
  *  This number needs only to consider additional objects. Connections to
