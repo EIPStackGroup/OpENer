@@ -279,7 +279,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
         &(g_tcpip.mcast_config.number_of_allocated_multicast_addresses),
         &message);
 
-      EipUint32 multicast_address = ntohl(
+      CipUdint multicast_address = ntohl(
         g_tcpip.mcast_config.starting_multicast_address);
 
       message_router_response->data_length += EncodeData(kCipUdint,
@@ -350,6 +350,28 @@ EipStatus GetAttributeAllTcpIpInterface(
 
   return kEipStatusOkSend;
 }
+
+/**
+ *  This function calculates the multicast base address to be used for CIP
+ *  connections from the current IP setting. The algorithm is implemented
+ *  according to CIP spec Volume 2,
+ *  section 3-5.3 "Multicast Address Allocation for EtherNet/IP"
+ */
+void CipTcpIpCalculateMulticastIp(CipTcpIpObject *p_tcpip)
+{
+  /* Multicast base address according to spec: 239.192.1.0 */
+  static const CipUdint cip_mcast_base_addr = 0xEFC00100;
+
+  /* Calculate the CIP multicast address. The multicast address is calculated, not input */
+  CipUdint host_id = ntohl(p_tcpip->interface_configuration.ip_address) &
+                    ~ntohl(p_tcpip->interface_configuration.network_mask);
+  host_id -= 1;
+  host_id &= 0x3ff;
+
+  g_tcpip.mcast_config.starting_multicast_address =
+    htonl(cip_mcast_base_addr + (host_id << 5));
+}
+
 
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipAttributeStruct *attribute = GetCipAttribute(instance, 13);

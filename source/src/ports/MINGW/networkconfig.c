@@ -65,13 +65,9 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
         g_tcpip.interface_configuration.gateway = inet_addr(
           pAdapter->GatewayList.IpAddress.String);
 
-        CipUdint host_id = ntohl(g_tcpip.interface_configuration.ip_address)
-                           & ~ntohl(g_tcpip.interface_configuration.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
-        host_id -= 1;
-        host_id &= 0x3ff;
-
-        g_tcpip.mcast_config.starting_multicast_address = htonl(
-          ntohl(inet_addr("239.192.1.0") ) + (host_id << 5) );
+        /* Calculate the CIP multicast address. The multicast address is
+         * derived from the current IP address. */
+        CipTcpIpCalculateMulticastIp(&g_tcpip);
       }
       pAdapter = pAdapter->Next;
     }

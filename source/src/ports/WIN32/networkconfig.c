@@ -72,15 +72,9 @@ void ConfigureIpMacAddress(const CipUint interface_index) {
         inet_pton(AF_INET, pAdapter->GatewayList.IpAddress.String,
                   &g_tcpip.interface_configuration.gateway);
 
-        CipUdint host_id = ntohl(g_tcpip.interface_configuration.ip_address)
-                           & ~ntohl(g_tcpip.interface_configuration.network_mask);              /* see CIP spec 3-5.3 for multicast address algorithm*/
-        host_id -= 1;
-        host_id &= 0x3ff;
-
-        CipUdint multicast_base;
-        inet_pton(AF_INET, "239.192.1.0", &multicast_base);
-        g_tcpip.mcast_config.starting_multicast_address = htonl(
-          ntohl(multicast_base) + (host_id << 5) );
+        /* Calculate the CIP multicast address. The multicast address is
+         * derived from the current IP address. */
+        CipTcpIpCalculateMulticastIp(&g_tcpip);
       }
       pAdapter = pAdapter->Next;
     }
