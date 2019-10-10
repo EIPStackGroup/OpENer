@@ -71,8 +71,13 @@ EipStatus NetworkHandlerInitialize(void) {
   SocketTimerArrayInitialize(g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS);
   /* Activate the current DSCP values to become the used set of values. */
   CipQosUpdateUsedSetQosValues();
+  /* Make sure the multicast configuration matches the current IP address. */
+  CipTcpIpCalculateMulticastIp(&g_tcpip);
+  /* Initialize encapsulation layer here because it accesses the IP address. */
+  EncapsulationInit();
 
-  /* clear the master an temp sets */
+
+  /* clear the master and temp sets */
   FD_ZERO(&master_socket);
   FD_ZERO(&read_socket);
 
