@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-/** @file generic_networkhandler.c
+/** @file generic_networkhandler.h
  *  @author Martin Melik Merkumians
  *  @brief This file includes all platform-independent functions of the network handler to reduce code duplication
  *

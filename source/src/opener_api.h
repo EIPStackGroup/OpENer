@@ -244,6 +244,28 @@ void InsertService(const CipClass *const cip_class_to_add_service,
                    char *const service_name);
 
 /** @ingroup CIP_API
+ * @brief Insert a Get or Set callback for a CIP class
+ *
+ * @param cip_class pointer to the target CIP object
+ * @param callback_function the callback function to insert
+ * @param callbacks_to_install  flags to select the affected callbacks
+ *
+ * This function inserts the provided @p callback_function into selected
+ *  callback function entries of the CIP class @p cip_class.
+ * The callback targets are selected by @p callbacks_to_install that may
+ *  be an ORed mask of kPreGetFunc, kPostGetFunc, kPreSetFunc, kPostSetFunc
+ *  and kNvDataFunc.
+ * If either the kPostSetFunc or kNvDataFunc is set the same function
+ *  pointer CipClass::PostSetCallback will be called.
+ */
+void InsertGetSetCallback
+(
+  CipClass *const cip_class,
+  CipGetSetCallback callback_function,
+  CIPAttributeFlag  callbacks_to_install
+);
+
+/** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *
  * This function may be used in own services for sending data back to the

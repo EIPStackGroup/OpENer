@@ -92,8 +92,22 @@ EipStatus SetAttributeSingleQoS(
       OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
       if(NULL != attribute->data) {
+        /* Call the PreSetCallback if enabled. */
+        if (attribute->attribute_flags & kPreSetFunc
+            && NULL != instance->cip_class->PreSetCallback) {
+          instance->cip_class->PreSetCallback(instance, attribute,
+                                            message_router_request->service);
+        }
+
         CipUsint *data = (CipUsint *) attribute->data;
         *(data) = attribute_value_received;
+
+        /* Call the PostSetCallback if enabled. */
+        if (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc)
+            && NULL != instance->cip_class->PostSetCallback) {
+          instance->cip_class->PostSetCallback(instance, attribute,
+                                            message_router_request->service);
+        }
 
         message_router_response->general_status = kCipErrorSuccess;
       } else {
@@ -184,27 +198,27 @@ EipStatus CipQoSInit() {
                   4,
                   kCipUsint,
                   (void *) &g_qos.dscp.urgent,
-                  kGetableSingle | kSetable);
+                  kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
                   (void *) &g_qos.dscp.scheduled,
-                  kGetableSingle | kSetable);
+                  kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
                   (void *) &g_qos.dscp.high,
-                  kGetableSingle | kSetable);
+                  kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
                   (void *) &g_qos.dscp.low,
-                  kGetableSingle | kSetable);
+                  kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   (void *) &g_qos.dscp.explicit,
-                  kGetableSingle | kSetable);
+                  kGetableSingle | kSetable | kNvDataFunc);
 
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingleQoS,
                 "GetAttributeSingleQoS");

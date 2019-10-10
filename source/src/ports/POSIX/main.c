@@ -22,6 +22,7 @@
 #include "networkconfig.h"
 #include "doublylinkedlist.h"
 #include "cipconnectionobject.h"
+#include "nvdata.h"
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
@@ -110,6 +111,14 @@ int main(int argc,
 
   /* Setup the CIP Layer */
   CipStackInit(unique_connection_id);
+
+  /* The CIP objects are now created and initialized with their default values.
+   *  Now any NV data values are loaded to change the data to the stored
+   *  configuration.
+   */
+  if (kEipStatusError == NvdataLoad()) {
+    OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
+  }
 
   /* Setup Network Handles */
   if (kEipStatusOk == NetworkHandlerInitialize() ) {
