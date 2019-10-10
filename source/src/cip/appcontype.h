@@ -8,8 +8,6 @@
 
 #include "cipconnectionmanager.h"
 
-extern DoublyLinkedList connection_list;
-
 void InitializeIoConnectionData(void);
 
 /** @brief check if for the given connection data received in a forward_open request

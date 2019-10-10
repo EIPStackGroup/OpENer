@@ -52,6 +52,7 @@
 #define CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED (1 << 11)
 #define CIP_CONNECTION_OBJECT_PRIORITY_URGENT (3 << 10)
 
+/** @brief Definition of the global connection list */
 DoublyLinkedList connection_list;
 
 /** @brief Array of the available explicit connections */

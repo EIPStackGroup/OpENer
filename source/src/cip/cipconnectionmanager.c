@@ -34,8 +34,6 @@ const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the fo
 static const int g_kNumberOfConnectableObjects = 2 +
                                                  OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
 
-extern DoublyLinkedList connection_list;
-
 typedef struct {
   EipUint32 class_id;
   OpenConnectionFunction open_connection_function;

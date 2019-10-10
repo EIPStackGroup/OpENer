@@ -191,6 +191,9 @@ struct cip_connection_object {
   ENIPMessage last_reply_sent;
 };
 
+/** @brief Extern declaration of the global connection list */
+extern DoublyLinkedList connection_list;
+
 DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
   );
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
