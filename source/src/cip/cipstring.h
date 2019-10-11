@@ -17,6 +17,11 @@
 #include "ciptypes.h"
 
 
+CipString *FreeCipString
+(
+  CipString *p_cip_string
+);
+
 CipString *SetCipStringByData
 (
    CipString *p_cip_string,
@@ -28,6 +33,11 @@ CipString *SetCipStringByCstr
 (
   CipString *p_cip_string,
   const char *p_string
+);
+
+CipShortString *FreeCipShortString
+(
+  CipShortString *p_cip_string
 );
 
 CipShortString *SetCipShortStringByData

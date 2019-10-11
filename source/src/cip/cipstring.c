@@ -17,34 +17,42 @@
 
 #include "opener_api.h"
 
+CipString *FreeCipString
+(
+  CipString *p_cip_string
+)
+{
+  if (NULL != p_cip_string->string) {
+    CipFree(p_cip_string->string);
+    p_cip_string->string = NULL;
+    p_cip_string->length = 0;
+  }
+  return p_cip_string;
+}
+
 
 CipString *SetCipStringByData
 (
-   CipString *p_cip_string,
-   size_t str_len,
-   const EipUint8 *p_data
+  CipString *p_cip_string,
+  size_t str_len,
+  const EipUint8 *p_data
 )
 {
-    CipString   *p_result = p_cip_string;
+  CipString   *p_result = p_cip_string;
 
-    if (NULL != p_cip_string->string) {
-        CipFree(p_cip_string->string);
-        p_cip_string->string = NULL;
-        p_cip_string->length = 0;
-    }
+  (void) FreeCipString(p_cip_string);
 
-    if (str_len) {
-        /* Allocate & clear +1 bytes for the trailing '\0' character. */
-        p_cip_string->string = CipCalloc(str_len+1, sizeof (EipUint8));
-        if (NULL == p_cip_string->string) {
-            p_result = NULL;
-        }
-        else {
-            p_cip_string->length = str_len;
-            memcpy(p_cip_string->string, p_data, str_len);
-        }
+  if (str_len) {
+    /* Allocate & clear +1 bytes for the trailing '\0' character. */
+    p_cip_string->string = CipCalloc(str_len+1, sizeof (EipUint8));
+    if (NULL == p_cip_string->string) {
+      p_result = NULL;
+    } else {
+      p_cip_string->length = str_len;
+      memcpy(p_cip_string->string, p_data, str_len);
     }
-    return p_result;
+  }
+  return p_result;
 }
 
 
@@ -59,33 +67,42 @@ CipString *SetCipStringByCstr
 }
 
 
-CipShortString *SetCipShortStringByData
+CipShortString *FreeCipShortString
 (
-   CipShortString *p_cip_string,
-   size_t str_len,
-   const EipUint8 *p_data
+  CipShortString *p_cip_string
 )
 {
-    CipShortString   *p_result = p_cip_string;
+  if (NULL != p_cip_string->string) {
+    CipFree(p_cip_string->string);
+    p_cip_string->string = NULL;
+    p_cip_string->length = 0;
+  }
+  return p_cip_string;
+}
 
-    if (NULL != p_cip_string->string) {
-        CipFree(p_cip_string->string);
-        p_cip_string->string = NULL;
-        p_cip_string->length = 0;
-    }
 
-    if (str_len) {
-        /* Allocate & clear +1 bytes for the trailing '\0' character. */
-        p_cip_string->string = CipCalloc(str_len+1, sizeof (EipUint8));
-        if (NULL == p_cip_string->string) {
-            p_result = NULL;
-        }
-        else {
-            p_cip_string->length = str_len;
-            memcpy(p_cip_string->string, p_data, str_len);
-        }
+CipShortString *SetCipShortStringByData
+(
+  CipShortString *p_cip_string,
+  size_t str_len,
+  const EipUint8 *p_data
+)
+{
+  CipShortString   *p_result = p_cip_string;
+
+  (void) FreeCipShortString(p_cip_string);
+
+  if (str_len) {
+    /* Allocate & clear +1 bytes for the trailing '\0' character. */
+    p_cip_string->string = CipCalloc(str_len+1, sizeof (EipUint8));
+    if (NULL == p_cip_string->string) {
+      p_result = NULL;
+    } else {
+      p_cip_string->length = str_len;
+      memcpy(p_cip_string->string, p_data, str_len);
     }
-    return p_result;
+  }
+  return p_result;
 }
 
 
@@ -95,6 +112,6 @@ CipShortString *SetCipShortStringByCstr
   const char *p_string
 )
 {
-    return SetCipShortStringByData(p_cip_string, strlen(p_string),
-                              (const EipByte *)p_string);
+  return SetCipShortStringByData(p_cip_string, strlen(p_string),
+                                 (const EipByte *)p_string);
 }
