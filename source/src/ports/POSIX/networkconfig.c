@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 #include <errno.h>
+#include <limits.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@
 
 #include "ciptcpipinterface.h"
 #include "cipethernetlink.h"
+#include "cipstring.h"
 #include "networkconfig.h"
 #include "cipcommon.h"
 #include "ciperror.h"
@@ -220,23 +222,12 @@ void ConfigureDomainName() {
 }
 
 void ConfigureHostName() {
-  char name[1024] = { 0 };
-  gethostname(name, sizeof(name) );
+  char    name_buf[HOST_NAME_MAX];
+  int     rc;
 
-  if(NULL != g_tcpip.hostname.string) {
-    /* if the string is already set to a value we have to free the resources
-     * before we can set the new value in order to avoid memory leaks.
-     */
-    CipFree(g_tcpip.hostname.string);
-  }
-  g_tcpip.hostname.length = strlen(name);
-  if(g_tcpip.hostname.length) {
-    g_tcpip.hostname.string =
-      (EipByte *) CipCalloc(g_tcpip.hostname.length + 1, sizeof(EipByte) );
-    snprintf( (char *)g_tcpip.hostname.string,
-              (g_tcpip.hostname.length + 1) * sizeof(EipByte), "%s", name );
-  }
-  else{
-    g_tcpip.hostname.string = NULL;
+  rc = gethostname(name_buf, sizeof name_buf);
+  name_buf[HOST_NAME_MAX-1] = '\0'; /* Ensure termination */
+  if (0 == rc) {
+      SetCipStringByCstr(&g_tcpip.hostname, name_buf);
   }
 }
