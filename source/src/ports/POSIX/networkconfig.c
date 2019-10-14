@@ -136,88 +136,88 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
 }
 
 void ConfigureDomainName() {
-  char resolv_conf_file[] = "/etc/resolv.conf";
+  static const char resolv_conf_file[] = "/etc/resolv.conf";
   FILE *file_handle = fopen(resolv_conf_file, "r");
   char *file_buffer = NULL;
   size_t file_length;
-  char *domain_name_string = NULL;
-  char *dns1_string = NULL;
-  char *dns2_string = NULL;
 
   if(file_handle) {
     fseek(file_handle, 0, SEEK_END);
     file_length = ftell(file_handle);
     fseek(file_handle, 0, SEEK_SET);
-    file_buffer = malloc(file_length);
+    file_buffer = malloc(file_length+1u); /* +1u for zero termination */
     if(file_buffer) {
       size_t rd_sz = fread(file_buffer, 1, file_length, file_handle);
       fclose(file_handle);
       if (rd_sz != file_length) {
         OPENER_TRACE_ERR("Read error on file %s\n", resolv_conf_file);
-        exit(1);
+        free(file_buffer);
+        exit(EXIT_FAILURE);
       }
+      file_buffer[file_length] = '\0';  /* zero terminate for sure */
     }
     else{
       OPENER_TRACE_ERR("Could not allocate memory for reading file %s\n",
                        resolv_conf_file);
       fclose(file_handle);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   } else {
     OPENER_TRACE_ERR("Could not open file %s\n", resolv_conf_file);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
-  if(strstr(file_buffer, "domain") ) {
-    char *strtok_save = NULL;
-    strtok_r(file_buffer, " ", &strtok_save);
-    domain_name_string = strtok_r(file_buffer, "\n", &strtok_save);
+  char *value_string;
+  char *strtok_save;
+  char *strtok_key;
+  char *p_line;
+  CipUdint  dmy_dns;
+  CipUdint  *p_dns = &g_tcpip.interface_configuration.name_server;
+  /* Split the file_buffer into lines. */
+  for (char *strtok_beg = file_buffer;
+        NULL != (p_line = strtok_r(strtok_beg, "\n", &strtok_save));
+        strtok_beg = NULL)
+  {
+    /* Inspect each line for keywords: search, domain, nameserver */
+    switch (p_line[0]) {
+    case '#':
+      /* fall through */
+    case ';':
+      /* Simply skip comments */
+      break;
 
-    if(NULL != g_tcpip.interface_configuration.domain_name.string) {
-      /* if the string is already set to a value we have to free the resources
-       * before we can set the new value in order to avoid memory leaks.
-       */
-      CipFree(g_tcpip.interface_configuration.domain_name.string);
+    case 'd':
+      /* fall through */
+    case 's':
+      strtok_r(p_line, " \t", &strtok_key);
+      if (0 == strcmp("search", p_line) || 0 == strcmp("domain", p_line)) {
+        if (NULL != (value_string = strtok_r(NULL, " \t", &strtok_key)))  {
+          SetCipStringByCstr(&g_tcpip.interface_configuration.domain_name,
+                            value_string);
+        }
+      }
+      break;
+
+    case 'n':
+      strtok_r(p_line, " \t", &strtok_key);
+      if (0 == strcmp("nameserver", p_line)) {
+        if (NULL != (value_string = strtok_r(NULL, " \t", &strtok_key))) {
+          inet_pton(AF_INET, value_string, p_dns);
+          /* Adjust destination for next nameserver occurrence. */
+          if (p_dns != &dmy_dns) {
+            if (p_dns == &g_tcpip.interface_configuration.name_server) {
+              p_dns = &g_tcpip.interface_configuration.name_server_2;
+            }
+            else {
+              /* After 2 nameserver lines any further nameservers are ignored. */
+              p_dns = &dmy_dns;
+            }
+          }
+        }
+      }
+      break;
     }
-    g_tcpip.interface_configuration.domain_name.length = strlen(
-      domain_name_string);
-
-    if(g_tcpip.interface_configuration.domain_name.length) {
-      g_tcpip.interface_configuration.domain_name.string =
-        (EipByte *) CipCalloc(
-          g_tcpip.interface_configuration.domain_name.length + 1,
-          sizeof(EipByte) );
-      /* *.domain_name.string was calloced with *.domain_name.length+1 which
-       *    provides a trailing '\0' when memcpy( , , *.length) is done!
-       */
-      memcpy(g_tcpip.interface_configuration.domain_name.string,
-             domain_name_string,
-             g_tcpip.interface_configuration.domain_name.length);
-    }
-    else{
-      g_tcpip.interface_configuration.domain_name.string = NULL;
-    }
   }
-
-  if(strstr(file_buffer, "nameserver") ) {
-    char *strtok_save = NULL;
-    strtok_r(file_buffer, " ", &strtok_save);
-    dns1_string = strtok_r(NULL, "\n", &strtok_save);
-
-    inet_pton(AF_INET, dns1_string,
-              &g_tcpip.interface_configuration.name_server);
-  }
-
-  if(strstr(file_buffer, "nameserver ") ) {
-    char *strtok_save = NULL;
-    strtok_r(file_buffer, " ", &strtok_save);
-    dns2_string = strtok_r(file_buffer, "\n", &strtok_save);
-
-    inet_pton(AF_INET,
-              dns2_string,
-              &g_tcpip.interface_configuration.name_server_2);
-  }
-
   free(file_buffer);
 }
 
