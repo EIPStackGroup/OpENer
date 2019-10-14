@@ -85,52 +85,63 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
     close(fd);
   }
 
-  char route_location[] = "/proc/net/route";
+  /* Calculate the CIP multicast address. The multicast address is
+   * derived from the current IP address and network mask. */
+  CipTcpIpCalculateMulticastIp(&g_tcpip);
+
+  static const char route_location[] = "/proc/net/route";
 
   FILE *file_handle = fopen(route_location, "r");
-  char file_buffer[100] = { 0 };
+  char file_buffer[132];
   char *gateway_string = NULL;
-  CipUdint gateway = 0;
 
-  if(file_handle) {
-    char *needle_start = NULL;
+  if(!file_handle) {
+    exit(EXIT_FAILURE);
+  }
+  else {
+    char *needle_start;
+    file_buffer[0] = '\0';  /* To enter the while loop */
     while(NULL ==
-          (needle_start =
-             strstr(file_buffer,
-                    network_interface) ) &&
+          (needle_start = strstr(file_buffer, network_interface) ) &&
           fgets(file_buffer, sizeof(file_buffer), file_handle) ) {
+      /* Skip each non matching line */
     }
+    fclose(file_handle);
 
     if(NULL != needle_start) {
       char *strtok_save = NULL;
-      strtok_r(needle_start, " \t", &strtok_save);
-      strtok_r(needle_start, " \t", &strtok_save);
-      gateway_string = strtok_r(needle_start, "\t", &strtok_save);
+      strtok_r(needle_start, " \t", &strtok_save);  /* Iface token */
+      strtok_r(NULL, " \t", &strtok_save);  /* Destination token */
+      gateway_string = strtok_r(NULL, " \t", &strtok_save);
     }
-    else{
+    else {
       OPENER_TRACE_ERR("network interface: %s not found", network_interface);
-      fclose(file_handle);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
 
-  if(inet_pton(AF_INET, gateway_string, &gateway) == 1) {
-    if(INADDR_LOOPBACK != gateway) {
-      g_tcpip.interface_configuration.gateway = gateway;
-    }
-    else{
-      g_tcpip.interface_configuration.gateway = 0;
-    }
+  CipUdint gateway = 0;
+  char *p_end;
+  /* The gateway string is a hex number in network byte order. */
+  errno = 0;  /* To distinguish success / failure later */
+  gateway = strtoul(gateway_string, &p_end, 16);
+
+  if ((errno == ERANGE && gateway == ULONG_MAX) ||  /* overflow */
+      (gateway_string == p_end) ||  /* No digits were found */
+      ('\0' != *p_end) ) {          /* More characters after number */
+    g_tcpip.interface_configuration.gateway = 0;
+    return kEipStatusError;
   }
-  else{
+  /* Only reached on strtoul() conversion success */
+  if(INADDR_LOOPBACK != gateway) {
+    g_tcpip.interface_configuration.gateway = gateway;
+  }
+  else {
     g_tcpip.interface_configuration.gateway = 0;
   }
-
-  /* Calculate the CIP multicast address. The multicast address is
-   * derived from the current IP address. */
-  CipTcpIpCalculateMulticastIp(&g_tcpip);
-
-  fclose(file_handle);
+  {
+    char ip_str[INET_ADDRSTRLEN];
+    OPENER_TRACE_INFO("Decoded gateway: %s\n", inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str));  }
 
   return kEipStatusOk;
 }
