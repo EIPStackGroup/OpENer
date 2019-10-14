@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include "ciptcpipinterface.h"
+#include "cipethernetlink.h"
 #include "networkconfig.h"
 #include "cipcommon.h"
 #include "ciperror.h"
@@ -23,24 +24,29 @@
 #include "opener_api.h"
 
 
-void ConfigureMacAddress(const char *interface) {
+EipStatus ConfigureMacAddressByInterface(const char *interface) {
   struct ifreq ifr;
   size_t if_name_len = strlen(interface);
-  if(if_name_len < sizeof(ifr.ifr_name) ) {
+  EipStatus status = kEipStatusError;
+
+  if(if_name_len < sizeof(ifr.ifr_name)) {
     memcpy(ifr.ifr_name, interface, if_name_len);
-    ifr.ifr_name[if_name_len] = 0;
+    ifr.ifr_name[if_name_len] = '\0';
+
+    int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+
+    if(ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
+      memcpy(&(g_ethernet_link.physical_address), &ifr.ifr_hwaddr.sa_data,
+             sizeof(g_ethernet_link.physical_address) );
+      status = kEipStatusOk;
+    }
+    close(fd);
   }
-  else{
-    OPENER_TRACE_INFO("interface name is too long");
+  else {
+    OPENER_TRACE_ERR("interface name is too long");
   }
 
-  int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-
-  if(ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
-    memcpy(&(g_ethernet_link.physical_address), &ifr.ifr_hwaddr.sa_data,
-           sizeof(g_ethernet_link.physical_address) );
-  }
-  close(fd);
+  return status;
 }
 
 EipStatus ConfigureNetworkInterface(const char *const network_interface) {

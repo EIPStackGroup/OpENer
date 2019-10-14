@@ -3,7 +3,6 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipethernetlink.h"
 
 EipStatus ConfigureNetworkInterface(const char *network_interface);
 
