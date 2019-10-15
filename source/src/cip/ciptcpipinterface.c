@@ -7,22 +7,45 @@
 
 #include <string.h>
 
+#include <netinet/in.h> /* IN_CLASSx() macros / INADDR_LOOPBACK / etc. */
+
 #include "opener_user_conf.h"
 #include "cipcommon.h"
+#include "cipconnectionobject.h"
 #include "cipmessagerouter.h"
 #include "ciperror.h"
+#include "cipstring.h"
 #include "endianconv.h"
 #include "cipethernetlink.h"
 #include "opener_api.h"
 #include "trace.h"
 #include "cipassembly.h"
 
+/* Define constants to initialize the config_capability attribute (#2). These
+*   are needed as defines because we use them for static initialization. */
+#define CFG_CAPS_DHCP_CLIENT          0x04u /**< Device has DHCP client */
+#define CFG_CAPS_CFG_SETTABLE         0x10u /**< Interface configuration can be set */
+#define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40u /**< Interface configuration change needs RESET */
+#define CFG_CAPS_ACD_CAPABLE          0x80u /**< Device supports ACD */
+
+/* OPENER_TCPIP_IFACE_CFG_SETTABLE controls if the interface configuration is fully settable.
+*   Prepare additional defines needed here:
+*   - IFACE_CFG_SET_MODE is used to initialize the set mode of the affected attributes (3, 5, 6).
+*   - CFG_CAPS is the matching initial value for .config_capability
+*/
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+  #define IFACE_CFG_SET_MODE  kSetable
+  #define CFG_CAPS  (CFG_CAPS_DHCP_CLIENT | CFG_CAPS_CFG_SETTABLE | CFG_CAPS_CFG_CHG_NEEDS_RESET)
+#else
+  #define IFACE_CFG_SET_MODE  kNotSetOrGetable
+  #define CFG_CAPS  (CFG_CAPS_DHCP_CLIENT)
+#endif
 
 /** definition of TCP/IP object instance 1 data */
 CipTcpIpObject g_tcpip =
 {
-  .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP or BOOTP */
-  .config_capability = 0x04, /* attribute #2 config_capability: This is a default value meaning that it is a DHCP client see 5-3.2.2.2 EIP specification. */
+  .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP, BOOTP or NV data */
+  .config_capability = CFG_CAPS, /* attribute #2 config_capability */
   .config_control = 0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
   .physical_link_object = {     /* attribute #4 physical link object */
     2,  /* PathSize in 16 Bit chunks */
@@ -54,6 +77,204 @@ CipTcpIpObject g_tcpip =
   .encapsulation_inactivity_timeout = 120 /* attribute #13 encapsulation_inactivity_timeout, use a default value of 120 */
 };
 
+/************** Static Functions *********************************/
+
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+/** Check for pb being an alphanumerical character
+ *
+ * Is slow but avoids issues with the locale if we're NOT int the 'C' locale.
+ */
+static bool isalnum_c(const EipByte byte)
+{
+  return
+    ('a' <= byte && byte <= 'z') ||
+    ('A' <= byte && byte <= 'Z') ||
+    ('0' <= byte && byte <= '9');
+}
+
+/** Check passed string to conform to the rules for host name labels
+ *
+ *  @param  p_label pointer to the label string to check
+ *  @return         true if label is valid
+ *
+ * A host name label is a string of length 1 to 63 characters with
+ *  the characters of the string conforming to this rules:
+ *  - 1st  character: [A-Za-z0-9]
+ *  - next character: [-A-Za-z0-9]
+ *  - last character: [A-Za-z0-9]
+ *  The minimum length of 1 is checked but not the maximum length
+ *  that has already been enforced on data reception.
+ */
+static bool IsValidNameLabel(const EipByte *p_label)
+{
+  if (!isalnum_c(*p_label)) {
+    return false;
+  }
+  ++p_label;
+  while ('\0' != *p_label && (isalnum_c(*p_label) || '-' == *p_label)) {
+    ++p_label;
+  }
+  return ('\0' == *p_label && '-' != p_label[-1]);
+}
+
+/** Check if p_domain is a valid domain
+ *
+ *  @param  p_domain  pointer to domain string to check
+ *  @return           true if domain is valid
+ *
+ * We check here for domain names that are part of a valid host name.
+ *  - Do not allow leading or trailing dots.
+ *  - Also a single '.' (the root domain) is not allowed.
+ *  - A complete numeric domain is accepted even if it should not.
+ *  - IDN domain names are not supported. Any IDN domain names must
+ *    be converted to punycode (see https://www.punycoder.com/) by
+ *    the user in advance.
+ */
+static bool IsValidDomain(EipByte *p_domain)
+{
+  bool status = true;
+
+  OPENER_TRACE_INFO("Enter '%s'->", p_domain);
+  if ('.' == *p_domain) { /* Forbid leading dot */
+    return false;
+  }
+  EipByte *p_dot = (EipByte *)strchr((char *)p_domain, '.');
+  if (p_dot) {
+    bool rc;
+
+    *p_dot = '\0';
+    status &= rc = IsValidNameLabel(p_domain);
+    OPENER_TRACE_INFO("Checked %d '%s'\n", rc, p_domain);
+    if ('\0' != p_dot[1]) {
+      status &= IsValidDomain(p_dot +1);
+    }
+    else {  /* Forbid trailing dot */
+      status = false;
+    }
+    *p_dot = '.';
+  }
+  else {
+    status = IsValidNameLabel(p_domain);
+    OPENER_TRACE_INFO("Check end %d '%s'\n", status, p_domain);
+  }
+  return status;
+}
+
+
+/** Check if a IP address is a valid network mask
+ *
+ *  @param  netmask network mask in network byte order
+ *  @return         valid status
+ *
+ *  Check if it is a valid network mask pattern. The pattern 0xffffffff and
+ *  0x00000000 are considered as invalid.
+ */
+static bool IsValidNetmask(in_addr_t netmask)
+{
+    bool valid;
+    in_addr_t v = ntohl(netmask);
+
+    v = ~v; /* Create the host mask */
+    ++v;    /* This must be a power of 2 then */
+    valid = v && !(v & (v - 1)); /* Check if it is a power of 2 */
+
+    return valid && (INADDR_BROADCAST != netmask);
+}
+
+/** Check if a IP address is in one of the network classes A, B or C
+ *
+ *  @param  ip_addr IP address in network byte order
+ *  @return         status
+ *
+ *  Check if the IP address belongs to the network classes A, B or C.
+ */
+static bool IsInClassAbc(in_addr_t ip_addr)
+{
+  in_addr_t ip = ntohl(ip_addr);
+  return IN_CLASSA(ip) || IN_CLASSB(ip) || IN_CLASSC(ip);
+}
+
+/** Check if a IP address is on the loopback network
+ *
+ *  @param  ip_addr IP address in network byte order
+ *  @return         status
+ *
+ *  Check if the IP address belongs to the loopback network
+ *  127.0.0.0 - 127.255.255.255.
+ */
+static bool IsOnLoopbackNetwork(in_addr_t ip_addr)
+{
+  in_addr_t ip = ntohl(ip_addr);
+  return (ip & IN_CLASSA_NET) == (INADDR_LOOPBACK & IN_CLASSA_NET);
+}
+
+/** Check the Interface configuration being valid according to EIP specification
+ *
+ * In Vol. 2 the "Table 5-4.3 Instance Attributes" provides some information
+ *  which checks should be carried out on the Interface configuration's IP
+ *  addresses. Also there are some hints in the
+ *  Figure 5-4.1 "Diagram Showing the Behavior of the TCP/IP Object".
+ *
+ * The following checks may carried out on the IP addresses:
+ *  -   N0: IP is not 0 aka. INADDR_ANY
+ *  - MASK: IP is a valid network mask
+ *  -  ABC: IP is in class A, B or C
+ *  - NLCL: IP is not localhost aka. INADDR_LOOPBACK
+ *
+ * This is the table which checks are applied to what IP:
+ *  N0 | MASK | ABC | NLCL | IP address
+ *   + |   -  |  +  |   +  | ip_address
+ *   - |   +  |  -  |   -  | network_mask
+ *   - |   -  |  +  |   +  | gateway
+ *   - |   -  |  +  |   -  | name_server / name_server_2
+ * A configured gateway must be reachable according to the network mask.
+ */
+static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *p_if_cfg)
+{
+  if (INADDR_ANY == ntohl(p_if_cfg->ip_address)) {  /* N0 */
+    return false;
+  }
+  if (INADDR_ANY != ntohl(p_if_cfg->network_mask) &&  /* MASK */
+      !IsValidNetmask(p_if_cfg->network_mask)) {
+    return false;
+  }
+  if (!IsInClassAbc(p_if_cfg->ip_address) ||        /* ABC */
+      !IsInClassAbc(p_if_cfg->gateway) ||
+      !IsInClassAbc(p_if_cfg->name_server) ||
+      !IsInClassAbc(p_if_cfg->name_server_2)) {
+    return false;
+  }
+  if (IsOnLoopbackNetwork(p_if_cfg->ip_address) ||  /* NLCL */
+      IsOnLoopbackNetwork(p_if_cfg->gateway)) {
+    return false;
+  }
+  if (INADDR_ANY != ntohl(p_if_cfg->gateway) &&
+      INADDR_ANY != ntohl(p_if_cfg->network_mask)) {
+    /* gateway is configured. Check if it is reachable. */
+    if ((p_if_cfg->network_mask & p_if_cfg->ip_address) !=
+        (p_if_cfg->network_mask & p_if_cfg->gateway)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool IsIOConnectionActive(void)
+{
+  DoublyLinkedListNode *node = connection_list.first;
+
+  while (NULL != node) {
+    CipConnectionObject *p_connection = node->data;
+    if (ConnectionObjectIsTypeIOConnection(p_connection)) {
+      /* An IO connection is found */
+      return true;
+    }
+    node = node->next;
+  }
+
+  return false;
+}
+#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0*/
 
 
 /************** Functions ****************************************/
@@ -79,7 +300,6 @@ EipStatus SetAttributeSingleTcpIpInterface(
   const int encapsulation_session) {
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
-  (void) instance; /*Suppress compiler warning */
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
@@ -88,12 +308,20 @@ EipStatus SetAttributeSingleTcpIpInterface(
                                                                 attribute_number)
                             ]);
     if ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) {
+
+      if (attribute->attribute_flags & kPreSetFunc
+          && instance->cip_class->PreSetCallback) {
+          instance->cip_class->PreSetCallback(instance,
+                                              attribute,
+                                              message_router_request->service);
+      }
+
       switch (attribute_number) {
         case 3: {
-          CipUint configuration_control_recieved = GetDintFromMessage(
+          CipDword configuration_control_received = GetUdintFromMessage(
             &(message_router_request->data) );
-          if ( (configuration_control_recieved >= 0x03)
-               && (configuration_control_recieved <= 0x0F) ) {
+          if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03 ||
+              (configuration_control_received & ~kTcpipCfgCtrlMethodMask)) {
             message_router_response->general_status =
               kCipErrorInvalidAttributeValue;
 
@@ -103,7 +331,9 @@ EipStatus SetAttributeSingleTcpIpInterface(
 
             if (attribute->data != NULL) {
               CipDword *data = (CipDword *) attribute->data;
-              *(data) = configuration_control_recieved;
+              /* Set reserved bits to zero on reception. */
+              configuration_control_received &= (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
+              *(data) = configuration_control_received;
               message_router_response->general_status = kCipErrorSuccess;
             } else {
               message_router_response->general_status = kCipErrorNotEnoughData;
@@ -112,9 +342,89 @@ EipStatus SetAttributeSingleTcpIpInterface(
         }
         break;
 
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+        case 5: { /* Interface configuration */
+          CipTcpIpInterfaceConfiguration if_cfg;
+          CipUdint  tmp_ip;
+
+          if (IsIOConnectionActive()) {
+            message_router_response->general_status = kCipErrorDeviceStateConflict;
+            break;
+          }
+          memset(&if_cfg, 0, sizeof if_cfg);
+          tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+          if_cfg.ip_address = htonl(tmp_ip);
+          tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+          if_cfg.network_mask = htonl(tmp_ip);
+          tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+          if_cfg.gateway = htonl(tmp_ip);
+          tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+          if_cfg.name_server = htonl(tmp_ip);
+          tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+          if_cfg.name_server_2 = htonl(tmp_ip);
+
+          CipUint s_len = GetUintFromMessage(&(message_router_request->data));
+          if (s_len > 48) {  /* see Vol. 2, Table 5-4.3 Instance Attributes */
+            message_router_response->general_status = kCipErrorTooMuchData;
+            break;
+          }
+          SetCipStringByData(&if_cfg.domain_name, s_len, message_router_request->data);
+          s_len = (s_len +1) & (~0x0001u);  /* Align for possible pad byte */
+          OPENER_TRACE_INFO("Domain: ds %hu '%s'\n", s_len, if_cfg.domain_name.string);
+          message_router_request->data += s_len;
+
+          if (!IsValidNetworkConfig(&if_cfg) ||
+              (s_len > 0 && !IsValidDomain(if_cfg.domain_name.string)) ) {
+            message_router_response->general_status = kCipErrorInvalidAttributeValue;
+            break;
+          }
+          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+          CipTcpIpInterfaceConfiguration * const p_interface_configuration =
+            (CipTcpIpInterfaceConfiguration *)attribute->data;
+          /* Free first and then making a shallow copy of if_cfg.domain_name is ok,
+           * because if_cfg goes out of scope now. */
+          FreeCipString(&p_interface_configuration->domain_name);
+          *p_interface_configuration = if_cfg;
+          /* Tell that this configuration change becomes active after a reset */
+          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+          message_router_response->general_status = kCipErrorSuccess;
+        }
+        break;
+
+        case 6: { /* host name */
+          CipString tmp_host_name = {
+            .length = 0u,
+            .string = NULL
+          };
+          CipUint s_len = GetUintFromMessage(&(message_router_request->data));
+          if (s_len > 64) {  /* see RFC 1123 on more details */
+            message_router_response->general_status = kCipErrorTooMuchData;
+            break;
+          }
+          SetCipStringByData(&tmp_host_name, s_len, message_router_request->data);
+          s_len = (s_len +1) & (~0x0001u);  /* Align for possible pad byte */
+          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n", s_len, tmp_host_name.string);
+          message_router_request->data += s_len;
+          if (!IsValidNameLabel(tmp_host_name.string)) {
+            message_router_response->general_status = kCipErrorInvalidAttributeValue;
+            break;
+          }
+          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+          CipString * const p_host_name = (CipString *)attribute->data;
+          /* Free first and then making a shallow copy of tmp_host_name is ok,
+           * because tmp_host_name goes out of scope now. */
+          FreeCipString(p_host_name);
+          *p_host_name = tmp_host_name;
+          /* Tell that this configuration change becomes active after a reset */
+          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+          message_router_response->general_status = kCipErrorSuccess;
+        }
+        break;
+#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0*/
+
         case 13: {
 
-          CipUint inactivity_timeout_received = GetIntFromMessage(
+          CipUint inactivity_timeout_received = GetUintFromMessage(
             &(message_router_request->data) );
 
           if (inactivity_timeout_received > 3600) {
@@ -125,8 +435,8 @@ EipStatus SetAttributeSingleTcpIpInterface(
             OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
 
             if (attribute->data != NULL) {
-
               CipUint *data = (CipUint *) attribute->data;
+
               *(data) = inactivity_timeout_received;
               message_router_response->general_status = kCipErrorSuccess;
             } else {
@@ -140,6 +450,16 @@ EipStatus SetAttributeSingleTcpIpInterface(
           message_router_response->general_status =
             kCipErrorAttributeNotSetable;
           break;
+      }
+
+      /* Call the PostSetCallback if enabled. */
+      if (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc)
+          && NULL != instance->cip_class->PostSetCallback) {
+        CipUsint service = message_router_request->service;
+        if (kCipErrorSuccess != message_router_response->general_status) {
+            service |= 0x80;  /* Flag no update, TODO: remove this workaround*/
+        }
+        instance->cip_class->PostSetCallback(instance, attribute, service);
       }
     } else {
       message_router_response->general_status = kCipErrorAttributeNotSetable;
@@ -180,13 +500,14 @@ EipStatus CipTcpIpInterfaceInit() {
   InsertAttribute(instance, 2, kCipDword, &g_tcpip.config_capability,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 3, kCipDword, &g_tcpip.config_control,
-                  kSetAndGetAble);
+                  kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
   InsertAttribute(instance, 4, kCipEpath, &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
   InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
-                  &g_tcpip.interface_configuration, kGetableSingleAndAll);
+                  &g_tcpip.interface_configuration,
+                  kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
   InsertAttribute(instance, 6, kCipString, &g_tcpip.hostname,
-                  kGetableSingleAndAll);
+                  kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
   InsertAttribute(instance, 8, kCipUsint, &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
@@ -196,7 +517,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   13,
                   kCipUint,
                   &g_tcpip.encapsulation_inactivity_timeout,
-                  kSetAndGetAble);
+                  kSetAndGetAble | kNvDataFunc);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingleTcpIpInterface,

@@ -29,6 +29,36 @@
 
 #include "typedefs.h"
 
+
+/** Set this define if you have a DLR capable device
+ *
+ * This define changes the OpENer device configuration in a way that
+ *  the DLR object is initialized and the other configuration stuff
+ *  that is mandatory for a DLR device is also enabled.
+ */
+#ifndef OPENER_IS_DLR_DEVICE
+  #define OPENER_IS_DLR_DEVICE  0 /* not yet implemented */
+#endif
+
+#if defined(OPENER_IS_DLR_DEVICE) && OPENER_IS_DLR_DEVICE != 0
+  /* Enable all the stuff the DLR device depends on */
+  #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
+#endif
+
+
+/** Set this define if you want the Interface Configuration to be settable
+ *
+ * This define makes the TCP/IP object's Interface Configuration (attribute #5)
+ *  and the Host Name (attribute #6) settable. This is required as per ODVA
+ *  publication 70 "Recommended Functionality for EIP Devices" Version
+ *  10. This also enables the storage of these attributes in NV data
+ *  storage area.
+ */
+#ifndef OPENER_TCPIP_IFACE_CFG_SETTABLE
+  #define OPENER_TCPIP_IFACE_CFG_SETTABLE 0
+#endif
+
+
 /** @brief Define the number of objects that may be used in connections
  *
  *  This number needs only to consider additional objects. Connections to

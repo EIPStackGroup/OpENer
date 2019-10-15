@@ -139,9 +139,11 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   else {
     g_tcpip.interface_configuration.gateway = 0;
   }
+#if defined(OPENER_TRACE_ENABLED)
   {
     char ip_str[INET_ADDRSTRLEN];
     OPENER_TRACE_INFO("Decoded gateway: %s\n", inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str));  }
+#endif
 
   return kEipStatusOk;
 }

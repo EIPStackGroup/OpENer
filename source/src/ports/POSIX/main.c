@@ -18,11 +18,15 @@
 #include "generic_networkhandler.h"
 #include "opener_api.h"
 #include "cipcommon.h"
+#include "ciptcpipinterface.h"
 #include "trace.h"
 #include "networkconfig.h"
 #include "doublylinkedlist.h"
 #include "cipconnectionobject.h"
 #include "nvdata.h"
+
+#define BringupNetwork(if_name, method, if_cfg, hostname)  (0)
+#define ShutdownNetwork(if_name)  (0)
 
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
@@ -45,11 +49,12 @@ static void *executeEventLoop(void *pthread_arg);
 /*****************************************************************************/
 /** @brief Flag indicating if the stack should end its execution
  */
-int g_end_stack = 0;
+volatile int g_end_stack = 0;
 
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
+  int ret;
 
   cap_t capabilities;
   cap_value_t capabilies_list[1];
@@ -57,7 +62,7 @@ int main(int argc,
   capabilities = cap_get_proc();
   if (NULL == capabilities) {
     printf("Could not get capabilities\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   capabilies_list[0] = CAP_NET_RAW;
@@ -66,18 +71,18 @@ int main(int argc,
                       CAP_SET) ) {
     cap_free(capabilities);
     printf("Could not set CAP_NET_RAW capability\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   if (-1 == cap_set_proc(capabilities) ) {
     cap_free(capabilities);
     printf("Could not push CAP_NET_RAW capability to process\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   if (-1 == cap_free(capabilities) ) {
     printf("Could not free capabilites value\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   if (argc != 2) {
@@ -85,20 +90,17 @@ int main(int argc,
     printf("The correct command line parameters are:\n");
     printf("./OpENer interfacename\n");
     printf("    e.g. ./OpENer eth1\n");
-    exit(0);
-  } else {
-    DoublyLinkedListInitialize(&connection_list,
-                               CipConnectionObjectListArrayAllocator,
-                               CipConnectionObjectListArrayFree);
-    /* fetch Internet address info from the platform */
-    if (kEipStatusError == ConfigureNetworkInterface(arg[1]) ) {
-      printf("Network interface %s not found.\n", arg[1]);
-      exit(0);
-    }
-    ConfigureDomainName();
-    ConfigureHostName();
+    exit(EXIT_FAILURE);
+  }
 
-    ConfigureMacAddress(arg[1]);
+  DoublyLinkedListInitialize(&connection_list,
+                             CipConnectionObjectListArrayAllocator,
+                             CipConnectionObjectListArrayFree);
+  /* Fetch MAC address from the platform. This tests also if the interface
+   *  is present. */
+  if (kEipStatusError == ConfigureMacAddressByInterface(arg[1]) ) {
+    printf("Network interface %s not found.\n", arg[1]);
+    exit(EXIT_FAILURE);
   }
 
   /* for a real device the serial number should be unique per device */
@@ -109,25 +111,64 @@ int main(int argc,
    */
   EipUint16 unique_connection_id = rand();
 
-  /* Setup the CIP Layer */
+  /* Setup the CIP Layer. All objects are initialized with the default
+   * values for the attribute contents. */
   CipStackInit(unique_connection_id);
 
-  /* The CIP objects are now created and initialized with their default values.
-   *  Now any NV data values are loaded to change the data to the stored
-   *  configuration.
+  /* The current host name is used as a default. This value is kept in the
+   *  case NvdataLoad() needs to recreate the TCP/IP object's settings from
+   *  the defaults on the first start without a valid TCP/IP configuration
+   *  file.
+   */
+  ConfigureHostName();
+
+  /* Now any NV data values are loaded to change the attribute contents to
+   *  the stored configuration.
    */
   if (kEipStatusError == NvdataLoad()) {
     OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
   }
 
-  /* Setup Network Handles */
-  if (kEipStatusOk == NetworkHandlerInitialize() ) {
-    g_end_stack = 0;
-#ifndef WIN32
-    /* register for closing signals so that we can trigger the stack to end */
-    signal(SIGHUP, LeaveStack);
-    signal(SIGINT, LeaveStack); /* needed to be able to abort with ^C */
-#endif
+  /* Bring up network interface or start DHCP client ... */
+  ret = BringupNetwork(arg[1],
+                       g_tcpip.config_control,
+                       &g_tcpip.interface_configuration,
+                       &g_tcpip.hostname);
+  if (ret < 0) {
+    OPENER_TRACE_ERR("BringUpNetwork() failed\n");
+  }
+
+  /* register for closing signals so that we can trigger the stack to end */
+  g_end_stack = 0;
+  signal(SIGHUP, LeaveStack);
+  signal(SIGINT, LeaveStack); /* needed to be able to abort with ^C */
+
+  /* Next actions depend on the set network configuration method. */
+  CipDword network_config_method = g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
+  if (kTcpipCfgCtrlStaticIp == network_config_method) {
+    OPENER_TRACE_INFO("Static network configuration done\n");
+  }
+  if (kTcpipCfgCtrlDhcp == network_config_method) {
+    OPENER_TRACE_INFO("DHCP network configuration started\n");
+    /* Wait for DHCP done here ...*/
+    /* TODO: implement this function to wait for IP present
+        or abort through g_end_stack.
+        rc = WaitInterfaceIsUp(arg[1], g_end_stack);
+      */
+    OPENER_TRACE_INFO("DHCP wait for interface: status %d\n", ret);
+
+    /* Read IP configuration received via DHCP from interface and store in
+     *  the TCP/IP object.*/
+    ret = ConfigureNetworkInterface(arg[1]);
+    if (ret < 0) {
+      OPENER_TRACE_WARN("Problems getting interface configuration\n");
+    }
+    ConfigureDomainName();
+  }
+
+
+  /* The network initialization of the EIP stack for the NetworkHandler. */
+  if (!g_end_stack && kEipStatusOk == NetworkHandlerInitialize()) {
 #ifdef OPENER_RT
     /* Memory lock all*/
     if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
@@ -138,7 +179,7 @@ int main(int argc,
     struct sched_param param;
     pthread_attr_t attr;
     pthread_t thread;
-    CipUint ret = pthread_attr_init(&attr);
+    ret = pthread_attr_init(&attr);
     if (ret) {
       OPENER_TRACE_ERR("init pthread attributes failed\n");
       exit(-2);
@@ -194,7 +235,10 @@ int main(int argc,
   /* close remaining sessions and connections, clean up used data */
   ShutdownCipStack();
 
-  return -1;
+  /* Shut down the network interface now. */
+  (void) ShutdownNetwork(arg[1]);
+
+  return EXIT_SUCCESS;
 }
 
 void LeaveStack(int signal) {
@@ -208,7 +252,7 @@ void *executeEventLoop(void *pthread_arg) {
   (void) pthread_arg;
 
   /* The event loop. Put other processing you need done continually in here */
-  while (1 != g_end_stack) {
+  while (!g_end_stack) {
     if (kEipStatusOk != NetworkHandlerProcessOnce() ) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
       break;

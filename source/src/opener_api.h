@@ -37,7 +37,7 @@ ConfigureNetworkInterface(const char *const network_interface);
  *
  *  @param mac_address  the hardware MAC address of the network interface
  */
-void ConfigureMacAddress(const char *network_interface);
+EipStatus ConfigureMacAddressByInterface(const char *network_interface);
 
 /** @ingroup CIP_API
  * @brief Configure the domain name of the device
