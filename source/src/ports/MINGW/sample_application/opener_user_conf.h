@@ -26,8 +26,47 @@
 
 typedef unsigned short in_port_t;
 
-/** @brief Identity configuration of the device */
-#include "devicedata.h"
+/** Set this define if you have a DLR capable device
+ *
+ * This define changes the OpENer device configuration in a way that
+ *  the DLR object is initialized and the other configuration stuff
+ *  that is mandatory for a DLR device is also enabled.
+ */
+#ifndef OPENER_IS_DLR_DEVICE
+  #define OPENER_IS_DLR_DEVICE  0
+#endif
+
+#if defined(OPENER_IS_DLR_DEVICE) && OPENER_IS_DLR_DEVICE != 0
+  /* Enable all the stuff the DLR device depends on */
+  #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
+  #define OPENER_ETHLINK_LABEL_ENABLE  1
+#endif
+
+
+/* Control some configuration of TCP/IP object */
+
+/** Set this define if you want the Interface Configuration to be settable
+ *
+ * This define makes the TCP/IP object's Interface Configuration (attribute #5)
+ *  and the Host Name (attribute #6) settable. This is required as per ODVA
+ *  publication 70 "Recommended Functionality for EIP Devices" Version
+ *  10. This also enables the storage of these attributes in NV data
+ *  storage area.
+ */
+#ifndef OPENER_TCPIP_IFACE_CFG_SETTABLE
+  #define OPENER_TCPIP_IFACE_CFG_SETTABLE 0
+#endif
+
+/* Control some configuration of Ethernet Link object */
+
+/** Set this define if you want a real interface label for the Ethernet Link object
+ *
+ * This define adds a interface label to the Ethernet Link object that has a string
+ *  length greater than zero. It defaults to "PORT 1".
+ */
+#ifndef OPENER_ETHLINK_LABEL_ENABLE
+  #define OPENER_ETHLINK_LABEL_ENABLE  0
+#endif
 
 /** @brief Define the number of objects that may be used in connections
  *
@@ -38,7 +77,7 @@ typedef unsigned short in_port_t;
 #define OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS 1
 
 /** @brief Define the number of supported explicit connections.
- *  According to ODVA's PUB 70 this number should be greater than 6.
+ *  According to ODVA's PUB 70 this number should be equal or greater than 6.
  */
 #define OPENER_CIP_NUM_EXPLICIT_CONNS 6
 
@@ -75,19 +114,9 @@ typedef unsigned short in_port_t;
  */
 #define OPENER_NUMBER_OF_SUPPORTED_SESSIONS 20
 
-/** @brief  The time in ms of the timer used in this implementations
+/** @brief The time in ms of the timer used in this implementations, time base for time-outs and production timers
  */
-static const int kOpenerTimerTickInMilliSeconds = 10;
-
-/** @brief Define if RUN IDLE data is sent with consumed data
- */
-static const int kOpenerConsumedDataHasRunIdleHeader = 1;
-
-/** @brief Define if RUN IDLE data is to be sent with produced data
- *
- * Per default we don't send run idle headers with produced data
- */
-static const int kOpenerProducedDataHasRunIdleHeader = 0;
+static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide print tracing macro */
@@ -135,7 +164,7 @@ static const int kOpenerProducedDataHasRunIdleHeader = 0;
 #endif
 
 /** @brief The number of bytes used for the Ethernet message buffer on
- * the pc port. For different platforms it may makes sense to
+ * the PC port. For different platforms it may makes sense to
  * have more than one buffer.
  *
  *  This buffer size will be used for any received message.

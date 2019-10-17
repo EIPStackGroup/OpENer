@@ -13,6 +13,8 @@
  * - Attribute  2: Interface Flags
  * - Attribute  3: Physical Address (Ethernet MAC)
  * - Attribute 10: Interface Label
+ *    If the define OPENER_ETHLINK_LABEL_ENABLE is set then this attribute
+ *    has a string content ("PORT 1" by default on instance 1).
  * - Attribute 11: Interface Capabilities
  *
  */
@@ -27,6 +29,17 @@
 #include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
+
+#ifndef OPENER_ETHLINK_LABEL_ENABLE
+  #define OPENER_ETHLINK_LABEL_ENABLE  0
+#endif
+
+#if defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0
+  #define INTERFACE_LABEL_ACCESS_MODE kGetableSingleAndAll
+  #define INTERFACE_LABEL             "PORT 1"
+#else
+  #define INTERFACE_LABEL_ACCESS_MODE kGetableAll
+#endif
 
 /** @brief Type definition of the Interface Control attribute (#6)
  *
@@ -132,6 +145,10 @@ EipStatus CipEthernetLinkInit() {
   /* set attributes to initial values */
   g_ethernet_link.interface_speed = 100;
   g_ethernet_link.interface_flags = 0xF; /* successful speed and duplex neg, full duplex active link, TODO in future it should be checked if link is active */
+#if defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0
+  g_ethernet_link.interface_label.length = sizeof INTERFACE_LABEL -1;
+  g_ethernet_link.interface_label.string = (EipByte *)INTERFACE_LABEL;
+#endif
   g_ethernet_link.interface_caps.capability_bits = kEthLinkCapAutoNeg;
   g_ethernet_link.interface_caps.speed_duplex_selector =
     kEthLinkSpeedDpx_100_FD;
@@ -165,7 +182,8 @@ EipStatus CipEthernetLinkInit() {
     InsertAttribute(ethernet_link_instance, 9, kCipUsint,
                     &dummy_attribute_usint, kGetableAll);
     InsertAttribute(ethernet_link_instance, 10, kCipShortString,
-                    &g_ethernet_link.interface_label, kGetableAll);
+                    &g_ethernet_link.interface_label,
+                    INTERFACE_LABEL_ACCESS_MODE);
     InsertAttribute(ethernet_link_instance, 11, kCipAny,
                     &g_ethernet_link.interface_caps, kGetableSingleAndAll);
   } else {

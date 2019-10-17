@@ -37,14 +37,17 @@
  *  that is mandatory for a DLR device is also enabled.
  */
 #ifndef OPENER_IS_DLR_DEVICE
-  #define OPENER_IS_DLR_DEVICE  0 /* not yet implemented */
+  #define OPENER_IS_DLR_DEVICE  0
 #endif
 
 #if defined(OPENER_IS_DLR_DEVICE) && OPENER_IS_DLR_DEVICE != 0
   /* Enable all the stuff the DLR device depends on */
   #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
+  #define OPENER_ETHLINK_LABEL_ENABLE  1
 #endif
 
+
+/* Control some configuration of TCP/IP object */
 
 /** Set this define if you want the Interface Configuration to be settable
  *
@@ -58,6 +61,16 @@
   #define OPENER_TCPIP_IFACE_CFG_SETTABLE 0
 #endif
 
+/* Control some configuration of Ethernet Link object */
+
+/** Set this define if you want a real interface label for the Ethernet Link object
+ *
+ * This define adds a interface label to the Ethernet Link object that has a string
+ *  length greater than zero. It defaults to "PORT 1".
+ */
+#ifndef OPENER_ETHLINK_LABEL_ENABLE
+  #define OPENER_ETHLINK_LABEL_ENABLE  0
+#endif
 
 /** @brief Define the number of objects that may be used in connections
  *
@@ -79,7 +92,7 @@
  */
 #define OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS 1
 
-/** @brief  Define the number of supported input only connections.
+/** @brief Define the number of supported input only connections.
  *  Each of these connections has to be configured with the function
  *  void configureInputOnlyConnectionPoint(unsigned int pa_unConnNum, unsigned int pa_unOutputAssembly, unsigned int pa_unInputAssembly, unsigned int pa_unConfigAssembly)
  *
