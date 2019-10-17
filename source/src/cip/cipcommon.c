@@ -348,8 +348,8 @@ void InsertAttribute(CipInstance *const instance,
     attribute++;
   }
   OPENER_TRACE_ERR(
-    "Tried to insert to many attributes into class: %" PRIu32 ", instance %" PRIu32 "\n",
-    instance->cip_class->class_instance.instance_number,
+    "Tried to insert too many attributes into class: %" PRIu32 " '%s', instance %" PRIu32 "\n",
+    instance->cip_class->class_code, instance->cip_class->class_name,
     instance->instance_number);
   OPENER_ASSERT(0)
   /* trying to insert too many attributes*/
