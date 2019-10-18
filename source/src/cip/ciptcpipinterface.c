@@ -47,12 +47,23 @@ CipTcpIpObject g_tcpip =
   .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP, BOOTP or NV data */
   .config_capability = CFG_CAPS, /* attribute #2 config_capability */
   .config_control = 0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
+#if OPENER_ETHLINK_INSTANCE_CNT != 2
+  /* For the details where the physical_link_object path should point to, depending on the #
+   *  of Ethernet Link objects refer to Vol. 2, Section 5-4.3.2.4 "Physical Link Object". */
   .physical_link_object = {     /* attribute #4 physical link object */
     2,  /* PathSize in 16 Bit chunks */
-    CIP_ETHERNETLINK_CLASS_CODE, /* Class Code */
-    1,  /* Instance # */
+    CIP_ETHERNETLINK_CLASS_CODE,  /* Class Code */
+    OPENER_ETHLINK_INSTANCE_CNT,  /* Instance # */
     0   /* Attribute # (not used as this is the EPATH to the EthernetLink object)*/
   },
+#else
+  .physical_link_object = {     /* attribute #4 physical link object */
+    0,  /* PathSize in 16 Bit chunks */
+    0,  /* Class Code */
+    0,  /* Instance # */
+    0   /* Attribute # */
+  },
+#endif  /* #if OPENER_ETHLINK_INSTANCE_CNT != 2 */
   .interface_configuration = { /* attribute #5 interface_configuration */
     0, /* IP address */
     0, /* NetworkMask */

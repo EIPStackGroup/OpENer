@@ -26,11 +26,14 @@
 
 typedef unsigned short in_port_t;
 
-/** Set this define if you have a DLR capable device
+/** @brief Set this define if you have a DLR capable device
  *
  * This define changes the OpENer device configuration in a way that
  *  the DLR object is initialized and the other configuration stuff
  *  that is mandatory for a DLR device is also enabled.
+ *
+ * This define should be set from the CMake command line using
+ *  "-DOPENER_IS_DLR_DEVICE:BOOL=ON"
  */
 #ifndef OPENER_IS_DLR_DEVICE
   #define OPENER_IS_DLR_DEVICE  0
@@ -39,13 +42,14 @@ typedef unsigned short in_port_t;
 #if defined(OPENER_IS_DLR_DEVICE) && OPENER_IS_DLR_DEVICE != 0
   /* Enable all the stuff the DLR device depends on */
   #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
-  #define OPENER_ETHLINK_LABEL_ENABLE  1
+  #define OPENER_ETHLINK_LABEL_ENABLE     1
+  #define OPENER_ETHLINK_INSTANCE_CNT     3
 #endif
 
 
 /* Control some configuration of TCP/IP object */
 
-/** Set this define if you want the Interface Configuration to be settable
+/** @brief Set this define if you want the Interface Configuration to be settable
  *
  * This define makes the TCP/IP object's Interface Configuration (attribute #5)
  *  and the Host Name (attribute #6) settable. This is required as per ODVA
@@ -59,7 +63,20 @@ typedef unsigned short in_port_t;
 
 /* Control some configuration of Ethernet Link object */
 
-/** Set this define if you want a real interface label for the Ethernet Link object
+/** @brief Set this define to determine the number of instantiated Ethernet Link objects
+ *
+ * A simple device has only a single Ethernet port. For this kind of device set this
+ *  define to 1.
+ * A DLR capable device has at least two Ethernet ports. For this kind of device set
+ *  this define to 2.
+ * If you want expose the internal switch port of your capable DLR device also then
+ *  set this define to 3.
+ */
+#ifndef OPENER_ETHLINK_INSTANCE_CNT
+  #define OPENER_ETHLINK_INSTANCE_CNT  1
+#endif
+
+/** @brief Set this define if you want a real interface label for the Ethernet Link object
  *
  * This define adds a interface label to the Ethernet Link object that has a string
  *  length greater than zero. It defaults to "PORT 1".

@@ -17,6 +17,18 @@ static const CipUint kCipEthernetLinkClassCode = CIP_ETHERNETLINK_CLASS_CODE;
 
 /* public type definitions */
 
+/** @brief Provide values for the Interface Type (attribute #7) */
+typedef enum {
+  /** Unknown interface type */
+  kEthLinkIfTypeUnknown = 0x00,
+  /** Internal (switch) port */
+  kEthLinkIfTypeInternal = 0x01,
+  /** Twisted pair (e.g., 10Base-T, 100Base-TX, 1000Base-T, etc.) */
+  kEthLinkIfTypeTwistedPair = 0x02,
+  /** Optical fiber (e.g., 100Base-FX) */
+  kEthLinkIfTypeOptical = 0x03,
+} CipEthLinkIfaceType;
+
 /** @brief Provide bit masks for the Interface Capability (#11) attribute's Capability Bits */
 typedef enum {
   /** Interface needs reset to activate attribute #6 */
@@ -64,6 +76,7 @@ typedef struct {
   EipUint32 interface_speed; /**< Attribute #1: 10/100/1000 Mbit/sec */
   EipUint32 interface_flags; /**< Attribute #2: Interface flags as defined in the CIP specification */
   EipUint8 physical_address[6]; /**< Attribute #3: MAC address of the Ethernet link */
+  CipUsint interface_type;  /**< Attribute #7: Type of interface; */
   CipShortString interface_label; /**< Attribute #10: Interface label */
   CipEthernetLinkMetaInterfaceCapability interface_caps; /**< Attribute #11: Interface capabilities */
 } CipEthernetLinkObject;
@@ -87,6 +100,6 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address);
 
 /* global object instance(s) */
 
-extern CipEthernetLinkObject g_ethernet_link;
+extern CipEthernetLinkObject g_ethernet_link[];
 
 #endif /* OPENER_CIPETHERNETLINK_H_*/
