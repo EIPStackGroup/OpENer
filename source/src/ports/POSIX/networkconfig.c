@@ -26,20 +26,19 @@
 #include "opener_api.h"
 
 
-EipStatus ConfigureMacAddressByInterface(const char *interface) {
+EipStatus IfaceGetMacAddress(const char *p_iface, uint8_t *p_physical_address) {
   struct ifreq ifr;
-  size_t if_name_len = strlen(interface);
+  size_t if_name_len = strlen(p_iface);
   EipStatus status = kEipStatusError;
 
   if(if_name_len < sizeof(ifr.ifr_name)) {
-    memcpy(ifr.ifr_name, interface, if_name_len);
+    memcpy(ifr.ifr_name, p_iface, if_name_len);
     ifr.ifr_name[if_name_len] = '\0';
 
     int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
 
     if(ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
-      memcpy(&(g_ethernet_link.physical_address), &ifr.ifr_hwaddr.sa_data,
-             sizeof(g_ethernet_link.physical_address) );
+      memcpy(p_physical_address, &ifr.ifr_hwaddr.sa_data, 6);
       status = kEipStatusOk;
     }
     close(fd);

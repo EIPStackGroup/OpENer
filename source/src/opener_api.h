@@ -33,11 +33,14 @@ EipStatus
 ConfigureNetworkInterface(const char *const network_interface);
 
 /** @ingroup CIP_API
- * @brief Configure the MAC address of the device
+ * @brief Read and return the MAC address of the Ethernet interface
  *
- *  @param mac_address  the hardware MAC address of the network interface
+ *  @param  p_iface             string of interface name or interface index
+ *  @param  p_physical_address  hardware MAC address of the network interface
+ *  @return                     kEipStatusOk: all fine
+ *                              kEipStatusError: failure, errno set
  */
-EipStatus ConfigureMacAddressByInterface(const char *network_interface);
+EipStatus IfaceGetMacAddress(const char *p_iface, uint8_t *p_physical_address);
 
 /** @ingroup CIP_API
  * @brief Configure the domain name of the device

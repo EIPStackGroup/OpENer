@@ -76,6 +76,14 @@ typedef struct {
  */
 EipStatus CipEthernetLinkInit(void);
 
+/** @brief Initialize the Ethernet MAC of the Ethernet Link object instances
+ *
+ *  @param  p_physical_address pointer to 6 bytes of MAC address
+ *
+ * This function sets the MAC address of all involved Ethernet Link objects.
+ */
+void CipEthernetLinkSetMac(EipUint8 *p_physical_address);
+
 
 /* global object instance(s) */
 

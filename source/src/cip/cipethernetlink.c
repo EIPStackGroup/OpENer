@@ -193,6 +193,14 @@ EipStatus CipEthernetLinkInit() {
   return kEipStatusOk;
 }
 
+void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
+  memcpy(g_ethernet_link.physical_address,
+         p_physical_address,
+         sizeof(g_ethernet_link.physical_address)
+         );
+  return;
+}
+
 static int EncodeInterfaceCounters(EipUint8 **pa_acMsg) {
 // Returns default value 0
   int return_value = 0;

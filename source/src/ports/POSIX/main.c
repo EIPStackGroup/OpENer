@@ -18,6 +18,7 @@
 #include "generic_networkhandler.h"
 #include "opener_api.h"
 #include "cipcommon.h"
+#include "cipethernetlink.h"
 #include "ciptcpipinterface.h"
 #include "trace.h"
 #include "networkconfig.h"
@@ -98,7 +99,8 @@ int main(int argc,
                              CipConnectionObjectListArrayFree);
   /* Fetch MAC address from the platform. This tests also if the interface
    *  is present. */
-  if (kEipStatusError == ConfigureMacAddressByInterface(arg[1]) ) {
+  uint8_t iface_mac[6];
+  if (kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac)) {
     printf("Network interface %s not found.\n", arg[1]);
     exit(EXIT_FAILURE);
   }
@@ -114,6 +116,8 @@ int main(int argc,
   /* Setup the CIP Layer. All objects are initialized with the default
    * values for the attribute contents. */
   CipStackInit(unique_connection_id);
+
+  CipEthernetLinkSetMac(iface_mac);
 
   /* The current host name is used as a default. This value is kept in the
    *  case NvdataLoad() needs to recreate the TCP/IP object's settings from
