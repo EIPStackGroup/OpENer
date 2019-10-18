@@ -141,7 +141,8 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
 #if defined(OPENER_TRACE_ENABLED)
   {
     char ip_str[INET_ADDRSTRLEN];
-    OPENER_TRACE_INFO("Decoded gateway: %s\n", inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str));  }
+    OPENER_TRACE_INFO("Decoded gateway: %s\n", inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str));
+  }
 #endif
 
   return kEipStatusOk;
