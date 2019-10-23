@@ -603,12 +603,12 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeader header = {
     .source_port = 2222,
     .destination_port = ntohs(address->sin_port),
-    .packet_length = kUpdHeaderLength + data_length,
+    .packet_length = kUdpHeaderLength + data_length,
     .checksum = 0
   };
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
-  memcpy(complete_message + kUpdHeaderLength, data, data_length);
+  memcpy(complete_message + kUdpHeaderLength, data, data_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
@@ -621,7 +621,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 
   int sent_length = sendto( socket_handle,
                             (char *) complete_message,
-                            data_length + kUpdHeaderLength,
+                            data_length + kUdpHeaderLength,
                             0,
                             (struct sockaddr *) address,
                             sizeof(*address) );
@@ -637,7 +637,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length + kUpdHeaderLength) {
+  if (sent_length != data_length + kUdpHeaderLength) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,

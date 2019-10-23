@@ -31,7 +31,7 @@
 *   - IFACE_CFG_SET_MODE is used to initialize the set mode of the affected attributes (3, 5, 6).
 *   - CFG_CAPS is the matching initial value for .config_capability
 */
-#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
   #define IFACE_CFG_SET_MODE  kSetable
   #define CFG_CAPS  (CFG_CAPS_DHCP_CLIENT | CFG_CAPS_CFG_SETTABLE | CFG_CAPS_CFG_CHG_NEEDS_RESET)
 #else
@@ -45,7 +45,7 @@ CipTcpIpObject g_tcpip =
   .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a valid configuration from DHCP, BOOTP or NV data */
   .config_capability = CFG_CAPS, /* attribute #2 config_capability */
   .config_control = 0x02, /* attribute #3 config_control: 0x02 means that the device shall obtain its interface configuration values via DHCP. */
-#if OPENER_ETHLINK_INSTANCE_CNT != 2
+#if 2 != OPENER_ETHLINK_INSTANCE_CNT
   /* For the details where the physical_link_object path should point to, depending on the #
    *  of Ethernet Link objects refer to Vol. 2, Section 5-4.3.2.4 "Physical Link Object". */
   .physical_link_object = {     /* attribute #4 physical link object */
@@ -88,7 +88,7 @@ CipTcpIpObject g_tcpip =
 
 /************** Static Functions *********************************/
 
-#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 /** Check for pb being an alphanumerical character
  *
  * Is slow but avoids issues with the locale if we're NOT in the 'C' locale.
@@ -282,7 +282,7 @@ static bool IsIOConnectionActive(void)
 
   return false;
 }
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0*/
+#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
 
 /************** Functions ****************************************/
@@ -350,7 +350,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
         }
         break;
 
-#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
         case 5: { /* Interface configuration */
           CipTcpIpInterfaceConfiguration if_cfg;
           CipUdint tmp_ip;
@@ -428,7 +428,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
           message_router_response->general_status = kCipErrorSuccess;
         }
         break;
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0*/
+#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
         case 13: {
 
