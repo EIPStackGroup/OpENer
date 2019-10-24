@@ -17,35 +17,20 @@
 #include "ciptypes.h"
 
 
-CipString *FreeCipString
-(
-  CipString *p_cip_string
-);
+CipString *FreeCipString(CipString *const cip_string);
 
-CipString *SetCipStringByData
-(
-   CipString *p_cip_string,
-   size_t str_len,
-   const EipUint8 *p_data
-);
+CipString *SetCipStringByData(CipString *const cip_string,
+		                      size_t str_len,
+							  const EipUint8 *const data);
 
-CipString *SetCipStringByCstr
-(
-  CipString *p_cip_string,
-  const char *p_string
-);
+CipString *SetCipStringByCstr(CipString *const cip_string,
+		                      const char *const string);
 
-CipShortString *FreeCipShortString
-(
-  CipShortString *p_cip_string
-);
+CipShortString *FreeCipShortString(CipShortString *const cip_string);
 
-CipShortString *SetCipShortStringByData
-(
-   CipShortString *p_cip_string,
-   size_t str_len,
-   const EipUint8 *p_data
-);
+CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
+		                                size_t str_len,
+										const CipOctet *data);
 
 CipShortString *SetCipShortStringByCstr
 (

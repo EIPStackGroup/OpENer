@@ -25,20 +25,19 @@
 #include "trace.h"
 #include "opener_api.h"
 
-
-EipStatus IfaceGetMacAddress(const char *p_iface, uint8_t *p_physical_address) {
+EipStatus IfaceGetMacAddress(const char *iface, uint8_t *const physical_address) {
   struct ifreq ifr;
-  size_t if_name_len = strlen(p_iface);
+  size_t if_name_len = strlen(iface);
   EipStatus status = kEipStatusError;
 
   if(if_name_len < sizeof(ifr.ifr_name)) {
-    memcpy(ifr.ifr_name, p_iface, if_name_len);
+    memcpy(ifr.ifr_name, iface, if_name_len);
     ifr.ifr_name[if_name_len] = '\0';
 
     int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
 
     if(ioctl(fd, SIOCGIFHWADDR, &ifr) == 0) {
-      memcpy(p_physical_address, &ifr.ifr_hwaddr.sa_data, 6);
+      memcpy(physical_address, &ifr.ifr_hwaddr.sa_data, 6);
       status = kEipStatusOk;
     }
     close(fd);
@@ -120,14 +119,14 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
   }
 
   CipUdint gateway = 0;
-  char *p_end;
+  char *end;
   /* The gateway string is a hex number in network byte order. */
   errno = 0;  /* To distinguish success / failure later */
-  gateway = strtoul(gateway_string, &p_end, 16);
+  gateway = strtoul(gateway_string, &end, 16);
 
   if ((errno == ERANGE && gateway == ULONG_MAX) ||  /* overflow */
-      (gateway_string == p_end) ||  /* No digits were found */
-      ('\0' != *p_end) ) {          /* More characters after number */
+      (gateway_string == end) ||  /* No digits were found */
+      ('\0' != *end) ) {          /* More characters after number */
     g_tcpip.interface_configuration.gateway = 0;
     return kEipStatusError;
   }
@@ -183,16 +182,16 @@ void ConfigureDomainName() {
   char *value_string;
   char *strtok_save;
   char *strtok_key;
-  char *p_line;
-  CipUdint  dmy_dns;
-  CipUdint  *p_dns = &g_tcpip.interface_configuration.name_server;
+  char *line;
+  CipUdint dmy_dns;
+  CipUdint *dns = &g_tcpip.interface_configuration.name_server;
   /* Split the file_buffer into lines. */
   for (char *strtok_beg = file_buffer;
-        NULL != (p_line = strtok_r(strtok_beg, "\n", &strtok_save));
+        NULL != (line = strtok_r(strtok_beg, "\n", &strtok_save));
         strtok_beg = NULL)
   {
     /* Inspect each line for keywords: search, domain, nameserver */
-    switch (p_line[0]) {
+    switch (line[0]) {
     case '#':
       /* fall through */
     case ';':
@@ -202,8 +201,8 @@ void ConfigureDomainName() {
     case 'd':
       /* fall through */
     case 's':
-      strtok_r(p_line, " \t", &strtok_key);
-      if (0 == strcmp("search", p_line) || 0 == strcmp("domain", p_line)) {
+      strtok_r(line, " \t", &strtok_key);
+      if (0 == strcmp("search", line) || 0 == strcmp("domain", line)) {
         if (NULL != (value_string = strtok_r(NULL, " \t", &strtok_key)))  {
           SetCipStringByCstr(&g_tcpip.interface_configuration.domain_name,
                             value_string);
@@ -212,18 +211,18 @@ void ConfigureDomainName() {
       break;
 
     case 'n':
-      strtok_r(p_line, " \t", &strtok_key);
-      if (0 == strcmp("nameserver", p_line)) {
+      strtok_r(line, " \t", &strtok_key);
+      if (0 == strcmp("nameserver", line)) {
         if (NULL != (value_string = strtok_r(NULL, " \t", &strtok_key))) {
-          inet_pton(AF_INET, value_string, p_dns);
+          inet_pton(AF_INET, value_string, dns);
           /* Adjust destination for next nameserver occurrence. */
-          if (p_dns != &dmy_dns) {
-            if (p_dns == &g_tcpip.interface_configuration.name_server) {
-              p_dns = &g_tcpip.interface_configuration.name_server_2;
+          if (dns != &dmy_dns) {
+            if (dns == &g_tcpip.interface_configuration.name_server) {
+              dns = &g_tcpip.interface_configuration.name_server_2;
             }
             else {
               /* After 2 nameserver lines any further nameservers are ignored. */
-              p_dns = &dmy_dns;
+              dns = &dmy_dns;
             }
           }
         }
@@ -235,11 +234,10 @@ void ConfigureDomainName() {
 }
 
 void ConfigureHostName() {
-  char    name_buf[HOST_NAME_MAX];
-  int     rc;
+  char name_buf[HOST_NAME_MAX];
 
-  rc = gethostname(name_buf, sizeof name_buf);
-  name_buf[HOST_NAME_MAX-1] = '\0'; /* Ensure termination */
+  int rc = gethostname(name_buf, sizeof name_buf);
+  name_buf[HOST_NAME_MAX - 1] = '\0'; /* Ensure termination */
   if (0 == rc) {
       SetCipStringByCstr(&g_tcpip.hostname, name_buf);
   }

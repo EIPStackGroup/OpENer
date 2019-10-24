@@ -93,7 +93,7 @@ CipTcpIpObject g_tcpip =
 #if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
 /** Check for pb being an alphanumerical character
  *
- * Is slow but avoids issues with the locale if we're NOT int the 'C' locale.
+ * Is slow but avoids issues with the locale if we're NOT in the 'C' locale.
  */
 static bool isalnum_c(const EipByte byte)
 {
@@ -105,7 +105,7 @@ static bool isalnum_c(const EipByte byte)
 
 /** Check passed string to conform to the rules for host name labels
  *
- *  @param  p_label pointer to the label string to check
+ *  @param  label pointer to the label string to check
  *  @return         true if label is valid
  *
  * A host name label is a string of length 1 to 63 characters with
@@ -116,19 +116,19 @@ static bool isalnum_c(const EipByte byte)
  *  The minimum length of 1 is checked but not the maximum length
  *  that has already been enforced on data reception.
  */
-static bool IsValidNameLabel(const EipByte *p_label)
+static bool IsValidNameLabel(const EipByte *label)
 {
-  if (!isalnum_c(*p_label)) {
+  if (!isalnum_c(*label)) {
     return false;
   }
-  ++p_label;
-  while ('\0' != *p_label && (isalnum_c(*p_label) || '-' == *p_label)) {
-    ++p_label;
+  ++label;
+  while ('\0' != *label && (isalnum_c(*label) || '-' == *label)) {
+    ++label;
   }
-  return ('\0' == *p_label && '-' != p_label[-1]);
+  return ('\0' == *label && '-' != label[-1]);
 }
 
-/** Check if p_domain is a valid domain
+/** Check if domain is a valid domain
  *
  *  @param  p_domain  pointer to domain string to check
  *  @return           true if domain is valid
@@ -141,32 +141,32 @@ static bool IsValidNameLabel(const EipByte *p_label)
  *    be converted to punycode (see https://www.punycoder.com/) by
  *    the user in advance.
  */
-static bool IsValidDomain(EipByte *p_domain)
+static bool IsValidDomain(EipByte *domain)
 {
   bool status = true;
 
-  OPENER_TRACE_INFO("Enter '%s'->", p_domain);
-  if ('.' == *p_domain) { /* Forbid leading dot */
+  OPENER_TRACE_INFO("Enter '%s'->", domain);
+  if ('.' == *domain) { /* Forbid leading dot */
     return false;
   }
-  EipByte *p_dot = (EipByte *)strchr((char *)p_domain, '.');
-  if (p_dot) {
+  EipByte *dot = (EipByte *)strchr((char *)domain, '.');
+  if (dot) {
     bool rc;
 
-    *p_dot = '\0';
-    status &= rc = IsValidNameLabel(p_domain);
-    OPENER_TRACE_INFO("Checked %d '%s'\n", rc, p_domain);
-    if ('\0' != p_dot[1]) {
-      status &= IsValidDomain(p_dot +1);
+    *dot = '\0';
+    status &= rc = IsValidNameLabel(domain);
+    OPENER_TRACE_INFO("Checked %d '%s'\n", rc, domain);
+    if ('\0' != dot[1]) {
+      status &= IsValidDomain(dot +1);
     }
     else {  /* Forbid trailing dot */
       status = false;
     }
-    *p_dot = '.';
+    *dot = '.';
   }
   else {
-    status = IsValidNameLabel(p_domain);
-    OPENER_TRACE_INFO("Check end %d '%s'\n", status, p_domain);
+    status = IsValidNameLabel(domain);
+    OPENER_TRACE_INFO("Check end %d '%s'\n", status, domain);
   }
   return status;
 }
@@ -182,12 +182,11 @@ static bool IsValidDomain(EipByte *p_domain)
  */
 static bool IsValidNetmask(in_addr_t netmask)
 {
-    bool valid;
     in_addr_t v = ntohl(netmask);
 
     v = ~v; /* Create the host mask */
     ++v;    /* This must be a power of 2 then */
-    valid = v && !(v & (v - 1)); /* Check if it is a power of 2 */
+    bool valid = v && !(v & (v - 1)); /* Check if it is a power of 2 */
 
     return valid && (INADDR_BROADCAST != netmask);
 }
@@ -240,30 +239,30 @@ static bool IsOnLoopbackNetwork(in_addr_t ip_addr)
  *   - |   -  |  +  |   -  | name_server / name_server_2
  * A configured gateway must be reachable according to the network mask.
  */
-static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *p_if_cfg)
+static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg)
 {
-  if (INADDR_ANY == ntohl(p_if_cfg->ip_address)) {  /* N0 */
+  if (INADDR_ANY == ntohl(if_cfg->ip_address)) {  /* N0 */
     return false;
   }
-  if (INADDR_ANY != ntohl(p_if_cfg->network_mask) &&  /* MASK */
-      !IsValidNetmask(p_if_cfg->network_mask)) {
+  if (INADDR_ANY != ntohl(if_cfg->network_mask) &&  /* MASK */
+      !IsValidNetmask(if_cfg->network_mask)) {
     return false;
   }
-  if (!IsInClassAbc(p_if_cfg->ip_address) ||        /* ABC */
-      !IsInClassAbc(p_if_cfg->gateway) ||
-      !IsInClassAbc(p_if_cfg->name_server) ||
-      !IsInClassAbc(p_if_cfg->name_server_2)) {
+  if (!IsInClassAbc(if_cfg->ip_address) ||        /* ABC */
+      !IsInClassAbc(if_cfg->gateway) ||
+      !IsInClassAbc(if_cfg->name_server) ||
+      !IsInClassAbc(if_cfg->name_server_2)) {
     return false;
   }
-  if (IsOnLoopbackNetwork(p_if_cfg->ip_address) ||  /* NLCL */
-      IsOnLoopbackNetwork(p_if_cfg->gateway)) {
+  if (IsOnLoopbackNetwork(if_cfg->ip_address) ||  /* NLCL */
+      IsOnLoopbackNetwork(if_cfg->gateway)) {
     return false;
   }
-  if (INADDR_ANY != ntohl(p_if_cfg->gateway) &&
-      INADDR_ANY != ntohl(p_if_cfg->network_mask)) {
+  if (INADDR_ANY != ntohl(if_cfg->gateway) &&
+      INADDR_ANY != ntohl(if_cfg->network_mask)) {
     /* gateway is configured. Check if it is reachable. */
-    if ((p_if_cfg->network_mask & p_if_cfg->ip_address) !=
-        (p_if_cfg->network_mask & p_if_cfg->gateway)) {
+    if ((if_cfg->network_mask & if_cfg->ip_address) !=
+        (if_cfg->network_mask & if_cfg->gateway)) {
       return false;
     }
   }
@@ -275,8 +274,8 @@ static bool IsIOConnectionActive(void)
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipConnectionObject *p_connection = node->data;
-    if (ConnectionObjectIsTypeIOConnection(p_connection)) {
+    CipConnectionObject *connection = node->data;
+    if (ConnectionObjectIsTypeIOConnection(connection)) {
       /* An IO connection is found */
       return true;
     }
@@ -356,7 +355,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
 #if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE != 0
         case 5: { /* Interface configuration */
           CipTcpIpInterfaceConfiguration if_cfg;
-          CipUdint  tmp_ip;
+          CipUdint tmp_ip;
 
           if (IsIOConnectionActive()) {
             message_router_response->general_status = kCipErrorDeviceStateConflict;
@@ -374,18 +373,18 @@ EipStatus SetAttributeSingleTcpIpInterface(
           tmp_ip = GetUdintFromMessage(&(message_router_request->data));
           if_cfg.name_server_2 = htonl(tmp_ip);
 
-          CipUint s_len = GetUintFromMessage(&(message_router_request->data));
-          if (s_len > 48) {  /* see Vol. 2, Table 5-4.3 Instance Attributes */
+          CipUint domain_name_length = GetUintFromMessage(&(message_router_request->data));
+          if (domain_name_length > 48) {  /* see Vol. 2, Table 5-4.3 Instance Attributes */
             message_router_response->general_status = kCipErrorTooMuchData;
             break;
           }
-          SetCipStringByData(&if_cfg.domain_name, s_len, message_router_request->data);
-          s_len = (s_len +1) & (~0x0001u);  /* Align for possible pad byte */
-          OPENER_TRACE_INFO("Domain: ds %hu '%s'\n", s_len, if_cfg.domain_name.string);
-          message_router_request->data += s_len;
+          SetCipStringByData(&if_cfg.domain_name, domain_name_length, message_router_request->data);
+          domain_name_length = (domain_name_length +1) & (~0x0001u);  /* Align for possible pad byte */
+          OPENER_TRACE_INFO("Domain: ds %hu '%s'\n", domain_name_length, if_cfg.domain_name.string);
+          message_router_request->data += domain_name_length;
 
           if (!IsValidNetworkConfig(&if_cfg) ||
-              (s_len > 0 && !IsValidDomain(if_cfg.domain_name.string)) ) {
+              (domain_name_length > 0 && !IsValidDomain(if_cfg.domain_name.string)) ) {
             message_router_response->general_status = kCipErrorInvalidAttributeValue;
             break;
           }
@@ -407,25 +406,25 @@ EipStatus SetAttributeSingleTcpIpInterface(
             .length = 0u,
             .string = NULL
           };
-          CipUint s_len = GetUintFromMessage(&(message_router_request->data));
-          if (s_len > 64) {  /* see RFC 1123 on more details */
+          CipUint host_name_length = GetUintFromMessage(&(message_router_request->data));
+          if (host_name_length > 64) {  /* see RFC 1123 on more details */
             message_router_response->general_status = kCipErrorTooMuchData;
             break;
           }
-          SetCipStringByData(&tmp_host_name, s_len, message_router_request->data);
-          s_len = (s_len +1) & (~0x0001u);  /* Align for possible pad byte */
-          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n", s_len, tmp_host_name.string);
-          message_router_request->data += s_len;
+          SetCipStringByData(&tmp_host_name, host_name_length, message_router_request->data);
+          host_name_length = (host_name_length +1) & (~0x0001u);  /* Align for possible pad byte */
+          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n", host_name_length, tmp_host_name.string);
+          message_router_request->data += host_name_length;
           if (!IsValidNameLabel(tmp_host_name.string)) {
             message_router_response->general_status = kCipErrorInvalidAttributeValue;
             break;
           }
           OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
-          CipString * const p_host_name = (CipString *)attribute->data;
+          CipString *const host_name = (CipString *)attribute->data;
           /* Free first and then making a shallow copy of tmp_host_name is ok,
            * because tmp_host_name goes out of scope now. */
-          FreeCipString(p_host_name);
-          *p_host_name = tmp_host_name;
+          FreeCipString(host_name);
+          *host_name = tmp_host_name;
           /* Tell that this configuration change becomes active after a reset */
           g_tcpip.status |= kTcpipStatusIfaceCfgPend;
           message_router_response->general_status = kCipErrorSuccess;
@@ -689,18 +688,18 @@ EipStatus GetAttributeAllTcpIpInterface(
  *  according to CIP spec Volume 2,
  *  section 3-5.3 "Multicast Address Allocation for EtherNet/IP"
  */
-void CipTcpIpCalculateMulticastIp(CipTcpIpObject *p_tcpip)
+void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip)
 {
   /* Multicast base address according to spec: 239.192.1.0 */
   static const CipUdint cip_mcast_base_addr = 0xEFC00100;
 
   /* Calculate the CIP multicast address. The multicast address is calculated, not input */
-  CipUdint host_id = ntohl(p_tcpip->interface_configuration.ip_address) &
-                    ~ntohl(p_tcpip->interface_configuration.network_mask);
+  CipUdint host_id = ntohl(tcpip->interface_configuration.ip_address) &
+                    ~ntohl(tcpip->interface_configuration.network_mask);
   host_id -= 1;
   host_id &= 0x3ff;
 
-  g_tcpip.mcast_config.starting_multicast_address =
+  tcpip->mcast_config.starting_multicast_address =
     htonl(cip_mcast_base_addr + (host_id << 5));
 }
 

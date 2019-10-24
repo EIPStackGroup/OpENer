@@ -55,7 +55,6 @@ volatile int g_end_stack = 0;
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
-  int ret;
 
   cap_t capabilities;
   cap_value_t capabilies_list[1];
@@ -134,7 +133,7 @@ int main(int argc,
   }
 
   /* Bring up network interface or start DHCP client ... */
-  ret = BringupNetwork(arg[1],
+  int ret = BringupNetwork(arg[1],
                        g_tcpip.config_control,
                        &g_tcpip.interface_configuration,
                        &g_tcpip.hostname);

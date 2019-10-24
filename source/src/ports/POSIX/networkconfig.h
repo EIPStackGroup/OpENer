@@ -4,10 +4,8 @@
  *
  ******************************************************************************/
 
-EipStatus ConfigureNetworkInterface(const char *network_interface);
+EipStatus ConfigureNetworkInterface(const char *const network_interface);
 
-void ConfigureDomainName(
-  );
+void ConfigureDomainName();
 
-void ConfigureHostName(
-  );
+void ConfigureHostName();

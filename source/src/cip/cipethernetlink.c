@@ -70,13 +70,13 @@ typedef struct speed_duplex_array_entry {
 
 
 /* forward declaration of functions to encode certain attribute objects */
-static int EncodeInterfaceCounters(EipUint32 inst_no, EipUint8 **pa_acMsg);
+static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message);
 
-static int EncodeMediaCounters(EipUint32 inst_no, EipUint8 **pa_acMsg);
+static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message);
 
-static int EncodeInterfaceControl(EipUint8 **pa_acMsg);
+static int EncodeInterfaceControl(CipOctet **message);
 
-static int EncodeInterfaceCapability(EipUint32 inst_no, EipUint8 **pa_acMsg);
+static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message);
 
 
 /* forward declaration for the GetAttributeSingle service handler function */
@@ -175,7 +175,7 @@ EipStatus CipEthernetLinkInit(void) {
                                                  NULL); /* # function pointer for initialization*/
 
   /* set attributes to initial values */
-  for (unsigned idx = 0;  idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+  for (size_t idx = 0;  idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
     g_ethernet_link[idx].interface_speed = 100;
     /* successful speed and duplex neg, full duplex active link.
      * TODO: in future it should be checked if link is active */
@@ -201,7 +201,7 @@ EipStatus CipEthernetLinkInit(void) {
                   "GetAttributeAll");
 
     /* bind attributes to the instance */
-    for (unsigned idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+    for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
       CipInstance *ethernet_link_instance =
         GetCipInstance(ethernet_link_class, idx+1);
 
@@ -237,7 +237,7 @@ EipStatus CipEthernetLinkInit(void) {
 }
 
 void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
-  for (unsigned idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+  for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
     memcpy(g_ethernet_link[idx].physical_address,
            p_physical_address,
            sizeof(g_ethernet_link[0].physical_address)
@@ -246,64 +246,61 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
   return;
 }
 
-static int EncodeInterfaceCounters(EipUint32 instance_number, EipUint8 **pa_acMsg) {
+static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
 // Returns default value 0
   int return_value = 0;
-  for (int i = 0; i < 11; i++) {
-    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, pa_acMsg);
+  for (size_t i = 0; i < 11; i++) {
+    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, message);
   }
   return return_value;
 }
 
-static int EncodeMediaCounters(EipUint32 instance_number, EipUint8 **pa_acMsg) {
+static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
 // Returns default value 0
   int return_value = 0;
-  for (int i = 0; i < 12; i++) {
-    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, pa_acMsg);
+  for (size_t i = 0; i < 12; i++) {
+    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, message);
   }
   return return_value;
 }
 
-static int EncodeInterfaceControl(EipUint8 **pa_acMsg) {
+static int EncodeInterfaceControl(CipOctet **message) {
 // Returns default value 0
   int return_value = 0;
   return_value += EncodeData(kCipWord, &interface_control.control_bits,
-                             pa_acMsg);
+                             message);
   return_value += EncodeData(kCipUint,
                              &interface_control.forced_interface_speed,
-                             pa_acMsg);
+                             message);
   return return_value;
 }
 
 #define NELEMENTS(x)  ((sizeof(x)/sizeof(x[0])))
-static int EncodeInterfaceCapability(EipUint32 inst_no, EipUint8 **pa_acMsg)
+static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message)
 {
   int return_value = 0;
   return_value += EncodeData(
                     kCipDword,
-                    &g_ethernet_link[inst_no-1].interface_caps.capability_bits,
-                    pa_acMsg);
-  {
-    unsigned selected =
-      g_ethernet_link[inst_no-1].interface_caps.speed_duplex_selector;
-    CipUsint count;
-    for (count = 0; selected; count++) { /* count # of bits set */
-      selected &= selected - 1u;  /* clear the least significant bit set */
-    }
-    return_value += EncodeData(kCipUsint, &count, pa_acMsg);
+                    &g_ethernet_link[instance_id - 1].interface_caps.capability_bits,
+                    message);
+  uint16_t selected = g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector;
+  CipUsint count;
+  for(count = 0; selected; count++) { /* count # of bits set */
+	  selected &= selected - 1u;  /* clear the least significant bit set */
   }
+  return_value += EncodeData(kCipUsint, &count, message);
 
-  for (unsigned u = 0; u < NELEMENTS(speed_duplex_table); u++) {
-    if (g_ethernet_link[inst_no-1].interface_caps.speed_duplex_selector &
-        (1u << u)) {
+  for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
+    if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
+        (1u << i)) {
       return_value += EncodeData(
                         kCipUint,
-                        &speed_duplex_table[u].interface_speed,
-                        pa_acMsg);
+                        &speed_duplex_table[i].interface_speed,
+                        message);
       return_value += EncodeData(
                         kCipUsint,
-                        &speed_duplex_table[u].interface_duplex_mode,
-                        pa_acMsg);
+                        &speed_duplex_table[i].interface_duplex_mode,
+                        message);
     }
   }
   return return_value;

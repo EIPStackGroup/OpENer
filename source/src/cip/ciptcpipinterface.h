@@ -81,9 +81,9 @@ void ShutdownTcpIpInterface(void);
 
 /** @brief Calculate Multicast address base from current IP setting
  *
- *  @param  p_tcpip pointer to TCP/IP object
+ *  @param  tcpip pointer to TCP/IP object
  */
-void CipTcpIpCalculateMulticastIp(CipTcpIpObject *p_tcpip);
+void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip);
 
 /** @brief Public Method to get Encapsulation Inactivity Timeout Value
  *
