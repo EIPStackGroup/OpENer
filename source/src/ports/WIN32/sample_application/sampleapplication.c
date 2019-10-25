@@ -12,6 +12,10 @@
 #include "ciptcpipinterface.h"
 #include "cipqos.h"
 #include "nvdata.h"
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+  #include "cipethernetlink.h"
+  #include "ethlinkcbs.h"
+#endif
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
@@ -73,6 +77,39 @@ EipStatus ApplicationInitialization(void) {
   InsertGetSetCallback(GetCipClass(kCipTcpIpInterfaceClassCode),
                        NvTcpipSetCallback,
                        kNvDataFunc);
+
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+  /* For the Ethernet Interface & Media Counters connect a PreGetCallback and
+   *  a PostGetCallback.
+   * The PreGetCallback is used to fetch the counters from the hardware.
+   * The PostGetCallback is utilized by the GetAndClear service to clear
+   *  the hardware counters after the current data have been transmitted.
+   */
+  {
+    CipClass *p_eth_link_class = GetCipClass(kCipEthernetLinkClassCode);
+    InsertGetSetCallback(p_eth_link_class,
+                         EthLnkPreGetCallback,
+                         kPreGetFunc);
+    InsertGetSetCallback(p_eth_link_class,
+                         EthLnkPostGetCallback,
+                         kPostGetFunc);
+    /* Specify the attributes for which the callback should be executed. */
+    for (int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx)
+    {
+      CipAttributeStruct *p_eth_link_attr;
+      CipInstance *p_eth_link_inst =
+        GetCipInstance(p_eth_link_class, idx+1);
+      OPENER_ASSERT(p_eth_link_inst);
+
+      /* Interface counters attribute */
+      p_eth_link_attr = GetCipAttribute(p_eth_link_inst, 4);
+      p_eth_link_attr->attribute_flags |= (kPreGetFunc | kPostGetFunc);
+      /* Media counters attribute */
+      p_eth_link_attr = GetCipAttribute(p_eth_link_inst, 5);
+      p_eth_link_attr->attribute_flags |= (kPreGetFunc | kPostGetFunc);
+    }
+  }
+#endif
 
   return kEipStatusOk;
 }

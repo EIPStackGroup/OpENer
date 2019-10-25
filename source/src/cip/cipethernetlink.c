@@ -3,22 +3,41 @@
  * All rights reserved.
  *
  ******************************************************************************/
-/*
- * CIP Ethernet Link Object
- * ========================
+/** @file
+ *  @brief Implement the CIP Ethernet Link Object
  *
- * Implemented Attributes
- * ----------------------
- * - Attribute  1: Interface Speed
- * - Attribute  2: Interface Flags
- * - Attribute  3: Physical Address (Ethernet MAC)
- * - Attribute  7: Interface Type
- *    See Vol. 2 Section 6-3.4 regarding an example for a device with internal
- *    switch port where the implementation of this attribute is recommended.
- * - Attribute 10: Interface Label
- *    If the define OPENER_ETHLINK_LABEL_ENABLE is set then this attribute
- *    has a string content ("PORT 1" by default on instance 1).
- * - Attribute 11: Interface Capabilities
+ *  CIP Ethernet Link Object
+ *  ========================
+ *
+ *  Implemented Attributes
+ *  ----------------------
+ *  Conditional attributes are indented and marked with the condition it
+ *  depends on like "(0 != OPENER_ETHLINK_CNTRS_ENABLE)"
+ *
+ *  - Attribute  1: Interface Speed
+ *  - Attribute  2: Interface Flags
+ *  - Attribute  3: Physical Address (Ethernet MAC)
+ *      - Attribute  4: Interface Counters (32-bit) (0 != OPENER_ETHLINK_CNTRS_ENABLE)
+ *      - Attribute  5: Media Counters (32-bit)     (0 != OPENER_ETHLINK_CNTRS_ENABLE)
+ *  - Attribute  7: Interface Type
+ *      See Vol. 2 Section 6-3.4 regarding an example for a device with internal
+ *      switch port where the implementation of this attribute is recommended.
+ *  - Attribute 10: Interface Label (0 != OPENER_ETHLINK_LABEL_ENABLE)
+ *      If the define OPENER_ETHLINK_LABEL_ENABLE is set then this attribute
+ *      has a string content ("PORT 1" by default on instance 1) otherwise it
+ *      is empty.
+ *  - Attribute 11: Interface Capabilities
+ *
+ *  Implemented Services
+ *  --------------------
+ *  Conditional services are indented and marked with the condition it
+ *  depends on like "(0 != OPENER_ETHLINK_CNTRS_ENABLE)"
+ *
+ *  - GetAttributeAll
+ *  - GetAttributeSingle
+ *    - GetAndClearAttribute  (0 != OPENER_ETHLINK_CNTRS_ENABLE)
+ *        This service should only implemented for the attributes 4, 5, 12,
+ *        13 and 15.
  *
  */
 
@@ -43,7 +62,7 @@
   #define OPENER_ETHLINK_LABEL_ENABLE  0
 #endif
 
-#if defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0
+#if defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
   #define IFACE_LABEL_ACCESS_MODE kGetableSingleAndAll
   #define IFACE_LABEL             "PORT 1"
   #define IFACE_LABEL_1           "PORT 2"
@@ -87,6 +106,16 @@ EipStatus GetAttributeSingleEthernetLink(
   const struct sockaddr *originator_address,
   const int encapsulation_session);
 
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+/* forward declaration for the GetAndClear service handler function */
+EipStatus GetAndClearEthernetLink(
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session);
+#endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
+
 
 /** @brief This is the internal table of possible speed / duplex combinations
  *
@@ -125,7 +154,7 @@ static const CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_table[] =
   },
 };
 
-#if defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0
+#if defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
 static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] =
 {
   {
@@ -145,11 +174,14 @@ static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] =
   },
 #endif
 };
-#endif /* defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0 */
+#endif /* defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE */
 
 /* Two dummy variables to provide fill data for the GetAttributeAll service. */
 static CipUsint dummy_attribute_usint = 0;
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+#else
 static CipUdint dummy_attribute_udint = 0;
+#endif
 
 /* Constant dummy data for attribute #6 */
 static CipEthernetLinkInterfaceControl interface_control =
@@ -168,7 +200,7 @@ EipStatus CipEthernetLinkInit(void) {
                                                  2, /* # class services*/
                                                  11, /* # instance attributes*/
                                                  11, /* # highest instance attribute number*/
-                                                 2, /* # instance services*/
+                                                 2+OPENER_ETHLINK_CNTRS_ENABLE, /* # instance services*/
                                                  OPENER_ETHLINK_INSTANCE_CNT, /* # instances*/
                                                  "Ethernet Link", /* # class name */
                                                  4, /* # class revision*/
@@ -185,7 +217,7 @@ EipStatus CipEthernetLinkInit(void) {
     if (2 == idx) {
       g_ethernet_link[idx].interface_type = kEthLinkIfTypeInternal;
     }
-#if defined(OPENER_ETHLINK_LABEL_ENABLE) && OPENER_ETHLINK_LABEL_ENABLE != 0
+#if defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
     g_ethernet_link[idx].interface_label = iface_label_table[idx];
 #endif
     g_ethernet_link[idx].interface_caps.capability_bits = kEthLinkCapAutoNeg;
@@ -199,6 +231,10 @@ EipStatus CipEthernetLinkInit(void) {
                   &GetAttributeSingleEthernetLink, "GetAttributeSingle");
     InsertService(ethernet_link_class, kGetAttributeAll, &GetAttributeAll,
                   "GetAttributeAll");
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+    InsertService(ethernet_link_class, kEthLinkGetAndClear,
+                  &GetAndClearEthernetLink, "GetAndClear");
+#endif
 
     /* bind attributes to the instance */
     for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
@@ -211,10 +247,17 @@ EipStatus CipEthernetLinkInit(void) {
                       &g_ethernet_link[idx].interface_flags, kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance, 3, kCip6Usint,
                       &g_ethernet_link[idx].physical_address, kGetableSingleAndAll);
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+      InsertAttribute(ethernet_link_instance, 4, kCipUsint,
+                      &g_ethernet_link[idx].interface_cntrs, kGetableSingleAndAll);
+      InsertAttribute(ethernet_link_instance, 5, kCipUsint,
+                      &g_ethernet_link[idx].media_cntrs, kGetableSingleAndAll);
+#else
       InsertAttribute(ethernet_link_instance, 4, kCipUsint,
                       &dummy_attribute_udint, kGetableAll);
       InsertAttribute(ethernet_link_instance, 5, kCipUsint,
                       &dummy_attribute_udint, kGetableAll);
+#endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
       InsertAttribute(ethernet_link_instance, 6, kCipUdint, &interface_control,
                       kGetableAll);
       InsertAttribute(ethernet_link_instance, 7, kCipUsint,
@@ -247,63 +290,80 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
 }
 
 static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
-// Returns default value 0
-  int return_value = 0;
+  int encoded_len = 0;
   for (size_t i = 0; i < 11; i++) {
-    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, message);
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+    /* Encode real values using the access through the array of the
+     *  interface_cntrs union. */
+    encoded_len += EncodeData(
+                    kCipUdint,
+                    g_ethernet_link[instance_id-1].interface_cntrs.cntr32 +i,
+                    message);
+#else
+    /* Encode the default counter value of 0 */
+    encoded_len += EncodeData(kCipUdint, &dummy_attribute_udint, message);
+#endif
   }
-  return return_value;
+  return encoded_len;
 }
 
 static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
-// Returns default value 0
-  int return_value = 0;
+  int encoded_len = 0;
   for (size_t i = 0; i < 12; i++) {
-    return_value += EncodeData(kCipUdint, &dummy_attribute_udint, message);
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+    /* Encode real values using the access through the array of the
+     *  media_cntrs union. */
+    encoded_len += EncodeData(
+                    kCipUdint,
+                    g_ethernet_link[instance_id-1].media_cntrs.cntr32 +i,
+                    message);
+#else
+    /* Encode the default counter value of 0 */
+    encoded_len += EncodeData(kCipUdint, &dummy_attribute_udint, message);
+#endif
   }
-  return return_value;
+  return encoded_len;
 }
 
 static int EncodeInterfaceControl(CipOctet **message) {
-// Returns default value 0
-  int return_value = 0;
-  return_value += EncodeData(kCipWord, &interface_control.control_bits,
-                             message);
-  return_value += EncodeData(kCipUint,
-                             &interface_control.forced_interface_speed,
-                             message);
-  return return_value;
+  int encoded_len = 0;
+  encoded_len += EncodeData(kCipWord, &interface_control.control_bits,
+                            message);
+  encoded_len += EncodeData(kCipUint,
+                            &interface_control.forced_interface_speed,
+                            message);
+  return encoded_len;
 }
 
 #define NELEMENTS(x)  ((sizeof(x)/sizeof(x[0])))
 static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message)
 {
-  int return_value = 0;
-  return_value += EncodeData(
+  int encoded_len = 0;
+  encoded_len += EncodeData(
                     kCipDword,
                     &g_ethernet_link[instance_id - 1].interface_caps.capability_bits,
                     message);
   uint16_t selected = g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector;
   CipUsint count;
-  for(count = 0; selected; count++) { /* count # of bits set */
+  for (count = 0; selected; count++) { /* count # of bits set */
 	  selected &= selected - 1u;  /* clear the least significant bit set */
   }
-  return_value += EncodeData(kCipUsint, &count, message);
+  encoded_len += EncodeData(kCipUsint, &count, message);
 
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
     if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
         (1u << i)) {
-      return_value += EncodeData(
+      encoded_len += EncodeData(
                         kCipUint,
                         &speed_duplex_table[i].interface_speed,
                         message);
-      return_value += EncodeData(
+      encoded_len += EncodeData(
                         kCipUsint,
                         &speed_duplex_table[i].interface_duplex_mode,
                         message);
     }
   }
-  return return_value;
+  return encoded_len;
 }
 
 EipStatus GetAttributeSingleEthernetLink(
@@ -312,7 +372,6 @@ EipStatus GetAttributeSingleEthernetLink(
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
-  /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
@@ -327,8 +386,8 @@ EipStatus GetAttributeSingleEthernetLink(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
-OPENER_TRACE_INFO("ENTER I %u A %hu\n", instance->instance_number, attribute_number);
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
+    /* Mask for filtering get-ability */
     uint8_t get_bit_mask = 0;
     if (kGetAttributeAll == message_router_request->service) {
       get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
@@ -339,11 +398,31 @@ OPENER_TRACE_INFO("ENTER I %u A %hu\n", instance->instance_number, attribute_num
                                                                  attribute_number)
                       ]);
     }
-    OPENER_TRACE_INFO ("Service %" PRIu8 ", get_bit_mask=%02" PRIx8 "\n",
+    OPENER_TRACE_INFO ("Service %" PRIu8 ", get_bit_mask=%02" PRIX8 "\n",
                        message_router_request->service, get_bit_mask);
     if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-      OPENER_TRACE_INFO("getAttribute %d\n",
-                        message_router_request->request_path.attribute_number); /* create a reply message containing the data*/
+      OPENER_TRACE_INFO("getAttribute %d\n", attribute_number);
+
+      /* create a reply message containing the data*/
+      bool use_common_handler;
+      switch (attribute_number) {
+      case 4: /* fall through */
+      case 5: /* fall through */
+      case 6: /* fall through */
+      case 11: /* fall through */
+        use_common_handler = false;
+        break;
+      default:
+        use_common_handler = true;
+        break;
+      }
+
+      /* Call the PreGetCallback if enabled for this attribute and the common handler is not used. */
+      if (!use_common_handler) {
+        if (attribute->attribute_flags & kPreGetFunc && NULL != instance->cip_class->PreGetCallback) {
+          instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
+        }
+      }
 
       switch (attribute_number) {
         case 4:
@@ -377,9 +456,67 @@ OPENER_TRACE_INFO("ENTER I %u A %hu\n", instance->instance_number, attribute_num
                              encapsulation_session);
       }
 
+      /* Call the PostGetCallback if enabled for this attribute and the common handler is not used. */
+      if (!use_common_handler) {
+        if (attribute->attribute_flags & kPostGetFunc && NULL != instance->cip_class->PostGetCallback) {
+          instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
+        }
+      }
+
     }
   }
 
   return kEipStatusOkSend;
 }
 
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+EipStatus GetAndClearEthernetLink(
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session) {
+
+  CipAttributeStruct *attribute = GetCipAttribute(
+    instance, message_router_request->request_path.attribute_number);
+
+  message_router_response->data_length = 0;
+  message_router_response->reply_service = (0x80
+                                            | message_router_request->service);
+  message_router_response->general_status = kCipErrorAttributeNotSupported;
+  message_router_response->size_of_additional_status = 0;
+
+  EipUint16 attribute_number = message_router_request->request_path
+                               .attribute_number;
+
+  if ( (NULL != attribute) && (NULL != attribute->data) ) {
+    OPENER_TRACE_INFO("GetAndClear attribute %" PRIu16 "\n", attribute_number);
+
+    /* The PreGetCallback is not executed here.
+     * The GetAttributeSingle{EthernetLink}() will do it on our behalf. */
+    switch (attribute_number) {
+      case 4: /* fall through */
+      case 5:
+        GetAttributeSingleEthernetLink(
+                           instance, message_router_request,
+                           message_router_response,
+                           originator_address,
+                           encapsulation_session);
+        break;
+      default:
+        message_router_response->general_status =
+          kCipErrorServiceNotSupportedForSpecifiedPath;
+        break;
+    }
+
+    /* Clearing the counters must be done in the PostGetCallback because it
+     *  is often hardware specific and can't be handled in generic code. */
+    /* The PostGetCallback is not executed here. The
+     *  GetAttributeSingle{EthernetLink}() should have done it on our
+     *  behalf already.
+     */
+  }
+
+  return kEipStatusOkSend;
+}
+#endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */

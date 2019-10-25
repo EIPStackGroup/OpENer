@@ -48,7 +48,12 @@ typedef enum {
   kCipErrorUnexpectedAttributeInList = 0x27, /**< An attempt was made to set an attribute that is not able to be set at this time. */
   kCipErrorInvalidMemberId = 0x28, /**< The Member ID specified in the request does not exist in the specified Class/Instance/Attribute */
   kCipErrorMemberNotSetable = 0x29, /**< A request to modify a non-modifiable member was received */
-  kCipErrorGroup2OnlyServerGeneralFailure = 0x2A /**< This error code may only be reported by DeviceNet group 2 only servers with 4K or less code space and only in place of Service not supported, Attribute not supported and Attribute not setable. */
-/*2B - CF Reserved by CIP for future extensions D0 - FF Reserved for Object Class and service errors*/
+  kCipErrorGroup2OnlyServerGeneralFailure = 0x2A, /**< This error code may only be reported by DeviceNet group 2 only servers with 4K or less code space and only in place of Service not supported, Attribute not supported and Attribute not setable. */
+  kCipErrorUnknownModbusError = 0x2B, /**< A CIP to Modbus translator received an unknown Modbus Exception Code. */
+  kCipErrorAttributeNotGettable = 0x2C, /**< A request to read a non-readable attribute was received. */
+  kCipErrorInstanceNotDeletable = 0x2D, /**< The requested object instance cannot be deleted. */
+  kCipErrorServiceNotSupportedForSpecifiedPath = 0x2E,  /**< The object supports the service, but not for the designated application path (e.g. attribute). NOTE: Not to be used when a more specific General Status Code applies,
+                                                              e.g. 0x0E (Attribute not settable) or 0x29 (Member not settable).*/
+/* 2F - CF Reserved by CIP for future extensions D0 - FF Reserved for Object Class and service errors*/
 } CipError;
 #endif /* OPENER_CIPERROR_H_ */

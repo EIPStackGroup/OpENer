@@ -5,6 +5,9 @@
  ******************************************************************************/
 #ifndef OPENER_CIPETHERNETLINK_H_
 #define OPENER_CIPETHERNETLINK_H_
+/** @file
+ *  @brief Declare public interface of the CIP Ethernet Link Object
+ */
 
 #include "typedefs.h"
 #include "ciptypes.h"
@@ -71,11 +74,68 @@ typedef struct {
   uint16_t speed_duplex_selector;
 } CipEthernetLinkMetaInterfaceCapability;
 
+
+
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+/** @brief Type definition of the Interface Counters attribute #4
+ *
+ * This union holds the 32-bit Interface Counters of the Ethernet Link object.
+ *  This is attribute is becomes required if the HC Interface Counters attribute or
+ *  Media Counters attribute is implemented, otherwise highly recommended.
+ * That means for DLR capable devices this attribute is required because the
+ *  Media Counters attribute is required for DLR capable devices.
+ */
+typedef union {
+  CipUdint  cntr32[11];
+  struct {
+    CipUdint  in_octets;
+    CipUdint  in_ucast;
+    CipUdint  in_nucast;
+    CipUdint  in_discards;
+    CipUdint  in_errors;
+    CipUdint  in_unknown_protos;
+    CipUdint  out_octets;
+    CipUdint  out_ucast;
+    CipUdint  out_nucast;
+    CipUdint  out_discards;
+    CipUdint  out_errors;
+  } ul;
+} CipEthernetLinkInterfaceCounters;
+
+/** @brief Type definition of the Media Counters attribute #5
+ *
+ * This union holds the 32-bit Media Counters of the Ethernet Link object.
+ *  This attribute becomes required if the devices supports DLR or if the
+ *  HC Media Counters attribute is implemented, otherwise highly recommended.
+ */
+typedef union {
+  CipUdint  cntr32[12];
+  struct {
+    CipUdint  align_errs;
+    CipUdint  fcs_errs;
+    CipUdint  single_coll;
+    CipUdint  multi_coll;
+    CipUdint  sqe_test_errs;
+    CipUdint  def_trans;
+    CipUdint  late_coll;
+    CipUdint  exc_coll;
+    CipUdint  mac_tx_errs;
+    CipUdint  crs_errs;
+    CipUdint  frame_too_long;
+    CipUdint  mac_rx_errs;
+  } ul;
+} CipEthernetLinkMediaCounters;
+#endif  /* ... && OPENER_ETHLINK_CNTRS_ENABLE != 0 */
+
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
   EipUint32 interface_speed; /**< Attribute #1: 10/100/1000 Mbit/sec */
   EipUint32 interface_flags; /**< Attribute #2: Interface flags as defined in the CIP specification */
   EipUint8 physical_address[6]; /**< Attribute #3: MAC address of the Ethernet link */
+#if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+  CipEthernetLinkInterfaceCounters interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
+  CipEthernetLinkMediaCounters media_cntrs; /**< Attribute #5: Media counters 32-bit wide */
+#endif
   CipUsint interface_type;  /**< Attribute #7: Type of interface; */
   CipShortString interface_label; /**< Attribute #10: Interface label */
   CipEthernetLinkMetaInterfaceCapability interface_caps; /**< Attribute #11: Interface capabilities */

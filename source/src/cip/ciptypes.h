@@ -89,9 +89,11 @@ typedef enum {
   kInsertMember = 0x1A,
   kRemoveMember = 0x1B,
   kGroupSync = 0x1C,
+  kGetConnectionPointMemberList = 0x1D,
   /* End CIP common services */
 
   /* Start CIP object-specific services */
+  kEthLinkGetAndClear = 0x4C, /**< Ethernet Link object's Get_And_Clear service */
   kForwardOpen = 0x54,
   kForwardClose = 0x4E,
   kUnconnectedSend = 0x52,

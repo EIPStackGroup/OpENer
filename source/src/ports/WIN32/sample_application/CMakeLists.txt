@@ -11,4 +11,8 @@ opener_platform_support("INCLUDES")
 
 opener_platform_support("INCLUDES")
 
-add_library(SAMPLE_APP sampleapplication.c)
+if (OPENER_IS_DLR_DEVICE)
+  set( SAMPLE_APP_DLR_ONLY_SRC ethlinkcbs.c )
+endif()
+
+add_library(SAMPLE_APP sampleapplication.c ${SAMPLE_APP_DLR_ONLY_SRC})
