@@ -72,7 +72,7 @@ EipStatus ApplicationInitialization(void) {
   InsertGetSetCallback(GetCipClass(kCipQoSClassCode), NvQosSetCallback,
                        kNvDataFunc);
   InsertGetSetCallback(GetCipClass(kCipTcpIpInterfaceClassCode),
-                       NvTcpipSetCallback(),
+                       NvTcpipSetCallback,
                        kNvDataFunc);
 
   return kEipStatusOk;
