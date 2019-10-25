@@ -60,8 +60,8 @@ void ConfigureIpMacAddress(const CipUint interface_index) {
     pAdapter = pAdapterInfo;
     while (pAdapter) {
       if (pAdapter->Index == interface_index) {
-        for (int i = 0; i < 6; i++) {
-          memcpy(&g_ethernet_link.physical_address, pAdapter->Address,
+        for (size_t i = 0; i < 6; i++) {
+          memcpy(&g_ethernet_link->physical_address, pAdapter->Address,
                  6 * sizeof(CipUsint) );
         }
 

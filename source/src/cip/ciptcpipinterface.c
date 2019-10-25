@@ -7,8 +7,6 @@
 
 #include <string.h>
 
-#include <netinet/in.h> /* IN_CLASSx() macros / INADDR_LOOPBACK / etc. */
-
 #include "opener_user_conf.h"
 #include "cipcommon.h"
 #include "cipconnectionobject.h"

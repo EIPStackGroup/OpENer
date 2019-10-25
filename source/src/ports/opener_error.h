@@ -17,9 +17,7 @@
  *
  * @return Error number
  */
-int GetSocketErrorNumber(
-  );
-
+int GetSocketErrorNumber(void);
 
 /**
  * @brief Returns a human readable message for the given error number

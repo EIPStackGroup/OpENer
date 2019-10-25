@@ -21,7 +21,7 @@
 
 const int kErrorMessageBufferSize = 255;
 
-int GetSocketErrorNumber() {
+int GetSocketErrorNumber(void) {
   return errno;
 }
 

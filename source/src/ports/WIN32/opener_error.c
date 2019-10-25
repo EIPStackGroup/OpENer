@@ -14,7 +14,7 @@
 
  #include "opener_error.h"
 
-int GetSocketErrorNumber() {
+int GetSocketErrorNumber(void) {
   return WSAGetLastError();
 }
 
