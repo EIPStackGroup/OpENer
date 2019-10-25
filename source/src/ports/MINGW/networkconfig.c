@@ -54,7 +54,7 @@ EipStatus ConfigureNetworkInterface(const char *const network_interface) {
       if (strcmp( pAdapter->IpAddressList.IpAddress.String,
                   network_interface) == 0) {
         for (int i = 0; i < 6; i++) {
-          memcpy(&g_ethernet_link.physical_address, pAdapter->Address,
+          memcpy(&g_ethernet_link->physical_address, pAdapter->Address,
                  6 * sizeof(CipUsint) );
         }
 

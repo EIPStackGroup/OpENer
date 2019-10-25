@@ -25,7 +25,7 @@ char *GetErrorMessage(int error_number) {
     NULL,
     error_number,
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-    &error_message,
+    (LPSTR)&error_message,
     0,
     NULL);
   return error_message;
