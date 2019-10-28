@@ -38,7 +38,7 @@ CipString *SetCipStringByData(CipString *const cip_string,
 
   (void) FreeCipString(cip_string);
 
-  if (0 == str_len) {
+  if (0 != str_len) {
     /* Allocate & clear +1 bytes for the trailing '\0' character. */
     cip_string->string = CipCalloc(str_len + 1, sizeof (CipOctet));
     if (NULL == cip_string->string) {
@@ -79,7 +79,7 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
 
   (void) FreeCipShortString(cip_string);
 
-  if (0 == str_len) {
+  if (0 != str_len) {
     /* Allocate & clear +1 bytes for the trailing '\0' character. */
     cip_string->string = CipCalloc(str_len + 1, sizeof (CipOctet));
     if (NULL == cip_string->string) {
