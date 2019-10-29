@@ -25,15 +25,15 @@ CipString *FreeCipString(CipString *const cip_string) {
       cip_string->length = 0;
     }
   } else {
-	  OPENER_TRACE_ERR("Trying to free NULL CipString!\n");
+    OPENER_TRACE_ERR("Trying to free NULL CipString!\n");
   }
   return cip_string;
 }
 
 
 CipString *SetCipStringByData(CipString *const cip_string,
-		                      size_t str_len,
-							  const CipOctet *const data) {
+                              size_t str_len,
+                              const CipOctet *const data) {
   CipString *result = cip_string;
 
   (void) FreeCipString(cip_string);
@@ -52,8 +52,8 @@ CipString *SetCipStringByData(CipString *const cip_string,
 }
 
 
-CipString *SetCipStringByCstr(CipString *cip_string,
-		                      const char *string) {
+CipString *SetCipStringByCstr(CipString *const cip_string,
+                              const char *const string) {
     return SetCipStringByData(cip_string, strlen(string), (const CipOctet*)string);
 }
 
@@ -66,15 +66,15 @@ CipShortString *FreeCipShortString(CipShortString *const cip_string) {
       cip_string->length = 0;
     }
   } else {
-	  OPENER_TRACE_ERR("Trying to free NULL CipShortString!\n");
+    OPENER_TRACE_ERR("Trying to free NULL CipShortString!\n");
   }
   return cip_string;
 }
 
 
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-		                                size_t str_len,
-										const CipOctet *data) {
+                                        size_t str_len,
+                                        const CipOctet *const data) {
   CipShortString *result = cip_string;
 
   (void) FreeCipShortString(cip_string);
@@ -93,8 +93,8 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
 }
 
 
-CipShortString *SetCipShortStringByCstr(CipShortString *cip_string,
-		                                const char *string) {
+CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
+                                        const char *const string) {
   return SetCipShortStringByData(cip_string, strlen(string),
                                  (const CipOctet*)string);
 }

@@ -20,22 +20,19 @@
 CipString *FreeCipString(CipString *const cip_string);
 
 CipString *SetCipStringByData(CipString *const cip_string,
-		                      size_t str_len,
-							  const EipUint8 *const data);
+                              size_t str_len,
+                              const EipUint8 *const data);
 
 CipString *SetCipStringByCstr(CipString *const cip_string,
-		                      const char *const string);
+                              const char *const string);
 
 CipShortString *FreeCipShortString(CipShortString *const cip_string);
 
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-		                                size_t str_len,
-										const CipOctet *data);
+                                        size_t str_len,
+                                        const CipOctet *const data);
 
-CipShortString *SetCipShortStringByCstr
-(
-  CipShortString *p_cip_string,
-  const char *p_string
-);
+CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
+                                        const char *const string);
 
 #endif /* of OPENER_CIPSTRING_H_ */
