@@ -19,6 +19,9 @@
 #include "ciperror.h"
 #include "cipassembly.h"
 #include "cipmessagerouter.h"
+#if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
+  #include "cipdlr.h"
+#endif
 #include "cipqos.h"
 #include "cpf.h"
 #include "trace.h"
@@ -47,6 +50,10 @@ void CipStackInit(const EipUint16 unique_connection_id) {
   OPENER_ASSERT(kEipStatusOk == eip_status)
   eip_status = CipAssemblyInitialize();
   OPENER_ASSERT(kEipStatusOk == eip_status)
+#if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
+  eip_status = CipDlrInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+#endif
   eip_status = CipQoSInit();
   OPENER_ASSERT(kEipStatusOk == eip_status)
   /* the application has to be initialized at last */
