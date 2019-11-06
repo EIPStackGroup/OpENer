@@ -192,9 +192,8 @@ EipStatus NetworkHandlerInitialize(void) {
                sizeof(struct sockaddr) ) ) == -1 ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n", error_code,
-                      GetErrorMessage(
-                        error_code) );
+    OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n",
+                     error_code, error_message);
     FreeErrorMessage(error_message);
     return kEipStatusError;
   }
