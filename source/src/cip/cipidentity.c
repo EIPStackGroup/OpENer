@@ -97,37 +97,36 @@ static EipStatus Reset(CipInstance *instance,
   message_router_response->size_of_additional_status = 0;
   message_router_response->general_status = kCipErrorSuccess;
 
-  if (message_router_request->request_path_size == 1) {
-    switch (message_router_request->data[0]) {
-      case 0: /* Reset type 0 -> emulate device reset / Power cycle */
+  if (message_router_request->request_path_size > 1) {
+    message_router_response->general_status = kCipErrorTooMuchData;
+  }
+  else {
+    CipOctet reset_type = 0;  /* The default type if type parameter was omitted. */
+    if (message_router_request->request_path_size == 1) {
+      reset_type = message_router_request->data[0];
+    }
+    switch (reset_type) {
+      case 0: /* Reset type 0 -> Emulate power cycle */
         if ( kEipStatusError == ResetDevice() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
-      case 1: /* Reset type 1 -> reset to device settings */
+      case 1: /* Reset type 1 -> Return to factory defaults & power cycle*/
         if ( kEipStatusError == ResetDeviceToInitialConfiguration() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
-      /* case 2: Not supported Reset type 2 -> Return to factory defaults except communications parameters */
+      /* case 2: Not supported Reset type 2 ->
+        Return to factory defaults except communications parameters & power cycle*/
 
       default:
         message_router_response->general_status = kCipErrorInvalidParameter;
         break;
     }
-  } else /*TODO: Should be if (pa_stMRRequest->DataLength == 0)*/
-  {
-    /* The same behavior as if the data value given would be 0
-       emulate device reset */
-
-    if ( kEipStatusError == ResetDevice() ) {
-      message_router_response->general_status = kCipErrorInvalidParameter;
-    } else {
-      /* eip_status = EIP_OK; */
-    }
   }
+
   message_router_response->data_length = 0;
   return eip_status;
 }
