@@ -33,7 +33,7 @@
  *  Conditional services are indented and marked with the condition it
  *  depends on like "(0 != OPENER_ETHLINK_CNTRS_ENABLE)"
  *
- *  - GetAttributeAll
+ *  - GetAttributesAll
  *  - GetAttributeSingle
  *    - GetAndClearAttribute  (0 != OPENER_ETHLINK_CNTRS_ENABLE)
  *        This service should only implemented for the attributes 4, 5, 12,
@@ -46,9 +46,6 @@
 #include <string.h>
 
 #include "cipcommon.h"
-#include "cipmessagerouter.h"
-#include "ciperror.h"
-#include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
 
@@ -346,13 +343,13 @@ static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message)
   uint16_t selected = g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector;
   CipUsint count;
   for (count = 0; selected; count++) { /* count # of bits set */
-	  selected &= selected - 1u;  /* clear the least significant bit set */
+	  selected &= selected - 1U;  /* clear the least significant bit set */
   }
   encoded_len += EncodeData(kCipUsint, &count, message);
 
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
     if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
-        (1u << i)) {
+        (1U << i)) {
       encoded_len += EncodeData(
                         kCipUint,
                         &speed_duplex_table[i].interface_speed,
@@ -401,7 +398,6 @@ EipStatus GetAttributeSingleEthernetLink(
     OPENER_TRACE_INFO ("Service %" PRIu8 ", get_bit_mask=%02" PRIX8 "\n",
                        message_router_request->service, get_bit_mask);
     if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-      OPENER_TRACE_INFO("getAttribute %d\n", attribute_number);
 
       /* create a reply message containing the data*/
       bool use_common_handler;
@@ -409,7 +405,7 @@ EipStatus GetAttributeSingleEthernetLink(
       case 4: /* fall through */
       case 5: /* fall through */
       case 6: /* fall through */
-      case 11: /* fall through */
+      case 11:
         use_common_handler = false;
         break;
       default:

@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #include <windows.h>
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 
 #include "networkhandler.h"
 

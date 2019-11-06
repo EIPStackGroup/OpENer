@@ -160,7 +160,7 @@ typedef enum {
 #define SEQ_GEQ16(a, b) ( (short)( (a) - (b) ) >= 0 )
 
 /** @brief Connection Manager class code */
-static const CipUint kCipConnectionManagerClassCode = 0x06u;
+static const CipUint kCipConnectionManagerClassCode = 0x06U;
 
 /* public functions */
 

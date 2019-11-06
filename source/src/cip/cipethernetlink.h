@@ -14,7 +14,7 @@
 
 /** @brief This Ethernet Link class code as #define is still needed for a static
  *  initialization. */
-#define CIP_ETHERNETLINK_CLASS_CODE   0xF6u
+#define CIP_ETHERNETLINK_CLASS_CODE   0xF6U
 /** @brief Ethernet Link class code */
 static const CipUint kCipEthernetLinkClassCode = CIP_ETHERNETLINK_CLASS_CODE;
 
@@ -136,7 +136,7 @@ typedef struct {
   CipEthernetLinkInterfaceCounters interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
   CipEthernetLinkMediaCounters media_cntrs; /**< Attribute #5: Media counters 32-bit wide */
 #endif
-  CipUsint interface_type;  /**< Attribute #7: Type of interface; */
+  CipUsint interface_type;  /**< Attribute #7: Type of interface */
   CipShortString interface_label; /**< Attribute #10: Interface label */
   CipEthernetLinkMetaInterfaceCapability interface_caps; /**< Attribute #11: Interface capabilities */
 } CipEthernetLinkObject;

@@ -21,10 +21,10 @@
 
 /* Define constants to initialize the config_capability attribute (#2). These
 *   are needed as defines because we use them for static initialization. */
-#define CFG_CAPS_DHCP_CLIENT          0x04u /**< Device has DHCP client */
-#define CFG_CAPS_CFG_SETTABLE         0x10u /**< Interface configuration can be set */
-#define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40u /**< Interface configuration change needs RESET */
-#define CFG_CAPS_ACD_CAPABLE          0x80u /**< Device supports ACD */
+#define CFG_CAPS_DHCP_CLIENT          0x04U /**< Device has DHCP client */
+#define CFG_CAPS_CFG_SETTABLE         0x10U /**< Interface configuration can be set */
+#define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40U /**< Interface configuration change needs RESET */
+#define CFG_CAPS_ACD_CAPABLE          0x80U /**< Device supports ACD */
 
 /* OPENER_TCPIP_IFACE_CFG_SETTABLE controls if the interface configuration is fully settable.
 *   Prepare additional defines needed here:
@@ -170,7 +170,7 @@ static bool IsValidDomain(EipByte *domain)
 }
 
 
-/** Check if a IP address is a valid network mask
+/** Check if an IP address is a valid network mask
  *
  *  @param  netmask network mask in network byte order
  *  @return         valid status
@@ -189,7 +189,7 @@ static bool IsValidNetmask(in_addr_t netmask)
     return valid && (INADDR_BROADCAST != netmask);
 }
 
-/** Check if a IP address is in one of the network classes A, B or C
+/** Check if an IP address is in one of the network classes A, B or C
  *
  *  @param  ip_addr IP address in network byte order
  *  @return         status
@@ -202,7 +202,7 @@ static bool IsInClassAbc(in_addr_t ip_addr)
   return IN_CLASSA(ip) || IN_CLASSB(ip) || IN_CLASSC(ip);
 }
 
-/** Check if a IP address is on the loopback network
+/** Check if an IP address is on the loopback network
  *
  *  @param  ip_addr IP address in network byte order
  *  @return         status
