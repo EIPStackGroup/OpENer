@@ -219,7 +219,7 @@ void AddNewActiveConnection(CipConnectionObject *const connection_object);
 void RemoveFromActiveConnections(CipConnectionObject *const connection_object);
 
 
-CipUint GetConnectionId(void);
+CipUdint GetConnectionId(void);
 
 typedef void (*CloseSessionFunction)(const CipConnectionObject *const
                                      connection_object);
