@@ -395,8 +395,6 @@ EipStatus GetAttributeSingleEthernetLink(
                                                                  attribute_number)
                       ]);
     }
-    OPENER_TRACE_INFO ("Service %" PRIu8 ", get_bit_mask=%02" PRIX8 "\n",
-                       message_router_request->service, get_bit_mask);
     if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
 
       /* create a reply message containing the data*/
@@ -407,6 +405,7 @@ EipStatus GetAttributeSingleEthernetLink(
       case 6: /* fall through */
       case 11:
         use_common_handler = false;
+        OPENER_TRACE_INFO("getAttribute %d\n", attribute_number);
         break;
       default:
         use_common_handler = true;

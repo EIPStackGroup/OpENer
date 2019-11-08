@@ -131,8 +131,6 @@ static EipStatus GetAttributeSingleDlr(
                                                                  attribute_number)
                       ]);
     }
-    OPENER_TRACE_INFO ("Service %" PRIu8 ", get_bit_mask=%02" PRIX8 "\n",
-                       message_router_request->service, get_bit_mask);
     if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
       /* create a reply message containing the data*/
       bool use_common_handler;
