@@ -12,6 +12,7 @@
  */
 
 #include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
 
 #include "generic_networkhandler.h"
@@ -26,6 +27,25 @@
 #include "udp_protocol.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
+
+/* ----- Windows size_t PRI macros ------------- */
+#if defined (__MINGW32__) /* This is a Mingw compiler */
+#define PRIuSZT PRIuPTR
+#define PRIxSZT PRIxPTR
+#else
+/* Even the Visual Studio compilers / libraries since VS12015 know that now. */
+#define PRIuSZT "zu"
+#define PRIxSZT "zx"
+#endif  /* if defined(__MINGW32__) */
+
+#if defined(_WIN32)
+/* Most network functions take their I/O buffers as (char *) pointers that
+ *  triggers a warning with our CipOctet (aka unsigned char) buffers. */
+#define NWBUF_CAST  (void *)
+#else
+#define NWBUF_CAST
+#endif
+
 
 /** @brief handle any connection request coming in the TCP server socket.
  *
@@ -479,7 +499,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
     /* Handle UDP broadcast messages */
     CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
     int received_size = recvfrom(g_network_status.udp_global_broadcast_listener,
-                                 incoming_message,
+                                 NWBUF_CAST incoming_message,
                                  sizeof(incoming_message),
                                  0, (struct sockaddr *) &from_address,
                                  &from_address_length);
@@ -544,7 +564,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
     /* Handle UDP broadcast messages */
     CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
     int received_size = recvfrom(g_network_status.udp_unicast_listener,
-                                 incoming_message,
+                                 NWBUF_CAST incoming_message,
                                  sizeof(incoming_message),
                                  0, (struct sockaddr *) &from_address,
                                  &from_address_length);
@@ -661,7 +681,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   /*Check how many data is here -- read the first four bytes from the connection */
   CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
 
-  long number_of_read_bytes = recv(socket, incoming_message, 4,
+  long number_of_read_bytes = recv(socket, NWBUF_CAST incoming_message, 4,
                                    0); /*TODO we may have to set the socket to a non blocking socket */
 
   SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
@@ -707,7 +727,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO(
         "Entering consumption loop, remaining data to receive: %ld\n",
         data_sent);
-      number_of_read_bytes = recv(socket, &incoming_message[0],
+      number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[0],
                                   data_sent, 0);
 
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
@@ -744,7 +764,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusOk;
   }
 
-  number_of_read_bytes = recv(socket, &incoming_message[4],
+  number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[4],
                               data_size, 0);
 
   if (0 == number_of_read_bytes) /* got error or connection closed by client */
@@ -778,7 +798,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     /*we got the right amount of data */
     data_size += 4;
     /*TODO handle partial packets*/
-    OPENER_TRACE_INFO("Data received on TCP: %zu\n", data_size);
+    OPENER_TRACE_INFO("Data received on TCP: %" PRIuSZT "\n", data_size);
 
     g_current_active_tcp_socket = socket;
 
@@ -816,7 +836,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     }
 
     if (need_to_send > 0) {
-      OPENER_TRACE_INFO("TCP reply: send %zu bytes on %d\n",
+      OPENER_TRACE_INFO("TCP reply: send %" PRIuSZT " bytes on %d\n",
                         outgoing_message.used_message_length,
                         socket);
 
@@ -829,7 +849,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != outgoing_message.used_message_length) {
         OPENER_TRACE_WARN(
-          "TCP response was not fully sent: exp %zu, sent %ld\n",
+          "TCP response was not fully sent: exp %" PRIuSZT ", sent %ld\n",
           outgoing_message.used_message_length,
           data_sent);
       }
@@ -936,7 +956,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         == g_tcpip.mcast_config.starting_multicast_address) {
       if (1 != g_tcpip.mcast_ttl_value) { /* we need to set a TTL value for the socket */
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
-                        &g_tcpip.mcast_ttl_value,
+                        NWBUF_CAST &g_tcpip.mcast_ttl_value,
                         sizeof(g_tcpip.mcast_ttl_value) ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
@@ -954,7 +974,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         struct in_addr my_addr =
         { .s_addr = g_tcpip.interface_configuration.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
-                        &my_addr.s_addr,
+                        NWBUF_CAST &my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
@@ -1025,7 +1045,7 @@ void CheckAndHandleConsumingUdpSockets(void) {
 
       int received_size = recvfrom(
         current_connection_object->socket[kUdpCommuncationDirectionConsuming],
-        incoming_message, sizeof(incoming_message), 0,
+        NWBUF_CAST incoming_message, sizeof(incoming_message), 0,
         (struct sockaddr *) &from_address, &from_address_length);
       if (0 == received_size) {
         int error_code = GetSocketErrorNumber();
