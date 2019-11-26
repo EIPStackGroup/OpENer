@@ -33,7 +33,7 @@
 #define PRIuSZT PRIuPTR
 #define PRIxSZT PRIxPTR
 #else
-/* Even the Visual Studio compilers / libraries since VS12015 know that now. */
+/* Even the Visual Studio compilers / libraries since VS2015 know that now. */
 #define PRIuSZT "zu"
 #define PRIxSZT "zx"
 #endif  /* if defined(__MINGW32__) */
