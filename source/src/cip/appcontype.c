@@ -293,9 +293,10 @@ CipConnectionObject *GetListenOnlyConnection(
         break;
       }
 
-      if ( NULL
-           == GetExistingProducerMulticastConnection(
-             connection_object->produced_path.instance_id) ) {
+      /* Here we look for both Point-to-Point and Multicast IO connections */
+      if ( NULL == GetExistingProducerIoConnection(false,
+             connection_object->produced_path.instance_id) )
+      {
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
@@ -333,27 +334,31 @@ CipConnectionObject *GetListenOnlyConnection(
   return NULL;
 }
 
-CipConnectionObject *GetExistingProducerMulticastConnection(
+CipConnectionObject *GetExistingProducerIoConnection(
+  const bool multicast_only,
   const EipUint32 input_point) {
   DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipConnectionObject *producer_multicast_connection = node->data;
-    if ( true ==
-         ConnectionObjectIsTypeIOConnection(producer_multicast_connection) &&
-         (input_point ==
-          producer_multicast_connection->produced_path.instance_id) &&
-         ( kConnectionObjectConnectionTypeMulticast ==
-           ConnectionObjectGetTToOConnectionType(producer_multicast_connection) )
-         &&
-         (kEipInvalidSocket !=
-          producer_multicast_connection->socket[
-            kUdpCommuncationDirectionProducing]) )
+    CipConnectionObject *producer_io_connection = node->data;
+    if (ConnectionObjectIsTypeIOConnection(producer_io_connection) &&
+        (input_point == producer_io_connection->produced_path.instance_id) &&
+        (kEipInvalidSocket !=
+         producer_io_connection->socket[kUdpCommuncationDirectionProducing]) )
     {
+      ConnectionObjectConnectionType cnxn_type =
+        ConnectionObjectGetTToOConnectionType(producer_io_connection);
       /* we have a connection that produces the same input assembly,
-       * is a multicast producer and manages the connection.
+       * and manages the connection.
        */
-      return producer_multicast_connection;
+      if (kConnectionObjectConnectionTypeMulticast == cnxn_type) {
+        return producer_io_connection;
+      }
+      if (!multicast_only &&
+          kConnectionObjectConnectionTypePointToPoint == cnxn_type)
+      {
+        return producer_io_connection;
+      }
     }
     node = node->next;
   }

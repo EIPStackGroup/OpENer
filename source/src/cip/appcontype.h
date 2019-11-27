@@ -30,10 +30,12 @@ CipConnectionObject *GetIoConnectionForConnectionData(
 /** @brief Check if there exists already an exclusive owner or listen only connection
  *         which produces the input assembly.
  *
- *  @param input_point the Input point to be produced
- *  @return if a connection could be found a pointer to this connection if not NULL
+ *  @param  multicast_only  Look only for multi-cast connections
+ *  @param  input_point     the Input point to be produced
+ *  @return   a pointer to the found connection; NULL if nothing found
  */
-CipConnectionObject *GetExistingProducerMulticastConnection(
+CipConnectionObject *GetExistingProducerIoConnection(
+  const bool multicast_only,
   const EipUint32 input_point);
 
 /** @brief check if there exists an producing multicast exclusive owner or

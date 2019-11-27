@@ -447,8 +447,9 @@ EipStatus OpenProducingMulticastConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data
   ) {
+  /* Here we look for existing multi-cast IO connections only. */
   CipConnectionObject *existing_connection_object =
-    GetExistingProducerMulticastConnection(
+    GetExistingProducerIoConnection(true,
       connection_object->produced_path.instance_id);
 
   int j = 0; /* allocate an unused sockaddr struct to use */
