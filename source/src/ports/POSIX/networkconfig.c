@@ -74,12 +74,14 @@ static EipStatus GetIpAndNetmaskFromInterface
     if(ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
       ipaddr = ( (struct sockaddr_in *) &ifr.ifr_addr )->sin_addr.s_addr;
     } else {
+      close(fd);
       return kEipStatusError;
     }
 
     if(ioctl(fd, SIOCGIFNETMASK, &ifr) == 0) {
       netaddr = ( (struct sockaddr_in *) &ifr.ifr_netmask )->sin_addr.s_addr;
     } else {
+      close(fd);
       return kEipStatusError;
     }
 
