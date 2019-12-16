@@ -20,6 +20,24 @@ static const CipUint kCipEthernetLinkClassCode = CIP_ETHERNETLINK_CLASS_CODE;
 
 /* public type definitions */
 
+/** @brief Provide values for the Interface Flags (attribute #2) */
+typedef enum {
+  /** Set this bit if your device needs a reset to take over new settings made via
+    * attribute #6. It is duplicates the meaning of kEthLinkCapManualReset */
+  kEthLinkFlagsManualReset = 0x20,
+} CipEthLinkIfaceFlags;
+
+/** @brief Provide values for the Interface Control (attribute #6) Control bits member */
+typedef enum {
+  /** Set this bit to enable Auto-negotiation of ethernet link parameters. */
+  kEthLinkIfCntrlAutonegotiate  = 0x01,
+  /** When Auto-negotiation is disabled set this bit to force Full-Duplex mode else
+   *  Half-Duplex mode is forced. */
+  kEthLinkIfCntrlForcedDuplex = 0x02,
+  /** For convenience declare the sum of valid bits as the maximum allowed value. */
+  kEthLinkIfCntrlMaxValid = kEthLinkIfCntrlAutonegotiate + kEthLinkIfCntrlForcedDuplex,
+} CipEthLinkIfaceControl;
+
 /** @brief Provide values for the Interface Type (attribute #7) */
 typedef enum {
   /** Unknown interface type */
@@ -127,6 +145,14 @@ typedef union {
 } CipEthernetLinkMediaCounters;
 #endif  /* ... && OPENER_ETHLINK_CNTRS_ENABLE != 0 */
 
+/** @brief Type definition of the Interface Control attribute (#6)
+ *
+ */
+typedef struct {
+  CipWord control_bits;
+  CipUint forced_interface_speed;
+} CipEthernetLinkInterfaceControl;
+
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
   EipUint32 interface_speed; /**< Attribute #1: 10/100/1000 Mbit/sec */
@@ -135,6 +161,9 @@ typedef struct {
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   CipEthernetLinkInterfaceCounters interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
   CipEthernetLinkMediaCounters media_cntrs; /**< Attribute #5: Media counters 32-bit wide */
+#endif
+#if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  CipEthernetLinkInterfaceControl interface_control;  /** Attribute #6: control link properties */
 #endif
   CipUsint interface_type;  /**< Attribute #7: Type of interface */
   CipShortString interface_label; /**< Attribute #10: Interface label */
