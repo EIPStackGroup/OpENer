@@ -19,6 +19,7 @@
  *  - Attribute  3: Physical Address (Ethernet MAC)
  *      - Attribute  4: Interface Counters (32-bit) (0 != OPENER_ETHLINK_CNTRS_ENABLE)
  *      - Attribute  5: Media Counters (32-bit)     (0 != OPENER_ETHLINK_CNTRS_ENABLE)
+ *      - Attribute  6: Interface Control           (0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE)
  *  - Attribute  7: Interface Type
  *      See Vol. 2 Section 6-3.4 regarding an example for a device with internal
  *      switch port where the implementation of this attribute is recommended.
