@@ -727,8 +727,8 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
 }
 
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
-  CheckIoConnectionEvent(connection_object->produced_path.instance_id,
-                         connection_object->consumed_path.instance_id,
+  CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
+                         connection_object->produced_path.instance_id,
                          kIoConnectionEventTimedOut);
 
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
