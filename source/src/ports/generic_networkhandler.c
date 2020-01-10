@@ -814,7 +814,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       FreeErrorMessage(error_message);
     }
 
-    ENIPMessage outgoing_message = {0};
+    ENIPMessage outgoing_message;
     InitializeENIPMessage(&outgoing_message);
     EipStatus need_to_send = HandleReceivedExplictTcpData(
       socket, incoming_message, data_size, &remaining_bytes,

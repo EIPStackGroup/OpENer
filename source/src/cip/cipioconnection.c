@@ -823,7 +823,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  ENIPMessage outgoing_message = {0};
+  ENIPMessage outgoing_message;
   InitializeENIPMessage(&outgoing_message);
   EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
                                              &outgoing_message);
