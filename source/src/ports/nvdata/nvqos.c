@@ -29,18 +29,22 @@
  */
 int NvQosLoad(CipQosObject *p_qos)
 {
-  CipQosObject  qos;
   FILE  *p_file;
   int   rd_cnt = 0;
   int   rc;
 
+  uint64_t dscp_urgent = 0;
+  uint64_t dscp_scheduled = 0;
+  uint64_t dscp_high = 0;
+  uint64_t dscp_low = 0;
+  uint64_t dscp_explicit = 0;
+
   rc = ConfFileOpen(false, QOS_CFG_NAME, &p_file);
   if (0 == rc) {
     /* Read input data */
-    memset(&qos, 0x00, sizeof qos);
     rd_cnt = fscanf(p_file, " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
-                    &qos.dscp.urgent, &qos.dscp.scheduled, &qos.dscp.high,
-                    &qos.dscp.low, &qos.dscp.explicit);
+                    &dscp_urgent, &dscp_scheduled, &dscp_high,
+                    &dscp_low, &dscp_explicit);
 
     /* Need to try to close all stuff in any case. */
     rc = ConfFileClose(&p_file);
@@ -48,11 +52,11 @@ int NvQosLoad(CipQosObject *p_qos)
   if (0 == rc) {
     /* If all data were read copy them to the global QoS object. */
     if (5 == rd_cnt) {
-      p_qos->dscp.urgent = qos.dscp.urgent;
-      p_qos->dscp.scheduled = qos.dscp.scheduled;
-      p_qos->dscp.high = qos.dscp.high;
-      p_qos->dscp.low = qos.dscp.low;
-      p_qos->dscp.explicit = qos.dscp.explicit;
+      p_qos->dscp.urgent = dscp_urgent;
+      p_qos->dscp.scheduled = dscp_scheduled;
+      p_qos->dscp.high = dscp_high;
+      p_qos->dscp.low = dscp_low;
+      p_qos->dscp.explicit = dscp_explicit;
     }
   }
   return rc;
