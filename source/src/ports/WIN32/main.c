@@ -30,9 +30,7 @@ LeaveStack(int pa_nSig);
 int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc,
-         char *arg[]) {
-  EipUint16 nUniqueConnectionID;
+int main(int argc, char *arg[]) {
 
   if (argc != 2) {
     printf("Wrong number of command line parameters!\n");
@@ -42,26 +40,27 @@ int main(int argc,
     printf(
       "    e.g. ./OpENer index\n");
     exit(0);
-  } else {
-    DoublyLinkedListInitialize(&connection_list,
-                               CipConnectionObjectListArrayAllocator,
-                               CipConnectionObjectListArrayFree);
-    /* fetch Internet address info from the platform */
-    ConfigureDomainName(atoi(arg[1]) );
-    ConfigureHostName(atoi(arg[1]) );
-    ConfigureIpMacAddress(atoi(arg[1]) );
+  }
+  DoublyLinkedListInitialize(&connection_list,
+                             CipConnectionObjectListArrayAllocator,
+                             CipConnectionObjectListArrayFree);
+  /* Fetch MAC address from the platform. This tests also if the interface is present. */
+  uint8_t iface_mac[6];
+  if (kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac)) {
+    printf("Network interface %s not found.\n", arg[1]);
+    exit(EXIT_FAILURE);
   }
 
   /*for a real device the serial number should be unique per device */
   SetDeviceSerialNumber(123456789);
 
-  /* nUniqueConnectionID should be sufficiently random or incremented and stored
-   *  in non-volatile memory each time the device boots.
+  /* unique_connection_id should be sufficiently random or incremented and stored
+   * in non-volatile memory each time the device boots.
    */
-  nUniqueConnectionID = rand();
+  EipUint16 unique_connection_id = rand();
 
   /* Setup the CIP Layer */
-  CipStackInit(nUniqueConnectionID);
+  CipStackInit(unique_connection_id);
 
   /* The CIP objects are now created and initialized with their default values.
    *  Now any NV data values are loaded to change the data to the stored
