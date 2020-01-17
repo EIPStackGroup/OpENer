@@ -85,11 +85,14 @@ void GetHostName(CipString *hostname);
 void SetDeviceSerialNumber(const EipUint32 serial_number);
 
 /** @ingroup CIP_API
- * @brief Set the current status of the device.
+ * @brief Set the device's Status word also updating the Extended Device Status
  *
- * @param status new Identity object's Status value
+ * @param status    complete Identity Object's Status word content
+ *
+ *  This function sets the status flags and the internal state of the Extended
+ *  Device Status field in Identity object's ext_status member.
  */
-void SetDeviceStatus(const EipUint16 status);
+void SetDeviceStatus(const CipWord status);
 
 /** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
