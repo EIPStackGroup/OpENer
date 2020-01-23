@@ -216,10 +216,10 @@ EipStatus CipEthernetLinkInit(void) {
 
   /* set attributes to initial values */
   for (size_t idx = 0;  idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
-    g_ethernet_link[idx].interface_speed = 100;
+    g_ethernet_link[idx].interface_speed = 100U;
     /* successful speed and duplex neg, full duplex active link.
      * TODO: in future it should be checked if link is active */
-    g_ethernet_link[idx].interface_flags = 0xF;
+    g_ethernet_link[idx].interface_flags = 0xFU;
 
     g_ethernet_link[idx].interface_type = kEthLinkIfTypeTwistedPair;
     if (2 == idx) {
@@ -232,8 +232,10 @@ EipStatus CipEthernetLinkInit(void) {
     g_ethernet_link[idx].interface_caps.speed_duplex_selector =
       kEthLinkSpeedDpx_100_FD;
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+    /* If auto-negotiation is enabled the forced_interface_speed must not be set, i. e.
+     *  be zero. See Vol. 2, section 5-5.3.2.6.2 */
     g_ethernet_link[idx].interface_control.control_bits = kEthLinkIfCntrlAutonegotiate;
-    g_ethernet_link[idx].interface_control.forced_interface_speed = 100;
+    g_ethernet_link[idx].interface_control.forced_interface_speed = 0U;
 #endif
   }
 
