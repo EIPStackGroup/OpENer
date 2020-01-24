@@ -726,7 +726,7 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip)
 
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
-  OPENER_ASSERT(NULL != attribute)
+  OPENER_ASSERT(NULL != attribute);
   CipUint * data = (CipUint *) attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;

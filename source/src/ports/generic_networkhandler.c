@@ -393,7 +393,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 //                        g_timestamps[i].last_update);
 //    }
 
-    OPENER_ASSERT(socket_timer != NULL)
+    OPENER_ASSERT(socket_timer != NULL);
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -903,7 +903,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
     CloseUdpSocket(new_socket);
-    OPENER_ASSERT(false) /* This should never happen! */
+    OPENER_ASSERT(false);/* This should never happen! */
     return kEipInvalidSocket;
   }
 

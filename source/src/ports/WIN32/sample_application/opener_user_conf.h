@@ -163,52 +163,54 @@ typedef unsigned short in_port_t;
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #ifdef OPENER_WITH_TRACES
-/* If we have tracing enabled provide print tracing macro */
-#include <stdio.h>
+    /* If we have tracing enabled provide LOG_TRACE macro */
+    #include <stdio.h>
 
-#define LOG_TRACE(...)  fprintf(stderr,__VA_ARGS__)
+    #define LOG_TRACE(...)  fprintf(stderr,__VA_ARGS__)
 
-/*#define PRINT_TRACE(args...)  fprintf(stderr,args);*/
+     #ifdef IDLING_ASSERT
+        /** @brief A specialized assertion command enabled by IDLING_ASSERT that
+         *  will log the assertion and block further
+         *  execution in a while(1) loop.
+         */
+        #define OPENER_ASSERT(assertion)                                    \
+          do {                                                              \
+            if( !(assertion) ) {                                            \
+              LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n",  \
+                        # assertion, __FILE__, __LINE__);                   \
+              while(1) {  }                                                 \
+            }                                                               \
+          } while(0)
 
-/** @brief A specialized assertion command that will log the assertion and block
- *  further execution in an while(1) loop.
- */
-#ifdef IDLING_ASSERT
-#define OPENER_ASSERT(assertion) \
-  do { \
-    if( !(assertion) ) { \
-      LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n", \
-                # assertion, \
-                __FILE__, \
-                __LINE__); \
-      while(1) {;} \
-    } \
-  } while(0);
-#else
-#define OPENER_ASSERT(assertion) assert(assertion);
-#endif
-/* else use standard assert() */
-//#include <assert.h>
-//#include <stdio.h>
-//#define OPENER_ASSERT(assertion) assert(assertion)
-#else
+    #else   /* ifdef IDLING_ASSERT */
+        /* Use standard assert() that vanishes only for release builds. */
+        #define OPENER_ASSERT(assertion) assert(assertion)
+    #endif  /* ifdef IDLING_ASSERT */
 
-/* for release builds execute the assertion, but don't test it */
-#define OPENER_ASSERT(assertion) (assertion);
+#else   /* ifdef OPENER_WITH_TRACES */
+    /* Select one of the OPENER_ASSERT() variants below if trace support is off */
+    #if 0
+        /* If there are any strange timing issues, you can try the version below,
+         *  where the assertion is performed but the assert function is not used.
+         *  This may result in "statement with no effect" warnings.
+         */
+        #define OPENER_ASSERT(assertion) (assertion)
+    #elif 0
+    /* If you still want assertions to stop execution but without tracing,
+     *  use the following */
+        #define OPENER_ASSERT(assertion)                    \
+          do { if(!(assertion)) { while(1) {} } } while (0)
+    #elif 0
+        /* Even for debug builds remove assertion. May solicit unused variable
+         *  warnings. */
+        #define OPENER_ASSERT(assertion)
+    #else
+        /* By default use standard assert() that vanishes only
+         *  for release builds. */
+        #define OPENER_ASSERT(assertion) assert(assertion)
+    #endif
 
-/* the above may result in "statement with no effect" warnings.
- *  If you do not use assert()s to run functions, the an empty
- *  macro can be used as below
- */
-//#define OPENER_ASSERT(assertion)
-/* else if you still want assertions to stop execution but without tracing, use the following */
-//#define OPENER_ASSERT(assertion) do { if(!(assertion)) { while(1){;} } } while (0)
-/* else use standard assert() */
-//#include <assert.h>
-//#include <stdio.h>
-//#define OPENER_ASSERT(assertion) assert(assertion)
-
-#endif
+#endif  /* ifdef OPENER_WITH_TRACES */
 
 /** @brief The number of bytes used for the Ethernet message buffer on
  * the PC port. For different platforms it may makes sense to

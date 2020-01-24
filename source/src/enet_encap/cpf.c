@@ -219,7 +219,7 @@ EipStatus CreateCommonPacketFormatStructure(
 
   int length_count = 0;
   CipUint item_count = GetIntFromMessage(&data);
-  OPENER_ASSERT(4U >= item_count) /* Sanitizing data - probably needs to be changed for productive code */
+  OPENER_ASSERT(4U >= item_count);/* Sanitizing data - probably needs to be changed for productive code */
   common_packet_format_data->item_count = item_count;
   length_count += 2;
   if (common_packet_format_data->item_count >= 1U) {
@@ -629,7 +629,7 @@ int EncodeSockaddrInfoItemTypeId(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  OPENER_ASSERT(item_type == 0 || item_type == 1)
+  OPENER_ASSERT(item_type == 0 || item_type == 1);
   outgoing_message->used_message_length += AddIntToMessage(
     common_packet_format_data_item->address_info_item[item_type].type_id,
     &outgoing_message->current_message_position);

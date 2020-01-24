@@ -592,7 +592,7 @@ EipStatus ForwardClose(
            && (connection_object->originator_serial_number
                == originator_serial_number) ) {
         /* found the corresponding connection object -> close it */
-        OPENER_ASSERT(NULL != connection_object->connection_close_function)
+        OPENER_ASSERT(NULL != connection_object->connection_close_function);
         if ( ( (struct sockaddr_in *) originator_address )->sin_addr.s_addr
              == connection_object->originator_address.sin_addr.s_addr ) {
           connection_object->connection_close_function(connection_object);
@@ -660,7 +660,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
                             connection_object->connection_serial_number);
-          OPENER_ASSERT(NULL != connection_object->connection_timeout_function)
+          OPENER_ASSERT(NULL != connection_object->connection_timeout_function);
           connection_object->connection_timeout_function(connection_object);
         } else {
           connection_object->inactivity_watchdog_timer -= elapsed_time;
@@ -690,7 +690,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
 
           if (connection_object->transmission_trigger_timer <= elapsed_time) { /* need to send package */
             OPENER_ASSERT(
-              NULL != connection_object->connection_send_data_function)
+              NULL != connection_object->connection_send_data_function);
             EipStatus eip_status = connection_object
                                    ->connection_send_data_function(
               connection_object);
