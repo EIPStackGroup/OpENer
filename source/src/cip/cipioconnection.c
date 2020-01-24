@@ -134,7 +134,9 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->consumed_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL)
+#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+#endif
     if ( kConnectionObjectTransportClassTriggerTransportClass1
          == ConnectionObjectGetTransportClassTriggerTransportClass(
            io_connection_object) ) {
@@ -234,7 +236,9 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->produced_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL)
+#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
+#endif
     if ( kConnectionObjectTransportClassTriggerTransportClass1 ==
          ConnectionObjectGetTransportClassTriggerTransportClass(
            io_connection_object) ) {
@@ -827,7 +831,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   InitializeENIPMessage(&outgoing_message);
   EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
                                              &outgoing_message);
-
+  (void) reply_length;  /* Silence unused variable compiler warning */
 
   outgoing_message.current_message_position -= 2;
   common_packet_format_data->data_item.length = producing_instance_attributes

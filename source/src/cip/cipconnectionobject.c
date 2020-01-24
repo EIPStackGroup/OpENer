@@ -107,7 +107,7 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
-  assert(false); /* NOT IMLEMENTED */
+  assert(false); /* NOT IMPLEMENTED */
   return NULL;
 }
 
@@ -117,6 +117,8 @@ void ConnectionObjectInitializeFromMessage(
   /* For unconnected send - can be ignored by targets, and is ignored here */
   CipByte priority_timetick = GetSintFromMessage(message);
   CipUsint timeout_ticks = GetSintFromMessage(message);
+  (void)priority_timetick;  /* Silence unused variable compiler warning */
+  (void)timeout_ticks;
 
   /* O_to_T Conn ID */
   ConnectionObjectSetCipConsumedConnectionID(connection_object,
