@@ -46,6 +46,7 @@ typedef unsigned short in_port_t;
   /* Enable all the stuff the DLR device depends on */
   #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
   #define OPENER_ETHLINK_CNTRS_ENABLE     1
+  #define OPENER_ETHLINK_IFACE_CTRL_ENABLE  1
   #define OPENER_ETHLINK_LABEL_ENABLE     1
   #define OPENER_ETHLINK_INSTANCE_CNT     3
 #endif
@@ -108,6 +109,8 @@ typedef unsigned short in_port_t;
 #ifndef OPENER_ETHLINK_IFACE_CTRL_ENABLE
   #define OPENER_ETHLINK_IFACE_CTRL_ENABLE 0
 #endif
+
+
 
 /** @brief Define the number of objects that may be used in connections
  *
