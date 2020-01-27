@@ -33,9 +33,9 @@ typedef enum {
   kEthLinkIfCntrlAutonegotiate  = 0x01,
   /** When Auto-negotiation is disabled set this bit to force Full-Duplex mode else
    *  Half-Duplex mode is forced. */
-  kEthLinkIfCntrlForcedDuplex = 0x02,
+  kEthLinkIfCntrlForceDuplexFD = 0x02,
   /** For convenience declare the sum of valid bits as the maximum allowed value. */
-  kEthLinkIfCntrlMaxValid = kEthLinkIfCntrlAutonegotiate + kEthLinkIfCntrlForcedDuplex,
+  kEthLinkIfCntrlMaxValid = kEthLinkIfCntrlAutonegotiate + kEthLinkIfCntrlForceDuplexFD,
 } CipEthLinkIfaceControl;
 
 /** @brief Provide values for the Interface Type (attribute #7) */

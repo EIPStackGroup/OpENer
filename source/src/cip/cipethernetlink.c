@@ -566,7 +566,7 @@ static bool IsIfaceControlAllowed
   CipEthernetLinkInterfaceControl const *iface_cntrl)
 {
   const CipUsint duplex_mode =
-       (iface_cntrl->control_bits & kEthLinkIfCntrlForcedDuplex) ? 1 : 0;
+       (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
     if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
         (1U << i)) {
@@ -618,7 +618,7 @@ EipStatus SetAttributeSingleEthernetLink(
 
           } else {
             if ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate)) &&
-                ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlForcedDuplex)) ||
+                ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlForceDuplexFD)) ||
                  (0 != if_cntrl.forced_interface_speed))) {
               message_router_response->general_status =
                 kCipErrorObjectStateConflict;
