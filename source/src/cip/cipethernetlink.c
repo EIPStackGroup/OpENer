@@ -590,7 +590,15 @@ EipStatus SetAttributeSingleEthernetLink(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
-  if (NULL != attribute) {
+
+  /* For attributes that are only kGetableAll we also need to return 
+   *  kCipErrorAttributeNotSupported. Therefore we return that error code if
+   *  these attributes don't have the kGetableSingle property set. */
+  uint8_t get_bit_mask =
+    instance->cip_class->get_single_bit_mask[CalculateIndex(attribute_number)];
+  
+  if (NULL != attribute &&
+      0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) )) {
     uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
                                                                 attribute_number)
                             ]);
@@ -657,7 +665,7 @@ EipStatus SetAttributeSingleEthernetLink(
       message_router_response->general_status = kCipErrorAttributeNotSetable;
     }
   } else {
-    /* we don't have this attribute */
+    /* we don't have this attribute or only accessible via GetAttributesAll */
     message_router_response->general_status = kCipErrorAttributeNotSupported;
   }
 
