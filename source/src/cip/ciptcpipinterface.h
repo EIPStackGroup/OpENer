@@ -29,6 +29,7 @@ static const CipDword kTcpipStatusAcdFault = 0x80U;
 
 /* Declare constants for config_control attribute (#3) */
 static const CipDword kTcpipCfgCtrlStaticIp   = 0x00U;  /**< IP configuration method is manual IP assignment */
+static const CipDword kTcpipCfgCtrlBootp      = 0x01U;  /**< IP configuration method is BOOTP */
 static const CipDword kTcpipCfgCtrlDhcp       = 0x02U;  /**< IP configuration method is DHCP */
 static const CipDword kTcpipCfgCtrlMethodMask = 0x0FU;  /**< bit mask for the method field */
 static const CipDword kTcpipCfgCtrlDnsEnable  = 0x10U;  /**< enables DNS resolution on originator devices */

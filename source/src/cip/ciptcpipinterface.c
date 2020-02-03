@@ -21,6 +21,8 @@
 
 /* Define constants to initialize the config_capability attribute (#2). These
 *   are needed as defines because we use them for static initialization. */
+#define CFG_CAPS_BOOTP_CLIENT         0x01U /**< Device has BOOTP client */
+#define CFG_CAPS_DNS_CLIENT           0x02U /**< Device has DNS client */
 #define CFG_CAPS_DHCP_CLIENT          0x04U /**< Device has DHCP client */
 #define CFG_CAPS_CFG_SETTABLE         0x10U /**< Interface configuration can be set */
 #define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40U /**< Interface configuration change needs RESET */
@@ -350,24 +352,46 @@ EipStatus SetAttributeSingleTcpIpInterface(
         case 3: {
           CipDword configuration_control_received = GetUdintFromMessage(
             &(message_router_request->data) );
-          if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03 ||
-              (configuration_control_received & ~kTcpipCfgCtrlMethodMask)) {
-            message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
-
-          } else {
-
-            OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
-
-            if (attribute->data != NULL) {
-              CipDword *data = (CipDword *) attribute->data;
-              /* Set reserved bits to zero on reception. */
-              configuration_control_received &= (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
-              *(data) = configuration_control_received;
-              message_router_response->general_status = kCipErrorSuccess;
-            } else {
-              message_router_response->general_status = kCipErrorNotEnoughData;
+          if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03 || /* only modes 0..2 */
+              (configuration_control_received & ~(kTcpipCfgCtrlMethodMask|kTcpipCfgCtrlDnsEnable))) { /* no reserved bits */
+            message_router_response->general_status = kCipErrorInvalidAttributeValue;
+            break;
+          }
+          {
+            /* check requested mode against capabilities */
+            CipDword cfg_method = (configuration_control_received & kTcpipCfgCtrlMethodMask);
+            CipDword caps = g_tcpip.config_capability;
+            if(cfg_method == kTcpipCfgCtrlBootp) {
+              /* BOOTP selected */
+              if((caps & CFG_CAPS_BOOTP_CLIENT) == 0) { /* we have no BOOTP */
+                OPENER_TRACE_INFO(" setAttribute 3 BOOTP not supported\n");
+                message_router_response->general_status = kCipErrorInvalidAttributeValue;
+                break;
+              }
+            } else if(cfg_method == kTcpipCfgCtrlDhcp) {
+              /* DHCP selected */
+              if((caps & CFG_CAPS_DHCP_CLIENT) == 0) { /* we have no DHCP */
+                OPENER_TRACE_INFO(" setAttribute 3 DHCP not supported\n");
+                message_router_response->general_status = kCipErrorInvalidAttributeValue;
+                break;
+              }
             }
+            if((configuration_control_received & kTcpipCfgCtrlDnsEnable) &&
+               ((caps & CFG_CAPS_DNS_CLIENT) == 0)) { /* we are no DNS client */
+              OPENER_TRACE_INFO(" setAttribute 3 DNS not supported\n");
+              message_router_response->general_status = kCipErrorInvalidAttributeValue;
+              break;
+            }
+          }
+          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+          if (attribute->data != NULL) {
+            CipDword *data = (CipDword *) attribute->data;
+            /* Set reserved bits to zero on reception. */
+            configuration_control_received &= (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
+            *(data) = configuration_control_received;
+            message_router_response->general_status = kCipErrorSuccess;
+          } else {
+            message_router_response->general_status = kCipErrorNotEnoughData;
           }
         }
         break;
