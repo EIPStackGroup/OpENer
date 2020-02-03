@@ -445,7 +445,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += EncapsulateIpAddress(
-    htons(kOpenerEthernetPort), g_tcpip.interface_configuration.ip_address,
+    htons(kOpenerEthernetPort), g_network_status.ip_address,
     &outgoing_message->current_message_position);
 
   /** Array of USINT - length 8 shall be set to zero */

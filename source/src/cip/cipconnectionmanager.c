@@ -522,6 +522,19 @@ EipStatus ForwardOpen(
       kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType);
   }
 
+  if(kConnectionObjectConnectionTypeMulticast == t_to_o_connection_type) {
+    /* for multicast, check if IP is within configured net because we send TTL 1 */
+    CipUdint o_ip = ((struct sockaddr_in *)originator_address)->sin_addr.s_addr;
+    CipUdint i_ip = g_network_status.ip_address;
+    CipUdint i_mask = g_network_status.network_mask;
+    if((o_ip & i_mask)!=(i_ip & i_mask)) {
+      return AssembleForwardOpenResponse(
+        &g_dummy_connection_object, message_router_response,
+        kCipErrorConnectionFailure,
+        kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast);
+    }
+  }
+
   /* Check if request is a Null request or a Non-Null request */
   if (kConnectionObjectConnectionTypeNull == o_to_t_connection_type
       && kConnectionObjectConnectionTypeNull == t_to_o_connection_type) {
