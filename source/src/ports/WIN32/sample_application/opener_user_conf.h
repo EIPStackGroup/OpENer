@@ -99,6 +99,15 @@ typedef unsigned short in_port_t;
   #define OPENER_ETHLINK_CNTRS_ENABLE 0
 #endif
 
+/** @brief Set this define if you need Interface Control for Ethernet Link object
+ *
+ * This define enables the Interface Control attribute (#6) as a settable
+ *  attribute which is required for a DLR device. This also enables the storage
+ *  of the attribute in NV data storage area.
+ */
+#ifndef OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  #define OPENER_ETHLINK_IFACE_CTRL_ENABLE 0
+#endif
 
 /** @brief Define the number of objects that may be used in connections
  *

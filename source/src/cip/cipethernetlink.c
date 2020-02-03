@@ -49,6 +49,7 @@
 #include "cipcommon.h"
 #include "opener_api.h"
 #include "trace.h"
+#include "opener_user_conf.h"
 
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
   /* If we have more than 1 Ethernet Link instance then the interface label
