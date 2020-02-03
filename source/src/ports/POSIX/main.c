@@ -17,7 +17,6 @@
 
 #include "generic_networkhandler.h"
 #include "opener_api.h"
-#include "cipcommon.h"
 #include "cipethernetlink.h"
 #include "ciptcpipinterface.h"
 #include "trace.h"
@@ -29,12 +28,16 @@
 #define BringupNetwork(if_name, method, if_cfg, hostname)  (0)
 #define ShutdownNetwork(if_name)  (0)
 
+/** If OpENer is aborted by a signal it returns the sum of the signal number
+ *  and this define. */
+#define RET_SHOW_SIGNAL 200
+
 /******************************************************************************/
 /** @brief Signal handler function for ending stack execution
  *
- * @param signal the signal we received
+ * @param signal  the signal we received
  */
-void LeaveStack(int signal);
+static void LeaveStack(int signal);
 
 /******************************************************************************/
 /** @brief Execute OpENer stack loop function
@@ -53,11 +56,10 @@ static void *executeEventLoop(void *pthread_arg);
 volatile int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc,
-         char *arg[]) {
+int main(int argc, char *arg[]) {
 
   cap_t capabilities;
-  cap_value_t capabilies_list[1];
+  cap_value_t capabilities_list[1];
 
   capabilities = cap_get_proc();
   if (NULL == capabilities) {
@@ -65,9 +67,9 @@ int main(int argc,
     exit(EXIT_FAILURE);
   }
 
-  capabilies_list[0] = CAP_NET_RAW;
+  capabilities_list[0] = CAP_NET_RAW;
   if (-1
-      == cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilies_list,
+      == cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilities_list,
                       CAP_SET) ) {
     cap_free(capabilities);
     printf("Could not set CAP_NET_RAW capability\n");
@@ -81,15 +83,14 @@ int main(int argc,
   }
 
   if (-1 == cap_free(capabilities) ) {
-    printf("Could not free capabilites value\n");
+    printf("Could not free capabilities value\n");
     exit(EXIT_FAILURE);
   }
 
   if (argc != 2) {
-    printf("Wrong number of command line parameters!\n");
-    printf("The correct command line parameters are:\n");
-    printf("./OpENer interfacename\n");
-    printf("    e.g. ./OpENer eth1\n");
+    fprintf(stderr, "Wrong number of command line parameters!\n");
+    fprintf(stderr, "Usage: %s [interface name]\n", arg[0]);
+    fprintf(stderr, "\te.g. ./OpENer eth1\n");
     exit(EXIT_FAILURE);
   }
 
@@ -123,21 +124,22 @@ int main(int argc,
    *  the defaults on the first start without a valid TCP/IP configuration
    *  file.
    */
-  ConfigureHostName();
+  GetHostName(&g_tcpip.hostname);
 
-  /* Now any NV data values are loaded to change the attribute contents to
-   *  the stored configuration.
+  /* The CIP objects are now created and initialized with their default values.
+   *  After that any NV data values are loaded to change the attribute contents
+   *  to the stored configuration.
    */
   if (kEipStatusError == NvdataLoad()) {
     OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
   }
 
   /* Bring up network interface or start DHCP client ... */
-  int ret = BringupNetwork(arg[1],
+  EipStatus status = BringupNetwork(arg[1],
                        g_tcpip.config_control,
                        &g_tcpip.interface_configuration,
                        &g_tcpip.hostname);
-  if (ret < 0) {
+  if (status < 0) {
     OPENER_TRACE_ERR("BringUpNetwork() failed\n");
   }
 
@@ -153,26 +155,27 @@ int main(int argc,
   }
   if (kTcpipCfgCtrlDhcp == network_config_method) {
     OPENER_TRACE_INFO("DHCP network configuration started\n");
-    /* Wait for DHCP done here ...*/
-    /* TODO: implement this function to wait for IP present
-        or abort through g_end_stack.
-        rc = WaitInterfaceIsUp(arg[1], g_end_stack);
-      */
-    OPENER_TRACE_INFO("DHCP wait for interface: status %d\n", ret);
-
-    /* Read IP configuration received via DHCP from interface and store in
-     *  the TCP/IP object.*/
-    ret = ConfigureNetworkInterface(arg[1]);
-    if (ret < 0) {
-      OPENER_TRACE_WARN("Problems getting interface configuration\n");
+    /* DHCP should already have been started with BringupNetwork(). Wait
+     * here for IP present (DHCP done) or abort through g_end_stack. */
+    status = IfaceWaitForIp(arg[1], -1, &g_end_stack);
+    OPENER_TRACE_INFO("DHCP wait for interface: status %d, g_end_stack=%d\n",
+                      status, g_end_stack);
+    if (kEipStatusOk == status && 0 == g_end_stack) {
+      /* Read IP configuration received via DHCP from interface and store in
+       *  the TCP/IP object.*/
+      status = IfaceGetConfiguration(arg[1], &g_tcpip.interface_configuration);
+      if (status < 0) {
+        OPENER_TRACE_WARN("Problems getting interface configuration\n");
+      }
     }
-    ConfigureDomainName();
   }
 
 
   /* The network initialization of the EIP stack for the NetworkHandler. */
   if (!g_end_stack && kEipStatusOk == NetworkHandlerInitialize()) {
 #ifdef OPENER_RT
+    int ret;
+
     /* Memory lock all*/
     if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
       OPENER_TRACE_ERR("mlockall failed: %m\n");
@@ -230,27 +233,34 @@ int main(int argc,
     /* Unlock memory */
     munlockall();
 #else
-    (void)executeEventLoop(NULL);
+    (void) executeEventLoop(NULL);
 #endif
     /* clean up network state */
     NetworkHandlerFinish();
   }
+
   /* close remaining sessions and connections, clean up used data */
   ShutdownCipStack();
 
   /* Shut down the network interface now. */
   (void) ShutdownNetwork(arg[1]);
 
+  if(0 != g_end_stack) {
+    printf("OpENer aborted by signal %d.\n", g_end_stack);
+    return RET_SHOW_SIGNAL+g_end_stack;
+  }
+
   return EXIT_SUCCESS;
 }
 
-void LeaveStack(int signal) {
-  (void) signal;       /* kill unused parameter warning */
-  OPENER_TRACE_STATE("got signal %d\n",signal);
-  g_end_stack = 1;
+static void LeaveStack(int signal) {
+  if (SIGHUP == signal || SIGINT == signal) {
+    g_end_stack = signal;
+  }
+  OPENER_TRACE_STATE("got signal %d\n", signal);
 }
 
-void *executeEventLoop(void *pthread_arg) {
+static void *executeEventLoop(void *pthread_arg) {
   static int pthread_dummy_ret;
   (void) pthread_arg;
 

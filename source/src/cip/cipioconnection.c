@@ -447,8 +447,9 @@ EipStatus OpenProducingMulticastConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data
   ) {
+  /* Here we look for existing multi-cast IO connections only. */
   CipConnectionObject *existing_connection_object =
-    GetExistingProducerMulticastConnection(
+    GetExistingProducerIoConnection(true,
       connection_object->produced_path.instance_id);
 
   int j = 0; /* allocate an unused sockaddr struct to use */
@@ -726,8 +727,8 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
 }
 
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
-  CheckIoConnectionEvent(connection_object->produced_path.instance_id,
-                         connection_object->consumed_path.instance_id,
+  CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
+                         connection_object->produced_path.instance_id,
                          kIoConnectionEventTimedOut);
 
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
@@ -822,7 +823,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  ENIPMessage outgoing_message = {0};
+  ENIPMessage outgoing_message;
   InitializeENIPMessage(&outgoing_message);
   EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
                                              &outgoing_message);

@@ -164,9 +164,9 @@ unsigned int GetPaddedLogicalPath(const EipUint8 **logical_path_segment) {
  *
  * A unique connectionID is formed from the boot-time-specified "incarnation ID"
  * and the per-new-connection-incremented connection number/counter.
- * @return new connection id
+ * @return new 32-bit connection id
  */
-CipUint GetConnectionId(void) {
+CipUdint GetConnectionId(void) {
   static CipUint connection_id = 18;
   connection_id++;
   return ( g_incarnation_id | (connection_id & 0x0000FFFF) );

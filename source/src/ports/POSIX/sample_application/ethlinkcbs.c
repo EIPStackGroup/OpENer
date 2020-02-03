@@ -52,7 +52,7 @@ static CipUdint media_calls[OPENER_ETHLINK_INSTANCE_CNT];
 /* This is meant as debugging aid and to check if the individual counter     */
 /*  value is sent at the right position in the Get* service response.        */
 
-#define MAKE_CNTR(inst, attr, idx, cnt) ((10000000u * inst) + (100000u * attr) + (1000u * idx) + cnt)
+#define MAKE_CNTR(inst, attr, idx, cnt) ((10000000U * inst) + (100000U * attr) + (1000U * idx) + cnt)
 
 EipStatus EthLnkPreGetCallback
 (
@@ -147,14 +147,14 @@ EipStatus EthLnkPostGetCallback
      *  clear our GetAttributeSingle PreCallback execution counters. */
     switch (attribute->attribute_number) {
     case 4:
-      iface_calls[inst_no-1] = 0u;
+      iface_calls[inst_no-1] = 0U;
       break;
     case 5:
-      media_calls[inst_no-1] = 0u;
+      media_calls[inst_no-1] = 0U;
       /* This is a concession to the conformance test tool that expects
        *  the media counters to be zero after a GetAndClear service. */
       for (int idx = 0; idx < 12; ++idx) {
-        g_ethernet_link[inst_no-1].media_cntrs.cntr32[idx] = 0u;
+        g_ethernet_link[inst_no-1].media_cntrs.cntr32[idx] = 0U;
       }
       break;
     default:

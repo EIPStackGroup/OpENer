@@ -18,7 +18,7 @@ add_library( ${PLATFORMLIBNAME} ${PLATFORM_SPEC_SRC})
 
 add_executable(OpENer main.c)
 
-target_link_libraries( OpENer PLATFORM_GENERIC ${PLATFORMLIBNAME} CIP Utils  SAMPLE_APP ENET_ENCAP NVDATA ws2_32 ${OpENer_CIP_OBJECTS} )
+target_link_libraries( OpENer PLATFORM_GENERIC ${PLATFORMLIBNAME} CIP Utils  SAMPLE_APP ENET_ENCAP NVDATA ws2_32 Iphlpapi ${OpENer_CIP_OBJECTS} )
 
 # Add additional CIP Objects
 string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT )

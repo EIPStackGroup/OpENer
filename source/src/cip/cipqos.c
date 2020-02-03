@@ -15,13 +15,13 @@
 #include "opener_api.h"
 #include "trace.h"
 
-#define DEFAULT_DSCP_EVENT 59u
-#define DEFAULT_DSCP_GENERAL 47u
-#define DEFAULT_DSCP_URGENT 55u
-#define DEFAULT_DSCP_SCHEDULED 47u
-#define DEFAULT_DSCP_HIGH 43u
-#define DEFAULT_DSCP_LOW 31u
-#define DEFAULT_DSCP_EXPLICIT 27u
+#define DEFAULT_DSCP_EVENT 59U
+#define DEFAULT_DSCP_GENERAL 47U
+#define DEFAULT_DSCP_URGENT 55U
+#define DEFAULT_DSCP_SCHEDULED 47U
+#define DEFAULT_DSCP_HIGH 43U
+#define DEFAULT_DSCP_LOW 31U
+#define DEFAULT_DSCP_EXPLICIT 27U
 
 /** @brief The QoS object
  *
@@ -88,7 +88,7 @@ EipStatus SetAttributeSingleQoS(
     CipUsint attribute_value_received = GetUsintFromMessage(
       &(message_router_request->data) );
 
-    if( attribute_value_received < 64u ) {
+    if( attribute_value_received < 64U ) {
       OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
       if(NULL != attribute->data) {
@@ -132,7 +132,7 @@ EipStatus SetAttributeSingleQoS(
 
 CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 
-  CipUsint priority_value = s_active_dscp.explicit;
+  CipUsint priority_value;
   switch (priority) {
     case kConnectionObjectPriorityLow:
       priority_value = s_active_dscp.low;
@@ -146,7 +146,7 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
     case kConnectionObjectPriorityUrgent:
       priority_value = s_active_dscp.urgent;
       break;
-    case kConnectionObjectPriorityExplicit: /* Fall-through wanted here */
+    case kConnectionObjectPriorityExplicit: /* fall through */
     default:
       priority_value = s_active_dscp.explicit;
       break;
@@ -154,7 +154,17 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
   return priority_value;
 }
 
+/** @brief Class level attribute initializer for QoS class
+ *
+ * This function is provided as class level attribute initializer to
+ *  @ref CreateCipClass. It replaces the default initialization of
+ *  @ref CreateCipClass.
+ * Because we do NOT initialize anything here all the class attributes
+ *  which are optional for the QoS class are NOT created!
+ *  This is intended.
+ */
 void InitializeCipQos(CipClass *class) {
+  /* Function is empty by intend. */
 }
 
 EipStatus CipQoSInit() {

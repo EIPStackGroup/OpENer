@@ -51,6 +51,7 @@ CipIdentityObject g_identity =
     OPENER_DEVICE_MINOR_REVISION
   },
   .status = 0, /* Attribute 5: Status */
+  .ext_status = kSelftestingUnknown,  /* Attribute 5: Extended Device Status field */
   .serial_number = 0, /* Attribute 6: Serial Number */
   .product_name = { /* Attribute 7: Product Name */
     sizeof(OPENER_DEVICE_NAME) - 1,
@@ -60,18 +61,69 @@ CipIdentityObject g_identity =
 };
 
 
-/** Private functions, sets the devices serial number
- * @param serial_number The serial number of the device
- */
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
   g_identity.serial_number = serial_number;
 }
 
-/** @brief Private function, sets the devices status
- * @param status The serial number of the device
- */
-void SetDeviceStatus(const EipUint16 status) {
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceStatus(const CipWord status) {
   g_identity.status = status;
+  g_identity.ext_status = status & kExtStatusMask;
+}
+
+static inline void MergeStatusAndExtStatus(void)
+{
+  CipWord status_flags = g_identity.status & (~kExtStatusMask);
+  CipWord ext_status = g_identity.ext_status & kExtStatusMask;
+
+  /* Any major fault will override the current extended status with kMajorFault.
+    See comment on Major Fault at Vol. 1, Table 5A-2.4. */
+  if(0 != (status_flags & (kMajorRecoverableFault | kMajorUnrecoverableFault))) {
+    ext_status = kMajorFault;
+  }
+  g_identity.status = status_flags | ext_status;
+}
+
+/** @brief Set status flags of the device's Status word
+ *
+ * @param status_flags  flags to set in the Status word
+ *
+ *  This function sets status flags of the device's Status word and combines
+ *  the flag values with the internal ext_status member into a new Status
+ *  value.
+ */
+void CipIdentitySetStatusFlags(const CipWord status_flags) {
+  g_identity.status |= status_flags & (~kExtStatusMask);
+  MergeStatusAndExtStatus();
+}
+
+/** @brief Clear status flags of the device's Status word
+ *
+ * @param status_flags  flags to clear in the Status word
+ *
+ *  This function clears status flags of the device's Status word and combines
+ *  the flag values with the internal ext_status member into a new Status
+ *  value.
+ */
+void CipIdentityClearStatusFlags(const CipWord status_flags) {
+  g_identity.status &= ~(status_flags & (~kExtStatusMask));
+  MergeStatusAndExtStatus();
+}
+
+/** @brief Set the device's Extended Device Status field in the Status word
+ *
+ * @param   extended_status Extended Device Status field
+ *
+ *  This function sets the internal ext_status member of the Identity object
+ *  and combines its value depending on the other Status flags into a new
+ *  Status value.
+ */
+void CipIdentitySetExtendedDeviceStatus(
+  CipIdentityExtendedStatus extended_status) {
+  OPENER_TRACE_INFO("Setting extended status: %x\n", extended_status);
+  g_identity.ext_status = extended_status & kExtStatusMask;
+  MergeStatusAndExtStatus();
 }
 
 /** @brief Reset service
@@ -97,37 +149,36 @@ static EipStatus Reset(CipInstance *instance,
   message_router_response->size_of_additional_status = 0;
   message_router_response->general_status = kCipErrorSuccess;
 
-  if (message_router_request->request_path_size == 1) {
-    switch (message_router_request->data[0]) {
-      case 0: /* Reset type 0 -> emulate device reset / Power cycle */
+  if (message_router_request->request_path_size > 1) {
+    message_router_response->general_status = kCipErrorTooMuchData;
+  }
+  else {
+    CipOctet reset_type = 0;  /* The default type if type parameter was omitted. */
+    if (message_router_request->request_path_size == 1) {
+      reset_type = message_router_request->data[0];
+    }
+    switch (reset_type) {
+      case 0: /* Reset type 0 -> Emulate power cycle */
         if ( kEipStatusError == ResetDevice() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
-      case 1: /* Reset type 1 -> reset to device settings */
+      case 1: /* Reset type 1 -> Return to factory defaults & power cycle*/
         if ( kEipStatusError == ResetDeviceToInitialConfiguration() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
-      /* case 2: Not supported Reset type 2 -> Return to factory defaults except communications parameters */
+      /* case 2: Not supported Reset type 2 ->
+        Return to factory defaults except communications parameters & power cycle*/
 
       default:
         message_router_response->general_status = kCipErrorInvalidParameter;
         break;
     }
-  } else /*TODO: Should be if (pa_stMRRequest->DataLength == 0)*/
-  {
-    /* The same behavior as if the data value given would be 0
-       emulate device reset */
-
-    if ( kEipStatusError == ResetDevice() ) {
-      message_router_response->general_status = kCipErrorInvalidParameter;
-    } else {
-      /* eip_status = EIP_OK; */
-    }
   }
+
   message_router_response->data_length = 0;
   return eip_status;
 }
@@ -208,11 +259,4 @@ EipStatus CipIdentityInit() {
   InsertService(class, kReset, &Reset, "Reset");
 
   return kEipStatusOk;
-}
-
-void CipIdentitySetExtendedDeviceStatus(
-  CipIdentityExtendedStatus extended_status) {
-  OPENER_TRACE_INFO("Setting extended status: %x\n", extended_status);
-  g_identity.status &= ~(0x70);
-  g_identity.status |= extended_status;
 }

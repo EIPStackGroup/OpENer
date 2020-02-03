@@ -21,10 +21,10 @@
 
 /* Define constants to initialize the config_capability attribute (#2). These
 *   are needed as defines because we use them for static initialization. */
-#define CFG_CAPS_DHCP_CLIENT          0x04u /**< Device has DHCP client */
-#define CFG_CAPS_CFG_SETTABLE         0x10u /**< Interface configuration can be set */
-#define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40u /**< Interface configuration change needs RESET */
-#define CFG_CAPS_ACD_CAPABLE          0x80u /**< Device supports ACD */
+#define CFG_CAPS_DHCP_CLIENT          0x04U /**< Device has DHCP client */
+#define CFG_CAPS_CFG_SETTABLE         0x10U /**< Interface configuration can be set */
+#define CFG_CAPS_CFG_CHG_NEEDS_RESET  0x40U /**< Interface configuration change needs RESET */
+#define CFG_CAPS_ACD_CAPABLE          0x80U /**< Device supports ACD */
 
 /* OPENER_TCPIP_IFACE_CFG_SETTABLE controls if the interface configuration is fully settable.
 *   Prepare additional defines needed here:
@@ -170,7 +170,7 @@ static bool IsValidDomain(EipByte *domain)
 }
 
 
-/** Check if a IP address is a valid network mask
+/** Check if an IP address is a valid network mask
  *
  *  @param  netmask network mask in network byte order
  *  @return         valid status
@@ -189,7 +189,7 @@ static bool IsValidNetmask(in_addr_t netmask)
     return valid && (INADDR_BROADCAST != netmask);
 }
 
-/** Check if a IP address is in one of the network classes A, B or C
+/** Check if an IP address is in one of the network classes A, B or C
  *
  *  @param  ip_addr IP address in network byte order
  *  @return         status
@@ -202,7 +202,7 @@ static bool IsInClassAbc(in_addr_t ip_addr)
   return IN_CLASSA(ip) || IN_CLASSB(ip) || IN_CLASSC(ip);
 }
 
-/** Check if a IP address is on the loopback network
+/** Check if an IP address is on the loopback network
  *
  *  @param  ip_addr IP address in network byte order
  *  @return         status
@@ -214,6 +214,21 @@ static bool IsOnLoopbackNetwork(in_addr_t ip_addr)
 {
   in_addr_t ip = ntohl(ip_addr);
   return (ip & IN_CLASSA_NET) == (INADDR_LOOPBACK & IN_CLASSA_NET);
+}
+
+/** Check if an IP address is either the network or the broadcast address
+ *
+ *  @param  ip_addr   IP address in network byte order
+ *  @param  net_mask  network mask in network byte order
+ *  @return           status
+ *
+ * Check if an IP address is either the network or the broadcast address.
+ *  In this case it is not a valid IP address for a host.
+ *  This check is endian agnostic.
+ */
+static bool IsNetworkOrBroadcastIp(in_addr_t ip_addr, in_addr_t net_mask) {
+  return  ((ip_addr & net_mask) == ip_addr) ||  /* is network address */
+          ((ip_addr | ~net_mask) == ip_addr);   /* is broadcast address */
 }
 
 /** Check the Interface configuration being valid according to EIP specification
@@ -228,13 +243,14 @@ static bool IsOnLoopbackNetwork(in_addr_t ip_addr)
  *  - MASK: IP is a valid network mask
  *  -  ABC: IP is in class A, B or C
  *  - NLCL: IP is not localhost aka. INADDR_LOOPBACK
+ *  -   NB: IP is neither network or broadcast address (using network_mask)
  *
  * This is the table which checks are applied to what IP:
- *  N0 | MASK | ABC | NLCL | IP address
- *   + |   -  |  +  |   +  | ip_address
- *   - |   +  |  -  |   -  | network_mask
- *   - |   -  |  +  |   +  | gateway
- *   - |   -  |  +  |   -  | name_server / name_server_2
+ *  N0 | MASK | ABC | NLCL | NB | IP address
+ *   + |   -  |  +  |   +  |  + | ip_address
+ *   - |   +  |  -  |   -  |  - | network_mask
+ *   - |   -  |  +  |   +  |  + | gateway
+ *   - |   -  |  +  |   -  |  - | name_server / name_server_2
  * A configured gateway must be reachable according to the network mask.
  */
 static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg)
@@ -254,6 +270,12 @@ static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg)
   }
   if (IsOnLoopbackNetwork(if_cfg->ip_address) ||  /* NLCL */
       IsOnLoopbackNetwork(if_cfg->gateway)) {
+    return false;
+  }
+  /* Check NB */
+  if (IsNetworkOrBroadcastIp(if_cfg->ip_address, if_cfg->network_mask) ||
+      (INADDR_ANY != ntohl(if_cfg->gateway) &&
+       IsNetworkOrBroadcastIp(if_cfg->gateway, if_cfg->network_mask))) {
     return false;
   }
   if (INADDR_ANY != ntohl(if_cfg->gateway) &&

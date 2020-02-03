@@ -9,10 +9,10 @@
  *
  * Some functions to create CIP string types from C strings or data buffers.
  */
+#include "cipstring.h"
+
 #include <stdlib.h>
 #include <string.h>
-
-#include "cipstring.h"
 
 #include "trace.h"
 #include "opener_api.h"

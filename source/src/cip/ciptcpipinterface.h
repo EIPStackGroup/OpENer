@@ -15,23 +15,23 @@
 #include "ciptypes.h"
 
 /** @brief TCP/IP Interface class code */
-static const CipUint kCipTcpIpInterfaceClassCode = 0xF5u;
+static const CipUint kCipTcpIpInterfaceClassCode = 0xF5U;
 
 /* Declare constants for status attribute (#1) */
 /** Indicates a pending configuration change in the TTL Value and/or Mcast Config attributes.*/
-static const CipDword kTcpipStatusMcastPend = 0x10u;
+static const CipDword kTcpipStatusMcastPend = 0x10U;
 /** Indicates a pending configuration change in the Interface Configuration attribute. */
-static const CipDword kTcpipStatusIfaceCfgPend = 0x20u;
+static const CipDword kTcpipStatusIfaceCfgPend = 0x20U;
 /** Indicates when an IP address conflict has been detected by ACD. */
-static const CipDword kTcpipStatusAcdStatus = 0x40u;
+static const CipDword kTcpipStatusAcdStatus = 0x40U;
 /** Indicates when an IP address conflict has been detected by ACD or the defense failed. */
-static const CipDword kTcpipStatusAcdFault = 0x80u;
+static const CipDword kTcpipStatusAcdFault = 0x80U;
 
 /* Declare constants for config_control attribute (#3) */
-static const CipDword kTcpipCfgCtrlStaticIp   = 0x00u;  /**< IP configuration method is manual IP assignment */
-static const CipDword kTcpipCfgCtrlDhcp       = 0x02u;  /**< IP configuration method is DHCP */
-static const CipDword kTcpipCfgCtrlMethodMask = 0x0fu;  /**< bit mask for the method field */
-static const CipDword kTcpipCfgCtrlDnsEnable  = 0x10u;  /**< enables DNS resolution on originator devices */
+static const CipDword kTcpipCfgCtrlStaticIp   = 0x00U;  /**< IP configuration method is manual IP assignment */
+static const CipDword kTcpipCfgCtrlDhcp       = 0x02U;  /**< IP configuration method is DHCP */
+static const CipDword kTcpipCfgCtrlMethodMask = 0x0FU;  /**< bit mask for the method field */
+static const CipDword kTcpipCfgCtrlDnsEnable  = 0x10U;  /**< enables DNS resolution on originator devices */
 
 /** @brief Multicast Configuration struct, called Mcast config
  *

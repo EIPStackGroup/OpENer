@@ -160,7 +160,7 @@ typedef enum {
 #define SEQ_GEQ16(a, b) ( (short)( (a) - (b) ) >= 0 )
 
 /** @brief Connection Manager class code */
-static const CipUint kCipConnectionManagerClassCode = 0x06u;
+static const CipUint kCipConnectionManagerClassCode = 0x06U;
 
 /* public functions */
 
@@ -219,7 +219,7 @@ void AddNewActiveConnection(CipConnectionObject *const connection_object);
 void RemoveFromActiveConnections(CipConnectionObject *const connection_object);
 
 
-CipUint GetConnectionId(void);
+CipUdint GetConnectionId(void);
 
 typedef void (*CloseSessionFunction)(const CipConnectionObject *const
                                      connection_object);

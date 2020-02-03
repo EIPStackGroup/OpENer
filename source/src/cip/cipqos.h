@@ -17,7 +17,7 @@
 #include "cipconnectionmanager.h"
 
 /** @brief QoS Object class code */
-static const CipUint kCipQoSClassCode = 0x48u;
+static const CipUint kCipQoSClassCode = 0x48U;
 
 /* public types */
 

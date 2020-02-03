@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #include <windows.h>
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 
 #include "networkhandler.h"
 
@@ -55,6 +55,6 @@ int SetQosOnSocket(int socket,
   /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
    *  Note that the DSCP value, if placed directly in the ToS field
    *  in the IP header, must be shifted left 2 bits. */
-  int set_tos = qos_value << 2;
-  return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
+  DWORD set_tos = qos_value << 2;
+  return setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&set_tos, sizeof(set_tos) );
 }

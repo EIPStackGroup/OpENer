@@ -19,39 +19,63 @@
  */
 
 /** @ingroup CIP_API
- * @brief Configure the data of the network interface of the device
+ * @brief Read network configuration data from specified hardware interface
  *
- *  This function setup the data of the network interface needed by OpENer.
- *  The multicast address is automatically calculated from he given data.
+ *  @param  iface     address of string specifying the hardware interface
+ *  @param  iface_cfg address of interface configuration structure
+ *  @return           kEipStatusOk on success,
+ *                    kEipStatusError on error with @p errno set
  *
- *  @param ip_address    the current IP address of the device
- *  @param subnet_mask  the subnet mask to be used
- *  @param gateway_address     the gateway address
- *  @return kEipStatusOk if the configuring worked otherwise kEipStatusError
+ * This function reads all information needed to fill the iface_cfg structure
+ *  of type @ref CipTcpIpInterfaceConfiguration from the hardware interface
+ *  specified by the iface string.
+ *
  */
-EipStatus
-ConfigureNetworkInterface(const char *const network_interface);
+EipStatus IfaceGetConfiguration
+(
+  const char *iface,
+  CipTcpIpInterfaceConfiguration *iface_cfg
+);
 
 /** @ingroup CIP_API
  * @brief Read and return the MAC address of the Ethernet interface
  *
  *  @param  iface             string of interface name or interface index
  *  @param  physical_address  hardware MAC address of the network interface
- *  @return                     kEipStatusOk: all fine
- *                              kEipStatusError: failure, errno set
+ *  @return                   kEipStatusOk: all fine
+ *                            kEipStatusError: failure, errno set
  */
 EipStatus IfaceGetMacAddress(const char *iface, uint8_t *const physical_address);
 
 /** @ingroup CIP_API
- * @brief Configure the domain name of the device
- * @param domain_name the domain name to be used
+ * @brief Wait for the network interface having an IP address
+ *
+ * @param timeout in seconds; max: INT_MAX/10, -1: wait for ever
+ * @param do_run  stop waiting if this parameter becomes zero
+ * @return        kEipStatusOk on success,
+ *                kEipStatusError on error with @p errno set
+ *
+ * This function waits for the network interface getting an IP address but
+ *  only @p timeout seconds (set to -1 to wait for ever).
+ * The polling wait process can be aborted by setting @p abort_wait to
+ *  a non zero value from another thread.
  */
-void ConfigureDomainName(void);
+EipStatus IfaceWaitForIp
+(
+  const char *iface,
+  int timeout,
+  volatile int *abort_wait
+);
+
 /** @ingroup CIP_API
- * @brief Configure the host name of the device
- * @param host_name the host name to be used
+ * @brief Get host name from platform
+ *
+ * @param hostname  address of CipString destination structure
+ *
+ * This function reads the host name from the platform and returns it
+ *  via the hostname parameter.
  */
-void ConfigureHostName(void);
+void GetHostName(CipString *hostname);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -61,11 +85,14 @@ void ConfigureHostName(void);
 void SetDeviceSerialNumber(const EipUint32 serial_number);
 
 /** @ingroup CIP_API
- * @brief Set the current status of the device.
+ * @brief Set the device's Status word also updating the Extended Device Status
  *
- * @param status new Identity object's Status value
+ * @param status    complete Identity Object's Status word content
+ *
+ *  This function sets the status flags and the internal state of the Extended
+ *  Device Status field in Identity object's ext_status member.
  */
-void SetDeviceStatus(const EipUint16 status);
+void SetDeviceStatus(const CipWord status);
 
 /** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
