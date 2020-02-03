@@ -415,6 +415,10 @@ EipStatus SetAttributeSingleTcpIpInterface(
            * because if_cfg goes out of scope now. */
           FreeCipString(&p_interface_configuration->domain_name);
           *p_interface_configuration = if_cfg;
+
+          /* Automatically set attribute 3 to static IP mode (kTcpipCfgCtrlStaticIp ^= 0),
+           * leaving only DnsEnable bit intact */
+          g_tcpip.config_control &= kTcpipCfgCtrlDnsEnable;
           /* Tell that this configuration change becomes active after a reset */
           g_tcpip.status |= kTcpipStatusIfaceCfgPend;
           message_router_response->general_status = kCipErrorSuccess;
