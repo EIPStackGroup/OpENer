@@ -83,18 +83,28 @@ static DWORD ConvertToIndexFromFakeAlias(const char *iface,
   WCHAR *p_if_alias;
   NET_LUID if_luid;
 
-  size_t mbtowc_rc = mbstowcs(NULL, iface, 0);
-  if( (size_t) -1 == mbtowc_rc ) { /* Invalid byte sequence encountered */
+  /*
+   * Determine the size of the wide character buffer by counting the
+   * number of wide characters the interface string will require.
+   */
+  size_t num_chars;
+  const errno_t count_result = mbstowcs_s(&num_chars, NULL, 0, iface, 0);
+  if (EILSEQ == count_result) { /* Invalid byte sequence encountered */
     return ERROR_NO_UNICODE_TRANSLATION;
   }
+  OPENER_ASSERT(0 == count_result);
 
-  size_t wc_cnt = mbtowc_rc + 1U; /* +1U for nul character */
-  p_if_alias = MALLOC(sizeof(WCHAR) * wc_cnt);
+  p_if_alias = MALLOC(sizeof(WCHAR) * num_chars); /* Count includes NULL term. */
   if(NULL == p_if_alias) {
     return ERROR_OUTOFMEMORY;
   }
 
-  (void) mbstowcs(p_if_alias, iface, wc_cnt);
+  const errno_t convert_result = mbstowcs_s(NULL,
+                                            p_if_alias,
+                                            num_chars,
+                                            iface,
+                                            num_chars);
+  OPENER_ASSERT(0 == convert_result);
   DWORD cnv_status = ConvertInterfaceAliasToLuid(p_if_alias, &if_luid);
   if(NETIO_SUCCESS(cnv_status) ) {
     cnv_status = ConvertInterfaceLuidToIndex(&if_luid, iface_idx);
@@ -216,16 +226,17 @@ static DWORD WideToCipString(const WCHAR *const src,
    *  2) the number of characters fits in EipUint16, excluding
    *    the nul terminator.
    */
-  const size_t num_chars = wcstombs(NULL, src, 0);
-  if( (size_t) -1 == num_chars ) {
+  size_t buffer_size;
+  const errno_t cnt_result = wcstombs_s(&buffer_size, NULL, 0, src, 0);
+  if (EILSEQ == cnt_result) {
     return ERROR_NO_UNICODE_TRANSLATION;
   }
-  if(num_chars >= UINT16_MAX) {
+  OPENER_ASSERT(0 == cnt_result);
+  OPENER_ASSERT(buffer_size > 0);
+  const size_t num_chars = buffer_size - 1;
+  if (num_chars >= UINT16_MAX) {
     return ERROR_BUFFER_OVERFLOW;
   }
-
-  /* New buffer includes nul termination. */
-  const size_t buffer_size = num_chars + 1U;
 
   if(num_chars) {
     /* Allocate a new destination buffer. */
@@ -235,8 +246,11 @@ static DWORD WideToCipString(const WCHAR *const src,
     }
 
     /* Transfer the string to the new buffer. */
-    size_t cnv_chars = wcstombs(buf, src, buffer_size);
-    OPENER_ASSERT(cnv_chars == num_chars);
+    size_t cnv_bytes;
+    const errno_t xfr_result =
+      wcstombs_s(&cnv_bytes, buf, buffer_size, src, num_chars);
+    OPENER_ASSERT(0 == xfr_result);
+    OPENER_ASSERT(cnv_bytes == buffer_size);
   }
 
   /* Release the any previous string content. */
