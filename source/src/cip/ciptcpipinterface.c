@@ -297,8 +297,10 @@ static bool IsIOConnectionActive(void)
 
   while (NULL != node) {
     CipConnectionObject *connection = node->data;
-    if (ConnectionObjectIsTypeIOConnection(connection)) {
-      /* An IO connection is found */
+    if (ConnectionObjectIsTypeIOConnection(connection) &&
+        kConnectionObjectStateTimedOut != ConnectionObjectGetState(connection)) {
+      /* An IO connection is present but is only considered active
+       *  if it is NOT in timeout state. */
       return true;
     }
     node = node->next;
