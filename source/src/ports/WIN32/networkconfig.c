@@ -26,6 +26,9 @@
 #include "opener_error.h"
 #include "trace.h"
 
+// Required to link Winsock(WSA) and iphlpapi functions.
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "iphlpapi.lib")
 
 /* ---------- Macro definitions ------------------------ */
 #define MALLOC(x) malloc(x)
