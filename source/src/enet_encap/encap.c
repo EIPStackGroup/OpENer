@@ -595,7 +595,10 @@ int GetFreeSessionIndex(void) {
  *                      >0 .. more than one packet received
  *                      <0 .. only fragment of data portion received
  */
-int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer, int receive_buffer_length, EncapsulationData *const encapsulation_data) {
+int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                          size_t receive_buffer_length,
+                                          EncapsulationData *const encapsulation_data)
+{
   encapsulation_data->communication_buffer_start = (EipUint8*) receive_buffer;
   encapsulation_data->command_code = GetUintFromMessage(&receive_buffer);
   encapsulation_data->data_length = GetUintFromMessage(&receive_buffer);
@@ -606,7 +609,12 @@ int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer, int re
   receive_buffer += kSenderContextSize;
   encapsulation_data->options = GetUdintFromMessage(&receive_buffer);
   encapsulation_data->current_communication_buffer_position = (EipUint8*) receive_buffer;
-  return (receive_buffer_length - ENCAPSULATION_HEADER_LENGTH - encapsulation_data->data_length);
+
+  /* Ensure buffer length fits in an int32 before casting in the return expression. */
+  OPENER_ASSERT(INT32_MAX >= receive_buffer_length);
+
+  return ( (int32_t)receive_buffer_length - ENCAPSULATION_HEADER_LENGTH -
+           encapsulation_data->data_length );
 }
 
 /** @brief Check if received package belongs to registered session.
