@@ -96,7 +96,9 @@ typedef struct enip_message ENIPMessage;
 
 void EncapsulateListIdentityResponseMessage(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
-int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer, int receive_buffer_length, EncapsulationData *const encapsulation_data);
+int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                          size_t receive_buffer_length,
+                                          EncapsulationData *const encapsulation_data);
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message);
 
