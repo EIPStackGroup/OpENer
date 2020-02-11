@@ -29,8 +29,8 @@
 #define MAX_NO_OF_TCP_SOCKETS 10
 
 /** @brief Ethernet/IP standard port */
-extern const int kOpenerEipIoUdpPort = 0x08AE;
-const int kOpenerEthernetPort = 0xAF12;
+extern const uint16_t kOpenerEipIoUdpPort = 0x08AE;
+const uint16_t kOpenerEthernetPort = 0xAF12;
 
 /* ----- Windows size_t PRI macros ------------- */
 #if defined(__MINGW32__) /* This is a Mingw compiler */

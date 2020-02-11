@@ -28,8 +28,8 @@
 #include "socket_timer.h"
 
 /*The port to be used per default for I/O messages on UDP.*/
-extern const int kOpenerEipIoUdpPort;
-extern const int kOpenerEthernetPort;
+extern const uint16_t kOpenerEipIoUdpPort;
+extern const uint16_t kOpenerEthernetPort;
 
 extern SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
