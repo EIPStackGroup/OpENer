@@ -85,8 +85,7 @@ void HandleReceivedListIdentityCommandTcp(
 
 void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const struct sockaddr_in *const from_address,
-                                          const EncapsulationData *const receive_data,
-                                          ENIPMessage *const outgoing_message);
+                                          const EncapsulationData *const receive_data);
 
 EipStatus HandleReceivedUnregisterSessionCommand(
   const EncapsulationData *const receive_data,
@@ -267,8 +266,7 @@ EipStatus HandleReceivedExplictUdpData
           } else {
             HandleReceivedListIdentityCommandUdp(socket,
                                                  from_address,
-                                                 &encapsulation_data,
-                                                 outgoing_message);
+                                                 &encapsulation_data);
             /* as the response has to be delayed do not send it now */
             return_value = kEipStatusOk;
           }
@@ -393,8 +391,7 @@ void HandleReceivedListIdentityCommandTcp(
 
 void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const struct sockaddr_in *const from_address,
-                                          const EncapsulationData *const receive_data,
-                                          ENIPMessage *const outgoing_message) {
+                                          const EncapsulationData *const receive_data) {
   DelayedEncapsulationMessage *delayed_message_buffer = NULL;
   ENIPMessage *p_outgoing_message = NULL;
 
