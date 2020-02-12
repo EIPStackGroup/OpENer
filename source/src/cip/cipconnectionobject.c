@@ -294,27 +294,35 @@ CipUsint ConnectionObjectGetInstanceTypeForAttribute(
 
 bool ConnectionObjectIsTypeNonLOIOConnection(
   const CipConnectionObject *const connection_object) {
+  bool isNonLOIO = false;
+
   switch(connection_object->instance_type) {
     case kConnectionObjectInstanceTypeIO:
     case kConnectionObjectInstanceTypeIOExclusiveOwner:
     case kConnectionObjectInstanceTypeIOInputOnly:
-      return true;
-    default: return false;
+      isNonLOIO = true;
+      break;
+    default:
+      break;
   }
-  return false;
+  return isNonLOIO;
 }
 
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object) {
+  bool isIO = false;
+
   switch(connection_object->instance_type) {
     case kConnectionObjectInstanceTypeIO:
     case kConnectionObjectInstanceTypeIOExclusiveOwner:
     case kConnectionObjectInstanceTypeIOInputOnly:
     case kConnectionObjectInstanceTypeIOListenOnly:
-      return true;
-    default: return false;
+      isIO = true;
+      break;
+    default:
+      break;
   }
-  return false;
+  return isIO;
 }
 
 ConnectionObjectTransportClassTriggerDirection
