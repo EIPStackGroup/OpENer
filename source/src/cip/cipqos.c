@@ -167,7 +167,7 @@ void InitializeCipQos(CipClass *class) {
   /* Function is empty by intend. */
 }
 
-EipStatus CipQoSInit() {
+EipStatus CipQoSInit(void) {
 
   CipClass *qos_class = NULL;
 

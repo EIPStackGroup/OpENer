@@ -418,7 +418,7 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
   }
 }
 
-CipUint ListIdentityGetCipIdentityItemLength() {
+CipUint ListIdentityGetCipIdentityItemLength(void) {
   return sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) +
          sizeof(CipUdint) + 8 * sizeof(CipUsint) + sizeof(CipUint) +
          sizeof(CipUint) + sizeof(CipUint) + 2 * sizeof(CipUsint) +

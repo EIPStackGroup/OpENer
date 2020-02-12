@@ -506,7 +506,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
   return kEipStatusOkSend;
 }
 
-EipStatus CipTcpIpInterfaceInit() {
+EipStatus CipTcpIpInterfaceInit(void) {
   CipClass *tcp_ip_class = NULL;
 
   if ( ( tcp_ip_class = CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */

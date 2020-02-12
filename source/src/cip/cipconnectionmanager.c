@@ -1518,7 +1518,7 @@ void CheckForTimedOutConnectionsAndCloseTCPConnections(
   }
 }
 
-void InitializeConnectionManagerData() {
+void InitializeConnectionManagerData(void) {
   memset( g_connection_management_list, 0,
           g_kNumberOfConnectableObjects *
           sizeof(ConnectionManagementHandling) );

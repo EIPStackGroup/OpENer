@@ -194,8 +194,8 @@ struct cip_connection_object {
 /** @brief Extern declaration of the global connection list */
 extern DoublyLinkedList connection_list;
 
-DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
-  );
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(void);
+
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
 
 /** @brief Array allocator

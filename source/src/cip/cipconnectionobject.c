@@ -59,7 +59,7 @@ DoublyLinkedList connection_list;
 CipConnectionObject explicit_connection_object_pool[
   OPENER_CIP_NUM_EXPLICIT_CONNS];
 
-DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(void) {
   enum {kNodesAmount = OPENER_CIP_NUM_EXPLICIT_CONNS +
                        OPENER_CIP_NUM_INPUT_ONLY_CONNS +
                        OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS +
