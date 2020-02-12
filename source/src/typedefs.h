@@ -6,6 +6,10 @@
 #ifndef OPENER_TYPEDEFS_H_
 #define OPENER_TYPEDEFS_H_
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdbool.h>
