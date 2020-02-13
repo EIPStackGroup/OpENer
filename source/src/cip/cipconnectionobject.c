@@ -118,6 +118,10 @@ void ConnectionObjectInitializeFromMessage(
   CipByte priority_timetick = GetSintFromMessage(message);
   CipUsint timeout_ticks = GetSintFromMessage(message);
 
+  /* Prevent compiler warnings for unused local variables. */
+  (void)priority_timetick;
+  (void)timeout_ticks;
+
   /* O_to_T Conn ID */
   ConnectionObjectSetCipConsumedConnectionID(connection_object,
                                              GetDintFromMessage(message) );
