@@ -381,6 +381,10 @@ EipStatus SetAttributeSingleTcpIpInterface(
             message_router_response->general_status = kCipErrorDeviceStateConflict;
             break;
           }
+          if (kTcpipCfgCtrlStaticIp != (g_tcpip.config_control & kTcpipCfgCtrlMethodMask)) {
+            message_router_response->general_status = kCipErrorObjectStateConflict;
+            break;
+          }
           memset(&if_cfg, 0, sizeof if_cfg);
           tmp_ip = GetUdintFromMessage(&(message_router_request->data));
           if_cfg.ip_address = htonl(tmp_ip);
@@ -415,10 +419,6 @@ EipStatus SetAttributeSingleTcpIpInterface(
            * because if_cfg goes out of scope now. */
           FreeCipString(&p_interface_configuration->domain_name);
           *p_interface_configuration = if_cfg;
-
-          /* Automatically set attribute 3 to static IP mode (kTcpipCfgCtrlStaticIp ^= 0),
-           * leaving only DnsEnable bit intact */
-          g_tcpip.config_control &= kTcpipCfgCtrlDnsEnable;
           /* Tell that this configuration change becomes active after a reset */
           g_tcpip.status |= kTcpipStatusIfaceCfgPend;
           message_router_response->general_status = kCipErrorSuccess;
