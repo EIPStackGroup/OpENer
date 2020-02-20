@@ -83,6 +83,7 @@ void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
     } else {
       OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
     }
+  } else {
     OPENER_TRACE_ERR("Attempt to provide a NULL pointer to node pointer\n");
   }
 
