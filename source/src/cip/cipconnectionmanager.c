@@ -1214,28 +1214,18 @@ EipUint8 ParseConnectionPath(
         return kCipErrorConnectionFailure;
       }
       /* Configuration connection point is producing connection point */
-      CipConnectionPathEpath connection_epath = {
-        .class_id = class_id,
-        .instance_id = instance_id,
-        .attribute_id_or_connection_point = 0
-      };
-
-      memcpy(&(connection_object->configuration_path),
-             &connection_epath,
-             sizeof(connection_object->configuration_path) );
-      memcpy(&(connection_object->produced_path), &connection_epath,
+      connection_object->configuration_path.class_id = class_id;
+      connection_object->configuration_path.instance_id = instance_id;
+      connection_object->configuration_path.attribute_id_or_connection_point = 0;
+      memcpy(&(connection_object->produced_path),
+             &(connection_object->configuration_path),
              sizeof(connection_object->produced_path) );
 
       /* End class 3 connection handling */
     } else { /* we have an IO connection */
-      CipConnectionPathEpath connection_epath = {
-        .class_id = class_id,
-        .instance_id = instance_id,
-        .attribute_id_or_connection_point = 0
-      };
-      memcpy(&(connection_object->configuration_path),
-             &connection_epath,
-             sizeof(connection_object->configuration_path) );
+      connection_object->configuration_path.class_id = class_id;
+      connection_object->configuration_path.instance_id = instance_id;
+      connection_object->configuration_path.attribute_id_or_connection_point = 0;
       ConnectionObjectConnectionType originator_to_target_connection_type =
         ConnectionObjectGetOToTConnectionType(
           connection_object);
@@ -1282,13 +1272,9 @@ EipUint8 ParseConnectionPath(
              GetPathLogicalSegmentLogicalType(message) )                                                                                                                                   /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         { /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
-          CipConnectionPathEpath connection_epath = {
-            .class_id = class_id,
-            .instance_id = attribute_id,
-            .attribute_id_or_connection_point = 0
-          };
-          memcpy(paths_to_encode[i], &connection_epath,
-                 sizeof(connection_object->produced_path) );
+          paths_to_encode[i]->class_id = class_id;
+          paths_to_encode[i]->instance_id = attribute_id;
+          paths_to_encode[i]->attribute_id_or_connection_point = 0;
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
             attribute_id);
