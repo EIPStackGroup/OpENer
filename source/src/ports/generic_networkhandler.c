@@ -823,10 +823,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     EipStatus need_to_send = HandleReceivedExplictTcpData(
       socket, incoming_message, data_size, &remaining_bytes,
       &sender_address, &outgoing_message);
-    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
-      g_timestamps,
-      OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-      socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
     }
@@ -846,10 +842,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
       data_sent = send(socket, (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length, 0);
-      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
-        g_timestamps,
-        OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-        socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if (data_sent != outgoing_message.used_message_length) {
         OPENER_TRACE_WARN(
