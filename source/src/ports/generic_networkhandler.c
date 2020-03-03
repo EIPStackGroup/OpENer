@@ -691,9 +691,9 @@ EipStatus HandleDataOnTcpSocket(int socket) {
 
   long number_of_read_bytes = recv(socket, NWBUF_CAST incoming_message, 4, 0); /*TODO we may have to set the socket to a non blocking socket */
 
-  SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                             OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                             socket);
+  SocketTimer * const socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
+                                                                   OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
+                                                                   socket);
   if(number_of_read_bytes == 0) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
@@ -830,9 +830,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                                                           &remaining_bytes,
                                                           &sender_address,
                                                           &outgoing_message);
-    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                               OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                               socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
     }
@@ -854,9 +851,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                        (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length,
                        MSG_NOSIGNAL);
-      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
-                                                                 OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-                                                                 socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
       if(data_sent != outgoing_message.used_message_length) {
         OPENER_TRACE_WARN(
