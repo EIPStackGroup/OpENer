@@ -415,6 +415,9 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
 static void EncodeCipEthernetLinkInterfaceCounters(const void *const data,
                                                    ENIPMessage *const outgoing_message)
 {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   for (size_t i = 0; i < 11; i++) {
     /* Encode real values using the access through the array of the
@@ -434,6 +437,9 @@ static void EncodeCipEthernetLinkInterfaceCounters(const void *const data,
 static void EncodeCipEthernetLinkMediaCounters(const void *const data,
                                                ENIPMessage *const outgoing_message)
 {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   for (size_t i = 0; i < 12; i++) {
     /* Encode real values using the access through the array of the
@@ -458,6 +464,9 @@ static void EncodeCipEthernetLinkInterfaceControl(const void *const data,
   const CipEthernetLinkInterfaceControl *const interface_control =
     data;
 #else
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
   CipEthernetLinkInterfaceControl *interface_control = &s_interface_control;
 #endif
   EncodeCipWord(&interface_control->control_bits, outgoing_message);

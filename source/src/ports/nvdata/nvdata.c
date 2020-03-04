@@ -62,6 +62,9 @@ EipStatus NvdataLoad(void) {
 EipStatus NvQosSetCallback(CipInstance *const instance,
                            CipAttributeStruct *const attribute,
                            CipByte service) {
+  /* Suppress unused parameter compiler warning. */
+  (void)service;
+
   EipStatus status = kEipStatusOk;
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
