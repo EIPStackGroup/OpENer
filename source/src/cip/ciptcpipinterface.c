@@ -335,6 +335,9 @@ void EncodeCipTcpIpInterfaceConfiguration(const void *const data,
 
 void EncodeCipTcpIpMulticastConfiguration(const void *const data,
                                           ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
   EncodeCipUsint(&(g_tcpip.mcast_config.alloc_control), outgoing_message);
   EncodeCipUsint(&(g_tcpip.mcast_config.reserved_shall_be_zero),
                  outgoing_message);
@@ -349,11 +352,17 @@ void EncodeCipTcpIpMulticastConfiguration(const void *const data,
 
 void EncodeSafetyNetworkNumber(const void *const data,
                                ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 6, outgoing_message);
 }
 
 void EncodeCipLastConflictDetected(const void *const data,
                                    ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
   const size_t kAttribute11Size = sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 *
                                   sizeof(CipUsint);
   OPENER_ASSERT(kAttribute11Size == 35);

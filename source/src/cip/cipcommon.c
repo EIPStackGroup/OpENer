@@ -475,6 +475,9 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session) {
+  (void) originator_address;
+  (void) encapsulation_session;
+
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(instance,
@@ -628,11 +631,19 @@ void EncodeCipString(const CipString *const data,
 
 void EncodeCipString2(const CipString2 *const data,
                       ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+  (void)outgoing_message;
+
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
 void EncodeCipStringN(const CipStringN *const data,
                       ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+  (void)outgoing_message;
+
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
@@ -717,6 +728,9 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                   message_router_request->request_path.attribute_number);
@@ -1002,6 +1016,9 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
                           const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
   CipAttributeStruct *attribute = instance->attributes; /* pointer to list of attributes*/
@@ -1040,6 +1057,9 @@ EipStatus GetAttributeList(CipInstance *instance,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
                            const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service =
@@ -1099,6 +1119,9 @@ EipStatus SetAttributeList(CipInstance *instance,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
                            const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service =
@@ -1294,6 +1317,9 @@ EipStatus CipCreateService(CipInstance *RESTRICT const instance,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80 | message_router_request->service);
@@ -1327,6 +1353,9 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
                  CipMessageRouterResponse *const message_router_response,
                  const struct sockaddr *originator_address,
                  const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
 
   message_router_response->general_status = kCipErrorInstanceNotDeletable;
   message_router_response->size_of_additional_status = 0;
@@ -1402,6 +1431,10 @@ EipStatus CipResetService(CipInstance *RESTRICT const instance,
                 CipMessageRouterResponse *const message_router_response,
                 const struct sockaddr *originator_address,
                 const int encapsulation_session) {
+  /* Suppress unused parameter compiler warning. */
+  (void)originator_address;
+  (void)encapsulation_session;
+
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);

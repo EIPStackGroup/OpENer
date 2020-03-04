@@ -110,6 +110,9 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)message;
+
   assert(false); /* NOT IMPLEMENTED */
   return NULL;
 }

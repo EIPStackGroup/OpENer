@@ -26,6 +26,9 @@
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
+  /* Suppress unused parameter compiler warning. */
+  (void)p_tcp_ip;
+
   CipTcpIpObject tcpip = {0};
   EipStatus eip_status = kEipStatusOk;
 
@@ -55,6 +58,9 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
+  /* Suppress unused parameter compiler warning. */
+  (void)p_tcp_ip;
+
   FILE *p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
   if (NULL != p_file) {
     /* Print output data */
