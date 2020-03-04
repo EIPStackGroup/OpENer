@@ -319,6 +319,10 @@ EipStatus HandleNullNonMatchingForwardOpenRequest(
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response
   ) {
+  (void) instance;
+  (void) message_router_request;
+  (void) message_router_response;
+
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(
     connection_object,
@@ -345,6 +349,9 @@ EipStatus HandleNullMatchingForwardOpenRequest(
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response
   ) {
+  (void) instance;
+  (void) message_router_request;
+
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(
     connection_object,
@@ -370,6 +377,9 @@ EipStatus HandleNonNullMatchingForwardOpenRequest(
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response
   ) {
+  (void) instance;
+  (void) message_router_request;
+
   OPENER_TRACE_INFO("Right now we cannot handle reconfiguration requests\n");
   return AssembleForwardOpenResponse(
     connection_object,
@@ -394,6 +404,8 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response
   ) {
+  (void) connection_object;
+  (void) instance;
 
   EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
@@ -557,6 +569,7 @@ EipStatus ForwardClose(
   const int encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
+  (void) encapsulation_session;
 
   /* check connection_serial_number && originator_vendor_id && originator_serial_number if connection is established */
   ConnectionManagerExtendedStatusCode connection_status =
@@ -635,6 +648,8 @@ EipStatus GetConnectionOwner(
   (void) instance;
   (void) message_router_request;
   (void) message_router_response;
+  (void) originator_address;
+  (void) encapsulation_session;
 
   return kEipStatusOk;
 }

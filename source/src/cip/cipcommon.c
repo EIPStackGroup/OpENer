@@ -433,6 +433,9 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session) {
+  (void) originator_address;
+  (void) encapsulation_session;
+
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(instance,

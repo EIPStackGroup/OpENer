@@ -38,6 +38,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 }
 
 void ShutdownSocketPlatform(int socket_handle) {
+  (void) socket_handle;
 #pragma message "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
 }
 
@@ -52,5 +53,8 @@ int SetSocketToNonBlocking(int socket_handle) {
 
 int SetQosOnSocket(const int socket,
                    CipUsint qos_value) {
+  (void) socket;
+  (void) qos_value;
+
   return 0; // Dummy implementation, until a working one is viable
 }

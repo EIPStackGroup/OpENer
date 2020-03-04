@@ -76,7 +76,12 @@ EipStatus SetAttributeSingleQoS(
 
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
-  (void) instance;   /*Suppress compiler warning */
+
+  /*Suppress compiler warning */
+  (void) instance;
+  (void) originator_address;
+  (void) encapsulation_session;
+
   EipUint16 attribute_number =
     message_router_request->request_path.attribute_number;
   uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
@@ -165,6 +170,7 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
  */
 void InitializeCipQos(CipClass *class) {
   /* Function is empty by intend. */
+  (void) class;
 }
 
 EipStatus CipQoSInit(void) {

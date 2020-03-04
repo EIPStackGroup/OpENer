@@ -331,6 +331,8 @@ static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
                     g_ethernet_link[instance_id-1].interface_cntrs.cntr32 +i,
                     message);
 #else
+    (void) instance_id;
+
     /* Encode the default counter value of 0 */
     encoded_len += EncodeData(kCipUdint, &dummy_attribute_udint, message);
 #endif
@@ -349,6 +351,8 @@ static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
                     g_ethernet_link[instance_id-1].media_cntrs.cntr32 +i,
                     message);
 #else
+    (void) instance_id;
+
     /* Encode the default counter value of 0 */
     encoded_len += EncodeData(kCipUdint, &dummy_attribute_udint, message);
 #endif
@@ -361,6 +365,8 @@ static int EncodeInterfaceControl(CipUdint instance_id, CipOctet **message) {
   CipEthernetLinkInterfaceControl *interface_control =
   	&g_ethernet_link[instance_id-1].interface_control;
 #else
+  (void) instance_id;
+
   CipEthernetLinkInterfaceControl *interface_control = &s_interface_control;
 #endif
   int encoded_len = 0;

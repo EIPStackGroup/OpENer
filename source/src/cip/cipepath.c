@@ -356,6 +356,8 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
 size_t CipEpathSetLogicalValue(const CipDword logical_value,
                                const LogicalSegmentLogicalFormat logical_format,
                                CipOctet **message) {
+  (void) logical_format;
+
   size_t written_bytes = 0;
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:

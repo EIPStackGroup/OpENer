@@ -107,6 +107,7 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
+  (void) message;
   assert(false); /* NOT IMLEMENTED */
   return NULL;
 }

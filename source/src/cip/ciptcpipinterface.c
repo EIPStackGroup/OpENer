@@ -328,6 +328,9 @@ EipStatus SetAttributeSingleTcpIpInterface(
   CipMessageRouterResponse *message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
+  (void) originator_address;
+  (void) encapsulation_session;
+
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
   EipUint16 attribute_number = message_router_request->request_path

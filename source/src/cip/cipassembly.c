@@ -156,6 +156,9 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
                                      CipMessageRouterResponse *const message_router_response,
                                      const struct sockaddr *originator_address,
                                      const int encapsulation_session) {
+  (void) originator_address;
+  (void) encapsulation_session;
+
   OPENER_TRACE_INFO(" setAttribute %d\n",
                     message_router_request->request_path.attribute_number);
 
