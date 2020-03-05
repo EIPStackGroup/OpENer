@@ -578,7 +578,7 @@ EipStatus HandleReceivedInvalidCommand(const EncapsulationData *const receive_da
  *                      kInvalidSession .. no free session available
  */
 int GetFreeSessionIndex(void) {
-  for(size_t session_index = 0; session_index < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; session_index++) {
+  for(int session_index = 0; session_index < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; session_index++) {
     if(kEipInvalidSocket == g_registered_sessions[session_index]) {
       return session_index;
     }
