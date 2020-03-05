@@ -446,7 +446,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
 
-    for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
+    for (int socket = 0; socket <= highest_socket_handle; socket++) {
       if ( true == CheckSocketSet(socket) ) {
         /* if it is still checked it is a TCP receive */
         if ( kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
@@ -458,7 +458,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     }
   }
 
-  for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
+  for (int socket = 0; socket <= highest_socket_handle; socket++) {
     CheckEncapsulationInactivity(socket);
   }
 
