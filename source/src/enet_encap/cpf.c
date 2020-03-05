@@ -306,7 +306,7 @@ EipStatus CreateCommonPacketFormatStructure(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeNullAddressItem(ENIPMessage *const outgoing_message) {
+size_t EncodeNullAddressItem(ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
     kCipItemIdNullAddress,
     &outgoing_message->current_message_position);
@@ -323,7 +323,7 @@ int EncodeNullAddressItem(ENIPMessage *const outgoing_message) {
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeConnectedAddressItem(
+size_t EncodeConnectedAddressItem(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
@@ -346,7 +346,7 @@ int EncodeConnectedAddressItem(
  *
  * @return New message size after encoding
  */
-int EncodeSequencedAddressItem(
+size_t EncodeSequencedAddressItem(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
@@ -373,7 +373,7 @@ int EncodeSequencedAddressItem(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeItemCount(
+size_t EncodeItemCount(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -390,7 +390,7 @@ int EncodeItemCount(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeDataItemType(
+size_t EncodeDataItemType(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -407,7 +407,7 @@ int EncodeDataItemType(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeDataItemLength(
+size_t EncodeDataItemLength(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -424,7 +424,7 @@ int EncodeDataItemLength(
  *
  * @return The new size of the message frame after encoding
  */
-int EncodeDataItemData(
+size_t EncodeDataItemData(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   for (size_t i = 0; i < common_packet_format_data_item->data_item.length;
@@ -445,7 +445,7 @@ int EncodeDataItemData(
  * @return The new size of the message buffer
  */
 
-int EncodeConnectedDataItemLength(
+size_t EncodeConnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -464,7 +464,7 @@ int EncodeConnectedDataItemLength(
  * @return The new size of the message buffer
  *
  */
-int EncodeSequenceNumber(
+size_t EncodeSequenceNumber(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -482,7 +482,7 @@ int EncodeSequenceNumber(
  *
  * @return The new size of the message buffer
  */
-int EncodeReplyService(
+size_t EncodeReplyService(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddSintToMessage(
@@ -499,7 +499,7 @@ int EncodeReplyService(
  *
  * @return New size of the message buffer
  */
-int EncodeReservedFieldOfLengthByte(
+size_t EncodeReservedFieldOfLengthByte(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddSintToMessage(
@@ -516,7 +516,7 @@ int EncodeReservedFieldOfLengthByte(
  *
  * @return New size of the message buffer
  */
-int EncodeGeneralStatus(
+size_t EncodeGeneralStatus(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddSintToMessage(
@@ -534,7 +534,7 @@ int EncodeGeneralStatus(
  * @return New size of the message buffer
  */
 
-int EncodeExtendedStatusLength(
+size_t EncodeExtendedStatusLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddSintToMessage(
@@ -576,7 +576,7 @@ size_t EncodeExtendedStatusDataItems(
  * @return New size of the message buffer
  */
 
-int EncodeExtendedStatus(
+size_t EncodeExtendedStatus(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   EncodeExtendedStatusLength(message_router_response, outgoing_message);
@@ -593,7 +593,7 @@ int EncodeExtendedStatus(
  *
  * @return New size of the message buffer
  */
-int EncodeUnconnectedDataItemLength(
+size_t EncodeUnconnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -609,7 +609,7 @@ int EncodeUnconnectedDataItemLength(
  * @param message_router_response Router Response message to be processed
  * @param outgoing_message The outgoing message object
  */
-int EncodeMessageRouterResponseData(
+size_t EncodeMessageRouterResponseData(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
   for (size_t i = 0; i < message_router_response->data_length; i++) {
@@ -629,7 +629,7 @@ int EncodeMessageRouterResponseData(
  *
  * @return New size of the message buffer
  */
-int EncodeSockaddrInfoItemTypeId(
+size_t EncodeSockaddrInfoItemTypeId(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
@@ -650,7 +650,7 @@ int EncodeSockaddrInfoItemTypeId(
  *
  * @return New size of the message buffer
  */
-int EncodeSockaddrInfoLength(
+size_t EncodeSockaddrInfoLength(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
