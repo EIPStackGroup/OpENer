@@ -272,7 +272,7 @@ static CipUdint GetIpFromSocketAddress(const SOCKET_ADDRESS *socket_address) {
 /* ---------- Public functions implementation ---------- */
 
 /* For Doxygen descriptions see opener_api.h. */
-EipStatus IfaceGetMacAddress(const char *iface, uint8_t *physical_address) {
+EipStatus IfaceGetMacAddress(const char *iface, uint8_t *const physical_address) {
   ULONG  iface_idx;
 
   if(kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx)) {
