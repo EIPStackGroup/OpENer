@@ -41,7 +41,7 @@ void ShutdownSocketPlatform(int socket_handle) {
   (void)socket_handle;
 
 #pragma \
-  message "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
+  message ("Untested. Is a shutdown() needed under Windows like for the POSIX port?")
 }
 
 void CloseSocketPlatform(int socket_handle) {
