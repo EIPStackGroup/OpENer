@@ -50,7 +50,7 @@ void GenerateGetAttributeSingleHeader(
  *          -1 .. requested attribute not available
  */
 EipStatus GetAttributeSingle(
-  CipInstance *RESTRICT const instance,
+  CipInstance *const instance,
   CipMessageRouterRequest *const
   message_router_request,
   CipMessageRouterResponse *const
@@ -76,7 +76,7 @@ void GenerateSetAttributeSingleHeader(
  *          -1 .. requested attribute not set
  */
 EipStatus SetAttributeSingle(
-  CipInstance *RESTRICT const instance,
+  CipInstance *const instance,
   CipMessageRouterRequest *const
   message_router_request,
   CipMessageRouterResponse *const

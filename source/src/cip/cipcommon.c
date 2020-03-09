@@ -445,7 +445,7 @@ void GenerateGetAttributeSingleHeader(
 }
 
 /* TODO this needs to check for buffer overflow*/
-EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
+EipStatus GetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
@@ -698,7 +698,7 @@ void GenerateSetAttributeSingleHeader(
   message_router_response->size_of_additional_status = 0;
 }
 
-EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
+EipStatus SetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
