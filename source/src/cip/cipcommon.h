@@ -50,7 +50,7 @@ void GenerateGetAttributeSingleHeader(
  *          -1 .. requested attribute not available
  */
 EipStatus GetAttributeSingle(
-  CipInstance *RESTRICT const instance,
+  CipInstance *const instance,
   CipMessageRouterRequest *const
   message_router_request,
   CipMessageRouterResponse *const
@@ -76,7 +76,7 @@ void GenerateSetAttributeSingleHeader(
  *          -1 .. requested attribute not set
  */
 EipStatus SetAttributeSingle(
-  CipInstance *RESTRICT const instance,
+  CipInstance *const instance,
   CipMessageRouterRequest *const
   message_router_request,
   CipMessageRouterResponse *const
@@ -158,7 +158,7 @@ int DecodePaddedEPath(CipEpath *epath,
  *          -1 .. requested instance not created
  */
 EipStatus CipCreateService(
-    CipInstance *RESTRICT const instance,
+    CipInstance *const instance,
     CipMessageRouterRequest *const
         message_router_request,
     CipMessageRouterResponse *const
@@ -179,7 +179,7 @@ EipStatus CipCreateService(
  * @return status  >0 .. success
  *          -1 .. requested instance not deleted
  */
-EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
+EipStatus CipDeleteService(CipInstance *const instance,
     CipMessageRouterRequest *const
         message_router_request,
     CipMessageRouterResponse *const
@@ -201,7 +201,7 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
  * @return status  >0 .. success
  *          -1 .. requested instance not reseted
  */
-EipStatus CipResetService(CipInstance *RESTRICT const instance,
+EipStatus CipResetService(CipInstance *const instance,
     CipMessageRouterRequest *const
         message_router_request,
     CipMessageRouterResponse *const

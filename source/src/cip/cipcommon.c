@@ -470,7 +470,7 @@ void GenerateGetAttributeSingleHeader(
 }
 
 /* TODO this needs to check for buffer overflow*/
-EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
+EipStatus GetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
@@ -723,7 +723,7 @@ void GenerateSetAttributeSingleHeader(
   message_router_response->size_of_additional_status = 0;
 }
 
-EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
+EipStatus SetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
@@ -1312,7 +1312,7 @@ int DecodePaddedEPath(CipEpath *epath,
   return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
 }
 
-EipStatus CipCreateService(CipInstance *RESTRICT const instance,
+EipStatus CipCreateService(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
@@ -1348,7 +1348,7 @@ EipStatus CipCreateService(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
+EipStatus CipDeleteService(CipInstance *const instance,
                  CipMessageRouterRequest *const message_router_request,
                  CipMessageRouterResponse *const message_router_response,
                  const struct sockaddr *originator_address,
@@ -1426,7 +1426,7 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
   return kEipStatusOk;
 }
 
-EipStatus CipResetService(CipInstance *RESTRICT const instance,
+EipStatus CipResetService(CipInstance *const instance,
                 CipMessageRouterRequest *const message_router_request,
                 CipMessageRouterResponse *const message_router_response,
                 const struct sockaddr *originator_address,

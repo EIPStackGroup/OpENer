@@ -127,7 +127,7 @@ void CipIdentitySetExtendedDeviceStatus(
  * @returns Currently always kEipOkSend is returned
  */
 EipStatus IdentityObjectPreResetCallback(
-    CipInstance *RESTRICT const instance,
+    CipInstance *const instance,
     CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response
 ) {
