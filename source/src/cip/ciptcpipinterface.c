@@ -309,9 +309,9 @@ static bool IsIOConnectionActive(void)
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *const RESTRICT message_router_request,
-  CipMessageRouterResponse *const RESTRICT message_router_response,
+  CipInstance *const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session);
 
@@ -580,9 +580,9 @@ void ShutdownTcpIpInterface(void) {
 }
 
 EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *const RESTRICT message_router_request,
-  CipMessageRouterResponse *const RESTRICT message_router_response,
+  CipInstance *const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
 

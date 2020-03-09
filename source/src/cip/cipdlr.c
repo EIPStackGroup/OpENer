@@ -100,7 +100,7 @@ static int EncodeNodeAddress(CipNodeAddress *node_address, CipOctet **message) {
 }
 
 static EipStatus GetAttributeSingleDlr(
-  CipInstance *RESTRICT const instance,
+  CipInstance *const instance,
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,

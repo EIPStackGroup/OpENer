@@ -56,9 +56,9 @@ static CipQosDscpValues s_active_dscp = {
 
 /************** Functions ****************************************/
 EipStatus GetAttributeSingleQoS(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *RESTRICT const message_router_request,
-  CipMessageRouterResponse *RESTRICT const message_router_response,
+  CipInstance *const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
