@@ -37,21 +37,21 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void ShutdownSocketPlatform(int socket_handle) {
+void ShutdownSocketPlatform(socket_platform_t socket_handle) {
   (void) socket_handle;
 #pragma message ("Untested. Is a shutdown() needed under Windows like for the POSIX port?")
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void CloseSocketPlatform(socket_platform_t socket_handle) {
   closesocket(socket_handle);
 }
 
-int SetSocketToNonBlocking(int socket_handle) {
+int SetSocketToNonBlocking(socket_platform_t socket_handle) {
   u_long iMode = 1;
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-int SetQosOnSocket(const int socket,
+int SetQosOnSocket(const socket_platform_t socket,
                    CipUsint qos_value) {
   (void) socket;
   (void) qos_value;

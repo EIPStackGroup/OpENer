@@ -170,7 +170,7 @@ struct cip_connection_object {
   CipInt correct_target_to_originator_size;
 
   /* Sockets for consuming and producing connection */
-  int socket[2];
+  socket_platform_t socket[2];
 
   struct sockaddr_in remote_address; /* socket address for produce */
   struct sockaddr_in originator_address; /* the address of the originator that

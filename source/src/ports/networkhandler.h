@@ -20,13 +20,13 @@ EipStatus NetworkHandlerInitializePlatform(void);
  *
  *  @param socket_handle The socket to shut down
  */
-void ShutdownSocketPlatform(int socket_handle);
+void ShutdownSocketPlatform(socket_platform_t socket_handle);
 
 /** @brief Platform dependent code to close a socket
  *
  *  @param socket_handle The socket handle to be closed
  */
-void CloseSocketPlatform(int socket_handle);
+void CloseSocketPlatform(socket_platform_t socket_handle);
 
 /** @brief Tries to set socket to non blocking behavior
  *
@@ -34,7 +34,7 @@ void CloseSocketPlatform(int socket_handle);
  *
  * @return platform specific result code
  */
-int SetSocketToNonBlocking(int socket_handle);
+int SetSocketToNonBlocking(socket_platform_t socket_handle);
 
 /** @brief Returns current time in microseconds from monotonic time base, please note
  *  that this does not represent a real absolute time, but measured from an arbitrary starting point
@@ -68,7 +68,7 @@ MilliSeconds GetMilliSeconds(void);
  * @return platform dependent result code
  *
  */
-int SetQosOnSocket(const int socket,
+int SetQosOnSocket(const socket_platform_t socket,
                    CipUsint qos_value);
 
 #endif /* OPENER_NETWORKHANDLER_H_ */

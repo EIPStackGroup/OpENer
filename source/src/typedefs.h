@@ -67,10 +67,6 @@ typedef uint64_t CipUlint; /**< 64-bit unsigned integer */
 typedef uint64_t CipLword; /**< 64-bit bit string */
 #endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
-/** @brief Constant identifying if a socket descriptor is invalid
- */
-static const int kEipInvalidSocket = -1;
-
 typedef unsigned long MilliSeconds;
 typedef unsigned long long MicroSeconds;
 

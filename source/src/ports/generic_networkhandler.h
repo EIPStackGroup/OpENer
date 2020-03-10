@@ -34,13 +34,13 @@ SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 fd_set master_socket;
 fd_set read_socket;
 
-int highest_socket_handle; /**< temporary file descriptor for select() */
+socket_platform_t highest_socket_handle; /**< temporary file descriptor for select() */
 
 /** @brief This variable holds the TCP socket the received to last explicit message.
  * It is needed for opening point to point connection to determine the peer's
  * address.
  */
-int g_current_active_tcp_socket;
+socket_platform_t g_current_active_tcp_socket;
 
 struct timeval g_time_value;
 MilliSeconds g_actual_time;
@@ -49,9 +49,9 @@ MilliSeconds g_last_time;
  *
  */
 typedef struct {
-  int tcp_listener; /**< TCP listener socket */
-  int udp_unicast_listener; /**< UDP unicast listener socket */
-  int udp_global_broadcast_listener; /**< UDP global network broadcast listener */
+  socket_platform_t tcp_listener; /**< TCP listener socket */
+  socket_platform_t udp_unicast_listener; /**< UDP unicast listener socket */
+  socket_platform_t udp_global_broadcast_listener; /**< UDP global network broadcast listener */
   MilliSeconds elapsed_time;
 } NetworkStatus;
 
@@ -63,9 +63,9 @@ NetworkStatus g_network_status; /**< Global variable holding the current network
  */
 EipStatus NetworkHandlerInitialize(void);
 
-void CloseUdpSocket(int socket_handle);
+void CloseUdpSocket(socket_platform_t socket_handle);
 
-void CloseTcpSocket(int socket_handle);
+void CloseTcpSocket(socket_platform_t socket_handle);
 
 EipStatus NetworkHandlerProcessOnce(void);
 
@@ -75,7 +75,7 @@ EipStatus NetworkHandlerFinish(void);
  * @param socket The socket to check
  * @return true if socket is set
  */
-EipBool8 CheckSocketSet(int socket);
+EipBool8 CheckSocketSet(socket_platform_t socket);
 
 /** @brief Returns the socket with the highest id
  * @param socket1 First socket
@@ -85,9 +85,9 @@ EipBool8 CheckSocketSet(int socket);
  *
  * @return Highest socket id from the provided sockets
  */
-int GetMaxSocket(int socket1,
-                 int socket2,
-                 int socket3,
-                 int socket4);
+socket_platform_t GetMaxSocket(socket_platform_t socket1,
+                               socket_platform_t socket2,
+                               socket_platform_t socket3,
+                               socket_platform_t socket4);
 
 #endif /* GENERIC_NETWORKHANDLER_H_ */

@@ -382,9 +382,9 @@ EipStatus OpenConsumingPointToPointConnection(
   addr.sin_port = htons(kOpenerEipIoUdpPort);
 
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming,
-                               &addr,
-                               qos_for_socket);                                            /* the address is only needed for bind used if consuming */
+  socket_platform_t socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming,
+                                             &addr,
+                                             qos_for_socket);                                            /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
       "cannot create UDP socket in OpenPointToPointConnection\n");
@@ -430,9 +430,9 @@ EipStatus OpenProducingPointToPointConnection(
   connection_object->remote_address.sin_port = port;
 
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(kUdpCommuncationDirectionProducing,
-                               &connection_object->remote_address,
-                               qos_for_socket);                                     /* the address is only needed for bind used if consuming */
+  socket_platform_t socket = CreateUdpSocket(kUdpCommuncationDirectionProducing,
+                                             &connection_object->remote_address,
+                                             qos_for_socket);                                     /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR(
       "cannot create UDP socket in OpenPointToPointConnection\n");
@@ -600,7 +600,7 @@ EipStatus OpenMulticastConnection(
                             .sin_port;
 
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(direction, &socket_address, qos_for_socket); /* the address is only needed for bind used if consuming */
+  socket_platform_t socket = CreateUdpSocket(direction, &socket_address, qos_for_socket); /* the address is only needed for bind used if consuming */
   if (socket == kEipInvalidSocket) {
     OPENER_TRACE_ERR("cannot create UDP socket in OpenMulticastConnection\n");
     return kEipStatusError;

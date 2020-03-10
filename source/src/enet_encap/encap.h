@@ -81,9 +81,9 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
-size_t GetSessionFromSocket(const int socket_handle);
+size_t GetSessionFromSocket(const socket_platform_t socket_handle);
 
-void RemoveSession(const int socket);
+void RemoveSession(const socket_platform_t socket);
 
 void CloseSessionBySessionHandle(
   const CipConnectionObject *const connection_object);
@@ -120,7 +120,7 @@ void HandleReceivedListInterfacesCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
 
-void HandleReceivedRegisterSessionCommand(int socket,
+void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
                                           const EncapsulationData *const receive_data,
                                           ENIPMessage *const outgoing_message);
 
