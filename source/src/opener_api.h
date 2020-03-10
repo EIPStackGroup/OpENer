@@ -616,7 +616,7 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
  * @param outgoing_message The outgoing ENIP message
  * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-EipStatus HandleReceivedExplictTcpData(int socket_handle,
+EipStatus HandleReceivedExplictTcpData(socket_platform_t socket_handle,
                                        EipUint8 *buffer,
                                        size_t length,
                                        int *number_of_remaining_bytes,
@@ -638,7 +638,7 @@ EipStatus HandleReceivedExplictTcpData(int socket_handle,
  * @param outgoing_message Outgoing ENIP message
  * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-EipStatus HandleReceivedExplictUdpData(const int socket_handle,
+EipStatus HandleReceivedExplictUdpData(const socket_platform_t socket_handle,
                                        const struct sockaddr_in *from_address,
                                        const EipUint8 *buffer,
                                        const size_t buffer_length,
@@ -710,7 +710,7 @@ TriggerConnections(unsigned int output_assembly_id,
  * the encapsulation layer.
  * @param socket_handle the handler to the socket of the closed connection
  */
-void CloseSession(int socket_handle);
+void CloseSession(socket_platform_t socket_handle);
 
 /**  @defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * @ingroup CIP_API
@@ -859,9 +859,9 @@ void RunIdleChanged(EipUint32 run_idle_value);
  * @return socket identifier on success
  *         -1 on error
  */
-int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket);
+socket_platform_t CreateUdpSocket(UdpCommuncationDirection communication_direction,
+                                  struct sockaddr_in *socket_data,
+                                  CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Create a producing or consuming UDP socket
@@ -873,7 +873,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
  */
 EipStatus
 SendUdpData(const struct sockaddr_in *const socket_data,
-            const int socket_handle,
+            const socket_platform_t socket_handle,
             const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
@@ -881,7 +881,7 @@ SendUdpData(const struct sockaddr_in *const socket_data,
  *
  * @param socket_handle socket descriptor to close
  */
-void CloseSocket(const int socket_handle);
+void CloseSocket(const socket_platform_t socket_handle);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
  * Documentation
@@ -994,9 +994,9 @@ void CloseSocket(const int socket_handle);
  *   - Receive explicit message data on connected TCP sockets and the UPD socket
  *     for port AF12hex. The received data has to be hand over to Ethernet
  *     encapsulation layer with the functions: \n
- *      int HandleReceivedExplictTCPData(int socket_handle, EIP_UINT8* buffer, int
+ *      int HandleReceivedExplictTCPData(socket_platform_t socket_handle, EIP_UINT8* buffer, int
  * buffer_length, int *number_of_remaining_bytes),\n
- *      int HandleReceivedExplictUDPData(int socket_handle, struct sockaddr_in
+ *      int HandleReceivedExplictUDPData(socket_platform_t socket_handle, struct sockaddr_in
  * *from_address, EIP_UINT8* buffer, unsigned int buffer_length, int
  * *number_of_remaining_bytes).\n
  *     Depending if the data has been received from a TCP or from a UDP socket.
@@ -1004,7 +1004,7 @@ void CloseSocket(const int socket_handle);
  *     be sent is in the given buffer pa_buf.
  *   - Create UDP sending and receiving sockets for implicit connected
  * messages\n
- *     OpENer will use to call-back function int CreateUdpSocket(
+ *     OpENer will use to call-back function socket_platform_t CreateUdpSocket(
  *     UdpCommuncationDirection connection_direction,
  *     struct sockaddr_in *pa_pstAddr)
  *     for informing the platform specific code that a new connection is
@@ -1015,11 +1015,11 @@ void CloseSocket(const int socket_handle);
  * *data, int data_length)
  *   - Close UDP and TCP sockets:
  *      -# Requested by OpENer through the call back function: void
- * CloseSocket(int socket_handle)
+ * CloseSocket(socket_platform_t socket_handle)
  *      -# For TCP connection when the peer closed the connection OpENer needs
  *         to be informed to clean up internal data structures. This is done
  * with
- *         the function void CloseSession(int socket_handle).
+ *         the function void CloseSession(socket_platform_t socket_handle).
  *      .
  *   - Cyclically update the connection status:\n
  *     In order that OpENer can determine when to produce new data on
