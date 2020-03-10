@@ -68,21 +68,21 @@ typedef enum {
 /** @brief Delayed Encapsulation Message structure */
 typedef struct {
   EipInt32 time_out; /**< time out in milli seconds */
-  int socket; /**< associated socket */
+  socket_platform_t socket; /**< associated socket */
   struct sockaddr_in receiver;
   ENIPMessage outgoing_message;
 } DelayedEncapsulationMessage;
 
 EncapsulationServiceInformation g_service_information;
 
-int g_registered_sessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
+socket_platform_t g_registered_sessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
 DelayedEncapsulationMessage g_delayed_encapsulation_messages[ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES];
 
 /*** private functions ***/
 void HandleReceivedListIdentityCommandTcp(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
-void HandleReceivedListIdentityCommandUdp(const int socket,
+void HandleReceivedListIdentityCommandUdp(const socket_platform_t socket,
                                           const struct sockaddr_in *const from_address,
                                           const EncapsulationData *const receive_data);
 
@@ -126,8 +126,12 @@ void EncapsulationInit(void) {
   snprintf((char*) g_service_information.name_of_service, sizeof(g_service_information.name_of_service), "Communications");
 }
 
-EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t length, int *number_of_remaining_bytes, struct sockaddr *originator_address,
-    ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedExplictTcpData(socket_platform_t socket,
+                                       EipUint8 *buffer,
+                                       size_t length,
+                                       int *number_of_remaining_bytes,
+                                       struct sockaddr *originator_address,
+                                       ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO("Handles data for TCP socket: %d\n", socket);
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
@@ -204,9 +208,13 @@ EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t leng
   return return_value;
 }
 
-EipStatus HandleReceivedExplictUdpData(const int socket, const struct sockaddr_in *from_address, const EipUint8 *buffer, const size_t buffer_length,
-    int *number_of_remaining_bytes,
-    bool unicast, ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedExplictUdpData(const socket_platform_t socket,
+                                       const struct sockaddr_in *from_address,
+                                       const EipUint8 *buffer,
+                                       const size_t buffer_length,
+                                       int *number_of_remaining_bytes,
+                                       bool unicast,
+                                       ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOk;
   EncapsulationData encapsulation_data = { 0 };
   /* eat the encapsulation header*/
@@ -330,7 +338,7 @@ void HandleReceivedListIdentityCommandTcp(const EncapsulationData *const receive
   EncapsulateListIdentityResponseMessage(receive_data, outgoing_message);
 }
 
-void HandleReceivedListIdentityCommandUdp(const int socket,
+void HandleReceivedListIdentityCommandUdp(const socket_platform_t socket,
                                           const struct sockaddr_in *const from_address,
                                           const EncapsulationData *const receive_data)
 {
@@ -435,7 +443,9 @@ void EncapsulateRegisterSessionCommandResponseMessage(const EncapsulationData *c
  * @param socket Socket this request is associated to. Needed for double register check
  * @param receive_data Pointer to received data with request/response.
  */
-void HandleReceivedRegisterSessionCommand(int socket, const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message) {
+void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
+                                          const EncapsulationData *const receive_data,
+                                          ENIPMessage *const outgoing_message) {
   int session_index = 0;
   size_t session_handle = 0;
   EncapsulationProtocolErrorCode encapsulation_protocol_status = kEncapsulationProtocolSuccess;
@@ -654,7 +664,7 @@ void CloseSessionBySessionHandle(const CipConnectionObject *const connection_obj
   OPENER_TRACE_INFO("encap.c: Close session by handle done\n");
 }
 
-void CloseSession(int socket) {
+void CloseSession(socket_platform_t socket) {
   OPENER_TRACE_INFO("encap.c: Close session\n");
   for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(g_registered_sessions[i] == socket) {
@@ -666,7 +676,7 @@ void CloseSession(int socket) {
   }OPENER_TRACE_INFO("encap.c: Close session done\n");
 }
 
-void RemoveSession(const int socket) {
+void RemoveSession(const socket_platform_t socket) {
   OPENER_TRACE_INFO("encap.c: Removing session\n");
   for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(g_registered_sessions[i] == socket) {
@@ -722,7 +732,7 @@ void CloseEncapsulationSessionBySockAddr(const CipConnectionObject *const connec
   }
 }
 
-size_t GetSessionFromSocket(const int socket_handle) {
+size_t GetSessionFromSocket(const socket_platform_t socket_handle) {
   for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(socket_handle == g_registered_sessions[i]) {
       return i;

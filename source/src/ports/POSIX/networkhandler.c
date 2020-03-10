@@ -38,7 +38,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void ShutdownSocketPlatform(int socket_handle) {
+void ShutdownSocketPlatform(socket_platform_t socket_handle) {
   if(0 != shutdown(socket_handle, SHUT_RDWR) ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
@@ -50,17 +50,17 @@ void ShutdownSocketPlatform(int socket_handle) {
   }
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void CloseSocketPlatform(socket_platform_t socket_handle) {
   close(socket_handle);
 }
 
-int SetSocketToNonBlocking(int socket_handle) {
+int SetSocketToNonBlocking(socket_platform_t socket_handle) {
   return fcntl(socket_handle, F_SETFL, fcntl(socket_handle,
                                              F_GETFL,
                                              0) | O_NONBLOCK);
 }
 
-int SetQosOnSocket(const int socket,
+int SetQosOnSocket(const socket_platform_t socket,
                    CipUsint qos_value) {
   /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
    *  Note that the DSCP value, if placed directly in the ToS field
