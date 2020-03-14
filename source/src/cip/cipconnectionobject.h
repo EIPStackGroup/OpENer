@@ -29,7 +29,7 @@ typedef enum {
 } ConnectionObjectState;
 
 typedef enum {
-  kConnectionObjectInstanceTypeInvalid = -1, /**< Invalid instance type - shall never occur! */
+  kConnectionObjectInstanceTypeInvalid = (CipUsint)(~0), /**< Invalid instance type - shall never occur! */
   kConnectionObjectInstanceTypeExplicitMessaging = 0, /**< Connection is an explicit messaging connection */
   kConnectionObjectInstanceTypeIO, /**< Connection is an I/O connection */
   kConnectionObjectInstanceTypeIOExclusiveOwner, /**< Also I/O connection, only for easy differentiation */
