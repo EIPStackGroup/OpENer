@@ -167,12 +167,12 @@ typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CI
  *      0 on error
  */
 CipClass *CreateCipClass(const CipUdint class_code,
-                         const int number_of_class_attributes,
-                         const EipUint32 highest_class_attribute_number,
-                         const int number_of_class_services,
-                         const int number_of_instance_attributes,
-                         const EipUint32 highest_instance_attribute_number,
-                         const int number_of_instance_services,
+                         const EipUint16 number_of_class_attributes,
+                         const EipUint16 highest_class_attribute_number,
+                         const EipUint16 number_of_class_services,
+                         const EipUint16 number_of_instance_attributes,
+                         const EipUint16 highest_instance_attribute_number,
+                         const EipUint16 number_of_instance_services,
                          const int number_of_instances,
                          const char *const name,
                          const EipUint16 revision,
