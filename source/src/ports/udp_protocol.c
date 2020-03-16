@@ -91,7 +91,10 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
     (const uint16_t *const )&destination_addr;
   checksum += *destination_addr_as_words + *(destination_addr_as_words + 1);
   checksum += htons(IPPROTO_UDP);
-  checksum += htons(udp_packet_length);
+
+  /* Sanity check before casting length to a 16-bit argument. */
+  OPENER_ASSERT(udp_packet_length <= UINT16_MAX);
+  checksum += htons( (uint16_t)udp_packet_length );
 
   while(0xFFFF0000 & checksum) {
     checksum = (checksum & 0xFFFF) + (checksum >> 16);
