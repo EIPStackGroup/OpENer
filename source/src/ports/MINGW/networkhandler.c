@@ -37,20 +37,20 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void ShutdownSocketPlatform(int socket_handle) {
+void ShutdownSocketPlatform(socket_platform_t socket_handle) {
 #warning "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
 }
 
-void CloseSocketPlatform(int socket_handle) {
+void CloseSocketPlatform(socket_platform_t socket_handle) {
   closesocket(socket_handle);
 }
 
-int SetSocketToNonBlocking(int socket_handle) {
+int SetSocketToNonBlocking(socket_platform_t socket_handle) {
   u_long iMode = 1;
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-int SetQosOnSocket(int socket,
+int SetQosOnSocket(socket_platform_t socket,
                    CipUsint qos_value) {
   /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
    *  Note that the DSCP value, if placed directly in the ToS field
