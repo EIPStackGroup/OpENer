@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include "udp_protocol.h"
+#include "opener_user_conf.h"
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -89,7 +90,10 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
   checksum += *destination_addr_as_words + *(destination_addr_as_words + 1);
 
   checksum += htons(IPPROTO_UDP);
-  checksum += htons(udp_packet_length);
+
+  /* Sanity check before casting length to a 16-bit argument. */
+  OPENER_ASSERT(udp_packet_length <= UINT16_MAX);
+  checksum += htons((uint16_t)udp_packet_length);
 
   //Add the carries
   while(0 != checksum >> 16) {
