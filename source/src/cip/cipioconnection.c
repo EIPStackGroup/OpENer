@@ -22,7 +22,7 @@
 #include "opener_error.h"
 
 /*The port to be used per default for I/O messages on UDP.*/
-const int kOpenerEipIoUdpPort = 0x08AE;
+const unsigned short kOpenerEipIoUdpPort = 0x08AE;
 
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.
