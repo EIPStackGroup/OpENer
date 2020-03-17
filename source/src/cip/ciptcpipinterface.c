@@ -658,12 +658,11 @@ EipStatus GetAttributeAllTcpIpInterface(
 
   for (int j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
   {
-    int attribute_number = attribute->attribute_number;
-    if (attribute_number < 32) /* only return attributes that are flagged as being part of GetAttributeALl */
+    if (attribute->attribute_number < 32) /* only return attributes that are flagged as being part of GetAttributeALl */
     {
-      message_router_request->request_path.attribute_number = attribute_number;
+      message_router_request->request_path.attribute_number = attribute->attribute_number;
 
-      if (8 == attribute_number) { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
+      if (8 == attribute->attribute_number) { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
         memset(message_router_response->data, 0, 6);
         message_router_response->data += 6;
       }
@@ -678,7 +677,7 @@ EipStatus GetAttributeAllTcpIpInterface(
       }
       message_router_response->data += message_router_response->data_length;
 
-      if (9 == attribute_number) {
+      if (9 == attribute->attribute_number) {
         /* returning default value for unimplemented attributes 10,11 and 12 */
 
         /* attribute 10, type: BOOL, default value: 0 */

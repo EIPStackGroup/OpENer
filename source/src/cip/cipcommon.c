@@ -768,13 +768,12 @@ EipStatus GetAttributeAll(CipInstance *instance,
   } else {
     for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) {
       /* for each instance attribute of this class */
-      int attribute_number = attribute->attribute_number;
       if ( (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                    attribute_number)]) &
-           (1 << (attribute_number % 8) ) ) {
+                                                    attribute->attribute_number)]) &
+           (1 << (attribute->attribute_number % 8) ) ) {
         /* only return attributes that are flagged as being part of GetAttributeALl */
         message_router_request->request_path.attribute_number =
-          attribute_number;
+          attribute->attribute_number;
         if (kEipStatusOkSend !=
             service->service_function(instance, message_router_request,
                                       message_router_response,
