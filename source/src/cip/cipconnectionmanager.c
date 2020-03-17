@@ -142,6 +142,13 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                              CipMessageRouterRequest *message_router_request,
                              EipUint16 *extended_error);
 
+
+static CipUint PathExtendedError(
+  const size_t path_size,
+  const size_t remain
+  );
+
+
 ConnectionManagementHandling *GetConnectionManagementEntry(
   const EipUint32 class_id);
 
@@ -1598,7 +1605,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                   message += 2;
                   remaining_path -= 2;
                 } else {
-                  *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happened*/
+                  *extended_error = PathExtendedError(connection_path_size,
+                                                      remaining_path);
                   return kCipErrorPathSegmentError; /*status code for invalid segment type*/
                 }
                 break;
@@ -1612,7 +1620,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
           default:
             OPENER_TRACE_WARN(
               "No data segment identifier found for the configuration data\n");
-            *extended_error = connection_path_size - remaining_path; /*offset in 16Bit words where within the connection path the error happened*/
+            *extended_error = PathExtendedError(connection_path_size,
+                                                remaining_path);
             return
               kConnectionManagerGeneralStatusPathSegmentErrorInUnconnectedSend;
         }
@@ -1626,6 +1635,33 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   message_router_request->data = message;
   return kEipStatusOk;
 }
+
+
+/** @brief Computes the 16-bit extended error when parsing a connection path.
+ *
+ * The extended error code is the offset in 16-bit words where the error
+ * was encountered.
+ *
+ * @param path_size Length of the path in 16-bit words.
+ * @param remain Number of 16-bit words remaining after the error was
+ *               encountered.
+ *
+ * @return The 16-bit extended error value.
+ */
+static CipUint PathExtendedError(const size_t path_size,
+                                 const size_t remain) {
+  /* There shouldn't be an error if the entire path has been parsed. */
+  OPENER_ASSERT(remain > 0);
+
+  /* Ensure the difference yields a non-negative number. */
+  OPENER_ASSERT(path_size >= remain);
+  const size_t offset = path_size - remain;
+
+  /* Ensure the result fits in the target data type. */
+  OPENER_ASSERT(offset <= UINT16_MAX);
+  return (CipUint)offset;
+}
+
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
