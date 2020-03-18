@@ -307,11 +307,13 @@ void CipEpathSetLogicalValue(const CipDword logical_value,
                              CipMessageRouterResponse *const message) {
   switch(logical_format) {
     case kLogicalSegmentLogicalFormatEightBit:
-      AddSintToMessage(logical_value, &message->message);
+      OPENER_ASSERT((logical_value <= INT8_MAX)); /* Sanity check before casting to a smaller integer. */
+      AddSintToMessage((EipUint8)logical_value, &message->message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
       MoveMessageNOctets(1, &message->message); /* Needed for padding */
-      AddIntToMessage(logical_value, &message->message);
+      OPENER_ASSERT((logical_value <= INT16_MAX)); /* Sanity check before casting to a smaller integer. */
+      AddIntToMessage((EipUint16)logical_value, &message->message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
       MoveMessageNOctets(1, &message->message); /* Needed for padding */
