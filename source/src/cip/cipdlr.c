@@ -89,8 +89,8 @@ CipDlrObject g_dlr;  /**< definition of DLR object instance 1 data */
 /* ********************************************************************
  * local functions
  */
-static int EncodeNodeAddress(CipNodeAddress *node_address, CipOctet **message) {
-  int encoded_len = 0;
+static size_t EncodeNodeAddress(CipNodeAddress *node_address, CipOctet **message) {
+  size_t encoded_len = 0;
   encoded_len += EncodeData(kCipUdint, &node_address->device_ip,
                             message);
   encoded_len += EncodeData(kCip6Usint,

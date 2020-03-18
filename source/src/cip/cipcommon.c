@@ -33,8 +33,8 @@
 EipUint8 g_message_data_reply_buffer[OPENER_MESSAGE_DATA_REPLY_BUFFER]; /**< Reply buffer */
 
 /* private functions*/
-int EncodeEPath(CipEpath *epath,
-                EipUint8 **message);
+size_t EncodeEPath(CipEpath *epath,
+                   EipUint8 **message);
 
 void CipStackInit(const EipUint16 unique_connection_id) {
   /* The message router is the first CIP object be initialized!!! */
@@ -488,10 +488,10 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-int EncodeData(const EipUint8 cip_type,
-               const void *const cip_data,
-               EipUint8 **cip_message) {
-  int counter = 0;
+size_t EncodeData(const EipUint8 cip_type,
+                  const void *const cip_data,
+                  EipUint8 **cip_message) {
+  size_t counter = 0;
 
   switch (cip_type)
   /* check the data type of attribute */
@@ -793,8 +793,8 @@ EipStatus GetAttributeAll(CipInstance *instance,
   return kEipStatusOkSend;
 }
 
-int EncodeEPath(CipEpath *epath,
-                EipUint8 **message) {
+size_t EncodeEPath(CipEpath *epath,
+                   EipUint8 **message) {
   unsigned int length = epath->path_size;
   AddIntToMessage(epath->path_size, message);
 

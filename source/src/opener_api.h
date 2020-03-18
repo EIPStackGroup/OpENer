@@ -306,9 +306,9 @@ void InsertGetSetCallback
  *  @return length of attribute in bytes
  *          -1 .. error
  */
-int EncodeData(const EipUint8 cip_data_type,
-               const void *const cip_data,
-               EipUint8 **cip_message);
+size_t EncodeData(const EipUint8 cip_data_type,
+                  const void *const cip_data,
+                  EipUint8 **cip_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
