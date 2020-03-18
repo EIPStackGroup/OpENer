@@ -361,15 +361,15 @@ size_t CipEpathSetLogicalValue(const CipDword logical_value,
   size_t written_bytes = 0;
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:
-      written_bytes = AddSintToMessage(logical_value, message);
+      written_bytes = AddSintToMessage(kLogicalSegmentLogicalFormatEightBit, message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
       written_bytes = MoveMessageNOctets(1, (const CipOctet **)message); /* Needed for padding */
-      written_bytes += AddIntToMessage(logical_value, message);
+      written_bytes += AddIntToMessage(kLogicalSegmentLogicalFormatSixteenBit, message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
       written_bytes = MoveMessageNOctets(1,(const CipOctet **)message); /* Needed for padding */
-      written_bytes += AddDintToMessage(logical_value, message);
+      written_bytes += AddDintToMessage(kLogicalSegmentLogicalFormatThirtyTwoBit, message);
       break;
     default:
       OPENER_ASSERT(false) /* This should never happen! */
