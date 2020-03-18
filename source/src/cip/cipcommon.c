@@ -1300,8 +1300,8 @@ EipStatus SetAttributeList(CipInstance *instance,
           AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
 
           //move request message pointer
-          int attribute_data_length = GetCipDataTypeLength(attribute->type,
-                                                           message_router_request->data);
+          size_t attribute_data_length = GetCipDataTypeLength(attribute->type,
+                                                              message_router_request->data);
           if(0 != attribute_data_length) {
             message_router_request->data += attribute_data_length;
             message_router_response->general_status =
@@ -1603,9 +1603,9 @@ EipStatus CipResetService(CipInstance *RESTRICT const instance,
 }
 
 void AllocateAttributeMasks(CipClass *target_class) {
-  unsigned size = 1 + CalculateIndex(target_class->highest_attribute_number);
+  size_t size = 1 + CalculateIndex(target_class->highest_attribute_number);
   OPENER_TRACE_INFO(
-    ">>> Allocate memory for %s %u bytes times 3 for masks\n",
+    ">>> Allocate memory for %s %zu bytes times 3 for masks\n",
     target_class->class_name, size);
   target_class->get_single_bit_mask = CipCalloc( size, sizeof(uint8_t) );
   target_class->set_bit_mask = CipCalloc( size, sizeof(uint8_t) );
