@@ -84,13 +84,13 @@ typedef struct speed_duplex_array_entry {
 
 
 /* forward declaration of functions to encode certain attribute objects */
-static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message);
+static size_t EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message);
 
-static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message);
+static size_t EncodeMediaCounters(CipUdint instance_id, CipOctet **message);
 
-static int EncodeInterfaceControl(CipUdint instance_id, CipOctet **message);
+static size_t EncodeInterfaceControl(CipUdint instance_id, CipOctet **message);
 
-static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message);
+static size_t EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message);
 
 
 /* forward declaration for the GetAttributeSingle service handler function */
@@ -320,8 +320,8 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
   return;
 }
 
-static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
-  int encoded_len = 0;
+static size_t EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
+  size_t encoded_len = 0;
   for (size_t i = 0; i < 11; i++) {
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
     /* Encode real values using the access through the array of the
@@ -340,8 +340,8 @@ static int EncodeInterfaceCounters(CipUdint instance_id, CipOctet **message) {
   return encoded_len;
 }
 
-static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
-  int encoded_len = 0;
+static size_t EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
+  size_t encoded_len = 0;
   for (size_t i = 0; i < 12; i++) {
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
     /* Encode real values using the access through the array of the
@@ -360,7 +360,7 @@ static int EncodeMediaCounters(CipUdint instance_id, CipOctet **message) {
   return encoded_len;
 }
 
-static int EncodeInterfaceControl(CipUdint instance_id, CipOctet **message) {
+static size_t EncodeInterfaceControl(CipUdint instance_id, CipOctet **message) {
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
   CipEthernetLinkInterfaceControl *interface_control =
   	&g_ethernet_link[instance_id-1].interface_control;
@@ -369,7 +369,7 @@ static int EncodeInterfaceControl(CipUdint instance_id, CipOctet **message) {
 
   CipEthernetLinkInterfaceControl *interface_control = &s_interface_control;
 #endif
-  int encoded_len = 0;
+  size_t encoded_len = 0;
   encoded_len += EncodeData(kCipWord, &interface_control->control_bits,
                             message);
   encoded_len += EncodeData(kCipUint,
@@ -379,9 +379,9 @@ static int EncodeInterfaceControl(CipUdint instance_id, CipOctet **message) {
 }
 
 #define NELEMENTS(x)  ((sizeof(x)/sizeof(x[0])))
-static int EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message)
+static size_t EncodeInterfaceCapability(CipUdint instance_id, CipOctet **message)
 {
-  int encoded_len = 0;
+  size_t encoded_len = 0;
   encoded_len += EncodeData(
                     kCipDword,
                     &g_ethernet_link[instance_id - 1].interface_caps.capability_bits,
