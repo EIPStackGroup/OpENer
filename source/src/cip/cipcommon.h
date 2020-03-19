@@ -82,10 +82,12 @@ EipStatus GetAttributeAll(CipInstance *instance,
 /** @brief Decodes padded EPath
  *  @param epath EPath object to the receiving element
  *  @param message pointer to the message to decode
- *  @return Number of decoded bytes
+ *  @param decoded_bytes Number of decoded bytes.
+ *  @return kEipStatusOk or kEipStatusError.
  */
-int DecodePaddedEPath(CipEpath *epath,
-                      const EipUint8 **message);
+EipStatus DecodePaddedEPath(CipEpath *epath,
+                            const EipUint8 **message,
+                            size_t *const decoded_bytes);
 
 size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct);
 

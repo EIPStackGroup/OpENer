@@ -252,9 +252,10 @@ CipError CreateMessageRouterRequestStructure(
   data++;
   data_length--;
 
-  int number_of_decoded_bytes = DecodePaddedEPath(
-    &(message_router_request->request_path), &data);
-  if (number_of_decoded_bytes < 0) {
+  size_t number_of_decoded_bytes;
+  const EipStatus path_decode_result = DecodePaddedEPath(
+    &(message_router_request->request_path), &data, &number_of_decoded_bytes);
+  if (path_decode_result != kEipStatusOk) {
     return kCipErrorPathSegmentError;
   }
 

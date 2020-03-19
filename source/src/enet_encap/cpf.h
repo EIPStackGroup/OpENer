@@ -118,10 +118,9 @@ EipStatus CreateCommonPacketFormatStructure(
  * Copy data from CPFDataItem into linear memory in message for transmission over in encapsulation.
  * @param  common_packet_format_data_item pointer to CPF structure which has to be aligned into linear memory.
  * @param  message Modified ENIPMessage struct
- * @return length of modification in bytes
- *     kEipStatusError .. error
+ * @return kEipStatusOk or kEipStatusError.
  */
-int AssembleIOMessage(
+EipStatus AssembleIOMessage(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const message);
 
@@ -133,10 +132,9 @@ int AssembleIOMessage(
  * @param  message_router_response	pointer to message router response which has to be aligned into linear memory.
  * @param  common_packet_format_data_item	pointer to CPF structure which has to be aligned into linear memory.
  * @param  outgoing_message Modified ENIPMessage struct
- * @return length of modification in bytes
- *         kEipStatusError .. error
+ * @return kEipStatusOk or kEipStatusError.
  */
-int AssembleLinearMessage(
+EipStatus AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message);

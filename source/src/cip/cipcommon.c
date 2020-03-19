@@ -850,9 +850,10 @@ size_t EncodeEPath(CipEpath *epath,
   return 2 + epath->path_size * 2;       /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath,
-                      const EipUint8 **message) {
-  unsigned int number_of_decoded_elements = 0;
+EipStatus DecodePaddedEPath(CipEpath *epath,
+                            const EipUint8 **message,
+                            size_t *const decoded_bytes) {
+  size_t number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 
   epath->path_size = *message_runner;
@@ -928,7 +929,11 @@ int DecodePaddedEPath(CipEpath *epath,
   }
 
   *message = message_runner;
-  return number_of_decoded_elements * 2 + 1;       /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+
+  OPENER_ASSERT(decoded_bytes != NULL);
+  *decoded_bytes = number_of_decoded_elements * 2 + 1;       /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+
+  return kEipStatusOk;
 }
 
 void AllocateAttributeMasks(CipClass *target_class) {

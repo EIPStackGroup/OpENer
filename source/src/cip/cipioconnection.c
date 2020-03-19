@@ -826,9 +826,10 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
   ENIPMessage outgoing_message;
   InitializeENIPMessage(&outgoing_message);
-  EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
-                                             &outgoing_message);
-  OPENER_ASSERT(kEipStatusError != reply_length);
+  const EipStatus msg_assembly_result = AssembleIOMessage(
+     common_packet_format_data,
+     &outgoing_message);
+  OPENER_ASSERT(msg_assembly_result == kEipStatusOk);
 
 
   outgoing_message.current_message_position -= 2;
