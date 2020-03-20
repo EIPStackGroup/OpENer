@@ -195,10 +195,10 @@ size_t AddLintToMessage(const EipUint64 data,
 #endif
 
 
-int EncapsulateIpAddress(EipUint16 port,
-                         EipUint32 address,
-                         EipByte **communication_buffer) {
-  int size = 0;
+size_t EncapsulateIpAddress(EipUint16 port,
+                            EipUint32 address,
+                            EipByte **communication_buffer) {
+  size_t size = 0;
   if (kOpENerEndianessLittle == g_opener_platform_endianess) {
     size += AddIntToMessage(htons(AF_INET), communication_buffer);
     size += AddIntToMessage(port, communication_buffer);

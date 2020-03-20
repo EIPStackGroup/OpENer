@@ -106,10 +106,12 @@ size_t AddLintToMessage(const EipUint64 pa_unData,
  * @param port Port of the socket, has to be provided in big-endian
  * @param address IP address of the socket, has to be provided in big-endian
  * @param communication_buffer The message buffer for sending the message
+ *
+ * @return The number of bytes required to contain the socket address.
  */
-int EncapsulateIpAddress(EipUint16 port,
-                         EipUint32 address,
-                         EipByte **communication_buffer);
+size_t EncapsulateIpAddress(EipUint16 port,
+                            EipUint32 address,
+                            EipByte **communication_buffer);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
