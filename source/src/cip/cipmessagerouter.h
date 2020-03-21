@@ -42,7 +42,7 @@ void DeleteAllClasses(void);
  *           kEipStatusOk on success
  */
 EipStatus NotifyMessageRouter(EipUint8 *data,
-                              int data_length,
+                              size_t data_length,
                               const struct sockaddr *const originator_address,
                               const int encapsulation_session);
 
