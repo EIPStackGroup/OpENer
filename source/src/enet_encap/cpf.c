@@ -223,7 +223,7 @@ EipStatus CreateCommonPacketFormatStructure(
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  int length_count = 0;
+  size_t length_count = 0;
   CipUint item_count = GetIntFromMessage(&data);
   OPENER_ASSERT(4U >= item_count) /* Sanitizing data - probably needs to be changed for productive code */
   common_packet_format_data->item_count = item_count;

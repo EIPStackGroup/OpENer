@@ -127,8 +127,8 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
        io_connection_object->connection_path.connection_point[
         kConnectionPointConsumer];*/
     io_connection_object->consumed_path.attribute_id_or_connection_point = 3;
-    int data_size = ConnectionObjectGetOToTConnectionSize(io_connection_object);
-    int diff_size = 0;
+    size_t data_size = ConnectionObjectGetOToTConnectionSize(io_connection_object);
+    size_t diff_size = 0;
 
     /* an assembly object should always have an attribute 3 */
     CipAttributeStruct *attribute = GetCipAttribute(instance,
@@ -227,8 +227,8 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
                 io_connection_object->produced_path.instance_id) ) ) {
 
     io_connection_object->producing_instance = instance;
-    int data_size = ConnectionObjectGetTToOConnectionSize(io_connection_object);
-    int diff_size = 0;
+    size_t data_size = ConnectionObjectGetTToOConnectionSize(io_connection_object);
+    size_t diff_size = 0;
     /* an assembly object should always have an attribute 3 */
     io_connection_object->produced_path.attribute_id_or_connection_point = 3;
     CipAttributeStruct *attribute = GetCipAttribute(instance,
