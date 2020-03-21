@@ -454,9 +454,18 @@ size_t EncodeDataItemData(
 size_t EncodeConnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddIntToMessage(
-    (EipUint16) ( message_router_response->data_length + 4 + 2  /* TODO: Magic numbers */
-                  + (2 * message_router_response->size_of_additional_status) ),
+   /* The encoded length must fit within an unsigned, 16-bit integer. */
+   const size_t length_wide = (
+      message_router_response->data_length
+      + 4  /* TODO: Magic numbers */
+      + 2  /* TODO: Magic numbers */
+      + (sizeof(EipUint16) * message_router_response->size_of_additional_status)
+      );
+   OPENER_ASSERT(length_wide <= UINT16_MAX);
+   const EipUint16 length = (EipUint16)length_wide;
+
+   outgoing_message->used_message_length += AddIntToMessage(
+    length,
     &outgoing_message->current_message_position);
   return outgoing_message->used_message_length;
 }
@@ -543,8 +552,12 @@ size_t EncodeGeneralStatus(
 size_t EncodeExtendedStatusLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddSintToMessage(
-    message_router_response->size_of_additional_status,
+   /* Length must fit in an unsigned, 8-bit integer. */
+   OPENER_ASSERT(message_router_response->size_of_additional_status <= UINT8_MAX);
+   const EipUint8 length = (EipUint8)message_router_response->size_of_additional_status;
+
+   outgoing_message->used_message_length += AddSintToMessage(
+    length,
     &outgoing_message->current_message_position);
   return outgoing_message->used_message_length;
 }
@@ -602,9 +615,17 @@ size_t EncodeExtendedStatus(
 size_t EncodeUnconnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddIntToMessage(
-    (EipUint16) ( message_router_response->data_length + 4  /* TODO: Magic number */
-                  + (2 * message_router_response->size_of_additional_status) ),
+   /* The encoded length must fit within an unsigned, 16-bit integer. */
+   const size_t length_wide = (
+      message_router_response->data_length
+      + 4  /* TODO: Magic number */
+      + (sizeof(EipUint16) * message_router_response->size_of_additional_status)
+      );
+   OPENER_ASSERT(length_wide <= UINT16_MAX);
+   const EipUint16 length = (EipUint16)length_wide;
+
+   outgoing_message->used_message_length += AddIntToMessage(
+    length,
     &outgoing_message->current_message_position);
   return outgoing_message->used_message_length;
 }

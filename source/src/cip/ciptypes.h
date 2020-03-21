@@ -214,12 +214,12 @@ typedef struct {
   CipOctet reserved; /**< Reserved; Shall be zero */
   CipUsint general_status; /**< One of the General Status codes listed in CIP
                               Specification Volume 1, Appendix B */
-  CipUsint size_of_additional_status; /**< Number of additional 16 bit words in
+  size_t size_of_additional_status; /**< Number of additional 16 bit words in
                                          Additional Status Array */
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
                                                           If SizeOfAdditionalStatus is 0. there is no
                                                           Additional Status */
-  EipInt16 data_length; /**< Supportative non-CIP variable, gives length of data segment */
+  size_t data_length; /**< Supportative non-CIP variable, gives length of data segment */
   CipOctet *data; /**< Array of octet; Response data per object definition from
                      request */
 } CipMessageRouterResponse;
