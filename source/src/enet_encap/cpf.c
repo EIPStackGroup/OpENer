@@ -23,7 +23,7 @@
 const size_t item_count_field_size = 2; /**< The size of the item count field in the message */
 const size_t item_data_type_id_field_length = 2; /**< The size of the item count field in the message */
 
-const size_t sequenced_address_item_length = 8;
+const EipUint16 sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
