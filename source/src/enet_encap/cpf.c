@@ -20,7 +20,11 @@
 const size_t kItemCountFieldSize = 2; /**< The size of the item count field in the message */
 const size_t KItemDataTypeIdFieldLength = 2; /**< The size of the item count field in the message */
 
-const size_t kSequencedAddressItemLength = 8;
+/** @brief Size, in bytes, of the encoded sequenced address item data field.
+ *
+ * Data type and value per @cite CipVol2, Table 2-6.6.
+ */
+const EipUint16 kSequencedAddressItemLength = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
