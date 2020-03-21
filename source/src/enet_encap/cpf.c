@@ -412,8 +412,12 @@ size_t EncodeDataItemType(
 size_t EncodeDataItemLength(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddIntToMessage(
-    common_packet_format_data_item->data_item.length,
+   /* Check to ensure the length fits into an unsigned 16-bit. */
+   OPENER_ASSERT(common_packet_format_data_item->data_item.length <= UINT16_MAX);
+   const EipUint16 length = (EipUint16)common_packet_format_data_item->data_item.length;
+
+   outgoing_message->used_message_length += AddIntToMessage(
+    length,
     &outgoing_message->current_message_position);
   return outgoing_message->used_message_length;
 }
@@ -656,8 +660,14 @@ size_t EncodeSockaddrInfoLength(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddIntToMessage(
-    common_packet_format_data_item->address_info_item[item_type].length,
+   const SocketAddressInfoItem *const addr_info = &common_packet_format_data_item->address_info_item[item_type];
+
+   /* Check to ensure the length fits into an unsigned 16-bit. */
+   OPENER_ASSERT(addr_info->length <= UINT16_MAX);
+   const EipUint16 length = (EipUint16)addr_info->length;
+
+   outgoing_message->used_message_length += AddIntToMessage(
+    length,
     &outgoing_message->current_message_position);
   return outgoing_message->used_message_length;
 }

@@ -40,13 +40,13 @@ typedef struct {
 
 typedef struct {
   CipUint type_id;
-  CipUint length;
+  size_t length;
   AddressData data;
 } AddressItem;
 
 typedef struct {
   EipUint16 type_id;
-  EipUint16 length;
+  size_t length;
   EipUint8 *data;
 } DataItem;
 
@@ -55,7 +55,7 @@ typedef struct {
  */
 typedef struct {
   CipUint type_id; /**< Either 0x8000 for O->T or 0x8001 for T->O */
-  CipUint length; /**< Length shall be 16 bytes */
+  size_t length; /**< Length shall be 16 bytes */
   CipInt sin_family; /**< Shall be AF_INET = 2 in big endian order */
   CipUint sin_port; /**< For point-to-point connection this shall be set to the used UDP port (recommended port = 0x08AE). For multicast this shall be set to 0x08AE and treated by the receiver as don't care. Big endian order */
   CipUdint sin_addr; /**< For multicast connections shall be set to the multicast address. For point-to-point shall be treated as don't care, recommended value 0. Big endian order. */
