@@ -839,16 +839,25 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->data_item.length += 4;
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
-  if (kConnectionObjectTransportClassTriggerTransportClass1 ==
-      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
+
+  const ConnectionObjectTransportClassTriggerTransportClass class =
+     ConnectionObjectGetTransportClassTriggerTransportClass(connection_object);
+  if (class == kConnectionObjectTransportClassTriggerTransportClass1)
   {
-    common_packet_format_data->data_item.length += 2;
-    AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message.current_message_position);
+     common_packet_format_data->data_item.length += 2;
+  }
+
+  /*
+   * Ensure the data item length fits in an unsigned, 16-bit integer before
+   * encoding it into the outgoing message buffer.
+   */
+  OPENER_ASSERT(common_packet_format_data->data_item.length <= UINT16_MAX);
+  const EipUint16 length = (EipUint16)common_packet_format_data->data_item.length;
+  AddIntToMessage(length, &outgoing_message.current_message_position);
+
+  if (class == kConnectionObjectTransportClassTriggerTransportClass1)
+  {
     AddIntToMessage(connection_object->sequence_count_producing,
-                    &outgoing_message.current_message_position);
-  } else {
-    AddIntToMessage(common_packet_format_data->data_item.length,
                     &outgoing_message.current_message_position);
   }
 
