@@ -400,7 +400,7 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
 typedef EipStatus (*ConnectionReceiveDataFunction)(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
-  const EipUint16 data_length);
+  const size_t data_length);
 
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.

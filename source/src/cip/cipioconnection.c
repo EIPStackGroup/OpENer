@@ -64,7 +64,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object);
 EipStatus HandleReceivedIoConnectionData(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
-  EipUint16 data_length);
+  size_t data_length);
 
 /**** Global variables ****/
 EipUint8 *g_config_data_buffer = NULL; /**< buffers for the config data coming with a forward open request. */
@@ -882,7 +882,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 EipStatus HandleReceivedIoConnectionData(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
-  EipUint16 data_length
+  size_t data_length
   ) {
 
   OPENER_TRACE_INFO("Starting data length: %d\n", data_length);
