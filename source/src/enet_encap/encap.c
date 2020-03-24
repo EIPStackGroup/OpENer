@@ -470,15 +470,15 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddDintToMessage(
     g_identity.serial_number,
     &outgoing_message->current_message_position);
-  *outgoing_message->current_message_position++ =
-    (unsigned char) g_identity.product_name.length;
-  outgoing_message->used_message_length++;
 
-  memcpy(outgoing_message->current_message_position,
-         g_identity.product_name.string,
-         g_identity.product_name.length);
-  outgoing_message->current_message_position += g_identity.product_name.length;
-  outgoing_message->used_message_length += g_identity.product_name.length;
+  /* Insert product name. */
+  const size_t prod_name_enc_length = EncodeData(
+     kCipShortString,
+     &g_identity.product_name,
+     &outgoing_message->current_message_position
+  );
+  outgoing_message->current_message_position += prod_name_enc_length;
+  outgoing_message->used_message_length += prod_name_enc_length;
 
   *outgoing_message->current_message_position++ = g_identity.state;
   outgoing_message->used_message_length++;
