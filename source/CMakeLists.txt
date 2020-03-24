@@ -148,7 +148,11 @@ endif( OpENer_TESTS )
 #######################################
 # OpENer C flags                      #
 #######################################
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+if (OpENer_PLATFORM STREQUAL "WIN32")
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4" )
+else ()
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+endif ()
 
 ####################################################
 # Internal cache holding the available CIP objects #
