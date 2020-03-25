@@ -664,10 +664,12 @@ size_t EncodeData(const EipUint8 cip_type,
   return counter;
 }
 
-int DecodeData(const EipUint8 cip_data_type,
-               void *const cip_data,
-               const EipUint8 **const cip_message) {
-  int number_of_decoded_bytes = -1;
+EipStatus DecodeData(const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipUint8 **const cip_message,
+                     size_t *const length
+) {
+  size_t number_of_decoded_bytes = 0;
 
   switch (cip_data_type)
   /* check the data type of attribute */
@@ -737,7 +739,14 @@ int DecodeData(const EipUint8 cip_data_type,
       break;
   }
 
-  return number_of_decoded_bytes;
+  const EipStatus result = (number_of_decoded_bytes > 0) ?
+     kEipStatusOk : kEipStatusError;
+
+  if ((result == kEipStatusOk) && (length != NULL)) {
+     *length = number_of_decoded_bytes;
+  }
+
+  return result;
 }
 
 CipServiceStruct *GetCipService(const CipInstance *const instance,

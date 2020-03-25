@@ -612,9 +612,11 @@ EipStatus SetAttributeSingleEthernetLink(
         case 6: {
           CipEthernetLinkInterfaceControl if_cntrl;
           (void)DecodeData(kCipWord, &if_cntrl.control_bits,
-                           &(message_router_request->data));
+                           &(message_router_request->data),
+                           NULL);
           (void)DecodeData(kCipUint, &if_cntrl.forced_interface_speed,
-                           &(message_router_request->data));
+                           &(message_router_request->data),
+                           NULL);
 
           if (if_cntrl.control_bits > kEthLinkIfCntrlMaxValid) {
             message_router_response->general_status =

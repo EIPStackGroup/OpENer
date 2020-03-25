@@ -319,12 +319,13 @@ size_t EncodeData(const EipUint8 cip_data_type,
  *  @param cip_data_type the CIP type to decode
  *  @param cip_data pointer to data value to written.
  *  @param cip_message pointer to memory where the data should be taken from
- *  @return length of taken bytes
- *          -1 .. error
+ *  @param length Location to store the number of bytes decoded.
+ *  @return kEipStatusOk or kEipStatusError.
  */
-int DecodeData(const EipUint8 cip_data_type,
-               void *const cip_data,
-               const EipUint8 **const cip_message);
+EipStatus DecodeData(const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipUint8 **const cip_message,
+                     size_t *const length);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
