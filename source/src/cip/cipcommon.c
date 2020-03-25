@@ -533,11 +533,17 @@ size_t EncodeData(const EipUint8 cip_type,
     case (kCipString): {
       CipString *const string = (CipString *) cip_data;
 
-      AddIntToMessage(*(EipUint16 *) &(string->length), cip_message);
+      /* Ensure length fits in an unsigned, 16-bit integer. */
+      OPENER_ASSERT(string->length <= UINT16_MAX);
+      counter = AddIntToMessage(
+         (EipUint16)string->length,
+         cip_message
+      );
+
       memcpy(*cip_message, string->string, string->length);
       *cip_message += string->length;
 
-      counter = string->length + 2;           /* we have a two byte length field */
+      counter += string->length;
       if (counter & 0x01) {
         /* we have an odd byte count */
         **cip_message = 0;
@@ -556,13 +562,17 @@ size_t EncodeData(const EipUint8 cip_type,
     case (kCipShortString): {
       CipShortString *const short_string = (CipShortString *) cip_data;
 
-      **cip_message = short_string->length;
-      ++(*cip_message);
+      /* Ensure the length fits into an unsigned, 8-bit integer. */
+      OPENER_ASSERT(short_string->length <= UINT8_MAX);
+      counter = AddSintToMessage(
+         (EipUint8)short_string->length,
+         cip_message
+      );
 
       memcpy(*cip_message, short_string->string, short_string->length);
       *cip_message += short_string->length;
 
-      counter = short_string->length + 1;
+      counter += short_string->length;
       break;
     }
 

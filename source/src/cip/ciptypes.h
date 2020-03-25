@@ -136,7 +136,7 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint8 length; /**< Length of the String (8 bit value) */
+  size_t length; /**< Length of the String (8 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipShortString;
 
@@ -144,7 +144,7 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint16 length; /**< Length of the String (16 bit value) */
+  size_t length; /**< Length of the String (16 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipString;
 
