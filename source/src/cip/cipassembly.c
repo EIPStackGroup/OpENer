@@ -134,7 +134,7 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
 
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint8 *const data,
-                                              const EipUint16 data_length) {
+                                              const size_t data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
   CipByteArray *assembly_byte_array =
