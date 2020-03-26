@@ -56,6 +56,6 @@ void ShutdownAssemblies(void);
  */
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint8 *const data,
-                                              const EipUint16 data_length);
+                                              const size_t data_length);
 
 #endif /* OPENER_CIPASSEMBLY_H_ */
