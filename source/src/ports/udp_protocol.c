@@ -31,11 +31,11 @@ uint16_t UDPHeaderGetDestinationPort(const UDPHeader *const header) {
 }
 
 void UDPHeaderSetPacketLength(UDPHeader *const header,
-                              const uint16_t packet_length) {
+                              const size_t packet_length) {
   header->packet_length = packet_length;
 }
 
-uint16_t UDPHeaderGetPacketLength(const UDPHeader *const header) {
+size_t UDPHeaderGetPacketLength(const UDPHeader *const header) {
   return header->packet_length;
 }
 
@@ -54,7 +54,12 @@ void UDPHeaderGenerate(const UDPHeader *header,
   message += 2;
   *( (uint16_t *)message ) = htons(UDPHeaderGetDestinationPort(header) );
   message += 2;
-  *( (uint16_t *)message ) = htons(UDPHeaderGetPacketLength(header) );
+
+  /* Ensure the length fits in an unsigned, 16-bit integer. */
+  const size_t length = UDPHeaderGetPacketLength(header);
+  OPENER_ASSERT(length <= UINT16_MAX);
+
+  *( (uint16_t *)message ) = htons((uint16_t)length);
   message += 2;
   *( (uint16_t *)message ) = htons(UDPHeaderGetChecksum(header) );
   message += 2;

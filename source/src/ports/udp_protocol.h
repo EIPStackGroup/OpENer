@@ -33,7 +33,7 @@ static const size_t kUdpHeaderLength = 8U; /**< UDP header length in bytes */
 typedef struct {
   uint16_t source_port;   /**< UDP source port */
   uint16_t destination_port;   /**< UDP destination port */
-  uint16_t packet_length;   /**< UDP packet length (data + header) */
+  size_t packet_length;   /**< UDP packet length (data + header) */
   uint16_t checksum;   /**< UDP checksum */
 } UDPHeader;
 
@@ -73,14 +73,14 @@ uint16_t UDPHeaderGetDestinationPort(const UDPHeader *const header);
  * @param packet_length Length value to be set
  */
 void UDPHeaderSetPacketLength(UDPHeader *const header,
-                              const uint16_t packet_length);
+                              const size_t packet_length);
 
 /** @brief Gets packet length field
  *
  * @param header The header struct instance
  * @return The packet length
  */
-uint16_t UDPHeaderGetPacketLength(const UDPHeader *const header);
+size_t UDPHeaderGetPacketLength(const UDPHeader *const header);
 
 /** @brief Sets checksum field
  *
