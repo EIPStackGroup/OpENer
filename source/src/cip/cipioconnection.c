@@ -495,7 +495,7 @@ EipStatus OpenProducingMulticastConnection(
     return kEipStatusError;
   }
 
-  int port = htons(kOpenerEipIoUdpPort);
+  uint16_t port = htons(kOpenerEipIoUdpPort);
   if(kCipItemIdSocketAddressInfoTargetToOriginator != sock_addr_info->type_id) {
     port = sock_addr_info->sin_port;
   }
