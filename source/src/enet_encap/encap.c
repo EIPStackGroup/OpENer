@@ -419,7 +419,7 @@ void HandleReceivedListIdentityCommandUdp(const socket_platform_t socket,
   }
 }
 
-CipUint ListIdentityGetCipIdentityItemLength(void) {
+size_t ListIdentityGetCipIdentityItemLength(void) {
   return sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) +
          sizeof(CipUdint) + 8 * sizeof(CipUsint) + sizeof(CipUint) +
          sizeof(CipUint) + sizeof(CipUint) + 2 * sizeof(CipUsint) +
@@ -434,8 +434,11 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
     kItemIDCipIdentity,
     &outgoing_message->current_message_position);
 
+  /* Ensure item item length fits in an unsigned, 16-bit integer. */
+  const size_t item_length = ListIdentityGetCipIdentityItemLength();
+  OPENER_ASSERT(item_length <= UINT16_MAX);
   outgoing_message->used_message_length += AddIntToMessage(
-    ListIdentityGetCipIdentityItemLength(),
+    (EipUint16)item_length,
     &outgoing_message->current_message_position);
 
   outgoing_message->used_message_length += AddIntToMessage(
@@ -489,7 +492,7 @@ void EncapsulateListIdentityResponseMessage(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message) {
 
-  const CipUint kEncapsulationCommandListIdentityLength =
+  const size_t kEncapsulationCommandListIdentityLength =
     ListIdentityGetCipIdentityItemLength() + sizeof(CipUint) +
     sizeof(CipUint)
     + sizeof(CipUint);               /* Last element is item count */
