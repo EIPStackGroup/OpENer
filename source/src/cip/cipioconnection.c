@@ -461,7 +461,7 @@ EipStatus OpenProducingMulticastConnection(
     j = 1;
   }
 
-  int port = htons(kOpenerEipIoUdpPort);
+  uint16_t port = htons(kOpenerEipIoUdpPort);
   if(kCipItemIdSocketAddressInfoTargetToOriginator !=
      common_packet_format_data->address_info_item[j].type_id) {
     port = common_packet_format_data->address_info_item[j].sin_port;
