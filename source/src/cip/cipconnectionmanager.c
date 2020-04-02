@@ -81,6 +81,11 @@ EipStatus AssembleForwardOpenResponse(
   EipUint8 general_status,
   EipUint16 extended_status);
 
+static void InvalidConnectionSizeAdditionalStatus(
+   const EipUint16 extended_status,
+   const size_t correct_size,
+   CipMessageRouterResponse *const response);
+
 EipStatus AssembleForwardCloseResponse(
   EipUint16 connection_serial_number,
   EipUint16 originatior_vendor_id,
@@ -800,27 +805,21 @@ EipStatus AssembleForwardOpenResponse(
 
       default: {
         switch (extended_status) {
-          case
-            kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize:
-          {
-            message_router_response->size_of_additional_status = 2;
-            message_router_response->additional_status[0] = extended_status;
-            message_router_response->additional_status[1] = connection_object
-                                                            ->
-                                                            correct_originator_to_target_size;
-            break;
-          }
+          case kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize:
+             InvalidConnectionSizeAdditionalStatus(
+                extended_status,
+                connection_object->correct_originator_to_target_size,
+                message_router_response
+             );
+             break;
 
-          case
-            kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize:
-          {
-            message_router_response->size_of_additional_status = 2;
-            message_router_response->additional_status[0] = extended_status;
-            message_router_response->additional_status[1] = connection_object
-                                                            ->
-                                                            correct_target_to_originator_size;
-            break;
-          }
+          case  kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize:
+             InvalidConnectionSizeAdditionalStatus(
+                extended_status,
+                connection_object->correct_target_to_originator_size,
+                message_router_response
+             );
+             break;
 
           default: {
             message_router_response->size_of_additional_status = 1;
@@ -852,6 +851,32 @@ EipStatus AssembleForwardOpenResponse(
 
   return kEipStatusOkSend; /* send reply */
 }
+
+
+/**
+ * @brief Sets additional status words for invalid connection data size responses.
+ *
+ * @param extended_status Extended status error code.
+ * @param correct_size The correct size of the connection object data.
+ * @param response The message router response.
+ *
+ * @return None.
+ */
+static void InvalidConnectionSizeAdditionalStatus(
+   const EipUint16 extended_status,
+   const size_t correct_size,
+   CipMessageRouterResponse *const response
+) {
+   response->size_of_additional_status = 2;
+   response->additional_status[0] = extended_status;
+
+   /* Ensure the correct size fits in an unsigned, 16-bit integer. */
+   OPENER_ASSERT(correct_size <= UINT16_MAX);
+   response->additional_status[1] = (EipUint16)correct_size;
+
+   return;
+}
+
 
 /**
  * @brief Adds a Null Address Item to the common data packet format data

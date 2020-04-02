@@ -166,8 +166,8 @@ struct cip_connection_object {
                                                    different
                                                    value than SequenceCountProducing */
 
-  CipInt correct_originator_to_target_size;
-  CipInt correct_target_to_originator_size;
+  size_t correct_originator_to_target_size;
+  size_t correct_target_to_originator_size;
 
   /* Sockets for consuming and producing connection */
   socket_platform_t socket[2];
