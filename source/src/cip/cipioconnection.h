@@ -50,10 +50,10 @@
  * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
  * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
- *    - EIP_OK ... on success
+ *    - kCipErrorSuccess ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnection(
+CipError EstablishIoConnection(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
@@ -62,10 +62,10 @@ EipStatus EstablishIoConnection(
  * This function will use the g_stCPFDataItem!
  * @param connection_object pointer to the connection object data
  * @return general status on the open process
- *    - EIP_OK ... on success
+ *    - kCipErrorSuccess ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object);
+CipError OpenCommunicationChannels(CipConnectionObject *connection_object);
 
 /** @brief close the communication channels of the given connection and remove it
  * from the active connections list.

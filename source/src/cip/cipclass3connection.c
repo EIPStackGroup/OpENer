@@ -23,15 +23,15 @@ void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
 }
 
 /**** Implementation ****/
-EipStatus EstablishClass3Connection(
+CipError EstablishClass3Connection(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error) {
-  EipStatus eip_status = kEipStatusOk;
+  CipError cip_status = kCipErrorSuccess;
 
   CipConnectionObject *explicit_connection = GetFreeExplicitConnection();
 
   if (NULL == explicit_connection) {
-    eip_status = kCipErrorConnectionFailure;
+    cip_status = kCipErrorConnectionFailure;
     *extended_error =
       kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable;
   } else {
@@ -51,7 +51,7 @@ EipStatus EstablishClass3Connection(
 
     AddNewActiveConnection(explicit_connection);
   }
-  return eip_status;
+  return cip_status;
 }
 
 /** @brief Searches and returns a free explicit connection slot
