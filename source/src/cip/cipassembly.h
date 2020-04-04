@@ -12,6 +12,17 @@
 /** @brief Assembly class code */
 static const CipUint kCipAssemblyClassCode = 0x04U;
 
+
+/** @brief Assembly object instance attribute IDs.
+ *
+ * Reference:
+ * \cite CipVol1, Table 5-5.4
+ */
+typedef enum {
+  kAssemblyObjectInstanceAttributeIdData = 3
+} AssemblyObjectInstanceAttributeId;
+
+
 /* public functions */
 
 /** @brief Setup the Assembly object
