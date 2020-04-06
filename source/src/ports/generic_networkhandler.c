@@ -650,7 +650,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
 EipStatus SendUdpData(struct sockaddr_in *address,
                       socket_platform_t socket_handle,
                       EipUint8 *data,
-                      EipUint16 data_length) {
+                      size_t data_length) {
 
 
 

@@ -754,7 +754,7 @@ EipStatus
 SendUdpData(struct sockaddr_in *socket_data,
             socket_platform_t socket_handle,
             EipUint8 *data,
-            EipUint16 data_length);
+            size_t data_length);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Close the given socket and clean up the stack
