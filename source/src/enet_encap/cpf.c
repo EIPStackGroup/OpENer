@@ -151,8 +151,13 @@ EipStatus NotifyConnectedCommonPacketFormat(
             /* End regenerate encapsulation header for new message */
             return kEipStatusOkSend;
           }
+
+          /*
+           * The EIP CPF sequence number is explicitly cast to an unsigned,
+           * 16-bit integer to match the width of the CIP sequence number.
+           */
           connection_object->sequence_count_consuming =
-            g_common_packet_format_data_item.address_item.data.sequence_number;
+            (CipUint)g_common_packet_format_data_item.address_item.data.sequence_number;
 
           ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
