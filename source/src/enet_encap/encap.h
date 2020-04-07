@@ -108,7 +108,7 @@ void SkipEncapsulationHeader(ENIPMessage *const outgoing_message);
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
                                  const size_t command_specific_data_length,
-                                 const size_t session_handle,
+                                 const CipUdint session_handle,
                                  const EncapsulationProtocolErrorCode encapsulation_protocol_status,
                                  ENIPMessage *const outgoing_message);
 

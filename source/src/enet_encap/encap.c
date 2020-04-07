@@ -305,7 +305,7 @@ void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
                                  const size_t command_specific_data_length,
-                                 const size_t session_handle,
+                                 const CipUdint session_handle,
                                  const EncapsulationProtocolErrorCode encapsulation_protocol_status,
                                  ENIPMessage *const outgoing_message) {
   outgoing_message->used_message_length += AddIntToMessage(
@@ -532,7 +532,7 @@ void DetermineDelayTime(const EipByte *const buffer_start,
 
 void EncapsulateRegisterSessionCommandResponseMessage(
   const EncapsulationData *const receive_data,
-  const size_t session_handle,
+  const CipUdint session_handle,
   const EncapsulationProtocolErrorCode encapsulation_protocol_status,
   ENIPMessage *const outgoing_message) {
 
@@ -561,7 +561,7 @@ void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
                                           const EncapsulationData *const receive_data,
                                           ENIPMessage *const outgoing_message) {
   int session_index = 0;
-  size_t session_handle = 0;
+  CipUdint session_handle = 0;
   EncapsulationProtocolErrorCode encapsulation_protocol_status =
     kEncapsulationProtocolSuccess;
 
@@ -577,13 +577,17 @@ void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
        && (protocol_version <= kSupportedProtocolVersion)
        && (0 == option_flag) ) {                 /*Option field should be zero*/
     /* check if the socket has already a session open */
-    for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+    for (CipUdint i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
       if (g_registered_sessions[i] == socket) {
         /* the socket has already registered a session this is not allowed*/
         OPENER_TRACE_INFO(
           "Error: A session is already registered at socket %d\n",
           socket);
+
+        /* Ensure the resulting handle fits into an unsigned, 32-bit integer. */
+        OPENER_ASSERT(UINT32_MAX > i);
         session_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
+
         encapsulation_protocol_status = kEncapsulationProtocolInvalidCommand;
         session_index = kSessionStatusInvalid;
         break;
@@ -603,7 +607,12 @@ void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
         SocketTimerSetSocket(socket_timer, socket);
         SocketTimerSetLastUpdate(socket_timer, g_actual_time);
         g_registered_sessions[session_index] = socket;                         /* store associated socket */
+
+        /* Ensure the resulting handle is positive and fits into an unsigned, 32-bit integer. */
+        OPENER_ASSERT(0 <= session_index);
+        OPENER_ASSERT(UINT32_MAX > session_index);
         session_handle = session_index + 1;
+
         encapsulation_protocol_status = kEncapsulationProtocolSuccess;
       }
     }
