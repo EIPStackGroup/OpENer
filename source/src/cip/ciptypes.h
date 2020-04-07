@@ -199,7 +199,7 @@ typedef struct {
 typedef struct {
   CipUsint service;
   CipEpath request_path;
-  EipInt16 request_path_size;
+  size_t request_path_size;
   const CipOctet *data;
 } CipMessageRouterRequest;
 
