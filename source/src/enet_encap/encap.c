@@ -311,9 +311,13 @@ void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
   outgoing_message->used_message_length += AddIntToMessage(
     receive_data->command_code,
     &outgoing_message->current_message_position);
+
+  /* Data length must fit into an unsigned, 16-bit integer. */
+  OPENER_ASSERT(command_specific_data_length <= UINT16_MAX);
   outgoing_message->used_message_length += AddIntToMessage(
-    command_specific_data_length,
+    (EipUint16)command_specific_data_length,
     &outgoing_message->current_message_position);
+
   outgoing_message->used_message_length += AddDintToMessage(session_handle,
                                                             &outgoing_message->current_message_position); //Session handle
   outgoing_message->used_message_length += AddDintToMessage(
