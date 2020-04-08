@@ -457,13 +457,14 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
                                        kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported);
   }
 
-  EipUint32 temp = ParseConnectionPath(&g_dummy_connection_object,
-                                       message_router_request,
-                                       &connection_status);
-  if(kEipStatusOk != temp) {
+  const EipUint8 path_parse_result = ParseConnectionPath(
+    &g_dummy_connection_object,
+    message_router_request,
+    &connection_status);
+  if(kEipStatusOk != path_parse_result) {
     return AssembleForwardOpenResponse(&g_dummy_connection_object,
                                        message_router_response,
-                                       temp,
+                                       path_parse_result,
                                        connection_status);
   }
 
@@ -471,22 +472,28 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   ConnectionManagementHandling *connection_management_entry =
     GetConnectionManagementEntry(                                                           /* Gets correct open connection function for the targeted object */
       g_dummy_connection_object.configuration_path.class_id);
+  CipError open_general_status;
   if(NULL != connection_management_entry) {
-    temp = connection_management_entry->open_connection_function(
+    open_general_status = connection_management_entry->open_connection_function(
       &g_dummy_connection_object,
       &connection_status);
   } else {
-    temp = kEipStatusError;
+    /*
+     * General status of Connection Failure(0x01) should be used with this
+     * extended status value.
+     * Reference Volume 1, CIP, Edition 3.3, November 2007, Table 3-5.29.
+     */
+    open_general_status = kCipErrorConnectionFailure;
     connection_status =
       kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
   }
 
-  if(kEipStatusOk != temp) {
+  if(kCipErrorSuccess != open_general_status) {
     OPENER_TRACE_INFO("connection manager: connect failed\n");
     /* in case of error the dummy objects holds all necessary information */
     return AssembleForwardOpenResponse(&g_dummy_connection_object,
                                        message_router_response,
-                                       temp,
+                                       open_general_status,
                                        connection_status);
   } else {
     OPENER_TRACE_INFO("connection manager: connect succeeded\n");
