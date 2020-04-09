@@ -499,7 +499,7 @@ typedef EipStatus (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(CipConnectionObject *connection_object);
+typedef void (*ConnectionCloseFunction)(CipConnectionObject *RESTRICT connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
