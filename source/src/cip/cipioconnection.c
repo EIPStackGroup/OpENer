@@ -49,7 +49,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object);
 /* Regularly close the IO connection. If it is an exclusive owner or input only
  * connection and in charge of the connection a new owner will be searched
  */
-void CloseIoConnection(CipConnectionObject *connection_object);
+void CloseIoConnection(CipConnectionObject *RESTRICT connection_object);
 
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object);
 
@@ -671,7 +671,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
   return connection_manager_status;
 }
 
-void CloseIoConnection(CipConnectionObject *connection_object) {
+void CloseIoConnection(CipConnectionObject *RESTRICT connection_object) {
 
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
                          connection_object->produced_path.instance_id,
