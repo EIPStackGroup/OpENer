@@ -62,7 +62,7 @@ add_definitions(-DOPENER_MESSAGE_DATA_REPLY_BUFFER=${OPENER_MESSAGE_DATA_REPLY_B
 #######################################
 set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "MINGW")
 
-set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
+set( OpENer_PLATFORM CACHE STRING "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
 
 #######################################

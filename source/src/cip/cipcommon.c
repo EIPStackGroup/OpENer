@@ -304,19 +304,19 @@ CipClass *CreateCipClass(const CipUdint class_code,
     InsertAttribute( (CipInstance *) cip_class, 7, kCipUint,
                      (void *) &cip_class->highest_attribute_number,
                      kGetableSingle );                              /* max instance attribute number*/
+	  if (number_of_class_services > 0) {
+		if (number_of_class_services > 1) {             /*only if the mask has values add the get_attribute_all service */
+		  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
+						"GetAttributeAll");                     /* bind instance services to the metaclass*/
+		}
+		InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
+					  "GetAttributeSingle");
+	  }
   } else {
     initializer(cip_class);
   }
 
   /* create the standard class services*/
-  if (number_of_class_services > 0) {
-    if (number_of_class_services > 1) {             /*only if the mask has values add the get_attribute_all service */
-      InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
-                    "GetAttributeAll");                     /* bind instance services to the metaclass*/
-    }
-    InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
-                  "GetAttributeSingle");
-  }
   return cip_class;
 }
 
@@ -427,6 +427,14 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
   return NULL;
 }
 
+void GenerateGetAttributeSingleHeader(const CipMessageRouterRequest *const message_router_request, CipMessageRouterResponse *const message_router_response) {
+	  message_router_response->data_length = 0;
+	  message_router_response->reply_service = (0x80
+	                                            | message_router_request->service);
+	  message_router_response->general_status = kCipErrorAttributeNotSupported;
+	  message_router_response->size_of_additional_status = 0;
+}
+
 /* TODO this needs to check for buffer overflow*/
 EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterRequest *const message_router_request,
@@ -439,11 +447,7 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                                                   message_router_request->request_path.attribute_number);
   EipByte *message = message_router_response->data;
 
-  message_router_response->data_length = 0;
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
-  message_router_response->general_status = kCipErrorAttributeNotSupported;
-  message_router_response->size_of_additional_status = 0;
+  GenerateGetAttributeSingleHeader(message_router_request, message_router_response);
 
   EipUint16 attribute_number =
     message_router_request->request_path.attribute_number;

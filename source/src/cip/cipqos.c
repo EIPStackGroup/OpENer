@@ -163,7 +163,7 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
  *  which are optional for the QoS class are NOT created!
  *  This is intended.
  */
-void InitializeCipQos(CipClass *class) {
+void InitializeCipQos(CipClass *cip_class) {
   /* Function is empty by intend. */
 }
 

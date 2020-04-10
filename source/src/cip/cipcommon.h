@@ -41,6 +41,8 @@ EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       const struct sockaddr *originator_address,
                       const int encapsulation_session);
 
+void GenerateGetAttributeSingleHeader(const CipMessageRouterRequest *const message_router_request, CipMessageRouterResponse *const message_router_response);
+
 /** @brief Generic implementation of the GetAttributeSingle CIP service
  *
  * Check from classID which Object requests an attribute, search if object has

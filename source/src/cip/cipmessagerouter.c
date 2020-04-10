@@ -73,6 +73,11 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
   InsertAttribute( (CipInstance *) cip_class, 7, kCipUint,
                    (void *) &cip_class->highest_attribute_number,
                    kGetableSingleAndAll );                       /* max instance attribute number*/
+
+  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
+                    "GetAttributeAll");                     /* bind instance services to the metaclass*/
+  InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
+                  "GetAttributeSingle");
 }
 
 EipStatus CipMessageRouterInit() {

@@ -55,8 +55,10 @@ typedef enum cip_data_types {
   kCip6Usint = 0xA2, /**< Struct for MAC Address (six USINTs)*/
   kCipMemberList = 0xA3, /**< */
   kCipByteArray = 0xA4, /**< */
-  kInternalUint6 = 0xF0 /**< bogus hack, for port class attribute 9, TODO
+  kInternalUint6 = 0xF0, /**< bogus hack, for port class attribute 9, TODO
                            figure out the right way to handle it */
+  kCipStringI,
+  kCipFileRevisionStruct
 } CipDataType;
 
 /** @brief Definition of CIP service codes
@@ -160,14 +162,35 @@ typedef struct {
 /** @brief STRINGI definition
  *
  */
-typedef struct {
+typedef struct cip_type_string_i_struct CipStringIStruct;
+
+typedef struct cip_string_i {
+  CipUsint number;
+  CipStringIStruct* array_of_string_i_structs;
+} CipStringI;
+
+typedef enum cip_type_string_i_character_set {
+	kCipStringICharSet_ISO_8859_1_1987 = 4,
+	kCipStringICharSet_ISO_8859_2_1987 = 5,
+	kCipStringICharSet_ISO_8859_3_1988 = 6,
+	kCipStringICharSet_ISO_8859_4_1988 = 7,
+	kCipStringICharSet_ISO_8859_5_1988 = 8,
+	kCipStringICharSet_ISO_8859_6_1987 = 9,
+	kCipStringICharSet_ISO_8859_7_1987 = 10,
+	kCipStringICharSet_ISO_8859_8_1989 = 11,
+	kCipStringICharSet_ISO_8859_9_1989 = 12,
+	kCipStringICharSet_ISO_10646_UCS_2 = 1000,
+	kCipStringICharSet_ISO_10646_UCS_4 = 1001
+} CipStringICharacterSet;
+
+typedef struct cip_type_string_i_struct {
   CipUsint language_char_1;
   CipUsint language_char_2;
   CipUsint language_char_3;
-  CipUsint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
+  CipUint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
   CipUint character_set;   /**< Character set of the string */
   CipOctet *string;   /**< Pointer to the string data */
-} CipStringI;
+} CipStringIStruct;
 
 /** @brief Struct for padded EPATHs
  *
