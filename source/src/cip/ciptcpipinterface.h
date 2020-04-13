@@ -56,6 +56,7 @@ typedef struct {
 
   /** #9 The multicast configuration for this device */
   MulticastAddressConfiguration mcast_config;
+  CipBool select_acd;
 
   /** #13 Number of seconds of inactivity before TCP connection is closed */
   CipUint encapsulation_inactivity_timeout;

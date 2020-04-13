@@ -5,13 +5,16 @@
  ******************************************************************************/
 #include "opener_api.h"
 #include "cipcommon.h"
-#include "cipmessagerouter.h"
 #include "endianconv.h"
 #include "ciperror.h"
 #include "trace.h"
+#include "enipmessage.h"
+
+#include "cipmessagerouter.h"
 
 CipMessageRouterRequest g_message_router_request;
 CipMessageRouterResponse g_message_router_response;
+
 
 /** @brief A class registry list node
  *
@@ -101,7 +104,7 @@ EipStatus CipMessageRouterInit() {
 
   /* reserved for future use -> set to zero */
   g_message_router_response.reserved = 0;
-  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (OPENER_MESSAGE_DATA_REPLY_BUFFER bytes) */
+  InitializeENIPMessage(&g_message_router_response.message);
 
   return kEipStatusOk;
 }
@@ -183,7 +186,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
   EipStatus eip_status = kEipStatusOkSend;
   CipError status = kCipErrorSuccess;
 
-  g_message_router_response.data = g_message_data_reply_buffer; /* set reply buffer, using a fixed buffer (OPENER_MESSAGE_DATA_REPLY_BUFFER bytes) */
+  InitializeENIPMessage(&g_message_router_response.message); /* Initialize reply buffer */
 
   OPENER_TRACE_INFO("NotifyMessageRouter: routing unconnected message\n");
   if ( kCipErrorSuccess
@@ -194,7 +197,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
     g_message_router_response.general_status = status;
     g_message_router_response.size_of_additional_status = 0;
     g_message_router_response.reserved = 0;
-    g_message_router_response.data_length = 0;
+    InitializeENIPMessage(&g_message_router_response.message);
     g_message_router_response.reply_service = (0x80
                                                | g_message_router_request.
                                                service);
@@ -210,7 +213,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
         kCipErrorPathDestinationUnknown;   /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
       g_message_router_response.size_of_additional_status = 0;
       g_message_router_response.reserved = 0;
-      g_message_router_response.data_length = 0;
+      InitializeENIPMessage(&g_message_router_response.message);
       g_message_router_response.reply_service = (0x80
                                                  | g_message_router_request.
                                                  service);

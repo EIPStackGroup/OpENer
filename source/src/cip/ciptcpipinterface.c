@@ -83,6 +83,7 @@ CipTcpIpObject g_tcpip =
     1,  /* we currently use only one multicast address */
     0   /* the multicast address will be allocated on IP address configuration */
   },
+  .select_acd = false,
   .encapsulation_inactivity_timeout = 120 /* attribute #13 encapsulation_inactivity_timeout, use a default value of 120 */
 };
 
@@ -308,6 +309,40 @@ static bool IsIOConnectionActive(void)
 
 
 /************** Functions ****************************************/
+
+void EncoodeCipTcpIpInterfaceConfiguration(const void *const data, ENIPMessage *const outgoing_message) {
+    CipTcpIpInterfaceConfiguration *
+      tcp_ip_network_interface_configuration =
+      (CipTcpIpInterfaceConfiguration *) data;
+    AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->ip_address), outgoing_message);
+    AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->network_mask), outgoing_message);
+    AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->gateway), outgoing_message);
+    AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->name_server), outgoing_message);
+    AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->name_server_2),outgoing_message);
+    EncodeCipString(&(tcp_ip_network_interface_configuration->domain_name), outgoing_message);
+}
+
+void EncodeCipTcpIpMulticastConfiguration(const void *const data, ENIPMessage *const outgoing_message) {
+  EncodeCipUsint(&(g_tcpip.mcast_config.alloc_control), outgoing_message);
+  EncodeCipUsint(&(g_tcpip.mcast_config.reserved_shall_be_zero), outgoing_message);
+  EncodeCipUint(&(g_tcpip.mcast_config.number_of_allocated_multicast_addresses), outgoing_message);
+
+  CipUdint multicast_address = ntohl(
+    g_tcpip.mcast_config.starting_multicast_address);
+
+  EncodeCipUdint(&multicast_address, outgoing_message);
+}
+
+void EncodeSafetyNetworkNumber(const void *const data, ENIPMessage *const outgoing_message) {
+	FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 6, outgoing_message);
+}
+
+void EncodeCipLastConflictDetected(const void *const data, ENIPMessage *const outgoing_message) {
+  const size_t kAttribute11Size = sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 * sizeof(CipUsint);
+  OPENER_ASSERT(kAttribute11Size == 35);
+  FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, kAttribute11Size, outgoing_message);
+}
+
 EipStatus GetAttributeSingleTcpIpInterface(
   CipInstance *const RESTRICT instance,
   CipMessageRouterRequest *const RESTRICT message_router_request,
@@ -500,7 +535,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
   }
 
   message_router_response->size_of_additional_status = 0;
-  message_router_response->data_length = 0;
+  InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80
                                             | message_router_request->service);
   return kEipStatusOkSend;
@@ -513,7 +548,7 @@ EipStatus CipTcpIpInterfaceInit() {
                                        0, /* # class attributes */
                                        7, /* # highest class attribute number */
                                        2, /* # class services */
-                                       9, /* # instance attributes */
+                                       13, /* # instance attributes */
                                        13, /* # highest instance attribute number */
                                        3, /* # instance services */
                                        1, /* # instances */
@@ -525,35 +560,42 @@ EipStatus CipTcpIpInterfaceInit() {
 
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute(instance, 1, kCipDword, &g_tcpip.status,
+  InsertAttribute2(instance, 1, kCipDword, EncodeCipDword, &g_tcpip.status,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 2, kCipDword, &g_tcpip.config_capability,
+  InsertAttribute2(instance, 2, kCipDword, EncodeCipDword, &g_tcpip.config_capability,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 3, kCipDword, &g_tcpip.config_control,
+  InsertAttribute2(instance, 3, kCipDword, EncodeCipDword, &g_tcpip.config_control,
                   kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
-  InsertAttribute(instance, 4, kCipEpath, &g_tcpip.physical_link_object,
+  InsertAttribute2(instance, 4, kCipEpath, EncodeCipEPath, &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString,
+  InsertAttribute2(instance, 5, kCipUdintUdintUdintUdintUdintString, EncoodeCipTcpIpInterfaceConfiguration,
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
-  InsertAttribute(instance, 6, kCipString, &g_tcpip.hostname,
+  InsertAttribute2(instance, 6, kCipString, EncodeCipString, &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
+  InsertAttribute2(instance, 7, kCipAny, EncodeSafetyNetworkNumber, NULL,
+                    kGetableAll);
 
-  InsertAttribute(instance, 8, kCipUsint, &g_tcpip.mcast_ttl_value,
+  InsertAttribute2(instance, 8, kCipUsint, EncodeCipUsint, &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 9, kCipAny, &g_tcpip.mcast_config,
+  InsertAttribute2(instance, 9, kCipAny, EncodeCipTcpIpMulticastConfiguration, &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
-  InsertAttribute(instance,
+  InsertAttribute2(instance, 10, kCipBool, EncodeCipBool, &g_tcpip.select_acd,
+                    kGetableSingleAndAll);
+  InsertAttribute2(instance, 11, kCipBool, EncodeCipLastConflictDetected, NULL,
+                      kGetableSingleAndAll);
+  InsertAttribute2(instance,
                   13,
                   kCipUint,
+				  EncodeCipUint,
                   &g_tcpip.encapsulation_inactivity_timeout,
                   kSetAndGetAble | kNvDataFunc);
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
-                &GetAttributeSingleTcpIpInterface,
+                &GetAttributeSingle,
                 "GetAttributeSingleTCPIPInterface");
 
-  InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAllTcpIpInterface,
+  InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAll2,
                 "GetAttributeAllTCPIPInterface");
 
   InsertService(tcp_ip_class, kSetAttributeSingle,
@@ -596,9 +638,7 @@ EipStatus GetAttributeSingleTcpIpInterface(
   }
 
   { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
-    EipByte *message = message_router_response->data;
-
-    message_router_response->data_length = 0;
+    InitializeENIPMessage(&message_router_response->message);
     message_router_response->reply_service = (0x80
                                               | message_router_request->service);
     message_router_response->size_of_additional_status = 0;
@@ -620,22 +660,14 @@ EipStatus GetAttributeSingleTcpIpInterface(
                         message_router_request->request_path.attribute_number);
 
       /* create a reply message containing the data*/
-      message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_tcpip.mcast_config.alloc_control), &message);
-      message_router_response->data_length += EncodeData(
-        kCipUsint, &(g_tcpip.mcast_config.reserved_shall_be_zero),
-        &message);
-      message_router_response->data_length += EncodeData(
-        kCipUint,
-        &(g_tcpip.mcast_config.number_of_allocated_multicast_addresses),
-        &message);
+      EncodeData(kCipUsint, &(g_tcpip.mcast_config.alloc_control), message_router_response);
+      EncodeData(kCipUsint, &(g_tcpip.mcast_config.reserved_shall_be_zero), message_router_response);
+      EncodeData(kCipUint, &(g_tcpip.mcast_config.number_of_allocated_multicast_addresses), message_router_response);
 
       CipUdint multicast_address = ntohl(
         g_tcpip.mcast_config.starting_multicast_address);
 
-      message_router_response->data_length += EncodeData(kCipUdint,
-                                                         &multicast_address,
-                                                         &message);
+      EncodeData(kCipUdint, &multicast_address, message_router_response);
       message_router_response->general_status = kCipErrorSuccess;
     }
   }
@@ -650,10 +682,9 @@ EipStatus GetAttributeAllTcpIpInterface(
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
-  EipUint8 *response = message_router_response->data; /* pointer into the reply */
   CipAttributeStruct *attribute = instance->attributes;
 
-  for (int j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
+  for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
   {
     int attribute_number = attribute->attribute_number;
     if (attribute_number < 32) /* only return attributes that are flagged as being part of GetAttributeALl */
@@ -661,8 +692,7 @@ EipStatus GetAttributeAllTcpIpInterface(
       message_router_request->request_path.attribute_number = attribute_number;
 
       if (8 == attribute_number) { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
-        memset(message_router_response->data, 0, 6);
-        message_router_response->data += 6;
+    	FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 6, &message_router_response->message);
       }
 
       if ( kEipStatusOkSend
@@ -670,35 +700,29 @@ EipStatus GetAttributeAllTcpIpInterface(
                                                message_router_response,
                                                originator_address,
                                                encapsulation_session) ) {
-        message_router_response->data = response;
         return kEipStatusError;
       }
-      message_router_response->data += message_router_response->data_length;
 
       if (9 == attribute_number) {
         /* returning default value for unimplemented attributes 10,11 and 12 */
 
         /* attribute 10, type: BOOL, default value: 0 */
-        message_router_response->data += 6;
-        *(message_router_response->data) = 0;
-        message_router_response->data += 1;
+        //message_router_response->data += 6;
+    	AddSintToMessage(0, &message_router_response->message);
+
 
         /* attribute 11, type: STRUCT OF USINT, ARRAY of 6 USINTs, ARRAY of 28 USINTs default value: 0 */
-        memset(message_router_response->data, 0, 29);
-        message_router_response->data += 29;
+    	const size_t kAttribute11Size = sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 * sizeof(CipUsint);
+    	OPENER_ASSERT(kAttribute11Size == 35);
+    	FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, kAttribute11Size, &message_router_response->message);
 
         /* attribute 12, type: BOOL default value: 0 */
-        *(message_router_response->data) = 0;
-        message_router_response->data += 1;
+    	AddSintToMessage(0, &message_router_response->message);
       }
 
     }
     attribute++;
   }
-  message_router_response->data_length = message_router_response->data
-                                         - response;
-  message_router_response->data = response;
-
   return kEipStatusOkSend;
 }
 

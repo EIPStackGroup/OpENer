@@ -49,6 +49,7 @@
 #include "cipcommon.h"
 #include "opener_api.h"
 #include "trace.h"
+#include "endianconv.h"
 
 /* ********************************************************************
  * defines
@@ -89,14 +90,9 @@ CipDlrObject g_dlr;  /**< definition of DLR object instance 1 data */
 /* ********************************************************************
  * local functions
  */
-static int EncodeNodeAddress(CipNodeAddress *node_address, CipOctet **message) {
-  int encoded_len = 0;
-  encoded_len += EncodeData(kCipUdint, &node_address->device_ip,
-                            message);
-  encoded_len += EncodeData(kCip6Usint,
-                            &node_address->device_mac,
-                            message);
-  return encoded_len;
+static void EncodeNodeAddress(CipNodeAddress *node_address, CipMessageRouterResponse *const message_router_response) {
+  EncodeData(kCipUdint, &node_address->device_ip, message_router_response);
+  EncodeData(kCip6Usint, &node_address->device_mac, message_router_response);
 }
 
 static EipStatus GetAttributeSingleDlr(
@@ -108,9 +104,7 @@ static EipStatus GetAttributeSingleDlr(
 
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
-  EipByte *message = message_router_response->data;
-
-  message_router_response->data_length = 0;
+  InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80
                                             | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;
@@ -149,7 +143,7 @@ static EipStatus GetAttributeSingleDlr(
 
       /* Call the PreGetCallback if enabled for this attribute and the common handler is not used. */
       if (!use_common_handler) {
-        if (attribute->attribute_flags & kPreGetFunc && NULL != instance->cip_class->PreGetCallback) {
+        if ((attribute->attribute_flags & kPreGetFunc) && NULL != instance->cip_class->PreGetCallback) {
           instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
         }
       }
@@ -158,17 +152,16 @@ static EipStatus GetAttributeSingleDlr(
         case 4: {
           /* This attribute is not implemented and only reached by GetAttributesAll. */
           const size_t kRingSupStructSize = 12u;
-          memset(message_router_response->data, 0, kRingSupStructSize);
-          message_router_response->data += kRingSupStructSize;
+          FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, kRingSupStructSize, &message_router_response->message);
           message_router_response->general_status = kCipErrorSuccess;
           break;
         }
         case 6: /* fall through */
         case 7: /* fall through */
         case 10:
-          message_router_response->data_length = EncodeNodeAddress(
+          EncodeNodeAddress(
             (CipNodeAddress *)attribute->data,
-            &message);
+            message_router_response);
           message_router_response->general_status = kCipErrorSuccess;
           break;
 
@@ -181,7 +174,7 @@ static EipStatus GetAttributeSingleDlr(
 
       /* Call the PostGetCallback if enabled for this attribute and the common handler is not used. */
       if (!use_common_handler) {
-        if (attribute->attribute_flags & kPostGetFunc && NULL != instance->cip_class->PostGetCallback) {
+        if ((attribute->attribute_flags & kPostGetFunc) && NULL != instance->cip_class->PostGetCallback) {
           instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
         }
       }

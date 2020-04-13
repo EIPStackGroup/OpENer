@@ -238,6 +238,13 @@ void InsertAttribute(CipInstance *const cip_instance,
                      void *const cip_data,
                      const EipByte cip_flags);
 
+void InsertAttribute2(CipInstance *const instance,
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_type,
+					 CipAttributeEncodeInMessage encode_function,
+                     void *const data,
+                     const EipByte cip_flags);
+
 
 /** @ingroup CIP_API
  * @brief Allocates Attribute bitmasks
@@ -302,13 +309,31 @@ void InsertGetSetCallback
  * requester (e.g., getAttributeSingle for special structs).
  *  @param cip_data_type the cip type to encode
  *  @param cip_data pointer to data value.
- *  @param cip_message pointer to memory where response should be written
- *  @return length of attribute in bytes
- *          -1 .. error
+ *  @param message_router_response The message router response construct
  */
-int EncodeData(const EipUint8 cip_data_type,
+void EncodeData(const EipUint8 cip_data_type,
                const void *const cip_data,
-               EipUint8 **cip_message);
+			   CipMessageRouterResponse *const message_router_response);
+
+void EncodeCipBool(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipUsint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipUint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipUdint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipDword(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipShortString(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipString(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipByteArray(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipEPath(const void *const data, ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message

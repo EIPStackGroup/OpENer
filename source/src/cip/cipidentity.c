@@ -179,7 +179,7 @@ static EipStatus Reset(CipInstance *instance,
     }
   }
 
-  message_router_response->data_length = 0;
+  InitializeENIPMessage(&message_router_response->message);
   return eip_status;
 }
 
@@ -188,29 +188,38 @@ void InitializeCipIdentity(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute( (CipInstance *) class, 1, kCipUint,
+  InsertAttribute2( (CipInstance *) class, 1, kCipUint,
+		           EncodeCipUint,
                    (void *) &class->revision,
                    kGetableSingleAndAll );                 /* revision */
-  InsertAttribute( (CipInstance *) class, 2, kCipUint,
+  InsertAttribute2( (CipInstance *) class, 2, kCipUint,
+		           EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
-  InsertAttribute( (CipInstance *) class, 3, kCipUint,
+  InsertAttribute2( (CipInstance *) class, 3, kCipUint,
+		           EncodeCipUint,
                    (void *) &class->number_of_instances, kGetAttributeSingle ); /* number of instances currently existing*/
-  InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
+  InsertAttribute2( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
+  InsertAttribute2( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 6, kCipUint,
+  InsertAttribute2( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max class attribute number*/
-  InsertAttribute( (CipInstance *) class, 7, kCipUint,
+  InsertAttribute2( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
+  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll2,
                     "GetAttributeAll");                     /* bind instance services to the metaclass*/
   InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
                   "GetAttributeSingle");
 
+}
+
+void EncodeRevision(const void *const data, ENIPMessage *const outgoing_message) {
+  CipRevision *revision = (CipRevision *) data;
+  AddSintToMessage(revision->major_revision, outgoing_message);
+  AddSintToMessage(revision->minor_revision, outgoing_message);
 }
 
 EipStatus CipIdentityInit() {
@@ -232,35 +241,39 @@ EipStatus CipIdentityInit() {
   }
 
   CipInstance *instance = GetCipInstance(class, 1);
-  InsertAttribute(instance,
+  InsertAttribute2(instance,
                   1,
                   kCipUint,
+				  EncodeCipUint,
                   &g_identity.vendor_id,
                   kGetableSingleAndAll);
-  InsertAttribute(instance,
+  InsertAttribute2(instance,
                   2,
                   kCipUint,
+				  EncodeCipUint,
                   &g_identity.device_type,
                   kGetableSingleAndAll);
-  InsertAttribute(instance,
+  InsertAttribute2(instance,
                   3,
                   kCipUint,
+				  EncodeCipUint,
                   &g_identity.product_code,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 4, kCipUsintUsint, &g_identity.revision,
+  InsertAttribute2(instance,4, kCipUsintUsint, EncodeRevision, &g_identity.revision,
                   kGetableSingleAndAll);
-  InsertAttribute(instance,
+  InsertAttribute2(instance,
                   5,
                   kCipWord,
+				  EncodeCipWord,
                   &g_identity.status,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 6, kCipUdint, &g_identity.serial_number,
+  InsertAttribute2(instance, 6, kCipUdint, EncodeCipUdint, &g_identity.serial_number,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 7, kCipShortString, &g_identity.product_name,
+  InsertAttribute2(instance, 7, kCipShortString, EncodeCipShortString, &g_identity.product_name,
                   kGetableSingleAndAll);
   InsertService(class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
-  InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
+  InsertService(class, kGetAttributeAll, &GetAttributeAll2, "GetAttributeAll");
   InsertService(class, kReset, &Reset, "Reset");
 
   return kEipStatusOk;

@@ -243,6 +243,8 @@ typedef struct {
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */
 
+typedef struct enip_message ENIPMessage;
+
 /** @brief CIP Message Router Response
  *
  */
@@ -257,16 +259,18 @@ typedef struct {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
                                                           If SizeOfAdditionalStatus is 0. there is no
                                                           Additional Status */
-  EipInt16 data_length; /**< Supportative non-CIP variable, gives length of data segment */
-  CipOctet *data; /**< Array of octet; Response data per object definition from
-                     request */
+  ENIPMessage message; /* The construct message */
 } CipMessageRouterResponse;
+
+/** @brief self-describing data encoding for CIP types */
+typedef void (*CipAttributeEncodeInMessage)(const void *const data, ENIPMessage *const outgoing_message);
 
 /** @brief Structure to describe a single CIP attribute of an object
 */
 typedef struct {
   EipUint16 attribute_number; /**< The attribute number of this attribute. */
   EipUint8 type;  /**< The @ref CipDataType of this attribute. */
+  CipAttributeEncodeInMessage encode; /**< Self-describing its data encoding */
   CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration for valid values. */
   void *data;
 } CipAttributeStruct;
