@@ -395,7 +395,7 @@ void InsertAttribute2(CipInstance *const instance,
         (cip_flags & kGetableSingle) ?
         1 << (attribute_number) % 8 : 0;
       cip_class->get_all_bit_mask[index] |=
-        (cip_flags & kGetableAll) ? 1 << (attribute_number) % 8 : 0;
+        (cip_flags & (kGetableAll | kGetableAllDummy)) ? 1 << (attribute_number) % 8 : 0;
       cip_class->set_bit_mask[index] |=
         ( (cip_flags & kSetable) ? 1 : 0 ) << ( (attribute_number) % 8 );
 
@@ -576,13 +576,15 @@ void EncodeCipString(const void *const data, ENIPMessage *const outgoing_message
     CipString *const string = (CipString *) data;
 
     AddIntToMessage(*(EipUint16 *) &(string->length), outgoing_message);
-    memcpy(outgoing_message->current_message_position, string->string, string->length);
-    outgoing_message->current_message_position += string->length;
-    outgoing_message->used_message_length += string->length;
+    if(0 != string->length) {
+      memcpy(outgoing_message->current_message_position, string->string, string->length);
+      outgoing_message->current_message_position += string->length;
+      outgoing_message->used_message_length += string->length;
 
-    if (outgoing_message->used_message_length & 0x01) {
-      /* we have an odd byte count */
-  	  AddSintToMessage(0, outgoing_message);
+      if (outgoing_message->used_message_length & 0x01) {
+        /* we have an odd byte count */
+  	    AddSintToMessage(0, outgoing_message);
+      }
     }
 }
 

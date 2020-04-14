@@ -300,7 +300,8 @@ EipStatus HandleReceivedExplictUdpData
 }
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
-  MoveMessageNOctets(ENCAPSULATION_HEADER_LENGTH, outgoing_message);
+  /* Move pointer over Header, but do not add to size */
+  outgoing_message->current_message_position += ENCAPSULATION_HEADER_LENGTH;
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,

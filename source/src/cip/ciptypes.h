@@ -113,6 +113,7 @@ typedef enum { /* TODO: Rework */
   kSetAndGetAble = 0x07, /**< both set and get-able */
   kGetableSingleAndAll = 0x03, /**< both single and all */
   /* Flags to control the usage of callbacks per attribute from the Get* and Set* services */
+  kGetableAllDummy = 0x08, /**< Get-able but a dummy Attribute */
   kPreGetFunc = 0x10, /**< enable pre get callback */
   kPostGetFunc = 0x20,  /**< enable post get callback */
   kPreSetFunc = 0x40, /**< enable pre set callback */

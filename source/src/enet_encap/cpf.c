@@ -525,6 +525,7 @@ void EncodeMessageRouterResponseData(
 //    AddSintToMessage( (message_router_response->message.message_buffer)[i], outgoing_message);
 //  }
   memcpy(outgoing_message->current_message_position, message_router_response->message.message_buffer, message_router_response->message.used_message_length);
+  outgoing_message->used_message_length += message_router_response->message.used_message_length;
 }
 
 /**
