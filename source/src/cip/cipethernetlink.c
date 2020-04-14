@@ -50,6 +50,7 @@
 #include "opener_api.h"
 #include "trace.h"
 #include "opener_user_conf.h"
+#include "endianconv.h"
 
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
   /* If we have more than 1 Ethernet Link instance then the interface label
@@ -84,9 +85,9 @@ typedef struct speed_duplex_array_entry {
 
 
 /* forward declaration of functions to encode certain attribute objects */
-static void EncodeInterfaceCounters(CipUdint instance_id, CipMessageRouterResponse *const message_router_response);
+static void EncodeCipEthernetLinkInterfaceCounters(const void *const data, ENIPMessage *const outgoing_message);
 
-static void EncodeMediaCounters(CipUdint instance_id, CipMessageRouterResponse *const message_router_response);
+static void EncodeCipEthernetLinkMediaCounters(const void *const data, ENIPMessage *const outgoing_message);
 
 static void EncodeCipEthernetLinkInterfaceControl(const void *const data, ENIPMessage *const outgoing_message);
 
@@ -278,10 +279,10 @@ EipStatus CipEthernetLinkInit(void) {
       InsertAttribute(ethernet_link_instance, 5, kCipUsint, EncodeCipUsint,
                       &g_ethernet_link[idx].media_cntrs, kGetableSingleAndAll);
 #else
-      InsertAttribute2(ethernet_link_instance, 4, kCipUsint, EncodeCipUsint,
-                      &dummy_attribute_udint, kGetableAll);
-      InsertAttribute2(ethernet_link_instance, 5, kCipUsint, EncodeCipUsint,
-                      &dummy_attribute_udint, kGetableAll);
+      InsertAttribute2(ethernet_link_instance, 4, kCipAny, EncodeCipEthernetLinkInterfaceCounters,
+                      &dummy_attribute_udint, kGetableAllDummy);
+      InsertAttribute2(ethernet_link_instance, 5, kCipAny, EncodeCipEthernetLinkMediaCounters,
+                      &dummy_attribute_udint, kGetableAllDummy);
 #endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
       if (2 == idx) {
@@ -301,9 +302,9 @@ EipStatus CipEthernetLinkInit(void) {
       InsertAttribute2(ethernet_link_instance, 7, kCipUsint, EncodeCipUsint,
                       &g_ethernet_link[idx].interface_type, kGetableSingleAndAll);
       InsertAttribute2(ethernet_link_instance, 8, kCipUsint, EncodeCipUsint,
-                      &dummy_attribute_usint, kGetableAll);
+                      &dummy_attribute_usint, kGetableAllDummy);
       InsertAttribute2(ethernet_link_instance, 9, kCipUsint, EncodeCipUsint,
-                      &dummy_attribute_usint, kGetableAll);
+                      &dummy_attribute_usint, kGetableAllDummy);
       InsertAttribute2(ethernet_link_instance, 10, kCipShortString, EncodeCipShortString,
                       &g_ethernet_link[idx].interface_label,
                       IFACE_LABEL_ACCESS_MODE);
@@ -327,30 +328,30 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
   return;
 }
 
-static void EncodeInterfaceCounters(CipUdint instance_id, CipMessageRouterResponse *const message_router_response) {
-  for (size_t i = 0; i < 11; i++) {
+static void EncodeCipEthernetLinkInterfaceCounters(const void *const data, ENIPMessage *const outgoing_message) {
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+  for (size_t i = 0; i < 11; i++) {
     /* Encode real values using the access through the array of the
      *  interface_cntrs union. */
     EncodeData(kCipUdint, g_ethernet_link[instance_id-1].interface_cntrs.cntr32 + i, message_router_response);
+  }
 #else
     /* Encode the default counter value of 0 */
-    EncodeData(kCipUdint, &dummy_attribute_udint, message_router_response);
+    FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 11 * sizeof(CipUdint), outgoing_message);
 #endif
-  }
 }
 
-static void EncodeMediaCounters(CipUdint instance_id, CipMessageRouterResponse *const message_router_response) {
-  for (size_t i = 0; i < 12; i++) {
+static void EncodeCipEthernetLinkMediaCounters(const void *const data, ENIPMessage *const outgoing_message) {
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
+  for (size_t i = 0; i < 12; i++) {
     /* Encode real values using the access through the array of the
      *  media_cntrs union. */
     EncodeData(kCipUdint, g_ethernet_link[instance_id-1].media_cntrs.cntr32 + i, message_router_response);
+  }
 #else
     /* Encode the default counter value of 0 */
-    EncodeData(kCipUdint, &dummy_attribute_udint, message_router_response);
+    FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 12 * sizeof(CipUdint), outgoing_message);
 #endif
-  }
 }
 
 static void EncodeCipEthernetLinkInterfaceControl(const void *const data, ENIPMessage *const outgoing_message) {
