@@ -500,36 +500,23 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
     message_router_request->request_path.attribute_number;
 
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
-    uint8_t get_bit_mask = 0;
-    if (kGetAttributeAll == message_router_request->service) {
-      get_bit_mask =
-        (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                 attribute_number)]);
-      message_router_response->general_status = kCipErrorSuccess;
-    } else {
-      get_bit_mask =
-        (instance->cip_class->get_single_bit_mask[CalculateIndex(
+    uint8_t get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
                                                     attribute_number)]);
-    }
     if (0 != (get_bit_mask & (1 << (attribute_number % 8) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number);                 /* create a reply message containing the data*/
 
       /* Call the PreGetCallback if enabled for this attribute and the class provides one. */
-      if (attribute->attribute_flags & kPreGetFunc && NULL != instance->cip_class->PreGetCallback) {
+      if ((attribute->attribute_flags & kPreGetFunc) && NULL != instance->cip_class->PreGetCallback) {
         instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
       }
 
       OPENER_ASSERT(NULL != attribute)
-      if(NULL == attribute->encode) {
-    	  EncodeData(attribute->type, attribute->data, message_router_response);
-      } else {
-    	  attribute->encode(attribute->data, &message_router_response->message);
-      }
+      attribute->encode(attribute->data, &message_router_response->message);
       message_router_response->general_status = kCipErrorSuccess;
 
       /* Call the PostGetCallback if enabled for this attribute and the class provides one. */
-      if (attribute->attribute_flags & kPostGetFunc && NULL != instance->cip_class->PostGetCallback) {
+      if ((attribute->attribute_flags & kPostGetFunc) && NULL != instance->cip_class->PostGetCallback) {
         instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
       }
     }

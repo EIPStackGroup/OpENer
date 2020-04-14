@@ -58,6 +58,7 @@ EipStatus NotifyCommonPacketFormat
             &g_message_router_response, &g_common_packet_format_data_item,
             outgoing_message);
 
+          /* Save pointer and move to start for Encapusulation Header */
           CipOctet *buffer = outgoing_message->current_message_position;
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
@@ -66,6 +67,7 @@ EipStatus NotifyCommonPacketFormat
                                       received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
+          /* Move pointer back to last octet */
           outgoing_message->current_message_position = buffer;
           return_value = kEipStatusOkSend;
         }

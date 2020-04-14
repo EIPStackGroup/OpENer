@@ -884,7 +884,7 @@ EipStatus AssembleForwardCloseResponse(
 
   message_router_response->reply_service = (0x80
                                             | message_router_request->service);
-  /* excepcted length is 10 if there is no application specific data */
+  /* Excepted length is 10 if there is no application specific data */
 
   if (kConnectionManagerExtendedStatusCodeSuccess == extended_error_code) {
     AddSintToMessage(0, &message_router_response->message); /* no application data */
@@ -901,7 +901,6 @@ EipStatus AssembleForwardCloseResponse(
     }
   }
 
-  // TODO: check if needed message++; seem superfluous with the new AddSint command above
   AddSintToMessage(0, &message_router_response->message); /* reserved */
 
   return kEipStatusOkSend;
