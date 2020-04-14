@@ -197,7 +197,7 @@ void InitializeCipIdentity(CipClass *class) {
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
   InsertAttribute2( (CipInstance *) class, 3, kCipUint,
 		           EncodeCipUint,
-                   (void *) &class->number_of_instances, kGetAttributeSingle ); /* number of instances currently existing*/
+                   (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
   InsertAttribute2( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
   InsertAttribute2( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
@@ -271,6 +271,7 @@ EipStatus CipIdentityInit() {
                   kGetableSingleAndAll);
   InsertAttribute2(instance, 7, kCipShortString, EncodeCipShortString, &g_identity.product_name,
                   kGetableSingleAndAll);
+
   InsertService(class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll2, "GetAttributeAll");
