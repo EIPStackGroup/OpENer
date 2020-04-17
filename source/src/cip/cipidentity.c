@@ -188,28 +188,28 @@ void InitializeCipIdentity(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute2( (CipInstance *) class, 1, kCipUint,
+  InsertAttribute( (CipInstance *) class, 1, kCipUint,
 		           EncodeCipUint,
                    (void *) &class->revision,
                    kGetableSingleAndAll );                 /* revision */
-  InsertAttribute2( (CipInstance *) class, 2, kCipUint,
+  InsertAttribute( (CipInstance *) class, 2, kCipUint,
 		           EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
-  InsertAttribute2( (CipInstance *) class, 3, kCipUint,
+  InsertAttribute( (CipInstance *) class, 3, kCipUint,
 		           EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
-  InsertAttribute2( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute2( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
-  InsertAttribute2( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max class attribute number*/
-  InsertAttribute2( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll2,
+  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
                     "GetAttributeAll");                     /* bind instance services to the metaclass*/
   InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
                   "GetAttributeSingle");
@@ -241,40 +241,40 @@ EipStatus CipIdentityInit() {
   }
 
   CipInstance *instance = GetCipInstance(class, 1);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   1,
                   kCipUint,
 				  EncodeCipUint,
                   &g_identity.vendor_id,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   2,
                   kCipUint,
 				  EncodeCipUint,
                   &g_identity.device_type,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   3,
                   kCipUint,
 				  EncodeCipUint,
                   &g_identity.product_code,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance,4, kCipUsintUsint, EncodeRevision, &g_identity.revision,
+  InsertAttribute(instance,4, kCipUsintUsint, EncodeRevision, &g_identity.revision,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   5,
                   kCipWord,
 				  EncodeCipWord,
                   &g_identity.status,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 6, kCipUdint, EncodeCipUdint, &g_identity.serial_number,
+  InsertAttribute(instance, 6, kCipUdint, EncodeCipUdint, &g_identity.serial_number,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 7, kCipShortString, EncodeCipShortString, &g_identity.product_name,
+  InsertAttribute(instance, 7, kCipShortString, EncodeCipShortString, &g_identity.product_name,
                   kGetableSingleAndAll);
 
   InsertService(class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
-  InsertService(class, kGetAttributeAll, &GetAttributeAll2, "GetAttributeAll");
+  InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
   InsertService(class, kReset, &Reset, "Reset");
 
   return kEipStatusOk;

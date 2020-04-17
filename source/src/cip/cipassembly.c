@@ -117,14 +117,14 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
 
   assembly_byte_array->length = data_length;
   assembly_byte_array->data = data;
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   3,
                   kCipByteArray,
 				  EncodeCipByteArray,
                   assembly_byte_array,
                   kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   4,
                   kCipUint,
 				  EncodeCipUint,

@@ -57,8 +57,7 @@ typedef enum cip_data_types {
   kCipByteArray = 0xA4, /**< */
   kInternalUint6 = 0xF0, /**< bogus hack, for port class attribute 9, TODO
                            figure out the right way to handle it */
-  kCipStringI,
-  kCipFileRevisionStruct
+  kCipStringI
 } CipDataType;
 
 /** @brief Definition of CIP service codes
@@ -166,7 +165,7 @@ typedef struct {
 typedef struct cip_type_string_i_struct CipStringIStruct;
 
 typedef struct cip_string_i {
-  CipUsint number;
+  CipUsint number_of_strings;
   CipStringIStruct* array_of_string_i_structs;
 } CipStringI;
 
@@ -260,7 +259,7 @@ typedef struct {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
                                                           If SizeOfAdditionalStatus is 0. there is no
                                                           Additional Status */
-  ENIPMessage message; /* The construct message */
+  ENIPMessage message; /* The constructed message */
 } CipMessageRouterResponse;
 
 /** @brief self-describing data encoding for CIP types */

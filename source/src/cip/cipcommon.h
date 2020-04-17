@@ -73,12 +73,6 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           const struct sockaddr *originator_address,
                           const int encapsulation_session);
 
-EipStatus GetAttributeAll2(CipInstance *instance,
-                          CipMessageRouterRequest *message_router_request,
-                          CipMessageRouterResponse *message_router_response,
-                          const struct sockaddr *originator_address,
-                          const int encapsulation_session);
-
 /** @brief Decodes padded EPath
  *  @param epath EPath object to the receiving element
  *  @param message pointer to the message to decode
@@ -86,7 +80,5 @@ EipStatus GetAttributeAll2(CipInstance *instance,
  */
 int DecodePaddedEPath(CipEpath *epath,
                       const EipUint8 **message);
-
-size_t GetSizeOfAttribute(const CipAttributeStruct *const attribute_struct);
 
 #endif /* OPENER_CIPCOMMON_H_ */

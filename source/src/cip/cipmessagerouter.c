@@ -15,7 +15,6 @@
 CipMessageRouterRequest g_message_router_request;
 CipMessageRouterResponse g_message_router_response;
 
-
 /** @brief A class registry list node
  *
  * A linked list of this  object is the registry of classes known to the message router
@@ -56,28 +55,28 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
 
   CipClass *meta_class = cip_class->class_instance.cip_class;
 
-  InsertAttribute2( (CipInstance *) cip_class, 1, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 1, kCipUint, EncodeCipUint,
                    (void *) &cip_class->revision, kGetableSingleAndAll );   /* revision */
-  InsertAttribute2( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
                    (void *) &cip_class->number_of_instances,
                    kGetableSingle );                                       /*  largest instance number */
-  InsertAttribute2( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
                    (void *) &cip_class->number_of_instances,
                    kGetableSingle );                                                           /* number of instances currently existing*/
-  InsertAttribute2( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint,
                    (void *) &kCipUintZero,
                    kGetableAll );   /* optional attribute list - default = 0 */
-  InsertAttribute2( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint,
                    (void *) &kCipUintZero,
                    kGetableAll ); /* optional service list - default = 0 */
-  InsertAttribute2( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll );                       /* max class attribute number*/
-  InsertAttribute2( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
                    (void *) &cip_class->highest_attribute_number,
                    kGetableSingleAndAll );                       /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll2,
+  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
                     "GetAttributeAll");                     /* bind instance services to the metaclass*/
   InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
                   "GetAttributeSingle");
@@ -197,7 +196,6 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
     g_message_router_response.general_status = status;
     g_message_router_response.size_of_additional_status = 0;
     g_message_router_response.reserved = 0;
-    InitializeENIPMessage(&g_message_router_response.message);
     g_message_router_response.reply_service = (0x80
                                                | g_message_router_request.
                                                service);
@@ -213,7 +211,6 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
         kCipErrorPathDestinationUnknown;   /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
       g_message_router_response.size_of_additional_status = 0;
       g_message_router_response.reserved = 0;
-      InitializeENIPMessage(&g_message_router_response.message);
       g_message_router_response.reply_service = (0x80
                                                  | g_message_router_request.
                                                  service);

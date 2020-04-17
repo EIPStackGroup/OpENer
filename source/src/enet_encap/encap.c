@@ -347,6 +347,8 @@ void HandleReceivedListServicesCommand(
   memcpy(outgoing_message->current_message_position,
          g_service_information.name_of_service,
          sizeof(g_service_information.name_of_service) );
+  outgoing_message->current_message_position +=
+    sizeof(g_service_information.name_of_service);
   outgoing_message->used_message_length +=
     sizeof(g_service_information.name_of_service);
 }
@@ -433,6 +435,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   AddIntToMessage(g_identity.status, outgoing_message);
   AddDintToMessage(g_identity.serial_number, outgoing_message);
   AddSintToMessage((unsigned char) g_identity.product_name.length, outgoing_message);
+//TODO Change to EncodeCipString
   memcpy(outgoing_message->current_message_position,
          g_identity.product_name.string,
          g_identity.product_name.length);

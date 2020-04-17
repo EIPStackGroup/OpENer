@@ -176,25 +176,25 @@ void InitializeConnectionManager(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute2( (CipInstance *) class, 1, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint,
                    (void *) &class->revision,
                    kGetableSingleAndAll ); /* revision */
-  InsertAttribute2( (CipInstance *) class, 2, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 2, kCipUint, EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
-  InsertAttribute2( (CipInstance *) class, 3, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
-  InsertAttribute2( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute2( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
-  InsertAttribute2( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max class attribute number*/
-  InsertAttribute2( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll2,	"GetAttributeAll"); /* bind instance services to the metaclass*/
+  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,	"GetAttributeAll"); /* bind instance services to the metaclass*/
   InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
 
 }

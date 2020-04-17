@@ -164,49 +164,49 @@ EipStatus CipQoSInit() {
 
   CipInstance *instance = GetCipInstance(qos_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   1,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.q_frames_enable,
                   kNotSetOrGetable);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   2,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.event,
                   kNotSetOrGetable);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   3,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.general,
                   kNotSetOrGetable);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   4,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.urgent,
                   kGetableSingle | kSetable | kNvDataFunc);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   5,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.scheduled,
                   kGetableSingle | kSetable | kNvDataFunc);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   6,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.high,
                   kGetableSingle | kSetable | kNvDataFunc);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   7,
                   kCipUsint,
 				  EncodeCipUsint,
                   (void *) &g_qos.dscp.low,
                   kGetableSingle | kSetable | kNvDataFunc);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   8,
                   kCipUsint,
 				  EncodeCipUsint,

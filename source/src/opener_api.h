@@ -229,16 +229,11 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param cip_instance Pointer to CIP class instance (Instance 0)
  *  @param attribute_number Number of attribute to be inserted.
  *  @param cip_data_type Type of attribute to be inserted.
+ *  @param encode_function Function pointer to the encoding function
  *  @param cip_data Pointer to data of attribute.
  *  @param cip_flags Flags to indicate set-ability and get-ability of attribute.
  */
-void InsertAttribute(CipInstance *const cip_instance,
-                     const EipUint16 attribute_number,
-                     const EipUint8 cip_data_type,
-                     void *const cip_data,
-                     const EipByte cip_flags);
-
-void InsertAttribute2(CipInstance *const instance,
+void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
 					 CipAttributeEncodeInMessage encode_function,
@@ -317,23 +312,47 @@ void EncodeData(const EipUint8 cip_data_type,
 
 void EncodeCipBool(const void *const data, ENIPMessage *const outgoing_message);
 
+void EncodeCipByte(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipDword(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipLword(const void *const data, ENIPMessage *const outgoing_message);
+
 void EncodeCipUsint(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipUint(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipUdint(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipUlint(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipDword(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipSint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipInt(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipDint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipLint(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipReal(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipLreal(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipShortString(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipString(const void *const data, ENIPMessage *const outgoing_message);
 
+void EncodeCipString2(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipStringN(const void *const data, ENIPMessage *const outgoing_message);
+
 void EncodeCipByteArray(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipEPath(const void *const data, ENIPMessage *const outgoing_message);
+
+void EncodeCipEthernetLinkPhyisicalAddress(const void *const data, ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message

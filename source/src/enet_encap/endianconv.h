@@ -109,7 +109,7 @@ void AddLintToMessage(const EipUint64 pa_unData,
  */
 void EncapsulateIpAddress(EipUint16 port,
                          EipUint32 address,
-						 ENIPMessage *const outgoing_message);
+			 ENIPMessage *const outgoing_message);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -125,11 +125,11 @@ void DetermineEndianess(void);
 int GetEndianess(void);
 
 void MoveMessageNOctets(const int amount_of_bytes_moved,
-		ENIPMessage *const outgoing_message);
+		        ENIPMessage *const outgoing_message);
 
 void FillNextNMessageOctetsWith(CipOctet value,
                                unsigned int amount_of_bytes_written,
-							   ENIPMessage *const outgoing_message);
+			       ENIPMessage *const outgoing_message);
 
 void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int amount_of_filled_bytes, ENIPMessage *const outgoing_message);
 

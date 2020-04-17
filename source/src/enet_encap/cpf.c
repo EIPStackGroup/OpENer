@@ -384,11 +384,9 @@ void EncodeDataItemLength(
 void EncodeDataItemData(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  for (size_t i = 0; i < common_packet_format_data_item->data_item.length;
-       i++) {
-    AddSintToMessage(*(common_packet_format_data_item->data_item.data + i),
-      outgoing_message);
-  }
+  memcpy(outgoing_message->current_message_position, common_packet_format_data_item->data_item.data, common_packet_format_data_item->data_item.length);
+  outgoing_message->current_message_position += common_packet_format_data_item->data_item.length;
+  outgoing_message->used_message_length += common_packet_format_data_item->data_item.length;
 }
 
 /**
@@ -401,7 +399,6 @@ void EncodeDataItemData(
 void EncodeConnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-
   AddIntToMessage((EipUint16) ( message_router_response->message.used_message_length + 4 + 2  /* TODO: Magic numbers */
                   + (2 * message_router_response->size_of_additional_status) ), outgoing_message);
 }
@@ -523,9 +520,6 @@ void EncodeUnconnectedDataItemLength(
 void EncodeMessageRouterResponseData(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-//  for (size_t i = 0; i < message_router_response->message.used_message_length; i++) {
-//    AddSintToMessage( (message_router_response->message.message_buffer)[i], outgoing_message);
-//  }
   memcpy(outgoing_message->current_message_position, message_router_response->message.message_buffer, message_router_response->message.used_message_length);
 
   outgoing_message->current_message_position += message_router_response->message.used_message_length;

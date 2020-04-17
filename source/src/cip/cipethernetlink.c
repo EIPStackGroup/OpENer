@@ -93,13 +93,6 @@ static void EncodeCipEthernetLinkInterfaceControl(const void *const data, ENIPMe
 
 static void EncodeCipEthernetLinkInterfaceCaps(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipEthernetLinkPhyisicalAddress(const void *const data, ENIPMessage *const outgoing_message) {
-    EipUint8 *p = (EipUint8 *) data;
-    memcpy(outgoing_message->current_message_position, p, 6);
-    outgoing_message->current_message_position += 6;
-    outgoing_message->used_message_length += 6;
-}
-
 
 /* forward declaration for the GetAttributeSingle service handler function */
 EipStatus GetAttributeSingleEthernetLink(
@@ -249,8 +242,8 @@ EipStatus CipEthernetLinkInit(void) {
     /* add services to the class */
     InsertService(ethernet_link_class, kGetAttributeSingle,
                   &GetAttributeSingle,
-                  "GetAttributeSingleEthernetLink");
-    InsertService(ethernet_link_class, kGetAttributeAll, &GetAttributeAll2,
+                  "GetAttributeSingle");
+    InsertService(ethernet_link_class, kGetAttributeAll, &GetAttributeAll,
                   "GetAttributeAll");
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
     InsertService(ethernet_link_class, kEthLinkGetAndClear,
@@ -267,11 +260,11 @@ EipStatus CipEthernetLinkInit(void) {
       CipInstance *ethernet_link_instance =
         GetCipInstance(ethernet_link_class, idx+1);
 
-      InsertAttribute2(ethernet_link_instance, 1, kCipUdint, EncodeCipUdint,
+      InsertAttribute(ethernet_link_instance, 1, kCipUdint, EncodeCipUdint,
                       &g_ethernet_link[idx].interface_speed, kGetableSingleAndAll);
-      InsertAttribute2(ethernet_link_instance, 2, kCipDword, EncodeCipDword,
+      InsertAttribute(ethernet_link_instance, 2, kCipDword, EncodeCipDword,
                       &g_ethernet_link[idx].interface_flags, kGetableSingleAndAll);
-      InsertAttribute2(ethernet_link_instance, 3, kCip6Usint, EncodeCipEthernetLinkPhyisicalAddress,
+      InsertAttribute(ethernet_link_instance, 3, kCip6Usint, EncodeCipEthernetLinkPhyisicalAddress,
                       &g_ethernet_link[idx].physical_address, kGetableSingleAndAll);
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
       InsertAttribute(ethernet_link_instance, 4, kCipUsint, EncodeCipUsint,
@@ -279,36 +272,36 @@ EipStatus CipEthernetLinkInit(void) {
       InsertAttribute(ethernet_link_instance, 5, kCipUsint, EncodeCipUsint,
                       &g_ethernet_link[idx].media_cntrs, kGetableSingleAndAll);
 #else
-      InsertAttribute2(ethernet_link_instance, 4, kCipAny, EncodeCipEthernetLinkInterfaceCounters,
+      InsertAttribute(ethernet_link_instance, 4, kCipAny, EncodeCipEthernetLinkInterfaceCounters,
                       &dummy_attribute_udint, kGetableAllDummy);
-      InsertAttribute2(ethernet_link_instance, 5, kCipAny, EncodeCipEthernetLinkMediaCounters,
+      InsertAttribute(ethernet_link_instance, 5, kCipAny, EncodeCipEthernetLinkMediaCounters,
                       &dummy_attribute_udint, kGetableAllDummy);
 #endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
       if (2 == idx) {
         /* Interface control of internal switch port is never settable. */
-        InsertAttribute2(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl,
+        InsertAttribute(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl,
                         &g_ethernet_link[idx].interface_control,
                         IFACE_CTRL_ACCESS_MODE & ~kSetable);
       } else {
-        InsertAttribute2(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl,
+        InsertAttribute(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl,
                         &g_ethernet_link[idx].interface_control,
                         IFACE_CTRL_ACCESS_MODE);
       }
 #else
-      InsertAttribute2(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl, &s_interface_control,
+      InsertAttribute(ethernet_link_instance, 6, kCipAny, EncodeCipEthernetLinkInterfaceControl, &s_interface_control,
                       kGetableAll);
 #endif
-      InsertAttribute2(ethernet_link_instance, 7, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 7, kCipUsint, EncodeCipUsint,
                       &g_ethernet_link[idx].interface_type, kGetableSingleAndAll);
-      InsertAttribute2(ethernet_link_instance, 8, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 8, kCipUsint, EncodeCipUsint,
                       &dummy_attribute_usint, kGetableAllDummy);
-      InsertAttribute2(ethernet_link_instance, 9, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 9, kCipUsint, EncodeCipUsint,
                       &dummy_attribute_usint, kGetableAllDummy);
-      InsertAttribute2(ethernet_link_instance, 10, kCipShortString, EncodeCipShortString,
+      InsertAttribute(ethernet_link_instance, 10, kCipShortString, EncodeCipShortString,
                       &g_ethernet_link[idx].interface_label,
                       IFACE_LABEL_ACCESS_MODE);
-      InsertAttribute2(ethernet_link_instance, 11, kCipAny,  EncodeCipEthernetLinkInterfaceCaps,
+      InsertAttribute(ethernet_link_instance, 11, kCipAny,  EncodeCipEthernetLinkInterfaceCaps,
                       &g_ethernet_link[idx].interface_caps, kGetableSingleAndAll);
     }
   } else {
@@ -385,98 +378,6 @@ static void EncodeCipEthernetLinkInterfaceCaps(const void *const data, ENIPMessa
     }
   }
 }
-
-//EipStatus GetAttributeSingleEthernetLink(
-//  CipInstance *RESTRICT const instance,
-//  CipMessageRouterRequest *const message_router_request,
-//  CipMessageRouterResponse *const message_router_response,
-//  const struct sockaddr *originator_address,
-//  const int encapsulation_session) {
-//
-//  CipAttributeStruct *attribute = GetCipAttribute(
-//    instance, message_router_request->request_path.attribute_number);
-//  InitializeENIPMessage(&message_router_response->message);
-//  message_router_response->reply_service = (0x80
-//                                            | message_router_request->service);
-//  message_router_response->general_status = kCipErrorAttributeNotSupported;
-//  message_router_response->size_of_additional_status = 0;
-//
-//  EipUint16 attribute_number = message_router_request->request_path
-//                               .attribute_number;
-//
-//  if ( (NULL != attribute) && (NULL != attribute->data) ) {
-//    /* Mask for filtering get-ability */
-//    uint8_t get_bit_mask = 0;
-//    if (kGetAttributeAll == message_router_request->service) {
-//      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-//                                                              attribute_number)]);
-//      message_router_response->general_status = kCipErrorSuccess;
-//    } else {
-//      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-//                                                                 attribute_number)
-//                      ]);
-//    }
-//    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-//
-//      /* create a reply message containing the data*/
-//      bool use_common_handler;
-//      switch (attribute_number) {
-//      case 4: /* fall through */
-//      case 5: /* fall through */
-//      case 6: /* fall through */
-//      case 11:
-//        use_common_handler = false;
-//        OPENER_TRACE_INFO("getAttribute %d\n", attribute_number);
-//        break;
-//      default:
-//        use_common_handler = true;
-//        break;
-//      }
-//
-//      /* Call the PreGetCallback if enabled for this attribute and the common handler is not used. */
-//      if (!use_common_handler) {
-//        if ((attribute->attribute_flags & kPreGetFunc) && NULL != instance->cip_class->PreGetCallback) {
-//          instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
-//        }
-//      }
-//
-//      switch (attribute_number) {
-//        case 4:
-//          EncodeInterfaceCounters(instance->instance_number, message_router_response);
-//          message_router_response->general_status = kCipErrorSuccess;
-//          break;
-//        case 5:
-//          EncodeMediaCounters(instance->instance_number, message_router_response);
-//          message_router_response->general_status = kCipErrorSuccess;
-//          break;
-//        case 6:
-//          EncodeInterfaceControl(instance->instance_number, message_router_response);
-//          message_router_response->general_status = kCipErrorSuccess;
-//          break;
-//        case 11:
-//          EncodeInterfaceCapability(instance->instance_number, message_router_response);
-//          message_router_response->general_status = kCipErrorSuccess;
-//          break;
-//
-//        default:
-//          GetAttributeSingle(instance, message_router_request,
-//                             message_router_response,
-//                             originator_address,
-//                             encapsulation_session);
-//      }
-//
-//      /* Call the PostGetCallback if enabled for this attribute and the common handler is not used. */
-//      if (!use_common_handler) {
-//        if ((attribute->attribute_flags & kPostGetFunc) && NULL != instance->cip_class->PostGetCallback) {
-//          instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
-//        }
-//      }
-//
-//    }
-//  }
-//
-//  return kEipStatusOkSend;
-//}
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 EipStatus GetAndClearEthernetLink(

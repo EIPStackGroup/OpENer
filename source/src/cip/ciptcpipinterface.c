@@ -345,20 +345,6 @@ void EncodeCipLastConflictDetected(const void *const data, ENIPMessage *const ou
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, kAttribute11Size, outgoing_message);
 }
 
-EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *const RESTRICT message_router_request,
-  CipMessageRouterResponse *const RESTRICT message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session);
-
-EipStatus GetAttributeAllTcpIpInterface(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session);
-
 EipStatus SetAttributeSingleTcpIpInterface(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
@@ -370,6 +356,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
+  /* Check attribute exists and is not a dummy for GetAttributeAll */
   if (NULL != attribute && !(kGetableAllDummy & attribute->attribute_flags)) {
     uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
                                                                 attribute_number)
@@ -562,32 +549,32 @@ EipStatus CipTcpIpInterfaceInit() {
 
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute2(instance, 1, kCipDword, EncodeCipDword, &g_tcpip.status,
+  InsertAttribute(instance, 1, kCipDword, EncodeCipDword, &g_tcpip.status,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 2, kCipDword, EncodeCipDword, &g_tcpip.config_capability,
+  InsertAttribute(instance, 2, kCipDword, EncodeCipDword, &g_tcpip.config_capability,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 3 , kCipDword, EncodeCipDword, &g_tcpip.config_control,
+  InsertAttribute(instance, 3 , kCipDword, EncodeCipDword, &g_tcpip.config_control,
                   kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
-  InsertAttribute2(instance, 4, kCipEpath, EncodeCipEPath, &g_tcpip.physical_link_object,
+  InsertAttribute(instance, 4, kCipEpath, EncodeCipEPath, &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 5, kCipUdintUdintUdintUdintUdintString, EncoodeCipTcpIpInterfaceConfiguration,
+  InsertAttribute(instance, 5, kCipUdintUdintUdintUdintUdintString, EncoodeCipTcpIpInterfaceConfiguration,
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
-  InsertAttribute2(instance, 6, kCipString, EncodeCipString, &g_tcpip.hostname,
+  InsertAttribute(instance, 6, kCipString, EncodeCipString, &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
-  InsertAttribute2(instance, 7, kCipAny, EncodeSafetyNetworkNumber, &dummy_data_field,
+  InsertAttribute(instance, 7, kCipAny, EncodeSafetyNetworkNumber, &dummy_data_field,
 		  kGetableAllDummy);
-  InsertAttribute2(instance, 8, kCipUsint, EncodeCipUsint, &g_tcpip.mcast_ttl_value,
+  InsertAttribute(instance, 8, kCipUsint, EncodeCipUsint, &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 9, kCipAny, EncodeCipTcpIpMulticastConfiguration, &g_tcpip.mcast_config,
+  InsertAttribute(instance, 9, kCipAny, EncodeCipTcpIpMulticastConfiguration, &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
-  InsertAttribute2(instance, 10, kCipBool, EncodeCipBool, &g_tcpip.select_acd,
+  InsertAttribute(instance, 10, kCipBool, EncodeCipBool, &g_tcpip.select_acd,
 		  kGetableAllDummy);
-  InsertAttribute2(instance, 11, kCipBool, EncodeCipLastConflictDetected, &dummy_data_field,
+  InsertAttribute(instance, 11, kCipBool, EncodeCipLastConflictDetected, &dummy_data_field,
 		  kGetableAllDummy);
-  InsertAttribute2(instance, 12, kCipBool, EncodeCipBool, &dummy_data_field,
+  InsertAttribute(instance, 12, kCipBool, EncodeCipBool, &dummy_data_field,
 		  kGetableAllDummy);
-  InsertAttribute2(instance,
+  InsertAttribute(instance,
                   13,
                   kCipUint,
 				  EncodeCipUint,
@@ -596,10 +583,10 @@ EipStatus CipTcpIpInterfaceInit() {
 
   InsertService(tcp_ip_class, kGetAttributeSingle,
                 &GetAttributeSingle,
-                "GetAttributeSingleTCPIPInterface");
+                "GetAttributeSingle");
 
-  InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAll2,
-                "GetAttributeAllTCPIPInterface");
+  InsertService(tcp_ip_class, kGetAttributeAll, &GetAttributeAll,
+                "GetAttributeAll");
 
   InsertService(tcp_ip_class, kSetAttributeSingle,
                 &SetAttributeSingleTcpIpInterface,
@@ -619,114 +606,6 @@ void ShutdownTcpIpInterface(void) {
     CipFree(g_tcpip.interface_configuration.domain_name.string);
     g_tcpip.interface_configuration.domain_name.string = NULL;
   }
-}
-
-EipStatus GetAttributeSingleTcpIpInterface(
-  CipInstance *const RESTRICT instance,
-  CipMessageRouterRequest *const RESTRICT message_router_request,
-  CipMessageRouterResponse *const RESTRICT message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-
-  EipUint16 attribute_number = message_router_request->request_path
-                               .attribute_number;
-
-  /* Use common handler for all attributes except attribute 9. */
-  if (9 != attribute_number) {
-    return GetAttributeSingle(instance,
-                              message_router_request,
-                              message_router_response,
-                              originator_address,
-                              encapsulation_session);
-  }
-
-  { /* attribute 9 can not be easily handled with the default mechanism therefore we will do it by hand */
-    InitializeENIPMessage(&message_router_response->message);
-    message_router_response->reply_service = (0x80
-                                              | message_router_request->service);
-    message_router_response->size_of_additional_status = 0;
-    message_router_response->general_status = kCipErrorAttributeNotSupported;
-
-    uint8_t get_bit_mask = 0;
-    if (kGetAttributeAll == message_router_request->service) {
-      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)]);
-      message_router_response->general_status = kCipErrorSuccess;
-    } else {
-      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                                 attribute_number)
-                      ]);
-    }
-
-    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-      OPENER_TRACE_INFO("getAttribute %d\n",
-                        message_router_request->request_path.attribute_number);
-
-      /* create a reply message containing the data*/
-      EncodeData(kCipUsint, &(g_tcpip.mcast_config.alloc_control), message_router_response);
-      EncodeData(kCipUsint, &(g_tcpip.mcast_config.reserved_shall_be_zero), message_router_response);
-      EncodeData(kCipUint, &(g_tcpip.mcast_config.number_of_allocated_multicast_addresses), message_router_response);
-
-      CipUdint multicast_address = ntohl(
-        g_tcpip.mcast_config.starting_multicast_address);
-
-      EncodeData(kCipUdint, &multicast_address, message_router_response);
-      message_router_response->general_status = kCipErrorSuccess;
-    }
-  }
-
-  return kEipStatusOkSend;
-}
-
-EipStatus GetAttributeAllTcpIpInterface(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-
-  CipAttributeStruct *attribute = instance->attributes;
-
-  for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) /* for each instance attribute of this class */
-  {
-    int attribute_number = attribute->attribute_number;
-    if (attribute_number < 32) /* only return attributes that are flagged as being part of GetAttributeALl */
-    {
-      message_router_request->request_path.attribute_number = attribute_number;
-
-      if (8 == attribute_number) { /* insert 6 zeros for the required empty safety network number according to Table 5-3.10 */
-    	FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 6, &message_router_response->message);
-      }
-
-      if ( kEipStatusOkSend
-           != GetAttributeSingleTcpIpInterface(instance, message_router_request,
-                                               message_router_response,
-                                               originator_address,
-                                               encapsulation_session) ) {
-        return kEipStatusError;
-      }
-
-      if (9 == attribute_number) {
-        /* returning default value for unimplemented attributes 10,11 and 12 */
-
-        /* attribute 10, type: BOOL, default value: 0 */
-        //message_router_response->data += 6;
-    	AddSintToMessage(0, &message_router_response->message);
-
-
-        /* attribute 11, type: STRUCT OF USINT, ARRAY of 6 USINTs, ARRAY of 28 USINTs default value: 0 */
-    	const size_t kAttribute11Size = sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 * sizeof(CipUsint);
-    	OPENER_ASSERT(kAttribute11Size == 35);
-    	FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, kAttribute11Size, &message_router_response->message);
-
-        /* attribute 12, type: BOOL default value: 0 */
-    	AddSintToMessage(0, &message_router_response->message);
-      }
-
-    }
-    attribute++;
-  }
-  return kEipStatusOkSend;
 }
 
 /**
