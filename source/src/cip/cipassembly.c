@@ -163,7 +163,6 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
 
   const EipUint8 *const router_request_data = message_router_request->data;
 
-  InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service =
     (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;

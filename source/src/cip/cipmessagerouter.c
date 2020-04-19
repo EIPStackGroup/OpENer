@@ -13,7 +13,6 @@
 #include "cipmessagerouter.h"
 
 CipMessageRouterRequest g_message_router_request;
-CipMessageRouterResponse g_message_router_response;
 
 /** @brief A class registry list node
  *
@@ -102,9 +101,6 @@ EipStatus CipMessageRouterInit() {
                 "GetAttributeSingle");
 
   /* reserved for future use -> set to zero */
-  g_message_router_response.reserved = 0;
-  InitializeENIPMessage(&g_message_router_response.message);
-
   return kEipStatusOk;
 }
 
@@ -180,12 +176,11 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
+                              CipMessageRouterResponse *message_router_response,
                               const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   CipError status = kCipErrorSuccess;
-
-  InitializeENIPMessage(&g_message_router_response.message); /* Initialize reply buffer */
 
   OPENER_TRACE_INFO("NotifyMessageRouter: routing unconnected message\n");
   if ( kCipErrorSuccess
@@ -193,10 +188,10 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
               data, data_length, &g_message_router_request) ) ) { /* error from create MR structure*/
     OPENER_TRACE_ERR(
       "NotifyMessageRouter: error from createMRRequeststructure\n");
-    g_message_router_response.general_status = status;
-    g_message_router_response.size_of_additional_status = 0;
-    g_message_router_response.reserved = 0;
-    g_message_router_response.reply_service = (0x80
+    message_router_response->general_status = status;
+    message_router_response->size_of_additional_status = 0;
+    message_router_response->reserved = 0;
+    message_router_response->reply_service = (0x80
                                                | g_message_router_request.
                                                service);
   } else {
@@ -207,24 +202,24 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       OPENER_TRACE_ERR(
         "NotifyMessageRouter: sending CIP_ERROR_OBJECT_DOES_NOT_EXIST reply, class id 0x%x is not registered\n",
         (unsigned ) g_message_router_request.request_path.class_id);
-      g_message_router_response.general_status =
+      message_router_response->general_status =
         kCipErrorPathDestinationUnknown;   /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
-      g_message_router_response.size_of_additional_status = 0;
-      g_message_router_response.reserved = 0;
-      g_message_router_response.reply_service = (0x80
+      message_router_response->size_of_additional_status = 0;
+      message_router_response->reserved = 0;
+      message_router_response->reply_service = (0x80
                                                  | g_message_router_request.
                                                  service);
     } else {
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/
-      g_message_router_response.reserved = 0;
+    	message_router_response->reserved = 0;
       OPENER_ASSERT(NULL != registered_object->cip_class)
       OPENER_TRACE_INFO(
         "NotifyMessageRouter: calling notify function of class '%s'\n",
         registered_object->cip_class->class_name);
       eip_status = NotifyClass(registered_object->cip_class,
                                &g_message_router_request,
-                               &g_message_router_response,
+                               message_router_response,
                                originator_address,
                                encapsulation_session);
 

@@ -578,7 +578,7 @@ void EncodeCipStringN(const void *const data, ENIPMessage *const outgoing_messag
 void EncodeCipByteArray(const void *const data, ENIPMessage *const outgoing_message) {
     OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
     CipByteArray *cip_byte_array = (CipByteArray *) data;
-    memcpy(&outgoing_message->current_message_position, cip_byte_array->data, cip_byte_array->length);
+    memcpy(outgoing_message->current_message_position, cip_byte_array->data, cip_byte_array->length);
     outgoing_message->current_message_position += cip_byte_array->length;
     outgoing_message->used_message_length += cip_byte_array->length;
 }

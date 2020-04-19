@@ -24,6 +24,11 @@ const size_t sequenced_address_item_length = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
+static void InitializeMessageRouterResponse(CipMessageRouterResponse *const message_router_response) {
+  memset(message_router_response, 0, sizeof(*message_router_response));
+  InitializeENIPMessage(&message_router_response->message);
+}
+
 EipStatus NotifyCommonPacketFormat
 (
   const EncapsulationData *const received_data,
@@ -31,6 +36,8 @@ EipStatus NotifyCommonPacketFormat
   ENIPMessage *const outgoing_message)
 {
   EipStatus return_value = kEipStatusError;
+  CipMessageRouterResponse message_router_response;
+  InitializeMessageRouterResponse(&message_router_response);
 
   if (kEipStatusError == ( return_value = CreateCommonPacketFormatStructure(
                              received_data->
@@ -48,6 +55,7 @@ EipStatus NotifyCommonPacketFormat
         return_value = NotifyMessageRouter(
           g_common_packet_format_data_item.data_item.data,
           g_common_packet_format_data_item.data_item.length,
+          &message_router_response,
           originator_address,
           received_data->session_handle);
         if (return_value != kEipStatusError) {
@@ -55,7 +63,8 @@ EipStatus NotifyCommonPacketFormat
           /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
            *  Its not clear how to transport this error information to the requester. */
           int response_len = AssembleLinearMessage(
-            &g_message_router_response, &g_common_packet_format_data_item,
+            &message_router_response,
+            &g_common_packet_format_data_item,
             outgoing_message);
 
           /* Save pointer and move to start for Encapusulation Header */
@@ -154,9 +163,12 @@ EipStatus NotifyConnectedCommonPacketFormat(
 
           ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
+          CipMessageRouterResponse message_router_response;
+          InitializeMessageRouterResponse(&message_router_response);
           return_value = NotifyMessageRouter(
             buffer,
             g_common_packet_format_data_item.data_item.length - 2,
+            &message_router_response,
             originator_address,
             received_data->session_handle);
 
@@ -168,7 +180,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
             /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
              *  Its not clear how to transport this error information to the requester. */
             int response_len = AssembleLinearMessage(
-              &g_message_router_response, &g_common_packet_format_data_item,
+              &message_router_response, &g_common_packet_format_data_item,
               outgoing_message);
 
             CipOctet *buffer = outgoing_message->current_message_position;
