@@ -613,8 +613,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
 
 EipStatus SendUdpData(struct sockaddr_in *address,
                       int socket_handle,
-                      EipUint8 *data,
-                      EipUint16 data_length) {
+                      const ENIPMessage *const outgoing_message) {
 
 
 
@@ -622,16 +621,16 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeader header = {
     .source_port = 2222,
     .destination_port = ntohs(address->sin_port),
-    .packet_length = kUdpHeaderLength + data_length,
+    .packet_length = kUdpHeaderLength + outgoing_message->used_message_length,
     .checksum = 0
   };
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
-  memcpy(complete_message + kUdpHeaderLength, data, data_length);
+  memcpy(complete_message + kUdpHeaderLength, outgoing_message->message_buffer, outgoing_message->used_message_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
-                                                        8 + data_length,
+                                                        8 + outgoing_message->used_message_length,
                                                         g_tcpip.
                                                         interface_configuration
                                                         .ip_address,
@@ -640,7 +639,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 
   int sent_length = sendto( socket_handle,
                             (char *) complete_message,
-                            data_length + kUdpHeaderLength,
+							outgoing_message->used_message_length + kUdpHeaderLength,
                             0,
                             (struct sockaddr *) address,
                             sizeof(*address) );
@@ -656,11 +655,11 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length + kUdpHeaderLength) {
+  if (sent_length != outgoing_message->used_message_length + kUdpHeaderLength) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
-      data_length);
+	  outgoing_message->used_message_length);
     return kEipStatusError;
   }
 

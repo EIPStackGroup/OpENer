@@ -789,15 +789,13 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
  *
  * @param socket_data Pointer to the "send to" address
  * @param socket_handle Socket descriptor to send on
- * @param data Pointer to the data to send
- * @param data_length Length of the data to send
+ * @param outgoing message The constructed outgoing message
  * @return kEipStatusOk on success
  */
 EipStatus
 SendUdpData(struct sockaddr_in *socket_data,
             int socket_handle,
-            EipUint8 *data,
-            EipUint16 data_length);
+			const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Close the given socket and clean up the stack
