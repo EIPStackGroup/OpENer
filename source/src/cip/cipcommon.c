@@ -297,7 +297,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                      (void *) &cip_class->number_of_instances,
                      kGetableSingleAndAll );                        /* number of instances currently existing*/
     InsertAttribute( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint,
-                     (void *) &kCipUintZero, kGetableAll );         /* optional attribute list - default = 0 */
+                     (void *) &kCipUintZero, kGetableAllDummy );         /* optional attribute list - default = 0 */
     InsertAttribute( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint,
                      (void *) &kCipUintZero, kNotSetOrGetable );    /* optional service list - default = 0 */
     InsertAttribute( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint,
@@ -306,14 +306,12 @@ CipClass *CreateCipClass(const CipUdint class_code,
     InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
                      (void *) &cip_class->highest_attribute_number,
                      kGetableSingle );                              /* max instance attribute number*/
-	  if (number_of_class_services > 0) {
-		if (number_of_class_services > 1) {             /*only if the mask has values add the get_attribute_all service */
-		  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
-						"GetAttributeAll");                     /* bind instance services to the metaclass*/
-		}
-		InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
-					  "GetAttributeSingle");
+	if (number_of_class_services > 0) {
+	  if (number_of_class_services > 1) {             /*only if the mask has values add the get_attribute_all service */
+	    InsertService(meta_class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");                     /* bind instance services to the metaclass*/
 	  }
+	  InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
+	}
   } else {
     initializer(cip_class);
   }
