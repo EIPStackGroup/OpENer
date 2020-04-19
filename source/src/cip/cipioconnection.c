@@ -825,8 +825,8 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
   ENIPMessage outgoing_message;
   InitializeENIPMessage(&outgoing_message);
-  EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
-                                             &outgoing_message);
+  AssembleIOMessage(common_packet_format_data,
+                    &outgoing_message);
 
 
   outgoing_message.current_message_position -= 2;
@@ -841,17 +841,17 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   {
     common_packet_format_data->data_item.length += 2;
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
     AddIntToMessage(connection_object->sequence_count_producing,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
   } else {
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
   }
 
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
   AddDintToMessage( g_run_idle_state,
-                    &(outgoing_message.current_message_position) );
+                    &outgoing_message );
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   memcpy(outgoing_message.current_message_position,
