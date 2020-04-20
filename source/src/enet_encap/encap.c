@@ -106,7 +106,7 @@ int GetFreeSessionIndex(void);
 SessionStatus CheckRegisteredSessions(
   const EncapsulationData *const receive_data);
 
-void DetermineDelayTime(const EipByte *const buffer_start,
+void DetermineDelayTime(const EipByte *buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer);
 
 /*   @brief Initializes session list and interface information. */
@@ -465,11 +465,11 @@ void EncapsulateListIdentityResponseMessage(
 
 }
 
-void DetermineDelayTime(const EipByte *const buffer_start,
+void DetermineDelayTime(const EipByte *buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer)
 {
 
-  MoveMessageNOctets(12, (const CipOctet **) &buffer_start);       /* start of the sender context */
+	buffer_start += 12;       /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(
     (const EipUint8 **const ) &buffer_start);
 

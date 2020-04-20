@@ -17,10 +17,10 @@
 #include "encap.h"
 #include "enipmessage.h"
 
-const size_t item_count_field_size = 2; /**< The size of the item count field in the message */
-const size_t item_data_type_id_field_length = 2; /**< The size of the item count field in the message */
+const size_t kItemCountFieldSize = 2; /**< The size of the item count field in the message */
+const size_t KItemDataTypeIdFieldLength = 2; /**< The size of the item count field in the message */
 
-const size_t sequenced_address_item_length = 8;
+const size_t kSequencedAddressItemLength = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
@@ -60,9 +60,9 @@ EipStatus NotifyCommonPacketFormat
           received_data->session_handle);
         if (return_value != kEipStatusError) {
           SkipEncapsulationHeader(outgoing_message);
-          /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
+          /* TODO: Here we get the status. What to do? kEipStatusError from AssembleLinearMessage().
            *  Its not clear how to transport this error information to the requester. */
-          int response_len = AssembleLinearMessage(
+          EipStatus status = AssembleLinearMessage(
             &message_router_response,
             &g_common_packet_format_data_item,
             outgoing_message);
@@ -72,7 +72,7 @@ EipStatus NotifyCommonPacketFormat
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
           GenerateEncapsulationHeader(received_data,
-                                      response_len,
+        		  	      outgoing_message->used_message_length,
                                       received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
@@ -177,9 +177,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
             .connection_identifier = connection_object
                                      ->cip_produced_connection_id;
             SkipEncapsulationHeader(outgoing_message);
-            /* TODO: Here we lose a possible kEipStatusError from AssembleLinearMessage().
+            /* TODO: Here we get the status. What to do? kEipStatusError from AssembleLinearMessage().
              *  Its not clear how to transport this error information to the requester. */
-            int response_len = AssembleLinearMessage(
+            EipStatus status = AssembleLinearMessage(
               &message_router_response, &g_common_packet_format_data_item,
               outgoing_message);
 
@@ -187,7 +187,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
             GenerateEncapsulationHeader(received_data,
-                                        response_len,
+                                        outgoing_message->used_message_length,
                                         received_data->session_handle,
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
@@ -346,7 +346,7 @@ void EncodeSequencedAddressItem(
   ENIPMessage *const outgoing_message) {
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
   AddIntToMessage(kCipItemIdSequencedAddressItem, outgoing_message);
-  AddIntToMessage(sequenced_address_item_length, outgoing_message);
+  AddIntToMessage(kSequencedAddressItemLength, outgoing_message);
   AddDintToMessage(common_packet_format_data_item->address_item.data.connection_identifier, outgoing_message);
   AddDintToMessage(common_packet_format_data_item->address_item.data.sequence_number, outgoing_message);
 }
@@ -567,7 +567,7 @@ void EncodeSockaddrInfoLength(
   AddIntToMessage(common_packet_format_data_item->address_info_item[item_type].length, outgoing_message);
 }
 
-int AssembleLinearMessage(
+EipStatus AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
@@ -670,12 +670,12 @@ int AssembleLinearMessage(
       }
     }
   }
-  return outgoing_message->used_message_length;
+  return kEipStatusOk;
 }
 
-int AssembleIOMessage(
+void AssembleIOMessage(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  return AssembleLinearMessage(0, common_packet_format_data_item,
+  AssembleLinearMessage(0, common_packet_format_data_item,
                                outgoing_message);
 }
