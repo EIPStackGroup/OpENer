@@ -828,6 +828,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   AssembleIOMessage(common_packet_format_data,
                     &outgoing_message);
 
+  MoveMessageNOctets(-2, &outgoing_message);
   common_packet_format_data->data_item.length = producing_instance_attributes
                                                 ->length;
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
@@ -837,6 +838,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   if (kConnectionObjectTransportClassTriggerTransportClass1 ==
       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
+    common_packet_format_data->data_item.length += 2;
     AddIntToMessage(common_packet_format_data->data_item.length,
                     &outgoing_message);
     AddIntToMessage(connection_object->sequence_count_producing,
@@ -856,9 +858,9 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
          producing_instance_attributes->length);
 
   outgoing_message.current_message_position +=
-    common_packet_format_data->data_item.length;
+		  producing_instance_attributes->length;
   outgoing_message.used_message_length +=
-    common_packet_format_data->data_item.length;
+		  producing_instance_attributes->length;
 
   return SendUdpData(
     &connection_object->remote_address,
