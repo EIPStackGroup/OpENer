@@ -81,7 +81,7 @@ EipStatus SetAttributeSingleQoS(
 
       if(NULL != attribute->data) {
         /* Call the PreSetCallback if enabled. */
-        if (attribute->attribute_flags & kPreSetFunc
+        if ((attribute->attribute_flags & kPreSetFunc)
             && NULL != instance->cip_class->PreSetCallback) {
           instance->cip_class->PreSetCallback(instance, attribute,
                                             message_router_request->service);
@@ -91,7 +91,7 @@ EipStatus SetAttributeSingleQoS(
         *(data) = attribute_value_received;
 
         /* Call the PostSetCallback if enabled. */
-        if (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc)
+        if ((attribute->attribute_flags & (kPostSetFunc | kNvDataFunc))
             && NULL != instance->cip_class->PostSetCallback) {
           instance->cip_class->PostSetCallback(instance, attribute,
                                             message_router_request->service);

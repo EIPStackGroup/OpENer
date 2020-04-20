@@ -195,7 +195,7 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
             message_router_response->general_status = kCipErrorTooMuchData;
           }
           else{
-            if (attribute->attribute_flags & kPreSetFunc
+            if ((attribute->attribute_flags & kPreSetFunc)
                 && instance->cip_class->PreSetCallback) {
                 instance->cip_class->PreSetCallback(instance,
                                                     attribute,

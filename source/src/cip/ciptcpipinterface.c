@@ -363,7 +363,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
                             ]);
     if ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) {
 
-      if (attribute->attribute_flags & kPreSetFunc
+      if ((attribute->attribute_flags & kPreSetFunc)
           && instance->cip_class->PreSetCallback) {
           instance->cip_class->PreSetCallback(instance,
                                               attribute,
@@ -507,7 +507,7 @@ EipStatus SetAttributeSingleTcpIpInterface(
       }
 
       /* Call the PostSetCallback if enabled. */
-      if (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc)
+      if ((attribute->attribute_flags & (kPostSetFunc | kNvDataFunc))
           && NULL != instance->cip_class->PostSetCallback) {
         CipUsint service = message_router_request->service;
         if (kCipErrorSuccess != message_router_response->general_status) {

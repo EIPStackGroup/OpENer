@@ -93,15 +93,6 @@ static void EncodeCipEthernetLinkInterfaceControl(const void *const data, ENIPMe
 
 static void EncodeCipEthernetLinkInterfaceCaps(const void *const data, ENIPMessage *const outgoing_message);
 
-
-/* forward declaration for the GetAttributeSingle service handler function */
-EipStatus GetAttributeSingleEthernetLink(
-  CipInstance *RESTRICT const instance,
-  CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session);
-
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 /* forward declaration for the GetAndClear service handler function */
 EipStatus GetAndClearEthernetLink(
