@@ -666,11 +666,15 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   header.packet_length = kUdpHeaderLength + data_length;
   header.checksum = 0;
 
+  /* Ensure the header and payload fit in the buffer. */
+  const size_t pkt_len = kUdpHeaderLength + data_length;
+  OPENER_ASSERT(pkt_len <= PC_OPENER_ETHERNET_BUFFER_SIZE);
+
   memcpy(udp_tx_buf + kUdpHeaderLength, data, data_length);
   UDPHeaderGenerate(&header, udp_tx_buf);
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(udp_tx_buf,
-                                                        8 + data_length,
+                                                        pkt_len,
                                                         g_tcpip.
                                                         interface_configuration
                                                         .ip_address,
@@ -681,7 +685,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   const EipStatus send_result = SendToPlatform(
      socket_handle,
      udp_tx_buf,
-     data_length + kUdpHeaderLength,
+     pkt_len,
      0,
      (struct sockaddr *) address,
      sizeof(*address),
@@ -699,7 +703,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length + kUdpHeaderLength) {
+  if (sent_length != pkt_len) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
