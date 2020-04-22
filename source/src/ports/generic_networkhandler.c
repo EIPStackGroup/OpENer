@@ -647,6 +647,11 @@ void CheckAndHandleUdpUnicastSocket(void) {
   }
 }
 
+
+/* Buffer used in SendUdpData() to assemble the complete header & payload. */
+static char udp_tx_buf[PC_OPENER_ETHERNET_BUFFER_SIZE];
+
+
 EipStatus SendUdpData(struct sockaddr_in *address,
                       socket_platform_t socket_handle,
                       EipUint8 *data,
@@ -661,22 +666,21 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   header.packet_length = kUdpHeaderLength + data_length;
   header.checksum = 0;
 
-  char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
-  memcpy(complete_message + kUdpHeaderLength, data, data_length);
-  UDPHeaderGenerate(&header, (char *)complete_message);
+  memcpy(udp_tx_buf + kUdpHeaderLength, data, data_length);
+  UDPHeaderGenerate(&header, udp_tx_buf);
   UDPHeaderSetChecksum(&header,
-                       htons(UDPHeaderCalculateChecksum(complete_message,
+                       htons(UDPHeaderCalculateChecksum(udp_tx_buf,
                                                         8 + data_length,
                                                         g_tcpip.
                                                         interface_configuration
                                                         .ip_address,
                                                         address->sin_addr.s_addr) ) );
-  UDPHeaderGenerate(&header, (char *)complete_message);
+  UDPHeaderGenerate(&header, udp_tx_buf);
 
   size_t sent_length;
   const EipStatus send_result = SendToPlatform(
      socket_handle,
-     (char *) complete_message,
+     udp_tx_buf,
      data_length + kUdpHeaderLength,
      0,
      (struct sockaddr *) address,
