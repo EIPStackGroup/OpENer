@@ -45,7 +45,8 @@ EipStatus IfaceGetConfiguration
  *  @return                   kEipStatusOk: all fine
  *                            kEipStatusError: failure, errno set
  */
-EipStatus IfaceGetMacAddress(const char *iface, uint8_t *const physical_address);
+EipStatus IfaceGetMacAddress(const char *iface,
+                             uint8_t *const physical_address);
 
 /** @ingroup CIP_API
  * @brief Wait for the network interface having an IP address
@@ -236,7 +237,7 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
 void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
-					 CipAttributeEncodeInMessage encode_function,
+                     CipAttributeEncodeInMessage encode_function,
                      void *const data,
                      const EipByte cip_flags);
 
@@ -294,7 +295,7 @@ void InsertGetSetCallback
 (
   CipClass *const cip_class,
   CipGetSetCallback callback_function,
-  CIPAttributeFlag  callbacks_to_install
+  CIPAttributeFlag callbacks_to_install
 );
 
 /** @ingroup CIP_API
@@ -307,52 +308,77 @@ void InsertGetSetCallback
  *  @param message_router_response The message router response construct
  */
 void EncodeData(const EipUint8 cip_data_type,
-               const void *const cip_data,
-			   CipMessageRouterResponse *const message_router_response);
+                const void *const cip_data,
+                CipMessageRouterResponse *const message_router_response);
 
-void EncodeCipBool(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipBool(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipByte(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipByte(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipWord(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipDword(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipDword(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipLword(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipLword(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipUsint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipUsint(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipUint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipUint(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipUdint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipUdint(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipUlint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipUlint(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipSint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipSint(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipInt(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipInt(const void *const data,
+                  ENIPMessage *const outgoing_message);
 
-void EncodeCipDint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipDint(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipLint(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipLint(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipReal(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipReal(const void *const data,
+                   ENIPMessage *const outgoing_message);
 
-void EncodeCipLreal(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipLreal(const void *const data,
+                    ENIPMessage *const outgoing_message);
 
-void EncodeCipShortString(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipShortString(const void *const data,
+                          ENIPMessage *const outgoing_message);
 
-void EncodeCipString(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipString(const void *const data,
+                     ENIPMessage *const outgoing_message);
 
-void EncodeCipString2(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipString2(const void *const data,
+                      ENIPMessage *const outgoing_message);
 
-void EncodeCipStringN(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipStringN(const void *const data,
+                      ENIPMessage *const outgoing_message);
 
-void EncodeCipByteArray(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipStringI(const void *const data,
+                      ENIPMessage *const outgoing_message);
 
-void EncodeCipEPath(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipByteArray(const void *const data,
+                        ENIPMessage *const outgoing_message);
 
-void EncodeCipEthernetLinkPhyisicalAddress(const void *const data, ENIPMessage *const outgoing_message);
+void EncodeCipEPath(const void *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
+                                           ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
@@ -795,7 +821,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 EipStatus
 SendUdpData(struct sockaddr_in *socket_data,
             int socket_handle,
-			const ENIPMessage *const outgoing_message);
+            const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Close the given socket and clean up the stack

@@ -34,7 +34,7 @@
 
 /* private functions*/
 void EncodeEPath(CipEpath *epath,
-                ENIPMessage *message);
+                 ENIPMessage *message);
 
 void CipStackInit(const EipUint16 unique_connection_id) {
   /* The message router is the first CIP object be initialized!!! */
@@ -222,7 +222,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   OPENER_TRACE_INFO("creating class '%s' with code: 0x%" PRIX32 "\n", name,
                     class_code);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_code))  /* check if an class with the ClassID already exists */
+  OPENER_ASSERT(NULL == GetCipClass(class_code) )  /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -231,7 +231,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
      and contains a pointer to a metaclass
      CIP never explicitly addresses a metaclass*/
 
-  CipClass *const cip_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the class object*/
+  CipClass * const cip_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the class object*/
   CipClass *const meta_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
@@ -273,8 +273,9 @@ CipClass *CreateCipClass(const CipUdint class_code,
   meta_class->services = (CipServiceStruct *) CipCalloc(
     meta_class->number_of_services, sizeof(CipServiceStruct) );
 
-  cip_class->services = (CipServiceStruct *) CipCalloc(cip_class->number_of_services,
-                                                   sizeof(CipServiceStruct) );
+  cip_class->services = (CipServiceStruct *) CipCalloc(
+    cip_class->number_of_services,
+    sizeof(CipServiceStruct) );
 
   if (number_of_instances > 0) {
     AddCipInstances(cip_class, number_of_instances);  /*TODO handle return value and clean up if necessary*/
@@ -306,12 +307,18 @@ CipClass *CreateCipClass(const CipUdint class_code,
     InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
                      (void *) &cip_class->highest_attribute_number,
                      kGetableSingle );                              /* max instance attribute number*/
-	if (number_of_class_services > 0) {
-	  if (number_of_class_services > 1) {             /*only if the mask has values add the get_attribute_all service */
-	    InsertService(meta_class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");                     /* bind instance services to the metaclass*/
-	  }
-	  InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
-	}
+    if (number_of_class_services > 0) {
+      if (number_of_class_services > 1) {                 /*only if the mask has values add the get_attribute_all service */
+        InsertService(meta_class,
+                      kGetAttributeAll,
+                      &GetAttributeAll,
+                      "GetAttributeAll");                                                                         /* bind instance services to the metaclass*/
+      }
+      InsertService(meta_class,
+                    kGetAttributeSingle,
+                    &GetAttributeSingle,
+                    "GetAttributeSingle");
+    }
   } else {
     initializer(cip_class);
   }
@@ -323,7 +330,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
 void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
-					 CipAttributeEncodeInMessage encode_function,
+                     CipAttributeEncodeInMessage encode_function,
                      void *const data,
                      const EipByte cip_flags) {
 
@@ -350,7 +357,8 @@ void InsertAttribute(CipInstance *const instance,
         (cip_flags & kGetableSingle) ?
         1 << (attribute_number) % 8 : 0;
       cip_class->get_all_bit_mask[index] |=
-        (cip_flags & (kGetableAll | kGetableAllDummy)) ? 1 << (attribute_number) % 8 : 0;
+        (cip_flags & (kGetableAll | kGetableAllDummy) ) ? 1 <<
+        (attribute_number) % 8 : 0;
       cip_class->set_bit_mask[index] |=
         ( (cip_flags & kSetable) ? 1 : 0 ) << ( (attribute_number) % 8 );
 
@@ -360,7 +368,9 @@ void InsertAttribute(CipInstance *const instance,
   }
   OPENER_TRACE_ERR(
     "Tried to insert too many attributes into class: %" PRIu32 " '%s', instance %" PRIu32 "\n",
-    cip_class->class_code, cip_class->class_name, instance->instance_number);
+    cip_class->class_code,
+    cip_class->class_name,
+    instance->instance_number);
   OPENER_ASSERT(0)
   /* trying to insert too many attributes*/
 }
@@ -396,20 +406,20 @@ void InsertGetSetCallback
 (
   CipClass *const cip_class,
   CipGetSetCallback callback_function,
-  CIPAttributeFlag  callbacks_to_install
+  CIPAttributeFlag callbacks_to_install
 ) {
-  if (0 != (kPreGetFunc & callbacks_to_install)) {
+  if (0 != (kPreGetFunc & callbacks_to_install) ) {
     cip_class->PreGetCallback = callback_function;
   }
-  if (0 != (kPostGetFunc & callbacks_to_install)) {
+  if (0 != (kPostGetFunc & callbacks_to_install) ) {
     cip_class->PostGetCallback = callback_function;
   }
-  if (0 != (kPreSetFunc & callbacks_to_install)) {
+  if (0 != (kPreSetFunc & callbacks_to_install) ) {
     cip_class->PreSetCallback = callback_function;
   }
   /* The PostSetCallback is used for both, the after set action and the storage
    * of non volatile data. Therefore check for both flags set. */
-  if (0 != ((kPostSetFunc | kNvDataFunc) & callbacks_to_install)) {
+  if (0 != ( (kPostSetFunc | kNvDataFunc) & callbacks_to_install ) ) {
     cip_class->PostSetCallback = callback_function;
   }
 }
@@ -431,9 +441,12 @@ CipAttributeStruct *GetCipAttribute(const CipInstance *const instance,
   return NULL;
 }
 
-void GenerateGetAttributeSingleHeader(const CipMessageRouterRequest *const message_router_request, CipMessageRouterResponse *const message_router_response) {
+void GenerateGetAttributeSingleHeader(
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 }
@@ -449,21 +462,27 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
   CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                   message_router_request->request_path.attribute_number);
 
-  GenerateGetAttributeSingleHeader(message_router_request, message_router_response);
+  GenerateGetAttributeSingleHeader(message_router_request,
+                                   message_router_response);
 
   EipUint16 attribute_number =
     message_router_request->request_path.attribute_number;
 
   if ( (NULL != attribute) && (NULL != attribute->data) ) {
-    uint8_t get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                    attribute_number)]);
+    uint8_t get_bit_mask =
+      (instance->cip_class->get_single_bit_mask[CalculateIndex(
+                                                  attribute_number)
+       ]);
     if (0 != (get_bit_mask & (1 << (attribute_number % 8) ) ) ) {
       OPENER_TRACE_INFO("getAttribute %d\n",
                         message_router_request->request_path.attribute_number);                 /* create a reply message containing the data*/
 
       /* Call the PreGetCallback if enabled for this attribute and the class provides one. */
-      if ((attribute->attribute_flags & kPreGetFunc) && NULL != instance->cip_class->PreGetCallback) {
-        instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
+      if ( (attribute->attribute_flags & kPreGetFunc) &&
+           NULL != instance->cip_class->PreGetCallback ) {
+        instance->cip_class->PreGetCallback(instance,
+                                            attribute,
+                                            message_router_request->service);
       }
 
       OPENER_ASSERT(NULL != attribute)
@@ -471,8 +490,11 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
       message_router_response->general_status = kCipErrorSuccess;
 
       /* Call the PostGetCallback if enabled for this attribute and the class provides one. */
-      if ((attribute->attribute_flags & kPostGetFunc) && NULL != instance->cip_class->PostGetCallback) {
-        instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
+      if ( (attribute->attribute_flags & kPostGetFunc) &&
+           NULL != instance->cip_class->PostGetCallback ) {
+        instance->cip_class->PostGetCallback(instance,
+                                             attribute,
+                                             message_router_request->service);
       }
     }
   }
@@ -480,118 +502,181 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-void EncodeCipBool(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipBool(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipByte(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipByte(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipWord(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDword(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipDword(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLword(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipLword(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipUsint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipUsint(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipUint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipUint(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipUdint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipUdint(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipUlint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipUlint(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipSint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipSint(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipInt(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipInt(const void *const data,
+                  ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipDint(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLint(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipLint(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipReal(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipReal(const void *const data,
+                   ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLreal(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipLreal(const void *const data,
+                    ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
 
-void EncodeCipShortString(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipShortString(const void *const data,
+                          ENIPMessage *const outgoing_message) {
   CipShortString *const short_string = (CipShortString *) data;
 
   AddSintToMessage(short_string->length, outgoing_message);
 
-  memcpy(outgoing_message->current_message_position, short_string->string, short_string->length);
+  memcpy(outgoing_message->current_message_position,
+         short_string->string,
+         short_string->length);
   outgoing_message->current_message_position += short_string->length;
   outgoing_message->used_message_length += short_string->length;
 }
 
-void EncodeCipString(const void *const data, ENIPMessage *const outgoing_message) {
-    CipString *const string = (CipString *) data;
+void EncodeCipString(const void *const data,
+                     ENIPMessage *const outgoing_message) {
+  CipString *const string = (CipString *) data;
 
-    AddIntToMessage(*(EipUint16 *) &(string->length), outgoing_message);
-    if(0 != string->length) {
-      memcpy(outgoing_message->current_message_position, string->string, string->length);
-      outgoing_message->current_message_position += string->length;
-      outgoing_message->used_message_length += string->length;
+  AddIntToMessage(*(EipUint16 *) &(string->length), outgoing_message);
+  if(0 != string->length) {
+    memcpy(outgoing_message->current_message_position,
+           string->string,
+           string->length);
+    outgoing_message->current_message_position += string->length;
+    outgoing_message->used_message_length += string->length;
 
-      if (outgoing_message->used_message_length & 0x01) {
-        /* we have an odd byte count */
-  	    AddSintToMessage(0, outgoing_message);
-      }
+    if (outgoing_message->used_message_length & 0x01) {
+      /* we have an odd byte count */
+      AddSintToMessage(0, outgoing_message);
     }
+  }
 }
 
-void EncodeCipString2(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipString2(const void *const data,
+                      ENIPMessage *const outgoing_message) {
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
-void EncodeCipStringN(const void *const data, ENIPMessage *const outgoing_message) {
+void EncodeCipStringN(const void *const data,
+                      ENIPMessage *const outgoing_message) {
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
-void EncodeCipByteArray(const void *const data, ENIPMessage *const outgoing_message) {
-    OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
-    CipByteArray *cip_byte_array = (CipByteArray *) data;
-    memcpy(outgoing_message->current_message_position, cip_byte_array->data, cip_byte_array->length);
-    outgoing_message->current_message_position += cip_byte_array->length;
-    outgoing_message->used_message_length += cip_byte_array->length;
+static void CipStringIHeaderEncoding(const CipStringIStruct *const string,
+                                     ENIPMessage *const outgoing_message) {
+  EncodeCipUsint(&(string->language_char_1), outgoing_message);
+  EncodeCipUsint(&(string->language_char_2), outgoing_message);
+  EncodeCipUsint(&(string->language_char_3), outgoing_message);
+  EncodeCipUsint(&(string->char_string_struct), outgoing_message);
+  EncodeCipUint(&(string->character_set), outgoing_message);
 }
 
-void EncodeCipEPath(const void *const data, ENIPMessage *const outgoing_message) {
-	EncodeEPath( (CipEpath *) data, outgoing_message );
+void EncodeCipStringI(const void *const data,
+                      ENIPMessage *const outgoing_message) {
+  const CipStringI *const string_i = data;
+  EncodeCipUsint(&(string_i->number_of_strings), outgoing_message);
+  for (size_t i = 0; i < string_i->number_of_strings; ++i) {
+    CipStringIHeaderEncoding( (string_i->array_of_string_i_structs) + i,
+                              outgoing_message );
+    switch(string_i->array_of_string_i_structs[i].char_string_struct) {
+      case kCipString: EncodeCipString(
+          string_i->array_of_string_i_structs[i].string,
+          outgoing_message); break;
+      case kCipString2: EncodeCipString2(
+          string_i->array_of_string_i_structs[i].string,
+          outgoing_message); break;
+      case kCipStringN: EncodeCipStringN(
+          string_i->array_of_string_i_structs[i].string,
+          outgoing_message); break;
+      case kCipShortString: EncodeCipShortString(
+          string_i->array_of_string_i_structs[i].string,
+          outgoing_message); break;
+      default: OPENER_ASSERT(false); break;
+    }
+  }
 }
 
-void EncodeCipEthernetLinkPhyisicalAddress(const void *const data, ENIPMessage *const outgoing_message) {
-    EipUint8 *p = (EipUint8 *) data;
-    memcpy(outgoing_message->current_message_position, p, 6);
-    outgoing_message->current_message_position += 6;
-    outgoing_message->used_message_length += 6;
+void EncodeCipByteArray(const void *const data,
+                        ENIPMessage *const outgoing_message) {
+  OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
+  CipByteArray *cip_byte_array = (CipByteArray *) data;
+  memcpy(outgoing_message->current_message_position,
+         cip_byte_array->data,
+         cip_byte_array->length);
+  outgoing_message->current_message_position += cip_byte_array->length;
+  outgoing_message->used_message_length += cip_byte_array->length;
+}
+
+void EncodeCipEPath(const void *const data,
+                    ENIPMessage *const outgoing_message) {
+  EncodeEPath( (CipEpath *) data, outgoing_message );
+}
+
+void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
+                                           ENIPMessage *const outgoing_message)
+{
+  EipUint8 *p = (EipUint8 *) data;
+  memcpy(outgoing_message->current_message_position, p, 6);
+  outgoing_message->current_message_position += 6;
+  outgoing_message->used_message_length += 6;
 }
 
 int DecodeData(const EipUint8 cip_data_type,
@@ -701,8 +786,9 @@ EipStatus GetAttributeAll(CipInstance *instance,
     message_router_response->general_status = kCipErrorServiceNotSupported;
     message_router_response->size_of_additional_status = 0;
   } else {
-	  GenerateGetAttributeSingleHeader(message_router_request, message_router_response);
-	  message_router_response->general_status = kCipErrorSuccess;
+    GenerateGetAttributeSingleHeader(message_router_request,
+                                     message_router_response);
+    message_router_response->general_status = kCipErrorSuccess;
     for (size_t j = 0; j < instance->cip_class->number_of_attributes; j++) {
       /* for each instance attribute of this class */
       EipUint16 attribute_number = attribute->attribute_number;
@@ -722,18 +808,18 @@ EipStatus GetAttributeAll(CipInstance *instance,
 }
 
 void EncodeEPath(CipEpath *epath,
-                ENIPMessage *message) {
+                 ENIPMessage *message) {
   unsigned int length = epath->path_size;
   size_t start_length = message->used_message_length;
   AddIntToMessage(epath->path_size, message);
 
   if (epath->class_id < 256) {
-	AddSintToMessage(0x20, message); /* 8 Bit Class Id */
-	AddSintToMessage((EipUint8) epath->class_id, message);
+    AddSintToMessage(0x20, message);     /* 8 Bit Class Id */
+    AddSintToMessage( (EipUint8) epath->class_id, message );
     length -= 1;
   } else {
-	AddSintToMessage(0x21, message); /*16Bit Class Id */
-	AddSintToMessage(0, message); /*pad byte */
+    AddSintToMessage(0x21, message);     /*16Bit Class Id */
+    AddSintToMessage(0, message);     /*pad byte */
     AddIntToMessage(epath->class_id, message);
     length -= 2;
   }
@@ -752,11 +838,11 @@ void EncodeEPath(CipEpath *epath,
 
     if (0 < length) {
       if (epath->attribute_number < 256) {
-    	AddSintToMessage(0x30, message); /*8Bit Attribute Id */
-    	AddSintToMessage(epath->attribute_number, message);
+        AddSintToMessage(0x30, message); /*8Bit Attribute Id */
+        AddSintToMessage(epath->attribute_number, message);
         length -= 1;
       } else {
-    	AddSintToMessage(0x31, message); /*16Bit Attribute Id */
+        AddSintToMessage(0x31, message); /*16Bit Attribute Id */
         AddSintToMessage(0, message); /*pad byte */
         AddIntToMessage(epath->attribute_number, message);
         length -= 2;
@@ -764,7 +850,8 @@ void EncodeEPath(CipEpath *epath,
     }
   }
 
-  OPENER_ASSERT(2 + epath->path_size * 2 == message->used_message_length - start_length);  /* path size is in 16 bit chunks according to the specification */
+  OPENER_ASSERT(
+    2 + epath->path_size * 2 == message->used_message_length - start_length);              /* path size is in 16 bit chunks according to the specification */
 }
 
 int DecodePaddedEPath(CipEpath *epath,
