@@ -120,14 +120,14 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
   InsertAttribute(instance,
                   3,
                   kCipByteArray,
-				  EncodeCipByteArray,
+                  EncodeCipByteArray,
                   assembly_byte_array,
                   kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
   InsertAttribute(instance,
                   4,
                   kCipUint,
-				  EncodeCipUint,
+                  EncodeCipUint,
                   &(assembly_byte_array->length),
                   kGetableSingle);
 
@@ -195,11 +195,11 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
             message_router_response->general_status = kCipErrorTooMuchData;
           }
           else{
-            if ((attribute->attribute_flags & kPreSetFunc)
-                && instance->cip_class->PreSetCallback) {
-                instance->cip_class->PreSetCallback(instance,
-                                                    attribute,
-                                                    message_router_request->service);
+            if ( (attribute->attribute_flags & kPreSetFunc)
+                 && instance->cip_class->PreSetCallback ) {
+              instance->cip_class->PreSetCallback(instance,
+                                                  attribute,
+                                                  message_router_request->service);
             }
 
             memcpy(data->data, router_request_data, data->length);
@@ -242,8 +242,7 @@ static EipStatus AssemblyPreGetCallback
   CipInstance *const instance,
   CipAttributeStruct *const attribute,
   CipByte service
-)
-{
+) {
   int rc;
   (void) attribute; (void) service; /* no unused parameter warnings */
 
@@ -257,8 +256,7 @@ static EipStatus AssemblyPostSetCallback
   CipInstance *const instance,
   CipAttributeStruct *const attribute,
   CipByte service
-)
-{
+) {
   int rc;
   (void) attribute; (void) service; /* no unused parameter warnings */
 

@@ -354,8 +354,8 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
 }
 
 void CipEpathSetLogicalValue(const CipDword logical_value,
-                               const LogicalSegmentLogicalFormat logical_format,
-                               CipMessageRouterResponse *const message) {
+                             const LogicalSegmentLogicalFormat logical_format,
+                             CipMessageRouterResponse *const message) {
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:
       AddSintToMessage(logical_value, &message->message);
@@ -370,7 +370,7 @@ void CipEpathSetLogicalValue(const CipDword logical_value,
       break;
     default:
       OPENER_ASSERT(false); /* This should never happen! */
-	  break;
+      break;
   }
 }
 
@@ -442,7 +442,7 @@ void GetElectronicKeyFormat4FromMessage(
   OPENER_ASSERT( kElectronicKeySegmentFormatKeyFormat4 ==
                  GetPathLogicalSegmentElectronicKeyFormat(*message) )
 
-  (*message) += 2;
+    (*message) += 2;
   ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message) );
@@ -657,8 +657,8 @@ size_t CipEpathEncodeConnectionEpath(
     encoded_path_length += 1;
     MoveMessageNOctets(1, (const CipOctet **)encoded_path);
     CipEpathSetLogicalValue(connection_epath->class_id,
-                                                   logical_value,
-                                                   encoded_path);
+                            logical_value,
+                            encoded_path);
   }
 
   {

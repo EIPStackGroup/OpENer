@@ -450,7 +450,7 @@ EipStatus OpenProducingMulticastConnection(
   /* Here we look for existing multi-cast IO connections only. */
   CipConnectionObject *existing_connection_object =
     GetExistingProducerIoConnection(true,
-      connection_object->produced_path.instance_id);
+                                    connection_object->produced_path.instance_id);
 
   int j = 0; /* allocate an unused sockaddr struct to use */
   if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
@@ -858,9 +858,9 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
          producing_instance_attributes->length);
 
   outgoing_message.current_message_position +=
-		  producing_instance_attributes->length;
+    producing_instance_attributes->length;
   outgoing_message.used_message_length +=
-		  producing_instance_attributes->length;
+    producing_instance_attributes->length;
 
   return SendUdpData(
     &connection_object->remote_address,

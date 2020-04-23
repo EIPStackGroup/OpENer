@@ -101,11 +101,11 @@ CipUdint GetUdintFromMessage(const CipOctet **const buffer_address) {
  * @param buffer pointer where data should be written.
  */
 void AddSintToMessage(const EipUint8 data,
-		ENIPMessage *const outgoing_message) {
+                      ENIPMessage *const outgoing_message) {
 
-	outgoing_message->current_message_position[0] = (unsigned char) data;
-	outgoing_message->current_message_position += 1;
-	outgoing_message->used_message_length += 1;
+  outgoing_message->current_message_position[0] = (unsigned char) data;
+  outgoing_message->current_message_position += 1;
+  outgoing_message->used_message_length += 1;
 }
 
 /**
@@ -114,7 +114,7 @@ void AddSintToMessage(const EipUint8 data,
  * @param buffer pointer where data should be written.
  */
 void AddIntToMessage(const EipUint16 data,
-		ENIPMessage *const outgoing_message) {
+                     ENIPMessage *const outgoing_message) {
 
   outgoing_message->current_message_position[0] = (unsigned char) data;
   outgoing_message->current_message_position[1] = (unsigned char) (data >> 8);
@@ -128,7 +128,7 @@ void AddIntToMessage(const EipUint16 data,
  * @param buffer pointer where data should be written.
  */
 void AddDintToMessage(const EipUint32 data,
-		ENIPMessage *const outgoing_message) {
+                      ENIPMessage *const outgoing_message) {
   outgoing_message->current_message_position[0] = (unsigned char) data;
   outgoing_message->current_message_position[1] = (unsigned char) (data >> 8);
   outgoing_message->current_message_position[2] = (unsigned char) (data >> 16);
@@ -172,14 +172,20 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
  * @param buffer pointer where data should be written.
  */
 void AddLintToMessage(const EipUint64 data,
-		ENIPMessage *const outgoing_message) {
+                      ENIPMessage *const outgoing_message) {
 
-  outgoing_message->current_message_position[0] = (EipUint8) (data >> 56) & 0xFF;
-  outgoing_message->current_message_position[1] = (EipUint8) (data >> 48) & 0xFF;
-  outgoing_message->current_message_position[2] = (EipUint8) (data >> 40) & 0xFF;
-  outgoing_message->current_message_position[3] = (EipUint8) (data >> 32) & 0xFF;
-  outgoing_message->current_message_position[4] = (EipUint8) (data >> 24) & 0xFF;
-  outgoing_message->current_message_position[5] = (EipUint8) (data >> 16) & 0xFF;
+  outgoing_message->current_message_position[0] = (EipUint8) (data >> 56) &
+                                                  0xFF;
+  outgoing_message->current_message_position[1] = (EipUint8) (data >> 48) &
+                                                  0xFF;
+  outgoing_message->current_message_position[2] = (EipUint8) (data >> 40) &
+                                                  0xFF;
+  outgoing_message->current_message_position[3] = (EipUint8) (data >> 32) &
+                                                  0xFF;
+  outgoing_message->current_message_position[4] = (EipUint8) (data >> 24) &
+                                                  0xFF;
+  outgoing_message->current_message_position[5] = (EipUint8) (data >> 16) &
+                                                  0xFF;
   outgoing_message->current_message_position[6] = (EipUint8) (data >> 8) & 0xFF;
   outgoing_message->current_message_position[7] = (EipUint8) (data) & 0xFF;
   outgoing_message->current_message_position += 8;
@@ -190,8 +196,8 @@ void AddLintToMessage(const EipUint64 data,
 
 
 void EncapsulateIpAddress(EipUint16 port,
-                         EipUint32 address,
-						 ENIPMessage *const outgoing_message) {
+                          EipUint32 address,
+                          ENIPMessage *const outgoing_message) {
   if (kOpENerEndianessLittle == g_opener_platform_endianess) {
     AddIntToMessage(htons(AF_INET), outgoing_message);
     AddIntToMessage(port, outgoing_message);
@@ -202,13 +208,13 @@ void EncapsulateIpAddress(EipUint16 port,
 
       AddIntToMessage(htons(AF_INET), outgoing_message);
 
-      AddSintToMessage((unsigned char) (port >> 8), outgoing_message);
-      AddSintToMessage((unsigned char) port, outgoing_message);
+      AddSintToMessage( (unsigned char) (port >> 8), outgoing_message );
+      AddSintToMessage( (unsigned char) port, outgoing_message );
 
-      AddSintToMessage((unsigned char) address, outgoing_message);
-      AddSintToMessage((unsigned char) (address >> 8), outgoing_message);
-      AddSintToMessage((unsigned char) (address >> 16), outgoing_message);
-      AddSintToMessage((unsigned char) (address >> 24), outgoing_message);
+      AddSintToMessage( (unsigned char) address, outgoing_message );
+      AddSintToMessage( (unsigned char) (address >> 8), outgoing_message );
+      AddSintToMessage( (unsigned char) (address >> 16), outgoing_message );
+      AddSintToMessage( (unsigned char) (address >> 24), outgoing_message );
 
     } else {
       fprintf(stderr,
@@ -244,20 +250,23 @@ int GetEndianess() {
 }
 
 void MoveMessageNOctets(const int amount_of_bytes_moved,
-		ENIPMessage *const outgoing_message) {
+                        ENIPMessage *const outgoing_message) {
   outgoing_message->current_message_position += amount_of_bytes_moved;
   outgoing_message->used_message_length += amount_of_bytes_moved;
 }
 
 void FillNextNMessageOctetsWith(CipOctet value,
-                               unsigned int amount_of_bytes_written,
-							   ENIPMessage *const outgoing_message) {
-  memset(outgoing_message->current_message_position, value, amount_of_bytes_written);
+                                unsigned int amount_of_bytes_written,
+                                ENIPMessage *const outgoing_message) {
+  memset(outgoing_message->current_message_position,
+         value,
+         amount_of_bytes_written);
 }
 
 void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
-                                                         unsigned int amount_of_filled_bytes,
-														 ENIPMessage *const outgoing_message) {
+                                                          unsigned int amount_of_filled_bytes,
+                                                          ENIPMessage *const outgoing_message)
+{
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, outgoing_message);
   MoveMessageNOctets(amount_of_filled_bytes, outgoing_message);
 }

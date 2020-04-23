@@ -59,7 +59,7 @@ CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
  * @param buffer pointer where data should be written.
  */
 void AddSintToMessage(const EipUint8 data,
-		ENIPMessage *const outgoing_message);
+                      ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -70,7 +70,7 @@ void AddSintToMessage(const EipUint8 data,
  * @return Length in bytes of the encoded message
  */
 void AddIntToMessage(const EipUint16 data,
-		ENIPMessage *const outgoing_message);
+                     ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -81,7 +81,7 @@ void AddIntToMessage(const EipUint16 data,
  * @return Length in bytes of the encoded message
  */
 void AddDintToMessage(const EipUint32 data,
-		ENIPMessage *const outgoing_message);
+                      ENIPMessage *const outgoing_message);
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
 
@@ -95,7 +95,7 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
  *
  */
 void AddLintToMessage(const EipUint64 pa_unData,
-		ENIPMessage *const outgoing_message);
+                      ENIPMessage *const outgoing_message);
 
 #endif
 
@@ -108,8 +108,8 @@ void AddLintToMessage(const EipUint64 pa_unData,
  * @param communication_buffer The message buffer for sending the message
  */
 void EncapsulateIpAddress(EipUint16 port,
-                         EipUint32 address,
-			 ENIPMessage *const outgoing_message);
+                          EipUint32 address,
+                          ENIPMessage *const outgoing_message);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -125,12 +125,14 @@ void DetermineEndianess(void);
 int GetEndianess(void);
 
 void MoveMessageNOctets(const int amount_of_bytes_moved,
-		        ENIPMessage *const outgoing_message);
+                        ENIPMessage *const outgoing_message);
 
 void FillNextNMessageOctetsWith(CipOctet value,
-                               unsigned int amount_of_bytes_written,
-			       ENIPMessage *const outgoing_message);
+                                unsigned int amount_of_bytes_written,
+                                ENIPMessage *const outgoing_message);
 
-void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value, unsigned int amount_of_filled_bytes, ENIPMessage *const outgoing_message);
+void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
+                                                          unsigned int amount_of_filled_bytes,
+                                                          ENIPMessage *const outgoing_message);
 
 #endif /* OPENER_ENDIANCONV_H_ */

@@ -213,7 +213,7 @@ EipStatus NetworkHandlerInitialize(void) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n",
-                     error_code, error_message);
+                      error_code, error_message);
     FreeErrorMessage(error_message);
     return kEipStatusError;
   }
@@ -626,11 +626,15 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   };
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
-  memcpy(complete_message + kUdpHeaderLength, outgoing_message->message_buffer, outgoing_message->used_message_length);
+  memcpy(complete_message + kUdpHeaderLength,
+         outgoing_message->message_buffer,
+         outgoing_message->used_message_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
-                                                        8 + outgoing_message->used_message_length,
+                                                        8 +
+                                                        outgoing_message->
+                                                        used_message_length,
                                                         g_tcpip.
                                                         interface_configuration
                                                         .ip_address,
@@ -639,7 +643,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
 
   int sent_length = sendto( socket_handle,
                             (char *) complete_message,
-							outgoing_message->used_message_length + kUdpHeaderLength,
+                            outgoing_message->used_message_length + kUdpHeaderLength,
                             0,
                             (struct sockaddr *) address,
                             sizeof(*address) );
@@ -659,7 +663,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
-	  outgoing_message->used_message_length);
+      outgoing_message->used_message_length);
     return kEipStatusError;
   }
 
@@ -726,7 +730,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO(
         "Entering consumption loop, remaining data to receive: %ld\n",
         data_sent);
-      number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[0],
+      number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[0],
                                   data_sent, 0);
 
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
@@ -763,7 +767,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusOk;
   }
 
-  number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[4],
+  number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[4],
                               data_size, 0);
 
   if (0 == number_of_read_bytes) /* got error or connection closed by client */
@@ -955,7 +959,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         == g_tcpip.mcast_config.starting_multicast_address) {
       if (1 != g_tcpip.mcast_ttl_value) { /* we need to set a TTL value for the socket */
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
-                        NWBUF_CAST &g_tcpip.mcast_ttl_value,
+                        NWBUF_CAST & g_tcpip.mcast_ttl_value,
                         sizeof(g_tcpip.mcast_ttl_value) ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
@@ -973,7 +977,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         struct in_addr my_addr =
         { .s_addr = g_tcpip.interface_configuration.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
-                        NWBUF_CAST &my_addr.s_addr,
+                        NWBUF_CAST & my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);

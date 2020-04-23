@@ -24,8 +24,9 @@ const size_t kSequencedAddressItemLength = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
-static void InitializeMessageRouterResponse(CipMessageRouterResponse *const message_router_response) {
-  memset(message_router_response, 0, sizeof(*message_router_response));
+static void InitializeMessageRouterResponse(
+  CipMessageRouterResponse *const message_router_response) {
+  memset(message_router_response, 0, sizeof(*message_router_response) );
   InitializeENIPMessage(&message_router_response->message);
 }
 
@@ -33,8 +34,7 @@ EipStatus NotifyCommonPacketFormat
 (
   const EncapsulationData *const received_data,
   const struct sockaddr *const originator_address,
-  ENIPMessage *const outgoing_message)
-{
+  ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusError;
   CipMessageRouterResponse message_router_response;
   InitializeMessageRouterResponse(&message_router_response);
@@ -72,7 +72,7 @@ EipStatus NotifyCommonPacketFormat
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
           GenerateEncapsulationHeader(received_data,
-        		  	      outgoing_message->used_message_length,
+                                      outgoing_message->used_message_length,
                                       received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
@@ -212,7 +212,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
     }
   }
   // return outgoing_message->used_message_length;
-  return (0 != outgoing_message->used_message_length ? kEipStatusOkSend : kEipStatusOk); /* TODO: What would the right EipStatus to return? */
+  return (0 !=
+          outgoing_message->used_message_length ? kEipStatusOkSend :
+          kEipStatusOk);                                                                 /* TODO: What would the right EipStatus to return? */
 }
 
 /**
@@ -332,7 +334,9 @@ void EncodeConnectedAddressItem(
   /* connected data item -> address length set to 4 and copy ConnectionIdentifier */
   AddIntToMessage(kCipItemIdConnectionAddress, outgoing_message);
   AddIntToMessage(4, outgoing_message);
-  AddDintToMessage(common_packet_format_data_item->address_item.data.connection_identifier, outgoing_message);
+  AddDintToMessage(
+    common_packet_format_data_item->address_item.data.connection_identifier,
+    outgoing_message);
 }
 
 /**
@@ -347,8 +351,12 @@ void EncodeSequencedAddressItem(
   /* sequenced address item -> address length set to 8 and copy ConnectionIdentifier and SequenceNumber */
   AddIntToMessage(kCipItemIdSequencedAddressItem, outgoing_message);
   AddIntToMessage(kSequencedAddressItemLength, outgoing_message);
-  AddDintToMessage(common_packet_format_data_item->address_item.data.connection_identifier, outgoing_message);
-  AddDintToMessage(common_packet_format_data_item->address_item.data.sequence_number, outgoing_message);
+  AddDintToMessage(
+    common_packet_format_data_item->address_item.data.connection_identifier,
+    outgoing_message);
+  AddDintToMessage(
+    common_packet_format_data_item->address_item.data.sequence_number,
+    outgoing_message);
 }
 
 /**
@@ -372,7 +380,8 @@ void EncodeItemCount(
 void EncodeDataItemType(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage(common_packet_format_data_item->data_item.type_id, outgoing_message);
+  AddIntToMessage(common_packet_format_data_item->data_item.type_id,
+                  outgoing_message);
 }
 
 /**
@@ -384,7 +393,8 @@ void EncodeDataItemType(
 void EncodeDataItemLength(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage(common_packet_format_data_item->data_item.length, outgoing_message);
+  AddIntToMessage(common_packet_format_data_item->data_item.length,
+                  outgoing_message);
 }
 
 /**
@@ -396,9 +406,13 @@ void EncodeDataItemLength(
 void EncodeDataItemData(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  memcpy(outgoing_message->current_message_position, common_packet_format_data_item->data_item.data, common_packet_format_data_item->data_item.length);
-  outgoing_message->current_message_position += common_packet_format_data_item->data_item.length;
-  outgoing_message->used_message_length += common_packet_format_data_item->data_item.length;
+  memcpy(outgoing_message->current_message_position,
+         common_packet_format_data_item->data_item.data,
+         common_packet_format_data_item->data_item.length);
+  outgoing_message->current_message_position +=
+    common_packet_format_data_item->data_item.length;
+  outgoing_message->used_message_length +=
+    common_packet_format_data_item->data_item.length;
 }
 
 /**
@@ -411,8 +425,12 @@ void EncodeDataItemData(
 void EncodeConnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage((EipUint16) ( message_router_response->message.used_message_length + 4 + 2  /* TODO: Magic numbers */
-                  + (2 * message_router_response->size_of_additional_status) ), outgoing_message);
+  AddIntToMessage( (EipUint16) ( message_router_response->message.
+                                 used_message_length + 4 + 2                                  /* TODO: Magic numbers */
+                                 + (2 *
+                                    message_router_response->
+                                    size_of_additional_status) ),
+                   outgoing_message );
 }
 
 /**
@@ -424,7 +442,9 @@ void EncodeConnectedDataItemLength(
 void EncodeSequenceNumber(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage((EipUint16) common_packet_format_data_item->address_item.data.sequence_number, outgoing_message);
+  AddIntToMessage(
+     (EipUint16) common_packet_format_data_item->address_item.data.sequence_number,
+    outgoing_message );
 }
 
 /**
@@ -473,7 +493,8 @@ void EncodeGeneralStatus(
 void EncodeExtendedStatusLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddSintToMessage(message_router_response->size_of_additional_status, outgoing_message);
+  AddSintToMessage(message_router_response->size_of_additional_status,
+                   outgoing_message);
 }
 
 /**
@@ -488,7 +509,8 @@ void EncodeExtendedStatusDataItems(
   for (size_t i = 0;
        i < message_router_response->size_of_additional_status &&
        i < MAX_SIZE_OF_ADD_STATUS; i++) {
-    AddIntToMessage(message_router_response->additional_status[i], outgoing_message);
+    AddIntToMessage(message_router_response->additional_status[i],
+                    outgoing_message);
   }
 }
 
@@ -519,8 +541,12 @@ void EncodeExtendedStatus(
 void EncodeUnconnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage((EipUint16) ( message_router_response->message.used_message_length + 4  /* TODO: Magic number */
-                  + (2 * message_router_response->size_of_additional_status) ), outgoing_message);
+  AddIntToMessage( (EipUint16) ( message_router_response->message.
+                                 used_message_length + 4                                  /* TODO: Magic number */
+                                 + (2 *
+                                    message_router_response->
+                                    size_of_additional_status) ),
+                   outgoing_message );
 }
 
 /**
@@ -532,10 +558,14 @@ void EncodeUnconnectedDataItemLength(
 void EncodeMessageRouterResponseData(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  memcpy(outgoing_message->current_message_position, message_router_response->message.message_buffer, message_router_response->message.used_message_length);
+  memcpy(outgoing_message->current_message_position,
+         message_router_response->message.message_buffer,
+         message_router_response->message.used_message_length);
 
-  outgoing_message->current_message_position += message_router_response->message.used_message_length;
-  outgoing_message->used_message_length += message_router_response->message.used_message_length;
+  outgoing_message->current_message_position +=
+    message_router_response->message.used_message_length;
+  outgoing_message->used_message_length +=
+    message_router_response->message.used_message_length;
 }
 
 /**
@@ -550,7 +580,9 @@ void EncodeSockaddrInfoItemTypeId(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   OPENER_ASSERT(item_type == 0 || item_type == 1)
-  AddIntToMessage(common_packet_format_data_item->address_info_item[item_type].type_id, outgoing_message);
+  AddIntToMessage(
+    common_packet_format_data_item->address_info_item[item_type].type_id,
+    outgoing_message);
 }
 
 /**
@@ -564,7 +596,9 @@ void EncodeSockaddrInfoLength(
   int item_type,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage(common_packet_format_data_item->address_info_item[item_type].length, outgoing_message);
+  AddIntToMessage(
+    common_packet_format_data_item->address_info_item[item_type].length,
+    outgoing_message);
 }
 
 EipStatus AssembleLinearMessage(
@@ -665,7 +699,7 @@ EipStatus AssembleLinearMessage(
           outgoing_message);
 
         FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-            0, 8, outgoing_message);
+          0, 8, outgoing_message);
         break;
       }
     }
@@ -677,5 +711,5 @@ void AssembleIOMessage(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   AssembleLinearMessage(0, common_packet_format_data_item,
-                               outgoing_message);
+                        outgoing_message);
 }

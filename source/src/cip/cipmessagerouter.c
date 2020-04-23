@@ -76,9 +76,9 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
                    kGetableSingleAndAll );                       /* max instance attribute number*/
 
   InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
-                    "GetAttributeAll");                     /* bind instance services to the metaclass*/
+                "GetAttributeAll");                         /* bind instance services to the metaclass*/
   InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
-                  "GetAttributeSingle");
+                "GetAttributeSingle");
 }
 
 EipStatus CipMessageRouterInit() {
@@ -192,8 +192,8 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
     message_router_response->size_of_additional_status = 0;
     message_router_response->reserved = 0;
     message_router_response->reply_service = (0x80
-                                               | g_message_router_request.
-                                               service);
+                                              | g_message_router_request.
+                                              service);
   } else {
     /* forward request to appropriate Object if it is registered*/
     CipMessageRouterObject *registered_object = GetRegisteredObject(
@@ -207,12 +207,12 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       message_router_response->size_of_additional_status = 0;
       message_router_response->reserved = 0;
       message_router_response->reply_service = (0x80
-                                                 | g_message_router_request.
-                                                 service);
+                                                | g_message_router_request.
+                                                service);
     } else {
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/
-    	message_router_response->reserved = 0;
+      message_router_response->reserved = 0;
       OPENER_ASSERT(NULL != registered_object->cip_class)
       OPENER_TRACE_INFO(
         "NotifyMessageRouter: calling notify function of class '%s'\n",

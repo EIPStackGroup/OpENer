@@ -183,9 +183,11 @@ void InitializeConnectionManager(CipClass *class) {
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
   InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
-  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint,
+                   (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint,
+                   (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
   InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
@@ -194,8 +196,14 @@ void InitializeConnectionManager(CipClass *class) {
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,	"GetAttributeAll"); /* bind instance services to the metaclass*/
-  InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
+  InsertService(meta_class,
+                kGetAttributeAll,
+                &GetAttributeAll,
+                "GetAttributeAll");                                                 /* bind instance services to the metaclass*/
+  InsertService(meta_class,
+                kGetAttributeSingle,
+                &GetAttributeSingle,
+                "GetAttributeSingle");
 
 }
 
@@ -762,8 +770,10 @@ EipStatus AssembleForwardOpenResponse(
       }
     }
 
-    AddDintToMessage(connection_object->cip_consumed_connection_id, &message_router_response->message);
-    AddDintToMessage(connection_object->cip_produced_connection_id, &message_router_response->message);
+    AddDintToMessage(connection_object->cip_consumed_connection_id,
+                     &message_router_response->message);
+    AddDintToMessage(connection_object->cip_produced_connection_id,
+                     &message_router_response->message);
   } else {
     /* we have an connection creation error */
     OPENER_TRACE_INFO("AssembleForwardOpenResponse: sending error response\n");
@@ -813,9 +823,12 @@ EipStatus AssembleForwardOpenResponse(
     }
   }
 
-  AddIntToMessage(connection_object->connection_serial_number, &message_router_response->message);
-  AddIntToMessage(connection_object->originator_vendor_id, &message_router_response->message);
-  AddDintToMessage(connection_object->originator_serial_number, &message_router_response->message);
+  AddIntToMessage(connection_object->connection_serial_number,
+                  &message_router_response->message);
+  AddIntToMessage(connection_object->originator_vendor_id,
+                  &message_router_response->message);
+  AddDintToMessage(connection_object->originator_serial_number,
+                   &message_router_response->message);
 
   if (kCipErrorSuccess == general_status) {
     /* set the actual packet rate to requested packet rate */
@@ -891,7 +904,8 @@ EipStatus AssembleForwardCloseResponse(
     message_router_response->general_status = kCipErrorSuccess;
     message_router_response->size_of_additional_status = 0;
   } else {
-    AddSintToMessage(*message_router_request->data, &message_router_response->message); /* remaining path size */
+    AddSintToMessage(*message_router_request->data,
+                     &message_router_response->message);                                /* remaining path size */
     if (kConnectionManagerExtendedStatusWrongCloser == extended_error_code) {
       message_router_response->general_status = kCipErrorPrivilegeViolation;
     } else {

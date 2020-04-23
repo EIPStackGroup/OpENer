@@ -56,7 +56,7 @@ typedef enum cip_data_types {
   kCipMemberList = 0xA3, /**< */
   kCipByteArray = 0xA4, /**< */
   kInternalUint6 = 0xF0, /**< bogus hack, for port class attribute 9, TODO
-                           figure out the right way to handle it */
+                            figure out the right way to handle it */
   kCipStringI
 } CipDataType;
 
@@ -166,21 +166,21 @@ typedef struct cip_type_string_i_struct CipStringIStruct;
 
 typedef struct cip_string_i {
   CipUsint number_of_strings;
-  CipStringIStruct* array_of_string_i_structs;
+  CipStringIStruct *array_of_string_i_structs;
 } CipStringI;
 
 typedef enum cip_type_string_i_character_set {
-	kCipStringICharSet_ISO_8859_1_1987 = 4,
-	kCipStringICharSet_ISO_8859_2_1987 = 5,
-	kCipStringICharSet_ISO_8859_3_1988 = 6,
-	kCipStringICharSet_ISO_8859_4_1988 = 7,
-	kCipStringICharSet_ISO_8859_5_1988 = 8,
-	kCipStringICharSet_ISO_8859_6_1987 = 9,
-	kCipStringICharSet_ISO_8859_7_1987 = 10,
-	kCipStringICharSet_ISO_8859_8_1989 = 11,
-	kCipStringICharSet_ISO_8859_9_1989 = 12,
-	kCipStringICharSet_ISO_10646_UCS_2 = 1000,
-	kCipStringICharSet_ISO_10646_UCS_4 = 1001
+  kCipStringICharSet_ISO_8859_1_1987 = 4,
+  kCipStringICharSet_ISO_8859_2_1987 = 5,
+  kCipStringICharSet_ISO_8859_3_1988 = 6,
+  kCipStringICharSet_ISO_8859_4_1988 = 7,
+  kCipStringICharSet_ISO_8859_5_1988 = 8,
+  kCipStringICharSet_ISO_8859_6_1987 = 9,
+  kCipStringICharSet_ISO_8859_7_1987 = 10,
+  kCipStringICharSet_ISO_8859_8_1989 = 11,
+  kCipStringICharSet_ISO_8859_9_1989 = 12,
+  kCipStringICharSet_ISO_10646_UCS_2 = 1000,
+  kCipStringICharSet_ISO_10646_UCS_4 = 1001
 } CipStringICharacterSet;
 
 typedef struct cip_type_string_i_struct {
@@ -263,10 +263,11 @@ typedef struct {
 } CipMessageRouterResponse;
 
 /** @brief self-describing data encoding for CIP types */
-typedef void (*CipAttributeEncodeInMessage)(const void *const data, ENIPMessage *const outgoing_message);
+typedef void (*CipAttributeEncodeInMessage)(const void *const data,
+                                            ENIPMessage *const outgoing_message);
 
 /** @brief Structure to describe a single CIP attribute of an object
-*/
+ */
 typedef struct {
   EipUint16 attribute_number; /**< The attribute number of this attribute. */
   EipUint8 type;  /**< The @ref CipDataType of this attribute. */
@@ -332,15 +333,15 @@ typedef struct cip_class {
   struct cip_service_struct *services; /**< pointer to the array of services */
   char *class_name; /**< class name */
   /** Is called in GetAttributeSingle* before the response is assembled from
-  * the object's attributes */
+   * the object's attributes */
   CipGetSetCallback PreGetCallback;
   /** Is called in GetAttributeSingle* after the response has been sent. */
   CipGetSetCallback PostGetCallback;
   /** Is called in SetAttributeSingle* before the received data is moved
-  * to the object's attributes */
+   * to the object's attributes */
   CipGetSetCallback PreSetCallback;
   /** Is called in SetAttributeSingle* after the received data was set
-  * in the object's attributes. */
+   * in the object's attributes. */
   CipGetSetCallback PostSetCallback;
 } CipClass;
 
