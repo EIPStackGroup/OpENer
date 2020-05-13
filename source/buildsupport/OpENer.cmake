@@ -22,7 +22,7 @@ endmacro(opener_platform_support ARGS)
 # Adds common Include directories     #
 #######################################
 macro(opener_common_includes)
-  set( SRC_DIR "${PROJECT_SOURCE_DIR}/src" )
+  set( SRC_DIR "${OpENer_SOURCE_DIR}/src" )
   set( CIP_SRC_DIR "${SRC_DIR}/cip" )
   set( ENET_ENCAP_SRC_DIR "${SRC_DIR}/enet_encap" )
   set( PORTS_SRC_DIR "${SRC_DIR}/ports")
