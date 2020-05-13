@@ -101,7 +101,7 @@ void SetDeviceStatus(const CipWord status);
  * @param unique_connection_id value passed to Connection_Manager_Init() to form
  * a "per boot" unique connection ID.
  */
-void CipStackInit(const EipUint16 unique_connection_id);
+EipStatus CipStackInit(const EipUint16 unique_connection_id);
 
 /** @ingroup CIP_API
  * @brief Shutdown of the CIP stack
@@ -298,6 +298,8 @@ void InsertGetSetCallback
   CIPAttributeFlag callbacks_to_install
 );
 
+
+//TODO: Update documentation
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *
@@ -307,9 +309,7 @@ void InsertGetSetCallback
  *  @param cip_data pointer to data value.
  *  @param message_router_response The message router response construct
  */
-void EncodeData(const EipUint8 cip_data_type,
-                const void *const cip_data,
-                CipMessageRouterResponse *const message_router_response);
+
 
 void EncodeCipBool(const void *const data,
                    ENIPMessage *const outgoing_message);

@@ -22,9 +22,6 @@
 #if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
   #include "cipdlr.h"
 #endif
-
-#include "../cip_objects/CIPFileObject/cipfile.h"
-
 #include "cipqos.h"
 #include "cpf.h"
 #include "trace.h"
@@ -36,7 +33,7 @@
 void EncodeEPath(CipEpath *epath,
                  ENIPMessage *message);
 
-void CipStackInit(const EipUint16 unique_connection_id) {
+EipStatus CipStackInit(const EipUint16 unique_connection_id) {
   /* The message router is the first CIP object be initialized!!! */
   EipStatus eip_status = CipMessageRouterInit();
   OPENER_ASSERT(kEipStatusOk == eip_status)
@@ -56,14 +53,11 @@ void CipStackInit(const EipUint16 unique_connection_id) {
 #endif
   eip_status = CipQoSInit();
   OPENER_ASSERT(kEipStatusOk == eip_status)
-  eip_status = CipFileInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
   OPENER_ASSERT(kEipStatusOk == eip_status)
 
-  /* Shut up compiler warning with traces disabled */
-    (void) eip_status;
+  return eip_status;
 }
 
 void ShutdownCipStack(void) {
