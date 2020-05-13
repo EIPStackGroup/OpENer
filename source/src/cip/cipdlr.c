@@ -102,7 +102,8 @@ static void EncodeCipNodeAddress(const void *const data,
                                  ENIPMessage *const outgoing_message) {
   CipNodeAddress *node_address = (CipNodeAddress *)data;
   EncodeCipUdint(&node_address->device_ip, outgoing_message);
-  EncodeData(kCip6Usint, &node_address->device_mac, outgoing_message);
+  EncodeCipEthernetLinkPhyisicalAddress(&node_address->device_mac,
+                                        outgoing_message);
 }
 
 
