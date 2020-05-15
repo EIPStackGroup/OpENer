@@ -116,7 +116,7 @@ int main(int argc,
 
   /* Setup the CIP Layer. All objects are initialized with the default
    * values for the attribute contents. */
-  CipStackInit(unique_connection_id);
+  EipStatus eip_status = CipStackInit(unique_connection_id);
 
   CipEthernetLinkSetMac(iface_mac);
 
@@ -136,11 +136,11 @@ int main(int argc,
   }
 
   /* Bring up network interface or start DHCP client ... */
-  EipStatus status = BringupNetwork(arg[1],
-                                    g_tcpip.config_control,
-                                    &g_tcpip.interface_configuration,
-                                    &g_tcpip.hostname);
-  if (status < 0) {
+  eip_status = BringupNetwork(arg[1],
+                              g_tcpip.config_control,
+                              &g_tcpip.interface_configuration,
+                              &g_tcpip.hostname);
+  if (eip_status < 0) {
     OPENER_TRACE_ERR("BringUpNetwork() failed\n");
   }
 
@@ -159,14 +159,17 @@ int main(int argc,
     OPENER_TRACE_INFO("DHCP network configuration started\n");
     /* DHCP should already have been started with BringupNetwork(). Wait
      * here for IP present (DHCP done) or abort through g_end_stack. */
-    status = IfaceWaitForIp(arg[1], -1, &g_end_stack);
-    OPENER_TRACE_INFO("DHCP wait for interface: status %d, g_end_stack=%d\n",
-                      status, g_end_stack);
-    if (kEipStatusOk == status && 0 == g_end_stack) {
+    eip_status = IfaceWaitForIp(arg[1], -1, &g_end_stack);
+    OPENER_TRACE_INFO(
+      "DHCP wait for interface: eip_status %d, g_end_stack=%d\n",
+      eip_status,
+      g_end_stack);
+    if (kEipStatusOk == eip_status && 0 == g_end_stack) {
       /* Read IP configuration received via DHCP from interface and store in
        *  the TCP/IP object.*/
-      status = IfaceGetConfiguration(arg[1], &g_tcpip.interface_configuration);
-      if (status < 0) {
+      eip_status = IfaceGetConfiguration(arg[1],
+                                         &g_tcpip.interface_configuration);
+      if (eip_status < 0) {
         OPENER_TRACE_WARN("Problems getting interface configuration\n");
       }
     }

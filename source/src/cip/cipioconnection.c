@@ -92,7 +92,8 @@ EipUint16 ProcessProductionInhibitTime(CipConnectionObject *io_connection_object
                 io_connection_object)
               / 1000) ) {
         /* see section C-1.4.3.3 */
-        return kConnectionManagerExtendedStatusCodeRpiNotSupported; /**< RPI not supported. Extended Error code deprecated */
+        return
+          kConnectionManagerExtendedStatusCodeProductionInhibitTimerGreaterThanRpi;
       }
     }
   }

@@ -174,20 +174,14 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
 void AddLintToMessage(const EipUint64 data,
                       ENIPMessage *const outgoing_message) {
 
-  outgoing_message->current_message_position[0] = (EipUint8) (data >> 56) &
-                                                  0xFF;
-  outgoing_message->current_message_position[1] = (EipUint8) (data >> 48) &
-                                                  0xFF;
-  outgoing_message->current_message_position[2] = (EipUint8) (data >> 40) &
-                                                  0xFF;
-  outgoing_message->current_message_position[3] = (EipUint8) (data >> 32) &
-                                                  0xFF;
-  outgoing_message->current_message_position[4] = (EipUint8) (data >> 24) &
-                                                  0xFF;
-  outgoing_message->current_message_position[5] = (EipUint8) (data >> 16) &
-                                                  0xFF;
-  outgoing_message->current_message_position[6] = (EipUint8) (data >> 8) & 0xFF;
-  outgoing_message->current_message_position[7] = (EipUint8) (data) & 0xFF;
+  outgoing_message->current_message_position[0] = (EipUint8) (data);
+  outgoing_message->current_message_position[1] = (EipUint8) (data >> 8);
+  outgoing_message->current_message_position[2] = (EipUint8) (data >> 16);
+  outgoing_message->current_message_position[3] = (EipUint8) (data >> 24);
+  outgoing_message->current_message_position[4] = (EipUint8) (data >> 32);
+  outgoing_message->current_message_position[5] = (EipUint8) (data >> 40);
+  outgoing_message->current_message_position[6] = (EipUint8) (data >> 48);
+  outgoing_message->current_message_position[7] = (EipUint8) (data >> 56);
   outgoing_message->current_message_position += 8;
   outgoing_message->used_message_length += 8;
 }

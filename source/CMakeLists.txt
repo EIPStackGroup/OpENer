@@ -31,7 +31,7 @@ configure_file(
 	)
 
 find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsupport )
- 
+
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
 option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
@@ -139,8 +139,9 @@ if( OpENer_TESTS )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/CodeCoverage.cmake )
-  set(COVERAGE_LCOV_EXCLUDES 'tests/*' 'usr/*' 'ports/POSIX/sample_application/*')
-  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests DEPENDENCIES OpENer_Tests)
+  APPEND_COVERAGE_COMPILER_FLAGS()
+  # The used CppUTest framework does not support parallel jobs
+  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests EXCLUDE "tests/*" "src/ports/*/sample_application/*")
   add_test_includes()
   add_subdirectory( tests )
 endif( OpENer_TESTS )

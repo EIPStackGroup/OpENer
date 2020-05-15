@@ -99,14 +99,14 @@ TEST(EndianConversion, AddLintToMessage) {
   AddLintToMessage(value_to_add_to_message, &message);
 
   /* Expected message from highest to lowest byte [30][52][09][84][0B][EF][2A][2D] */
-  BYTES_EQUAL(0x2D, message.message_buffer[0]);
-  BYTES_EQUAL(0x2A, message.message_buffer[1]);
-  BYTES_EQUAL(0xEF, message.message_buffer[2]);
-  BYTES_EQUAL(0x0B, message.message_buffer[3]);
-  BYTES_EQUAL(0x84, message.message_buffer[4]);
-  BYTES_EQUAL(0x09, message.message_buffer[5]);
-  BYTES_EQUAL(0x52, message.message_buffer[6]);
-  BYTES_EQUAL(0x30, message.message_buffer[7]);
+  BYTES_EQUAL(0x30, message.message_buffer[0]);
+  BYTES_EQUAL(0x52, message.message_buffer[1]);
+  BYTES_EQUAL(0x09, message.message_buffer[2]);
+  BYTES_EQUAL(0x84, message.message_buffer[3]);
+  BYTES_EQUAL(0x0B, message.message_buffer[4]);
+  BYTES_EQUAL(0xEF, message.message_buffer[5]);
+  BYTES_EQUAL(0x2A, message.message_buffer[6]);
+  BYTES_EQUAL(0x2D, message.message_buffer[7]);
 
   POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position)
 }

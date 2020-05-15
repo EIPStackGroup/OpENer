@@ -147,8 +147,16 @@ typedef struct {
  */
 typedef struct {
   EipUint16 length; /**< Length of the String (16 bit value) */
-  EipByte *string; /**< Pointer to the string data */
+  CipByte *string; /**< Pointer to the string data */
 } CipString;
+
+/** @brief CIP String2
+ *
+ */
+typedef struct {
+  EipUint16 length; /**< Length of the String (16 bit value) */
+  CipWord *string; /**< Pointer to the string data */
+} CipString2;
 
 /** @brief CIP String with variable symbol size
  *

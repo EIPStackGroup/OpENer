@@ -496,83 +496,83 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-void EncodeCipBool(const void *const data,
+void EncodeCipBool(const CipBool *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipByte(const void *const data,
+void EncodeCipByte(const CipByte *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipWord(const void *const data,
+void EncodeCipWord(const CipWord *const data,
                    ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDword(const void *const data,
+void EncodeCipDword(const CipDword *const data,
                     ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLword(const void *const data,
+void EncodeCipLword(const CipLword *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipUsint(const void *const data,
+void EncodeCipUsint(const CipUsint *const data,
                     ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipUint(const void *const data,
+void EncodeCipUint(const CipUint *const data,
                    ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipUdint(const void *const data,
+void EncodeCipUdint(const CipUdint *const data,
                     ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipUlint(const void *const data,
+void EncodeCipUlint(const CipUlint *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipSint(const void *const data,
+void EncodeCipSint(const CipSint *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipInt(const void *const data,
+void EncodeCipInt(const CipInt *const data,
                   ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDint(const void *const data,
+void EncodeCipDint(const CipDint *const data,
                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLint(const void *const data,
+void EncodeCipLint(const CipLint *const data,
                    ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipReal(const void *const data,
+void EncodeCipReal(const CipReal *const data,
                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLreal(const void *const data,
+void EncodeCipLreal(const CipLreal *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
 
-void EncodeCipShortString(const void *const data,
+void EncodeCipShortString(const CipShortString *const data,
                           ENIPMessage *const outgoing_message) {
   CipShortString *const short_string = (CipShortString *) data;
 
@@ -585,7 +585,7 @@ void EncodeCipShortString(const void *const data,
   outgoing_message->used_message_length += short_string->length;
 }
 
-void EncodeCipString(const void *const data,
+void EncodeCipString(const CipString *const data,
                      ENIPMessage *const outgoing_message) {
   CipString *const string = (CipString *) data;
 
@@ -604,12 +604,12 @@ void EncodeCipString(const void *const data,
   }
 }
 
-void EncodeCipString2(const void *const data,
+void EncodeCipString2(const CipString2 *const data,
                       ENIPMessage *const outgoing_message) {
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
-void EncodeCipStringN(const void *const data,
+void EncodeCipStringN(const CipStringN *const data,
                       ENIPMessage *const outgoing_message) {
   OPENER_ASSERT(false); /* Not implemented yet */
 }
@@ -623,7 +623,7 @@ static void CipStringIHeaderEncoding(const CipStringIStruct *const string,
   EncodeCipUint(&(string->character_set), outgoing_message);
 }
 
-void EncodeCipStringI(const void *const data,
+void EncodeCipStringI(const CipStringI *const data,
                       ENIPMessage *const outgoing_message) {
   const CipStringI *const string_i = data;
   EncodeCipUsint(&(string_i->number_of_strings), outgoing_message);
@@ -648,7 +648,7 @@ void EncodeCipStringI(const void *const data,
   }
 }
 
-void EncodeCipByteArray(const void *const data,
+void EncodeCipByteArray(const CipByteArray *const data,
                         ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
   CipByteArray *cip_byte_array = (CipByteArray *) data;
@@ -659,7 +659,7 @@ void EncodeCipByteArray(const void *const data,
   outgoing_message->used_message_length += cip_byte_array->length;
 }
 
-void EncodeCipEPath(const void *const data,
+void EncodeCipEPath(const CipEpath *const data,
                     ENIPMessage *const outgoing_message) {
   EncodeEPath( (CipEpath *) data, outgoing_message );
 }
