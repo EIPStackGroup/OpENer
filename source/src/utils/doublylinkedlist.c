@@ -44,13 +44,13 @@ DoublyLinkedListNode *DoublyLinkedListNodeCreate(
 
 void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
                                  DoublyLinkedListNode **node) {
-  OPENER_ASSERT(list->deallocator != NULL)
+  OPENER_ASSERT(list->deallocator != NULL);
   list->deallocator(node);
 }
 
 void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
                                   void *data) {
-  OPENER_ASSERT(list->allocator != NULL)
+  OPENER_ASSERT(list->allocator != NULL);
   DoublyLinkedListNode * new_node = DoublyLinkedListNodeCreate(data,
                                                                list->allocator);
   if(NULL == list->first) {
@@ -65,7 +65,7 @@ void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
 
 void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
                                   const void *const data) {
-  OPENER_ASSERT(list->allocator != NULL)
+  OPENER_ASSERT(list->allocator != NULL);
   DoublyLinkedListNode * new_node = DoublyLinkedListNodeCreate(data,
                                                                list->allocator);
   if(NULL == list->last) {
@@ -81,7 +81,7 @@ void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
 void DoublyLinkedListInsertBeforeNode(DoublyLinkedList *const list,
                                       DoublyLinkedListNode *node,
                                       void *data) {
-  OPENER_ASSERT(list->allocator != NULL)
+  OPENER_ASSERT(list->allocator != NULL);
   if(list->first == node) {
     DoublyLinkedListInsertAtHead(list, data);
   } else {
@@ -97,7 +97,7 @@ void DoublyLinkedListInsertBeforeNode(DoublyLinkedList *const list,
 void DoublyLinkedListInsertAfterNode(DoublyLinkedList *const list,
                                      DoublyLinkedListNode *node,
                                      void *data) {
-  OPENER_ASSERT(list->allocator != NULL)
+  OPENER_ASSERT(list->allocator != NULL);
   if(list->last == node) {
     DoublyLinkedListInsertAtTail(list, data);
   } else {

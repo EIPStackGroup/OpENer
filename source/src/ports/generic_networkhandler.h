@@ -52,6 +52,8 @@ typedef struct {
   int tcp_listener; /**< TCP listener socket */
   int udp_unicast_listener; /**< UDP unicast listener socket */
   int udp_global_broadcast_listener; /**< UDP global network broadcast listener */
+  CipUdint ip_address; /**< IP being valid during NetworkHandlerInitialize() */
+  CipUdint network_mask; /**< network mask being valid during NetworkHandlerInitialize() */
   MilliSeconds elapsed_time;
 } NetworkStatus;
 

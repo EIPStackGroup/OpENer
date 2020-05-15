@@ -113,7 +113,7 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
 
   while (NULL != object) /* for each entry in list*/
   {
-    OPENER_ASSERT(NULL != object->cip_class)
+    OPENER_ASSERT(NULL != object->cip_class);
     if (object->cip_class->class_code == class_id) {
       return object; /* return registration node if it matches class ID*/
     }
@@ -213,7 +213,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/
       g_message_router_response.reserved = 0;
-      OPENER_ASSERT(NULL != registered_object->cip_class)
+      OPENER_ASSERT(NULL != registered_object->cip_class);
       OPENER_TRACE_INFO(
         "NotifyMessageRouter: calling notify function of class '%s'\n",
         registered_object->cip_class->class_name);

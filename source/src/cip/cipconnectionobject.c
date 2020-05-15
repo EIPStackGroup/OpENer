@@ -83,6 +83,7 @@ void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
     } else {
       OPENER_TRACE_ERR("Attempt to delete NULL pointer to node\n");
     }
+  } else {
     OPENER_TRACE_ERR("Attempt to provide a NULL pointer to node pointer\n");
   }
 
@@ -107,7 +108,7 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
-  assert(false); /* NOT IMLEMENTED */
+  assert(false); /* NOT IMPLEMENTED */
   return NULL;
 }
 
@@ -117,6 +118,8 @@ void ConnectionObjectInitializeFromMessage(
   /* For unconnected send - can be ignored by targets, and is ignored here */
   CipByte priority_timetick = GetSintFromMessage(message);
   CipUsint timeout_ticks = GetSintFromMessage(message);
+  (void)priority_timetick;  /* Silence unused variable compiler warning */
+  (void)timeout_ticks;
 
   /* O_to_T Conn ID */
   ConnectionObjectSetCipConsumedConnectionID(connection_object,
@@ -239,7 +242,7 @@ void ConnectionObjectSetState(CipConnectionObject *const connection_object,
         CIP_CONNECTION_OBJECT_STATE_CLOSING;
       break;
     default:
-      OPENER_ASSERT(false) /* Never get here */
+      OPENER_ASSERT(false);/* Never get here */
       break;
   }
 }
@@ -285,7 +288,7 @@ CipUsint ConnectionObjectGetInstanceTypeForAttribute(
       instance_type = CIP_CONNECTION_OBJECT_INSTANCE_TYPE_CIP_BRIDGED;
       break;
     default:
-      OPENER_ASSERT(false) /* This is a fault case */
+      OPENER_ASSERT(false);/* This is a fault case */
       instance_type = kConnectionObjectInstanceTypeInvalid;
       break;
   }
@@ -725,7 +728,7 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
       kConnectionObjectPriorityScheduled; break;
     case CIP_CONNECTION_OBJECT_PRIORITY_URGENT: result =
       kConnectionObjectPriorityUrgent; break;
-    default: OPENER_ASSERT(false) /* Not possible to get here! */
+    default: OPENER_ASSERT(false);/* Not possible to get here! */
       result = kConnectionObjectPriorityLow;
       break;
   }

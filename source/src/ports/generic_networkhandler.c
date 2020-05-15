@@ -93,6 +93,10 @@ EipStatus NetworkHandlerInitialize(void) {
   CipQosUpdateUsedSetQosValues();
   /* Make sure the multicast configuration matches the current IP address. */
   CipTcpIpCalculateMulticastIp(&g_tcpip);
+  /* Freeze IP and network mask matching to the socket setup. This is needed
+   *  for the off subnet multicast routing check later. */
+  g_network_status.ip_address = g_tcpip.interface_configuration.ip_address;
+  g_network_status.network_mask = g_tcpip.interface_configuration.network_mask;
   /* Initialize encapsulation layer here because it accesses the IP address. */
   EncapsulationInit();
 
@@ -193,7 +197,7 @@ EipStatus NetworkHandlerInitialize(void) {
   struct sockaddr_in my_address = {
     .sin_family = AF_INET,
     .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = g_tcpip.interface_configuration.ip_address
+    .sin_addr.s_addr = g_network_status.ip_address
   };
 
   /* bind the new socket to port 0xAF12 (CIP) */
@@ -393,7 +397,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 //                        g_timestamps[i].last_update);
 //    }
 
-    OPENER_ASSERT(socket_timer != NULL)
+    OPENER_ASSERT(socket_timer != NULL);
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -632,9 +636,7 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeaderSetChecksum(&header,
                        htons(UDPHeaderCalculateChecksum(complete_message,
                                                         8 + data_length,
-                                                        g_tcpip.
-                                                        interface_configuration
-                                                        .ip_address,
+                                                        g_network_status.ip_address,
                                                         address->sin_addr.s_addr) ) );
   UDPHeaderGenerate(&header, (char *)complete_message);
 
@@ -903,7 +905,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
     CloseUdpSocket(new_socket);
-    OPENER_ASSERT(false) /* This should never happen! */
+    OPENER_ASSERT(false);/* This should never happen! */
     return kEipInvalidSocket;
   }
 
@@ -972,7 +974,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         /* Need to specify the interface for outgoing multicast packets on a device
             with multiple interfaces. */
         struct in_addr my_addr =
-        { .s_addr = g_tcpip.interface_configuration.ip_address };
+        { .s_addr = g_network_status.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
                         NWBUF_CAST &my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {

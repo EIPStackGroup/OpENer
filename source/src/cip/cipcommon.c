@@ -39,29 +39,29 @@ int EncodeEPath(CipEpath *epath,
 void CipStackInit(const EipUint16 unique_connection_id) {
   /* The message router is the first CIP object be initialized!!! */
   EipStatus eip_status = CipMessageRouterInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipIdentityInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipTcpIpInterfaceInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipEthernetLinkInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = ConnectionManagerInit(unique_connection_id);
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = CipAssemblyInitialize();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
 #if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
   eip_status = CipDlrInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
 #endif
   eip_status = CipQoSInit();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
-  OPENER_ASSERT(kEipStatusOk == eip_status)
+  OPENER_ASSERT(kEipStatusOk == eip_status);
 
   /* Shut up compiler warning with traces disabled */
-    (void) eip_status;
+  (void) eip_status;
 }
 
 void ShutdownCipStack(void) {
@@ -103,7 +103,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
           /* call the service, and return what it returns */
           OPENER_TRACE_INFO("notify: calling %s service\n",
                             service->name);
-          OPENER_ASSERT(NULL != service->service_function)
+          OPENER_ASSERT(NULL != service->service_function);
           return service->service_function(instance,
                                            message_router_request,
                                            message_router_response,
@@ -220,7 +220,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   OPENER_TRACE_INFO("creating class '%s' with code: 0x%" PRIX32 "\n", name,
                     class_code);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_code))  /* check if an class with the ClassID already exists */
+  OPENER_ASSERT(NULL == GetCipClass(class_code)); /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -329,7 +329,7 @@ void InsertAttribute(CipInstance *const instance,
   CipAttributeStruct *attribute = instance->attributes;
   CipClass *cip_class = instance->cip_class;
 
-  OPENER_ASSERT(NULL != attribute)
+  OPENER_ASSERT(NULL != attribute);
   /* adding a attribute to a class that was not declared to have any attributes is not allowed */
   for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
     if (attribute->data == NULL) {             /* found non set attribute */
@@ -338,7 +338,7 @@ void InsertAttribute(CipInstance *const instance,
       attribute->attribute_flags = cip_flags;
       attribute->data = data;
 
-      OPENER_ASSERT(attribute_number <= cip_class->highest_attribute_number)
+      OPENER_ASSERT(attribute_number <= cip_class->highest_attribute_number);
 
       size_t index = CalculateIndex(attribute_number);
 
@@ -357,7 +357,7 @@ void InsertAttribute(CipInstance *const instance,
   OPENER_TRACE_ERR(
     "Tried to insert too many attributes into class: %" PRIu32 " '%s', instance %" PRIu32 "\n",
     cip_class->class_code, cip_class->class_name, instance->instance_number);
-  OPENER_ASSERT(0)
+  OPENER_ASSERT(false);
   /* trying to insert too many attributes*/
 }
 
@@ -370,7 +370,7 @@ void InsertService(const CipClass *const cip_class,
   OPENER_TRACE_INFO("%s, number of services:%d, service number:%d\n",
                     cip_class->class_name, cip_class->number_of_services,
                     service_number);
-  OPENER_ASSERT(service != NULL)
+  OPENER_ASSERT(service != NULL);
   /* adding a service to a class that was not declared to have services is not allowed*/
   for (int i = 0; i < cip_class->number_of_services; i++) /* Iterate over all service slots attached to the class */
   {
@@ -384,7 +384,7 @@ void InsertService(const CipClass *const cip_class,
     }
     ++service;
   }
-  OPENER_ASSERT(0)
+  OPENER_ASSERT(false);
   /* adding more services than were declared is a no-no*/
 }
 
@@ -469,7 +469,7 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
         instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
       }
 
-      OPENER_ASSERT(NULL != attribute)
+      OPENER_ASSERT(NULL != attribute);
       message_router_response->data_length = EncodeData(attribute->type,
                                                         attribute->data,
                                                         &message);

@@ -216,10 +216,10 @@ EipStatus CipEthernetLinkInit(void) {
 
   /* set attributes to initial values */
   for (size_t idx = 0;  idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
-    g_ethernet_link[idx].interface_speed = 100;
+    g_ethernet_link[idx].interface_speed = 100U;
     /* successful speed and duplex neg, full duplex active link.
      * TODO: in future it should be checked if link is active */
-    g_ethernet_link[idx].interface_flags = 0xF;
+    g_ethernet_link[idx].interface_flags = 0xFU;
 
     g_ethernet_link[idx].interface_type = kEthLinkIfTypeTwistedPair;
     if (2 == idx) {
@@ -232,8 +232,10 @@ EipStatus CipEthernetLinkInit(void) {
     g_ethernet_link[idx].interface_caps.speed_duplex_selector =
       kEthLinkSpeedDpx_100_FD;
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+    /* If auto-negotiation is enabled the forced_interface_speed must not be set, i. e.
+     *  be zero. See Vol. 2, section 5-5.3.2.6.2 */
     g_ethernet_link[idx].interface_control.control_bits = kEthLinkIfCntrlAutonegotiate;
-    g_ethernet_link[idx].interface_control.forced_interface_speed = 100;
+    g_ethernet_link[idx].interface_control.forced_interface_speed = 0U;
 #endif
   }
 
@@ -564,7 +566,7 @@ static bool IsIfaceControlAllowed
   CipEthernetLinkInterfaceControl const *iface_cntrl)
 {
   const CipUsint duplex_mode =
-       (iface_cntrl->control_bits & kEthLinkIfCntrlForcedDuplex) ? 1 : 0;
+       (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
     if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
         (1U << i)) {
@@ -588,7 +590,15 @@ EipStatus SetAttributeSingleEthernetLink(
   EipUint16 attribute_number = message_router_request->request_path
                                .attribute_number;
 
-  if (NULL != attribute) {
+
+  /* For attributes that are only kGetableAll we also need to return 
+   *  kCipErrorAttributeNotSupported. Therefore we return that error code if
+   *  these attributes don't have the kGetableSingle property set. */
+  uint8_t get_bit_mask =
+    instance->cip_class->get_single_bit_mask[CalculateIndex(attribute_number)];
+  
+  if (NULL != attribute &&
+      0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) )) {
     uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
                                                                 attribute_number)
                             ]);
@@ -616,7 +626,7 @@ EipStatus SetAttributeSingleEthernetLink(
 
           } else {
             if ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate)) &&
-                ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlForcedDuplex)) ||
+                ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlForceDuplexFD)) ||
                  (0 != if_cntrl.forced_interface_speed))) {
               message_router_response->general_status =
                 kCipErrorObjectStateConflict;
@@ -655,7 +665,7 @@ EipStatus SetAttributeSingleEthernetLink(
       message_router_response->general_status = kCipErrorAttributeNotSetable;
     }
   } else {
-    /* we don't have this attribute */
+    /* we don't have this attribute or only accessible via GetAttributesAll */
     message_router_response->general_status = kCipErrorAttributeNotSupported;
   }
 
