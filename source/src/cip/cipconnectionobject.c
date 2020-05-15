@@ -147,7 +147,7 @@ void ConnectionObjectInitializeFromMessage(
                                                  GetSintFromMessage(
                                                    message) );
 
-  MoveMessageNOctets(3, message); /* 3 bytes reserved */
+  (*message) += 3; /* 3 bytes reserved */
 
   /* the requested packet interval parameter needs to be a multiple of TIMERTICK from the header file */
   OPENER_TRACE_INFO(

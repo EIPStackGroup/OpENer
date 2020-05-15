@@ -92,7 +92,8 @@ EipUint16 ProcessProductionInhibitTime(CipConnectionObject *io_connection_object
                 io_connection_object)
               / 1000) ) {
         /* see section C-1.4.3.3 */
-        return kConnectionManagerExtendedStatusCodeRpiNotSupported; /**< RPI not supported. Extended Error code deprecated */
+        return
+          kConnectionManagerExtendedStatusCodeProductionInhibitTimerGreaterThanRpi;
       }
     }
   }
@@ -454,7 +455,7 @@ EipStatus OpenProducingMulticastConnection(
   /* Here we look for existing multi-cast IO connections only. */
   CipConnectionObject *existing_connection_object =
     GetExistingProducerIoConnection(true,
-      connection_object->produced_path.instance_id);
+                                    connection_object->produced_path.instance_id);
 
   int j = 0; /* allocate an unused sockaddr struct to use */
   if (g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
@@ -829,11 +830,10 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
   ENIPMessage outgoing_message;
   InitializeENIPMessage(&outgoing_message);
-  EipUint16 reply_length = AssembleIOMessage(common_packet_format_data,
-                                             &outgoing_message);
-  (void) reply_length;  /* Silence unused variable compiler warning */
+  AssembleIOMessage(common_packet_format_data,
+                    &outgoing_message);
 
-  outgoing_message.current_message_position -= 2;
+  MoveMessageNOctets(-2, &outgoing_message);
   common_packet_format_data->data_item.length = producing_instance_attributes
                                                 ->length;
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
@@ -845,30 +845,32 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   {
     common_packet_format_data->data_item.length += 2;
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
     AddIntToMessage(connection_object->sequence_count_producing,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
   } else {
     AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message.current_message_position);
+                    &outgoing_message);
   }
 
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
   AddDintToMessage( g_run_idle_state,
-                    &(outgoing_message.current_message_position) );
+                    &outgoing_message );
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   memcpy(outgoing_message.current_message_position,
          producing_instance_attributes->data,
          producing_instance_attributes->length);
 
+  outgoing_message.current_message_position +=
+    producing_instance_attributes->length;
   outgoing_message.used_message_length +=
-    common_packet_format_data->data_item.length;
+    producing_instance_attributes->length;
 
   return SendUdpData(
     &connection_object->remote_address,
     connection_object->socket[kUdpCommuncationDirectionProducing],
-    outgoing_message.message_buffer, outgoing_message.used_message_length);
+    &outgoing_message);
 }
 
 EipStatus HandleReceivedIoConnectionData(
