@@ -143,8 +143,15 @@ elseif(NOT CMAKE_COMPILER_IS_GNUCXX)
     endif()
 endif()
 
-set(COVERAGE_COMPILER_FLAGS "-g -fprofile-arcs -ftest-coverage -fprofile-abs-path"
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG(-fprofile-abs-path ProfileAbsPathAvailable)
+if (ProfileAbsPathAvailable)
+  set(COVERAGE_COMPILER_FLAGS "-g -fprofile-arcs -ftest-coverage -fprofile-abs-path"
     CACHE INTERNAL "")
+else()
+  set(COVERAGE_COMPILER_FLAGS "-g -fprofile-arcs -ftest-coverage"
+    CACHE INTERNAL "")
+endif()
 
 set(CMAKE_Fortran_FLAGS_COVERAGE
     ${COVERAGE_COMPILER_FLAGS}
