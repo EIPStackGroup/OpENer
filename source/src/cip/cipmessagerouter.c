@@ -213,7 +213,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/
       message_router_response->reserved = 0;
-      OPENER_ASSERT(NULL != registered_object->cip_class)
+      OPENER_ASSERT(NULL != registered_object->cip_class);
       OPENER_TRACE_INFO(
         "NotifyMessageRouter: calling notify function of class '%s'\n",
         registered_object->cip_class->class_name);

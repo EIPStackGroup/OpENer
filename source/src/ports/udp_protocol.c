@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include "udp_protocol.h"
+#include "trace.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -62,39 +63,34 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
                                     const size_t udp_packet_length,
                                     const in_addr_t source_addr,
                                     const in_addr_t destination_addr) {
+  /* Checksum is calculated for 16-bit words */
   const uint16_t *udp_packet_words = udp_packet;
-  uint32_t checksum = 0;
-  size_t length = udp_packet_length;
+  uint_fast32_t checksum = 0; /**< Carry bit access is needed (17th bit) */
 
-  // Process UDP packet
-  while(length > 1) {
-    checksum += *udp_packet_words++;
-    if(checksum & 0x8000000) {
-      checksum = (checksum & 0xFFFF) + (checksum >> 16);
-    }
-    length -= 2;
+  for( uint16_t i = udp_packet_length; i > 1; i = i - 2 ) {
+    checksum +=  *udp_packet_words;
+    udp_packet_words++;
   }
 
-  if(0 != length % 2) {
-    // Add padding if packet length is odd
-    checksum += *( (uint8_t *)udp_packet_words );
+  if (udp_packet_length % 2) {
+    checksum += (*( ( (uint8_t *)udp_packet_words ) + 1 ) << 8);
   }
 
-  //Process IP pseudo header
-  uint16_t *source_addr_as_words = (void *)&source_addr;
+  const uint16_t *const source_addr_as_words =
+    (const uint16_t *const )&source_addr;
   checksum += *source_addr_as_words + *(source_addr_as_words + 1);
 
-  uint16_t *destination_addr_as_words = (void *)&destination_addr;
+  const uint16_t *const destination_addr_as_words =
+    (const uint16_t *const )&destination_addr;
   checksum += *destination_addr_as_words + *(destination_addr_as_words + 1);
-
   checksum += htons(IPPROTO_UDP);
   checksum += htons(udp_packet_length);
 
-  //Add the carries
-  while(0 != checksum >> 16) {
+  while(0xFFFF0000 & checksum) {
     checksum = (checksum & 0xFFFF) + (checksum >> 16);
   }
 
   // Return one's complement
   return (uint16_t)(~checksum);
 }
+

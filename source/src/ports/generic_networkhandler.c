@@ -615,8 +615,8 @@ void CheckAndHandleUdpUnicastSocket(void) {
   }
 }
 
-EipStatus SendUdpData(struct sockaddr_in *address,
-                      int socket_handle,
+EipStatus SendUdpData(const struct sockaddr_in *const address,
+                      const int socket_handle,
                       const ENIPMessage *const outgoing_message) {
 
 
@@ -634,15 +634,11 @@ EipStatus SendUdpData(struct sockaddr_in *address,
          outgoing_message->message_buffer,
          outgoing_message->used_message_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
-  UDPHeaderSetChecksum(&header,
-                       htons(UDPHeaderCalculateChecksum(complete_message,
-                                                        8 +
-                                                        outgoing_message->
-                                                        used_message_length,
-                                                        g_tcpip.
-                                                        interface_configuration
-                                                        .ip_address,
-                                                        address->sin_addr.s_addr) ) );
+  const uint16_t udp_checksum = UDPHeaderCalculateChecksum(complete_message,
+                                                           8 + outgoing_message->used_message_length,
+                                                           g_tcpip.interface_configuration.ip_address,
+                                                           address->sin_addr.s_addr);
+  UDPHeaderSetChecksum(&header, htons(udp_checksum) );
   UDPHeaderGenerate(&header, (char *)complete_message);
 
   int sent_length = sendto( socket_handle,
@@ -926,7 +922,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
-  {
+  /* check if it is sending or receiving */
+  if (communication_direction == kUdpCommuncationDirectionConsuming) {
     int option_value = 1;
     if (setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
                     (char *) &option_value,
@@ -938,10 +935,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
-  }
-
-  /* check if it is sending or receiving */
-  if (communication_direction == kUdpCommuncationDirectionConsuming) {
 
     /* bind is only for consuming necessary */
     if ( ( bind( new_socket, (struct sockaddr *) socket_data,
