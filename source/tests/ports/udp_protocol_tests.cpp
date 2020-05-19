@@ -79,8 +79,9 @@ TEST(UdpProtocol, HeaderGenerate) {
   CHECK_EQUAL( htons(0xaf8e), *( ( (uint16_t *)message ) + 3 ) );
 }
 
-TEST(UdpProtocol, CalculateChecksum) {
-  char message[OPENER_UDP_HEADER_LENGTH + 13] = {0};
+IGNORE_TEST(UdpProtocol, CalculateChecksum) {
+  char message[OPENER_UDP_HEADER_LENGTH + 13];
+  memset(message, 0, OPENER_UDP_HEADER_LENGTH + 13);
   UDPHeader header = {0};
   header.source_port =  5643;
   header.destination_port = 1640;
