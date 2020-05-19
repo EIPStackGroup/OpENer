@@ -6,6 +6,7 @@
 
 #include "udp_protocol.h"
 #include "trace.h"
+#include "opener_user_conf.h"
 
 #ifdef WIN32
 #include <winsock2.h>

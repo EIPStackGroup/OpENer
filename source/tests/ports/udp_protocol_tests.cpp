@@ -79,7 +79,7 @@ TEST(UdpProtocol, HeaderGenerate) {
   CHECK_EQUAL( htons(0xaf8e), *( ( (uint16_t *)message ) + 3 ) );
 }
 
-IGONRE_TEST(UdpProtocol, CalculateChecksumOddLength) {
+IGNORE_TEST(UdpProtocol, CalculateChecksumOddLength) {
   char message[OPENER_UDP_HEADER_LENGTH + 13];
   memset(message, 0, OPENER_UDP_HEADER_LENGTH + 13);
   UDPHeader header = {0};
