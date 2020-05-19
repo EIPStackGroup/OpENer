@@ -67,12 +67,13 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
   const uint16_t *udp_packet_words = udp_packet;
   uint_fast32_t checksum = 0; /**< Carry bit access is needed (17th bit) */
 
-  for( uint16_t i = udp_packet_length; i > 1; i = i - 2 ) {
+  uint16_t i = udp_packet_length;
+  for(; i > 1; i = i - 2 ) {
     checksum +=  *udp_packet_words;
     udp_packet_words++;
   }
 
-  if (udp_packet_length % 2) {
+  if (i > 0) {
     checksum += (*( ( (uint8_t *)udp_packet_words ) + 1 ) << 8);
   }
 
