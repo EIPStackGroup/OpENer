@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 
+#include <assert.h>
 #include "udp_protocol.h"
 #include "trace.h"
 #include "opener_user_conf.h"
