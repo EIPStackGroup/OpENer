@@ -75,7 +75,7 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
   }
 
   if (i > 1) {
-    checksum += (*( ( (uint8_t *)udp_packet_words ) + 1 ) << 8);
+    checksum += (*( (uint8_t *)udp_packet_words ) << 8);
     i--;
   }
   OPENER_ASSERT(0 == i); /* data processed */
