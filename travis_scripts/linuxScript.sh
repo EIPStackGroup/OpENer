@@ -10,7 +10,8 @@ cmake -DOpENer_PLATFORM:STRING="POSIX" -DCMAKE_BUILD_TYPE:STRING="Debug" -DOpENe
   -DCPPUTEST_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTest/libCppUTest.a \
   -DCPPUTESTEXT_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTestExt/libCppUTestExt.a .
 build-wrapper-linux-x86-64 --out-dir bw-output make all
-make test
+#make test
+$TRAVIS_BUILD_DIR/tests/OpENer_tests
 make OpENer_coverage
 chmod +x $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
 $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
