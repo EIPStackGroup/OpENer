@@ -141,7 +141,7 @@ if( OpENer_TESTS )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/CodeCoverage.cmake )
   APPEND_COVERAGE_COMPILER_FLAGS()
   # The used CppUTest framework does not support parallel jobs
-  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests EXCLUDE "tests/*" "src/ports/*/sample_application/*")
+  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests EXCLUDE "tests/*" "src/ports/*/sample_application/*" "${CPPUTEST_HOME}/*")
   add_test_includes()
   add_subdirectory( tests )
 endif( OpENer_TESTS )

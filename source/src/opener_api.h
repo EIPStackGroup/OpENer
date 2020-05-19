@@ -819,8 +819,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
  * @return kEipStatusOk on success
  */
 EipStatus
-SendUdpData(struct sockaddr_in *socket_data,
-            int socket_handle,
+SendUdpData(const struct sockaddr_in *const socket_data,
+            const int socket_handle,
             const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
