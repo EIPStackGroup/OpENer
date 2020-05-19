@@ -99,7 +99,7 @@ TEST(UdpProtocol, CalculateChecksumOddLength) {
                                                  OPENER_UDP_HEADER_LENGTH + 13,
                                                  source_addr,
                                                  destination_addr);
-  CHECK_EQUAL(0xE991, checksum); // Aquired via the function under test - correctness verified via Wireshark
+  CHECK_EQUAL(0xD591, checksum); // Aquired via the function under test - correctness verified via Wireshark
 }
 
 TEST(UdpProtocol, CalculateChecksumEvenLength) {
