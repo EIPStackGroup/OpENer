@@ -79,7 +79,7 @@ TEST(UdpProtocol, HeaderGenerate) {
   CHECK_EQUAL( htons(0xaf8e), *( ( (uint16_t *)message ) + 3 ) );
 }
 
-TEST(UdpProtocol, CalculateChecksum) {
+IGONRE_TEST(UdpProtocol, CalculateChecksumOddLength) {
   char message[OPENER_UDP_HEADER_LENGTH + 13];
   memset(message, 0, OPENER_UDP_HEADER_LENGTH + 13);
   UDPHeader header = {0};
@@ -100,4 +100,27 @@ TEST(UdpProtocol, CalculateChecksum) {
                                                  source_addr,
                                                  destination_addr);
   CHECK_EQUAL(0x9491, checksum); // Aquired via the function under test - correctness verified via Wireshark
+}
+
+TEST(UdpProtocol, CalculateChecksumEvenLength) {
+  char message[OPENER_UDP_HEADER_LENGTH + 12];
+  memset(message, 0, OPENER_UDP_HEADER_LENGTH + 12);
+  UDPHeader header = {0};
+  header.source_port =  5643;
+  header.destination_port = 1640;
+  header.packet_length = OPENER_UDP_HEADER_LENGTH + 12;
+  header.checksum = 0;
+  UDPHeaderGenerate(&header, message);
+  for(size_t i = kUdpHeaderLength; i < OPENER_UDP_HEADER_LENGTH + 12; i++) {
+    message[i] = i;
+  }
+
+  in_addr_t source_addr = 0x0A000001;
+  in_addr_t destination_addr = 0x0A000002;
+
+  uint16_t checksum = UDPHeaderCalculateChecksum(message,
+                                                 OPENER_UDP_HEADER_LENGTH + 12,
+                                                 source_addr,
+                                                 destination_addr);
+  CHECK_EQUAL(0xEB91, checksum); // Aquired via the function under test - correctness verified via Wireshark
 }

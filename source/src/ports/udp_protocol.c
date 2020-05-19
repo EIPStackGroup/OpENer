@@ -73,9 +73,11 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
     udp_packet_words++;
   }
 
-  if (i > 0) {
+  if (i > 1) {
     checksum += (*( ( (uint8_t *)udp_packet_words ) + 1 ) << 8);
+    i--;
   }
+  OPENER_ASSERT(0 == i); /* data processed */
 
   const uint16_t *const source_addr_as_words =
     (const uint16_t *const )&source_addr;
