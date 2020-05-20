@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "conffile.h"
+#include "ciptypes.h"
 
 #define QOS_CFG_NAME  "qos.cfg"
 
@@ -32,11 +33,11 @@ int NvQosLoad(CipQosObject *p_qos) {
   int rd_cnt = 0;
   int rc;
 
-  uint64_t dscp_urgent = 0;
-  uint64_t dscp_scheduled = 0;
-  uint64_t dscp_high = 0;
-  uint64_t dscp_low = 0;
-  uint64_t dscp_explicit = 0;
+  CipUsint dscp_urgent = 0;
+  CipUsint dscp_scheduled = 0;
+  CipUsint dscp_high = 0;
+  CipUsint dscp_low = 0;
+  CipUsint dscp_explicit = 0;
 
   rc = ConfFileOpen(false, QOS_CFG_NAME, &p_file);
   if (0 == rc) {
