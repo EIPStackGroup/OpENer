@@ -27,11 +27,10 @@
  *  @param  p_qos pointer to the QoS object's data structure
  *  @return       0: success; -1: failure
  */
-int NvQosLoad(CipQosObject *p_qos)
-{
+int NvQosLoad(CipQosObject *p_qos) {
   FILE  *p_file;
-  int   rd_cnt = 0;
-  int   rc;
+  int rd_cnt = 0;
+  int rc;
 
   uint64_t dscp_urgent = 0;
   uint64_t dscp_scheduled = 0;
@@ -42,9 +41,13 @@ int NvQosLoad(CipQosObject *p_qos)
   rc = ConfFileOpen(false, QOS_CFG_NAME, &p_file);
   if (0 == rc) {
     /* Read input data */
-    rd_cnt = fscanf(p_file, " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
-                    &dscp_urgent, &dscp_scheduled, &dscp_high,
-                    &dscp_low, &dscp_explicit);
+    rd_cnt = fscanf(p_file,
+                    " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
+                    &dscp_urgent,
+                    &dscp_scheduled,
+                    &dscp_high,
+                    &dscp_low,
+                    &dscp_explicit);
 
     /* Need to try to close all stuff in any case. */
     rc = ConfFileClose(&p_file);
@@ -67,17 +70,20 @@ int NvQosLoad(CipQosObject *p_qos)
  *  @param  p_qos pointer to the QoS object's data structure
  *  @return       0: success; -1: failure
  */
-int NvQosStore(const CipQosObject *p_qos)
-{
+int NvQosStore(const CipQosObject *p_qos) {
   FILE  *p_file;
-  int   rc;
+  int rc;
 
   rc = ConfFileOpen(true, QOS_CFG_NAME, &p_file);
   if (rc >= 0) {
     /* Print output data */
-    rc = fprintf(p_file, " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 "\n",
-                 p_qos->dscp.urgent, p_qos->dscp.scheduled, p_qos->dscp.high,
-                 p_qos->dscp.low, p_qos->dscp.explicit);
+    rc = fprintf(p_file,
+                 " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 "\n",
+                 p_qos->dscp.urgent,
+                 p_qos->dscp.scheduled,
+                 p_qos->dscp.high,
+                 p_qos->dscp.low,
+                 p_qos->dscp.explicit);
     if (rc > 0) {
       rc = 0;
     }
