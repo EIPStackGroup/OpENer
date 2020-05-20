@@ -5,7 +5,7 @@ echo 'Linux main Script started...'
 set -e
 
 cd $TRAVIS_BUILD_DIR/source
-cmake -DOpENer_PLATFORM:STRING="POSIX" -DCMAKE_BUILD_TYPE:STRING="Debug" -DOpENer_64_BIT_DATA_TYPES_ENABLED:BOOL=ON \
+cmake -DOpENer_PLATFORM:STRING="POSIX" -DCMAKE_BUILD_TYPE:STRING="Debug" \
   -DOpENer_TESTS:BOOL=ON -DCPPUTEST_HOME:PATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest \
   -DCPPUTEST_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTest/libCppUTest.a \
   -DCPPUTESTEXT_LIBRARY:FILEPATH=$TRAVIS_BUILD_DIR/source/dependencies/cpputest/src/CppUTestExt/libCppUTestExt.a .

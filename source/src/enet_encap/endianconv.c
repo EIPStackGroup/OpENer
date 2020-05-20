@@ -138,8 +138,6 @@ void AddDintToMessage(const EipUint32 data,
   outgoing_message->used_message_length += 4;
 }
 
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
-
 /**
  *   @brief Reads EipUint64 from *pa_buf and converts little endian to host.
  *   @param pa_buf pointer where data should be reed.
@@ -185,9 +183,6 @@ void AddLintToMessage(const EipUint64 data,
   outgoing_message->current_message_position += 8;
   outgoing_message->used_message_length += 8;
 }
-
-#endif
-
 
 void EncapsulateIpAddress(EipUint16 port,
                           EipUint32 address,

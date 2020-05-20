@@ -54,14 +54,12 @@ typedef int32_t CipDint; /**< 32-bit signed integer */
 typedef float CipReal; /**< 32-bit IEEE 754 floating point */
 typedef double CipLreal; /**< 64-bit IEEE 754 floating point */
 
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
 typedef int64_t EipInt64; /**< 64-bit signed number */
 typedef uint64_t EipUint64; /**< 64-bit unsigned number */
 
 typedef int64_t CipLint; /**< 64-bit signed integer */
 typedef uint64_t CipUlint; /**< 64-bit unsigned integer */
 typedef uint64_t CipLword; /**< 64-bit bit string */
-#endif /* OPENER_SUPPORT_64BIT_DATATYPES */
 
 /** @brief Constant identifying if a socket descriptor is invalid
  */

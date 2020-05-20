@@ -216,7 +216,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   OPENER_TRACE_INFO("creating class '%s' with code: 0x%" PRIX32 "\n", name,
                     class_code);
 
-  OPENER_ASSERT(NULL == GetCipClass(class_code)); /* check if an class with the ClassID already exists */
+  OPENER_ASSERT(NULL == GetCipClass(class_code) ); /* check if an class with the ClassID already exists */
   /* should never try to redefine a class*/
 
   /* a metaClass is a class that holds the class attributes and services
@@ -225,7 +225,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
      and contains a pointer to a metaclass
      CIP never explicitly addresses a metaclass*/
 
-  CipClass * const cip_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the class object*/
+  CipClass *const cip_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );        /* create the class object*/
   CipClass *const meta_class = (CipClass *) CipCalloc(1, sizeof(CipClass) );       /* create the metaclass object*/
 
   /* initialize the class-specific fields of the Class struct*/
@@ -704,7 +704,6 @@ int DecodeData(const EipUint8 cip_data_type,
       number_of_decoded_bytes = 4;
       break;
 
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
     case (kCipLint):
     case (kCipUlint):
     case (kCipLword): {
@@ -712,7 +711,6 @@ int DecodeData(const EipUint8 cip_data_type,
       number_of_decoded_bytes = 8;
     }
     break;
-#endif
 
     case (kCipString): {
       CipString *string = (CipString *) cip_data;

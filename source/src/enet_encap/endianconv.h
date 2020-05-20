@@ -83,8 +83,6 @@ void AddIntToMessage(const EipUint16 data,
 void AddDintToMessage(const EipUint32 data,
                       ENIPMessage *const outgoing_message);
 
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
-
 EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
 
 /** @ingroup ENCAP
@@ -96,8 +94,6 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
  */
 void AddLintToMessage(const EipUint64 pa_unData,
                       ENIPMessage *const outgoing_message);
-
-#endif
 
 /** @brief Encapsulate the sockaddr information as necessary for the Common Packet Format data items
  *
