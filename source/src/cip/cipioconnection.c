@@ -40,7 +40,7 @@ EipStatus OpenConsumingPointToPointConnection(
   CipConnectionObject *const connection_object,
   CipCommonPacketFormatData *const common_packet_format_data);
 
-EipStatus OpenProducingPointToPointConnection(
+CipError OpenProducingPointToPointConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data);
 
@@ -277,11 +277,11 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
  *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnection(
+CipError EstablishIoConnection(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error
   ) {
-  EipStatus eip_status = kEipStatusOk;
+  CipError cip_error = kCipErrorSuccess;
 
   CipConnectionObject *io_connection_object = GetIoConnectionForConnectionData(
     connection_object,
@@ -348,10 +348,10 @@ EipStatus EstablishIoConnection(
     }
   }
 
-  eip_status = OpenCommunicationChannels(io_connection_object);
-  if (kEipStatusOk != eip_status) {
+  cip_error = OpenCommunicationChannels(io_connection_object);
+  if (kCipErrorSuccess != cip_error) {
     *extended_error = 0; /*TODO find out the correct extended error code*/
-    return eip_status;
+    return cip_error;
   }
 
   AddNewActiveConnection(io_connection_object);
@@ -359,7 +359,7 @@ EipStatus EstablishIoConnection(
     io_connection_object->consumed_path.instance_id,
     io_connection_object->produced_path.instance_id,
     kIoConnectionEventOpened);
-  return eip_status;
+  return cip_error;
 }
 
 /** @brief Open a Point2Point connection dependent on pa_direction.
@@ -413,7 +413,7 @@ EipStatus OpenConsumingPointToPointConnection(
   return kEipStatusOk;
 }
 
-EipStatus OpenProducingPointToPointConnection(
+CipError OpenProducingPointToPointConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data
   ) {
@@ -445,7 +445,7 @@ EipStatus OpenProducingPointToPointConnection(
   }
   connection_object->socket[kUdpCommuncationDirectionProducing] = socket;
 
-  return kEipStatusOk;
+  return kCipErrorSuccess;
 }
 
 EipStatus OpenProducingMulticastConnection(
@@ -926,9 +926,9 @@ EipStatus HandleReceivedIoConnectionData(
   return kEipStatusOk;
 }
 
-EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object) {
+CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
-  EipStatus eip_status = kEipStatusOk;
+  CipError cip_error = kCipErrorSuccess;
   /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
   CipCommonPacketFormatData *common_packet_format_data =
     &g_common_packet_format_data_item;
@@ -945,7 +945,7 @@ EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object) {
   {
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object, common_packet_format_data)
-        == kEipStatusError) {
+        != kEipStatusError) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
@@ -980,7 +980,7 @@ EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object) {
       return kCipErrorConnectionFailure;
     }
   }
-  return eip_status;
+  return cip_error;
 }
 
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
