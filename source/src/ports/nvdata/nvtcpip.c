@@ -38,14 +38,15 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
     OPENER_TRACE_ERR(
       "ERROR: Loading of TCP/IP object's NV data not implemented yet\n");
     /* TODO: Implement load */
-    EipStatus eip_status = kEipStatusError;
+    eip_status = kEipStatusError;
     /* If all NV attributes were read copy them attribute by attribute
      * to the caller's TCP/IP object. */
     /* TODO: copy all NV attributes */
 
     /* Need to try to close all stuff in any case. */
-    eip_status = kEipStatusError ==
-                 ConfFileClose(&p_file) ? kEipStatusError : eip_status;
+    eip_status =
+      (kEipStatusError ==
+       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   }
 
   return eip_status;
@@ -66,7 +67,8 @@ EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
     EipStatus eip_status = kEipStatusError;
 
     /* Need to try to close all stuff in any case. */
-    return ConfFileClose(&p_file) ? kEipStatusError : eip_status;
+    return (kEipStatusError ==
+            ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   } else {
     return kEipStatusError; /* File could not be openend*/
   }

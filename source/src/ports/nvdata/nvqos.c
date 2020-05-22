@@ -89,8 +89,9 @@ EipStatus NvQosStore(const CipQosObject *p_qos) {
     }
 
     /* Need to try to close all stuff in any case. */
-    eip_status = kEipStatusError ==
-                 ConfFileClose(&p_file) ? kEipStatusError : eip_status;
+    eip_status =
+      (kEipStatusError ==
+       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   }
   return eip_status;
 }
