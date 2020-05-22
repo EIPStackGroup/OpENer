@@ -14,8 +14,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-int ConfFileOpen(bool write, const char *p_name, FILE **p_filep);
+#include "typedefs.h"
 
-int ConfFileClose(FILE **p_filep);
+FILE *ConfFileOpen(const bool write,
+                   const char *const p_name);
+
+EipStatus ConfFileClose(FILE **p_filep);
 
 #endif  /* _CONFFILE_H_ */
