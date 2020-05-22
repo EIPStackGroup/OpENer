@@ -30,7 +30,7 @@
  */
 int NvQosLoad(CipQosObject *p_qos) {
   int rd_cnt = 0;
-  int rc;
+  EipStatus eip_status = kEipStatusError;
 
   CipUsint dscp_urgent = 0;
   CipUsint dscp_scheduled = 0;
@@ -50,9 +50,9 @@ int NvQosLoad(CipQosObject *p_qos) {
                     &dscp_explicit);
 
     /* Need to try to close all stuff in any case. */
-    rc = ConfFileClose(&p_file);
+    eip_status = ConfFileClose(&p_file);
   }
-  if (0 == rc) {
+  if (kEipStatusOk == eip_status) {
     /* If all data were read copy them to the global QoS object. */
     if (5 == rd_cnt) {
       p_qos->dscp.urgent = dscp_urgent;
@@ -60,9 +60,11 @@ int NvQosLoad(CipQosObject *p_qos) {
       p_qos->dscp.high = dscp_high;
       p_qos->dscp.low = dscp_low;
       p_qos->dscp.explicit = dscp_explicit;
+    } else {
+      eip_status = kEipStatusError;
     }
   }
-  return rc;
+  return eip_status;
 }
 
 /** @brief Store NV data of the QoS object to file
