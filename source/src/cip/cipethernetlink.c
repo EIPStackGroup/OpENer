@@ -432,9 +432,10 @@ static void EncodeCipEthernetLinkInterfaceCaps(const void *const data,
   const CipEthernetLinkMetaInterfaceCapability *const interface_caps = data;
   EncodeCipDword(&interface_caps->capability_bits, outgoing_message);
   uint16_t selected = interface_caps->speed_duplex_selector;
-  CipUsint count;
-  for (count = 0; selected; count++) { /* count # of bits set */
+  CipUsint count = 0;
+  while(selected) { /* count # of bits set */
     selected &= selected - 1U;        /* clear the least significant bit set */
+    count++;
   }
   EncodeCipUsint(&count, outgoing_message);
 
