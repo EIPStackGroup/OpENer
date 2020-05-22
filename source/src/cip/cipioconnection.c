@@ -641,7 +641,7 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
         config_instance,
         3);
       OPENER_ASSERT(NULL != attribute_three);
-      CipByteArray * attribute_three_data =
+      CipByteArray *attribute_three_data =
         (CipByteArray *) attribute_three->data;
       OPENER_ASSERT(NULL != attribute_three_data);
       if (attribute_three_data->length != g_config_data_length) {
