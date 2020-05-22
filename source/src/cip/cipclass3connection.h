@@ -49,7 +49,7 @@ EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
  *    - kEipStatusOk ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishClass3Connection(
+CipError EstablishClass3Connection(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
