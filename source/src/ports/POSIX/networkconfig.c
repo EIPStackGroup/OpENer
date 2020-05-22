@@ -198,7 +198,7 @@ static EipStatus GetDnsInfoFromResolvConf
   char *value_string;
   char *strtok_save;
   char *strtok_key;
-  char *line;
+  char *line = NULL;
   CipUdint dmy_dns;
   CipUdint *dns = &iface_cfg->name_server;
   /* Split the file_buffer into lines. */
@@ -206,6 +206,7 @@ static EipStatus GetDnsInfoFromResolvConf
        NULL != line;
        strtok_beg = NULL)
   {
+    line = strtok_r(strtok_beg, "\n", &strtok_save);
     /* Inspect each line for keywords: search, domain, nameserver */
     switch (line[0]) {
       case '#':
@@ -245,7 +246,6 @@ static EipStatus GetDnsInfoFromResolvConf
         }
         break;
     }
-    line = strtok_r(strtok_beg, "\n", &strtok_save);
   }
   free(file_buffer);
   return kEipStatusOk;
