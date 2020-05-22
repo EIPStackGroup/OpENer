@@ -467,7 +467,7 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
  *
  * @return Stack status
  */
-typedef EipStatus (*ConnectionReceiveDataFunction)(
+typedef CipError (*ConnectionReceiveDataFunction)(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
   const EipUint16 data_length);
