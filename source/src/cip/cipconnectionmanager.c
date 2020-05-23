@@ -30,6 +30,7 @@
 
 
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
+const size_t g_kLargeForwardOpenHeaderLength = 40; /**< the length in bytes of the large forward open command specific data till the start of the connection path (including con path size)*/
 
 static const int g_kNumberOfConnectableObjects = 2 +
                                                  OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
@@ -55,6 +56,13 @@ EipUint32 g_incarnation_id;
 
 /* private functions */
 EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session);
+
+EipStatus LargeForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
@@ -217,7 +225,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
     2,   /* # of class services */
     0,   /* # of instance attributes */
     14,   /* # highest instance attribute number*/
-    5,   /* # of instance services */
+    6,   /* # of instance services */
     1,   /* # of instances */
     "connection manager",   /* class name */
     1,   /* revision */
@@ -230,6 +238,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InsertService(connection_manager, kGetAttributeAll, &GetAttributeAll,
                 "GetAttributeAll");
   InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
+  InsertService(connection_manager, kLargeForwardOpen, &LargeForwardOpen, "LargeForwardOpen");
   InsertService(connection_manager, kForwardClose, &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager, kGetConnectionOwner, &GetConnectionOwner,
@@ -470,6 +479,21 @@ static const HandleForwardOpenRequestFunction
     HandleNullNonMatchingForwardOpenRequest,
     HandleNullMatchingForwardOpenRequest
   } };
+
+/** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *
+ * Large Forward Open service calls Forward Open service
+ */
+EipStatus LargeForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  ) {
+    g_dummy_connection_object.is_large_forward_open = true;
+    return ForwardOpen(instance, message_router_request, message_router_response, originator_address, encapsulation_session);
+}
 
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
  *
@@ -768,7 +792,12 @@ EipStatus AssembleForwardOpenResponse(
 
   AddNullAddressItem(cip_common_packet_format_data);
 
-  message_router_response->reply_service = (0x80 | kForwardOpen);
+  CIPServiceCode service_code = kForwardOpen;
+  if (connection_object->is_large_forward_open) {
+      service_code = kLargeForwardOpen;
+  }
+
+  message_router_response->reply_service = (0x80 | service_code);
   message_router_response->general_status = general_status;
 
   if (kCipErrorSuccess == general_status) {
@@ -1081,14 +1110,19 @@ EipUint8 ParseConnectionPath(
   /* with 256 we mark that we haven't got a PIT segment */
   ConnectionObjectSetProductionInhibitTime(connection_object, 256);
 
-  if ( (g_kForwardOpenHeaderLength + remaining_path * 2)
+  size_t header_length = g_kForwardOpenHeaderLength;
+  if (connection_object->is_large_forward_open) {
+      header_length = g_kLargeForwardOpenHeaderLength;
+  }
+
+  if ( (header_length + remaining_path * 2)
        < message_router_request->request_path_size ) {
     /* the received packet is larger than the data in the path */
     *extended_error = 0;
     return kCipErrorTooMuchData;
   }
 
-  if ( (g_kForwardOpenHeaderLength + remaining_path * 2)
+  if ( (header_length + remaining_path * 2)
        > message_router_request->request_path_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;

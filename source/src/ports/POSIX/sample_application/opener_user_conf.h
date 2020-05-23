@@ -220,6 +220,6 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
  *  This buffer size will be used for any received message.
  *  The same buffer is used for the replied explicit message.
  */
-#define PC_OPENER_ETHERNET_BUFFER_SIZE 512
+#define PC_OPENER_ETHERNET_BUFFER_SIZE 8192
 
 #endif /*OPENER_USER_CONF_H_*/

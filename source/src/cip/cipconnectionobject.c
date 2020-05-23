@@ -44,13 +44,13 @@
 #define CIP_CONNECTION_OBJECT_WATCHDOG_TIMEOUT_ACTION_DEFERRED_DELETE 3
 
 #define CIP_CONNECTION_OBJECT_CONNECTION_TYPE_NULL 0
-#define CIP_CONNECTION_OBJECT_CONNECTION_TYPE_MULTICAST (1 << 13)
-#define CIP_CONNECTION_OBJECT_CONNECTION_TYPE_POINT_TO_POINT (1 << 14)
+#define CIP_CONNECTION_OBJECT_CONNECTION_TYPE_MULTICAST 1
+#define CIP_CONNECTION_OBJECT_CONNECTION_TYPE_POINT_TO_POINT 2
 
 #define CIP_CONNECTION_OBJECT_PRIORITY_LOW 0
-#define CIP_CONNECTION_OBJECT_PRIORITY_HIGH (1 << 10)
-#define CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED (1 << 11)
-#define CIP_CONNECTION_OBJECT_PRIORITY_URGENT (3 << 10)
+#define CIP_CONNECTION_OBJECT_PRIORITY_HIGH 1
+#define CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED 2
+#define CIP_CONNECTION_OBJECT_PRIORITY_URGENT 3
 
 /** @brief Definition of the global connection list */
 DoublyLinkedList connection_list;
@@ -163,17 +163,26 @@ void ConnectionObjectInitializeFromMessage(
 
   ConnectionObjectSetInitialInactivityWatchdogTimerValue(connection_object);
 
-  //TODO: introduce setter function
-  connection_object->o_to_t_network_connection_parameters = GetIntFromMessage(
-    message);
+  if (connection_object->is_large_forward_open == true) {
+    ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
+                                                       GetDintFromMessage(message) );
+  } else {
+    ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
+                                                       GetIntFromMessage(message) );
+  }
 
   ConnectionObjectSetTToORequestedPacketInterval(connection_object,
                                                  GetDintFromMessage(message) );
 
   ConnectionObjectSetExpectedPacketRate(connection_object);
 
-  connection_object->t_to_o_network_connection_parameters = GetIntFromMessage(
-    message);
+  if (connection_object->is_large_forward_open == true) {
+    ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
+                                                       GetDintFromMessage(message) );
+  } else {
+    ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
+                                                       GetIntFromMessage(message) );
+  }
 
   connection_object->transport_class_trigger = GetSintFromMessage(message);
 }
@@ -677,22 +686,56 @@ void ConnectionObjectSetTToORequestedPacketInterval(
     requested_packet_interval;
 }
 
+void ConnectionObjectSetTToONetworkConnectionParameters(
+  CipConnectionObject *connection_object,
+  const CipDword connection_parameters) {
+  connection_object->t_to_o_network_connection_parameters =
+    connection_parameters;
+}
+
+void ConnectionObjectSetOToTNetworkConnectionParameters(
+  CipConnectionObject *connection_object,
+  const CipDword connection_parameters) {
+  connection_object->o_to_t_network_connection_parameters =
+    connection_parameters;
+}
+
+bool ConnectionObjectIsRedundantOwner(
+  const CipDword connection_parameters,
+  const CipBool is_lfo) {
+  if (is_lfo) {
+      return (connection_parameters & (1 << 31));
+  } else {
+      return (connection_parameters & (1 << 15));
+  }
+}
+
 bool ConnectionObjectIsOToTRedundantOwner(
   const CipConnectionObject *const connection_object) {
-  const CipWord kOwnerMask = 0x80;
-  return kOwnerMask & connection_object->o_to_t_network_connection_parameters;
+  return ConnectionObjectIsRedundantOwner(
+    connection_object->o_to_t_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 bool ConnectionObjectIsTToORedundantOwner(
   const CipConnectionObject *const connection_object) {
-  const CipWord kOwnerMask = 0x80;
-  return kOwnerMask & connection_object->t_to_o_network_connection_parameters;
+  return ConnectionObjectIsRedundantOwner(
+    connection_object->t_to_o_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 ConnectionObjectConnectionType ConnectionObjectGetConnectionType(
-  const CipWord connection_parameters) {
-  const CipWord kConnectionTypeMask = 3 << 13;
-  switch(connection_parameters & kConnectionTypeMask) {
+  const CipDword connection_parameters,
+  const CipBool is_lfo) {
+
+  CipUsint connection_type;
+  if (is_lfo) {
+      connection_type = (connection_parameters & (3 << 29)) >> 29;
+  } else {
+      connection_type = (connection_parameters & (3 << 13)) >> 13;
+  }
+
+  switch(connection_type) {
     case CIP_CONNECTION_OBJECT_CONNECTION_TYPE_NULL: return
         kConnectionObjectConnectionTypeNull;
     case CIP_CONNECTION_OBJECT_CONNECTION_TYPE_MULTICAST: return
@@ -706,20 +749,30 @@ ConnectionObjectConnectionType ConnectionObjectGetConnectionType(
 ConnectionObjectConnectionType ConnectionObjectGetOToTConnectionType(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionType(
-    connection_object->o_to_t_network_connection_parameters);
+    connection_object->o_to_t_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 ConnectionObjectConnectionType ConnectionObjectGetTToOConnectionType(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionType(
-    connection_object->t_to_o_network_connection_parameters);
+    connection_object->t_to_o_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 ConnectionObjectPriority ConnectionObjectGetPriority(
-  const CipWord connection_parameters) {
-  const CipWord kPriorityMask = 3 << 10;
+  const CipDword connection_parameters,
+  const CipBool is_lfo) {
+
+  CipUsint priority;
+  if (is_lfo) {
+      priority = (connection_parameters & (3 << 26)) >> 26;
+  } else {
+      priority = (connection_parameters & (3 << 10)) >> 10;
+  }
+
   ConnectionObjectPriority result;
-  switch(connection_parameters & kPriorityMask) {
+  switch(priority) {
     case CIP_CONNECTION_OBJECT_PRIORITY_LOW: result =
       kConnectionObjectPriorityLow; break;
     case CIP_CONNECTION_OBJECT_PRIORITY_HIGH: result =
@@ -738,20 +791,30 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
 ConnectionObjectPriority ConnectionObjectGetOToTPriority(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetPriority(
-    connection_object->o_to_t_network_connection_parameters);
+    connection_object->o_to_t_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 ConnectionObjectPriority ConnectionObjectGetTToOPriority(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetPriority(
-    connection_object->t_to_o_network_connection_parameters);
+    connection_object->t_to_o_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 
 ConnectionObjectConnectionSizeType ConnectionObjectGetConnectionSizeType(
-  const CipWord connection_parameters) {
-  const CipWord kConnectionSizeTypeMask = 1 << 9;
-  if(connection_parameters & kConnectionSizeTypeMask) {
+  const CipDword connection_parameters,
+  const CipBool is_lfo) {
+
+  bool connection_size_type;
+  if (is_lfo) {
+      connection_size_type = (connection_parameters & (1 << 25));
+  } else {
+      connection_size_type = (connection_parameters & (1 << 9));
+  }
+
+  if (connection_size_type) {
     return kConnectionObjectConnectionSizeTypeVariable;
   } else {
     return kConnectionObjectConnectionSizeTypeFixed;
@@ -761,30 +824,43 @@ ConnectionObjectConnectionSizeType ConnectionObjectGetConnectionSizeType(
 ConnectionObjectConnectionSizeType ConnectionObjectGetOToTConnectionSizeType(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionSizeType(
-    connection_object->o_to_t_network_connection_parameters);
+    connection_object->o_to_t_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 ConnectionObjectConnectionSizeType ConnectionObjectGetTToOConnectionSizeType(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionSizeType(
-    connection_object->t_to_o_network_connection_parameters);
+    connection_object->t_to_o_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
-size_t ConnectionObjectGetConnectionSize(const CipWord connection_parameters) {
-  const CipWord kConnectionSizeMask = 0x01FF;
-  return connection_parameters & kConnectionSizeMask;
+size_t ConnectionObjectGetConnectionSize(
+  const CipDword connection_parameters,
+  const CipBool is_lfo) {
+  const CipDword kConnectionSizeMask = 0x000001FF;
+  const CipDword kConnectionSizeMaskLFO = 0x0000FFFF;
+
+  CipDword mask = kConnectionSizeMask;
+  if (is_lfo) {
+      mask = kConnectionSizeMaskLFO;
+  }
+
+  return connection_parameters & mask;
 }
 
 size_t ConnectionObjectGetOToTConnectionSize(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionSize(
-    connection_object->o_to_t_network_connection_parameters);
+    connection_object->o_to_t_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 size_t ConnectionObjectGetTToOConnectionSize(
   const CipConnectionObject *const connection_object) {
   return ConnectionObjectGetConnectionSize(
-    connection_object->t_to_o_network_connection_parameters);
+    connection_object->t_to_o_network_connection_parameters,
+    connection_object->is_large_forward_open);
 }
 
 void ConnectionObjectDeepCopy(
