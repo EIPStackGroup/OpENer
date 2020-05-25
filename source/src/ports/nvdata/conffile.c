@@ -91,8 +91,8 @@ static FILE *FopenMkdir(char *p_path,
  *
  *  @param  write   Open for write?
  *  @param  p_name  pointer to file name string
- *  @param  p_filep pointer to FILE* to initialize
- *  @return       0: success; -1: failure, errno set
+
+ *  @return valid file handle: success; NULL: failure, errno set
  *
  *  This function open a configuration file, possibly for write operation,
  *  in the NV data storage directory.
@@ -112,7 +112,7 @@ FILE *ConfFileOpen(const bool write,
 /** @brief Close the configuration file associated with the FILE* given
  *
  *  @param  p_filep pointer to FILE* to close
- *  @return       0: success; -1: failure, errno set
+ *  @return kEipStatusOk: success; kEipStatusError: failure and errno set
  *
  *  Closes the configuration file associated to p_filep. No data
  *  synchronization to disk yet.
