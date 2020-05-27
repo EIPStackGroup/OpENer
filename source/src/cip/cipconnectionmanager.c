@@ -535,10 +535,11 @@ EipStatus ForwardOpen(
 
   if(kConnectionObjectConnectionTypeMulticast == t_to_o_connection_type) {
     /* for multicast, check if IP is within configured net because we send TTL 1 */
-    CipUdint originator_ip = ((struct sockaddr_in *)originator_address)->sin_addr.s_addr;
+    CipUdint originator_ip =
+      ( (struct sockaddr_in *)originator_address )->sin_addr.s_addr;
     CipUdint interface_ip = g_network_status.ip_address;
     CipUdint interface_mask = g_network_status.network_mask;
-    if((originator_ip & interface_mask)!=(interface_ip & interface_mask)) {
+    if( (originator_ip & interface_mask)!=(interface_ip & interface_mask) ) {
       return AssembleForwardOpenResponse(
         &g_dummy_connection_object, message_router_response,
         kCipErrorConnectionFailure,
