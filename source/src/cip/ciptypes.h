@@ -96,6 +96,7 @@ typedef enum {
   /* Start CIP object-specific services */
   kEthLinkGetAndClear = 0x4C, /**< Ethernet Link object's Get_And_Clear service */
   kForwardOpen = 0x54,
+  kLargeForwardOpen = 0x5B,
   kForwardClose = 0x4E,
   kUnconnectedSend = 0x52,
   kGetConnectionOwner = 0x5A

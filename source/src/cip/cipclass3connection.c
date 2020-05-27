@@ -21,7 +21,7 @@ void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
                                                     CloseSessionBySessionHandle);
   CloseConnection(connection_object);
 }
-#define RESTRICT
+
 /**** Implementation ****/
 CipError EstablishClass3Connection(
   CipConnectionObject *RESTRICT const connection_object,

@@ -97,6 +97,7 @@ static FILE *FopenMkdir(char *p_path,
  *  This function open a configuration file, possibly for write operation,
  *  in the NV data storage directory.
  */
+
 FILE *ConfFileOpen(const bool write,
                    const char *const p_name) {
   char path_buf[64];
