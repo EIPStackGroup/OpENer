@@ -28,17 +28,17 @@
  *  @param  p_qos pointer to the TCP/IP object's data structure
  *  @return       0: success; -1: failure
  */
-int NvTcpipLoad(CipTcpIpObject *p_tcp_ip)
-{
-  CipTcpIpObject  tcpip;
+int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
+  CipTcpIpObject tcpip;
   FILE  *p_file;
-  int   rc;
+  int rc;
 
   memset(&tcpip, 0, sizeof tcpip);
   rc = ConfFileOpen(false, TCPIP_CFG_NAME, &p_file);
   if (0 == rc) {
     /* Read input data */
-    OPENER_TRACE_ERR("ERROR: Loading of TCP/IP object's NV data not implemented yet\n");
+    OPENER_TRACE_ERR(
+      "ERROR: Loading of TCP/IP object's NV data not implemented yet\n");
     /* TODO: Implement load */
     rc = kEipStatusError;
 
@@ -58,15 +58,15 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip)
  *  @param  p_qos pointer to the TCP/IP object's data structure
  *  @return       0: success; -1: failure
  */
-int NvTcpipStore(const CipTcpIpObject *p_tcp_ip)
-{
+int NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
   FILE  *p_file;
-  int   rc;
+  int rc;
 
   rc = ConfFileOpen(true, TCPIP_CFG_NAME, &p_file);
   if (rc >= 0) {
     /* Print output data */
-    OPENER_TRACE_ERR("ERROR: Storing of TCP/IP object's NV data not implemented yet\n");
+    OPENER_TRACE_ERR(
+      "ERROR: Storing of TCP/IP object's NV data not implemented yet\n");
     /* TODO: Implement store */
     rc = kEipStatusError;
 

@@ -165,10 +165,12 @@ void ConnectionObjectInitializeFromMessage(
 
   if (connection_object->is_large_forward_open == true) {
     ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
-                                                       GetDintFromMessage(message) );
+                                                       GetDintFromMessage(
+                                                         message) );
   } else {
     ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
-                                                       GetIntFromMessage(message) );
+                                                       GetIntFromMessage(
+                                                         message) );
   }
 
   ConnectionObjectSetTToORequestedPacketInterval(connection_object,
@@ -178,10 +180,12 @@ void ConnectionObjectInitializeFromMessage(
 
   if (connection_object->is_large_forward_open == true) {
     ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
-                                                       GetDintFromMessage(message) );
+                                                       GetDintFromMessage(
+                                                         message) );
   } else {
     ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
-                                                       GetIntFromMessage(message) );
+                                                       GetIntFromMessage(
+                                                         message) );
   }
 
   connection_object->transport_class_trigger = GetSintFromMessage(message);
@@ -704,9 +708,9 @@ bool ConnectionObjectIsRedundantOwner(
   const CipDword connection_parameters,
   const CipBool is_lfo) {
   if (is_lfo) {
-      return (connection_parameters & (1 << 31));
+    return (connection_parameters & (1 << 31) );
   } else {
-      return (connection_parameters & (1 << 15));
+    return (connection_parameters & (1 << 15) );
   }
 }
 
@@ -730,9 +734,9 @@ ConnectionObjectConnectionType ConnectionObjectGetConnectionType(
 
   CipUsint connection_type;
   if (is_lfo) {
-      connection_type = (connection_parameters & (3 << 29)) >> 29;
+    connection_type = (connection_parameters & (3 << 29) ) >> 29;
   } else {
-      connection_type = (connection_parameters & (3 << 13)) >> 13;
+    connection_type = (connection_parameters & (3 << 13) ) >> 13;
   }
 
   switch(connection_type) {
@@ -766,9 +770,9 @@ ConnectionObjectPriority ConnectionObjectGetPriority(
 
   CipUsint priority;
   if (is_lfo) {
-      priority = (connection_parameters & (3 << 26)) >> 26;
+    priority = (connection_parameters & (3 << 26) ) >> 26;
   } else {
-      priority = (connection_parameters & (3 << 10)) >> 10;
+    priority = (connection_parameters & (3 << 10) ) >> 10;
   }
 
   ConnectionObjectPriority result;
@@ -809,9 +813,9 @@ ConnectionObjectConnectionSizeType ConnectionObjectGetConnectionSizeType(
 
   bool connection_size_type;
   if (is_lfo) {
-      connection_size_type = (connection_parameters & (1 << 25));
+    connection_size_type = (connection_parameters & (1 << 25) );
   } else {
-      connection_size_type = (connection_parameters & (1 << 9));
+    connection_size_type = (connection_parameters & (1 << 9) );
   }
 
   if (connection_size_type) {
@@ -843,7 +847,7 @@ size_t ConnectionObjectGetConnectionSize(
 
   CipDword mask = kConnectionSizeMask;
   if (is_lfo) {
-      mask = kConnectionSizeMaskLFO;
+    mask = kConnectionSizeMaskLFO;
   }
 
   return connection_parameters & mask;

@@ -34,19 +34,19 @@
 #define CFG_BASE  "nvdata/"
 
 #if ENABLE_VERBOSE != 0
-#define VERBOSE(pFile, pFmt, ...)   do { fprintf(pFile, pFmt, ##__VA_ARGS__); } while (0)
+#define VERBOSE(pFile, pFmt, ...)   do { fprintf(pFile, pFmt, ## __VA_ARGS__); \
+} while (0)
 #else
 #define VERBOSE(pFile, pFmt, ...)
 #endif
 
 
 /** @brief Portable wrapper for mkdir(). Internally used by RecMkdir()
-  *
-  * @param[in] path the full path of the directory to create
-  * @return zero on success, otherwise -1 and errno set
-  */
-static inline int Mkdir(const char *path)
-{
+ *
+ * @param[in] path the full path of the directory to create
+ * @return zero on success, otherwise -1 and errno set
+ */
+static inline int Mkdir(const char *path) {
 #ifdef _WIN32
   return _mkdir(path);
 #else
@@ -56,8 +56,7 @@ static inline int Mkdir(const char *path)
 }
 
 
-static void RecMkdir(char * const p_path)
-{
+static void RecMkdir(char *const p_path) {
   char *sep = strrchr(p_path, '/' );
   if(sep && p_path != sep) {  /* "p_path != sep" avoids mkdir("/")! */
     *sep = '\0';
@@ -74,8 +73,8 @@ static void RecMkdir(char * const p_path)
 }
 
 
-static FILE *FopenMkdir(char *p_path, char *mode)
-{
+static FILE *FopenMkdir(char *p_path,
+                        char *mode) {
   char *sep = strrchr(p_path, '/' );
   /* In write mode create missing directories. */
   if(sep && 'w' == *mode) {
@@ -98,10 +97,11 @@ static FILE *FopenMkdir(char *p_path, char *mode)
  *  This function open a configuration file, possibly for write operation,
  *  in the NV data storage directory.
  */
-int ConfFileOpen(bool write, const char *p_name, FILE **p_filep)
-{
-  char  path_buf[64];
-  int   rc;
+int ConfFileOpen(bool write,
+                 const char *p_name,
+                 FILE **p_filep) {
+  char path_buf[64];
+  int rc;
 
   rc = snprintf(path_buf, sizeof path_buf, "%s%s", CFG_BASE, p_name);
   if (rc > 0) {
@@ -125,8 +125,7 @@ int ConfFileOpen(bool write, const char *p_name, FILE **p_filep)
  *  Closes the configuration file associated to p_filep. No data
  *  synchronization to disk yet.
  */
-int ConfFileClose(FILE **p_filep)
-{
+int ConfFileClose(FILE **p_filep) {
   int rc = fclose(*p_filep);
   *p_filep = NULL;
   return rc;
