@@ -483,6 +483,14 @@ static const HandleForwardOpenRequestFunction
     HandleNullMatchingForwardOpenRequest
   } };
 
+EipStatus ForwardOpenRoutine(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  );
+
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
  *
  * Large Forward Open service calls Forward Open service
@@ -495,11 +503,11 @@ EipStatus LargeForwardOpen(
   const int encapsulation_session
   ) {
   g_dummy_connection_object.is_large_forward_open = true;
-  return ForwardOpen(instance,
-                     message_router_request,
-                     message_router_response,
-                     originator_address,
-                     encapsulation_session);
+  return ForwardOpenRoutine(instance,
+                            message_router_request,
+                            message_router_response,
+                            originator_address,
+                            encapsulation_session);
 }
 
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
@@ -524,6 +532,20 @@ EipStatus LargeForwardOpen(
  *              -1 .. error
  */
 EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  ) {
+  g_dummy_connection_object.is_large_forward_open = false;
+  return ForwardOpenRoutine(instance,
+                            message_router_request,
+                            message_router_response,
+                            originator_address,
+                            encapsulation_session);
+}
+EipStatus ForwardOpenRoutine(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
