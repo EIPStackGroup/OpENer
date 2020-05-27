@@ -50,6 +50,8 @@ EipStatus NvdataLoad(void) {
  * @param  attribute pointer to attribute structure
  * @param  service   the CIP service code of current request
  *
+ *  @return kEipStatusOk: success; kEipStatusError: failure
+ *
  * This function implements the PostSetCallback for the QoS class. The
  * purpose of this function is to save the NV attributes of the QoS
  * class instance to external storage.
@@ -57,12 +59,9 @@ EipStatus NvdataLoad(void) {
  * This application specific implementation chose to save all attributes
  * at once using a single NvQosStore() call.
  */
-EipStatus NvQosSetCallback
-(
-  CipInstance *const instance,
-  CipAttributeStruct *const attribute,
-  CipByte service
-) {
+EipStatus NvQosSetCallback(CipInstance *const instance,
+                           CipAttributeStruct *const attribute,
+                           CipByte service) {
   EipStatus status = kEipStatusOk;
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
@@ -88,12 +87,9 @@ EipStatus NvQosSetCallback
  * This application specific implementation chose to save all attributes
  * at once using a single NvTcpipStore() call.
  */
-EipStatus NvTcpipSetCallback
-(
-  CipInstance *const instance,
-  CipAttributeStruct *const attribute,
-  CipByte service
-) {
+EipStatus NvTcpipSetCallback(CipInstance *const instance,
+                             CipAttributeStruct *const attribute,
+                             CipByte service) {
   EipStatus status = kEipStatusOk;
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {

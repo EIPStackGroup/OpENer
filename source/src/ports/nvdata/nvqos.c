@@ -26,7 +26,7 @@
 /** @brief Load NV data of the QoS object from file
  *
  *  @param  p_qos pointer to the QoS object's data structure
- *  @return       0: success; -1: failure
+ *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 int NvQosLoad(CipQosObject *p_qos) {
   int rd_cnt = 0;
@@ -70,7 +70,7 @@ int NvQosLoad(CipQosObject *p_qos) {
 /** @brief Store NV data of the QoS object to file
  *
  *  @param  p_qos pointer to the QoS object's data structure
- *  @return       0: success; -1: failure
+ *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 EipStatus NvQosStore(const CipQosObject *p_qos) {
   FILE  *p_file = ConfFileOpen(true, QOS_CFG_NAME);

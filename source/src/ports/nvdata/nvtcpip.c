@@ -12,12 +12,9 @@
  */
 #include "nvtcpip.h"
 
-// #include <inttypes.h>
-// #include <stdio.h>
 #include <string.h>
 
 #include "trace.h"
-
 #include "conffile.h"
 
 #define TCPIP_CFG_NAME  "tcpip.cfg" /**< Name of the configuration file */
@@ -25,8 +22,8 @@
 
 /** @brief Load NV data of the TCP/IP object from file
  *
- *  @param  p_qos pointer to the TCP/IP object's data structure
- *  @return       0: success; -1: failure
+ *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
+ *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
   CipTcpIpObject tcpip = {0};
@@ -54,8 +51,8 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
 
 /** @brief Store NV data of the TCP/IP object to file
  *
- *  @param  p_qos pointer to the TCP/IP object's data structure
- *  @return       0: success; -1: failure
+ *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
+ *  @return kEipStatusOk: success; kEipStatusError: failure
  */
 EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
   FILE *p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
