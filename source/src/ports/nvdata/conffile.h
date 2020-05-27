@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+
 #include "typedefs.h"
 
 FILE *ConfFileOpen(const bool write,
