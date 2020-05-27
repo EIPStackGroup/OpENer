@@ -97,24 +97,17 @@ static FILE *FopenMkdir(char *p_path,
  *  This function open a configuration file, possibly for write operation,
  *  in the NV data storage directory.
  */
-int ConfFileOpen(bool write,
-                 const char *p_name,
-                 FILE **p_filep) {
+
+FILE *ConfFileOpen(const bool write,
+                   const char *const p_name) {
   char path_buf[64];
   int rc;
 
   rc = snprintf(path_buf, sizeof path_buf, "%s%s", CFG_BASE, p_name);
   if (rc > 0) {
-    FILE *filep = FopenMkdir(path_buf, write ? "w" : "r");
-    if (filep) {
-      rc = 0;
-      *p_filep  = filep;
-    }
-    else {
-      rc = EOF;
-    }
+    return FopenMkdir(path_buf, write ? "w" : "r");
   }
-  return rc;
+  return NULL;
 }
 
 /** @brief Close the configuration file associated with the FILE* given
@@ -125,8 +118,11 @@ int ConfFileOpen(bool write,
  *  Closes the configuration file associated to p_filep. No data
  *  synchronization to disk yet.
  */
-int ConfFileClose(FILE **p_filep) {
-  int rc = fclose(*p_filep);
+EipStatus ConfFileClose(FILE **p_filep) {
+  EipStatus eip_status = kEipStatusOk;
+  if(0 != fclose(*p_filep) ) {
+    eip_status = kEipStatusError;
+  }
   *p_filep = NULL;
-  return rc;
+  return eip_status;
 }

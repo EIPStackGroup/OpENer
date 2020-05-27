@@ -34,18 +34,14 @@
  *  and return (-1) on failure and (0) on success.
  */
 EipStatus NvdataLoad(void) {
-  EipStatus status = kEipStatusOk;
-  int rc;
-
   /* Load NV data for QoS object instance */
-  rc = NvQosLoad(&g_qos);
-  status |= rc;
-  if (0 != rc) {
-    rc = NvQosStore(&g_qos);
-    status |= rc;
+  EipStatus eip_status = NvQosLoad(&g_qos);
+  if (kEipStatusError != eip_status) {
+    eip_status =
+      (kEipStatusError == NvQosStore(&g_qos) ) ? kEipStatusError : eip_status;
   }
 
-  return status;
+  return eip_status;
 }
 
 /** A PostSetCallback for QoS class to store NV attributes

@@ -29,9 +29,8 @@
  *  @return       0: success; -1: failure
  */
 int NvQosLoad(CipQosObject *p_qos) {
-  FILE  *p_file;
   int rd_cnt = 0;
-  int rc;
+  EipStatus eip_status = kEipStatusError;
 
   CipUsint dscp_urgent = 0;
   CipUsint dscp_scheduled = 0;
@@ -39,8 +38,8 @@ int NvQosLoad(CipQosObject *p_qos) {
   CipUsint dscp_low = 0;
   CipUsint dscp_explicit = 0;
 
-  rc = ConfFileOpen(false, QOS_CFG_NAME, &p_file);
-  if (0 == rc) {
+  FILE  *p_file = ConfFileOpen(false, QOS_CFG_NAME);
+  if (NULL != p_file) {
     /* Read input data */
     rd_cnt = fscanf(p_file,
                     " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
@@ -51,9 +50,9 @@ int NvQosLoad(CipQosObject *p_qos) {
                     &dscp_explicit);
 
     /* Need to try to close all stuff in any case. */
-    rc = ConfFileClose(&p_file);
+    eip_status = ConfFileClose(&p_file);
   }
-  if (0 == rc) {
+  if (kEipStatusOk == eip_status) {
     /* If all data were read copy them to the global QoS object. */
     if (5 == rd_cnt) {
       p_qos->dscp.urgent = dscp_urgent;
@@ -61,9 +60,11 @@ int NvQosLoad(CipQosObject *p_qos) {
       p_qos->dscp.high = dscp_high;
       p_qos->dscp.low = dscp_low;
       p_qos->dscp.explicit = dscp_explicit;
+    } else {
+      eip_status = kEipStatusError;
     }
   }
-  return rc;
+  return eip_status;
 }
 
 /** @brief Store NV data of the QoS object to file
@@ -71,26 +72,26 @@ int NvQosLoad(CipQosObject *p_qos) {
  *  @param  p_qos pointer to the QoS object's data structure
  *  @return       0: success; -1: failure
  */
-int NvQosStore(const CipQosObject *p_qos) {
-  FILE  *p_file;
-  int rc;
-
-  rc = ConfFileOpen(true, QOS_CFG_NAME, &p_file);
-  if (rc >= 0) {
+EipStatus NvQosStore(const CipQosObject *p_qos) {
+  FILE  *p_file = ConfFileOpen(true, QOS_CFG_NAME);
+  EipStatus eip_status = kEipStatusOk;
+  if (NULL != p_file) {
     /* Print output data */
-    rc = fprintf(p_file,
-                 " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 "\n",
-                 p_qos->dscp.urgent,
-                 p_qos->dscp.scheduled,
-                 p_qos->dscp.high,
-                 p_qos->dscp.low,
-                 p_qos->dscp.explicit);
-    if (rc > 0) {
-      rc = 0;
+    if (0 >= fprintf(p_file,
+                     " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8
+                     "\n",
+                     p_qos->dscp.urgent,
+                     p_qos->dscp.scheduled,
+                     p_qos->dscp.high,
+                     p_qos->dscp.low,
+                     p_qos->dscp.explicit) ) {
+      eip_status = kEipStatusError;
     }
 
     /* Need to try to close all stuff in any case. */
-    rc |= ConfFileClose(&p_file);
+    eip_status =
+      (kEipStatusError ==
+       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   }
-  return rc;
+  return eip_status;
 }
