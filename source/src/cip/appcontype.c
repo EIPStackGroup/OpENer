@@ -295,7 +295,8 @@ CipConnectionObject *GetListenOnlyConnection(
 
       /* Here we look for both Point-to-Point and Multicast IO connections */
       if ( NULL == GetExistingProducerIoConnection(false,
-             connection_object->produced_path.instance_id) )
+                                                   connection_object->
+                                                   produced_path.instance_id) )
       {
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;

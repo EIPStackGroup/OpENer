@@ -51,8 +51,8 @@ void DoublyLinkedListNodeDestroy(const DoublyLinkedList *const list,
 void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
                                   void *data) {
   OPENER_ASSERT(list->allocator != NULL);
-  DoublyLinkedListNode * new_node = DoublyLinkedListNodeCreate(data,
-                                                               list->allocator);
+  DoublyLinkedListNode *new_node = DoublyLinkedListNodeCreate(data,
+                                                              list->allocator);
   if(NULL == list->first) {
     list->first = new_node;
     list->last = new_node;
@@ -66,8 +66,8 @@ void DoublyLinkedListInsertAtHead(DoublyLinkedList *const list,
 void DoublyLinkedListInsertAtTail(DoublyLinkedList *const list,
                                   const void *const data) {
   OPENER_ASSERT(list->allocator != NULL);
-  DoublyLinkedListNode * new_node = DoublyLinkedListNodeCreate(data,
-                                                               list->allocator);
+  DoublyLinkedListNode *new_node = DoublyLinkedListNodeCreate(data,
+                                                              list->allocator);
   if(NULL == list->last) {
     list->first = new_node;
     list->last = new_node;

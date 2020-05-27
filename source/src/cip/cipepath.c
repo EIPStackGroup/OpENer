@@ -174,7 +174,7 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
       port_identifier < 16,
       "Port identifier too large for standard port identifier field\n"); */
   OPENER_ASSERT(port_identifier < 16);
-    (*cip_path) |= port_identifier;
+  (*cip_path) |= port_identifier;
 }
 
 unsigned int GetPathPortSegmentLinkAddressSize(
@@ -449,7 +449,7 @@ void GetElectronicKeyFormat4FromMessage(
   OPENER_ASSERT( kElectronicKeySegmentFormatKeyFormat4 ==
                  GetPathLogicalSegmentElectronicKeyFormat(*message) );
 
-    (*message) += 2;
+  (*message) += 2;
   ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message) );

@@ -40,7 +40,7 @@ typedef unsigned short in_port_t;
 #endif
 
 #if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
-  /* Enable all the stuff the DLR device depends on */
+/* Enable all the stuff the DLR device depends on */
   #define OPENER_TCPIP_IFACE_CFG_SETTABLE 1
   #define OPENER_ETHLINK_CNTRS_ENABLE     1
   #define OPENER_ETHLINK_IFACE_CTRL_ENABLE  1
@@ -160,50 +160,50 @@ typedef unsigned short in_port_t;
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #ifdef OPENER_WITH_TRACES
-    /* If we have tracing enabled provide LOG_TRACE macro */
+/* If we have tracing enabled provide LOG_TRACE macro */
     #include <stdio.h>
 
     #define LOG_TRACE(...)  fprintf(stderr,__VA_ARGS__)
 
      #ifdef IDLING_ASSERT
-        /** @brief A specialized assertion command enabled by IDLING_ASSERT that
-         *  will log the assertion and block further
-         *  execution in a while(1) loop.
-         */
+/** @brief A specialized assertion command enabled by IDLING_ASSERT that
+ *  will log the assertion and block further
+ *  execution in a while(1) loop.
+ */
         #define OPENER_ASSERT(assertion)                                    \
-          do {                                                              \
-            if( !(assertion) ) {                                            \
-              LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n",  \
-                        # assertion, __FILE__, __LINE__);                   \
-              while(1) {  }                                                 \
-            }                                                               \
-          } while(0)
+  do {                                                              \
+    if( !(assertion) ) {                                            \
+      LOG_TRACE("Assertion \"%s\" failed: file \"%s\", line %d\n",  \
+                # assertion, __FILE__, __LINE__);                   \
+      while(1) {  }                                                 \
+    }                                                               \
+  } while(0)
 
     #else   /* ifdef IDLING_ASSERT */
-        /* Use standard assert() that vanishes only for release builds. */
+/* Use standard assert() that vanishes only for release builds. */
         #define OPENER_ASSERT(assertion) assert(assertion)
     #endif  /* ifdef IDLING_ASSERT */
 
 #else   /* ifdef OPENER_WITH_TRACES */
-    /* Select one of the OPENER_ASSERT() variants below if trace support is off */
+/* Select one of the OPENER_ASSERT() variants below if trace support is off */
     #if 0
-        /* If there are any strange timing issues, you can try the version below,
-         *  where the assertion is performed but the assert function is not used.
-         *  This may result in "statement with no effect" warnings.
-         */
+/* If there are any strange timing issues, you can try the version below,
+ *  where the assertion is performed but the assert function is not used.
+ *  This may result in "statement with no effect" warnings.
+ */
         #define OPENER_ASSERT(assertion) (assertion)
     #elif 0
-    /* If you still want assertions to stop execution but without tracing,
-     *  use the following */
+/* If you still want assertions to stop execution but without tracing,
+ *  use the following */
         #define OPENER_ASSERT(assertion)                    \
-          do { if(!(assertion)) { while(1) {} } } while (0)
+  do { if(!(assertion) ) { while(1) {} } } while (0)
     #elif 0
-        /* Even for debug builds remove assertion. May solicit unused variable
-         *  warnings. */
+/* Even for debug builds remove assertion. May solicit unused variable
+ *  warnings. */
         #define OPENER_ASSERT(assertion)
     #else
-        /* By default use standard assert() that vanishes only
-         *  for release builds. */
+/* By default use standard assert() that vanishes only
+ *  for release builds. */
         #define OPENER_ASSERT(assertion) assert(assertion)
     #endif
 

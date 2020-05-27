@@ -23,7 +23,7 @@ static const CipUint kCipEthernetLinkClassCode = CIP_ETHERNETLINK_CLASS_CODE;
 /** @brief Provide values for the Interface Flags (attribute #2) */
 typedef enum {
   /** Set this bit if your device needs a reset to take over new settings made via
-    * attribute #6. It is duplicates the meaning of kEthLinkCapManualReset */
+   * attribute #6. It is duplicates the meaning of kEthLinkCapManualReset */
   kEthLinkFlagsManualReset = 0x20,
 } CipEthLinkIfaceFlags;
 
@@ -35,7 +35,8 @@ typedef enum {
    *  Half-Duplex mode is forced. */
   kEthLinkIfCntrlForceDuplexFD = 0x02,
   /** For convenience declare the sum of valid bits as the maximum allowed value. */
-  kEthLinkIfCntrlMaxValid = kEthLinkIfCntrlAutonegotiate + kEthLinkIfCntrlForceDuplexFD,
+  kEthLinkIfCntrlMaxValid = kEthLinkIfCntrlAutonegotiate +
+                            kEthLinkIfCntrlForceDuplexFD,
 } CipEthLinkIfaceControl;
 
 /** @brief Provide values for the Interface Type (attribute #7) */
@@ -104,19 +105,19 @@ typedef struct {
  *  Media Counters attribute is required for DLR capable devices.
  */
 typedef union {
-  CipUdint  cntr32[11];
+  CipUdint cntr32[11];
   struct {
-    CipUdint  in_octets;
-    CipUdint  in_ucast;
-    CipUdint  in_nucast;
-    CipUdint  in_discards;
-    CipUdint  in_errors;
-    CipUdint  in_unknown_protos;
-    CipUdint  out_octets;
-    CipUdint  out_ucast;
-    CipUdint  out_nucast;
-    CipUdint  out_discards;
-    CipUdint  out_errors;
+    CipUdint in_octets;
+    CipUdint in_ucast;
+    CipUdint in_nucast;
+    CipUdint in_discards;
+    CipUdint in_errors;
+    CipUdint in_unknown_protos;
+    CipUdint out_octets;
+    CipUdint out_ucast;
+    CipUdint out_nucast;
+    CipUdint out_discards;
+    CipUdint out_errors;
   } ul;
 } CipEthernetLinkInterfaceCounters;
 
@@ -127,20 +128,20 @@ typedef union {
  *  HC Media Counters attribute is implemented, otherwise highly recommended.
  */
 typedef union {
-  CipUdint  cntr32[12];
+  CipUdint cntr32[12];
   struct {
-    CipUdint  align_errs;
-    CipUdint  fcs_errs;
-    CipUdint  single_coll;
-    CipUdint  multi_coll;
-    CipUdint  sqe_test_errs;
-    CipUdint  def_trans;
-    CipUdint  late_coll;
-    CipUdint  exc_coll;
-    CipUdint  mac_tx_errs;
-    CipUdint  crs_errs;
-    CipUdint  frame_too_long;
-    CipUdint  mac_rx_errs;
+    CipUdint align_errs;
+    CipUdint fcs_errs;
+    CipUdint single_coll;
+    CipUdint multi_coll;
+    CipUdint sqe_test_errs;
+    CipUdint def_trans;
+    CipUdint late_coll;
+    CipUdint exc_coll;
+    CipUdint mac_tx_errs;
+    CipUdint crs_errs;
+    CipUdint frame_too_long;
+    CipUdint mac_rx_errs;
   } ul;
 } CipEthernetLinkMediaCounters;
 #endif  /* ... && OPENER_ETHLINK_CNTRS_ENABLE != 0 */
@@ -162,7 +163,8 @@ typedef struct {
   CipEthernetLinkInterfaceCounters interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
   CipEthernetLinkMediaCounters media_cntrs; /**< Attribute #5: Media counters 32-bit wide */
 #endif
-#if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && 0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+#if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
   CipEthernetLinkInterfaceControl interface_control;  /** Attribute #6: control link properties */
 #endif
   CipUsint interface_type;  /**< Attribute #7: Type of interface */

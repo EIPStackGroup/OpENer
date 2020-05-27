@@ -20,7 +20,7 @@
 #include "cipassembly.h"
 
 /* Define constants to initialize the config_capability attribute (#2). These
-*   are needed as defines because we use them for static initialization. */
+ *   are needed as defines because we use them for static initialization. */
 #define CFG_CAPS_BOOTP_CLIENT         0x01U /**< Device has BOOTP client */
 #define CFG_CAPS_DNS_CLIENT           0x02U /**< Device has DNS client */
 #define CFG_CAPS_DHCP_CLIENT          0x04U /**< Device has DHCP client */
@@ -295,7 +295,8 @@ static bool IsIOConnectionActive(void) {
   while (NULL != node) {
     CipConnectionObject *connection = node->data;
     if (ConnectionObjectIsTypeIOConnection(connection) &&
-        kConnectionObjectStateTimedOut != ConnectionObjectGetState(connection)) {
+        kConnectionObjectStateTimedOut !=
+        ConnectionObjectGetState(connection) ) {
       /* An IO connection is present but is only considered active
        *  if it is NOT in timeout state. */
       return true;
@@ -420,12 +421,15 @@ EipStatus SetAttributeSingleTcpIpInterface(
           CipTcpIpInterfaceConfiguration if_cfg;
           CipUdint tmp_ip;
 
-          if (IsIOConnectionActive()) {
-            message_router_response->general_status = kCipErrorDeviceStateConflict;
+          if (IsIOConnectionActive() ) {
+            message_router_response->general_status =
+              kCipErrorDeviceStateConflict;
             break;
           }
-          if (kTcpipCfgCtrlStaticIp != (g_tcpip.config_control & kTcpipCfgCtrlMethodMask)) {
-            message_router_response->general_status = kCipErrorObjectStateConflict;
+          if (kTcpipCfgCtrlStaticIp !=
+              (g_tcpip.config_control & kTcpipCfgCtrlMethodMask) ) {
+            message_router_response->general_status =
+              kCipErrorObjectStateConflict;
             break;
           }
           memset(&if_cfg, 0, sizeof if_cfg);
@@ -699,7 +703,7 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip) {
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
   OPENER_ASSERT(NULL != attribute);
-  CipUint * data = (CipUint *) attribute->data;
+  CipUint *data = (CipUint *) attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;
 }
