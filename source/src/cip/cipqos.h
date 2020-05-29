@@ -29,7 +29,7 @@ typedef struct cip_qos_dscp_values {
   CipUsint scheduled; /**< Attr. #5: DSCP value for CIP transport class 0/1 Scheduled priority messages */
   CipUsint high; /**< Attr. #6: DSCP value for CIP transport class 0/1 High priority messages */
   CipUsint low; /**< Attr. #7: DSCP value for CIP transport class 0/1 low priority messages */
-  CipUsint explicit; /**< Attr. #8: DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
+  CipUsint explicit_msg; /**< Attr. #8: DSCP value for CIP explicit messages (transport class 2/3 and UCMM)
                                         and all other EtherNet/IP encapsulation messages */
 } CipQosDscpValues;
 

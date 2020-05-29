@@ -71,7 +71,7 @@ typedef struct {
 
 
 /* global public variables */
-CipIdentityObject g_identity;
+extern CipIdentityObject g_identity;
 
 
 /* public functions */
