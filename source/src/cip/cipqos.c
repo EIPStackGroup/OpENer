@@ -35,7 +35,7 @@ CipQosObject g_qos = {
   .dscp.scheduled = DEFAULT_DSCP_SCHEDULED,
   .dscp.high = DEFAULT_DSCP_HIGH,
   .dscp.low = DEFAULT_DSCP_LOW,
-  .dscp.explicit = DEFAULT_DSCP_EXPLICIT
+  .dscp.explicit_msg = DEFAULT_DSCP_EXPLICIT
 };
 
 /** @brief Active set of DSCP data inherits its data from the QoS object on boot-up
@@ -51,7 +51,7 @@ static CipQosDscpValues s_active_dscp = {
   .scheduled = DEFAULT_DSCP_SCHEDULED,
   .high = DEFAULT_DSCP_HIGH,
   .low = DEFAULT_DSCP_LOW,
-  .explicit = DEFAULT_DSCP_EXPLICIT
+  .explicit_msg = DEFAULT_DSCP_EXPLICIT
 };
 
 /************** Functions ****************************************/
@@ -136,7 +136,7 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
       break;
     case kConnectionObjectPriorityExplicit: /* fall through */
     default:
-      priority_value = s_active_dscp.explicit;
+      priority_value = s_active_dscp.explicit_msg;
       break;
   }
   return priority_value;
@@ -210,7 +210,7 @@ EipStatus CipQoSInit() {
                   8,
                   kCipUsint,
                   EncodeCipUsint,
-                  (void *) &g_qos.dscp.explicit,
+                  (void *) &g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingle,
@@ -233,7 +233,7 @@ void CipQosResetAttributesToDefaultValues(void) {
     .scheduled = DEFAULT_DSCP_SCHEDULED,
     .high = DEFAULT_DSCP_HIGH,
     .low = DEFAULT_DSCP_LOW,
-    .explicit = DEFAULT_DSCP_EXPLICIT
+    .explicit_msg = DEFAULT_DSCP_EXPLICIT
   };
   g_qos.q_frames_enable = false;
   g_qos.dscp = kDefaultValues;

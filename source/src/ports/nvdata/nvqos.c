@@ -59,7 +59,7 @@ int NvQosLoad(CipQosObject *p_qos) {
       p_qos->dscp.scheduled = dscp_scheduled;
       p_qos->dscp.high = dscp_high;
       p_qos->dscp.low = dscp_low;
-      p_qos->dscp.explicit = dscp_explicit;
+      p_qos->dscp.explicit_msg = dscp_explicit;
     } else {
       eip_status = kEipStatusError;
     }
@@ -84,7 +84,7 @@ EipStatus NvQosStore(const CipQosObject *p_qos) {
                      p_qos->dscp.scheduled,
                      p_qos->dscp.high,
                      p_qos->dscp.low,
-                     p_qos->dscp.explicit) ) {
+                     p_qos->dscp.explicit_msg) ) {
       eip_status = kEipStatusError;
     }
 
