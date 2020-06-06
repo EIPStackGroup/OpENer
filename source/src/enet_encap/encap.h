@@ -100,9 +100,9 @@ void EncapsulateListIdentityResponseMessage(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
 
-EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
-                                      size_t receive_buffer_length,
-                                      EncapsulationData *const encapsulation_data);
+int CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                 size_t receive_buffer_length,
+                                 EncapsulationData *const encapsulation_data);
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message);
 

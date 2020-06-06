@@ -778,9 +778,9 @@ int GetFreeSessionIndex(void) {
  *                      >0 .. more than one packet received
  *                      <0 .. only fragment of data portion received
  */
-EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
-                                      size_t receive_buffer_length,
-                                      EncapsulationData *const encapsulation_data)
+int CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                 size_t receive_buffer_length,
+                                 EncapsulationData *const encapsulation_data)
 {
   encapsulation_data->communication_buffer_start =
     (EipUint8 *) receive_buffer;
@@ -796,13 +796,13 @@ EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
   encapsulation_data->current_communication_buffer_position =
     (EipUint8 *) receive_buffer;
 
-  const size_t diff = receive_buffer_length - ENCAPSULATION_HEADER_LENGTH
-          - encapsulation_data->data_length;
+  /* Cast buf size to a signed integer to support possible negative values. */
+  OPENER_ASSERT(receive_buffer_length <= INT_MAX);
+  int diff = (int)receive_buffer_length;
 
-  /* Sanity check before casting the return value to EipInt16. */
-  OPENER_ASSERT((INT16_MIN <= diff) && (INT16_MAX >= diff));
+  diff -= ENCAPSULATION_HEADER_LENGTH + encapsulation_data->data_length;
 
-  return (EipInt16)diff;
+  return diff;
 }
 
 /** @brief Check if received package belongs to registered session.
