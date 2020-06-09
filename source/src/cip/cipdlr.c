@@ -49,6 +49,7 @@
 #include "cipcommon.h"
 #include "opener_api.h"
 #include "trace.h"
+#include "endianconv.h"
 
 /* ********************************************************************
  * defines
@@ -89,107 +90,20 @@ CipDlrObject g_dlr;  /**< definition of DLR object instance 1 data */
 /* ********************************************************************
  * local functions
  */
-static int EncodeNodeAddress(CipNodeAddress *node_address, CipOctet **message) {
-  int encoded_len = 0;
-  encoded_len += EncodeData(kCipUdint, &node_address->device_ip,
-                            message);
-  encoded_len += EncodeData(kCip6Usint,
-                            &node_address->device_mac,
-                            message);
-  return encoded_len;
+static void EncodeCipRingSupervisorConfig(const void *const data,
+                                          ENIPMessage *const outgoing_message) {
+  const size_t kRingSupStructSize = 12u;
+  FillNextNMessageOctetsWithValueAndMoveToNextPosition(0,
+                                                       kRingSupStructSize,
+                                                       outgoing_message);
 }
 
-static EipStatus GetAttributeSingleDlr(
-  CipInstance *RESTRICT const instance,
-  CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-
-  CipAttributeStruct *attribute = GetCipAttribute(
-    instance, message_router_request->request_path.attribute_number);
-  EipByte *message = message_router_response->data;
-
-  message_router_response->data_length = 0;
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
-  message_router_response->general_status = kCipErrorAttributeNotSupported;
-  message_router_response->size_of_additional_status = 0;
-
-  EipUint16 attribute_number = message_router_request->request_path
-                               .attribute_number;
-
-  if ( (NULL != attribute) && (NULL != attribute->data) ) {
-    /* Mask for filtering get-ability */
-    uint8_t get_bit_mask = 0;
-    if (kGetAttributeAll == message_router_request->service) {
-      get_bit_mask = (instance->cip_class->get_all_bit_mask[CalculateIndex(
-                                                              attribute_number)]);
-      message_router_response->general_status = kCipErrorSuccess;
-    } else {
-      get_bit_mask = (instance->cip_class->get_single_bit_mask[CalculateIndex(
-                                                                 attribute_number)
-                      ]);
-    }
-    if ( 0 != ( get_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
-      /* create a reply message containing the data*/
-      bool use_common_handler;
-      switch (attribute_number) {
-      case 4: /* fall through */
-      case 6: /* fall through */
-      case 7: /* fall through */
-      case 10:
-        use_common_handler = false;
-        OPENER_TRACE_INFO("getAttribute %d\n", attribute_number);
-        break;
-      default:
-        use_common_handler = true;
-        break;
-      }
-
-      /* Call the PreGetCallback if enabled for this attribute and the common handler is not used. */
-      if (!use_common_handler) {
-        if (attribute->attribute_flags & kPreGetFunc && NULL != instance->cip_class->PreGetCallback) {
-          instance->cip_class->PreGetCallback(instance, attribute, message_router_request->service);
-        }
-      }
-
-      switch (attribute_number) {
-        case 4: {
-          /* This attribute is not implemented and only reached by GetAttributesAll. */
-          const size_t kRingSupStructSize = 12u;
-          memset(message_router_response->data, 0, kRingSupStructSize);
-          message_router_response->data += kRingSupStructSize;
-          message_router_response->general_status = kCipErrorSuccess;
-          break;
-        }
-        case 6: /* fall through */
-        case 7: /* fall through */
-        case 10:
-          message_router_response->data_length = EncodeNodeAddress(
-            (CipNodeAddress *)attribute->data,
-            &message);
-          message_router_response->general_status = kCipErrorSuccess;
-          break;
-
-        default:
-          GetAttributeSingle(instance, message_router_request,
-                             message_router_response,
-                             originator_address,
-                             encapsulation_session);
-      }
-
-      /* Call the PostGetCallback if enabled for this attribute and the common handler is not used. */
-      if (!use_common_handler) {
-        if (attribute->attribute_flags & kPostGetFunc && NULL != instance->cip_class->PostGetCallback) {
-          instance->cip_class->PostGetCallback(instance, attribute, message_router_request->service);
-        }
-      }
-
-    }
-  }
-
-  return kEipStatusOkSend;
+static void EncodeCipNodeAddress(const void *const data,
+                                 ENIPMessage *const outgoing_message) {
+  CipNodeAddress *node_address = (CipNodeAddress *)data;
+  EncodeCipUdint(&node_address->device_ip, outgoing_message);
+  EncodeCipEthernetLinkPhyisicalAddress(&node_address->device_mac,
+                                        outgoing_message);
 }
 
 
@@ -218,36 +132,77 @@ EipStatus CipDlrInit(void) {
 
   /* Add services to the class */
   InsertService(dlr_class, kGetAttributeSingle,
-                GetAttributeSingleDlr, "GetAttributeSingleDlr");
+                GetAttributeSingle, "GetAttributeSingle");
   InsertService(dlr_class, kGetAttributeAll,
                 GetAttributeAll, "GetAttributeAll");
 
   /* Bind attributes to the instance */
   CipInstance *dlr_instance = GetCipInstance(dlr_class, 1u);
 
-  InsertAttribute(dlr_instance,  1, kCipUsint, &g_dlr.network_topology,
+  InsertAttribute(dlr_instance,
+                  1,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  &g_dlr.network_topology,
                   kGetableSingleAndAll);
-  InsertAttribute(dlr_instance,  2, kCipUsint, &g_dlr.network_status,
+  InsertAttribute(dlr_instance,
+                  2,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  &g_dlr.network_status,
                   kGetableSingleAndAll);
-  InsertAttribute(dlr_instance,  3, kCipUsint, (void *)&s_0xFF_default,
+  InsertAttribute(dlr_instance,
+                  3,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  (void *)&s_0xFF_default,
                   kGetableAll);
-  InsertAttribute(dlr_instance,  4, kCipAny, (void *)&s_0x00000000_default,
+  InsertAttribute(dlr_instance,  4, kCipAny, EncodeCipRingSupervisorConfig,
+                  (void *)&s_0x00000000_default,
+                  kGetableAllDummy);
+  InsertAttribute(dlr_instance,
+                  5,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *)&s_0x0000_default,
                   kGetableAll);
-  InsertAttribute(dlr_instance,  5, kCipUint, (void *)&s_0x0000_default,
+  InsertAttribute(dlr_instance,
+                  6,
+                  kCipAny,
+                  EncodeCipNodeAddress,
+                  (void *)&s_zero_node,
                   kGetableAll);
-  InsertAttribute(dlr_instance,  6, kCipAny, (void *)&s_zero_node,
+  InsertAttribute(dlr_instance,
+                  7,
+                  kCipAny,
+                  EncodeCipNodeAddress,
+                  (void *)&s_zero_node,
                   kGetableAll);
-  InsertAttribute(dlr_instance,  7, kCipAny, (void *)&s_zero_node,
-                  kGetableAll);
-  InsertAttribute(dlr_instance,  8, kCipUint, (void *)&s_0xFFFF_default,
+  InsertAttribute(dlr_instance,
+                  8,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *)&s_0xFFFF_default,
                   kGetableAll);
   /* Attribute #9 is not implemented and also NOT part of the GetAttributesAll
    *  response. Therefore it is not added here! */
-  InsertAttribute(dlr_instance, 10, kCipAny, &g_dlr.active_supervisor_address,
+  InsertAttribute(dlr_instance,
+                  10,
+                  kCipAny,
+                  EncodeCipNodeAddress,
+                  &g_dlr.active_supervisor_address,
                   kGetableSingleAndAll);
-  InsertAttribute(dlr_instance, 11, kCipUsint, (void *)&s_0x00_default,
+  InsertAttribute(dlr_instance,
+                  11,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  (void *)&s_0x00_default,
                   kGetableAll);
-  InsertAttribute(dlr_instance, 12, kCipDword, &g_dlr.capability_flags,
+  InsertAttribute(dlr_instance,
+                  12,
+                  kCipDword,
+                  EncodeCipDword,
+                  &g_dlr.capability_flags,
                   kGetableSingleAndAll);
 
   /* Set attributes to initial values */

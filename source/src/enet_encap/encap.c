@@ -106,7 +106,7 @@ int GetFreeSessionIndex(void);
 SessionStatus CheckRegisteredSessions(
   const EncapsulationData *const receive_data);
 
-void DetermineDelayTime(const EipByte *const buffer_start,
+void DetermineDelayTime(const EipByte *buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer);
 
 /*   @brief Initializes session list and interface information. */
@@ -300,8 +300,8 @@ EipStatus HandleReceivedExplictUdpData
 }
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
-  MoveMessageNOctets(ENCAPSULATION_HEADER_LENGTH,
-                     (const CipOctet **)&outgoing_message->current_message_position);
+  /* Move pointer over Header, but do not add to size */
+  outgoing_message->current_message_position += ENCAPSULATION_HEADER_LENGTH;
 }
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
@@ -309,23 +309,15 @@ void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
                                  const size_t session_handle,
                                  const EncapsulationProtocolErrorCode encapsulation_protocol_status,
                                  ENIPMessage *const outgoing_message) {
-  outgoing_message->used_message_length += AddIntToMessage(
-    receive_data->command_code,
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    command_specific_data_length,
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddDintToMessage(session_handle,
-                                                            &outgoing_message->current_message_position); //Session handle
-  outgoing_message->used_message_length += AddDintToMessage(
-    encapsulation_protocol_status,
-    &outgoing_message->current_message_position);                                                         //Status
+  AddIntToMessage(receive_data->command_code, outgoing_message);
+  AddIntToMessage(command_specific_data_length, outgoing_message);
+  AddDintToMessage(session_handle, outgoing_message); //Session handle
+  AddDintToMessage(encapsulation_protocol_status, outgoing_message); //Status
   memcpy(outgoing_message->current_message_position,
          receive_data->sender_context, kSenderContextSize);                // sender context
   outgoing_message->current_message_position += kSenderContextSize;
   outgoing_message->used_message_length += kSenderContextSize;
-  outgoing_message->used_message_length += AddDintToMessage(0,
-                                                            &outgoing_message->current_message_position); // options
+  AddDintToMessage(0, outgoing_message); // options
 }
 
 /** @brief generate reply with "Communications Services" + compatibility Flags.
@@ -347,23 +339,18 @@ void HandleReceivedListServicesCommand(
                               outgoing_message);
 
   /* Command specific data copy Interface data to msg for sending */
-  outgoing_message->used_message_length += AddIntToMessage(1,
-                                                           &outgoing_message->current_message_position); // Item count
-  outgoing_message->used_message_length += AddIntToMessage(
-    g_service_information.type_code,
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    (EipUint16) (g_service_information.length - 4),
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    g_service_information.encapsulation_protocol_version,
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    g_service_information.capability_flags,
-    &outgoing_message->current_message_position);
+  AddIntToMessage(1, outgoing_message); // Item count
+  AddIntToMessage(g_service_information.type_code, outgoing_message);
+  AddIntToMessage( (EipUint16) (g_service_information.length - 4),
+                   outgoing_message );
+  AddIntToMessage(g_service_information.encapsulation_protocol_version,
+                  outgoing_message);
+  AddIntToMessage(g_service_information.capability_flags, outgoing_message);
   memcpy(outgoing_message->current_message_position,
          g_service_information.name_of_service,
          sizeof(g_service_information.name_of_service) );
+  outgoing_message->current_message_position +=
+    sizeof(g_service_information.name_of_service);
   outgoing_message->used_message_length +=
     sizeof(g_service_information.name_of_service);
 }
@@ -381,8 +368,7 @@ void HandleReceivedListInterfacesCommand(
                               kEncapsulationProtocolSuccess,
                               outgoing_message);
   /* Command specific data */
-  outgoing_message->used_message_length += AddIntToMessage(0x0000,
-                                                           &outgoing_message->current_message_position); /* Set Item Count to 0: no Target Items follow. */
+  AddIntToMessage(0x0000, outgoing_message); /* Set Item Count to 0: no Target Items follow. */
 }
 
 void HandleReceivedListIdentityCommandTcp(
@@ -432,59 +418,36 @@ CipUint ListIdentityGetCipIdentityItemLength() {
 void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   /* Item ID*/
   const CipUint kItemIDCipIdentity = 0x0C;
-  outgoing_message->used_message_length += AddIntToMessage(
-    kItemIDCipIdentity,
-    &outgoing_message->current_message_position);
+  AddIntToMessage(kItemIDCipIdentity, outgoing_message);
 
-  outgoing_message->used_message_length += AddIntToMessage(
-    ListIdentityGetCipIdentityItemLength(),
-    &outgoing_message->current_message_position);
+  AddIntToMessage(ListIdentityGetCipIdentityItemLength(), outgoing_message);
 
-  outgoing_message->used_message_length += AddIntToMessage(
-    kSupportedProtocolVersion,
-    &outgoing_message->current_message_position);
+  AddIntToMessage(kSupportedProtocolVersion, outgoing_message);
 
-  outgoing_message->used_message_length += EncapsulateIpAddress(
-    htons(kOpenerEthernetPort), g_tcpip.interface_configuration.ip_address,
-    &outgoing_message->current_message_position);
+  EncapsulateIpAddress(htons(kOpenerEthernetPort),
+                       g_tcpip.interface_configuration.ip_address,
+                       outgoing_message);
 
   /** Array of USINT - length 8 shall be set to zero */
-  memset(outgoing_message->current_message_position, 0, 8);
-  outgoing_message->used_message_length += MoveMessageNOctets(8,
-                                                              (const CipOctet **) &outgoing_message->current_message_position);
+  FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 8, outgoing_message);
 
-  outgoing_message->used_message_length += AddIntToMessage(g_identity.vendor_id,
-                                                           &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    g_identity.device_type,
-    &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    g_identity.product_code,
-    &outgoing_message->current_message_position);
-  *(outgoing_message->current_message_position)++ =
-    g_identity.revision.major_revision;
-  outgoing_message->used_message_length++;
-  *(outgoing_message->current_message_position)++ =
-    g_identity.revision.minor_revision;
-  outgoing_message->used_message_length++;
-  outgoing_message->used_message_length += AddIntToMessage(g_identity.status,
-                                                           &outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddDintToMessage(
-    g_identity.serial_number,
-    &outgoing_message->current_message_position);
-  *outgoing_message->current_message_position++ =
-    (unsigned char) g_identity.product_name.length;
-  outgoing_message->used_message_length++;
-
+  AddIntToMessage(g_identity.vendor_id, outgoing_message);
+  AddIntToMessage(g_identity.device_type, outgoing_message);
+  AddIntToMessage(g_identity.product_code, outgoing_message);
+  AddSintToMessage(g_identity.revision.major_revision, outgoing_message);
+  AddSintToMessage(g_identity.revision.minor_revision, outgoing_message);
+  AddIntToMessage(g_identity.status, outgoing_message);
+  AddDintToMessage(g_identity.serial_number, outgoing_message);
+  AddSintToMessage( (unsigned char) g_identity.product_name.length,
+                    outgoing_message );
+//TODO Change to EncodeCipString
   memcpy(outgoing_message->current_message_position,
          g_identity.product_name.string,
          g_identity.product_name.length);
   outgoing_message->current_message_position += g_identity.product_name.length;
   outgoing_message->used_message_length += g_identity.product_name.length;
 
-  *outgoing_message->current_message_position++ = g_identity.state;
-  outgoing_message->used_message_length++;
-
+  AddSintToMessage(g_identity.state, outgoing_message);
 }
 
 void EncapsulateListIdentityResponseMessage(
@@ -502,17 +465,16 @@ void EncapsulateListIdentityResponseMessage(
                               kEncapsulationProtocolSuccess,
                               outgoing_message);
 
-  outgoing_message->used_message_length += AddIntToMessage(1,
-                                                           &outgoing_message->current_message_position); /* Item count: one item */
+  AddIntToMessage(1, outgoing_message); /* Item count: one item */
   EncodeListIdentityCipIdentityItem(outgoing_message);
 
 }
 
-void DetermineDelayTime(const EipByte *const buffer_start,
+void DetermineDelayTime(const EipByte *buffer_start,
                         DelayedEncapsulationMessage *const delayed_message_buffer)
 {
 
-  MoveMessageNOctets(12, (const CipOctet **) &buffer_start);       /* start of the sender context */
+  buffer_start += 12;             /* start of the sender context */
   EipUint16 maximum_delay_time = GetIntFromMessage(
     (const EipUint8 **const ) &buffer_start);
 
@@ -541,11 +503,8 @@ void EncapsulateRegisterSessionCommandResponseMessage(
                               encapsulation_protocol_status,
                               outgoing_message);
 
-  outgoing_message->used_message_length += AddIntToMessage(1,
-                                                           &outgoing_message->current_message_position); /* protocol version*/
-  outgoing_message->used_message_length += AddIntToMessage(
-    0,
-    &outgoing_message->current_message_position);                     /* Options flag, shall be set to zero */
+  AddIntToMessage(1, outgoing_message); /* protocol version*/
+  AddIntToMessage(0, outgoing_message); /* Options flag, shall be set to zero */
 }
 
 /* @brief Check supported protocol, generate session handle, send replay back to originator.

@@ -121,7 +121,7 @@ EipStatus CreateCommonPacketFormatStructure(
  * @return length of modification in bytes
  *     kEipStatusError .. error
  */
-int AssembleIOMessage(
+void AssembleIOMessage(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const message);
 
@@ -136,7 +136,7 @@ int AssembleIOMessage(
  * @return length of modification in bytes
  *         kEipStatusError .. error
  */
-int AssembleLinearMessage(
+EipStatus AssembleLinearMessage(
   const CipMessageRouterResponse *const message_router_response,
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message);

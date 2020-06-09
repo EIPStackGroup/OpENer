@@ -30,6 +30,7 @@
 
 
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
+const size_t g_kLargeForwardOpenHeaderLength = 40; /**< the length in bytes of the large forward open command specific data till the start of the connection path (including con path size)*/
 
 static const int g_kNumberOfConnectableObjects = 2 +
                                                  OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
@@ -55,6 +56,13 @@ EipUint32 g_incarnation_id;
 
 /* private functions */
 EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session);
+
+EipStatus LargeForwardOpen(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
@@ -176,23 +184,34 @@ void InitializeConnectionManager(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute( (CipInstance *) class, 1, kCipUint,
+  InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint,
                    (void *) &class->revision,
                    kGetableSingleAndAll ); /* revision */
-  InsertAttribute( (CipInstance *) class, 2, kCipUint,
+  InsertAttribute( (CipInstance *) class, 2, kCipUint, EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
-  InsertAttribute( (CipInstance *) class, 3, kCipUint,
+  InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint,
                    (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
-  InsertAttribute( (CipInstance *) class, 4, kCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint,
+                   (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 5, kCipUint, (void *) &kCipUintZero,
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint,
+                   (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 6, kCipUint,
+  InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max class attribute number*/
-  InsertAttribute( (CipInstance *) class, 7, kCipUint,
+  InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max instance attribute number*/
+
+  InsertService(meta_class,
+                kGetAttributeAll,
+                &GetAttributeAll,
+                "GetAttributeAll");                                                 /* bind instance services to the metaclass*/
+  InsertService(meta_class,
+                kGetAttributeSingle,
+                &GetAttributeSingle,
+                "GetAttributeSingle");
 
 }
 
@@ -206,7 +225,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
     2,   /* # of class services */
     0,   /* # of instance attributes */
     14,   /* # highest instance attribute number*/
-    5,   /* # of instance services */
+    6,   /* # of instance services */
     1,   /* # of instances */
     "connection manager",   /* class name */
     1,   /* revision */
@@ -219,6 +238,10 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InsertService(connection_manager, kGetAttributeAll, &GetAttributeAll,
                 "GetAttributeAll");
   InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
+  InsertService(connection_manager,
+                kLargeForwardOpen,
+                &LargeForwardOpen,
+                "LargeForwardOpen");
   InsertService(connection_manager, kForwardClose, &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager, kGetConnectionOwner, &GetConnectionOwner,
@@ -460,6 +483,33 @@ static const HandleForwardOpenRequestFunction
     HandleNullMatchingForwardOpenRequest
   } };
 
+EipStatus ForwardOpenRoutine(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  );
+
+/** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
+ *
+ * Large Forward Open service calls Forward Open service
+ */
+EipStatus LargeForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  ) {
+  g_dummy_connection_object.is_large_forward_open = true;
+  return ForwardOpenRoutine(instance,
+                            message_router_request,
+                            message_router_response,
+                            originator_address,
+                            encapsulation_session);
+}
+
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
  *
  *  Forward Open four cases
@@ -482,6 +532,20 @@ static const HandleForwardOpenRequestFunction
  *              -1 .. error
  */
 EipStatus ForwardOpen(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session
+  ) {
+  g_dummy_connection_object.is_large_forward_open = false;
+  return ForwardOpenRoutine(instance,
+                            message_router_request,
+                            message_router_response,
+                            originator_address,
+                            encapsulation_session);
+}
+EipStatus ForwardOpenRoutine(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
@@ -520,6 +584,20 @@ EipStatus ForwardOpen(
       &g_dummy_connection_object, message_router_response,
       kCipErrorConnectionFailure,
       kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType);
+  }
+
+  if(kConnectionObjectConnectionTypeMulticast == t_to_o_connection_type) {
+    /* for multicast, check if IP is within configured net because we send TTL 1 */
+    CipUdint originator_ip =
+      ( (struct sockaddr_in *)originator_address )->sin_addr.s_addr;
+    CipUdint interface_ip = g_network_status.ip_address;
+    CipUdint interface_mask = g_network_status.network_mask;
+    if( (originator_ip & interface_mask)!=(interface_ip & interface_mask) ) {
+      return AssembleForwardOpenResponse(
+        &g_dummy_connection_object, message_router_response,
+        kCipErrorConnectionFailure,
+        kConnectionManagerExtendedStatusCodeNotConfiguredForOffSubnetMulticast);
+    }
   }
 
   /* Check if request is a Null request or a Non-Null request */
@@ -592,7 +670,7 @@ EipStatus ForwardClose(
            && (connection_object->originator_serial_number
                == originator_serial_number) ) {
         /* found the corresponding connection object -> close it */
-        OPENER_ASSERT(NULL != connection_object->connection_close_function)
+        OPENER_ASSERT(NULL != connection_object->connection_close_function);
         if ( ( (struct sockaddr_in *) originator_address )->sin_addr.s_addr
              == connection_object->originator_address.sin_addr.s_addr ) {
           connection_object->connection_close_function(connection_object);
@@ -660,7 +738,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
                             connection_object->connection_serial_number);
-          OPENER_ASSERT(NULL != connection_object->connection_timeout_function)
+          OPENER_ASSERT(NULL != connection_object->connection_timeout_function);
           connection_object->connection_timeout_function(connection_object);
         } else {
           connection_object->inactivity_watchdog_timer -= elapsed_time;
@@ -690,7 +768,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
 
           if (connection_object->transmission_trigger_timer <= elapsed_time) { /* need to send package */
             OPENER_ASSERT(
-              NULL != connection_object->connection_send_data_function)
+              NULL != connection_object->connection_send_data_function);
             EipStatus eip_status = connection_object
                                    ->connection_send_data_function(
               connection_object);
@@ -738,19 +816,23 @@ EipStatus AssembleForwardOpenResponse(
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *cip_common_packet_format_data =
     &g_common_packet_format_data_item;
-  EipByte *message = message_router_response->data;
   cip_common_packet_format_data->item_count = 2;
   cip_common_packet_format_data->data_item.type_id =
     kCipItemIdUnconnectedDataItem;
 
   AddNullAddressItem(cip_common_packet_format_data);
 
-  message_router_response->reply_service = (0x80 | kForwardOpen);
+  CIPServiceCode service_code = kForwardOpen;
+  if (connection_object->is_large_forward_open) {
+    service_code = kLargeForwardOpen;
+  }
+
+  message_router_response->reply_service = (0x80 | service_code);
   message_router_response->general_status = general_status;
 
   if (kCipErrorSuccess == general_status) {
     OPENER_TRACE_INFO("assembleFWDOpenResponse: sending success response\n");
-    message_router_response->data_length = 26; /* if there is no application specific data */
+    /* if there is no application specific data, total length should be 26 */
     message_router_response->size_of_additional_status = 0;
 
     if (cip_common_packet_format_data->address_info_item[0].type_id != 0) {
@@ -760,14 +842,16 @@ EipStatus AssembleForwardOpenResponse(
       }
     }
 
-    AddDintToMessage(connection_object->cip_consumed_connection_id, &message);
-    AddDintToMessage(connection_object->cip_produced_connection_id, &message);
+    AddDintToMessage(connection_object->cip_consumed_connection_id,
+                     &message_router_response->message);
+    AddDintToMessage(connection_object->cip_produced_connection_id,
+                     &message_router_response->message);
   } else {
     /* we have an connection creation error */
     OPENER_TRACE_INFO("AssembleForwardOpenResponse: sending error response\n");
     ConnectionObjectSetState(connection_object,
                              kConnectionObjectStateNonExistent);
-    message_router_response->data_length = 10;
+    /* Expected data length is 10 octets */
 
     switch (general_status) {
       case kCipErrorNotEnoughData:
@@ -811,22 +895,23 @@ EipStatus AssembleForwardOpenResponse(
     }
   }
 
-  AddIntToMessage(connection_object->connection_serial_number, &message);
-  AddIntToMessage(connection_object->originator_vendor_id, &message);
-  AddDintToMessage(connection_object->originator_serial_number, &message);
+  AddIntToMessage(connection_object->connection_serial_number,
+                  &message_router_response->message);
+  AddIntToMessage(connection_object->originator_vendor_id,
+                  &message_router_response->message);
+  AddDintToMessage(connection_object->originator_serial_number,
+                   &message_router_response->message);
 
   if (kCipErrorSuccess == general_status) {
     /* set the actual packet rate to requested packet rate */
     AddDintToMessage(connection_object->o_to_t_requested_packet_interval,
-                     &message);
+                     &message_router_response->message);
     AddDintToMessage(connection_object->t_to_o_requested_packet_interval,
-                     &message);
+                     &message_router_response->message);
   }
 
-  *message = 0; /* remaining path size - for routing devices relevant */
-  message++;
-  *message = 0; /* reserved */
-  message++;
+  AddSintToMessage(0, &message_router_response->message); /* remaining path size - for routing devices relevant */
+  AddSintToMessage(0, &message_router_response->message); /* reserved */
 
   return kEipStatusOkSend; /* send reply */
 }
@@ -872,27 +957,27 @@ EipStatus AssembleForwardCloseResponse(
   /* write reply information in CPF struct dependent of pa_status */
   CipCommonPacketFormatData *common_data_packet_format_data =
     &g_common_packet_format_data_item;
-  EipByte *message = message_router_response->data;
   common_data_packet_format_data->item_count = 2;
   common_data_packet_format_data->data_item.type_id =
     kCipItemIdUnconnectedDataItem;
 
   AddNullAddressItem(common_data_packet_format_data);
 
-  AddIntToMessage(connection_serial_number, &message);
-  AddIntToMessage(originatior_vendor_id, &message);
-  AddDintToMessage(originator_serial_number, &message);
+  AddIntToMessage(connection_serial_number, &message_router_response->message);
+  AddIntToMessage(originatior_vendor_id, &message_router_response->message);
+  AddDintToMessage(originator_serial_number, &message_router_response->message);
 
   message_router_response->reply_service = (0x80
                                             | message_router_request->service);
-  message_router_response->data_length = 10; /* if there is no application specific data */
+  /* Excepted length is 10 if there is no application specific data */
 
   if (kConnectionManagerExtendedStatusCodeSuccess == extended_error_code) {
-    *message = 0; /* no application data */
+    AddSintToMessage(0, &message_router_response->message); /* no application data */
     message_router_response->general_status = kCipErrorSuccess;
     message_router_response->size_of_additional_status = 0;
   } else {
-    *message = *message_router_request->data; /* remaining path size */
+    AddSintToMessage(*message_router_request->data,
+                     &message_router_response->message);                                /* remaining path size */
     if (kConnectionManagerExtendedStatusWrongCloser == extended_error_code) {
       message_router_response->general_status = kCipErrorPrivilegeViolation;
     } else {
@@ -902,9 +987,7 @@ EipStatus AssembleForwardCloseResponse(
     }
   }
 
-  message++;
-  *message = 0; /* reserved */
-  message++;
+  AddSintToMessage(0, &message_router_response->message); /* reserved */
 
   return kEipStatusOkSend;
 }
@@ -1057,14 +1140,19 @@ EipUint8 ParseConnectionPath(
   /* with 256 we mark that we haven't got a PIT segment */
   ConnectionObjectSetProductionInhibitTime(connection_object, 256);
 
-  if ( (g_kForwardOpenHeaderLength + remaining_path * 2)
+  size_t header_length = g_kForwardOpenHeaderLength;
+  if (connection_object->is_large_forward_open) {
+    header_length = g_kLargeForwardOpenHeaderLength;
+  }
+
+  if ( (header_length + remaining_path * 2)
        < message_router_request->request_path_size ) {
     /* the received packet is larger than the data in the path */
     *extended_error = 0;
     return kCipErrorTooMuchData;
   }
 
-  if ( (g_kForwardOpenHeaderLength + remaining_path * 2)
+  if ( (header_length + remaining_path * 2)
        > message_router_request->request_path_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;

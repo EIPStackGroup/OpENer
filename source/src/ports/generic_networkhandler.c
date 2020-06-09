@@ -93,6 +93,10 @@ EipStatus NetworkHandlerInitialize(void) {
   CipQosUpdateUsedSetQosValues();
   /* Make sure the multicast configuration matches the current IP address. */
   CipTcpIpCalculateMulticastIp(&g_tcpip);
+  /* Freeze IP and network mask matching to the socket setup. This is needed
+   *  for the off subnet multicast routing check later. */
+  g_network_status.ip_address = g_tcpip.interface_configuration.ip_address;
+  g_network_status.network_mask = g_tcpip.interface_configuration.network_mask;
   /* Initialize encapsulation layer here because it accesses the IP address. */
   EncapsulationInit();
 
@@ -193,7 +197,7 @@ EipStatus NetworkHandlerInitialize(void) {
   struct sockaddr_in my_address = {
     .sin_family = AF_INET,
     .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = g_tcpip.interface_configuration.ip_address
+    .sin_addr.s_addr = g_network_status.ip_address
   };
 
   /* bind the new socket to port 0xAF12 (CIP) */
@@ -213,7 +217,7 @@ EipStatus NetworkHandlerInitialize(void) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR( "error with UDP unicast bind: %d - %s\n",
-                     error_code, error_message);
+                      error_code, error_message);
     FreeErrorMessage(error_message);
     return kEipStatusError;
   }
@@ -393,7 +397,7 @@ void CheckAndHandleTcpListenerSocket(void) {
 //                        g_timestamps[i].last_update);
 //    }
 
-    OPENER_ASSERT(socket_timer != NULL)
+    OPENER_ASSERT(socket_timer != NULL);
 
     FD_SET(new_socket, &master_socket);
     /* add newfd to master set */
@@ -611,10 +615,9 @@ void CheckAndHandleUdpUnicastSocket(void) {
   }
 }
 
-EipStatus SendUdpData(struct sockaddr_in *address,
-                      int socket_handle,
-                      EipUint8 *data,
-                      EipUint16 data_length) {
+EipStatus SendUdpData(const struct sockaddr_in *const address,
+                      const int socket_handle,
+                      const ENIPMessage *const outgoing_message) {
 
 
 
@@ -622,25 +625,25 @@ EipStatus SendUdpData(struct sockaddr_in *address,
   UDPHeader header = {
     .source_port = 2222,
     .destination_port = ntohs(address->sin_port),
-    .packet_length = kUdpHeaderLength + data_length,
+    .packet_length = kUdpHeaderLength + outgoing_message->used_message_length,
     .checksum = 0
   };
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
-  memcpy(complete_message + kUdpHeaderLength, data, data_length);
+  memcpy(complete_message + kUdpHeaderLength,
+         outgoing_message->message_buffer,
+         outgoing_message->used_message_length);
   UDPHeaderGenerate(&header, (char *)complete_message);
-  UDPHeaderSetChecksum(&header,
-                       htons(UDPHeaderCalculateChecksum(complete_message,
-                                                        8 + data_length,
-                                                        g_tcpip.
-                                                        interface_configuration
-                                                        .ip_address,
-                                                        address->sin_addr.s_addr) ) );
+  const uint16_t udp_checksum = UDPHeaderCalculateChecksum(complete_message,
+                                                           8 + outgoing_message->used_message_length,
+                                                           g_tcpip.interface_configuration.ip_address,
+                                                           address->sin_addr.s_addr);
+  UDPHeaderSetChecksum(&header, htons(udp_checksum) );
   UDPHeaderGenerate(&header, (char *)complete_message);
 
   int sent_length = sendto( socket_handle,
                             (char *) complete_message,
-                            data_length + kUdpHeaderLength,
+                            outgoing_message->used_message_length + kUdpHeaderLength,
                             0,
                             (struct sockaddr *) address,
                             sizeof(*address) );
@@ -656,11 +659,11 @@ EipStatus SendUdpData(struct sockaddr_in *address,
     return kEipStatusError;
   }
 
-  if (sent_length != data_length + kUdpHeaderLength) {
+  if (sent_length != outgoing_message->used_message_length + kUdpHeaderLength) {
     OPENER_TRACE_WARN(
       "data length sent_length mismatch; probably not all data was sent in SendUdpData, sent %d of %d\n",
       sent_length,
-      data_length);
+      outgoing_message->used_message_length);
     return kEipStatusError;
   }
 
@@ -727,7 +730,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO(
         "Entering consumption loop, remaining data to receive: %ld\n",
         data_sent);
-      number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[0],
+      number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[0],
                                   data_sent, 0);
 
       if (number_of_read_bytes == 0) /* got error or connection closed by client */
@@ -764,7 +767,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusOk;
   }
 
-  number_of_read_bytes = recv(socket, NWBUF_CAST &incoming_message[4],
+  number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[4],
                               data_size, 0);
 
   if (0 == number_of_read_bytes) /* got error or connection closed by client */
@@ -903,7 +906,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
     OPENER_TRACE_ERR(
       "error setting socket to non-blocking on new socket\n");
     CloseUdpSocket(new_socket);
-    OPENER_ASSERT(false) /* This should never happen! */
+    OPENER_ASSERT(false);/* This should never happen! */
     return kEipInvalidSocket;
   }
 
@@ -919,7 +922,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
 
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n", new_socket);
 
-  {
+  /* check if it is sending or receiving */
+  if (communication_direction == kUdpCommuncationDirectionConsuming) {
     int option_value = 1;
     if (setsockopt( new_socket, SOL_SOCKET, SO_REUSEADDR,
                     (char *) &option_value,
@@ -931,10 +935,6 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       CloseUdpSocket(new_socket);
       return kEipInvalidSocket;
     }
-  }
-
-  /* check if it is sending or receiving */
-  if (communication_direction == kUdpCommuncationDirectionConsuming) {
 
     /* bind is only for consuming necessary */
     if ( ( bind( new_socket, (struct sockaddr *) socket_data,
@@ -956,7 +956,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         == g_tcpip.mcast_config.starting_multicast_address) {
       if (1 != g_tcpip.mcast_ttl_value) { /* we need to set a TTL value for the socket */
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_TTL,
-                        NWBUF_CAST &g_tcpip.mcast_ttl_value,
+                        NWBUF_CAST & g_tcpip.mcast_ttl_value,
                         sizeof(g_tcpip.mcast_ttl_value) ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);
@@ -972,9 +972,9 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
         /* Need to specify the interface for outgoing multicast packets on a device
             with multiple interfaces. */
         struct in_addr my_addr =
-        { .s_addr = g_tcpip.interface_configuration.ip_address };
+        { .s_addr = g_network_status.ip_address };
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
-                        NWBUF_CAST &my_addr.s_addr,
+                        NWBUF_CAST & my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
           int error_code = GetSocketErrorNumber();
           char *error_message = GetErrorMessage(error_code);

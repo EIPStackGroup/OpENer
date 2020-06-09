@@ -34,43 +34,37 @@
  *  and return (-1) on failure and (0) on success.
  */
 EipStatus NvdataLoad(void) {
-  EipStatus status = kEipStatusOk;
-  int       rc;
-
   /* Load NV data for QoS object instance */
-  rc = NvQosLoad(&g_qos);
-  status |= rc;
-  if (0 != rc) {
-    rc = NvQosStore(&g_qos);
-    status |= rc;
+  EipStatus eip_status = NvQosLoad(&g_qos);
+  if (kEipStatusError != eip_status) {
+    eip_status =
+      (kEipStatusError == NvQosStore(&g_qos) ) ? kEipStatusError : eip_status;
   }
 
-  return status;
+  return eip_status;
 }
 
 /** A PostSetCallback for QoS class to store NV attributes
-*
-* @param  instance  pointer to instance of QoS class
-* @param  attribute pointer to attribute structure
-* @param  service   the CIP service code of current request
-*
-* This function implements the PostSetCallback for the QoS class. The
-* purpose of this function is to save the NV attributes of the QoS
-* class instance to external storage.
-*
-* This application specific implementation chose to save all attributes
-* at once using a single NvQosStore() call.
-*/
-EipStatus NvQosSetCallback
-(
-  CipInstance *const instance,
-  CipAttributeStruct *const attribute,
-  CipByte service
-)
-{
+ *
+ * @param  instance  pointer to instance of QoS class
+ * @param  attribute pointer to attribute structure
+ * @param  service   the CIP service code of current request
+ *
+ *  @return kEipStatusOk: success; kEipStatusError: failure
+ *
+ * This function implements the PostSetCallback for the QoS class. The
+ * purpose of this function is to save the NV attributes of the QoS
+ * class instance to external storage.
+ *
+ * This application specific implementation chose to save all attributes
+ * at once using a single NvQosStore() call.
+ */
+EipStatus NvQosSetCallback(CipInstance *const instance,
+                           CipAttributeStruct *const attribute,
+                           CipByte service) {
   EipStatus status = kEipStatusOk;
 
-  if (0 != (kNvDataFunc & attribute->attribute_flags)) {
+  if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
     OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                       instance->cip_class->class_name,
                       instance->instance_number,
@@ -81,36 +75,32 @@ EipStatus NvQosSetCallback
 }
 
 /** A PostSetCallback for TCP/IP class to store NV attributes
-*
-* @param  instance  pointer to instance of TCP/IP class
-* @param  attribute pointer to attribute structure
-* @param  service   the CIP service code of current request
-*
-* This function implements the PostSetCallback for the TCP/IP class. The
-* purpose of this function is to save the NV attributes of the TCP/IP
-* class instance to external storage.
-*
-* This application specific implementation chose to save all attributes
-* at once using a single NvTcpipStore() call.
-*/
-EipStatus NvTcpipSetCallback
-(
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
-)
-{
-    EipStatus status = kEipStatusOk;
+ *
+ * @param  instance  pointer to instance of TCP/IP class
+ * @param  attribute pointer to attribute structure
+ * @param  service   the CIP service code of current request
+ *
+ * This function implements the PostSetCallback for the TCP/IP class. The
+ * purpose of this function is to save the NV attributes of the TCP/IP
+ * class instance to external storage.
+ *
+ * This application specific implementation chose to save all attributes
+ * at once using a single NvTcpipStore() call.
+ */
+EipStatus NvTcpipSetCallback(CipInstance *const instance,
+                             CipAttributeStruct *const attribute,
+                             CipByte service) {
+  EipStatus status = kEipStatusOk;
 
-    if (0 != (kNvDataFunc & attribute->attribute_flags)) {
-      /* Workaround: Update only if service is not flagged. */
-      if (0 == (0x80 & service)) {
-        OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
-                          instance->cip_class->class_name,
-                          instance->instance_number,
-                          attribute->attribute_number);
-        status = NvTcpipStore(&g_tcpip);
-      }
+  if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
+    /* Workaround: Update only if service is not flagged. */
+    if (0 == (0x80 & service) ) {
+      OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
+                        instance->cip_class->class_name,
+                        instance->instance_number,
+                        attribute->attribute_number);
+      status = NvTcpipStore(&g_tcpip);
     }
-    return status;
+  }
+  return status;
 }

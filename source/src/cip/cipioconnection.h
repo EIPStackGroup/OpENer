@@ -53,7 +53,7 @@
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus EstablishIoConnection(
+CipError EstablishIoConnection(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error);
 
@@ -65,7 +65,7 @@ EipStatus EstablishIoConnection(
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-EipStatus OpenCommunicationChannels(CipConnectionObject *connection_object);
+CipError OpenCommunicationChannels(CipConnectionObject *connection_object);
 
 /** @brief close the communication channels of the given connection and remove it
  * from the active connections list.

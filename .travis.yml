@@ -1,4 +1,3 @@
-sudo: false
 language: c
 branches:
   except:
@@ -24,34 +23,34 @@ addons:
     organization: eipstackgroup
     token: $SONAR_TOKEN
 
-matrix:
-  include:
-    - name: "GCC on Linux"
-      os: linux
-      env: CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
+jobs:
+  - name: "GCC on Linux"
+    os: linux
+    dist: xenial
+    env: CMAKE_URL="https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
 
-      install:
-        - git fetch --unshallow --tags
-        - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-        - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-        - |
-          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-          cmake --version
-      before_script:
-        - $TRAVIS_BUILD_DIR/travis_scripts/linuxBeforeScript.sh
-      script:
-        - $TRAVIS_BUILD_DIR/travis_scripts/linuxScript.sh
-      after_success:
-        - $TRAVIS_BUILD_DIR/travis_scripts/linuxAfterSuccessScript.sh
-    - name: "MSVC on Windows"
-      os: windows
-      script:
-        - $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh
-    - name: "MinGW on Windows"
-      os: windows
-      env:
-        - CC="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-gcc"
-        - CXX="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-g++"
-      script:
-        - $TRAVIS_BUILD_DIR/travis_scripts/windowsMinGWScript.sh
+    install:
+      - git fetch --unshallow --tags
+      - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+      - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+      - |
+        mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+        export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+        cmake --version
+    before_script:
+      - $TRAVIS_BUILD_DIR/travis_scripts/linuxBeforeScript.sh
+    script:
+      - $TRAVIS_BUILD_DIR/travis_scripts/linuxScript.sh
+    after_success:
+      - $TRAVIS_BUILD_DIR/travis_scripts/linuxAfterSuccessScript.sh
+  - name: "MSVC on Windows"
+    os: windows
+    script:
+      - $TRAVIS_BUILD_DIR/travis_scripts/windowsScript.sh
+  - name: "MinGW on Windows"
+    os: windows
+    env:
+      - CC="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-gcc"
+      - CXX="/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/x86_64-w64-mingw32-g++"
+    script:
+      - $TRAVIS_BUILD_DIR/travis_scripts/windowsMinGWScript.sh
