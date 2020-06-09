@@ -85,7 +85,7 @@ void ShutdownAssemblies(void) {
   if(NULL != assembly_class) {
     const CipInstance *instance = assembly_class->instances;
     while(NULL != instance) {
-      CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
+      const CipAttributeStruct *const attribute = GetCipAttribute(instance, 3);
       if(NULL != attribute) {
         CipFree(attribute->data);
       }
