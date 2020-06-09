@@ -436,7 +436,7 @@ bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
   const DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipConnectionObject *connection = node->data;
+    const CipConnectionObject *const connection = node->data;
     OPENER_ASSERT(NULL != connection);
     if (config_point == connection->configuration_path.instance_id) {
       return true;
