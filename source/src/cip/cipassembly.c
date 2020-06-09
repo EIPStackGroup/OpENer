@@ -19,7 +19,7 @@
  *  Currently only supports Attribute 3 (CIP_BYTE_ARRAY) of an Assembly
  */
 EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
-                                     CipMessageRouterRequest *const message_router_request,
+                                     const CipMessageRouterRequest *const message_router_request,
                                      CipMessageRouterResponse *const message_router_response,
                                      const struct sockaddr *originator_address,
                                      const int encapsulation_session);
@@ -80,10 +80,10 @@ EipStatus CipAssemblyInitialize(void) {
 }
 
 void ShutdownAssemblies(void) {
-  CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode);
+  const CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
 
   if(NULL != assembly_class) {
-    CipInstance *instance = assembly_class->instances;
+    const CipInstance *instance = assembly_class->instances;
     while(NULL != instance) {
       CipAttributeStruct *attribute = GetCipAttribute(instance, 3);
       if(NULL != attribute) {
@@ -139,7 +139,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint16 data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future */
   /* copy received data to Attribute 3 */
-  CipByteArray *assembly_byte_array =
+  const CipByteArray *const assembly_byte_array =
     (CipByteArray *) instance->attributes->data;
   if(assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
@@ -154,7 +154,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
 }
 
 EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
-                                     CipMessageRouterRequest *const message_router_request,
+                                     const CipMessageRouterRequest *const message_router_request,
                                      CipMessageRouterResponse *const message_router_response,
                                      const struct sockaddr *originator_address,
                                      const int encapsulation_session) {
@@ -174,7 +174,7 @@ EipStatus SetAssemblyAttributeSingle(CipInstance *const instance,
   if( (attribute != NULL) &&
       (3 == message_router_request->request_path.attribute_number) ) {
     if(attribute->data != NULL) {
-      CipByteArray *data = (CipByteArray *) attribute->data;
+      const CipByteArray *const data = (CipByteArray *) attribute->data;
 
       /* TODO: check for ATTRIBUTE_SET/GETABLE MASK */
       if( true == IsConnectedOutputAssembly(instance->instance_number) ) {
