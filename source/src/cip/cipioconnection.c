@@ -837,7 +837,12 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->data_item.length = producing_instance_attributes
                                                 ->length;
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
-  common_packet_format_data->data_item.length += 4;
+  bool is_heartbeat = (common_packet_format_data->data_item.length == 0);
+
+
+  if(!is_heartbeat) {
+      common_packet_format_data->data_item.length += 4;
+  }
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   if (kConnectionObjectTransportClassTriggerTransportClass1 ==
@@ -854,8 +859,10 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   }
 
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
-  AddDintToMessage( g_run_idle_state,
-                    &outgoing_message );
+  if(!is_heartbeat) {
+      AddDintToMessage( g_run_idle_state,
+                        &outgoing_message );
+  }
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   memcpy(outgoing_message.current_message_position,
