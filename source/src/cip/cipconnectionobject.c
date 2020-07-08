@@ -50,7 +50,9 @@
 #define CIP_CONNECTION_OBJECT_PRIORITY_SCHEDULED (1 << 11)
 #define CIP_CONNECTION_OBJECT_PRIORITY_URGENT (3 << 10)
 
-DoublyLinkedList connection_list;
+DoublyLinkedList connection_list = {
+    .allocator = CipConnectionObjectListArrayAllocator, 
+    .deallocator = CipConnectionObjectListArrayFree};
 
 /** @brief Array of the available explicit connections */
 CipConnectionObject explicit_connection_object_pool[
