@@ -45,7 +45,8 @@ EipStatus IfaceGetConfiguration
  *  @return                   kEipStatusOk: all fine
  *                            kEipStatusError: failure, errno set
  */
-EipStatus IfaceGetMacAddress(const char *iface, uint8_t *const physical_address);
+EipStatus IfaceGetMacAddress(const char *iface,
+                             uint8_t *const physical_address);
 
 /** @ingroup CIP_API
  * @brief Wait for the network interface having an IP address
@@ -100,7 +101,7 @@ void SetDeviceStatus(const CipWord status);
  * @param unique_connection_id value passed to Connection_Manager_Init() to form
  * a "per boot" unique connection ID.
  */
-void CipStackInit(const EipUint16 unique_connection_id);
+EipStatus CipStackInit(const EipUint16 unique_connection_id);
 
 /** @ingroup CIP_API
  * @brief Shutdown of the CIP stack
@@ -229,13 +230,15 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param cip_instance Pointer to CIP class instance (Instance 0)
  *  @param attribute_number Number of attribute to be inserted.
  *  @param cip_data_type Type of attribute to be inserted.
+ *  @param encode_function Function pointer to the encoding function
  *  @param cip_data Pointer to data of attribute.
  *  @param cip_flags Flags to indicate set-ability and get-ability of attribute.
  */
-void InsertAttribute(CipInstance *const cip_instance,
+void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
-                     const EipUint8 cip_data_type,
-                     void *const cip_data,
+                     const EipUint8 cip_type,
+                     CipAttributeEncodeInMessage encode_function,
+                     void *const data,
                      const EipByte cip_flags);
 
 
@@ -292,9 +295,11 @@ void InsertGetSetCallback
 (
   CipClass *const cip_class,
   CipGetSetCallback callback_function,
-  CIPAttributeFlag  callbacks_to_install
+  CIPAttributeFlag callbacks_to_install
 );
 
+
+//TODO: Update documentation
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *
@@ -302,13 +307,78 @@ void InsertGetSetCallback
  * requester (e.g., getAttributeSingle for special structs).
  *  @param cip_data_type the cip type to encode
  *  @param cip_data pointer to data value.
- *  @param cip_message pointer to memory where response should be written
- *  @return length of attribute in bytes
- *          -1 .. error
+ *  @param message_router_response The message router response construct
  */
-size_t EncodeData(const EipUint8 cip_data_type,
-                  const void *const cip_data,
-                  EipUint8 **cip_message);
+
+
+void EncodeCipBool(const CipBool *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipByte(const CipByte *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipWord(const CipWord *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipDword(const CipDword *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipLword(const CipLword *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipUsint(const CipUsint *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipUint(const CipUint *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipUdint(const CipUdint *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipUlint(const CipUlint *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipSint(const CipSint *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipInt(const CipInt *const data,
+                  ENIPMessage *const outgoing_message);
+
+void EncodeCipDint(const CipDint *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipLint(const CipLint *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipReal(const CipReal *const data,
+                   ENIPMessage *const outgoing_message);
+
+void EncodeCipLreal(const CipLreal *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipShortString(const CipShortString *const data,
+                          ENIPMessage *const outgoing_message);
+
+void EncodeCipString(const CipString *const data,
+                     ENIPMessage *const outgoing_message);
+
+void EncodeCipString2(const CipString2 *const data,
+                      ENIPMessage *const outgoing_message);
+
+void EncodeCipStringN(const CipStringN *const data,
+                      ENIPMessage *const outgoing_message);
+
+void EncodeCipStringI(const CipStringI *const data,
+                      ENIPMessage *const outgoing_message);
+
+void EncodeCipByteArray(const CipByteArray *const data,
+                        ENIPMessage *const outgoing_message);
+
+void EncodeCipEPath(const CipEpath *const data,
+                    ENIPMessage *const outgoing_message);
+
+void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
+                                           ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
@@ -398,7 +468,7 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
  *
  * @return Stack status
  */
-typedef EipStatus (*ConnectionReceiveDataFunction)(
+typedef CipError (*ConnectionReceiveDataFunction)(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
   const size_t data_length);
@@ -746,15 +816,13 @@ socket_platform_t CreateUdpSocket(UdpCommuncationDirection communication_directi
  *
  * @param socket_data Pointer to the "send to" address
  * @param socket_handle Socket descriptor to send on
- * @param data Pointer to the data to send
- * @param data_length Length of the data to send
+ * @param outgoing message The constructed outgoing message
  * @return kEipStatusOk on success
  */
 EipStatus
-SendUdpData(struct sockaddr_in *socket_data,
-            socket_platform_t socket_handle,
-            EipUint8 *data,
-            size_t data_length);
+SendUdpData(const struct sockaddr_in *const socket_data,
+            const socket_platform_t socket_handle,
+            const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Close the given socket and clean up the stack

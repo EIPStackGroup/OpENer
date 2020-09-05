@@ -46,7 +46,8 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 
 void ShutdownSocketPlatform(socket_platform_t socket_handle) {
   (void) socket_handle;
-#pragma message ("Untested. Is a shutdown() needed under Windows like for the POSIX port?")
+#pragma \
+  message "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
 }
 
 void CloseSocketPlatform(socket_platform_t socket_handle) {

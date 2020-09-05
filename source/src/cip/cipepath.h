@@ -259,9 +259,9 @@ void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
 
 CipDword CipEpathGetLogicalValue(const EipUint8 **message);
 
-size_t CipEpathSetLogicalValue(const CipDword logical_value,
-                               const LogicalSegmentLogicalFormat logical_format,
-                               CipOctet **message);
+void CipEpathSetLogicalValue(const CipDword logical_value,
+                             const LogicalSegmentLogicalFormat logical_format,
+                             CipMessageRouterResponse *const message);
 
 /** @brief  Gets the Extended Logical Type of a Logical Segment EPath message
  *

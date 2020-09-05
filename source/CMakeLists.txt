@@ -31,7 +31,7 @@ configure_file(
 	)
 
 find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsupport )
- 
+
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
 option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
@@ -62,21 +62,13 @@ add_definitions(-DOPENER_MESSAGE_DATA_REPLY_BUFFER=${OPENER_MESSAGE_DATA_REPLY_B
 #######################################
 set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" "MINGW")
 
-set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
+set( OpENer_PLATFORM CACHE STRING "Platform OpENer will be built for" )
 set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
 
 #######################################
 # Platform-dependent functions check  #
 #######################################
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_function_checks.cmake )
-
-#######################################
-# OpENer 64-bit data types            #
-#######################################
-set( OpENer_64_BIT_DATA_TYPES_ENABLED CACHE BOOL "Enable 64-bit data type support" )
-if( OpENer_64_BIT_DATA_TYPES_ENABLED )
-  add_definitions( -DOPENER_SUPPORT_64BIT_DATATYPES )
-endif( OpENer_64_BIT_DATA_TYPES_ENABLED )
 
 #######################################
 # OpENer tracer switches              #
@@ -139,8 +131,9 @@ if( OpENer_TESTS )
   set( CPPUTEST_HOME "" CACHE PATH "Path to CppUTest directory" )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer_Tests.cmake )
   INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/CodeCoverage.cmake )
-  set(COVERAGE_LCOV_EXCLUDES 'tests/*' 'usr/*' 'ports/POSIX/sample_application/*')
-  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests DEPENDENCIES OpENer_Tests)
+  APPEND_COVERAGE_COMPILER_FLAGS()
+  # The used CppUTest framework does not support parallel jobs
+  SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests EXCLUDE "tests/*" "src/ports/*/sample_application/*" "${CPPUTEST_HOME}/*")
   add_test_includes()
   add_subdirectory( tests )
 endif( OpENer_TESTS )

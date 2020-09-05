@@ -103,8 +103,9 @@ SegmentType GetPathSegmentType(const CipOctet *const cip_path) {
       result = kSegmentTypeReserved;
       break;
     default:
-      OPENER_ASSERT(
-        "Invalid Segment type in the message! We should never come here!\n")
+      OPENER_TRACE_ERR(
+        "Invalid Segment type in the message! We should never come here!\n");
+      OPENER_ASSERT(false);
       break;
   }
   return result;
@@ -138,8 +139,9 @@ void SetPathSegmentType(SegmentType segment_type,
       *cip_path = SEGMENT_TYPE_SEGMENT_RESERVED;
       break;
     default:
-      OPENER_ASSERT(
-        "Invalid Segment type chosen! We should never come here!\n")
+      OPENER_TRACE_ERR(
+        "Invalid Segment type chosen! We should never come here!\n");
+      OPENER_ASSERT(false);
       break;
   }
 }
@@ -159,9 +161,10 @@ unsigned int GetPathPortSegmentPortIdentifier(
   const unsigned char *const cip_path) {
   const unsigned int kPortIdentifierMask = 0x0F;
   unsigned int port_identifier = *cip_path & kPortIdentifierMask;
-/*  OPENER_ASSERT(0 != port_identifier, "Use of reserved port identifier 0\n"); */
-  OPENER_ASSERT( kSegmentTypePortSegment == GetPathSegmentType(cip_path) )
-  OPENER_ASSERT(0 != port_identifier)
+
+  OPENER_ASSERT( kSegmentTypePortSegment == GetPathSegmentType(cip_path) );
+  /* Use of reserved port identifier 0 */
+  OPENER_ASSERT(0 != port_identifier);
   return port_identifier;
 }
 
@@ -170,25 +173,25 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
 /* OPENER_ASSERT(
       port_identifier < 16,
       "Port identifier too large for standard port identifier field\n"); */
-  OPENER_ASSERT(port_identifier < 16)
-    (*cip_path) |= port_identifier;
+  OPENER_ASSERT(port_identifier < 16);
+  (*cip_path) |= port_identifier;
 }
 
 unsigned int GetPathPortSegmentLinkAddressSize(
   const unsigned char *const cip_path) {
 /*  OPENER_ASSERT(false == GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path),
-                "Call to non existent extended link address size\n") */
+                "Call to non existent extended link address size\n"); */
   OPENER_ASSERT( true ==
-                 GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) )
+                 GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) );
   return *(cip_path + 1);
 }
 
 unsigned int GetPathPortSegmentExtendedPortNumber(
   const unsigned char *const cip_path) {
 /*  OPENER_ASSERT(kPortSegmentExtendedPort == GetPathPortSegmentPortIdentifier(cip_path),
-                "There is no extended port available!\n") */
+                "There is no extended port available!\n");*/
   OPENER_ASSERT( kPortSegmentExtendedPort ==
-                 GetPathPortSegmentPortIdentifier(cip_path) )
+                 GetPathPortSegmentPortIdentifier(cip_path) );
   const unsigned int kExtendedPortSegmentPosition =
     GetPathPortSegmentExtendedLinkAddressSizeBit(cip_path) == true ? 2 : 1;
   return cip_path[kExtendedPortSegmentPosition]
@@ -212,7 +215,7 @@ void SetPathPortSegmentExtendedPortIdentifier(
 
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
   const unsigned char *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   const unsigned int kLogicalTypeMask = 0x1C;
   const unsigned int logical_type = (*cip_path) & kLogicalTypeMask;
   LogicalSegmentLogicalType result = kLogicalSegmentLogicalTypeExtendedLogical;
@@ -242,8 +245,9 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
       result = kLogicalSegmentLogicalTypeExtendedLogical;
       break;
     default:
-      OPENER_ASSERT(
-        "Logical segment/logical type: It is not possible to reach this point!\n")
+      OPENER_TRACE_ERR(
+        "Logical segment/logical type: It is not possible to reach this point!\n");
+      OPENER_ASSERT(false);
       break;
   }
   return result;
@@ -251,7 +255,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
 
 void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type,
                                       CipOctet *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   switch (logical_type) {
     case kLogicalSegmentLogicalTypeClassId:
       (*cip_path) |= LOGICAL_SEGMENT_TYPE_CLASS_ID;
@@ -278,15 +282,16 @@ void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type,
       (*cip_path) |= LOGICAL_SEGMENT_TYPE_EXTENDED_LOGICAL;
       break;
     default:
-      OPENER_ASSERT(
+      OPENER_TRACE_ERR(
         "Logical segment/logical type: It is not possible to reach this point!\n");
+      OPENER_ASSERT(false);
       break;
   }
 }
 
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   const unsigned char *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
   LogicalSegmentLogicalFormat result = kLogicalSegmentLogicalFormatEightBit;
@@ -301,8 +306,9 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
       result = kLogicalSegmentLogicalFormatThirtyTwoBit;
       break;
     default:
-      OPENER_ASSERT(
-        "Logical segment/logical type: Invalid logical type detected!\n")
+      OPENER_TRACE_ERR(
+        "Logical segment/logical type: Invalid logical type detected!\n");
+      OPENER_ASSERT(false);
       break;
   }
   return result;
@@ -311,7 +317,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
 void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
                                         CipOctet *const cip_path) {
   OPENER_ASSERT( kSegmentTypeLogicalSegment ==
-                 GetPathSegmentType( (const CipOctet *)cip_path ) )
+                 GetPathSegmentType( (const CipOctet *)cip_path ) );
   switch (format) {
     case kLogicalSegmentLogicalFormatEightBit:
       (*cip_path) |= LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
@@ -323,8 +329,9 @@ void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
       (*cip_path) |= LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT;
       break;
     default:
-      OPENER_ASSERT(
-        "Logical segment/logical type: Invalid logical type detected!\n")
+      OPENER_TRACE_ERR(
+        "Logical segment/logical type: Invalid logical type detected!\n");
+      OPENER_ASSERT(false);
       break;
   }
 }
@@ -333,49 +340,47 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   LogicalSegmentLogicalFormat logical_format =
     GetPathLogicalSegmentLogicalFormat(*message);
   CipDword data = 0;
-  MoveMessageNOctets(1, message); /* Move to logical value */
+  (*message) += 1; /* Move to logical value */
   switch (logical_format) {
     case kLogicalSegmentLogicalFormatEightBit:
       data = GetSintFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
-      MoveMessageNOctets(1, message); /* Pad byte needs to be skipped */
+      (*message) += 1; /* Pad byte needs to be skipped */
       data = GetIntFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
-      MoveMessageNOctets(1, message); /* Pad byte needs to be skipped */
+      (*message) += 1; /* Pad byte needs to be skipped */
       data = GetDintFromMessage(message);
       break;
     default:
-      OPENER_ASSERT(false) /* shall not happen! */
+      OPENER_ASSERT(false);/* shall not happen! */
       break;
   }
   return data;
 }
 
-size_t CipEpathSetLogicalValue(const CipDword logical_value,
-                               const LogicalSegmentLogicalFormat logical_format,
-                               CipOctet **message) {
+void CipEpathSetLogicalValue(const CipDword logical_value,
+                             const LogicalSegmentLogicalFormat logical_format,
+                             CipMessageRouterResponse *const message) {
   (void) logical_format;
 
-  size_t written_bytes = 0;
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:
-      written_bytes = AddSintToMessage(kLogicalSegmentLogicalFormatEightBit, message);
+      AddSintToMessage(logical_value, &message->message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
-      written_bytes = MoveMessageNOctets(1, (const CipOctet **)message); /* Needed for padding */
-      written_bytes += AddIntToMessage(kLogicalSegmentLogicalFormatSixteenBit, message);
+      MoveMessageNOctets(1, &message->message); /* Needed for padding */
+      AddIntToMessage(logical_value, message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
-      written_bytes = MoveMessageNOctets(1,(const CipOctet **)message); /* Needed for padding */
-      written_bytes += AddDintToMessage(kLogicalSegmentLogicalFormatThirtyTwoBit, message);
+      MoveMessageNOctets(1, &message->message); /* Needed for padding */
+      AddDintToMessage(logical_value, message);
       break;
     default:
-      OPENER_ASSERT(false) /* This should never happen! */
-      written_bytes = 0;
+      OPENER_ASSERT(false); /* This should never happen! */
+      break;
   }
-  return written_bytes;
 }
 
 LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
@@ -383,7 +388,7 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
 /*  OPENER_ASSERT(LOGICAL_SEGMENT_TYPE_EXTENDED_kLogicalSegmentLogicalTypeExtendedLogicalMessageValue == GetPathLogicalSegmentLogicalType(cip_path),
                 "Trying to extract non-existent extended logical type") */
   OPENER_ASSERT( kLogicalSegmentLogicalTypeExtendedLogical == GetPathLogicalSegmentLogicalType(
-                   cip_path) )
+                   cip_path) );
   const unsigned int extended_logical_type = *(cip_path + 1);
   LogicalSegmentExtendedLogicalType result =
     kLogicalSegmentExtendedLogicalTypeReserved;
@@ -409,9 +414,9 @@ LogicalSegmentSpecialTypeLogicalFormat
 GetPathLogicalSegmentSpecialTypeLogicalType(const unsigned char *const cip_path)
 {
 /*  OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path), "Not a logical segment!\n") */
-  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   OPENER_ASSERT( kLogicalSegmentLogicalTypeSpecial == GetPathLogicalSegmentLogicalType(
-                   cip_path) )
+                   cip_path) );
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
 
@@ -430,7 +435,7 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
 /*  OPENER_ASSERT(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
       GetPathLogicalSegmentSpecialTypeLogicalType(cip_path), "Not an electronic key!\n") */
   OPENER_ASSERT( kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
-                 GetPathLogicalSegmentSpecialTypeLogicalType(cip_path) )
+                 GetPathLogicalSegmentSpecialTypeLogicalType(cip_path) );
   ElectronicKeySegmentFormat result = kElectronicKeySegmentFormatReserved;
   switch( *(cip_path + 1) ) {
     case ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4: result =
@@ -444,9 +449,9 @@ void GetElectronicKeyFormat4FromMessage(
   const CipOctet **const message,
   ElectronicKeyFormat4 *key) {
   OPENER_ASSERT( kElectronicKeySegmentFormatKeyFormat4 ==
-                 GetPathLogicalSegmentElectronicKeyFormat(*message) )
+                 GetPathLogicalSegmentElectronicKeyFormat(*message) );
 
-  MoveMessageNOctets(2, message);
+  (*message) += 2;
   ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message) );
@@ -467,7 +472,7 @@ void GetElectronicKeyFormat4FromMessage(
  */
 NetworkSegmentSubtype GetPathNetworkSegmentSubtype(
   const unsigned char *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) );
   const unsigned int kSubtypeMask = 0x1F;
   const unsigned int subtype = (*cip_path) & kSubtypeMask;
   NetworkSegmentSubtype result = kNetworkSegmentSubtypeReserved;
@@ -501,9 +506,9 @@ CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(
 /*  OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path),"Not a network segment!\n")
    OPENER_ASSERT(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds == GetPathNetworkSegmentSubtype(cip_path),
                 "Not a Production Inhibit Time milliseconds segment!\n") */
-  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) );
   OPENER_ASSERT( kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds == GetPathNetworkSegmentSubtype(
-                   cip_path) )
+                   cip_path) );
   return *(cip_path + 1);
 }
 
@@ -520,10 +525,10 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(
                   "Not a Production Inhibit Time microseconds segment!\n")
    OPENER_ASSERT(2 == *(cip_path + 1), "Data Words length is incorrect! See CIP Spec Vol.1 C-1.4.3.3.2\n") */
 
-  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) );
   OPENER_ASSERT( kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds == GetPathNetworkSegmentSubtype(
-                   cip_path) )
-  OPENER_ASSERT( 2 == *(cip_path + 1) )
+                   cip_path) );
+  OPENER_ASSERT( 2 == *(cip_path + 1) );
 
   const unsigned char *message_runner = cip_path + 2;
   return GetDintFromMessage(&message_runner);
@@ -547,7 +552,7 @@ unsigned int GetPathSymbolicSegmentASCIIFormatLength(
   const unsigned char *const cip_path) {
   const unsigned int kSymbolicSegmentASCIIFormatLength = 0x1F;
   const unsigned int length = *cip_path & kSymbolicSegmentASCIIFormatLength;
-  OPENER_ASSERT(0 != length)
+  OPENER_ASSERT(0 != length);
   return length;
 }
 
@@ -571,9 +576,9 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentNumericType(
 
 SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
   const unsigned char *const cip_path) {
-  OPENER_ASSERT( kSegmentTypeSymbolicSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeSymbolicSegment == GetPathSegmentType(cip_path) );
   OPENER_ASSERT( kSymbolicSegmentFormatExtendedString == GetPathSymbolicSegmentFormat(
-                   cip_path) )
+                   cip_path) );
   const unsigned int kSymbolicSegmentExtendedFormatMask = 0xE0;
   const unsigned int extended_type = *(cip_path + 1) &
                                      kSymbolicSegmentExtendedFormatMask;
@@ -619,9 +624,9 @@ CipUsint GetPathDataSegmentSimpleDataWordLength(
   const unsigned char *const cip_path) {
 /*  OPENER_ASSERT(kSegmentTypeDataSegment == GetPathSegmentType(cip_path),"Not a data segment!\n");
     OPENER_ASSERT(kDataSegmentSubtypeSimpleData == GetPathDataSegmentSubtype(cip_path), "Not a simple data segment!\n") */
-  OPENER_ASSERT( kSegmentTypeDataSegment == GetPathSegmentType(cip_path) )
+  OPENER_ASSERT( kSegmentTypeDataSegment == GetPathSegmentType(cip_path) );
   OPENER_ASSERT( kDataSegmentSubtypeSimpleData ==
-                 GetPathDataSegmentSubtype(cip_path) )
+                 GetPathDataSegmentSubtype(cip_path) );
 
   const unsigned char *message_runner = cip_path + 1;
   return GetSintFromMessage(&message_runner);
@@ -644,6 +649,8 @@ LogicalSegmentLogicalFormat CipEpathGetNeededLogicalFormatForValue(
   return logical_format;
 }
 
+
+//TODO: Does not match the actual interface anymore, check how to fix
 size_t CipEpathEncodeConnectionEpath(
   const CipConnectionPathEpath *const connection_epath,
   CipOctet **encoded_path) {
@@ -658,9 +665,9 @@ size_t CipEpathEncodeConnectionEpath(
     SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
     encoded_path_length += 1;
     MoveMessageNOctets(1, (const CipOctet **)encoded_path);
-    encoded_path_length += CipEpathSetLogicalValue(connection_epath->class_id,
-                                                   logical_value,
-                                                   encoded_path);
+    CipEpathSetLogicalValue(connection_epath->class_id,
+                            logical_value,
+                            encoded_path);
   }
 
   {
@@ -672,7 +679,7 @@ size_t CipEpathEncodeConnectionEpath(
     SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
     encoded_path_length += 1;
     MoveMessageNOctets(1, (const CipOctet **)encoded_path);
-    encoded_path_length += CipEpathSetLogicalValue(
+    CipEpathSetLogicalValue(
       connection_epath->instance_id,
       logical_value,
       encoded_path);
@@ -688,7 +695,7 @@ size_t CipEpathEncodeConnectionEpath(
     SetPathLogicalSegmentLogicalFormat(logical_value, *encoded_path);
     encoded_path_length += 1;
     MoveMessageNOctets(1, (const CipOctet **)encoded_path);
-    encoded_path_length += CipEpathSetLogicalValue(
+    CipEpathSetLogicalValue(
       connection_epath->attribute_id_or_connection_point,
       logical_value,
       encoded_path);

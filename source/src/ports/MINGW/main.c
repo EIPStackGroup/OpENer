@@ -49,7 +49,8 @@ static DWORD executeEventLoop(LPVOID thread_arg);
 volatile int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc, char *arg[]) {
+int main(int argc,
+         char *arg[]) {
 
   if (argc != 2) {
     fprintf(stderr, "Wrong number of command line parameters!\n");
@@ -64,7 +65,7 @@ int main(int argc, char *arg[]) {
   /* Fetch MAC address from the platform. This tests also if the interface
    *  is present. */
   uint8_t iface_mac[6];
-  if (kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac)) {
+  if (kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac) ) {
     printf("Network interface %s not found.\n", arg[1]);
     exit(EXIT_FAILURE);
   }
@@ -94,15 +95,15 @@ int main(int argc, char *arg[]) {
    *  After that any NV data values are loaded to change the attribute contents
    *  to the stored configuration.
    */
-  if (kEipStatusError == NvdataLoad()) {
+  if (kEipStatusError == NvdataLoad() ) {
     OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
   }
 
   /* Bring up network interface or start DHCP client ... */
   EipStatus status = BringupNetwork(arg[1],
-                       g_tcpip.config_control,
-                       &g_tcpip.interface_configuration,
-                       &g_tcpip.hostname);
+                                    g_tcpip.config_control,
+                                    &g_tcpip.interface_configuration,
+                                    &g_tcpip.hostname);
   if (status < 0) {
     OPENER_TRACE_ERR("BringUpNetwork() failed\n");
   }
@@ -114,7 +115,8 @@ int main(int argc, char *arg[]) {
   signal(SIGTERM, LeaveStack);
 
   /* Next actions depend on the set network configuration method. */
-  CipDword network_config_method = g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
+  CipDword network_config_method = g_tcpip.config_control &
+                                   kTcpipCfgCtrlMethodMask;
   if (kTcpipCfgCtrlStaticIp == network_config_method) {
     OPENER_TRACE_INFO("Static network configuration done\n");
   }
@@ -137,7 +139,7 @@ int main(int argc, char *arg[]) {
 
 
   /* The network initialization of the EIP stack for the NetworkHandler. */
-  if (!g_end_stack && kEipStatusOk == NetworkHandlerInitialize()) {
+  if (!g_end_stack && kEipStatusOk == NetworkHandlerInitialize() ) {
 
     (void) executeEventLoop(NULL);
 
@@ -153,7 +155,7 @@ int main(int argc, char *arg[]) {
 
   if(0 != g_end_stack) {
     printf("OpENer aborted by signal %d.\n", g_end_stack);
-    return RET_SHOW_SIGNAL+g_end_stack;
+    return RET_SHOW_SIGNAL + g_end_stack;
   }
 
   return EXIT_SUCCESS;

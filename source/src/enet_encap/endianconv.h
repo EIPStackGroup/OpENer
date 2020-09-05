@@ -7,6 +7,7 @@
 #define OPENER_ENDIANCONV_H_
 
 #include "typedefs.h"
+#include "ciptypes.h"
 
 /** @file endianconv.h
  * @brief Responsible for Endianess conversion
@@ -57,8 +58,8 @@ CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-size_t AddSintToMessage(const EipUint8 data,
-                        EipUint8 **const buffer);
+void AddSintToMessage(const EipUint8 data,
+                      ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -68,8 +69,8 @@ size_t AddSintToMessage(const EipUint8 data,
  *
  * @return Length in bytes of the encoded message
  */
-size_t AddIntToMessage(const EipUint16 data,
-                       EipUint8 **const buffer);
+void AddIntToMessage(const EipUint16 data,
+                     ENIPMessage *const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -79,10 +80,8 @@ size_t AddIntToMessage(const EipUint16 data,
  *
  * @return Length in bytes of the encoded message
  */
-size_t AddDintToMessage(const EipUint32 data,
-                        EipUint8 **const buffer);
-
-#ifdef OPENER_SUPPORT_64BIT_DATATYPES
+void AddDintToMessage(const EipUint32 data,
+                      ENIPMessage *const outgoing_message);
 
 EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
 
@@ -92,12 +91,9 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
  * @param data value to write
  * @param buffer pointer to the network buffer array. This pointer will be incremented by 8!
  *
- * @return Length in bytes of the encoded message
  */
-size_t AddLintToMessage(const EipUint64 pa_unData,
-                        EipUint8 **const buffer);
-
-#endif
+void AddLintToMessage(const EipUint64 pa_unData,
+                      ENIPMessage *const outgoing_message);
 
 /** @brief Encapsulate the sockaddr information as necessary for the Common Packet Format data items
  *
@@ -109,9 +105,9 @@ size_t AddLintToMessage(const EipUint64 pa_unData,
  *
  * @return The number of bytes required to contain the socket address.
  */
-size_t EncapsulateIpAddress(EipUint16 port,
-                            EipUint32 address,
-                            EipByte **communication_buffer);
+void EncapsulateIpAddress(EipUint16 port,
+                          EipUint32 address,
+                          ENIPMessage *const outgoing_message);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -126,14 +122,15 @@ void DetermineEndianess(void);
  */
 int GetEndianess(void);
 
-int MoveMessageNOctets(const int n,
-                       const CipOctet **message_runner);
+void MoveMessageNOctets(const int amount_of_bytes_moved,
+                        ENIPMessage *const outgoing_message);
 
-int FillNextNMessageOctetsWith(CipOctet value,
-                               unsigned int n,
-                               CipOctet **message);
+void FillNextNMessageOctetsWith(CipOctet value,
+                                unsigned int amount_of_bytes_written,
+                                ENIPMessage *const outgoing_message);
 
-int FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
-                                                         unsigned int n,
-                                                         CipOctet **message);
+void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
+                                                          unsigned int amount_of_filled_bytes,
+                                                          ENIPMessage *const outgoing_message);
+
 #endif /* OPENER_ENDIANCONV_H_ */

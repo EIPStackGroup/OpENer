@@ -145,10 +145,10 @@ struct cip_connection_object {
   CipUdint originator_serial_number;
 
   MilliSeconds o_to_t_requested_packet_interval;
-  CipWord o_to_t_network_connection_parameters;
+  CipDword o_to_t_network_connection_parameters;
 
   MilliSeconds t_to_o_requested_packet_interval;
-  CipWord t_to_o_network_connection_parameters;
+  CipDword t_to_o_network_connection_parameters;
 
   CipUint sequence_count_producing; /**< sequence Count for Class 1 Producing
                                          Connections */
@@ -189,6 +189,7 @@ struct cip_connection_object {
   ConnectionReceiveDataFunction connection_receive_data_function;
 
   ENIPMessage last_reply_sent;
+  CipBool is_large_forward_open;
 };
 
 /** @brief Extern declaration of the global connection list */
@@ -387,6 +388,14 @@ MilliSeconds ConnectionObjectGetTToORequestedPacketInterval(
 void ConnectionObjectSetTToORequestedPacketInterval(
   CipConnectionObject *connection_object,
   const MilliSeconds requested_packet_interval);
+
+void ConnectionObjectSetTToONetworkConnectionParameters(
+  CipConnectionObject *connection_object,
+  const CipDword connection_parameters);
+
+void ConnectionObjectSetOToTNetworkConnectionParameters(
+  CipConnectionObject *connection_object,
+  const CipDword connection_parameters);
 
 bool ConnectionObjectIsTToORedundantOwner(
   const CipConnectionObject *const connection_object);

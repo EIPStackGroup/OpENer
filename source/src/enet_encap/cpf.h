@@ -120,7 +120,7 @@ EipStatus CreateCommonPacketFormatStructure(
  * @param  message Modified ENIPMessage struct
  * @return kEipStatusOk or kEipStatusError.
  */
-EipStatus AssembleIOMessage(
+void AssembleIOMessage(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const message);
 

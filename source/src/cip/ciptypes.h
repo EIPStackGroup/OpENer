@@ -55,8 +55,9 @@ typedef enum cip_data_types {
   kCip6Usint = 0xA2, /**< Struct for MAC Address (six USINTs)*/
   kCipMemberList = 0xA3, /**< */
   kCipByteArray = 0xA4, /**< */
-  kInternalUint6 = 0xF0 /**< bogus hack, for port class attribute 9, TODO
-                           figure out the right way to handle it */
+  kInternalUint6 = 0xF0, /**< bogus hack, for port class attribute 9, TODO
+                            figure out the right way to handle it */
+  kCipStringI
 } CipDataType;
 
 /** @brief Definition of CIP service codes
@@ -95,6 +96,7 @@ typedef enum {
   /* Start CIP object-specific services */
   kEthLinkGetAndClear = 0x4C, /**< Ethernet Link object's Get_And_Clear service */
   kForwardOpen = 0x54,
+  kLargeForwardOpen = 0x5B,
   kForwardClose = 0x4E,
   kUnconnectedSend = 0x52,
   kGetConnectionOwner = 0x5A
@@ -111,6 +113,7 @@ typedef enum { /* TODO: Rework */
   kSetAndGetAble = 0x07, /**< both set and get-able */
   kGetableSingleAndAll = 0x03, /**< both single and all */
   /* Flags to control the usage of callbacks per attribute from the Get* and Set* services */
+  kGetableAllDummy = 0x08, /**< Get-able but a dummy Attribute */
   kPreGetFunc = 0x10, /**< enable pre get callback */
   kPostGetFunc = 0x20,  /**< enable post get callback */
   kPreSetFunc = 0x40, /**< enable pre set callback */
@@ -145,14 +148,58 @@ typedef struct {
  */
 typedef struct {
   size_t length; /**< Length of the String (16 bit value) */
-  EipByte *string; /**< Pointer to the string data */
+  CipByte *string; /**< Pointer to the string data */
 } CipString;
 
+/** @brief CIP String2
+ *
+ */
 typedef struct {
-  EipUint16 size;
+  EipUint16 length; /**< Length of the String (16 bit value) */
+  CipWord *string; /**< Pointer to the string data */
+} CipString2;
+
+/** @brief CIP String with variable symbol size
+ *
+ */
+typedef struct {
+  EipUint16 size; /**< Amount of bytes per symbol */
   EipUint16 length; /**< Length of the String (16 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipStringN;
+
+/** @brief STRINGI definition
+ *
+ */
+typedef struct cip_type_string_i_struct CipStringIStruct;
+
+typedef struct cip_string_i {
+  CipUsint number_of_strings;
+  CipStringIStruct *array_of_string_i_structs;
+} CipStringI;
+
+typedef enum cip_type_string_i_character_set {
+  kCipStringICharSet_ISO_8859_1_1987 = 4,
+  kCipStringICharSet_ISO_8859_2_1987 = 5,
+  kCipStringICharSet_ISO_8859_3_1988 = 6,
+  kCipStringICharSet_ISO_8859_4_1988 = 7,
+  kCipStringICharSet_ISO_8859_5_1988 = 8,
+  kCipStringICharSet_ISO_8859_6_1987 = 9,
+  kCipStringICharSet_ISO_8859_7_1987 = 10,
+  kCipStringICharSet_ISO_8859_8_1989 = 11,
+  kCipStringICharSet_ISO_8859_9_1989 = 12,
+  kCipStringICharSet_ISO_10646_UCS_2 = 1000,
+  kCipStringICharSet_ISO_10646_UCS_4 = 1001
+} CipStringICharacterSet;
+
+typedef struct cip_type_string_i_struct {
+  CipUsint language_char_1;
+  CipUsint language_char_2;
+  CipUsint language_char_3;
+  CipUint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
+  CipUint character_set;   /**< Character set of the string */
+  CipOctet *string;   /**< Pointer to the string data */
+} CipStringIStruct;
 
 /** @brief Struct for padded EPATHs
  *
@@ -205,6 +252,8 @@ typedef struct {
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */
 
+typedef struct enip_message ENIPMessage;
+
 /** @brief CIP Message Router Response
  *
  */
@@ -219,16 +268,19 @@ typedef struct {
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
                                                           If SizeOfAdditionalStatus is 0. there is no
                                                           Additional Status */
-  size_t data_length; /**< Supportative non-CIP variable, gives length of data segment */
-  CipOctet *data; /**< Array of octet; Response data per object definition from
-                     request */
+  ENIPMessage message; /* The constructed message */
 } CipMessageRouterResponse;
 
+/** @brief self-describing data encoding for CIP types */
+typedef void (*CipAttributeEncodeInMessage)(const void *const data,
+                                            ENIPMessage *const outgoing_message);
+
 /** @brief Structure to describe a single CIP attribute of an object
-*/
+ */
 typedef struct {
   EipUint16 attribute_number; /**< The attribute number of this attribute. */
   EipUint8 type;  /**< The @ref CipDataType of this attribute. */
+  CipAttributeEncodeInMessage encode; /**< Self-describing its data encoding */
   CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration for valid values. */
   void *data;
 } CipAttributeStruct;
@@ -290,15 +342,15 @@ typedef struct cip_class {
   struct cip_service_struct *services; /**< pointer to the array of services */
   char *class_name; /**< class name */
   /** Is called in GetAttributeSingle* before the response is assembled from
-  * the object's attributes */
+   * the object's attributes */
   CipGetSetCallback PreGetCallback;
   /** Is called in GetAttributeSingle* after the response has been sent. */
   CipGetSetCallback PostGetCallback;
   /** Is called in SetAttributeSingle* before the received data is moved
-  * to the object's attributes */
+   * to the object's attributes */
   CipGetSetCallback PreSetCallback;
   /** Is called in SetAttributeSingle* after the received data was set
-  * in the object's attributes. */
+   * in the object's attributes. */
   CipGetSetCallback PostSetCallback;
 } CipClass;
 

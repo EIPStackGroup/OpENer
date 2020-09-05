@@ -30,6 +30,16 @@ TEST(SocketTimer, NoEmptySocketTimerAvailable) {
   POINTERS_EQUAL( NULL, SocketTimerArrayGetEmptySocketTimer(timers, 10) );
 }
 
+TEST(SocketTimer, SetSocket) {
+  SocketTimer timer = {
+    socket : -1,
+    last_update : 0
+  };
+  SocketTimerSetSocket(&timer, 1);
+  CHECK_EQUAL( 1, timer.socket );
+}
+
+
 TEST(SocketTimer, UpdateSocketTimer) {
   SocketTimer timer = {
     socket : -1,

@@ -24,7 +24,8 @@
 typedef uint32_t in_addr_t;
 #endif
 
-static const size_t kUdpHeaderLength = 8U; /**< UDP header length in bytes */
+#define OPENER_UDP_HEADER_LENGTH (8U)
+static const size_t kUdpHeaderLength = OPENER_UDP_HEADER_LENGTH; /**< UDP header length in bytes */
 
 /** @brief Representing the needed information for the UDP header
  *

@@ -45,7 +45,8 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 }
 
 void ShutdownSocketPlatform(socket_platform_t socket_handle) {
-#warning "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
+#warning \
+  "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
 }
 
 void CloseSocketPlatform(socket_platform_t socket_handle) {
@@ -63,7 +64,11 @@ int SetQosOnSocket(socket_platform_t socket,
    *  Note that the DSCP value, if placed directly in the ToS field
    *  in the IP header, must be shifted left 2 bits. */
   DWORD set_tos = qos_value << 2;
-  return setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&set_tos, sizeof(set_tos) );
+  return setsockopt(socket,
+                    IPPROTO_IP,
+                    IP_TOS,
+                    (char *)&set_tos,
+                    sizeof(set_tos) );
 }
 
 

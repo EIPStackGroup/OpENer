@@ -188,8 +188,9 @@ CipConnectionObject *GetExclusiveOwnerConnection(
              connection_object->configuration_path.instance_id) ) {
 
       /* check if on other connection point with the same output assembly is currently connected */
-      CipConnectionObject *exclusive_owner = GetConnectedOutputAssembly(
-        connection_object->produced_path.instance_id);
+      const CipConnectionObject *const exclusive_owner =
+        GetConnectedOutputAssembly(
+          connection_object->produced_path.instance_id);
       if ( NULL
            != exclusive_owner ) {
         if(kConnectionObjectStateEstablished ==
@@ -295,7 +296,8 @@ CipConnectionObject *GetListenOnlyConnection(
 
       /* Here we look for both Point-to-Point and Multicast IO connections */
       if ( NULL == GetExistingProducerIoConnection(false,
-             connection_object->produced_path.instance_id) )
+                                                   connection_object->
+                                                   produced_path.instance_id) )
       {
         *extended_error =
           kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
@@ -337,7 +339,7 @@ CipConnectionObject *GetListenOnlyConnection(
 CipConnectionObject *GetExistingProducerIoConnection(
   const bool multicast_only,
   const EipUint32 input_point) {
-  DoublyLinkedListNode *node = connection_list.first;
+  const DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
     CipConnectionObject *producer_io_connection = node->data;
@@ -367,7 +369,7 @@ CipConnectionObject *GetExistingProducerIoConnection(
 
 CipConnectionObject *GetNextNonControlMasterConnection(
   const EipUint32 input_point) {
-  DoublyLinkedListNode *node = connection_list.first;
+  const DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
     CipConnectionObject *next_non_control_master_connection =
@@ -402,9 +404,9 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 
   OPENER_TRACE_INFO("Close all instance type %d only connections\n",
                     instance_type);
-  DoublyLinkedListNode *node = connection_list.first;
+  const DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
-    CipConnectionObject *connection = node->data;
+    CipConnectionObject *const connection = node->data;
     node = node->next;
     if ( (instance_type == ConnectionObjectGetInstanceType(connection) )
          && (input_point == connection->produced_path.instance_id) ) {
@@ -421,9 +423,9 @@ void CloseAllConnectionsForInputWithSameType(const EipUint32 input_point,
 }
 
 void CloseAllConnections(void) {
-  DoublyLinkedListNode *node = connection_list.first;
+  const DoublyLinkedListNode *node = connection_list.first;
   while (NULL != node) {
-    CipConnectionObject *connection = node->data;
+    CipConnectionObject *const connection = node->data;
     assert(connection->connection_close_function != NULL);
     connection->connection_close_function(connection);
     node = connection_list.first;
@@ -431,11 +433,11 @@ void CloseAllConnections(void) {
 }
 
 bool ConnectionWithSameConfigPointExists(const EipUint32 config_point) {
-  DoublyLinkedListNode *node = connection_list.first;
+  const DoublyLinkedListNode *node = connection_list.first;
 
   while (NULL != node) {
-    CipConnectionObject *connection = node->data;
-    OPENER_ASSERT(NULL != connection)
+    const CipConnectionObject *const connection = node->data;
+    OPENER_ASSERT(NULL != connection);
     if (config_point == connection->configuration_path.instance_id) {
       return true;
     }
