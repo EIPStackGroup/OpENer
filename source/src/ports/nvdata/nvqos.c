@@ -42,7 +42,7 @@ int NvQosLoad(CipQosObject *p_qos) {
   if (NULL != p_file) {
     /* Read input data */
     rd_cnt = fscanf(p_file,
-                    " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
+                    " %hh" SCNu8 ", %hh" SCNu8 ", %hh" SCNu8 ", %hh" SCNu8 ", %hh" SCNu8 "\n",
                     &dscp_urgent,
                     &dscp_scheduled,
                     &dscp_high,
