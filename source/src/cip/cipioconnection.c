@@ -146,8 +146,6 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
       diff_size += 2;
     }
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    OPENER_ASSERT(attribute != NULL)
-    bool is_heartbeat = (((CipByteArray *)attribute->data)->length == 0);
     if ( (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
@@ -864,17 +862,11 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
    */
   OPENER_ASSERT(common_packet_format_data->data_item.length <= UINT16_MAX);
   const EipUint16 length = (EipUint16)common_packet_format_data->data_item.length;
-  AddIntToMessage(length, &outgoing_message.current_message_position);
+  AddIntToMessage(length, &outgoing_message);
 
   if (class == kConnectionObjectTransportClassTriggerTransportClass1)
   {
-    common_packet_format_data->data_item.length += 2;
-    AddIntToMessage(common_packet_format_data->data_item.length,
-                    &outgoing_message);
     AddIntToMessage(connection_object->sequence_count_producing,
-                    &outgoing_message);
-  } else {
-    AddIntToMessage(common_packet_format_data->data_item.length,
                     &outgoing_message);
   }
 

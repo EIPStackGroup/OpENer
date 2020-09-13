@@ -99,8 +99,7 @@ static DWORD ConvertToIndexFromFakeAlias(const char *iface,
     return ERROR_NO_UNICODE_TRANSLATION;
   }
 
-  size_t wc_cnt = mbtowc_rc + 1U; /* +1U for nul character */
-  p_if_alias = MALLOC(sizeof(WCHAR) * wc_cnt);
+  p_if_alias = MALLOC(sizeof(WCHAR) * num_chars); /* Count includes NULL term. */
   if (NULL == p_if_alias) {
     return ERROR_OUTOFMEMORY;
   }

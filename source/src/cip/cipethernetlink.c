@@ -419,8 +419,6 @@ static void EncodeCipEthernetLinkInterfaceControl(const void *const data,
   const CipEthernetLinkInterfaceControl *const interface_control =
     data;
 #else
-  (void) instance_id;
-
   CipEthernetLinkInterfaceControl *interface_control = &s_interface_control;
 #endif
   EncodeCipWord(&interface_control->control_bits, outgoing_message);

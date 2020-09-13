@@ -444,7 +444,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage *const outgoing_message) {
   AddDintToMessage(g_identity.serial_number, outgoing_message);
   AddSintToMessage( (unsigned char) g_identity.product_name.length,
                     outgoing_message );
-  EncodeCipShortString(&g_identity.product_name, outgoing_messag);
+  EncodeCipShortString(&g_identity.product_name, outgoing_message);
 
   AddSintToMessage(g_identity.state, outgoing_message);
 }

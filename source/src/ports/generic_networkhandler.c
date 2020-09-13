@@ -207,7 +207,7 @@ EipStatus NetworkHandlerInitialize(void) {
   struct sockaddr_in my_address;
   my_address.sin_family = AF_INET;
   my_address.sin_port = htons(kOpenerEthernetPort);
-  my_address.sin_addr.s_addr = g_network_status.ip_address
+  my_address.sin_addr.s_addr = g_network_status.ip_address;
 
   /* bind the new socket to port 0xAF12 (CIP) */
   if ( ( bind( g_network_status.tcp_listener, (struct sockaddr *) &my_address,
