@@ -3,6 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <string.h>
 
 #include "cpf.h"
@@ -20,7 +24,7 @@
 const size_t kItemCountFieldSize = 2; /**< The size of the item count field in the message */
 const size_t KItemDataTypeIdFieldLength = 2; /**< The size of the item count field in the message */
 
-const size_t kSequencedAddressItemLength = 8;
+const EipUint16 kSequencedAddressItemLength = 8;
 
 CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data items */
 
@@ -158,8 +162,13 @@ EipStatus NotifyConnectedCommonPacketFormat(
             /* End regenerate encapsulation header for new message */
             return kEipStatusOkSend;
           }
+
+          /*
+           * The EIP CPF sequence number is explicitly cast to an unsigned,
+           * 16-bit integer to match the width of the CIP sequence number.
+           */
           connection_object->sequence_count_consuming =
-            g_common_packet_format_data_item.address_item.data.sequence_number;
+            (CipUint)g_common_packet_format_data_item.address_item.data.sequence_number;
 
           ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
@@ -183,7 +192,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
               &message_router_response, &g_common_packet_format_data_item,
               outgoing_message);
 
-            CipOctet *buffer = outgoing_message->current_message_position;
+            CipOctet *msg_pos = outgoing_message->current_message_position;
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
             GenerateEncapsulationHeader(received_data,
@@ -191,7 +200,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
                                         received_data->session_handle,
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
-            outgoing_message->current_message_position = buffer;
+            outgoing_message->current_message_position = msg_pos;
             memcpy(&connection_object->last_reply_sent,
                    outgoing_message,
                    sizeof(ENIPMessage) );
@@ -234,7 +243,7 @@ EipStatus CreateCommonPacketFormatStructure(
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  int length_count = 0;
+  size_t length_count = 0;
   CipUint item_count = GetIntFromMessage(&data);
   OPENER_ASSERT(4U >= item_count);/* Sanitizing data - probably needs to be changed for productive code */
   common_packet_format_data->item_count = item_count;

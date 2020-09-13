@@ -11,8 +11,8 @@
 Random *RandomNew(SetSeed set_seed,
                   GetNextUInt32 get_next_uint32) {
   Random *random = malloc( sizeof(Random) );
-  *random =
-    (Random ) { .set_seed = set_seed, .get_next_uint32 = get_next_uint32 };
+  random->set_seed = set_seed;
+  random->get_next_uint32 = get_next_uint32;
   return random;
 }
 

@@ -141,6 +141,8 @@ static EipStatus Reset(CipInstance *instance,
                        const struct sockaddr *originator_address,
                        const int encapsulation_session) {
   (void) instance;
+  (void) originator_address;
+  (void) encapsulation_session;
 
   EipStatus eip_status = kEipStatusOkSend;
 

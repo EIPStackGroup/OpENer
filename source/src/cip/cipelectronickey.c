@@ -37,7 +37,7 @@ typedef struct electronic_key_format_4 {
 
 const size_t kElectronicKeyFormat4Size = sizeof(ElectronicKeyFormat4);
 
-ElectronicKeyFormat4 *ElectronicKeyFormat4New() {
+ElectronicKeyFormat4 *ElectronicKeyFormat4New(void) {
   return (ElectronicKeyFormat4 *)calloc( 1, sizeof(ElectronicKeyFormat4) );
 }
 

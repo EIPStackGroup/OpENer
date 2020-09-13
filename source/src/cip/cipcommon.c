@@ -202,12 +202,12 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class,
 }
 
 CipClass *CreateCipClass(const CipUdint class_code,
-                         const int number_of_class_attributes,
-                         const EipUint32 highest_class_attribute_number,
-                         const int number_of_class_services,
-                         const int number_of_instance_attributes,
-                         const EipUint32 highest_instance_attribute_number,
-                         const int number_of_instance_services,
+                         const EipUint16 number_of_class_attributes,
+                         const EipUint16 highest_class_attribute_number,
+                         const EipUint16 number_of_class_services,
+                         const EipUint16 number_of_instance_attributes,
+                         const EipUint16 highest_instance_attribute_number,
+                         const EipUint16 number_of_instance_services,
                          const int number_of_instances,
                          char *name,
                          const EipUint16 revision,
@@ -451,6 +451,9 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session) {
+  (void) originator_address;
+  (void) encapsulation_session;
+
   /* Mask for filtering get-ability */
 
   CipAttributeStruct *attribute = GetCipAttribute(instance,
@@ -672,10 +675,12 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
   outgoing_message->used_message_length += 6;
 }
 
-int DecodeData(const EipUint8 cip_data_type,
-               void *const cip_data,
-               const EipUint8 **const cip_message) {
-  int number_of_decoded_bytes = -1;
+EipStatus DecodeData(const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipUint8 **const cip_message,
+                     size_t *const length
+) {
+  size_t number_of_decoded_bytes = 0;
 
   switch (cip_data_type)
   /* check the data type of attribute */
@@ -743,7 +748,14 @@ int DecodeData(const EipUint8 cip_data_type,
       break;
   }
 
-  return number_of_decoded_bytes;
+  const EipStatus result = (number_of_decoded_bytes > 0) ?
+     kEipStatusOk : kEipStatusError;
+
+  if ((result == kEipStatusOk) && (length != NULL)) {
+     *length = number_of_decoded_bytes;
+  }
+
+  return result;
 }
 
 CipServiceStruct *GetCipService(const CipInstance *const instance,
@@ -845,9 +857,10 @@ void EncodeEPath(CipEpath *epath,
     2 + epath->path_size * 2 == message->used_message_length - start_length);              /* path size is in 16 bit chunks according to the specification */
 }
 
-int DecodePaddedEPath(CipEpath *epath,
-                      const EipUint8 **message) {
-  unsigned int number_of_decoded_elements = 0;
+EipStatus DecodePaddedEPath(CipEpath *epath,
+                            const EipUint8 **message,
+                            size_t *const decoded_bytes) {
+  size_t number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 
   epath->path_size = *message_runner;
@@ -922,11 +935,15 @@ int DecodePaddedEPath(CipEpath *epath,
   }
 
   *message = message_runner;
-  return number_of_decoded_elements * 2 + 1;       /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+
+  OPENER_ASSERT(decoded_bytes != NULL);
+  *decoded_bytes = number_of_decoded_elements * 2 + 1;       /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+
+  return kEipStatusOk;
 }
 
 void AllocateAttributeMasks(CipClass *target_class) {
-  unsigned size = 1 + CalculateIndex(target_class->highest_attribute_number);
+  size_t size = 1 + CalculateIndex(target_class->highest_attribute_number);
   OPENER_TRACE_INFO(
     ">>> Allocate memory for %s %u bytes times 3 for masks\n",
     target_class->class_name, size);

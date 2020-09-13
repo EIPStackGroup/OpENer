@@ -12,6 +12,17 @@
 /** @brief Assembly class code */
 static const CipUint kCipAssemblyClassCode = 0x04U;
 
+
+/** @brief Assembly object instance attribute IDs.
+ *
+ * Reference:
+ * Volume 1, CIP, Edition 3.3, November 2007, Table 5-5.4
+ */
+typedef enum {
+   kAssemblyObjectInstanceAttributeIdData = 3
+} AssemblyObjectInstanceAttributeId;
+
+
 /* public functions */
 
 /** @brief Setup the Assembly object
@@ -45,6 +56,6 @@ void ShutdownAssemblies(void);
  */
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
                                               const EipUint8 *const data,
-                                              const EipUint16 data_length);
+                                              const size_t data_length);
 
 #endif /* OPENER_CIPASSEMBLY_H_ */

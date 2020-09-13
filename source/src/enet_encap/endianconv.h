@@ -102,6 +102,8 @@ void AddLintToMessage(const EipUint64 pa_unData,
  * @param port Port of the socket, has to be provided in big-endian
  * @param address IP address of the socket, has to be provided in big-endian
  * @param communication_buffer The message buffer for sending the message
+ *
+ * @return The number of bytes required to contain the socket address.
  */
 void EncapsulateIpAddress(EipUint16 port,
                           EipUint32 address,

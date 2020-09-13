@@ -10,6 +10,7 @@
 #include "opener_user_conf.h"
 
 #ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #endif
 
@@ -32,11 +33,11 @@ uint16_t UDPHeaderGetDestinationPort(const UDPHeader *const header) {
 }
 
 void UDPHeaderSetPacketLength(UDPHeader *const header,
-                              const uint16_t packet_length) {
+                              const size_t packet_length) {
   header->packet_length = packet_length;
 }
 
-uint16_t UDPHeaderGetPacketLength(const UDPHeader *const header) {
+size_t UDPHeaderGetPacketLength(const UDPHeader *const header) {
   return header->packet_length;
 }
 
@@ -55,7 +56,12 @@ void UDPHeaderGenerate(const UDPHeader *header,
   message += 2;
   *( (uint16_t *)message ) = htons(UDPHeaderGetDestinationPort(header) );
   message += 2;
-  *( (uint16_t *)message ) = htons(UDPHeaderGetPacketLength(header) );
+
+  /* Ensure the length fits in an unsigned, 16-bit integer. */
+  const size_t length = UDPHeaderGetPacketLength(header);
+  OPENER_ASSERT(length <= UINT16_MAX);
+
+  *( (uint16_t *)message ) = htons((uint16_t)length);
   message += 2;
   *( (uint16_t *)message ) = htons(UDPHeaderGetChecksum(header) );
   message += 2;
@@ -91,7 +97,10 @@ uint16_t UDPHeaderCalculateChecksum(const void *udp_packet,
     (const uint16_t *const )&destination_addr;
   checksum += *destination_addr_as_words + *(destination_addr_as_words + 1);
   checksum += htons(IPPROTO_UDP);
-  checksum += htons(udp_packet_length);
+
+  /* Sanity check before casting length to a 16-bit argument. */
+  OPENER_ASSERT(udp_packet_length <= UINT16_MAX);
+  checksum += htons((uint16_t)udp_packet_length);
 
   while(0xFFFF0000 & checksum) {
     checksum = (checksum & 0xFFFF) + (checksum >> 16);

@@ -59,7 +59,7 @@ DoublyLinkedList connection_list;
 CipConnectionObject explicit_connection_object_pool[
   OPENER_CIP_NUM_EXPLICIT_CONNS];
 
-DoublyLinkedListNode *CipConnectionObjectListArrayAllocator() {
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(void) {
   enum {kNodesAmount = OPENER_CIP_NUM_EXPLICIT_CONNS +
                        OPENER_CIP_NUM_INPUT_ONLY_CONNS +
                        OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS +
@@ -108,6 +108,7 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
+  (void) message;
   assert(false); /* NOT IMPLEMENTED */
   return NULL;
 }
@@ -119,6 +120,10 @@ void ConnectionObjectInitializeFromMessage(
   CipByte priority_timetick = GetSintFromMessage(message);
   CipUsint timeout_ticks = GetSintFromMessage(message);
   (void)priority_timetick;  /* Silence unused variable compiler warning */
+  (void)timeout_ticks;
+
+  /* Prevent compiler warnings for unused local variables. */
+  (void)priority_timetick;
   (void)timeout_ticks;
 
   /* O_to_T Conn ID */
@@ -310,27 +315,35 @@ CipUsint ConnectionObjectGetInstanceTypeForAttribute(
 
 bool ConnectionObjectIsTypeNonLOIOConnection(
   const CipConnectionObject *const connection_object) {
+  bool isNonLOIO = false;
+
   switch(connection_object->instance_type) {
     case kConnectionObjectInstanceTypeIO:
     case kConnectionObjectInstanceTypeIOExclusiveOwner:
     case kConnectionObjectInstanceTypeIOInputOnly:
-      return true;
-    default: return false;
+      isNonLOIO = true;
+      break;
+    default:
+      break;
   }
-  return false;
+  return isNonLOIO;
 }
 
 bool ConnectionObjectIsTypeIOConnection(
   const CipConnectionObject *const connection_object) {
+  bool isIO = false;
+
   switch(connection_object->instance_type) {
     case kConnectionObjectInstanceTypeIO:
     case kConnectionObjectInstanceTypeIOExclusiveOwner:
     case kConnectionObjectInstanceTypeIOInputOnly:
     case kConnectionObjectInstanceTypeIOListenOnly:
-      return true;
-    default: return false;
+      isIO = true;
+      break;
+    default:
+      break;
   }
-  return false;
+  return isIO;
 }
 
 ConnectionObjectTransportClassTriggerDirection
@@ -433,29 +446,28 @@ void ConnectionObjectSetConsumedConnectionSize(
   connection_object->consumed_connection_size = consumed_connection_size;
 }
 
-CipUint ConnectionObjectGetExpectedPacketRate(
+MilliSeconds ConnectionObjectGetExpectedPacketRate(
   const CipConnectionObject *const connection_object) {
   return connection_object->expected_packet_rate;
 }
 
-CipUint ConnectionObjectGetRequestedPacketInterval(
+MilliSeconds ConnectionObjectGetRequestedPacketInterval(
   const CipConnectionObject *const connection_object) {
-  CipUdint remainder_to_resolution =
+  const MilliSeconds remainder_to_resolution =
     (connection_object->t_to_o_requested_packet_interval) %
     (kOpenerTimerTickInMilliSeconds * 1000);
   if( 0 == remainder_to_resolution ) {         /* Value can be represented in multiples of the timer resolution */
-    return (CipUint)(connection_object->t_to_o_requested_packet_interval /
-                     1000);
+    return connection_object->t_to_o_requested_packet_interval / 1000;
   }
   else{
-    return (CipUint)(connection_object->t_to_o_requested_packet_interval /
-                     1000 - remainder_to_resolution / 1000);
+    return (connection_object->t_to_o_requested_packet_interval / 1000)
+       - (remainder_to_resolution / 1000);
   }
 }
 
 void ConnectionObjectSetExpectedPacketRate(
   CipConnectionObject *const connection_object) {
-  CipUdint remainder_to_resolution =
+  const MilliSeconds remainder_to_resolution =
     (connection_object->t_to_o_requested_packet_interval) %
     (kOpenerTimerTickInMilliSeconds * 1000);
   if( 0 == remainder_to_resolution ) { /* Value can be represented in multiples of the timer resolution */
@@ -465,8 +477,7 @@ void ConnectionObjectSetExpectedPacketRate(
   else{
     connection_object->expected_packet_rate =
       connection_object->t_to_o_requested_packet_interval / 1000 +
-      ( (CipUdint)
-        kOpenerTimerTickInMilliSeconds - remainder_to_resolution / 1000 );
+      (kOpenerTimerTickInMilliSeconds - remainder_to_resolution / 1000 );
   }
 }
 
@@ -573,14 +584,14 @@ void ConnectionObjectSetConsumedConnectionPathLength(
     consumed_connection_path_length;
 }
 
-CipUint ConnectionObjectGetProductionInhibitTime(
+MilliSeconds ConnectionObjectGetProductionInhibitTime(
   const CipConnectionObject *const connection_object) {
   return connection_object->production_inhibit_time;
 }
 
 void ConnectionObjectSetProductionInhibitTime(
   CipConnectionObject *const connection_object,
-  const CipUint
+  const MilliSeconds
   production_inhibit_time) {
   connection_object->production_inhibit_time = production_inhibit_time;
 }
@@ -660,32 +671,32 @@ CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
 }
 
 void ConnectionObjectSetConnectionTimeoutMultiplier(
-  CipConnectionObject *connection_object,
-  CipUsint connection_timeout_multiplier) {
+  CipConnectionObject * const connection_object,
+  const CipUsint connection_timeout_multiplier) {
   connection_object->connection_timeout_multiplier =
     connection_timeout_multiplier;
 }
 
-CipUdint ConnectionObjectGetOToTRequestedPacketInterval(
+MilliSeconds ConnectionObjectGetOToTRequestedPacketInterval(
   const CipConnectionObject *const connection_object) {
   return connection_object->o_to_t_requested_packet_interval;
 }
 
 void ConnectionObjectSetOToTRequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval) {
+  const MilliSeconds requested_packet_interval) {
   connection_object->o_to_t_requested_packet_interval =
     requested_packet_interval;
 }
 
-CipUdint ConnectionObjectGetTToORequestedPacketInterval(
+MilliSeconds ConnectionObjectGetTToORequestedPacketInterval(
   const CipConnectionObject *const connection_object) {
   return connection_object->t_to_o_requested_packet_interval;
 }
 
 void ConnectionObjectSetTToORequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval) {
+  const MilliSeconds requested_packet_interval) {
   connection_object->t_to_o_requested_packet_interval =
     requested_packet_interval;
 }

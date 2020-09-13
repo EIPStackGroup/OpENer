@@ -22,7 +22,7 @@
 #define ENCAPSULATION_HEADER_LENGTH     24
 
 /** @brief Ethernet/IP standard port */
-static const int kOpenerEthernetPort = 0xAF12;
+static const unsigned short kOpenerEthernetPort = 0xAF12;
 
 /** @brief definition of status codes in encapsulation protocol
  * All other codes are either legacy codes, or reserved for future use
@@ -81,9 +81,9 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
-size_t GetSessionFromSocket(const int socket_handle);
+size_t GetSessionFromSocket(const socket_platform_t socket_handle);
 
-void RemoveSession(const int socket);
+void RemoveSession(const socket_platform_t socket);
 
 void CloseSessionBySessionHandle(
   const CipConnectionObject *const connection_object);
@@ -100,15 +100,15 @@ void EncapsulateListIdentityResponseMessage(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
 
-EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
-                                      int receive_buffer_length,
-                                      EncapsulationData *const encapsulation_data);
+int CreateEncapsulationStructure(const EipUint8 *receive_buffer,
+                                 size_t receive_buffer_length,
+                                 EncapsulationData *const encapsulation_data);
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message);
 
 void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
                                  const size_t command_specific_data_length,
-                                 const size_t session_handle,
+                                 const CipUdint session_handle,
                                  const EncapsulationProtocolErrorCode encapsulation_protocol_status,
                                  ENIPMessage *const outgoing_message);
 
@@ -120,7 +120,7 @@ void HandleReceivedListInterfacesCommand(
   const EncapsulationData *const receive_data,
   ENIPMessage *const outgoing_message);
 
-void HandleReceivedRegisterSessionCommand(int socket,
+void HandleReceivedRegisterSessionCommand(socket_platform_t socket,
                                           const EncapsulationData *const receive_data,
                                           ENIPMessage *const outgoing_message);
 

@@ -29,7 +29,7 @@ typedef enum {
 } ConnectionObjectState;
 
 typedef enum {
-  kConnectionObjectInstanceTypeInvalid = -1, /**< Invalid instance type - shall never occur! */
+  kConnectionObjectInstanceTypeInvalid = (CipUsint)(~0), /**< Invalid instance type - shall never occur! */
   kConnectionObjectInstanceTypeExplicitMessaging = 0, /**< Connection is an explicit messaging connection */
   kConnectionObjectInstanceTypeIO, /**< Connection is an I/O connection */
   kConnectionObjectInstanceTypeIOExclusiveOwner, /**< Also I/O connection, only for easy differentiation */
@@ -109,7 +109,7 @@ struct cip_connection_object {
   /* Attribute 4-6 only for device net*/
   CipUint produced_connection_size; /*< Attribute 7 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
   CipUint consumed_connection_size; /*< Attribute 8 - Limits produced connection size - for explicit messaging 0xFFFF means no predefined limit */
-  CipUint expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
+  MilliSeconds expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
   CipUdint cip_produced_connection_id; /*< Attribute 10 */
   CipUdint cip_consumed_connection_id; /*< Attribute 11 */
   CipUsint watchdog_timeout_action; /*< Attribute 12 */
@@ -119,7 +119,7 @@ struct cip_connection_object {
   CipUint consumed_connection_path_length; /*< Attribute 15 */
   CipOctet *consumed_connection_path; /*< Attribute 16 */
   CipConnectionPathEpath consumed_path;
-  CipUint production_inhibit_time; /*< Attribute 17 */
+  MilliSeconds production_inhibit_time; /*< Attribute 17 */
   CipUsint connection_timeout_multiplier; /*< Attribute 18 */
   /* Attribute 19 not supported as Connection Bind service not supported */
 
@@ -144,10 +144,10 @@ struct cip_connection_object {
   CipUint originator_vendor_id;
   CipUdint originator_serial_number;
 
-  CipUdint o_to_t_requested_packet_interval;
+  MilliSeconds o_to_t_requested_packet_interval;
   CipDword o_to_t_network_connection_parameters;
 
-  CipUdint t_to_o_requested_packet_interval;
+  MilliSeconds t_to_o_requested_packet_interval;
   CipDword t_to_o_network_connection_parameters;
 
   CipUint sequence_count_producing; /**< sequence Count for Class 1 Producing
@@ -166,11 +166,11 @@ struct cip_connection_object {
                                                    different
                                                    value than SequenceCountProducing */
 
-  CipInt correct_originator_to_target_size;
-  CipInt correct_target_to_originator_size;
+  size_t correct_originator_to_target_size;
+  size_t correct_target_to_originator_size;
 
   /* Sockets for consuming and producing connection */
-  int socket[2];
+  socket_platform_t socket[2];
 
   struct sockaddr_in remote_address; /* socket address for produce */
   struct sockaddr_in originator_address; /* the address of the originator that
@@ -195,8 +195,8 @@ struct cip_connection_object {
 /** @brief Extern declaration of the global connection list */
 extern DoublyLinkedList connection_list;
 
-DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(
-  );
+DoublyLinkedListNode *CipConnectionObjectListArrayAllocator(void);
+
 void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node);
 
 /** @brief Array allocator
@@ -261,10 +261,10 @@ void ConnectionObjectSetConsumedConnectionSize(
   const CipUint
   consumed_connection_size);
 
-CipUint ConnectionObjectGetExpectedPacketRate(
+MilliSeconds ConnectionObjectGetExpectedPacketRate(
   const CipConnectionObject *const connection_object);
 
-CipUint ConnectionObjectGetRequestedPacketInterval(
+MilliSeconds ConnectionObjectGetRequestedPacketInterval(
   const CipConnectionObject *const connection_object);
 
 /**
@@ -316,12 +316,12 @@ void ConnectionObjectSetConsumedConnectionPathLength(
   const CipUint
   consumed_connection_path_length);
 
-CipUint ConnectionObjectGetProductionInhibitTime(
+MilliSeconds ConnectionObjectGetProductionInhibitTime(
   const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetProductionInhibitTime(
   CipConnectionObject *const connection_object,
-  const CipUint
+  const MilliSeconds
   production_inhibit_time);
 
 CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
@@ -359,12 +359,12 @@ void ConnectionObjectSetOriginatorSerialNumber(
   CipConnectionObject *connection_object,
   CipUdint originator_serial_number);
 
-CipUdint ConnectionObjectGetOToTRequestedPacketInterval(
+MilliSeconds ConnectionObjectGetOToTRequestedPacketInterval(
   const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetOToTRequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval);
+  const MilliSeconds requested_packet_interval);
 
 bool ConnectionObjectIsOToTRedundantOwner(
   const CipConnectionObject *const connection_object);
@@ -382,12 +382,12 @@ size_t ConnectionObjectGetOToTConnectionSize(
   const CipConnectionObject *const connection_object);
 
 /* T to O */
-CipUdint ConnectionObjectGetTToORequestedPacketInterval(
+MilliSeconds ConnectionObjectGetTToORequestedPacketInterval(
   const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetTToORequestedPacketInterval(
   CipConnectionObject *connection_object,
-  const CipUdint requested_packet_interval);
+  const MilliSeconds requested_packet_interval);
 
 void ConnectionObjectSetTToONetworkConnectionParameters(
   CipConnectionObject *connection_object,

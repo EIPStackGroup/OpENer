@@ -363,6 +363,8 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
 void CipEpathSetLogicalValue(const CipDword logical_value,
                              const LogicalSegmentLogicalFormat logical_format,
                              CipMessageRouterResponse *const message) {
+  (void) logical_format;
+
   switch(logical_value) {
     case kLogicalSegmentLogicalFormatEightBit:
       AddSintToMessage(logical_value, &message->message);

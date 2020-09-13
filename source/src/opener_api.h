@@ -173,12 +173,12 @@ typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CI
  *      0 on error
  */
 CipClass *CreateCipClass( const CipUdint class_code,
-                          const int number_of_class_attributes,
-                          const EipUint32 highest_class_attribute_number,
-                          const int number_of_class_services,
-                          const int number_of_instance_attributes,
-                          const EipUint32 highest_instance_attribute_number,
-                          const int number_of_instance_services,
+                          const EipUint16 number_of_class_attributes,
+                          const EipUint16 highest_class_attribute_number,
+                          const EipUint16 number_of_class_services,
+                          const EipUint16 number_of_instance_attributes,
+                          const EipUint16 highest_instance_attribute_number,
+                          const EipUint16 number_of_instance_services,
                           const int number_of_instances,
                           char *name,
                           const EipUint16 revision,
@@ -265,13 +265,13 @@ size_t CalculateIndex(EipUint16 attribute_number);
  *  the service array is not expandable if you insert a service that has
  *  already been defined, the previous service will be replaced
  *
- * @param cip_class_to_add_service pointer to CIP object. (may be also
+ * @param cip_class pointer to CIP object. (may be also
  * instance# 0)
  * @param service_code service code of service to be inserted.
  * @param service_function pointer to function which represents the service.
  * @param service_name name of the service
  */
-void InsertService(const CipClass *const cip_class_to_add_service,
+void InsertService(const CipClass *const cip_class,
                    const EipUint8 service_code,
                    const CipServiceFunction service_function,
                    char *const service_name);
@@ -389,12 +389,13 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
  *  @param cip_data_type the CIP type to decode
  *  @param cip_data pointer to data value to written.
  *  @param cip_message pointer to memory where the data should be taken from
- *  @return length of taken bytes
- *          -1 .. error
+ *  @param length Location to store the number of bytes decoded.
+ *  @return kEipStatusOk or kEipStatusError.
  */
-int DecodeData(const EipUint8 cip_data_type,
-               void *const cip_data,
-               const EipUint8 **const cip_message);
+EipStatus DecodeData(const EipUint8 cip_data_type,
+                     void *const cip_data,
+                     const EipUint8 **const cip_message,
+                     size_t *const length);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -428,7 +429,7 @@ typedef struct cip_connection_object CipConnectionObject;
  *
  * @return CIP error code
  */
-typedef EipStatus (*OpenConnectionFunction)(
+typedef CipError (*OpenConnectionFunction)(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error_code);
 
@@ -438,7 +439,7 @@ typedef EipStatus (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(CipConnectionObject *connection_object);
+typedef void (*ConnectionCloseFunction)(CipConnectionObject *RESTRICT connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -470,7 +471,7 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
 typedef CipError (*ConnectionReceiveDataFunction)(
   CipConnectionObject *connection_object,
   const EipUint8 *data,
-  const EipUint16 data_length);
+  const size_t data_length);
 
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.
@@ -559,7 +560,7 @@ void ConfigureListenOnlyConnectionPoint(
  */
 EipStatus HandleReceivedExplictTcpData
 (
-  int socket_handle,
+  socket_platform_t socket_handle,
   EipUint8 *buffer,
   size_t length,
   int *number_of_remaining_bytes,
@@ -584,7 +585,7 @@ EipStatus HandleReceivedExplictTcpData
  */
 EipStatus HandleReceivedExplictUdpData
 (
-  const int socket_handle,
+  const socket_platform_t socket_handle,
   const struct sockaddr_in *from_address,
   const EipUint8 *buffer,
   const size_t buffer_length,
@@ -657,7 +658,7 @@ TriggerConnections(unsigned int output_assembly_id,
  * the encapsulation layer.
  * @param socket_handle the handler to the socket of the closed connection
  */
-void CloseSession(int socket_handle);
+void CloseSession(socket_platform_t socket_handle);
 
 /**  @defgroup CIP_CALLBACK_API Callback Functions Demanded by OpENer
  * @ingroup CIP_API
@@ -806,9 +807,9 @@ void RunIdleChanged(EipUint32 run_idle_value);
  * @return socket identifier on success
  *         -1 on error
  */
-int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket);
+socket_platform_t CreateUdpSocket(UdpCommuncationDirection communication_direction,
+                                  struct sockaddr_in *socket_data,
+                                  CipUsint qos_for_socket);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Create a producing or consuming UDP socket
@@ -820,7 +821,7 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
  */
 EipStatus
 SendUdpData(const struct sockaddr_in *const socket_data,
-            const int socket_handle,
+            const socket_platform_t socket_handle,
             const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
@@ -828,7 +829,7 @@ SendUdpData(const struct sockaddr_in *const socket_data,
  *
  * @param socket_handle socket descriptor to close
  */
-void CloseSocket(const int socket_handle);
+void CloseSocket(const socket_platform_t socket_handle);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
  * Documentation
@@ -941,9 +942,9 @@ void CloseSocket(const int socket_handle);
  *   - Receive explicit message data on connected TCP sockets and the UPD socket
  *     for port AF12hex. The received data has to be hand over to Ethernet
  *     encapsulation layer with the functions: \n
- *      int HandleReceivedExplictTCPData(int socket_handle, EIP_UINT8* buffer, int
+ *      int HandleReceivedExplictTCPData(socket_platform_t socket_handle, EIP_UINT8* buffer, int
  * buffer_length, int *number_of_remaining_bytes),\n
- *      int HandleReceivedExplictUDPData(int socket_handle, struct sockaddr_in
+ *      int HandleReceivedExplictUDPData(socket_platform_t socket_handle, struct sockaddr_in
  * *from_address, EIP_UINT8* buffer, unsigned int buffer_length, int
  * *number_of_remaining_bytes).\n
  *     Depending if the data has been received from a TCP or from a UDP socket.
@@ -951,7 +952,7 @@ void CloseSocket(const int socket_handle);
  *     be sent is in the given buffer pa_buf.
  *   - Create UDP sending and receiving sockets for implicit connected
  * messages\n
- *     OpENer will use to call-back function int CreateUdpSocket(
+ *     OpENer will use to call-back function socket_platform_t CreateUdpSocket(
  *     UdpCommuncationDirection connection_direction,
  *     struct sockaddr_in *pa_pstAddr)
  *     for informing the platform specific code that a new connection is
@@ -962,11 +963,11 @@ void CloseSocket(const int socket_handle);
  * *data, int data_length)
  *   - Close UDP and TCP sockets:
  *      -# Requested by OpENer through the call back function: void
- * CloseSocket(int socket_handle)
+ * CloseSocket(socket_platform_t socket_handle)
  *      -# For TCP connection when the peer closed the connection OpENer needs
  *         to be informed to clean up internal data structures. This is done
  * with
- *         the function void CloseSession(int socket_handle).
+ *         the function void CloseSession(socket_platform_t socket_handle).
  *      .
  *   - Cyclically update the connection status:\n
  *     In order that OpENer can determine when to produce new data on

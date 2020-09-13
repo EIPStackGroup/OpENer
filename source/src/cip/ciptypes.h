@@ -139,7 +139,7 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint8 length; /**< Length of the String (8 bit value) */
+  size_t length; /**< Length of the String (8 bit value) */
   EipByte *string; /**< Pointer to the string data */
 } CipShortString;
 
@@ -147,7 +147,7 @@ typedef struct {
  *
  */
 typedef struct {
-  EipUint16 length; /**< Length of the String (16 bit value) */
+  size_t length; /**< Length of the String (16 bit value) */
   CipByte *string; /**< Pointer to the string data */
 } CipString;
 
@@ -246,7 +246,7 @@ typedef struct {
 typedef struct {
   CipUsint service;
   CipEpath request_path;
-  EipInt16 request_path_size;
+  size_t request_path_size;
   const CipOctet *data;
 } CipMessageRouterRequest;
 
@@ -263,7 +263,7 @@ typedef struct {
   CipOctet reserved; /**< Reserved; Shall be zero */
   CipUsint general_status; /**< One of the General Status codes listed in CIP
                               Specification Volume 1, Appendix B */
-  CipUsint size_of_additional_status; /**< Number of additional 16 bit words in
+  size_t size_of_additional_status; /**< Number of additional 16 bit words in
                                          Additional Status Array */
   EipUint16 additional_status[MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
                                                           If SizeOfAdditionalStatus is 0. there is no

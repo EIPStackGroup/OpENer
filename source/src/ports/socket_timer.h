@@ -13,7 +13,7 @@
  *
  */
 typedef struct socket_timer {
-  int socket;       /**< key */
+  socket_platform_t socket;       /**< key */
   MilliSeconds last_update;       /**< time stop of last update */
 } SocketTimer;
 
@@ -25,7 +25,7 @@ typedef struct socket_timer {
  * @param socket Socket handle
  */
 void SocketTimerSetSocket(SocketTimer *const socket_timer,
-                          const int socket);
+                          const socket_platform_t socket);
 
 /** @brief
  * Sets time stamp entry of the Socket Timer
@@ -72,7 +72,7 @@ void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
 SocketTimer *SocketTimerArrayGetSocketTimer(
   SocketTimer *const array_of_socket_timers,
   const size_t array_length,
-  const int socket);
+  const socket_platform_t socket);
 
 /** @brief
  * Get an empty Socket Timer entry

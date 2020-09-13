@@ -46,7 +46,7 @@ EipStatus RegisterCipClass(CipClass *cip_class);
  */
 CipError CreateMessageRouterRequestStructure(
   const EipUint8 *data,
-  EipInt16 data_length,
+  size_t data_length,
   CipMessageRouterRequest *message_router_request);
 
 
@@ -175,7 +175,7 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 }
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
-                              int data_length,
+                              size_t data_length,
                               CipMessageRouterResponse *message_router_response,
                               const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
@@ -245,16 +245,17 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
 
 CipError CreateMessageRouterRequestStructure(
   const EipUint8 *data,
-  EipInt16 data_length,
+  size_t data_length,
   CipMessageRouterRequest *message_router_request) {
 
   message_router_request->service = *data;
   data++;
   data_length--;
 
-  int number_of_decoded_bytes = DecodePaddedEPath(
-    &(message_router_request->request_path), &data);
-  if (number_of_decoded_bytes < 0) {
+  size_t number_of_decoded_bytes;
+  const EipStatus path_decode_result = DecodePaddedEPath(
+    &(message_router_request->request_path), &data, &number_of_decoded_bytes);
+  if (path_decode_result != kEipStatusOk) {
     return kCipErrorPathSegmentError;
   }
 

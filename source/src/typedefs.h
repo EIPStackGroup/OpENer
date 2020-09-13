@@ -6,6 +6,10 @@
 #ifndef OPENER_TYPEDEFS_H_
 #define OPENER_TYPEDEFS_H_
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -60,10 +64,6 @@ typedef uint64_t EipUint64; /**< 64-bit unsigned number */
 typedef int64_t CipLint; /**< 64-bit signed integer */
 typedef uint64_t CipUlint; /**< 64-bit unsigned integer */
 typedef uint64_t CipLword; /**< 64-bit bit string */
-
-/** @brief Constant identifying if a socket descriptor is invalid
- */
-static const int kEipInvalidSocket = -1;
 
 typedef unsigned long MilliSeconds;
 typedef unsigned long long MicroSeconds;

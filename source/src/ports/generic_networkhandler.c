@@ -11,6 +11,10 @@
  *  The generic network handler delegates platform-dependent tasks to the platform network handler
  */
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <assert.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -72,11 +76,17 @@ void CheckAndHandleConsumingUdpSockets(void);
  *  @param socket The socket to be processed
  *  @return kEipStatusOk on success, or kEipStatusError on failure
  */
-EipStatus HandleDataOnTcpSocket(int socket);
+EipStatus HandleDataOnTcpSocket(socket_platform_t socket);
 
-void CheckEncapsulationInactivity(int socket_handle);
+static EipStatus CheckTcpRecvResult(
+   const socket_platform_t socket,
+   const EipStatus recv_result,
+   const size_t bytes_received
+);
 
-void RemoveSocketTimerFromList(const int socket_handle);
+void CheckEncapsulationInactivity(socket_platform_t socket_handle);
+
+void RemoveSocketTimerFromList(const socket_platform_t socket_handle);
 
 /*************************************************
 * Function implementations from now on
@@ -194,11 +204,10 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in my_address = {
-    .sin_family = AF_INET,
-    .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = g_network_status.ip_address
-  };
+  struct sockaddr_in my_address;
+  my_address.sin_family = AF_INET;
+  my_address.sin_port = htons(kOpenerEthernetPort);
+  my_address.sin_addr.s_addr = g_network_status.ip_address;
 
   /* bind the new socket to port 0xAF12 (CIP) */
   if ( ( bind( g_network_status.tcp_listener, (struct sockaddr *) &my_address,
@@ -237,11 +246,10 @@ EipStatus NetworkHandlerInitialize(void) {
     /* print message but don't abort by intent */
   }
 
-  struct sockaddr_in global_broadcast_address = {
-    .sin_family = AF_INET,
-    .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = htonl(INADDR_ANY)
-  };
+  struct sockaddr_in global_broadcast_address;
+  global_broadcast_address.sin_family = AF_INET;
+  global_broadcast_address.sin_port = htons(kOpenerEthernetPort);
+  global_broadcast_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
   /* enable the UDP socket to receive broadcast messages */
   set_socket_option_value = 1;
@@ -332,17 +340,17 @@ EipStatus NetworkHandlerInitialize(void) {
   return kEipStatusOk;
 }
 
-void CloseUdpSocket(int socket_handle) {
+void CloseUdpSocket(socket_platform_t socket_handle) {
   CloseSocket(socket_handle);
 }
 
-void CloseTcpSocket(int socket_handle) {
+void CloseTcpSocket(socket_platform_t socket_handle) {
   ShutdownSocketPlatform(socket_handle);
   RemoveSocketTimerFromList(socket_handle);
   CloseSocket(socket_handle);
 }
 
-void RemoveSocketTimerFromList(const int socket_handle) {
+void RemoveSocketTimerFromList(const socket_platform_t socket_handle) {
   SocketTimer *socket_timer = NULL;
   while( NULL !=
          ( socket_timer =
@@ -354,7 +362,7 @@ void RemoveSocketTimerFromList(const int socket_handle) {
   }
 }
 
-EipBool8 CheckSocketSet(int socket) {
+EipBool8 CheckSocketSet(socket_platform_t socket) {
   EipBool8 return_value = false;
   if ( FD_ISSET(socket, &read_socket) ) {
     if ( FD_ISSET(socket, &master_socket) ) {
@@ -369,7 +377,7 @@ EipBool8 CheckSocketSet(int socket) {
 }
 
 void CheckAndHandleTcpListenerSocket(void) {
-  int new_socket = kEipInvalidSocket;
+  socket_platform_t new_socket = kEipInvalidSocket;
   /* see if this is a connection request to the TCP listener*/
   if ( true == CheckSocketSet(g_network_status.tcp_listener) ) {
     OPENER_TRACE_INFO("networkhandler: new TCP connection\n");
@@ -421,10 +429,22 @@ EipStatus NetworkHandlerProcessOnce(void) {
     kOpenerTimerTickInMilliSeconds - g_network_status.elapsed_time : 0)
                          * 1000; /* 10 ms */
 
-  int ready_socket = select(highest_socket_handle + 1, &read_socket, 0, 0,
-                            &g_time_value);
+#ifdef WIN32
+  /*
+   * Winsock ignores this parameter, so it is unnecessary to handle
+   * the conversion from SOCKET to int.
+   */
+  const int nfds = 0;
+#else
+  const int nfds = highest_socket_handle + 1;
+#endif
+  int ready_socket = select(nfds, &read_socket, 0, 0, &g_time_value);
 
-  if (ready_socket == kEipInvalidSocket) {
+#ifdef WIN32
+  if (ready_socket == SOCKET_ERROR) {
+#else
+  if (ready_socket == -1) {
+#endif
     if (EINTR == errno) /* we have somehow been interrupted. The default behavior is to go back into the select loop. */
     {
       return kEipStatusOk;
@@ -446,7 +466,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSockets();
 
-    for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
+    for (socket_platform_t socket = 0; socket <= highest_socket_handle; socket++) {
       if ( true == CheckSocketSet(socket) ) {
         /* if it is still checked it is a TCP receive */
         if ( kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
@@ -458,7 +478,7 @@ EipStatus NetworkHandlerProcessOnce(void) {
     }
   }
 
-  for (size_t socket = 0; socket <= highest_socket_handle; socket++) {
+  for (socket_platform_t socket = 0; socket <= highest_socket_handle; socket++) {
     CheckEncapsulationInactivity(socket);
   }
 
@@ -542,11 +562,19 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
         OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if (sendto( g_network_status.udp_unicast_listener, /* sending from unicast port, due to strange behavior of the broadcast port */
-                    (char *) outgoing_message.message_buffer,
-                    outgoing_message.used_message_length, 0,
-                    (struct sockaddr *) &from_address, sizeof(from_address) )
-            != outgoing_message.used_message_length) {
+        size_t bytes_sent;
+        const EipStatus send_result = SendToPlatform(
+           g_network_status.udp_unicast_listener, /* sending from unicast port, due to strange behavior of the broadcast port */
+           (char *)outgoing_message.message_buffer,
+           outgoing_message.used_message_length,
+           0,
+           (struct sockaddr *) &from_address,
+           sizeof(from_address),
+           &bytes_sent
+        );
+
+        if ((send_result == kEipStatusOk)
+            && (bytes_sent != outgoing_message.used_message_length)) {
           OPENER_TRACE_INFO(
             "networkhandler: UDP response was not fully sent\n");
         }
@@ -602,11 +630,19 @@ void CheckAndHandleUdpUnicastSocket(void) {
         OPENER_TRACE_INFO("UDP unicast reply sent:\n");
 
         /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if (sendto( g_network_status.udp_unicast_listener,
-                    (char *) outgoing_message.message_buffer,
-                    outgoing_message.used_message_length, 0,
-                    (struct sockaddr *) &from_address, sizeof(from_address) )
-            != outgoing_message.used_message_length) {
+        size_t bytes_sent;
+        const EipStatus send_result = SendToPlatform(
+           g_network_status.udp_unicast_listener,
+           (char *)outgoing_message.message_buffer,
+           outgoing_message.used_message_length,
+           0,
+           (struct sockaddr *) &from_address,
+           sizeof(from_address),
+           &bytes_sent
+        );
+
+        if ((send_result == kEipStatusOk)
+            && (bytes_sent != outgoing_message.used_message_length)) {
           OPENER_TRACE_INFO(
             "networkhandler: UDP unicast response was not fully sent\n");
         }
@@ -616,18 +652,17 @@ void CheckAndHandleUdpUnicastSocket(void) {
 }
 
 EipStatus SendUdpData(const struct sockaddr_in *const address,
-                      const int socket_handle,
+                      const socket_platform_t socket_handle,
                       const ENIPMessage *const outgoing_message) {
 
 
 
   OPENER_TRACE_INFO("UDP port to be sent to: %x\n", ntohs(address->sin_port) );
-  UDPHeader header = {
-    .source_port = 2222,
-    .destination_port = ntohs(address->sin_port),
-    .packet_length = kUdpHeaderLength + outgoing_message->used_message_length,
-    .checksum = 0
-  };
+  UDPHeader header;
+  header.source_port = 2222;
+  header.destination_port = ntohs(address->sin_port);
+  header.packet_length = kUdpHeaderLength + outgoing_message->used_message_length,
+  header.checksum = 0;
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
   memcpy(complete_message + kUdpHeaderLength,
@@ -641,14 +676,18 @@ EipStatus SendUdpData(const struct sockaddr_in *const address,
   UDPHeaderSetChecksum(&header, htons(udp_checksum) );
   UDPHeaderGenerate(&header, (char *)complete_message);
 
-  int sent_length = sendto( socket_handle,
-                            (char *) complete_message,
-                            outgoing_message->used_message_length + kUdpHeaderLength,
-                            0,
-                            (struct sockaddr *) address,
-                            sizeof(*address) );
+  size_t sent_length;
+  const EipStatus send_result = SendToPlatform(
+     socket_handle,
+     (char *) complete_message,
+     outgoing_message->used_message_length + kUdpHeaderLength,
+     0,
+     (struct sockaddr *) address,
+     sizeof(*address),
+     &sent_length
+  );
 
-  if (sent_length < 0) {
+  if (send_result == kEipStatusError) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -670,10 +709,10 @@ EipStatus SendUdpData(const struct sockaddr_in *const address,
   return kEipStatusOk;
 }
 
-EipStatus HandleDataOnTcpSocket(int socket) {
+EipStatus HandleDataOnTcpSocket(socket_platform_t socket) {
   OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket for socket: %d\n", socket);
   int remaining_bytes = 0;
-  long data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
+  size_t data_sent = PC_OPENER_ETHERNET_BUFFER_SIZE;
 
   /* We will handle just one EIP packet here the rest is done by the select
    * method which will inform us if more data is available in the socket
@@ -684,38 +723,27 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   /*Check how many data is here -- read the first four bytes from the connection */
   CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = {0};
 
-  long number_of_read_bytes = recv(socket, NWBUF_CAST incoming_message, 4,
-                                   0); /*TODO we may have to set the socket to a non blocking socket */
+  size_t bytes_rx;
+  EipStatus rx_result = RecvPlatform(
+     socket,
+     incoming_message,
+     4,
+     0, /*TODO we may have to set the socket to a non blocking socket */
+     &bytes_rx
+  );
+  EipStatus rx_ok = CheckTcpRecvResult(
+     socket,
+     rx_result,
+     bytes_rx
+  );
+  if (kEipStatusError == rx_ok   ) {
+     return kEipStatusError;
+  }
 
   SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
     g_timestamps,
     OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
     socket);
-  if (number_of_read_bytes == 0) {
-    int error_code = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR(
-      "networkhandler: socket: %d - connection closed by client: %d - %s\n",
-      socket,
-      error_code,
-      error_message);
-    FreeErrorMessage(error_message);
-    RemoveSocketTimerFromList(socket);
-    RemoveSession(socket);
-    return kEipStatusError;
-  }
-  if (number_of_read_bytes < 0) {
-    int error_code = GetSocketErrorNumber();
-    if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
-      return kEipStatusOk;
-    }
-    char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
-                     error_code,
-                     error_message);
-    FreeErrorMessage(error_message);
-    return kEipStatusError;
-  }
 
   const EipUint8 *read_buffer = &incoming_message[2]; /* at this place EIP stores the data length */
   size_t data_size = GetIntFromMessage(&read_buffer)
@@ -730,35 +758,24 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO(
         "Entering consumption loop, remaining data to receive: %ld\n",
         data_sent);
-      number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[0],
-                                  data_sent, 0);
 
-      if (number_of_read_bytes == 0) /* got error or connection closed by client */
-      {
-        int error_code = GetSocketErrorNumber();
-        char *error_message = GetErrorMessage(error_code);
-        OPENER_TRACE_ERR(
-          "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+       rx_result = RecvPlatform(
           socket,
-          error_code,
-          error_message);
-        FreeErrorMessage(error_message);
-        RemoveSocketTimerFromList(socket);
-        return kEipStatusError;
-      }
-      if (number_of_read_bytes < 0) {
-        int error_code = GetSocketErrorNumber();
-        char *error_message = GetErrorMessage(error_code);
-        if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
-          return kEipStatusOk;
-        }
-        OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
-                         error_code,
-                         error_message);
-        FreeErrorMessage(error_message);
-        return kEipStatusError;
-      }
-      data_size -= number_of_read_bytes;
+          &incoming_message[0],
+          data_sent,
+          0,
+          &bytes_rx
+       );
+       rx_ok = CheckTcpRecvResult(
+          socket,
+          rx_result,
+          bytes_rx
+       );
+       if (kEipStatusError == rx_ok) {
+          return kEipStatusError;
+       }
+
+      data_size -= bytes_rx;
       if ( (data_size < PC_OPENER_ETHERNET_BUFFER_SIZE) && (data_size != 0) ) {
         data_sent = data_size;
       }
@@ -767,37 +784,23 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusOk;
   }
 
-  number_of_read_bytes = recv(socket, NWBUF_CAST & incoming_message[4],
-                              data_size, 0);
-
-  if (0 == number_of_read_bytes) /* got error or connection closed by client */
-  {
-    int error_code = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR(
-      "networkhandler: socket: %d - connection closed by client: %d - %s\n",
-      socket,
-      error_code,
-      error_message);
-    FreeErrorMessage(error_message);
-    RemoveSocketTimerFromList(socket);
-    RemoveSession(socket);
-    return kEipStatusError;
-  }
-  if (number_of_read_bytes < 0) {
-    int error_code = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
-    if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
-      return kEipStatusOk;
-    }
-    OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
-                     error_code,
-                     error_message);
-    FreeErrorMessage(error_message);
-    return kEipStatusError;
+  rx_result = RecvPlatform(
+     socket,
+     &incoming_message[4],
+     data_size,
+     0,
+     &bytes_rx
+  );
+  rx_ok = CheckTcpRecvResult(
+     socket,
+     rx_result,
+     bytes_rx
+  );
+  if (kEipStatusError == rx_ok) {
+     return kEipStatusError;
   }
 
-  if ( (unsigned) number_of_read_bytes == data_size ) {
+  if (bytes_rx == data_size) {
     /*we got the right amount of data */
     data_size += 4;
     /*TODO handle partial packets*/
@@ -822,10 +825,6 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     EipStatus need_to_send = HandleReceivedExplictTcpData(
       socket, incoming_message, data_size, &remaining_bytes,
       &sender_address, &outgoing_message);
-    SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
-      g_timestamps,
-      OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-      socket);
     if(NULL != socket_timer) {
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
     }
@@ -843,18 +842,21 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                         outgoing_message.used_message_length,
                         socket);
 
-      data_sent = send(socket, (char *) outgoing_message.message_buffer,
-                       outgoing_message.used_message_length, 0);
-      SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
-        g_timestamps,
-        OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
-        socket);
+      size_t bytes_sent;
+      const EipStatus send_result = SendPlatform(
+         socket,
+         outgoing_message.message_buffer,
+         outgoing_message.used_message_length,
+         0,
+         &bytes_sent
+      );
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
-      if (data_sent != outgoing_message.used_message_length) {
+      if ((send_result == kEipStatusOk)
+          && (bytes_sent != outgoing_message.used_message_length)) {
         OPENER_TRACE_WARN(
           "TCP response was not fully sent: exp %" PRIuSZT ", sent %ld\n",
           outgoing_message.used_message_length,
-          data_sent);
+          bytes_sent);
       }
     }
 
@@ -870,17 +872,67 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   return kEipStatusError;
 }
 
+
+/** @brief Detects and handles unsuccessful attempts to receive TCP data.
+ *
+ * @param socket Socket handle associated with the target RecvPlatform() call.
+ * @param recv_result Value returned by RecvPlatform().
+ * @param bytes_received Number of bytes received as reported by RecvPlatform().
+ *
+ * @return kEipStatusOk if data was received successfully.
+ *         kEipStatusError if the receive failed or the client closed the connection.
+ */
+static EipStatus CheckTcpRecvResult(
+   const socket_platform_t socket,
+   const EipStatus recv_result,
+   const size_t bytes_received
+) {
+   EipStatus status = kEipStatusOk;
+
+   if (recv_result == kEipStatusError) {
+      const int error_code = GetSocketErrorNumber();
+      if (OPENER_SOCKET_WOULD_BLOCK == error_code) {
+         status = kEipStatusOk;
+      } else {
+         char *error_message = GetErrorMessage(error_code);
+         OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
+            error_code,
+            error_message);
+         FreeErrorMessage(error_message);
+         status = kEipStatusError;
+      }
+   }
+
+   /* Connection closed by client end. */
+   else if (bytes_received == 0) {
+      const int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR(
+         "networkhandler: socket: %d - connection closed by client: %d - %s\n",
+         socket,
+         error_code,
+         error_message);
+      FreeErrorMessage(error_message);
+      RemoveSocketTimerFromList(socket);
+      RemoveSession(socket);
+      status = kEipStatusError;
+   }
+
+   return status;
+}
+
+
 /** @brief create a new UDP socket for the connection manager
  *
  * @param communication_direction Consuming or producing port
  * @param socket_data Data for socket creation
  *
  * @return the socket handle if successful, else kEipInvalidSocket */
-int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket) {
+socket_platform_t CreateUdpSocket(UdpCommuncationDirection communication_direction,
+                                  struct sockaddr_in *socket_data,
+                                  CipUsint qos_for_socket) {
   struct sockaddr_in peer_address;
-  int new_socket = kEipInvalidSocket;
+  socket_platform_t new_socket = kEipInvalidSocket;
 
   socklen_t peer_address_length = sizeof(struct sockaddr_in);
   /* create a new UDP socket */
@@ -971,8 +1023,8 @@ int CreateUdpSocket(UdpCommuncationDirection communication_direction,
       {
         /* Need to specify the interface for outgoing multicast packets on a device
             with multiple interfaces. */
-        struct in_addr my_addr =
-        { .s_addr = g_network_status.ip_address };
+        struct in_addr my_addr;
+        my_addr.s_addr = g_network_status.ip_address;
         if ( setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
                         NWBUF_CAST & my_addr.s_addr,
                         sizeof my_addr.s_addr ) < 0 ) {
@@ -1085,7 +1137,7 @@ void CheckAndHandleConsumingUdpSockets(void) {
 }
 
 
-void CloseSocket(const int socket_handle) {
+void CloseSocket(const socket_platform_t socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket %d\n", socket_handle);
 
   if (kEipInvalidSocket != socket_handle) {
@@ -1095,10 +1147,10 @@ void CloseSocket(const int socket_handle) {
   OPENER_TRACE_INFO("networkhandler: closing socket done %d\n", socket_handle);
 }
 
-int GetMaxSocket(int socket1,
-                 int socket2,
-                 int socket3,
-                 int socket4) {
+socket_platform_t GetMaxSocket(socket_platform_t socket1,
+                               socket_platform_t socket2,
+                               socket_platform_t socket3,
+                               socket_platform_t socket4) {
   if ( (socket1 > socket2) && (socket1 > socket3) && (socket1 > socket4) ) {
     return socket1;
   }
@@ -1114,7 +1166,7 @@ int GetMaxSocket(int socket1,
   return socket4;
 }
 
-void CheckEncapsulationInactivity(int socket_handle) {
+void CheckEncapsulationInactivity(socket_platform_t socket_handle) {
   if (0 < g_tcpip.encapsulation_inactivity_timeout) { //*< Encapsulation inactivity timeout is enabled
     SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps,

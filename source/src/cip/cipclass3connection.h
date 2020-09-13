@@ -46,7 +46,7 @@ EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
  * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
  * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
- *    - kEipStatusOk ... on success
+ *    - kCipErrorSuccess ... on success
  *    - On an error the general status code to be put into the response
  */
 CipError EstablishClass3Connection(

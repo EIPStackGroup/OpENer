@@ -9,7 +9,7 @@
 #include "trace.h"
 
 void SocketTimerSetSocket(SocketTimer *const socket_timer,
-                          const int socket) {
+                          const socket_platform_t socket) {
   socket_timer->socket = socket;
   OPENER_TRACE_INFO("Adds socket %d to socket timers\n", socket);
 }
@@ -41,7 +41,7 @@ void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
 SocketTimer *SocketTimerArrayGetSocketTimer(
   SocketTimer *const array_of_socket_timers,
   const size_t array_length,
-  const int socket) {
+  const socket_platform_t socket) {
   for (size_t i = 0; i < array_length; ++i) {
     if (socket == array_of_socket_timers[i].socket) {
       return &array_of_socket_timers[i];

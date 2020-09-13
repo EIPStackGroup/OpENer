@@ -48,8 +48,7 @@ extern const size_t kElectronicKeyFormat4Size;
  *
  *	@return A new unset electronic key
  */
-ElectronicKeyFormat4 *ElectronicKeyFormat4New(
-  );
+ElectronicKeyFormat4 *ElectronicKeyFormat4New(void);
 
 /** @brief Destructor for the electroic key format 4 class
  *
