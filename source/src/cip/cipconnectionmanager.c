@@ -753,54 +753,54 @@ EipStatus GetConnectionData(
 
 	/* assemble response message */
 
-	// Connection number
+	// Connection number UINT
 	AddIntToMessage(1,&message_router_response->message); //TODO: replace with connection number from response
-	// Connection state
+	// Connection state UINT
 	AddIntToMessage(connection_object->state,&message_router_response->message);
-	// Originator Port
+	// Originator Port UINT
 	AddIntToMessage(connection_object->originator_address.sin_port,&message_router_response->message); //TODO: check if this is correct
-	// Target Port
+	// Target Port UINT
 	AddIntToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Connection Serial Number
+	// Connection Serial Number UINT
 	AddIntToMessage(connection_object->connection_serial_number,
 		                  &message_router_response->message);
-	// Originator Vendor ID
+	// Originator Vendor ID UINT
 	AddIntToMessage(connection_object->originator_vendor_id,
 		                  &message_router_response->message);
-	// Originator Serial number
+	// Originator Serial number UDINT
 	AddDintToMessage(connection_object->originator_serial_number,
 		                   &message_router_response->message);
-	// Originator O->T CID
+	// Originator O->T CID UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Target O->T CID
+	// Target O->T CID UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Connection Timeout Multiplier
+	// Connection Timeout Multiplier USINT
 	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI O->T
+	// Originator RPI O->T UDINT
 	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
-	// Originator API O->T
+	// Originator API O->T UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Originator T->O CID
+	// Originator T->O CID UDINT
 	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message); //TODO: check if this is correct
-	// Target T->O CID
+	// Target T->O CID UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Connection Timeout Multiplier
+	// Connection Timeout Multiplier USINT
 	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Reserved
+	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI T->O
+	// Originator RPI T->O UDINT
 	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
-	// Originator API T->O
+	// Originator API T->O UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
 
   return kEipStatusOk;
