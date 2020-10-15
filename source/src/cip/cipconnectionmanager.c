@@ -735,10 +735,73 @@ EipStatus GetConnectionData(
 	//TODO: add code
 	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
 
-	CIPServiceCode service_code = kGetConnectionData;
+	//get Connection Number from request
+	EipUint16 Connection_number = message_router_request->data[0]; //TODO: check if this is correct
 
+	OPENER_TRACE_INFO("Connection_number: %d\n", Connection_number); //TODO: remove
+
+	CIPServiceCode service_code = kGetConnectionData;
 	message_router_response->reply_service = (0x80 | service_code);
-	//message_router_response->general_status = kEipStatusOk;
+
+	//TODO: check status
+	message_router_response->general_status = kEipStatusOk;
+	message_router_response->size_of_additional_status = 1;
+	message_router_response->additional_status[0] = kEipStatusOk;
+
+	DoublyLinkedListNode *node = connection_list.first; //TODO: remove, first element used for test
+	CipConnectionObject *connection_object = node->data;
+
+	/* assemble response message */
+
+	// Connection number
+	AddIntToMessage(1,&message_router_response->message); //TODO: replace with connection number from response
+	// Connection state
+	AddIntToMessage(connection_object->state,&message_router_response->message);
+	// Originator Port
+	AddIntToMessage(connection_object->originator_address.sin_port,&message_router_response->message); //TODO: check if this is correct
+	// Target Port
+	AddIntToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	// Connection Serial Number
+	AddIntToMessage(connection_object->connection_serial_number,
+		                  &message_router_response->message);
+	// Originator Vendor ID
+	AddIntToMessage(connection_object->originator_vendor_id,
+		                  &message_router_response->message);
+	// Originator Serial number
+	AddDintToMessage(connection_object->originator_serial_number,
+		                   &message_router_response->message);
+	// Originator O->T CID
+	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	// Target O->T CID
+	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	// Connection Timeout Multiplier
+	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Originator RPI O->T
+	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
+	// Originator API O->T
+	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	// Originator T->O CID
+	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message); //TODO: check if this is correct
+	// Target T->O CID
+	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	// Connection Timeout Multiplier
+	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Reserved
+	AddSintToMessage(0, &message_router_response->message);
+	// Originator RPI T->O
+	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
+	// Originator API T->O
+	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
 
   return kEipStatusOk;
 }
