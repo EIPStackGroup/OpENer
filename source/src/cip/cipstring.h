@@ -17,8 +17,8 @@
 #include "ciptypes.h"
 
 CipStringN *SetCipStringNByData(CipStringN *const cip_string,
-                                size_t str_len,
-                                size_t size,
+                                CipUint str_len,
+                                CipUint size,
                                 const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipStringN under the expectation, that each C-String element is a StringN octet
@@ -32,7 +32,7 @@ CipStringN *SetCipStringNByData(CipStringN *const cip_string,
  */
 CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
                                 const char *const string,
-                                const size_t symbol_size);
+                                const CipUint symbol_size);
 
 /** @brief Clears the internal structure of a CipStringN
  *
@@ -59,7 +59,7 @@ void FreeCipStringN(CipStringN *const cip_string);
  * @return The CipString2 address
  */
 CipString2 *SetCipString2ByData(CipString2 *const cip_string,
-                                size_t str_len,
+                                CipUint str_len,
                                 const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipString2 under the expectation, that each C-String element is a CipString2 octet
@@ -116,7 +116,7 @@ void FreeCipString(CipString *const cip_string);
  * @return The CipString address
  */
 CipString *SetCipStringByData(CipString *const cip_string,
-                              size_t str_len,
+                              CipUint str_len,
                               const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipString under the expectation, that each C-String element is a CipString octet
@@ -155,7 +155,7 @@ void FreeCipShortString(CipShortString *const cip_string);
  * @return The CipShortString address
  */
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-                                        size_t str_len,
+                                        CipUsint str_len,
                                         const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipShortString under the expectation, that each C-String element is a CipShortString octet

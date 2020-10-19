@@ -50,8 +50,8 @@ void FreeCipStringN(CipStringN *const cip_string) {
  * @return The CipStringN address
  */
 CipStringN *SetCipStringNByData(CipStringN *const cip_string,
-                                size_t str_len,
-                                size_t size,
+                                CipUint str_len,
+                                CipUint size,
                                 const CipOctet *const data) {
   CipStringN *result = cip_string;
 
@@ -78,7 +78,7 @@ CipStringN *SetCipStringNByData(CipStringN *const cip_string,
 
 CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
                                 const char *const string,
-                                const size_t symbol_size) {
+                                const CipUint symbol_size) {
   if(0 != strlen(string) % symbol_size) {
     OPENER_TRACE_ERR("Not enough octets for %d width StringN\n", size);
     return cip_string;
@@ -120,7 +120,7 @@ CipString2 *ClearCipString2(CipString2 *const cip_string) {
 }
 
 CipString2 *SetCipString2ByData(CipString2 *const cip_string,
-                                size_t str_len,
+                                CipUint str_len,
                                 const CipOctet *const data) {
   CipString2 *result = cip_string;
 
@@ -169,7 +169,7 @@ void FreeCipString(CipString *const cip_string) {
 }
 
 CipString *SetCipStringByData(CipString *const cip_string,
-                              size_t str_len,
+                              CipUint str_len,
                               const CipOctet *const data) {
   CipString *result = cip_string;
 
@@ -233,7 +233,7 @@ void FreeCipShortString(CipShortString *const cip_string) {
  * @return The CipShortString address
  */
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-                                        size_t str_len,
+                                        CipUsint str_len,
                                         const CipOctet *const data) {
   CipShortString *result = cip_string;
 
