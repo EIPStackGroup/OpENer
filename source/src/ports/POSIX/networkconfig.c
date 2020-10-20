@@ -277,7 +277,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
 
 /* For an API documentation look at opener_api.h. */
 #define WAIT_CYCLE_NS   100000000U
-EipStatus IfaceWaitForIp(const char *iface,
+EipStatus IfaceWaitForIp(const char *const iface,
                          int timeout,
                          volatile int *const p_abort_wait) {
   struct ifreq ifr;

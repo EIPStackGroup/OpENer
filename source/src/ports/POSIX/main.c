@@ -63,32 +63,32 @@ int main(int argc,
   cap_value_t capabilities_list[1];
 
   capabilities = cap_get_proc();
-  if (NULL == capabilities) {
+  if(NULL == capabilities) {
     printf("Could not get capabilities\n");
     exit(EXIT_FAILURE);
   }
 
   capabilities_list[0] = CAP_NET_RAW;
-  if (-1
-      == cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilities_list,
-                      CAP_SET) ) {
+  if(-1 ==
+     cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilities_list,
+                  CAP_SET) ) {
     cap_free(capabilities);
     printf("Could not set CAP_NET_RAW capability\n");
     exit(EXIT_FAILURE);
   }
 
-  if (-1 == cap_set_proc(capabilities) ) {
+  if(-1 == cap_set_proc(capabilities) ) {
     cap_free(capabilities);
     printf("Could not push CAP_NET_RAW capability to process\n");
     exit(EXIT_FAILURE);
   }
 
-  if (-1 == cap_free(capabilities) ) {
+  if(-1 == cap_free(capabilities) ) {
     printf("Could not free capabilities value\n");
     exit(EXIT_FAILURE);
   }
 
-  if (argc != 2) {
+  if(argc != 2) {
     fprintf(stderr, "Wrong number of command line parameters!\n");
     fprintf(stderr, "Usage: %s [interface name]\n", arg[0]);
     fprintf(stderr, "\te.g. ./OpENer eth1\n");
@@ -101,7 +101,7 @@ int main(int argc,
   /* Fetch MAC address from the platform. This tests also if the interface
    *  is present. */
   uint8_t iface_mac[6];
-  if (kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac) ) {
+  if(kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac) ) {
     printf("Network interface %s not found.\n", arg[1]);
     exit(EXIT_FAILURE);
   }
@@ -131,7 +131,7 @@ int main(int argc,
    *  After that any NV data values are loaded to change the attribute contents
    *  to the stored configuration.
    */
-  if (kEipStatusError == NvdataLoad() ) {
+  if(kEipStatusError == NvdataLoad() ) {
     OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
   }
 
@@ -140,7 +140,7 @@ int main(int argc,
                               g_tcpip.config_control,
                               &g_tcpip.interface_configuration,
                               &g_tcpip.hostname);
-  if (eip_status < 0) {
+  if(eip_status < 0) {
     OPENER_TRACE_ERR("BringUpNetwork() failed\n");
   }
 
@@ -152,10 +152,10 @@ int main(int argc,
   /* Next actions depend on the set network configuration method. */
   CipDword network_config_method = g_tcpip.config_control &
                                    kTcpipCfgCtrlMethodMask;
-  if (kTcpipCfgCtrlStaticIp == network_config_method) {
+  if(kTcpipCfgCtrlStaticIp == network_config_method) {
     OPENER_TRACE_INFO("Static network configuration done\n");
   }
-  if (kTcpipCfgCtrlDhcp == network_config_method) {
+  if(kTcpipCfgCtrlDhcp == network_config_method) {
     OPENER_TRACE_INFO("DHCP network configuration started\n");
     /* DHCP should already have been started with BringupNetwork(). Wait
      * here for IP present (DHCP done) or abort through g_end_stack. */
@@ -164,20 +164,19 @@ int main(int argc,
       "DHCP wait for interface: eip_status %d, g_end_stack=%d\n",
       eip_status,
       g_end_stack);
-    if (kEipStatusOk == eip_status && 0 == g_end_stack) {
+    if(kEipStatusOk == eip_status && 0 == g_end_stack) {
       /* Read IP configuration received via DHCP from interface and store in
        *  the TCP/IP object.*/
       eip_status = IfaceGetConfiguration(arg[1],
                                          &g_tcpip.interface_configuration);
-      if (eip_status < 0) {
+      if(eip_status < 0) {
         OPENER_TRACE_WARN("Problems getting interface configuration\n");
       }
     }
   }
 
-
   /* The network initialization of the EIP stack for the NetworkHandler. */
-  if (!g_end_stack && kEipStatusOk == NetworkHandlerInitialize() ) {
+  if(!g_end_stack && kEipStatusOk == NetworkHandlerInitialize() ) {
 #ifdef OPENER_RT
     int ret;
 
@@ -259,10 +258,9 @@ int main(int argc,
 }
 
 static void LeaveStack(int signal) {
-  if (SIGHUP == signal || SIGINT == signal) {
+  if(SIGHUP == signal || SIGINT == signal) {
     g_end_stack = signal;
-  }
-  OPENER_TRACE_STATE("got signal %d\n", signal);
+  } OPENER_TRACE_STATE("got signal %d\n", signal);
 }
 
 static void *executeEventLoop(void *pthread_arg) {
@@ -270,8 +268,8 @@ static void *executeEventLoop(void *pthread_arg) {
   (void) pthread_arg;
 
   /* The event loop. Put other processing you need done continually in here */
-  while (!g_end_stack) {
-    if (kEipStatusOk != NetworkHandlerProcessOnce() ) {
+  while(!g_end_stack) {
+    if(kEipStatusOk != NetworkHandlerProcessOnce() ) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
       break;
     }

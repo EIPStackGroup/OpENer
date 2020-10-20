@@ -399,9 +399,9 @@ EipStatus IfaceGetConfiguration(const char *iface,
 }
 
 /* For Doxygen descriptions see opener_api.h. */
-EipStatus IfaceWaitForIp(const char *iface,
+EipStatus IfaceWaitForIp(const char *const iface,
                          int timeout,
-                         volatile int *abort_wait) {
+                         volatile int *const abort_wait) {
   ULONG iface_idx;
 
   if(kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
