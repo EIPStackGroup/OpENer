@@ -279,7 +279,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
 #define WAIT_CYCLE_NS   100000000U
 EipStatus IfaceWaitForIp(const char *iface,
                          int timeout,
-                         volatile int *p_abort_wait) {
+                         volatile int *const p_abort_wait) {
   struct ifreq ifr;
   int rc;
 
