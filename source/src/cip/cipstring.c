@@ -85,7 +85,7 @@ CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
   }
   /* We expect here, that the length of the string is the total length in Octets */
   return SetCipStringNByData(cip_string,
-                             strlen(string) / symbol_size,
+                             (CipUint) strlen(string) / symbol_size,
                              symbol_size,
                              (const CipOctet *) string);
 }
@@ -141,8 +141,7 @@ CipString2 *SetCipString2ByData(CipString2 *const cip_string,
 
 CipString2 *SetCipString2ByCstr(CipString2 *const cip_string,
                                 const char *const string) {
-  return SetCipString2ByData(cip_string,
-                             strlen(string) / 2,
+  return SetCipString2ByData(cip_string, (CipUint) strlen(string) / 2,
                              (const CipOctet *) string);
 }
 
@@ -190,8 +189,7 @@ CipString *SetCipStringByData(CipString *const cip_string,
 
 CipString *SetCipStringByCstr(CipString *const cip_string,
                               const char *const string) {
-  return SetCipStringByData(cip_string,
-                            strlen(string),
+  return SetCipStringByData(cip_string, (CipUint) strlen(string),
                             (const CipOctet *) string);
 }
 
@@ -262,7 +260,6 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
  */
 CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
                                         const char *const string) {
-  return SetCipShortStringByData(cip_string,
-                                 strlen(string),
+  return SetCipShortStringByData(cip_string, (CipUsint) strlen(string),
                                  (const CipOctet *) string);
 }
