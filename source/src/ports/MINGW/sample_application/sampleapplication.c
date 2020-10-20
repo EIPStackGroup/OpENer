@@ -99,7 +99,7 @@ EipStatus ApplicationInitialization(void) {
     {
       CipAttributeStruct *p_eth_link_attr;
       CipInstance *p_eth_link_inst =
-        GetCipInstance(p_eth_link_class, idx+1);
+        GetCipInstance(p_eth_link_class, idx + 1);
       OPENER_ASSERT(p_eth_link_inst);
 
       /* Interface counters attribute */
