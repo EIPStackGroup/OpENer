@@ -31,11 +31,8 @@
  *  specified by the iface string.
  *
  */
-EipStatus IfaceGetConfiguration
-(
-  const char *iface,
-  CipTcpIpInterfaceConfiguration *iface_cfg
-);
+EipStatus IfaceGetConfiguration(const char *iface,
+                                CipTcpIpInterfaceConfiguration *iface_cfg);
 
 /** @ingroup CIP_API
  * @brief Read and return the MAC address of the Ethernet interface
@@ -61,12 +58,9 @@ EipStatus IfaceGetMacAddress(const char *iface,
  * The polling wait process can be aborted by setting @p abort_wait to
  *  a non zero value from another thread.
  */
-EipStatus IfaceWaitForIp
-(
-  const char *iface,
-  int timeout,
-  volatile int *abort_wait
-);
+EipStatus IfaceWaitForIp(const char *const iface,
+                         int timeout,
+                         volatile int *const abort_wait);
 
 /** @ingroup CIP_API
  * @brief Get host name from platform
@@ -172,17 +166,17 @@ typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CI
  *  @return pointer to new class object
  *      0 on error
  */
-CipClass *CreateCipClass( const CipUdint class_code,
-                          const int number_of_class_attributes,
-                          const EipUint32 highest_class_attribute_number,
-                          const int number_of_class_services,
-                          const int number_of_instance_attributes,
-                          const EipUint32 highest_instance_attribute_number,
-                          const int number_of_instance_services,
-                          const int number_of_instances,
-                          char *name,
-                          const EipUint16 revision,
-                          InitializeCipClass initializer );
+CipClass *CreateCipClass(const CipUdint class_code,
+                         const int number_of_class_attributes,
+                         const EipUint32 highest_class_attribute_number,
+                         const int number_of_class_services,
+                         const int number_of_instance_attributes,
+                         const EipUint32 highest_instance_attribute_number,
+                         const int number_of_instance_services,
+                         const int number_of_instances,
+                         char *name,
+                         const EipUint16 revision,
+                         InitializeCipClass initializer);
 
 /** @ingroup CIP_API
  * @brief Add a number of CIP instances to a given CIP class
@@ -219,7 +213,6 @@ CipInstance *AddCipInstances(
 CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
                             const EipUint32 instance_id);
 
-
 /** @ingroup CIP_API
  * @brief Insert an attribute in an instance of a CIP class
  *
@@ -240,7 +233,6 @@ void InsertAttribute(CipInstance *const instance,
                      CipAttributeEncodeInMessage encode_function,
                      void *const data,
                      const EipByte cip_flags);
-
 
 /** @ingroup CIP_API
  * @brief Allocates Attribute bitmasks
@@ -291,13 +283,9 @@ void InsertService(const CipClass *const cip_class_to_add_service,
  * If either the kPostSetFunc or kNvDataFunc is set the same function
  *  pointer CipClass::PostSetCallback will be called.
  */
-void InsertGetSetCallback
-(
-  CipClass *const cip_class,
-  CipGetSetCallback callback_function,
-  CIPAttributeFlag callbacks_to_install
-);
-
+void InsertGetSetCallback(CipClass *const cip_class,
+                          CipGetSetCallback callback_function,
+                          CIPAttributeFlag callbacks_to_install);
 
 //TODO: Update documentation
 /** @ingroup CIP_API
@@ -309,7 +297,6 @@ void InsertGetSetCallback
  *  @param cip_data pointer to data value.
  *  @param message_router_response The message router response construct
  */
-
 
 void EncodeCipBool(const CipBool *const data,
                    ENIPMessage *const outgoing_message);
@@ -467,10 +454,10 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
  *
  * @return Stack status
  */
-typedef CipError (*ConnectionReceiveDataFunction)(
-  CipConnectionObject *connection_object,
-  const EipUint8 *data,
-  const EipUint16 data_length);
+typedef CipError (*ConnectionReceiveDataFunction)(CipConnectionObject *
+                                                  connection_object,
+                                                  const EipUint8 *data,
+                                                  const EipUint16 data_length);
 
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.
@@ -518,11 +505,10 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureInputOnlyConnectionPoint(
-  const unsigned int connection_number,
-  const unsigned int output_assembly_id,
-  const unsigned int input_assembly_id,
-  const unsigned int configuration_assembly_id);
+void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
+                                       const unsigned int output_assembly_id,
+                                       const unsigned int input_assembly_id,
+                                       const unsigned int configuration_assembly_id);
 
 /** \ingroup CIP_API
  * \brief Configures the connection point for a listen only connection.
@@ -537,11 +523,10 @@ void ConfigureInputOnlyConnectionPoint(
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureListenOnlyConnectionPoint(
-  const unsigned int connection_number,
-  const unsigned int output_assembly_id,
-  const unsigned int input_assembly_id,
-  const unsigned int configuration_assembly_id);
+void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
+                                        const unsigned int output_assembly_id,
+                                        const unsigned int input_assembly_id,
+                                        const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -557,15 +542,12 @@ void ConfigureListenOnlyConnectionPoint(
  * @param outgoing_message The outgoing ENIP message
  * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-EipStatus HandleReceivedExplictTcpData
-(
-  int socket_handle,
-  EipUint8 *buffer,
-  size_t length,
-  int *number_of_remaining_bytes,
-  struct sockaddr *originator_address,
-  ENIPMessage *const outgoing_message);
-
+EipStatus HandleReceivedExplictTcpData(int socket_handle,
+                                       EipUint8 *buffer,
+                                       size_t length,
+                                       int *number_of_remaining_bytes,
+                                       struct sockaddr *originator_address,
+                                       ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -582,16 +564,13 @@ EipStatus HandleReceivedExplictTcpData
  * @param outgoing_message Outgoing ENIP message
  * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
  */
-EipStatus HandleReceivedExplictUdpData
-(
-  const int socket_handle,
-  const struct sockaddr_in *from_address,
-  const EipUint8 *buffer,
-  const size_t buffer_length,
-  int *number_of_remaining_bytes,
-  bool unicast,
-  ENIPMessage *const outgoing_message);
-
+EipStatus HandleReceivedExplictUdpData(const int socket_handle,
+                                       const struct sockaddr_in *from_address,
+                                       const EipUint8 *buffer,
+                                       const size_t buffer_length,
+                                       int *number_of_remaining_bytes,
+                                       bool unicast,
+                                       ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
  *  @brief Notify the connection manager that data for a connection has been
@@ -988,29 +967,29 @@ void CloseSocket(const int socket_handle);
  * support different device profiles and specific CIP objects needed for your
  * device. The functions to be used are:
  *   - CipClass *CreateCipClass( const CipUdint class_code,
-                          const int number_of_class_attributes,
-                          const EipUint32 highest_class_attribute_number,
-                          const int number_of_class_services,
-                          const int number_of_instance_attributes,
-                          const EipUint32 highest_instance_attribute_number,
-                          const int number_of_instance_services,
-                          const int number_of_instances,
-                          char *name,
-                          const EipUint16 revision,
-                          InitializeCipClass initializer );
+   const int number_of_class_attributes,
+   const EipUint32 highest_class_attribute_number,
+   const int number_of_class_services,
+   const int number_of_instance_attributes,
+   const EipUint32 highest_instance_attribute_number,
+   const int number_of_instance_services,
+   const int number_of_instances,
+   char *name,
+   const EipUint16 revision,
+   InitializeCipClass initializer );
  *   - CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
-                             const int number_of_instances)
+   const int number_of_instances)
  *   - CipInstance *AddCipInstance(CipClass *RESTRICT const class,
-                            const EipUint32 instance_id)
+   const EipUint32 instance_id)
  *   - void InsertAttribute(CipInstance *const cip_instance,
-                     const EipUint16 attribute_number,
-                     const EipUint8 cip_data_type,
-                     void *const cip_data,
-                     const EipByte cip_flags);
+   const EipUint16 attribute_number,
+   const EipUint8 cip_data_type,
+   void *const cip_data,
+   const EipByte cip_flags);
  *   - void InsertService(const CipClass *const cip_class_to_add_service,
-                   const EipUint8 service_code,
-                   const CipServiceFunction service_function,
-                   char *const service_name);
+   const EipUint8 service_code,
+   const CipServiceFunction service_function,
+   char *const service_name);
  *
  * @page license OpENer Open Source License
  * The OpENer Open Source License is an adapted BSD style license. The

@@ -14,4 +14,4 @@ ctest --output-on-failure
 make OpENer_coverage
 chmod +x $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
 $TRAVIS_BUILD_DIR/travis_scripts/compileGcovResults.sh
-sonar-scanner -Dproject.settings=$TRAVIS_BUILD_DIR/sonar-project.properties -Dsonar.sources=. -Dsonar.exclusions=OpENer_coverage/**,dependencies/**,CMakeFiles/** -Dsonar.cfamily.gcov.reportsPath=./gcov_results -Dsonar.coverage.exclusions=$TRAVIS_BUILD_DIR/source/tests/*,$TRAVIS_BUILD_DIR/source/src/ports/*/sample_application/*
+sonar-scanner -Dproject.settings=$TRAVIS_BUILD_DIR/sonar-project.properties -Dsonar.sources=. -Dsonar.exclusions=OpENer_coverage/**,dependencies/**,CMakeFiles/** -Dsonar.cfamily.gcov.reportsPath=./gcov_results -Dsonar.coverage.exclusions=tests/*,src/ports/**/sample_application/*,tests/**/*

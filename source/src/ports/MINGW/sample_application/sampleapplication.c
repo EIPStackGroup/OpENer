@@ -20,7 +20,7 @@
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
-#define DEMO_APP_CONFIG_ASSEMBLY_NUM               1 //0x001
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM               151 //0x097
 #define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM  152 //0x098
 #define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153 //0x099
 #define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
@@ -29,8 +29,8 @@
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
-EipUint8 g_assembly_data064[40]; /* Input */
-EipUint8 g_assembly_data096[40]; /* Output */
+EipUint8 g_assembly_data064[32]; /* Input */
+EipUint8 g_assembly_data096[32]; /* Output */
 EipUint8 g_assembly_data097[10]; /* Config */
 EipUint8 g_assembly_data09A[32]; /* Explicit */
 
@@ -99,7 +99,7 @@ EipStatus ApplicationInitialization(void) {
     {
       CipAttributeStruct *p_eth_link_attr;
       CipInstance *p_eth_link_inst =
-        GetCipInstance(p_eth_link_class, idx+1);
+        GetCipInstance(p_eth_link_class, idx + 1);
       OPENER_ASSERT(p_eth_link_inst);
 
       /* Interface counters attribute */
