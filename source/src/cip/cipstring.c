@@ -80,7 +80,7 @@ CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
                                 const char *const string,
                                 const CipUint symbol_size) {
   if(0 != strlen(string) % symbol_size) {
-    OPENER_TRACE_ERR("Not enough octets for %d width StringN\n", size);
+    OPENER_TRACE_ERR("Not enough octets for %d width StringN\n", symbol_size);
     return cip_string;
   }
   /* We expect here, that the length of the string is the total length in Octets */
