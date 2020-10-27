@@ -83,6 +83,13 @@ EipStatus GetConnectionOwner(
   const struct sockaddr *originator_address,
   const int encapsulation_session);
 
+EipStatus GetConnectionData(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session);
+
 EipStatus AssembleForwardOpenResponse(
   CipConnectionObject *connection_object,
   CipMessageRouterResponse *message_router_response,
@@ -225,7 +232,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
     2,   /* # of class services */
     0,   /* # of instance attributes */
     14,   /* # highest instance attribute number*/
-    6,   /* # of instance services */
+    7,   /* # of instance services */
     1,   /* # of instances */
     "connection manager",   /* class name */
     1,   /* revision */
@@ -238,14 +245,14 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
   InsertService(connection_manager, kGetAttributeAll, &GetAttributeAll,
                 "GetAttributeAll");
   InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
-  InsertService(connection_manager,
-                kLargeForwardOpen,
-                &LargeForwardOpen,
-                "LargeForwardOpen");
+  InsertService(connection_manager, kLargeForwardOpen, &LargeForwardOpen,
+		  	  	  "LargeForwardOpen");
   InsertService(connection_manager, kForwardClose, &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager, kGetConnectionOwner, &GetConnectionOwner,
                 "GetConnectionOwner");
+  InsertService(connection_manager, kGetConnectionData, &GetConnectionData,
+                  "GetConnectionData");
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
 
@@ -713,6 +720,25 @@ EipStatus GetConnectionOwner(
   (void) instance;
   (void) message_router_request;
   (void) message_router_response;
+
+  return kEipStatusOk;
+}
+
+/* TODO: Not implemented */
+EipStatus GetConnectionData(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session) {
+
+	//TODO: add code
+	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
+
+	CIPServiceCode service_code = kGetConnectionData;
+
+	message_router_response->reply_service = (0x80 | service_code);
+	//message_router_response->general_status = kEipStatusOk;
 
   return kEipStatusOk;
 }
