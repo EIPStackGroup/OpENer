@@ -19,44 +19,104 @@ extern "C" {
 
 }
 
-TEST_GROUP(EndianConversion) {
+TEST_GROUP (EndianConversion) {
 
 };
 
 TEST(EndianConversion, GetSintFromMessage) {
-  const EipUint8 test_message[] = { 8 };
-  const EipUint8 *message_pointer = test_message;
-  const EipUint8 **const message = &message_pointer;
-  EipUint16 returned_value = GetSintFromMessage(message);
+  const CipOctet test_message[] = {8};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipSint returned_value = GetSintFromMessage(message);
+
+  LONGS_EQUAL(8, returned_value);
+  POINTERS_EQUAL(test_message + 1, *message);
+}
+
+TEST(EndianConversion, GetUsintFromMessage) {
+  const CipOctet test_message[] = {8};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipUsint returned_value = GetUsintFromMessage(message);
+
+  LONGS_EQUAL(8, returned_value);
+  POINTERS_EQUAL(test_message + 1, *message);
+}
+
+TEST(EndianConversion, GetByteFromMessage) {
+  const CipOctet test_message[] = {8};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipByte returned_value = GetByteFromMessage(message);
 
   LONGS_EQUAL(8, returned_value);
   POINTERS_EQUAL(test_message + 1, *message);
 }
 
 TEST(EndianConversion, GetIntFromMessage) {
-  const EipUint8 test_message[] = { 8, 60 };
-  const EipUint8 *message_pointer = test_message;
-  const EipUint8 **const message = &message_pointer;
-  EipUint16 returned_value = GetIntFromMessage(message);
+  const CipOctet test_message[] = {8, 60};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipInt returned_value = GetIntFromMessage(message);
+
+  LONGS_EQUAL(15368, returned_value);
+  POINTERS_EQUAL(test_message + 2, *message);
+}
+
+TEST(EndianConversion, GetUintFromMessage) {
+  const CipOctet test_message[] = {8, 60};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipUint returned_value = GetUintFromMessage(message);
+
+  LONGS_EQUAL(15368, returned_value);
+  POINTERS_EQUAL(test_message + 2, *message);
+}
+
+TEST(EndianConversion, GetWordFromMessage) {
+  const CipOctet test_message[] = {8, 60};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipWord returned_value = GetWordFromMessage(message);
 
   LONGS_EQUAL(15368, returned_value);
   POINTERS_EQUAL(test_message + 2, *message);
 }
 
 TEST(EndianConversion, GetDintFromMessage) {
-  const EipUint8 test_message[] = { 28, 53, 41, 37 };
-  const EipUint8 *message_pointer = test_message;
-  const EipUint8 **const message = &message_pointer;
-  EipUint32 returned_value = GetDintFromMessage(message);
+  const CipOctet test_message[] = {28, 53, 41, 37};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipDint returned_value = GetDintFromMessage(message);
+
+  LONGS_EQUAL(623457564, returned_value);
+  POINTERS_EQUAL(test_message + 4, *message);
+}
+
+TEST(EndianConversion, GetUdintFromMessage) {
+  const CipOctet test_message[] = {28, 53, 41, 37};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipUdint returned_value = GetDintFromMessage(message);
+
+  LONGS_EQUAL(623457564, returned_value);
+  POINTERS_EQUAL(test_message + 4, *message);
+}
+
+TEST(EndianConversion, GetDwordFromMessage) {
+  const CipOctet test_message[] = {28, 53, 41, 37};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
+  CipDword returned_value = GetDwordFromMessage(message);
 
   LONGS_EQUAL(623457564, returned_value);
   POINTERS_EQUAL(test_message + 4, *message);
 }
 
 TEST(EndianConversion, GetLintFromMessage) {
-  const EipUint8 test_message[] = { 81, 126, 166, 15, 70, 97, 208, 236 };
-  const EipUint8 *message_pointer = test_message;
-  const EipUint8 **const message = &message_pointer;
+  const CipOctet test_message[] = {81, 126, 166, 15, 70, 97, 208, 236};
+  const CipOctet *message_pointer = test_message;
+  const CipOctet **const message = &message_pointer;
   EipUint64 returned_value = GetLintFromMessage(message);
 
   LONGS_EQUAL(5872313548673241324, returned_value);
