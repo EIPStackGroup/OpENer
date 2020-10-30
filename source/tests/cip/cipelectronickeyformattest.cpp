@@ -110,9 +110,9 @@ TEST(CipElectronicKeyFormat, SetMajorRevisionCompatibility) {
 }
 
 TEST(CipElectronicKeyFormat, GetMajorRevision) {
-  CipUint expected_major_revision = 0x1;
+  const CipUsint expected_major_revision = 0x1;
 
-  CipUint set_major_revision = 0x1;
+  CipUsint set_major_revision = 0x1;
   CipByte *expected_major_data = (CipByte *)key + 6;
   *expected_major_data = set_major_revision;
 
@@ -121,7 +121,7 @@ TEST(CipElectronicKeyFormat, GetMajorRevision) {
 }
 
 TEST(CipElectronicKeyFormat, GetMajorRevisionCompatibility) {
-  CipUint expected_major_revision = 0x81;
+  const CipUsint expected_major_revision = 0x81;
 
   CipByte *expected_major_data = (CipByte *)key + 6;
   *expected_major_data = expected_major_revision;
