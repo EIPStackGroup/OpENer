@@ -155,7 +155,7 @@ TEST(CipElectronicKeyFormat, ParseElectronicKeyTest) {
   const CipOctet message[] =
   { 0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
   const CipOctet *message_buffer = message;
-  GetElectronicKeyFormat4FromMessage( (const CipOctet **)&message_buffer, key );
+  GetElectronicKeyFormat4FromMessage(&message_buffer, key);
 
   message_buffer = message;
   CHECK_EQUAL( 256, ElectronicKeyFormat4GetVendorId(key) );
