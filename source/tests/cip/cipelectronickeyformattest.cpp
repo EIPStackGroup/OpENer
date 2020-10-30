@@ -15,7 +15,7 @@ extern "C" {
 
 }
 
-TEST_GROUP(CipElectronicKey) {
+TEST_GROUP(CipElectronicKeyFormat) {
   ElectronicKeyFormat4 *key;
 
   void setup() {
@@ -23,23 +23,23 @@ TEST_GROUP(CipElectronicKey) {
   }
 
   void teardown() {
-    ElectronicKeyFormat4Delete(&key);
+    ElectronicKeyFormat4Delete (&key);
   }
 
 };
 
-TEST(CipElectronicKey, CreateElectronicKey) {
+TEST(CipElectronicKeyFormat, CreateElectronicKey) {
   char dummyArea[kElectronicKeyFormat4Size];
   memset(dummyArea, 0, sizeof(dummyArea) );
   MEMCMP_EQUAL(dummyArea, key, kElectronicKeyFormat4Size);
 };
 
-TEST(CipElectronicKey, DeleteElectronicKey) {
+TEST(CipElectronicKeyFormat, DeleteElectronicKey) {
   ElectronicKeyFormat4Delete(&key);
   POINTERS_EQUAL(NULL, key);
 }
 
-TEST(CipElectronicKey, SetVendorID) {
+TEST(CipElectronicKeyFormat, SetVendorID) {
   char demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *vendor_id = (CipUint *)demoArea;
@@ -49,7 +49,7 @@ TEST(CipElectronicKey, SetVendorID) {
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
-TEST(CipElectronicKey, GetVendorID) {
+TEST(CipElectronicKeyFormat, GetVendorID) {
   CipUint expected_vendor_id = 1;
 
   CipUint *vendor_id_data = (CipUint *)key;
@@ -59,7 +59,7 @@ TEST(CipElectronicKey, GetVendorID) {
   CHECK_EQUAL(expected_vendor_id, vendor_id);
 }
 
-TEST(CipElectronicKey, SetDeviceType) {
+TEST(CipElectronicKeyFormat, SetDeviceType) {
   char demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *device_type = (CipUint *)demoArea + 1;
@@ -69,7 +69,7 @@ TEST(CipElectronicKey, SetDeviceType) {
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
-TEST(CipElectronicKey, GetDeviceType) {
+TEST(CipElectronicKeyFormat, GetDeviceType) {
   CipUint expected_device_type = 1;
 
   CipUint *device_type_data = (CipUint *)key + 1;
@@ -79,7 +79,7 @@ TEST(CipElectronicKey, GetDeviceType) {
   CHECK_EQUAL(expected_device_type, device_type);
 }
 
-TEST(CipElectronicKey, SetProductCode) {
+TEST(CipElectronicKeyFormat, SetProductCode) {
   char demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *product_code = (CipUint *)demoArea + 2;
@@ -89,7 +89,7 @@ TEST(CipElectronicKey, SetProductCode) {
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
-TEST(CipElectronicKey, GetProductCode) {
+TEST(CipElectronicKeyFormat, GetProductCode) {
   CipUint expected_product_code = 1;
 
   CipUint *product_code_data = (CipUint *)key + 2;
@@ -99,7 +99,7 @@ TEST(CipElectronicKey, GetProductCode) {
   CHECK_EQUAL(expected_product_code, product_code);
 }
 
-TEST(CipElectronicKey, SetMajorRevisionCompatibility) {
+TEST(CipElectronicKeyFormat, SetMajorRevisionCompatibility) {
   char demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipByte *major_revision_compatiblitiy = (CipByte *)demoArea + 6;
@@ -109,7 +109,7 @@ TEST(CipElectronicKey, SetMajorRevisionCompatibility) {
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
-TEST(CipElectronicKey, GetMajorRevision) {
+TEST(CipElectronicKeyFormat, GetMajorRevision) {
   CipUint expected_major_revision = 0x1;
 
   CipUint set_major_revision = 0x1;
@@ -120,7 +120,7 @@ TEST(CipElectronicKey, GetMajorRevision) {
   CHECK_EQUAL(expected_major_revision, product_code);
 }
 
-TEST(CipElectronicKey, GetMajorRevisionCompatibility) {
+TEST(CipElectronicKeyFormat, GetMajorRevisionCompatibility) {
   CipUint expected_major_revision = 0x81;
 
   CipByte *expected_major_data = (CipByte *)key + 6;
@@ -130,7 +130,7 @@ TEST(CipElectronicKey, GetMajorRevisionCompatibility) {
   CHECK_TEXT(compatibility, "Compatibility flag not working");
 }
 
-TEST(CipElectronicKey, SetMinorRevision) {
+TEST(CipElectronicKeyFormat, SetMinorRevision) {
   char demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipByte *minor_revision_compatiblitiy = (CipByte *)demoArea + 7;
@@ -140,7 +140,7 @@ TEST(CipElectronicKey, SetMinorRevision) {
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
 }
 
-TEST(CipElectronicKey, GetMinorRevision) {
+TEST(CipElectronicKeyFormat, GetMinorRevision) {
   CipUint expected_minor_revision = 0x1;
 
   CipByte *expected_minor_data = (CipByte *)key + 7;
@@ -150,10 +150,10 @@ TEST(CipElectronicKey, GetMinorRevision) {
   CHECK_EQUAL(expected_minor_revision, product_code);
 }
 
-TEST(CipElectronicKey, ParseElectronicKeyTest) {
+TEST(CipElectronicKeyFormat, ParseElectronicKeyTest) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const CipOctet message[] =
-  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
+  { 0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
   const CipOctet *message_buffer = message;
   GetElectronicKeyFormat4FromMessage( (const CipOctet **)&message_buffer, key );
 
@@ -169,7 +169,7 @@ TEST(CipElectronicKey, ParseElectronicKeyTest) {
 
 }
 
-//TEST(CipElectronicKey, CheckElectronicKeyWrongVendorId) {
+//TEST(CipElectronicKeyFormat, CheckElectronicKeyWrongVendorId) {
 //	const CipOctet message [] = "\x34\x04\x02\x00\x0c\x00\xe9\xfd\x01\x02";
 //	const CipOctet *message_buffer = message;
 //	EipUint16 *extended_status = 0;

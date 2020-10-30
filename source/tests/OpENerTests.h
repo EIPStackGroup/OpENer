@@ -6,7 +6,7 @@ IMPORT_TEST_GROUP (UdpProtocol);
 IMPORT_TEST_GROUP (EndianConversion);
 IMPORT_TEST_GROUP (CipCommon);
 IMPORT_TEST_GROUP (CipEpath);
-IMPORT_TEST_GROUP (CipElectronicKey);
+IMPORT_TEST_GROUP (CipElectronicKeyFormat);
 IMPORT_TEST_GROUP (CipConnectionManager);
 IMPORT_TEST_GROUP (CipConnectionObject);
 IMPORT_TEST_GROUP (SocketTimer);
