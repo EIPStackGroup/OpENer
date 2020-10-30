@@ -29,7 +29,7 @@ TEST_GROUP(CipElectronicKeyFormat) {
 };
 
 TEST(CipElectronicKeyFormat, CreateElectronicKey) {
-  char dummyArea[kElectronicKeyFormat4Size];
+  CipOctet dummyArea[kElectronicKeyFormat4Size];
   memset(dummyArea, 0, sizeof(dummyArea) );
   MEMCMP_EQUAL(dummyArea, key, kElectronicKeyFormat4Size);
 };
@@ -40,7 +40,7 @@ TEST(CipElectronicKeyFormat, DeleteElectronicKey) {
 }
 
 TEST(CipElectronicKeyFormat, SetVendorID) {
-  char demoArea[kElectronicKeyFormat4Size];
+  CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *vendor_id = (CipUint *)demoArea;
   *vendor_id = 1;
@@ -60,7 +60,7 @@ TEST(CipElectronicKeyFormat, GetVendorID) {
 }
 
 TEST(CipElectronicKeyFormat, SetDeviceType) {
-  char demoArea[kElectronicKeyFormat4Size];
+  CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *device_type = (CipUint *)demoArea + 1;
   *device_type = 1;
@@ -80,7 +80,7 @@ TEST(CipElectronicKeyFormat, GetDeviceType) {
 }
 
 TEST(CipElectronicKeyFormat, SetProductCode) {
-  char demoArea[kElectronicKeyFormat4Size];
+  CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipUint *product_code = (CipUint *)demoArea + 2;
   *product_code = 1;
@@ -100,7 +100,7 @@ TEST(CipElectronicKeyFormat, GetProductCode) {
 }
 
 TEST(CipElectronicKeyFormat, SetMajorRevisionCompatibility) {
-  char demoArea[kElectronicKeyFormat4Size];
+  CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipByte *major_revision_compatiblitiy = (CipByte *)demoArea + 6;
   *major_revision_compatiblitiy = 0x81;
@@ -131,7 +131,7 @@ TEST(CipElectronicKeyFormat, GetMajorRevisionCompatibility) {
 }
 
 TEST(CipElectronicKeyFormat, SetMinorRevision) {
-  char demoArea[kElectronicKeyFormat4Size];
+  CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea) );
   CipByte *minor_revision_compatiblitiy = (CipByte *)demoArea + 7;
   *minor_revision_compatiblitiy = 0x81;
@@ -141,7 +141,7 @@ TEST(CipElectronicKeyFormat, SetMinorRevision) {
 }
 
 TEST(CipElectronicKeyFormat, GetMinorRevision) {
-  CipUint expected_minor_revision = 0x1;
+  CipUsint expected_minor_revision = 0x1;
 
   CipByte *expected_minor_data = (CipByte *)key + 7;
   *expected_minor_data = expected_minor_revision;
