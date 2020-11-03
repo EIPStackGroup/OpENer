@@ -382,6 +382,44 @@ TEST(CipEpath, GetLogicalValue32Bit) {
   free(original_address);
 }
 
+TEST(CipEpath, SetLogicalValue8Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value, kLogicalSegmentLogicalFormatEightBit,
+                          &response);
+  CHECK_EQUAL(value, *response.message.message_buffer);
+}
+
+TEST(CipEpath, SetLogicalValue16Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value,
+                          kLogicalSegmentLogicalFormatSixteenBit,
+                          &response);
+  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
+}
+
+TEST(CipEpath, SetLogicalValue32Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value,
+                          kLogicalSegmentLogicalFormatThirtyTwoBit,
+                          &response);
+  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 5) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 6) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 7) );
+}
+
 TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {
   const unsigned char message[] = {0x3C, 0x00};
   const LogicalSegmentExtendedLogicalType extended_type =
