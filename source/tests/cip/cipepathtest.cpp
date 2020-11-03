@@ -313,6 +313,31 @@ TEST(CipEpath, GetLogicalSegmentLogicalFormatThirtyTwoBits) {
   CHECK_EQUAL(kLogicalSegmentLogicalFormatThirtyTwoBit, format);
 }
 
+TEST(CipEpath, SetLogicalSegmentLogicalFormatEightBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatEightBit,
+                                     message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalFormatSixteenBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatSixteenBit,
+                                     message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalFormatThirtyTwoBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatThirtyTwoBit,
+                                     message);
+  CHECK_EQUAL(
+    SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT,
+    message[0]);
+}
+
 TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {
   const unsigned char message[] = {0x3C, 0x00};
   const LogicalSegmentExtendedLogicalType extended_type =
