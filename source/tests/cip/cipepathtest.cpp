@@ -338,6 +338,50 @@ TEST(CipEpath, SetLogicalSegmentLogicalFormatThirtyTwoBits) {
     message[0]);
 }
 
+TEST(CipEpath, GetLogicalValue8Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
+  message[1] = 20;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(20, result);
+  free(original_address);
+}
+
+TEST(CipEpath, GetLogicalValue16Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+               LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT;
+  message[1] = 0;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(5653, result);
+  free(original_address);
+}
+
+TEST(CipEpath, GetLogicalValue32Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+               LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT;
+  message[1] = 0;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(404166165, result);
+  free(original_address);
+}
+
 TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {
   const unsigned char message[] = {0x3C, 0x00};
   const LogicalSegmentExtendedLogicalType extended_type =
