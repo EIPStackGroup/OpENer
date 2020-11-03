@@ -43,13 +43,27 @@
 #define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_HANDLE 0x06 /**< Message value indicating the Structured Member Handler Extended Logical Segment type */
 
 #define LOGICAL_SEGMENT_SPECIAL_TYPE_FORMAT_ELECTRONIC_KEY 0x00 /**< Message value indicating an electronic key */
+#define ELECTRONIC_KEY_SEGMENT_KEY_FORMAT_4 0x04
 
-#define NETWORK_SEGMENT_SUBTYPE_SCHEDULE 0x01 /**< Message value indicating a network segment schedule message */
-#define NETWORK_SEGMENT_SUBTYPE_FIXED_TAG 0x02 /**< Message value indicating a network segment fixed tag message */
-#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS 0x03 /**< Message value indicating a network segment PIT in milliseconds message */
-#define NETWORK_SEGMENT_SUBTYPE_SAFETY 0x04 /**< Message value indicating a network segment safety message */
-#define NETWORK_SEGMENT_SUBTYPE_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS 0x10 /**< Message value indicating a network segment PIT in microseconds message */
-#define NETWORK_SEGMENT_SUBTYPE_EXTENDED_NETWORK 0x1F /**< Message indicating a network message extended network message */
+#define NETWORK_SEGMENT_SCHEDULE 0x01 /**< Message value indicating a network segment schedule message */
+#define NETWORK_SEGMENT_FIXED_TAG 0x02 /**< Message value indicating a network segment fixed tag message */
+#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS 0x03 /**< Message value indicating a network segment PIT in milliseconds message */
+#define NETWORK_SEGMENT_SAFETY 0x04 /**< Message value indicating a network segment safety message */
+#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS 0x10 /**< Message value indicating a network segment PIT in microseconds message */
+#define NETWORK_SEGMENT_EXTENDED_NETWORK 0x1F /**< Message indicating a network message extended network message */
+
+#define SYMBOLIC_SEGMENT_FORMAT_EXTENDED_STRING 0x00
+
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_DOUBLE_CHAR 0x20
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_TRIPLE_CHAR 0x40
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_NUMERIC 0xC0
+
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_NUMERIC_USINT_TYPE 0x06
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_NUMERIC_UINT_TYPE 0x07
+#define SYMBOLIC_SEGMENT_EXTENDED_FORMAT_NUMERIC_UDINT_TYPE 0x08
+
+#define DATA_SEGMENT_SUBTYPE_SIMPLE_DATA 0x00
+#define DATA_SEGMENT_SUBTYPE_ANSI_EXTENDED_SYMBOL 0x11
 
 /** @brief Segment type Enum
  *
@@ -161,7 +175,7 @@ typedef enum symbolic_segment_extended_format {
 
 /* Start - Often used types of EPaths */
 typedef struct connection_path_epath {
-  CipDword class_id; /**< here in accordance with Vol. 1 C-1.4.2 */
+  CipDword class_id;   /**< here in accordance with Vol. 1 C-1.4.2 */
   CipDword instance_id;
   CipDword attribute_id_or_connection_point;
 } CipConnectionPathEpath;
@@ -293,9 +307,8 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
  * @param cip_path The start of the EPath message
  * @param key Writes the data on the user provided data electronic key struct
  */
-void GetElectronicKeyFormat4FromMessage(
-  const CipOctet **const cip_path,
-  ElectronicKeyFormat4 *key);
+void GetElectronicKeyFormat4FromMessage(const CipOctet **const cip_path,
+                                        ElectronicKeyFormat4 *key);
 
 /** @brief Gets the Network Segment Subtype of a EPatch Network Segement EPath message
  *

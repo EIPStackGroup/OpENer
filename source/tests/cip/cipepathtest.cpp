@@ -14,7 +14,7 @@ extern "C" {
 
 }
 
-TEST_GROUP(CipEpath) {
+TEST_GROUP (CipEpath) {
 
 };
 
@@ -229,6 +229,69 @@ TEST(CipEpath, GetLogicalSegmentLogicalTypeExtendedLogical) {
   CHECK_EQUAL(kLogicalSegmentLogicalTypeExtendedLogical, type);
 }
 
+TEST(CipEpath, SetLogicalSegmentLogicalTypeClassId) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeClassId, message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_CLASS_ID,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeInstanceId) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeInstanceId,
+                                   message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_INSTANCE_ID,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeMemberId) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeMemberId, message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_MEMBER_ID,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeConnectionPoint) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeConnectionPoint,
+                                   message);
+  CHECK_EQUAL(
+    SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_CONNECTION_POINT,
+    message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeAttributeId) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeAttributeId,
+                                   message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeSpecial) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeSpecial, message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_SPECIAL,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeServiceId) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeServiceId,
+                                   message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_SERVICE_ID,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalTypeExtendedLogicalPath) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalType(kLogicalSegmentLogicalTypeExtendedLogical,
+                                   message);
+  CHECK_EQUAL(
+    SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_TYPE_EXTENDED_LOGICAL,
+    message[0]);
+}
+
 TEST(CipEpath, GetLogicalSegmentLogicalFormatEightBits) {
   const unsigned char message[] = {0x20};
   const LogicalSegmentLogicalFormat format = GetPathLogicalSegmentLogicalFormat(
@@ -248,6 +311,113 @@ TEST(CipEpath, GetLogicalSegmentLogicalFormatThirtyTwoBits) {
   const LogicalSegmentLogicalFormat format = GetPathLogicalSegmentLogicalFormat(
     message);
   CHECK_EQUAL(kLogicalSegmentLogicalFormatThirtyTwoBit, format);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalFormatEightBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatEightBit,
+                                     message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalFormatSixteenBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatSixteenBit,
+                                     message);
+  CHECK_EQUAL(SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT,
+              message[0]);
+}
+
+TEST(CipEpath, SetLogicalSegmentLogicalFormatThirtyTwoBits) {
+  CipOctet message[] = {SEGMENT_TYPE_LOGICAL_SEGMENT};
+  SetPathLogicalSegmentLogicalFormat(kLogicalSegmentLogicalFormatThirtyTwoBit,
+                                     message);
+  CHECK_EQUAL(
+    SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT,
+    message[0]);
+}
+
+TEST(CipEpath, GetLogicalValue8Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
+  message[1] = 20;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(20, result);
+  free(original_address);
+}
+
+TEST(CipEpath, GetLogicalValue16Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+               LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT;
+  message[1] = 0;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(5653, result);
+  free(original_address);
+}
+
+TEST(CipEpath, GetLogicalValue32Bit) {
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *original_address = message;
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+               LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT;
+  message[1] = 0;
+  message[2] = 21;
+  message[3] = 22;
+  message[4] = 23;
+  message[5] = 24;
+  CipDword result = CipEpathGetLogicalValue( (const CipOctet **)&message );
+  CHECK_EQUAL(404166165, result);
+  free(original_address);
+}
+
+TEST(CipEpath, SetLogicalValue8Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value, kLogicalSegmentLogicalFormatEightBit,
+                          &response);
+  CHECK_EQUAL(value, *response.message.message_buffer);
+}
+
+TEST(CipEpath, SetLogicalValue16Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value,
+                          kLogicalSegmentLogicalFormatSixteenBit,
+                          &response);
+  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
+}
+
+TEST(CipEpath, SetLogicalValue32Bit) {
+  const CipUsint value = 54;
+  CipMessageRouterResponse response = {0};
+  response.message.current_message_position = response.message.message_buffer;
+  CipEpathSetLogicalValue(value,
+                          kLogicalSegmentLogicalFormatThirtyTwoBit,
+                          &response);
+  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 5) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 6) );
+  CHECK_EQUAL(0, *(response.message.message_buffer + 7) );
 }
 
 TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {
@@ -335,7 +505,7 @@ TEST(CipEpath, GetElectronicKeyFormat4FromMessage) {
 TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const CipOctet message[] =
-  {0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
+  { 0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
   const CipOctet *message_pp = (const CipOctet *)message;
   const CipOctet *message_buffer = message;
   ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
@@ -429,7 +599,6 @@ TEST(CipEpath, GetPathDataSegmentSimpleDataWordLength) {
   CipUsint length = GetPathDataSegmentSimpleDataWordLength(message);
   CHECK_EQUAL(37, length);
 }
-
 
 TEST(CipEpath, GetPathSymbolicSegmentFormatASCII) {
   const unsigned char message[] = {0x61};
