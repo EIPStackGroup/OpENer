@@ -97,7 +97,7 @@ TEST(EndianConversion, GetUdintFromMessage) {
   const CipOctet test_message[] = {28, 53, 41, 37};
   const CipOctet *message_pointer = test_message;
   const CipOctet **const message = &message_pointer;
-  CipUdint returned_value = GetDintFromMessage(message);
+  CipUdint returned_value = GetUdintFromMessage(message);
 
   LONGS_EQUAL(623457564, returned_value);
   POINTERS_EQUAL(test_message + 4, *message);
