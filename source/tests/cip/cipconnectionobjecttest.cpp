@@ -182,6 +182,27 @@ TEST(CipConnectionObject, InstanceTypeCipBridged) {
   CHECK_EQUAL(2, value);
 }
 
+TEST(CipConnectionObject, IsTypeNonLOIOConnectionTrue) {
+  CipConnectionObject connection_object = {0};
+  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
+  CHECK_EQUAL(true,
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+  connection_object.instance_type =
+    kConnectionObjectInstanceTypeIOExclusiveOwner;
+  CHECK_EQUAL(true,
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
+  CHECK_EQUAL(true,
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+}
+
+TEST(CipConnectionObject, IsTypeNonLOIOConnectionFalse) {
+  CipConnectionObject connection_object = {0};
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
+  CHECK_EQUAL(false,
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+}
+
 TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
   CipConnectionObject connection_object = {0};
   connection_object.transport_class_trigger = 0x80;
