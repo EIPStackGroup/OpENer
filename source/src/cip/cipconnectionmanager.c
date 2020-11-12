@@ -729,10 +729,11 @@ EipStatus GetConnectionData(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response,
+
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
 
-	//TODO: add code
+	//TODO: add code, remove comment
 	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
 
 	//get Connection Number from request
@@ -771,11 +772,11 @@ EipStatus GetConnectionData(
 	AddDintToMessage(connection_object->originator_serial_number,
 		                   &message_router_response->message);
 	// Originator O->T CID UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
 	// Target O->T CID UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
 	// Connection Timeout Multiplier USINT
-	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
+	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
 	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
 	// Reserved USINT
@@ -783,15 +784,15 @@ EipStatus GetConnectionData(
 	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
 	// Originator RPI O->T UDINT
-	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
+	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message);
 	// Originator API O->T UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
 	// Originator T->O CID UDINT
-	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message); //TODO: check if this is correct
+	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
 	// Target T->O CID UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
 	// Connection Timeout Multiplier USINT
-	AddSintToMessage(0, &message_router_response->message); //TODO: replace with correct value
+	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
 	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
 	// Reserved USINT
@@ -799,7 +800,7 @@ EipStatus GetConnectionData(
 	// Reserved USINT
 	AddSintToMessage(0, &message_router_response->message);
 	// Originator RPI T->O UDINT
-	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message); //TODO: check if this is correct
+	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message);
 	// Originator API T->O UDINT
 	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
 
