@@ -203,6 +203,30 @@ TEST(CipConnectionObject, IsTypeNonLOIOConnectionFalse) {
               ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
 }
 
+TEST(CipConnectionObject, IsTypeIOConnectionTrue) {
+  CipConnectionObject connection_object = {0};
+  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  connection_object.instance_type =
+    kConnectionObjectInstanceTypeIOExclusiveOwner;
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+}
+
+TEST(CipConnectionObject, IsTypeIOConnectionFalse) {
+  CipConnectionObject connection_object = {0};
+  connection_object.instance_type = kConnectionObjectInstanceTypeInvalid;
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  connection_object.instance_type =
+    kConnectionObjectInstanceTypeExplicitMessaging;
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  connection_object.instance_type = kConnectionObjectInstanceTypeCipBridged;
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+}
+
 TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
   CipConnectionObject connection_object = {0};
   connection_object.transport_class_trigger = 0x80;
