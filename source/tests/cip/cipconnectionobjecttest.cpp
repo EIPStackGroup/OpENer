@@ -132,6 +132,15 @@ TEST(CipConnectionObject, SetStateClosing) {
 }
 
 /* Get InstanceType tests */
+
+TEST(CipConnectionObject, GetInstanceType) {
+  CipConnectionObject connection_object = {0};
+  connection_object.instance_type =
+    kConnectionObjectInstanceTypeExplicitMessaging;
+  CHECK_EQUAL(kConnectionObjectInstanceTypeExplicitMessaging,
+              ConnectionObjectGetInstanceType(&connection_object) );
+}
+
 TEST(CipConnectionObject, InstanceTypeIExplicitMessaging) {
   CipConnectionObject connection_object = {0};
   connection_object.instance_type =
