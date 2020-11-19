@@ -54,7 +54,7 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
-EipUint16 GetIntFromMessage(const EipUint8 **const buffer) {
+CipInt GetIntFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
   *buffer += 2;

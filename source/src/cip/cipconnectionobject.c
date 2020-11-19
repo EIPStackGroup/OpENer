@@ -130,9 +130,9 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
                                              GetDintFromMessage(message) );
 
   ConnectionObjectSetConnectionSerialNumber(connection_object,
-                                            GetIntFromMessage(message) );
+                                            GetUintFromMessage(message) );
   ConnectionObjectSetOriginatorVendorId(connection_object,
-                                        GetIntFromMessage(message) );
+                                        GetUintFromMessage(message) );
   ConnectionObjectSetOriginatorSerialNumber(connection_object,
                                             GetDintFromMessage(message) );
 
@@ -168,7 +168,7 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
                                                          message) );
   } else {
     ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
-                                                       GetIntFromMessage(
+                                                       GetWordFromMessage(
                                                          message) );
   }
 
@@ -183,7 +183,7 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
                                                          message) );
   } else {
     ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
-                                                       GetIntFromMessage(
+                                                       GetWordFromMessage(
                                                          message) );
   }
 

@@ -625,9 +625,9 @@ EipStatus ForwardClose(CipInstance *instance,
 
   message_router_request->data += 2; /* ignore Priority/Time_tick and Time-out_ticks */
 
-  EipUint16 connection_serial_number = GetIntFromMessage(
+  EipUint16 connection_serial_number = GetUintFromMessage(
     &message_router_request->data);
-  EipUint16 originator_vendor_id = GetIntFromMessage(
+  EipUint16 originator_vendor_id = GetUintFromMessage(
     &message_router_request->data);
   EipUint32 originator_serial_number = GetDintFromMessage(
     &message_router_request->data);

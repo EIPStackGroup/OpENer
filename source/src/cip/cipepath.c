@@ -291,7 +291,7 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
       (*message) += 1; /* Pad byte needs to be skipped */
-      data = GetIntFromMessage(message);
+      data = GetWordFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
       (*message) += 1; /* Pad byte needs to be skipped */
@@ -406,9 +406,9 @@ void GetElectronicKeyFormat4FromMessage(const CipOctet **const message,
                   *message) );
 
   (*message) += 2;
-  ElectronicKeyFormat4SetVendorId(key, GetIntFromMessage(message) );
-  ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message) );
-  ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message) );
+  ElectronicKeyFormat4SetVendorId(key, GetUintFromMessage(message) );
+  ElectronicKeyFormat4SetDeviceType(key, GetUintFromMessage(message) );
+  ElectronicKeyFormat4SetProductCode(key, GetUintFromMessage(message) );
   ElectronicKeyFormat4SetMajorRevisionCompatibility(key,
                                                     GetByteFromMessage(message) );
   ElectronicKeyFormat4SetMinorRevision(key, GetUsintFromMessage(message) );

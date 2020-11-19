@@ -36,7 +36,7 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
  * @param buffer Pointer to the network buffer array. This pointer will be incremented by 2!
  * @return Extracted 16 bit integer value
  */
-EipUint16 GetIntFromMessage(const EipUint8 **const buffer);
+CipInt GetIntFromMessage(const EipUint8 **const buffer);
 
 CipUint GetUintFromMessage(const CipOctet **const buffer_address);
 
