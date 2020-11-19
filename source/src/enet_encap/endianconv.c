@@ -26,9 +26,9 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-CipSint GetSintFromMessage(const CipOctet **const buffer) {
-  const CipOctet *buffer_address = (unsigned char *) *buffer;
-  CipSint data = buffer_address[0];
+CipSint GetSintFromMessage(const EipUint8 **const buffer) {
+  const unsigned char *const buffer_address = (unsigned char *) *buffer;
+  EipUint8 data = buffer_address[0];
   *buffer += 1;
   return data;
 }
@@ -54,7 +54,7 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
-CipInt GetIntFromMessage(const CipOctet **const buffer) {
+CipInt GetIntFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
   *buffer += 2;
@@ -80,7 +80,7 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UNÍT32 value
  */
-CipDint GetDintFromMessage(const CipOctet **const buffer) {
+CipDint GetDintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *p = (unsigned char *) *buffer;
   EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
   *buffer += 4;
