@@ -510,8 +510,8 @@ EipStatus OpenProducingMulticastConnection(
   connection_object->remote_address.sin_addr.s_addr = common_packet_format_data
                                                       ->address_info_item[j].
                                                       sin_addr =
-                                                        g_tcpip.mcast_config.
-                                                        starting_multicast_address;
+    g_tcpip.mcast_config.
+    starting_multicast_address;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
@@ -841,7 +841,7 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
 
   if(!is_heartbeat) {
-      common_packet_format_data->data_item.length += 4;
+    common_packet_format_data->data_item.length += 4;
   }
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
@@ -860,8 +860,8 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
   if(!is_heartbeat) {
-      AddDintToMessage( g_run_idle_state,
-                        &outgoing_message );
+    AddDintToMessage( g_run_idle_state,
+                      &outgoing_message );
   }
 #endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
