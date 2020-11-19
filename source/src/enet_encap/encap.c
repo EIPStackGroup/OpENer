@@ -729,13 +729,13 @@ EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
   encapsulation_data->communication_buffer_start = (EipUint8 *) receive_buffer;
   encapsulation_data->command_code = GetUintFromMessage(&receive_buffer);
   encapsulation_data->data_length = GetUintFromMessage(&receive_buffer);
-  encapsulation_data->session_handle = GetDintFromMessage(&receive_buffer);
-  encapsulation_data->status = GetDintFromMessage(&receive_buffer);
+  encapsulation_data->session_handle = GetUdintFromMessage(&receive_buffer);
+  encapsulation_data->status = GetUdintFromMessage(&receive_buffer);
 
   memcpy(encapsulation_data->sender_context, receive_buffer,
          kSenderContextSize);
   receive_buffer += kSenderContextSize;
-  encapsulation_data->options = GetDintFromMessage(&receive_buffer);
+  encapsulation_data->options = GetUdintFromMessage(&receive_buffer);
   encapsulation_data->current_communication_buffer_position =
     (EipUint8 *) receive_buffer;
   return (receive_buffer_length - ENCAPSULATION_HEADER_LENGTH -

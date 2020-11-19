@@ -124,17 +124,17 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
 
   /* O_to_T Conn ID */
   ConnectionObjectSetCipConsumedConnectionID(connection_object,
-                                             GetDintFromMessage(message) );
+                                             GetUdintFromMessage(message) );
   /* T_to_O Conn ID */
   ConnectionObjectSetCipProducedConnectionID(connection_object,
-                                             GetDintFromMessage(message) );
+                                             GetUdintFromMessage(message) );
 
   ConnectionObjectSetConnectionSerialNumber(connection_object,
                                             GetUintFromMessage(message) );
   ConnectionObjectSetOriginatorVendorId(connection_object,
                                         GetUintFromMessage(message) );
   ConnectionObjectSetOriginatorSerialNumber(connection_object,
-                                            GetDintFromMessage(message) );
+                                            GetUdintFromMessage(message) );
 
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
@@ -158,13 +158,13 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
     connection_object->connection_serial_number);
 
   ConnectionObjectSetOToTRequestedPacketInterval(connection_object,
-                                                 GetDintFromMessage(message) );
+                                                 GetUdintFromMessage(message) );
 
   ConnectionObjectSetInitialInactivityWatchdogTimerValue(connection_object);
 
   if(connection_object->is_large_forward_open == true) {
     ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
-                                                       GetDintFromMessage(
+                                                       GetDwordFromMessage(
                                                          message) );
   } else {
     ConnectionObjectSetOToTNetworkConnectionParameters(connection_object,
@@ -173,13 +173,13 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
   }
 
   ConnectionObjectSetTToORequestedPacketInterval(connection_object,
-                                                 GetDintFromMessage(message) );
+                                                 GetUdintFromMessage(message) );
 
   ConnectionObjectSetExpectedPacketRate(connection_object);
 
   if(connection_object->is_large_forward_open == true) {
     ConnectionObjectSetTToONetworkConnectionParameters(connection_object,
-                                                       GetDintFromMessage(
+                                                       GetDwordFromMessage(
                                                          message) );
   } else {
     ConnectionObjectSetTToONetworkConnectionParameters(connection_object,

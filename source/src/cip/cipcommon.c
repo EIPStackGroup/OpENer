@@ -703,7 +703,7 @@ int DecodeData(const EipUint8 cip_data_type,
     case (kCipUdint):
     case (kCipDword):
     case (kCipReal):
-      (*(EipUint32 *) (cip_data) ) = GetDintFromMessage(cip_message);
+      (*(EipUint32 *) (cip_data) ) = GetUdintFromMessage(cip_message);
       number_of_decoded_bytes = 4;
       break;
 

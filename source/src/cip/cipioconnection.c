@@ -882,7 +882,7 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
   if(data_length > 0) {
     /* we have no heartbeat connection */
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    EipUint32 nRunIdleBuf = GetDintFromMessage( &(data) );
+    EipUint32 nRunIdleBuf = GetUdintFromMessage( &(data) );
     OPENER_TRACE_INFO("Run/Idle handler: 0x%x\n", nRunIdleBuf);
     const uint32_t kRunBitMask = 0x0001;
     if( (kRunBitMask & nRunIdleBuf) == 1 ) {

@@ -629,7 +629,7 @@ EipStatus ForwardClose(CipInstance *instance,
     &message_router_request->data);
   EipUint16 originator_vendor_id = GetUintFromMessage(
     &message_router_request->data);
-  EipUint32 originator_serial_number = GetDintFromMessage(
+  EipUint32 originator_serial_number = GetUdintFromMessage(
     &message_router_request->data);
 
   OPENER_TRACE_INFO("ForwardClose: ConnSerNo %d\n", connection_serial_number);

@@ -295,7 +295,7 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
       break;
     case kLogicalSegmentLogicalFormatThirtyTwoBit:
       (*message) += 1; /* Pad byte needs to be skipped */
-      data = GetDintFromMessage(message);
+      data = GetDwordFromMessage(message);
       break;
     default:
       OPENER_ASSERT(false);/* shall not happen! */
@@ -492,7 +492,7 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(
   OPENER_ASSERT(2 == *(cip_path + 1) );
 
   const unsigned char *message_runner = cip_path + 2;
-  return GetDintFromMessage(&message_runner);
+  return GetUdintFromMessage(&message_runner);
 }
 
 /*** Network Segment ***/

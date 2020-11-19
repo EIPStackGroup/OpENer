@@ -244,12 +244,12 @@ EipStatus CreateCommonPacketFormatStructure(const EipUint8 *data,
     length_count += 4;
     if(common_packet_format_data->address_item.length >= 4) {
       common_packet_format_data->address_item.data.connection_identifier =
-        GetDintFromMessage(&data);
+        GetUdintFromMessage(&data);
       length_count += 4;
     }
     if(common_packet_format_data->address_item.length == 8) {
       common_packet_format_data->address_item.data.sequence_number =
-        GetDintFromMessage(&data);
+        GetUdintFromMessage(&data);
       length_count += 4;
     }
   }
@@ -278,7 +278,7 @@ EipStatus CreateCommonPacketFormatStructure(const EipUint8 *data,
         common_packet_format_data->address_info_item[j].sin_port =
           GetIntFromMessage(&data);
         common_packet_format_data->address_info_item[j].sin_addr =
-          GetDintFromMessage(&data);
+          GetUdintFromMessage(&data);
         for(size_t i = 0; i < 8; i++) {
           common_packet_format_data->address_info_item[j].nasin_zero[i] = *data;
           data++;

@@ -80,7 +80,7 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UNÍT32 value
  */
-EipUint32 GetDintFromMessage(const EipUint8 **const buffer) {
+CipDint GetDintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *p = (unsigned char *) *buffer;
   EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
   *buffer += 4;

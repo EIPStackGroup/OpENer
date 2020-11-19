@@ -48,7 +48,7 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address);
  * @param buffer pointer to the network buffer array. This pointer will be incremented by 4!
  * @return Extracted 32 bit integer value
  */
-EipUint32 GetDintFromMessage(const EipUint8 **const buffer);
+CipDint GetDintFromMessage(const EipUint8 **const buffer);
 
 CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
 
