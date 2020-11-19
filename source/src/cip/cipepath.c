@@ -287,7 +287,7 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   (*message) += 1; /* Move to logical value */
   switch(logical_format) {
     case kLogicalSegmentLogicalFormatEightBit:
-      data = GetSintFromMessage(message);
+      data = GetByteFromMessage(message);
       break;
     case kLogicalSegmentLogicalFormatSixteenBit:
       (*message) += 1; /* Pad byte needs to be skipped */
@@ -410,8 +410,8 @@ void GetElectronicKeyFormat4FromMessage(const CipOctet **const message,
   ElectronicKeyFormat4SetDeviceType(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetProductCode(key, GetIntFromMessage(message) );
   ElectronicKeyFormat4SetMajorRevisionCompatibility(key,
-                                                    GetSintFromMessage(message) );
-  ElectronicKeyFormat4SetMinorRevision(key, GetSintFromMessage(message) );
+                                                    GetByteFromMessage(message) );
+  ElectronicKeyFormat4SetMinorRevision(key, GetUsintFromMessage(message) );
 }
 
 /*** Logical Segment ***/
@@ -604,7 +604,7 @@ CipUsint GetPathDataSegmentSimpleDataWordLength(
                 GetPathDataSegmentSubtype(cip_path) );
 
   const unsigned char *message_runner = cip_path + 1;
-  return GetSintFromMessage(&message_runner);
+  return GetUsintFromMessage(&message_runner);
 }
 
 /*** End Data Segment ***/

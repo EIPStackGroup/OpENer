@@ -24,7 +24,7 @@ typedef enum {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-EipUint8 GetSintFromMessage(const EipUint8 **const buffer);
+CipSint GetSintFromMessage(const EipUint8 **const buffer);
 
 CipByte GetByteFromMessage(const CipOctet **const buffer_address);
 
