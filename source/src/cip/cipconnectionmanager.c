@@ -78,12 +78,11 @@ EipStatus GetConnectionOwner(CipInstance *instance,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session);
 
-EipStatus GetConnectionData(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session);
+EipStatus GetConnectionData(CipInstance *instance,
+							CipMessageRouterRequest *message_router_request,
+							CipMessageRouterResponse *message_router_response,
+							const struct sockaddr *originator_address,
+							const int encapsulation_session);
 
 EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                                       CipMessageRouterResponse *message_router_response,
@@ -219,7 +218,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                                                 2, /* # of class services */
                                                 0, /* # of instance attributes */
                                                 14, /* # highest instance attribute number*/
-    7,   /* # of instance services */
+												7,   /* # of instance services */
                                                 1, /* # of instances */
                                                 "connection manager", /* class name */
                                                 1, /* revision */
