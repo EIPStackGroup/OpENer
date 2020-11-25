@@ -24,7 +24,7 @@ typedef enum {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-EipUint8 GetSintFromMessage(const EipUint8 **const buffer);
+CipSint GetSintFromMessage(const EipUint8 **const buffer);
 
 CipByte GetByteFromMessage(const CipOctet **const buffer_address);
 
@@ -36,7 +36,7 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
  * @param buffer Pointer to the network buffer array. This pointer will be incremented by 2!
  * @return Extracted 16 bit integer value
  */
-EipUint16 GetIntFromMessage(const EipUint8 **const buffer);
+CipInt GetIntFromMessage(const EipUint8 **const buffer);
 
 CipUint GetUintFromMessage(const CipOctet **const buffer_address);
 
@@ -48,9 +48,11 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address);
  * @param buffer pointer to the network buffer array. This pointer will be incremented by 4!
  * @return Extracted 32 bit integer value
  */
-EipUint32 GetDintFromMessage(const EipUint8 **const buffer);
+CipDint GetDintFromMessage(const EipUint8 **const buffer);
 
 CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
+
+CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
 
 /** @ingroup ENCAP
  *

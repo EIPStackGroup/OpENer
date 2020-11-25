@@ -26,7 +26,7 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-EipUint8 GetSintFromMessage(const EipUint8 **const buffer) {
+CipSint GetSintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint8 data = buffer_address[0];
   *buffer += 1;
@@ -54,7 +54,7 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
-EipUint16 GetIntFromMessage(const EipUint8 **const buffer) {
+CipInt GetIntFromMessage(const EipUint8 **const buffer) {
   const unsigned char *const buffer_address = (unsigned char *) *buffer;
   EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
   *buffer += 2;
@@ -80,7 +80,7 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UNÍT32 value
  */
-EipUint32 GetDintFromMessage(const EipUint8 **const buffer) {
+CipDint GetDintFromMessage(const EipUint8 **const buffer) {
   const unsigned char *p = (unsigned char *) *buffer;
   EipUint32 data = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
   *buffer += 4;
@@ -90,6 +90,14 @@ EipUint32 GetDintFromMessage(const EipUint8 **const buffer) {
 CipUdint GetUdintFromMessage(const CipOctet **const buffer_address) {
   const CipOctet *buffer = *buffer_address;
   CipUdint data = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] <<
+                  24;
+  *buffer_address += 4;
+  return data;
+}
+
+CipUdint GetDwordFromMessage(const CipOctet **const buffer_address) {
+  const CipOctet *buffer = *buffer_address;
+  CipDword data = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] <<
                   24;
   *buffer_address += 4;
   return data;
@@ -145,21 +153,18 @@ void AddDintToMessage(const EipUint32 data,
  */
 EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
   const EipUint8 *buffer_address = *buffer;
-  EipUint64 data = ( ( ( (EipUint64) buffer_address[0] ) << 56 )
-                     & 0xFF00000000000000LL )
-                   + ( ( ( (EipUint64) buffer_address[1] ) << 48 ) &
-                       0x00FF000000000000LL )
-                   + ( ( ( (EipUint64) buffer_address[2] ) << 40 ) &
-                       0x0000FF0000000000LL )
-                   + ( ( ( (EipUint64) buffer_address[3] ) << 32 ) &
-                       0x000000FF00000000LL )
-                   + ( ( ( (EipUint64) buffer_address[4] ) << 24 ) &
-                       0x00000000FF000000 )
-                   + ( ( ( (EipUint64) buffer_address[5] ) << 16 ) &
-                       0x0000000000FF0000 )
-                   + ( ( ( (EipUint64) buffer_address[6] ) << 8 ) &
-                       0x000000000000FF00 )
-                   + ( ( (EipUint64) buffer_address[7] ) & 0x00000000000000FF );
+  EipUint64 data =
+    ( ( ( (EipUint64) buffer_address[0] ) << 56 ) & 0xFF00000000000000LL ) +
+    ( ( ( (EipUint64) buffer_address[1] ) << 48 ) & 0x00FF000000000000LL )
+    + ( ( ( (EipUint64) buffer_address[2] ) << 40 ) &
+        0x0000FF0000000000LL ) +
+    ( ( ( (EipUint64) buffer_address[3] ) << 32 ) & 0x000000FF00000000LL )
+    + ( ( ( (EipUint64) buffer_address[4] ) << 24 ) &
+        0x00000000FF000000 ) +
+    ( ( ( (EipUint64) buffer_address[5] ) << 16 ) & 0x0000000000FF0000 )
+    + ( ( ( (EipUint64) buffer_address[6] ) << 8 ) &
+        0x000000000000FF00 ) +
+    ( ( (EipUint64) buffer_address[7] ) & 0x00000000000000FF );
   *buffer += 8;
   return data;
 }
@@ -187,13 +192,13 @@ void AddLintToMessage(const EipUint64 data,
 void EncapsulateIpAddress(EipUint16 port,
                           EipUint32 address,
                           ENIPMessage *const outgoing_message) {
-  if (kOpENerEndianessLittle == g_opener_platform_endianess) {
+  if(kOpENerEndianessLittle == g_opener_platform_endianess) {
     AddIntToMessage(htons(AF_INET), outgoing_message);
     AddIntToMessage(port, outgoing_message);
     AddDintToMessage(address, outgoing_message);
 
   } else {
-    if (kOpENerEndianessBig == g_opener_platform_endianess) {
+    if(kOpENerEndianessBig == g_opener_platform_endianess) {
 
       AddIntToMessage(htons(AF_INET), outgoing_message);
 
@@ -208,7 +213,7 @@ void EncapsulateIpAddress(EipUint16 port,
     } else {
       fprintf(stderr,
               "No endianess detected! Probably the DetermineEndianess function was not executed!");
-      exit (EXIT_FAILURE);
+      exit(EXIT_FAILURE);
     }
   }
 }
@@ -221,8 +226,8 @@ void EncapsulateIpAddress(EipUint16 port,
  */
 void DetermineEndianess() {
   int i = 1;
-  char *p = (char *) &i;
-  if (p[0] == 1) {
+  const char *const p = (char *) &i;
+  if(p[0] == 1) {
     g_opener_platform_endianess = kOpENerEndianessLittle;
   } else {
     g_opener_platform_endianess = kOpENerEndianessBig;
