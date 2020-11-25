@@ -58,6 +58,31 @@ EipStatus GetAttributeSingle(
   const struct sockaddr *originator_address,
   const int encapsulation_session);
 
+void GenerateSetAttributeSingleHeader(
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response);
+
+/** @brief Generic implementation of the SetAttributeSingle CIP service
+ *
+ * TODO: add description
+ *
+ * @param instance pointer to instance.
+ * @param message_router_request pointer to request.
+ * @param message_router_response pointer to response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return status  >0 .. success
+ *          -1 .. requested attribute not set //TODO: check if correct
+ */
+EipStatus SetAttributeSingle(
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const
+  message_router_request,
+  CipMessageRouterResponse *const
+  message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session);
+
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *
  * Copy all attributes from Object into the global message buffer.

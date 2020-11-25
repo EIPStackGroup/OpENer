@@ -276,12 +276,17 @@ typedef struct {
 typedef void (*CipAttributeEncodeInMessage)(const void *const data,
                                             ENIPMessage *const outgoing_message);
 
+/** @brief self-describing data decoding for CIP types */
+typedef void (*CipAttributeDecodeInMessage)(const void *const data,
+                                            ENIPMessage *const incoming_message); //TODO: chek if correct
+
 /** @brief Structure to describe a single CIP attribute of an object
  */
 typedef struct {
   EipUint16 attribute_number; /**< The attribute number of this attribute. */
   EipUint8 type;  /**< The @ref CipDataType of this attribute. */
   CipAttributeEncodeInMessage encode; /**< Self-describing its data encoding */
+  CipAttributeDecodeInMessage decode; /**< Self-describing its data decoding */
   CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration for valid values. */
   void *data;
 } CipAttributeStruct;

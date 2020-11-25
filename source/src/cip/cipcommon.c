@@ -325,6 +325,7 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      CipAttributeEncodeInMessage encode_function,
+					 //CipAttributeDecodeInMessage decode_function, //TODO: add decode
                      void *const data,
                      const EipByte cip_flags) {
 
@@ -672,7 +673,239 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
   outgoing_message->used_message_length += 6;
 }
 
-int DecodeData(const EipUint8 cip_data_type,
+void GenerateSetAttributeSingleHeader( //TODO: update
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
+  message_router_response->general_status = kCipErrorAttributeNotSupported;
+  message_router_response->size_of_additional_status = 0;
+}
+
+EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response,
+                             const struct sockaddr *originator_address,
+                             const int encapsulation_session) {
+
+  CipAttributeStruct *attribute = GetCipAttribute(instance,
+                                                  message_router_request->request_path.attribute_number);
+
+  GenerateSetAttributeSingleHeader(message_router_request,
+                                   message_router_response);
+
+  EipUint16 attribute_number =
+    message_router_request->request_path.attribute_number;
+
+  /* Mask for filtering set-ability */
+  if ( (NULL != attribute) && (NULL != attribute->data) ) {
+    uint8_t set_bit_mask =
+      (instance->cip_class->set_bit_mask[CalculateIndex(
+                                                  attribute_number)
+       ]);
+    if (0 != (set_bit_mask & (1 << (attribute_number % 8) ) ) ) {    //TODO: check if attribute setable, check correct bit mask
+      OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
+
+      //TODO: check data length ?
+
+      /* Call the PreSetCallback if enabled for this attribute and the class provides one. */
+      if ( (attribute->attribute_flags & kPreSetFunc) &&
+           NULL != instance->cip_class->PreSetCallback ) {
+        instance->cip_class->PreSetCallback(instance,
+                                            attribute,
+                                            message_router_request->service);
+      }
+
+      OPENER_ASSERT(NULL != attribute);
+      attribute->decode(attribute->data, &message_router_response->message);
+      message_router_response->general_status = kCipErrorSuccess;
+
+      /* Call the PostSetCallback if enabled for this attribute and the class provides one. */
+      if ( (attribute->attribute_flags & kPostSetFunc) &&
+           NULL != instance->cip_class->PostSetCallback ) {
+        instance->cip_class->PostSetCallback(instance,
+                                             attribute,
+                                             message_router_request->service);
+      }
+    }
+  }
+
+  return kEipStatusOkSend;
+}
+
+
+int DecodeCipBool(const CipBool *const data, const EipUint8 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	*(EipUint8*) (data) = **cip_message;
+	++(*cip_message);
+	number_of_decoded_bytes = 1;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipByte(const CipByte *const data,
+			const EipUint8 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+		(*(EipUint8*) (data)) = GetByteFromMessage(cip_message);
+		number_of_decoded_bytes = 1;
+		return number_of_decoded_bytes;
+}
+
+int DecodeCipWord(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint16*) (data)) = GetWordFromMessage(cip_message);
+	number_of_decoded_bytes = 2;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipDword(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint32*) (data)) = GetDintFromMessage(cip_message);
+	number_of_decoded_bytes = 4;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipLword(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
+	number_of_decoded_bytes = 8;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipUsint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint8*) (data)) = GetUsintFromMessage(cip_message);
+	number_of_decoded_bytes = 1;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipUint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint16*) (data)) = GetUintFromMessage(cip_message);
+	number_of_decoded_bytes = 2;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipUdint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint32*) (data)) = GetUdintFromMessage(cip_message);
+	number_of_decoded_bytes = 4;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipUlint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
+	number_of_decoded_bytes = 8;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipSint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint8*) (data)) = GetSintFromMessage(cip_message);
+	number_of_decoded_bytes = 1;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipInt(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint16*) (data)) = GetIntFromMessage(cip_message);
+	number_of_decoded_bytes = 2;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipDint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint32*) (data)) = GetDintFromMessage(cip_message);
+	number_of_decoded_bytes = 4;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipLint(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
+	number_of_decoded_bytes = 8;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipReal(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint32 *) (data) ) = GetDintFromMessage(cip_message);
+	number_of_decoded_bytes = 4;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipLreal(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
+	number_of_decoded_bytes = 8;
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipString(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	CipString *string = (CipString*) data;
+	string->length = GetIntFromMessage(cip_message);
+	memcpy(string->string, *cip_message, string->length);
+	*cip_message += string->length;
+
+	number_of_decoded_bytes = string->length + 2; /* we have a two byte length field */
+	if (number_of_decoded_bytes & 0x01) {
+		/* we have an odd byte count */
+		++(*cip_message);
+		number_of_decoded_bytes++;
+	}
+	return number_of_decoded_bytes;
+}
+
+int DecodeCipShortString(const CipByte *const data,
+		const EipUint16 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	CipShortString *short_string = (CipShortString*) data;
+
+	short_string->length = **cip_message;
+	++(*cip_message);
+
+	memcpy(short_string->string, *cip_message, short_string->length);
+	*cip_message += short_string->length;
+
+	number_of_decoded_bytes = short_string->length + 1;
+	return number_of_decoded_bytes;
+}
+
+
+int DecodeData(const EipUint8 cip_data_type,  //TODO: replace with Decode functions, see above
                void *const cip_data,
                const EipUint8 **const cip_message) {
   int number_of_decoded_bytes = -1;

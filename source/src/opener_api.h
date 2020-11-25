@@ -224,6 +224,7 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
  *  @param attribute_number Number of attribute to be inserted.
  *  @param cip_data_type Type of attribute to be inserted.
  *  @param encode_function Function pointer to the encoding function
+ *  @param decode_function Function pointer to the decoding function
  *  @param cip_data Pointer to data of attribute.
  *  @param cip_flags Flags to indicate set-ability and get-ability of attribute.
  */
@@ -231,6 +232,7 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      CipAttributeEncodeInMessage encode_function,
+					 //CipAttributeDecodeInMessage decode_function, //TODO: add decode
                      void *const data,
                      const EipByte cip_flags);
 
@@ -379,9 +381,60 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeData(const EipUint8 cip_data_type,
+int DecodeData(const EipUint8 cip_data_type,  //TODO: replace with decode functions, see below
                void *const cip_data,
                const EipUint8 **const cip_message);
+
+int DecodeCipBool(const CipBool *const data,
+					const EipUint8 **const cip_message);
+
+int DecodeCipByte(const CipByte *const data,
+			const EipUint8 **const cip_message);
+
+int DecodeCipWord(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipDword(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipLword(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipUsint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipUint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipUdint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipUlint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipSint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipInt(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipDint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipLint(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipReal(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipLreal(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipString(const CipByte *const data,
+		const EipUint16 **const cip_message);
+
+int DecodeCipShortString(const CipByte *const data,
+		const EipUint16 **const cip_message);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
