@@ -93,7 +93,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
     CipServiceStruct *service = instance->cip_class->services;         /* get pointer to array of services */
     if (NULL != service)             /* if services are defined */
     {
-      for (size_t i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
+      for (size_t i = 0; i < instance->cip_class->number_of_services; i++)                   /* search the services list */
       {
         if (message_router_request->service == service->service_number)                         /* if match is found */
         {
@@ -370,6 +370,54 @@ void InsertAttribute(CipInstance *const instance,
 /* trying to insert too many attributes*/
 }
 
+void InsertAttribute2(CipInstance *const instance,     //TODO: used for testing, remove
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_type,
+                     CipAttributeEncodeInMessage encode_function,
+					 CipAttributeDecodeInMessage decode_function,
+                     void *const data,
+                     const EipByte cip_flags) {
+
+  OPENER_ASSERT(NULL != data); /* Its not allowed to push a NULL pointer, as this marks an unused attribute struct */
+
+  CipAttributeStruct *attribute = instance->attributes;
+  CipClass *cip_class = instance->cip_class;
+
+  OPENER_ASSERT(NULL != attribute);
+/* adding a attribute to a class that was not declared to have any attributes is not allowed */
+  for(int i = 0; i < instance->cip_class->number_of_attributes; i++) {
+    if(attribute->data == NULL) { /* found non set attribute */
+      attribute->attribute_number = attribute_number;
+      attribute->type = cip_type;
+      attribute->encode = encode_function;
+      attribute->decode = decode_function;
+      attribute->attribute_flags = cip_flags;
+      attribute->data = data;
+
+      OPENER_ASSERT(attribute_number <= cip_class->highest_attribute_number);
+
+      size_t index = CalculateIndex(attribute_number);
+
+      cip_class->get_single_bit_mask[index] |=
+        (cip_flags & kGetableSingle) ? 1 << (attribute_number) % 8 : 0;
+      cip_class->get_all_bit_mask[index] |=
+        (cip_flags & (kGetableAll | kGetableAllDummy) ) ? 1 <<
+        (attribute_number) % 8 : 0;
+      cip_class->set_bit_mask[index] |= ( (cip_flags & kSetable) ? 1 : 0 ) <<
+                                        ( (attribute_number) % 8 );
+
+      return;
+    }
+    attribute++;
+  } OPENER_TRACE_ERR(
+    "Tried to insert too many attributes into class: %" PRIu32 " '%s', instance %" PRIu32 "\n",
+    cip_class->class_code,
+    cip_class->class_name,
+    instance->instance_number);
+  OPENER_ASSERT(false);
+/* trying to insert too many attributes*/
+}
+
 void InsertService(const CipClass *const cip_class,
                    const EipUint8 service_number,
                    const CipServiceFunction service_function,
@@ -477,8 +525,8 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
                                             message_router_request->service);
       }
 
-      OPENER_ASSERT(NULL != attribute); attribute->encode(attribute->data,
-                                                          &message_router_response->message);
+      OPENER_ASSERT(NULL != attribute);
+      attribute->encode(attribute->data, &message_router_response->message);
       message_router_response->general_status = kCipErrorSuccess;
 
 /* Call the PostGetCallback if enabled for this attribute and the class provides one. */
@@ -682,7 +730,7 @@ void GenerateSetAttributeSingleHeader( //TODO: update
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service =
     (0x80 | message_router_request->service);
-  message_router_response->general_status = kCipErrorAttributeNotSupported;
+  message_router_response->general_status = kCipErrorSuccess;//kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 }
 
@@ -719,10 +767,30 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
                                             attribute,
                                             message_router_request->service);
       }
+			//#################   //TODO: remove DEBUG
+
+			CipByteArray *attribute_test = (CipByteArray*) attribute->data;
+
+			OPENER_TRACE_INFO("DEBUG: attribute_data: "); //TODO: remove
+			for (int i = 0; i < attribute_test->length; i++) {
+				OPENER_TRACE_INFO("%x",*(attribute_test->data+i)); //TODO: remove
+			} OPENER_TRACE_INFO("\n"); //TODO: remove
+			//############################
 
       OPENER_ASSERT(NULL != attribute);
-      attribute->decode(attribute->data, &message_router_response->message);
+      attribute->decode(attribute->data, message_router_request->data);
+      //TODO: check status after writing data
       message_router_response->general_status = kCipErrorSuccess;
+
+			//#################   //TODO: remove DEBUG
+
+			attribute_test = (CipByteArray*) attribute->data;
+
+			OPENER_TRACE_INFO("DEBUG: attribute_data: "); //TODO: remove
+			for (int i = 0; i < attribute_test->length; i++) {
+				OPENER_TRACE_INFO("%x",*(attribute_test->data+i)); //TODO: remove
+			} OPENER_TRACE_INFO("\n"); //TODO: remove
+			//############################
 
       /* Call the PostSetCallback if enabled for this attribute and the class provides one. */
       if ( (attribute->attribute_flags & kPostSetFunc) &&
@@ -754,6 +822,38 @@ int DecodeCipByte(const CipByte *const data,
 		(*(EipUint8*) (data)) = GetByteFromMessage(cip_message);
 		number_of_decoded_bytes = 1;
 		return number_of_decoded_bytes;
+}
+
+int DecodeCipByteArray(const CipByteArray *const data,
+		const EipUint8 **const cip_message) {
+
+	int number_of_decoded_bytes = -1;
+	OPENER_TRACE_INFO(" -> set attribute byte array\r\n");
+	CipByteArray *cip_byte_array = (CipByteArray*) data;
+
+	OPENER_TRACE_INFO("message_data_length: %d\n", cip_message); //TODO: error
+	OPENER_TRACE_INFO("attribute_data_length: %d\n", data->length);
+
+//	if (get cip_message < data->length) {  //if(message_router_request->request_path_size > data->length)
+//		OPENER_TRACE_INFO(
+//				"DecodeCipByteArray: not enough data received.\r\n");
+//		//message_router_response->general_status = kCipErrorNotEnoughData;
+//		return number_of_decoded_bytes;
+//	} else {
+//		if (message_data->length > data->length) {
+//			OPENER_TRACE_INFO(
+//					"DecodeCipByteArray: too much data received.\r\n");
+//			//message_router_response->general_status = kCipErrorTooMuchData;
+//			return number_of_decoded_bytes;
+//		}
+//	}
+
+	memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
+	*cip_message += cip_byte_array->length;
+
+	number_of_decoded_bytes = cip_byte_array->length;
+
+	return number_of_decoded_bytes;
 }
 
 int DecodeCipWord(const CipByte *const data,

@@ -61,10 +61,17 @@ CipClass *CreateAssemblyClass(void) {
                   kGetAttributeSingle,
                   &GetAttributeSingle,
                   "GetAttributeSingle");
-    InsertService(assembly_class,
-                  kSetAttributeSingle,
-                  &SetAssemblyAttributeSingle,
-                  "SetAssemblyAttributeSingle");
+
+//    InsertService(assembly_class,
+//                  kSetAttributeSingle,
+//                  &SetAssemblyAttributeSingle,
+//                  "SetAssemblyAttributeSingle");
+
+    InsertService(assembly_class,						//TODO: used for testing, remove
+                      kSetAttributeSingle,
+                      &SetAttributeSingle,
+                      "SetAttributeSingle");
+
     InsertGetSetCallback(assembly_class, AssemblyPreGetCallback, kPreGetFunc);
     InsertGetSetCallback(assembly_class, AssemblyPostSetCallback, kPostSetFunc);
   }
@@ -117,19 +124,33 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
 
   assembly_byte_array->length = data_length;
   assembly_byte_array->data = data;
-  InsertAttribute(instance,
-                  3,
-                  kCipByteArray,
-                  EncodeCipByteArray,
-                  assembly_byte_array,
-                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
+//  InsertAttribute(instance,
+//                  3,
+//                  kCipByteArray,
+//                  EncodeCipByteArray,
+//                  assembly_byte_array,
+//                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
+  InsertAttribute2(instance,
+                   3,
+                   kCipByteArray,
+                   EncodeCipByteArray,
+				   DecodeCipByteArray,
+                   assembly_byte_array,
+                   kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
-  InsertAttribute(instance,
-                  4,
-                  kCipUint,
-                  EncodeCipUint,
-                  &(assembly_byte_array->length),
-                  kGetableSingle);
+//  InsertAttribute(instance,
+//                  4,
+//                  kCipUint,
+//                  EncodeCipUint,
+//                  &(assembly_byte_array->length),
+//                  kGetableSingle);
+  InsertAttribute2(instance,
+                    4,
+                    kCipUint,
+                    EncodeCipUint,
+					DecodeCipUint,
+                    &(assembly_byte_array->length),
+                    kGetableSingle);
 
   return instance;
 }

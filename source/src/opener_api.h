@@ -236,6 +236,14 @@ void InsertAttribute(CipInstance *const instance,
                      void *const data,
                      const EipByte cip_flags);
 
+void InsertAttribute2(CipInstance *const instance, //TODO: used for testing, remove
+                     const EipUint16 attribute_number,
+                     const EipUint8 cip_type,
+                     CipAttributeEncodeInMessage encode_function,
+					 CipAttributeDecodeInMessage decode_function,
+                     void *const data,
+                     const EipByte cip_flags);
+
 /** @ingroup CIP_API
  * @brief Allocates Attribute bitmasks
  *
@@ -370,7 +378,7 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
                                            ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
- * @brief Retrieve the given data according to CIP encoding from the message
+ * @brief Retrieve the given data according to CIP encoding from the message     //TODO: update
  * buffer.
  *
  * This function may be used in in own services for handling data from the
@@ -389,6 +397,9 @@ int DecodeCipBool(const CipBool *const data,
 					const EipUint8 **const cip_message);
 
 int DecodeCipByte(const CipByte *const data,
+			const EipUint8 **const cip_message);
+
+int DecodeCipByteArray(const CipByteArray *const data,
 			const EipUint8 **const cip_message);
 
 int DecodeCipWord(const CipByte *const data,
