@@ -47,6 +47,11 @@
 #define NWBUF_CAST
 #endif
 
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#warning "MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function"
+#endif
+
 /** @brief handle any connection request coming in the TCP server socket.
  *
  */
@@ -747,11 +752,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
           outgoing_message.used_message_length,
           socket);
 
-      signal(SIGPIPE, SIG_IGN);
-      data_sent = send(socket, (char*) outgoing_message.message_buffer, outgoing_message.used_message_length, 0);
-      const struct sigaction enable_signal = { .sa_handler = SIG_DFL };
-      //disable_signal.sa_handler = SIG_DFL;
-      signal(SIGPIPE, SIG_DFL);
+      data_sent = send(socket, (char*) outgoing_message.message_buffer, outgoing_message.used_message_length, MSG_NOSIGNAL);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
