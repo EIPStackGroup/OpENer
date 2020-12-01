@@ -747,13 +747,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
           outgoing_message.used_message_length,
           socket);
 
-      const struct sigaction disable_signal = { .sa_handler = SIG_IGN };
-      //disable_signal.sa_handler = SIG_IGN;
-      sigaction(SIGPIPE, &disable_signal, NULL);
+      signal(SIGPIPE, SIG_IGN);
       data_sent = send(socket, (char*) outgoing_message.message_buffer, outgoing_message.used_message_length, 0);
       const struct sigaction enable_signal = { .sa_handler = SIG_DFL };
       //disable_signal.sa_handler = SIG_DFL;
-      sigaction(SIGPIPE, &enable_signal, NULL);
+      signal(SIGPIPE, SIG_DFL);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
