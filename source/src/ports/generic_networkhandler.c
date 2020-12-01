@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #include "generic_networkhandler.h"
 
@@ -746,7 +747,13 @@ EipStatus HandleDataOnTcpSocket(int socket) {
           outgoing_message.used_message_length,
           socket);
 
-      data_sent = send(socket, (char*) outgoing_message.message_buffer, outgoing_message.used_message_length, MSG_NOSIGNAL);
+      const struct sigaction disable_signal = { .sa_handler = SIG_IGN };
+      //disable_signal.sa_handler = SIG_IGN;
+      sigaction(SIGPIPE, &disable_signal, NULL);
+      data_sent = send(socket, (char*) outgoing_message.message_buffer, outgoing_message.used_message_length, 0);
+      const struct sigaction enable_signal = { .sa_handler = SIG_DFL };
+      //disable_signal.sa_handler = SIG_DFL;
+      sigaction(SIGPIPE, &enable_signal, NULL);
       SocketTimer *socket_timer = SocketTimerArrayGetSocketTimer(g_timestamps,
       OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket);
       SocketTimerSetLastUpdate(socket_timer, g_actual_time);
