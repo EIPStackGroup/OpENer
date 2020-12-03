@@ -64,7 +64,8 @@ void GenerateSetAttributeSingleHeader(
 
 /** @brief Generic implementation of the SetAttributeSingle CIP service
  *
- * TODO: add description
+ *  Modifies an attribute value if the requested object has
+ *  the appropriate attribute implemented and if the attribute is setable.
  *
  * @param instance pointer to instance.
  * @param message_router_request pointer to request.
@@ -72,7 +73,7 @@ void GenerateSetAttributeSingleHeader(
  * @param originator_address address struct of the originator as received
  * @param encapsulation_session associated encapsulation session of the explicit message
  * @return status  >0 .. success
- *          -1 .. requested attribute not set //TODO: check if correct
+ *          -1 .. requested attribute not set
  */
 EipStatus SetAttributeSingle(
   CipInstance *RESTRICT const instance,
