@@ -278,7 +278,8 @@ typedef void (*CipAttributeEncodeInMessage)(const void *const data,
 
 /** @brief self-describing data decoding for CIP types */
 typedef int (*CipAttributeDecodeInMessage)(const void *const data,
-									CipMessageRouterRequest *const message_router_request);
+									const CipMessageRouterRequest *const message_router_request,
+									CipMessageRouterResponse *const message_router_response);
 
 /** @brief Structure to describe a single CIP attribute of an object
  */

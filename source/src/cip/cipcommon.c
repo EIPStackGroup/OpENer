@@ -735,108 +735,106 @@ void GenerateSetAttributeSingleHeader( //TODO: update
 }
 
 EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
-                             CipMessageRouterRequest *const message_router_request,
-                             CipMessageRouterResponse *const message_router_response,
-                             const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-  CipAttributeStruct *attribute = GetCipAttribute(instance,
-                                                  message_router_request->request_path.attribute_number);
+	CipAttributeStruct *attribute = GetCipAttribute(instance,
+			message_router_request->request_path.attribute_number);
 
-  GenerateSetAttributeSingleHeader(message_router_request,
-                                   message_router_response);
+	GenerateSetAttributeSingleHeader(message_router_request,
+			message_router_response);
 
-  EipUint16 attribute_number =
-    message_router_request->request_path.attribute_number;
+	EipUint16 attribute_number =
+			message_router_request->request_path.attribute_number;
 
-  /* Mask for filtering set-ability */
-  if ( (NULL != attribute) && (NULL != attribute->data) ) {
-    uint8_t set_bit_mask =
-      (instance->cip_class->set_bit_mask[CalculateIndex(
-                                                  attribute_number)
-       ]);
-    if (0 != (set_bit_mask & (1 << (attribute_number % 8) ) ) ) {
-      OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
+	/* Mask for filtering set-ability */
+	if ((NULL != attribute) && (NULL != attribute->data)) {
+		uint8_t set_bit_mask =
+				(instance->cip_class->set_bit_mask[CalculateIndex(
+						attribute_number)]);
+		if (0 != (set_bit_mask & (1 << (attribute_number % 8)))) {
+			OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
 
-      /* Call the PreSetCallback if enabled for this attribute and the class provides one. */
-      if ( (attribute->attribute_flags & kPreSetFunc) &&
-           NULL != instance->cip_class->PreSetCallback ) {
-        instance->cip_class->PreSetCallback(instance,
-                                            attribute,
-                                            message_router_request->service);
-      }
-		//#################   //TODO: remove DEBUG
+			/* Call the PreSetCallback if enabled for this attribute and the class provides one. */
+			if ((attribute->attribute_flags & kPreSetFunc) &&
+			NULL != instance->cip_class->PreSetCallback) {
+				instance->cip_class->PreSetCallback(instance, attribute,
+						message_router_request->service);
+			}
 
-		CipByteArray *attribute_test = (CipByteArray*) attribute->data;
+			//#################   //TODO: remove DEBUG
 
-		OPENER_TRACE_INFO("DEBUG: attribute_data: "); //TODO: remove
-		for (int i = 0; i < attribute_test->length; i++) {
-			OPENER_TRACE_INFO("%x",*(attribute_test->data+i)); //TODO: remove
-		} OPENER_TRACE_INFO("\n"); //TODO: remove
-		//############################
+			CipByteArray *attribute_test = (CipByteArray*) attribute->data;
 
-      OPENER_ASSERT(NULL != attribute);
+			OPENER_TRACE_INFO("DEBUG: attribute_data: ");
+			for (int i = 0; i < attribute_test->length; i++) {
+				OPENER_TRACE_INFO("%x",*(attribute_test->data+i));
+			}OPENER_TRACE_INFO("\n");
+			//############################
 
-      int number_of_decoded_bytes = attribute->decode(attribute->data, message_router_request);
-      OPENER_TRACE_INFO("DEBUG: number of decoded bytes: %d\n", number_of_decoded_bytes); //TODO: remove
+			OPENER_ASSERT(NULL != attribute);
 
-      if(number_of_decoded_bytes != -1){
-    	  message_router_response->general_status = kCipErrorSuccess;
-      }
-      else{
-    	  message_router_response->general_status = kCipErrorNoStoredAttributeData;
-      }
+			int number_of_decoded_bytes = attribute->decode(attribute->data,
+					message_router_request, message_router_response); //writes data to attribute, sets resonse status
+			OPENER_TRACE_INFO("DEBUG: number of decoded bytes: %d\n", number_of_decoded_bytes); //TODO: remove,
 
+			//TODO: check use of number_of_decoded_bytes
 
-		//#################   //TODO: remove DEBUG
+			//#################   //TODO: remove DEBUG
 
-		attribute_test = (CipByteArray*) attribute->data;
+			attribute_test = (CipByteArray*) attribute->data;
 
-		OPENER_TRACE_INFO("DEBUG: attribute_data: "); //TODO: remove
-		for (int i = 0; i < attribute_test->length; i++) {
-			OPENER_TRACE_INFO("%x",*(attribute_test->data+i)); //TODO: remove
-		} OPENER_TRACE_INFO("\n"); //TODO: remove
-		//############################
+			OPENER_TRACE_INFO("DEBUG: attribute_data: ");
+			for (int i = 0; i < attribute_test->length; i++) {
+				OPENER_TRACE_INFO("%x",*(attribute_test->data+i));
+			}OPENER_TRACE_INFO("\n");
+			//############################
 
-      /* Call the PostSetCallback if enabled for this attribute and the class provides one. */
-      if ( (attribute->attribute_flags & kPostSetFunc) &&
-           NULL != instance->cip_class->PostSetCallback ) {
-        instance->cip_class->PostSetCallback(instance,
-                                             attribute,
-                                             message_router_request->service);
-      }
-    }
-    else{
-    	message_router_response->general_status = kCipErrorAttributeNotSetable; //TODO: check if correct
-    	OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not setable!\n\r", attribute_number);
-    }
-  }
+			/* Call the PostSetCallback if enabled for this attribute and the class provides one. */
+			if ((attribute->attribute_flags & kPostSetFunc) &&
+			NULL != instance->cip_class->PostSetCallback) {
+				instance->cip_class->PostSetCallback(instance, attribute,
+						message_router_request->service);
+			}
+		} else {
+			message_router_response->general_status =
+					kCipErrorAttributeNotSetable;
+			OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not setable!\n\r", attribute_number);
+		}
+	}
 
-  return kEipStatusOkSend;
+	return kEipStatusOkSend;
 }
 
 
 int DecodeCipBool(const CipBool *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
 	*(EipUint8*) (data) = *message_router_request->data;
 	//++(*message_router_request->data);
 	number_of_decoded_bytes = 1;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipByte(const CipByte *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
 		(*(EipUint8*) (data)) = GetByteFromMessage(message_router_request->data);
 		number_of_decoded_bytes = 1;
+		message_router_response->general_status = kCipErrorSuccess;
 		return number_of_decoded_bytes;
 }
 
 int DecodeCipByteArray(const CipByteArray *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
@@ -844,19 +842,16 @@ int DecodeCipByteArray(const CipByteArray *const data,
 	OPENER_TRACE_INFO(" -> set attribute byte array\r\n");
 	CipByteArray *cip_byte_array = (CipByteArray*) data;
 
-	OPENER_TRACE_INFO("DEBUG: message_data_length: %d\n", message_router_request->request_path_size); //TODO: remove
-	OPENER_TRACE_INFO("DEBUG: attribute_data_length: %d\n", data->length); //TODO: remove
-
 	if (message_router_request->request_path_size < data->length) {
 		OPENER_TRACE_INFO(
 				"DecodeCipByteArray: not enough data received.\n");
-		//message_router_response->general_status = kCipErrorNotEnoughData;
+		message_router_response->general_status = kCipErrorNotEnoughData;
 		return number_of_decoded_bytes;
 	} else {
 		if (message_router_request->request_path_size > data->length) {
 			OPENER_TRACE_INFO(
 					"DecodeCipByteArray: too much data received.\n");
-			//message_router_response->general_status = kCipErrorTooMuchData;
+			message_router_response->general_status = kCipErrorTooMuchData;
 			return number_of_decoded_bytes;
 		}
 	}
@@ -864,154 +859,182 @@ int DecodeCipByteArray(const CipByteArray *const data,
 	memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
 	number_of_decoded_bytes = cip_byte_array->length;
 
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipWord(const CipWord *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint16*) (data)) = GetWordFromMessage(cip_message);
 	number_of_decoded_bytes = 2;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipDword(const CipDword *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint32*) (data)) = GetDintFromMessage(cip_message);
 	number_of_decoded_bytes = 4;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipLword(const CipLword *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
 	number_of_decoded_bytes = 8;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipUsint(const CipUsint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint8*) (data)) = GetUsintFromMessage(cip_message);
 	number_of_decoded_bytes = 1;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipUint(const CipUint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint16*) (data)) = GetUintFromMessage(cip_message);
 	number_of_decoded_bytes = 2;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipUdint(const CipUdint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint32*) (data)) = GetUdintFromMessage(cip_message);
 	number_of_decoded_bytes = 4;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipUlint(const CipUlint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
 	number_of_decoded_bytes = 8;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipSint(const CipSint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint8*) (data)) = GetSintFromMessage(cip_message);
 	number_of_decoded_bytes = 1;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipInt(const CipInt *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint16*) (data)) = GetIntFromMessage(cip_message);
 	number_of_decoded_bytes = 2;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipDint(const CipDint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint32*) (data)) = GetDintFromMessage(cip_message);
 	number_of_decoded_bytes = 4;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipLint(const CipLint *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
 	number_of_decoded_bytes = 8;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipReal(const CipReal *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint32 *) (data) ) = GetDintFromMessage(cip_message);
 	number_of_decoded_bytes = 4;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipLreal(const CipLreal *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		 CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
 	int number_of_decoded_bytes = -1;
 	(*(EipUint64*) (data)) = GetLintFromMessage(cip_message);
 	number_of_decoded_bytes = 8;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipString(const CipString *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
@@ -1027,11 +1050,13 @@ int DecodeCipString(const CipString *const data,
 		++(*cip_message);
 		number_of_decoded_bytes++;
 	}
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 
 int DecodeCipShortString(const CipShortString *const data,
-		const CipMessageRouterRequest *const message_router_request) {
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
@@ -1045,6 +1070,7 @@ int DecodeCipShortString(const CipShortString *const data,
 	*cip_message += short_string->length;
 
 	number_of_decoded_bytes = short_string->length + 1;
+	message_router_response->general_status = kCipErrorSuccess;
 	return number_of_decoded_bytes;
 }
 

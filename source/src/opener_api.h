@@ -378,7 +378,7 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
                                            ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_API
- * @brief Retrieve the given data according to CIP encoding from the message     //TODO: update
+ * @brief Retrieve the given data according to CIP encoding from the message     //TODO: remove DecodeData
  * buffer.
  *
  * This function may be used in in own services for handling data from the
@@ -393,59 +393,89 @@ int DecodeData(const EipUint8 cip_data_type,  //TODO: replace with decode functi
                void *const cip_data,
                const EipUint8 **const cip_message);
 
+/** @ingroup CIP_API
+ * @brief Retrieve the given data according to CIP encoding from the message
+ * buffer.
+ *
+ * This function may be used in own services for handling data from the
+ * requester (e.g., setAttributeSingle).
+ *  @param data pointer to value to be written.
+ *  @param message_router_request pointer to the request where the data should be taken from
+ *  @param message_router_response pointer to the response where status should be set
+ *  @return length of taken bytes
+ *          -1 .. error
+ */
 int DecodeCipBool(const CipBool *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByte(const CipByte *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByteArray(const CipByteArray *const data,
-			const CipMessageRouterRequest *const message_router_request);
+			const CipMessageRouterRequest *const message_router_request,
+			CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipWord(const CipWord *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDword(const CipDword *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLword(const CipLword *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUsint(const CipUsint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUint(const CipUint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUdint(const CipUdint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUlint(const CipUlint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipSint(const CipSint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipInt(const CipInt *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDint(const CipDint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLint(const CipLint *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipReal(const CipReal *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLreal(const CipLreal *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipString(const CipString *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipShortString(const CipShortString *const data,
-		const CipMessageRouterRequest *const message_router_request);
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
