@@ -589,66 +589,90 @@ EipStatus CipTcpIpInterfaceInit() {
 
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
-  InsertAttribute(instance, 1, kCipDword, EncodeCipDword, &g_tcpip.status,
+  InsertAttribute(instance,
+		  	  	  1,
+				  kCipDword,
+				  EncodeCipDword,
+				  NULL,
+				  &g_tcpip.status,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   2,
                   kCipDword,
                   EncodeCipDword,
+				  NULL,
                   &g_tcpip.config_capability,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   3,
                   kCipDword,
                   EncodeCipDword,
+				  DecodeCipWord,
                   &g_tcpip.config_control,
                   kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
   InsertAttribute(instance,
                   4,
                   kCipEpath,
                   EncodeCipEPath,
+				  NULL,
                   &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   5,
                   kCipUdintUdintUdintUdintUdintString,
                   EncoodeCipTcpIpInterfaceConfiguration,
+				  NULL,
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
-  InsertAttribute(instance, 6, kCipString, EncodeCipString, &g_tcpip.hostname,
+  InsertAttribute(instance,
+		  	  	  6,
+				  kCipString,
+				  EncodeCipString,
+				  NULL,
+				  &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
   InsertAttribute(instance,
                   7,
                   kCipAny,
                   EncodeSafetyNetworkNumber,
+				  NULL,
                   &dummy_data_field,
                   kGetableAllDummy);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
+				  NULL,
                   &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   9,
                   kCipAny,
                   EncodeCipTcpIpMulticastConfiguration,
+				  NULL,
                   &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
-  InsertAttribute(instance, 10, kCipBool, EncodeCipBool, &g_tcpip.select_acd,
+  InsertAttribute(instance,
+		  	  	  10,
+				  kCipBool,
+				  EncodeCipBool,
+				  NULL,
+				  &g_tcpip.select_acd,
                   kGetableAllDummy);
   InsertAttribute(instance,
                   11,
                   kCipBool,
                   EncodeCipLastConflictDetected,
+				  NULL,
                   &dummy_data_field,
                   kGetableAllDummy);
-  InsertAttribute(instance, 12, kCipBool, EncodeCipBool, &dummy_data_field,
-                  kGetableAllDummy);
+  InsertAttribute(instance, 12, kCipBool, EncodeCipBool, NULL,
+		  	  	  &dummy_data_field, kGetableAllDummy);
   InsertAttribute(instance,
                   13,
                   kCipUint,
                   EncodeCipUint,
+				  DecodeCipUint,
                   &g_tcpip.encapsulation_inactivity_timeout,
                   kSetAndGetAble | kNvDataFunc);
 

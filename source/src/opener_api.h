@@ -232,7 +232,7 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      CipAttributeEncodeInMessage encode_function,
-					 //CipAttributeDecodeInMessage decode_function, //TODO: add decode
+					 CipAttributeDecodeInMessage decode_function,
                      void *const data,
                      const EipByte cip_flags);
 

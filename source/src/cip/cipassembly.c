@@ -62,25 +62,18 @@ CipClass *CreateAssemblyClass(void) {
                                             "assembly", /* name */
                                             2, /* Revision, according to the CIP spec currently this has to be 2 */
                                             NULL); /* # function pointer for initialization*/
-  if(NULL != assembly_class) {
-    InsertService(assembly_class,
-                  kGetAttributeSingle,
-                  &GetAttributeSingle,
-                  "GetAttributeSingle");
+	if (NULL != assembly_class) {
+		InsertService(assembly_class, kGetAttributeSingle, &GetAttributeSingle,
+				"GetAttributeSingle");
 
-//    InsertService(assembly_class,
-//                  kSetAttributeSingle,
-//                  &SetAssemblyAttributeSingle,
-//                  "SetAssemblyAttributeSingle");
+		InsertService(assembly_class, kSetAttributeSingle, &SetAttributeSingle,
+				"SetAttributeSingle");
 
-    InsertService(assembly_class,						//TODO: used for testing, remove
-                      kSetAttributeSingle,
-                      &SetAttributeSingle,
-                      "SetAttributeSingle");
-
-    InsertGetSetCallback(assembly_class, AssemblyPreGetCallback, kPreGetFunc);
-    InsertGetSetCallback(assembly_class, AssemblyPostSetCallback, kPostSetFunc);
-  }
+		InsertGetSetCallback(assembly_class, AssemblyPreGetCallback,
+				kPreGetFunc);
+		InsertGetSetCallback(assembly_class, AssemblyPostSetCallback,
+				kPostSetFunc);
+	}
 
   return assembly_class;
 }
@@ -130,13 +123,8 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
 
   assembly_byte_array->length = data_length;
   assembly_byte_array->data = data;
-//  InsertAttribute(instance,
-//                  3,
-//                  kCipByteArray,
-//                  EncodeCipByteArray,
-//                  assembly_byte_array,
-//                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
-  InsertAttribute2(instance,
+
+  InsertAttribute(instance,
                    3,
                    kCipByteArray,
                    EncodeCipByteArray,
@@ -144,17 +132,12 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
                    assembly_byte_array,
                    kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
-//  InsertAttribute(instance,
-//                  4,
-//                  kCipUint,
-//                  EncodeCipUint,
-//                  &(assembly_byte_array->length),
-//                  kGetableSingle);
-  InsertAttribute2(instance,
+
+  InsertAttribute(instance,
                     4,
                     kCipUint,
                     EncodeCipUint,
-					DecodeCipUint,
+					NULL,
                     &(assembly_byte_array->length),
                     kGetableSingle);
 

@@ -285,24 +285,24 @@ CipClass *CreateCipClass(const CipUdint class_code,
   AllocateAttributeMasks(cip_class); /* Allocation of bitmasks for Instance Attributes */
 
   if(NULL == initializer) {
-    InsertAttribute( (CipInstance *) cip_class, 1, kCipUint, EncodeCipUint,
-                     (void *) &cip_class->revision, kGetableSingleAndAll );                                                /* revision */
-    InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
-                     (void *) &cip_class->number_of_instances,
-                     kGetableSingleAndAll );                                                                                          /* #2 Max instance no. */
-    InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
-                     (void *) &cip_class->number_of_instances,
-                     kGetableSingleAndAll );                                                                                          /* number of instances currently existing*/
-    InsertAttribute( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint,
-                     (void *) &kCipUintZero, kGetableAllDummy );                                                /* optional attribute list - default = 0 */
-    InsertAttribute( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint,
-                     (void *) &kCipUintZero, kNotSetOrGetable );                                                /* optional service list - default = 0 */
-    InsertAttribute( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint,
-                     (void *) &meta_class->highest_attribute_number,
-                     kGetableSingle );                                                                                                /* max class attribute number*/
-    InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
-                     (void *) &cip_class->highest_attribute_number,
-                     kGetableSingle );                                                                                               /* max instance attribute number*/
+	InsertAttribute((CipInstance*) cip_class, 1, kCipUint, EncodeCipUint,
+			NULL, (void*) &cip_class->revision, kGetableSingleAndAll); 			/* revision */
+	InsertAttribute((CipInstance*) cip_class, 2, kCipUint, EncodeCipUint,
+			NULL, (void*) &cip_class->number_of_instances,
+			kGetableSingleAndAll); 												/* #2 Max instance no. */
+	InsertAttribute((CipInstance*) cip_class, 3, kCipUint, EncodeCipUint,
+			NULL, (void*) &cip_class->number_of_instances,
+			kGetableSingleAndAll); 												/* number of instances currently existing*/
+	InsertAttribute((CipInstance*) cip_class, 4, kCipUint, EncodeCipUint,
+			NULL, (void*) &kCipUintZero, kGetableAllDummy); 					/* optional attribute list - default = 0 */
+	InsertAttribute((CipInstance*) cip_class, 5, kCipUint, EncodeCipUint,
+			NULL, (void*) &kCipUintZero, kNotSetOrGetable); 					/* optional service list - default = 0 */
+	InsertAttribute((CipInstance*) cip_class, 6, kCipUint, EncodeCipUint,
+			NULL, (void*) &meta_class->highest_attribute_number,
+			kGetableSingle); 													/* max class attribute number*/
+	InsertAttribute((CipInstance*) cip_class, 7, kCipUint, EncodeCipUint,
+			NULL, (void*) &cip_class->highest_attribute_number,
+			kGetableSingle);                                                     /* max instance attribute number*/
     if(number_of_class_services > 0) {
       if(number_of_class_services > 1) { /*only if the mask has values add the get_attribute_all service */
         InsertService(meta_class,
@@ -324,53 +324,6 @@ CipClass *CreateCipClass(const CipUdint class_code,
 }
 
 void InsertAttribute(CipInstance *const instance,
-                     const EipUint16 attribute_number,
-                     const EipUint8 cip_type,
-                     CipAttributeEncodeInMessage encode_function,
-					 //CipAttributeDecodeInMessage decode_function, //TODO: add decode
-                     void *const data,
-                     const EipByte cip_flags) {
-
-  OPENER_ASSERT(NULL != data); /* Its not allowed to push a NULL pointer, as this marks an unused attribute struct */
-
-  CipAttributeStruct *attribute = instance->attributes;
-  CipClass *cip_class = instance->cip_class;
-
-  OPENER_ASSERT(NULL != attribute);
-/* adding a attribute to a class that was not declared to have any attributes is not allowed */
-  for(int i = 0; i < instance->cip_class->number_of_attributes; i++) {
-    if(attribute->data == NULL) { /* found non set attribute */
-      attribute->attribute_number = attribute_number;
-      attribute->type = cip_type;
-      attribute->encode = encode_function;
-      attribute->attribute_flags = cip_flags;
-      attribute->data = data;
-
-      OPENER_ASSERT(attribute_number <= cip_class->highest_attribute_number);
-
-      size_t index = CalculateIndex(attribute_number);
-
-      cip_class->get_single_bit_mask[index] |=
-        (cip_flags & kGetableSingle) ? 1 << (attribute_number) % 8 : 0;
-      cip_class->get_all_bit_mask[index] |=
-        (cip_flags & (kGetableAll | kGetableAllDummy) ) ? 1 <<
-        (attribute_number) % 8 : 0;
-      cip_class->set_bit_mask[index] |= ( (cip_flags & kSetable) ? 1 : 0 ) <<
-                                        ( (attribute_number) % 8 );
-
-      return;
-    }
-    attribute++;
-  } OPENER_TRACE_ERR(
-    "Tried to insert too many attributes into class: %" PRIu32 " '%s', instance %" PRIu32 "\n",
-    cip_class->class_code,
-    cip_class->class_name,
-    instance->instance_number);
-  OPENER_ASSERT(false);
-/* trying to insert too many attributes*/
-}
-
-void InsertAttribute2(CipInstance *const instance,     //TODO: used for testing, remove
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      CipAttributeEncodeInMessage encode_function,

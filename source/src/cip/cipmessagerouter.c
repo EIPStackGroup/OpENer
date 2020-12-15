@@ -54,24 +54,24 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
 
   CipClass *meta_class = cip_class->class_instance.cip_class;
 
-  InsertAttribute( (CipInstance *) cip_class, 1, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 1, kCipUint, EncodeCipUint, NULL,
                    (void *) &cip_class->revision, kGetableSingleAndAll );   /* revision */
-  InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint, NULL,
                    (void *) &cip_class->number_of_instances,
                    kGetableSingle );                                       /*  largest instance number */
-  InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint, NULL,
                    (void *) &cip_class->number_of_instances,
                    kGetableSingle );                                                           /* number of instances currently existing*/
-  InsertAttribute( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 4, kCipUint, EncodeCipUint, NULL,
                    (void *) &kCipUintZero,
                    kGetableAll );   /* optional attribute list - default = 0 */
-  InsertAttribute( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 5, kCipUint, EncodeCipUint, NULL,
                    (void *) &kCipUintZero,
                    kGetableAll ); /* optional service list - default = 0 */
-  InsertAttribute( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 6, kCipUint, EncodeCipUint, NULL,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll );                       /* max class attribute number*/
-  InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) cip_class, 7, kCipUint, EncodeCipUint, NULL,
                    (void *) &cip_class->highest_attribute_number,
                    kGetableSingleAndAll );                       /* max instance attribute number*/
 

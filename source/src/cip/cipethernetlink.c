@@ -273,18 +273,21 @@ EipStatus CipEthernetLinkInit(void) {
                       1,
                       kCipUdint,
                       EncodeCipUdint,
+					  NULL,
                       &g_ethernet_link[idx].interface_speed,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
                       2,
                       kCipDword,
                       EncodeCipDword,
+					  NULL,
                       &g_ethernet_link[idx].interface_flags,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
                       3,
                       kCip6Usint,
                       EncodeCipEthernetLinkPhyisicalAddress,
+					  NULL,
                       &g_ethernet_link[idx].physical_address,
                       kGetableSingleAndAll);
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
@@ -292,6 +295,7 @@ EipStatus CipEthernetLinkInit(void) {
                       4,
                       kCipUsint,
                       EncodeCipUsint,
+					  NULL,
                       &g_ethernet_link[idx].interface_cntrs,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance, 5, kCipUsint, EncodeCipUsint,
@@ -301,12 +305,14 @@ EipStatus CipEthernetLinkInit(void) {
                       4,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceCounters,
+					  NULL,
                       &dummy_attribute_udint,
                       kGetableAllDummy);
       InsertAttribute(ethernet_link_instance,
                       5,
                       kCipAny,
                       EncodeCipEthernetLinkMediaCounters,
+					  NULL,
                       &dummy_attribute_udint,
                       kGetableAllDummy);
 #endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
@@ -333,26 +339,29 @@ EipStatus CipEthernetLinkInit(void) {
                       6,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceControl,
+					  NULL,
                       &s_interface_control,
                       kGetableAll);
 #endif
-      InsertAttribute(ethernet_link_instance, 7, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 7, kCipUsint, EncodeCipUsint, NULL,
                       &g_ethernet_link[idx].interface_type,
                       kGetableSingleAndAll);
-      InsertAttribute(ethernet_link_instance, 8, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 8, kCipUsint, EncodeCipUsint, NULL,
                       &dummy_attribute_usint, kGetableAllDummy);
-      InsertAttribute(ethernet_link_instance, 9, kCipUsint, EncodeCipUsint,
+      InsertAttribute(ethernet_link_instance, 9, kCipUsint, EncodeCipUsint, NULL,
                       &dummy_attribute_usint, kGetableAllDummy);
       InsertAttribute(ethernet_link_instance,
                       10,
                       kCipShortString,
                       EncodeCipShortString,
+					  NULL,
                       &g_ethernet_link[idx].interface_label,
                       IFACE_LABEL_ACCESS_MODE);
       InsertAttribute(ethernet_link_instance,
                       11,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceCaps,
+					  NULL,
                       &g_ethernet_link[idx].interface_caps,
                       kGetableSingleAndAll);
     }
