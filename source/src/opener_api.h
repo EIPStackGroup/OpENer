@@ -236,14 +236,6 @@ void InsertAttribute(CipInstance *const instance,
                      void *const data,
                      const EipByte cip_flags);
 
-void InsertAttribute2(CipInstance *const instance, //TODO: used for testing, remove
-                     const EipUint16 attribute_number,
-                     const EipUint8 cip_type,
-                     CipAttributeEncodeInMessage encode_function,
-					 CipAttributeDecodeInMessage decode_function,
-                     void *const data,
-                     const EipByte cip_flags);
-
 /** @ingroup CIP_API
  * @brief Allocates Attribute bitmasks
  *
