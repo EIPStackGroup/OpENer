@@ -55,7 +55,7 @@ static void *executeEventLoop(void *pthread_arg);
 /** @brief Fuzz TCP packets handling flow with AFL.
  *
  */
-static void *fuzzHandlePacketFlow(void);
+static void fuzzHandlePacketFlow(void);
 
 /*****************************************************************************/
 /** @brief Flag indicating if the stack should end its execution
@@ -292,6 +292,7 @@ static void *executeEventLoop(void *pthread_arg) {
 }
 
 static void fuzzHandlePacketFlow(void) {
+#ifdef FUZZING_AFL
   int socket_fd = 0;   // Fake socket fd
   uint8_t buff[512];   // Input buffer
   struct sockaddr_in from_address = { 0 }; // Fake socket address
@@ -313,4 +314,5 @@ static void fuzzHandlePacketFlow(void) {
     // Fuzz TCP
     EipStatus need_to_send = HandleReceivedExplictTcpData(socket_fd, receive_buffer, received_size, &remaining_bytes, &from_address, &outgoing_message);
   }
+#endif
 }

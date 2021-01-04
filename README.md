@@ -128,7 +128,7 @@ documentation. You can generate the documentation by invoking doxygen from the
 command line in the opener main directory.
 
 
-Fuzzing:
+Fuzzing
 --------------
 Fuzzing is an automated testing method that directs varying input data to a program in 
 order to monitor output. It is a way to test for overall reliability as well as identify 
@@ -140,7 +140,8 @@ The fuzzer we are using is AFL, a fuzzer that uses runtime guided techniques to 
 - Feeds the fuzzed process with the test case through STDIN
 - Monitors the execution and registers which paths are reachable
 
-To start fuzzing this project with AFL you'll need to compile it with AFL. First make sure you have AFL prepared:
+To start fuzzing this project with AFL you'll need to compile it with AFL.
+First make sure you have AFL installed:
 ```
 sudo apt install build-essential
 wget http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
@@ -151,7 +152,7 @@ echo "AFL is ready at: $(which afl-fuzz)"
 
 ```
 
-Then, compile it with AFL:
+Then, compile OpENer with AFL:
 1. Change to the ``OpENer/bin/posix`` directory
 2. Compile OpENer with AFL ``./setup_posix_fuzz_afl.sh`` 
 3. Run ``make``
@@ -161,6 +162,8 @@ Finally, generate some test cases and start AFL:
 # Generate inputs
 mkdir inputs
 echo 630000000000000000000000000000000000000000000000 | xxd -r -p > ./inputs/req_list_identity
+# You can also use the inputs we prepared from ``fuzz/inputs``
+# Finally, let's fuzz!
 afl-fuzz -i inputs -o findings ./src/ports/POSIX/OpENer eth1
 ```
 ![Alt text](fuzz/fuzz.png "AFL Fuzzing")
