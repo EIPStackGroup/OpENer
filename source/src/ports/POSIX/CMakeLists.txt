@@ -13,6 +13,14 @@ if(OpENer_RT)
 endif(OpENer_RT)
 
 #######################################
+# AFL Fuzzing                         #
+#######################################
+option(USE_FUZZ_AFL "Fuzz mode" OFF)
+if(USE_FUZZ_AFL)
+  add_definitions( -DFUZZING_AFL )
+endif(USE_FUZZ_AFL)
+
+#######################################
 # Add common includes                 #
 #######################################
 opener_common_includes()

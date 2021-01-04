@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 #include <sys/capability.h>
 
 #ifdef OPENER_RT
@@ -49,6 +50,12 @@ static void LeaveStack(int signal);
  *  parameter for pthread_create().
  */
 static void *executeEventLoop(void *pthread_arg);
+
+/******************************************************************************/
+/** @brief Fuzz TCP packets handling flow with AFL.
+ *
+ */
+static void *fuzzHandlePacketFlow(void);
 
 /*****************************************************************************/
 /** @brief Flag indicating if the stack should end its execution
@@ -126,6 +133,12 @@ int main(int argc,
    *  file.
    */
   GetHostName(&g_tcpip.hostname);
+
+  /* Fuzzing UDP/TCP handle packet flow */
+#ifdef FUZZING_AFL
+  fuzzHandlePacketFlow();
+  return EXIT_SUCCESS;
+#endif 
 
   /* The CIP objects are now created and initialized with their default values.
    *  After that any NV data values are loaded to change the attribute contents
@@ -276,4 +289,28 @@ static void *executeEventLoop(void *pthread_arg) {
   }
 
   return &pthread_dummy_ret;
+}
+
+static void fuzzHandlePacketFlow(void) {
+  int socket_fd = 0;   // Fake socket fd
+  uint8_t buff[512];   // Input buffer
+  struct sockaddr_in from_address = { 0 }; // Fake socket address
+  int remaining_bytes = 0; // Fake reamining bytes
+  ENIPMessage outgoing_message;
+
+  /* AFL persistent mode */
+  while(__AFL_LOOP(100000)) {
+    /* Read input from STDIN and enter the handle receive flow */
+    memset(buff, 0, 512);
+    ssize_t received_size = read(STDIN_FILENO, buff, 512);
+    EipUint8 *receive_buffer = &buff[0];
+
+    InitializeENIPMessage(&outgoing_message);
+
+    // Fuzz UDP
+    //EipStatus need_to_send = HandleReceivedExplictUdpData(socket_fd, &from_address, receive_buffer, received_size, &remaining_bytes, true, &outgoing_message);
+
+    // Fuzz TCP
+    EipStatus need_to_send = HandleReceivedExplictTcpData(socket_fd, receive_buffer, received_size, &remaining_bytes, &from_address, &outgoing_message);
+  }
 }
