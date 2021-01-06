@@ -704,34 +704,41 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
 
 	/* Mask for filtering set-ability */
 	if ((NULL != attribute) && (NULL != attribute->data)) {
-		uint8_t set_bit_mask =
-				(instance->cip_class->set_bit_mask[CalculateIndex(
-						attribute_number)]);
-		if (0 != (set_bit_mask & (1 << (attribute_number % 8)))) {
-			OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
 
-			/* Call the PreSetCallback if enabled for this attribute and the class provides one. */
-			if ((attribute->attribute_flags & kPreSetFunc) &&
-			NULL != instance->cip_class->PreSetCallback) {
-				instance->cip_class->PreSetCallback(instance, attribute,
-						message_router_request->service);
-			}
-
-			OPENER_ASSERT(NULL != attribute);
-
-			attribute->decode(attribute->data,
-					message_router_request, message_router_response); //writes data to attribute, sets resonse status
-
-			/* Call the PostSetCallback if enabled for this attribute and the class provides one. */
-			if ((attribute->attribute_flags & (kPostSetFunc | kNvDataFunc)) &&
-			NULL != instance->cip_class->PostSetCallback) {
-				instance->cip_class->PostSetCallback(instance, attribute,
-						message_router_request->service);
-			}
+		if (0x00 == attribute->attribute_flags) { // kNotSetOrGetable
+			OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not supported!\n\r", attribute_number);
 		} else {
-			message_router_response->general_status =
-					kCipErrorAttributeNotSetable;
-			OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not setable!\n\r", attribute_number);
+			uint8_t set_bit_mask =
+					(instance->cip_class->set_bit_mask[CalculateIndex(
+							attribute_number)]);
+			if (0 != (set_bit_mask & (1 << (attribute_number % 8)))) {
+				OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
+
+				/* Call the PreSetCallback if enabled for this attribute and the class provides one. */
+				if ((attribute->attribute_flags & kPreSetFunc) &&
+				NULL != instance->cip_class->PreSetCallback) {
+					instance->cip_class->PreSetCallback(instance, attribute,
+							message_router_request->service);
+				}
+
+				OPENER_ASSERT(NULL != attribute);
+
+				attribute->decode(attribute->data, message_router_request,
+						message_router_response); //writes data to attribute, sets resonse status
+
+				/* Call the PostSetCallback if enabled for this attribute and the class provides one. */
+				if ((attribute->attribute_flags & (kPostSetFunc | kNvDataFunc))
+						&&
+						NULL != instance->cip_class->PostSetCallback) {
+					instance->cip_class->PostSetCallback(instance, attribute,
+							message_router_request->service);
+				}
+			} else {
+				message_router_response->general_status =
+						kCipErrorAttributeNotSetable;
+				OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not setable!\n\r", attribute_number);
+			}
+
 		}
 	}
 
