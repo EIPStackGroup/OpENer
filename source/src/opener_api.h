@@ -174,7 +174,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const EipUint32 highest_instance_attribute_number,
                          const int number_of_instance_services,
                          const int number_of_instances,
-                         char *name,
+                         const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer);
 

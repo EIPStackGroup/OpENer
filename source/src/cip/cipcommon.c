@@ -90,7 +90,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       instance_number,
                       instance_number == 0 ? " (class object)" : "");
 
-    CipServiceStruct *service = instance->cip_class->services;         /* get pointer to array of services */
+    CipServiceStruct *service = instance->cip_class->services;     /* get pointer to array of services */
     if (NULL != service)             /* if services are defined */
     {
       for (size_t i = 0; i < instance->cip_class->number_of_services; i++)                   /* seach the services list */
@@ -112,7 +112,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
     }
     OPENER_TRACE_WARN(
       "notify: service 0x%x not supported\n", message_router_request->service);
-    message_router_response->general_status = kCipErrorServiceNotSupported;                                                                                    /* if no services or service not found, return an error reply*/
+    message_router_response->general_status = kCipErrorServiceNotSupported;                                                                                                                                                           /* if no services or service not found, return an error reply*/
   } else {
     OPENER_TRACE_WARN("notify: instance number %d unknown\n", instance_number);
 /* if instance not found, return an error reply */
@@ -141,7 +141,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
                     number_of_instances,
                     cip_class->class_name);
 
-  next_instance = &cip_class->instances;     /* get address of pointer to head of chain */
+  next_instance = &cip_class->instances;   /* get address of pointer to head of chain */
   while (*next_instance)       /* as long as what pp points to is not zero */
   {
     next_instance = &(*next_instance)->next;              /* follow the chain until pp points to pointer that contains a zero */
@@ -209,7 +209,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const EipUint32 highest_instance_attribute_number,
                          const int number_of_instance_services,
                          const int number_of_instances,
-                         char *name,
+                         const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer) {
 

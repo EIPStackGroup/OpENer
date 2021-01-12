@@ -1096,6 +1096,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   const EipUint8 *message = message_router_request->data;
   const size_t connection_path_size = GetUsintFromMessage(&message); /* length in words */
   size_t remaining_path = connection_path_size;
+  OPENER_TRACE_INFO("Received connection path size: %zu \n",
+                    connection_path_size);
   CipClass *class = NULL;
 
   CipDword class_id = 0x0;
@@ -1529,8 +1531,7 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions)
-{
+  CloseSessionFunction CloseSessions) {
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
