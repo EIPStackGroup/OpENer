@@ -705,7 +705,9 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
 	/* Mask for filtering set-ability */
 	if ((NULL != attribute) && (NULL != attribute->data)) {
 
-		if (0x00 == attribute->attribute_flags) { // kNotSetOrGetable
+		if ((attribute->attribute_flags == kGetableAllDummy) ||
+			(attribute->attribute_flags == kNotSetOrGetable) ||
+			(attribute->attribute_flags == kGetableAll)){
 			OPENER_TRACE_WARN("SetAttributeSingle: Attribute %d not supported!\n\r", attribute_number);
 		} else {
 			uint8_t set_bit_mask =
