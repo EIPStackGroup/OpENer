@@ -1393,7 +1393,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                 break;
               default:
                 OPENER_TRACE_ERR("Not allowed in connection manager");
-                break;
+                return kCipErrorPathSegmentError;
             }
           }
           break;
