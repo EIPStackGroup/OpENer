@@ -1418,16 +1418,14 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
-  if ( kConnectionObjectTransportClassTriggerTransportClass3 !=
-       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
+  if(kConnectionObjectTransportClassTriggerTransportClass3 !=
+     ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
     /* only close the UDP connection for not class 3 connections */
-    CloseUdpSocket(
-      connection_object->socket[kUdpCommuncationDirectionConsuming]);
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
     connection_object->socket[kUdpCommuncationDirectionConsuming] =
       kEipInvalidSocket;
-    CloseUdpSocket(
-      connection_object->socket[kUdpCommuncationDirectionProducing]);
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
     connection_object->socket[kUdpCommuncationDirectionProducing] =
       kEipInvalidSocket;
   }
@@ -1531,7 +1529,8 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions) {
+  CloseSessionFunction CloseSessions)
+{
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
