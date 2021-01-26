@@ -127,6 +127,57 @@ use the GIT version you will need the program Doxygen for generating the HTML
 documentation. You can generate the documentation by invoking doxygen from the 
 command line in the opener main directory.
 
+
+Fuzzing
+--------------
+### Intro
+Fuzzing is an automated testing method that directs varying input data to a program in 
+order to monitor output. It is a way to test for overall reliability as well as identify 
+potential security bugs.
+
+The fuzzer we are using is AFL, a fuzzer that uses runtime guided techniques to create input for the tested program. From a high-level prespective AFL works as follows:
+- Forks the fuzzed process
+- Genereates a new test case based on a predefined input
+- Feeds the fuzzed process with the test case through STDIN
+- Monitors the execution and registers which paths are reachable
+
+![Alt text](fuzz/imgs/fuzz.png "AFL Fuzzing")
+
+### Compile
+To start fuzzing this project with AFL you'll need to compile it with AFL.
+First make sure you have AFL installed:
+```
+sudo apt install build-essential
+wget http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
+tar xzf afl-latest.tgz
+cd afl*
+make && sudo make install
+echo "AFL is ready at: $(which afl-fuzz)"
+
+```
+
+Then, compile OpENer with AFL:
+1. Change to the ``OpENer/bin/posix`` directory
+2. Compile OpENer with AFL ``./setup_posix_fuzz_afl.sh`` 
+3. Run ``make``
+
+### Fuzz
+Finally, generate some test cases and start AFL:
+```
+# Generate inputs
+mkdir inputs
+echo 630000000000000000000000000000000000000000000000 | xxd -r -p > ./inputs/enip_req_list_identity
+# You can also use the inputs we prepared from OpENer/fuzz/inputs
+# Finally, let's fuzz!
+afl-fuzz -i inputs -o findings ./src/ports/POSIX/OpENer <interface_name>
+```
+
+### Reproduce a crash
+Usually to reproduce a crash it's enough to retransmit the testcase using ``cat testcase | nc IP_ADDR 44818``
+However, since CIP runs over the EtherNet/IP layer, it must first register a valid session. Therefore, we need to use a dedicated script:
+`python fuzz/scripts/send_testcase.py IP testcase_path`
+
+
 Porting OpENer:
 ---------------
 For porting OpENer to new platforms please see the porting section in the 

@@ -749,6 +749,15 @@ EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer,
  */
 SessionStatus CheckRegisteredSessions(
   const EncapsulationData *const receive_data) {
+
+/* Skip the check when fuzzing
+    in order to increase our code coverage 
+    we are simply bypassing all the session checks
+*/
+#ifdef FUZZING_AFL
+  return kSessionStatusValid;
+#endif
+
   if( (0 < receive_data->session_handle) && (receive_data->session_handle <=
                                              OPENER_NUMBER_OF_SUPPORTED_SESSIONS) )
   {
