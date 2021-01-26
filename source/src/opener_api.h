@@ -369,21 +369,6 @@ void EncodeCipEPath(const CipEpath *const data,
 void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
                                            ENIPMessage *const outgoing_message);
 
-/** @ingroup CIP_API
- * @brief Retrieve the given data according to CIP encoding from the message     //TODO: remove DecodeData
- * buffer.
- *
- * This function may be used in in own services for handling data from the
- * requester (e.g., setAttributeSingle).
- *  @param cip_data_type the CIP type to decode
- *  @param cip_data pointer to data value to written.
- *  @param cip_message pointer to memory where the data should be taken from
- *  @return length of taken bytes
- *          -1 .. error
- */
-int DecodeData(const EipUint8 cip_data_type,  //TODO: replace with decode functions, see below
-               void *const cip_data,
-               const EipUint8 **const cip_message);
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
