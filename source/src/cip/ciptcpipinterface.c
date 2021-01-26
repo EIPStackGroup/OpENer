@@ -313,7 +313,7 @@ static CipUsint dummy_data_field = 0; /**< dummy data fiel to provide non-null d
 
 /************** Functions ****************************************/
 
-void EncoodeCipTcpIpInterfaceConfiguration(const void *const data,
+void EncodeCipTcpIpInterfaceConfiguration(const void *const data,
                                            ENIPMessage *const outgoing_message)
 {
   CipTcpIpInterfaceConfiguration *
@@ -362,213 +362,169 @@ void EncodeCipLastConflictDetected(const void *const data,
                                                        outgoing_message);
 }
 
-EipStatus SetAttributeSingleTcpIpInterface(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-  CipAttributeStruct *attribute = GetCipAttribute(
-    instance, message_router_request->request_path.attribute_number);
-  EipUint16 attribute_number = message_router_request->request_path
-                               .attribute_number;
 
-  /* Check attribute exists and is not a dummy for GetAttributeAll */
-  if (NULL != attribute && !(kGetableAllDummy & attribute->attribute_flags) ) {
-    uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
-                                                                attribute_number)
-                            ]);
-    if ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) {
+int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
+		const CipDword *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
-      if ( (attribute->attribute_flags & kPreSetFunc)
-           && instance->cip_class->PreSetCallback ) {
-        instance->cip_class->PreSetCallback(instance,
-                                            attribute,
-                                            message_router_request->service);
-      }
+	int number_of_decoded_bytes = -1;
 
-      switch (attribute_number) {
-        case 3: {
-          CipDword configuration_control_received = GetUdintFromMessage(
-            &(message_router_request->data) );
-          if ( (configuration_control_received & kTcpipCfgCtrlMethodMask) >=
-               0x03 ||
-               (configuration_control_received & ~kTcpipCfgCtrlMethodMask) ) {
-            message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
+	CipDword configuration_control_received = GetDintFromMessage(
+			&(message_router_request->data));
+	if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03
+			|| (configuration_control_received & ~kTcpipCfgCtrlMethodMask)) {
+		message_router_response->general_status =
+				kCipErrorInvalidAttributeValue;
 
-          } else {
+	} else {
 
-            OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+		/* Set reserved bits to zero on reception. */
+		configuration_control_received &= (kTcpipCfgCtrlMethodMask
+				| kTcpipCfgCtrlDnsEnable);
 
-            if (attribute->data != NULL) {
-              CipDword *data = (CipDword *) attribute->data;
-              /* Set reserved bits to zero on reception. */
-              configuration_control_received &=
-                (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
-              *(data) = configuration_control_received;
-              message_router_response->general_status = kCipErrorSuccess;
-            } else {
-              message_router_response->general_status = kCipErrorNotEnoughData;
-            }
-          }
-        }
-        break;
+		(*(EipUint32*) (data)) = configuration_control_received;
+		number_of_decoded_bytes = 4;
+		message_router_response->general_status = kCipErrorSuccess;
+	}
+
+	return number_of_decoded_bytes;
+}
 
 #if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
           0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
-        case 5: { /* Interface configuration */
-          CipTcpIpInterfaceConfiguration if_cfg;
-          CipUdint tmp_ip;
 
-          if (IsIOConnectionActive() ) {
-            message_router_response->general_status =
-              kCipErrorDeviceStateConflict;
-            break;
-          }
-          if (kTcpipCfgCtrlStaticIp !=
-              (g_tcpip.config_control & kTcpipCfgCtrlMethodMask) ) {
-            message_router_response->general_status =
-              kCipErrorObjectStateConflict;
-            break;
-          }
-          memset(&if_cfg, 0, sizeof if_cfg);
-          tmp_ip = GetUdintFromMessage(&(message_router_request->data) );
-          if_cfg.ip_address = htonl(tmp_ip);
-          tmp_ip = GetUdintFromMessage(&(message_router_request->data) );
-          if_cfg.network_mask = htonl(tmp_ip);
-          tmp_ip = GetUdintFromMessage(&(message_router_request->data) );
-          if_cfg.gateway = htonl(tmp_ip);
-          tmp_ip = GetUdintFromMessage(&(message_router_request->data) );
-          if_cfg.name_server = htonl(tmp_ip);
-          tmp_ip = GetUdintFromMessage(&(message_router_request->data) );
-          if_cfg.name_server_2 = htonl(tmp_ip);
+int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
+		const CipTcpIpInterfaceConfiguration *const data, //kCipUdintUdintUdintUdintUdintString
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
-          CipUint domain_name_length =
-            GetUintFromMessage(&(message_router_request->data) );
-          if (domain_name_length > 48) {  /* see Vol. 2, Table 5-4.3 Instance Attributes */
-            message_router_response->general_status = kCipErrorTooMuchData;
-            break;
-          }
-          SetCipStringByData(&if_cfg.domain_name,
-                             domain_name_length,
-                             message_router_request->data);
-          domain_name_length = (domain_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
-          OPENER_TRACE_INFO("Domain: ds %hu '%s'\n",
-                            domain_name_length,
-                            if_cfg.domain_name.string);
-          message_router_request->data += domain_name_length;
+	int number_of_decoded_bytes = -1;
 
-          if (!IsValidNetworkConfig(&if_cfg) ||
-              (domain_name_length > 0 &&
-               !IsValidDomain(if_cfg.domain_name.string) ) ) {
-            message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
-            break;
-          }
-          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
-          CipTcpIpInterfaceConfiguration *const p_interface_configuration =
-            (CipTcpIpInterfaceConfiguration *)attribute->data;
-          /* Free first and then making a shallow copy of if_cfg.domain_name is ok,
-           * because if_cfg goes out of scope now. */
-          FreeCipString(&p_interface_configuration->domain_name);
-          *p_interface_configuration = if_cfg;
-          /* Tell that this configuration change becomes active after a reset */
-          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
-          message_router_response->general_status = kCipErrorSuccess;
-        }
-        break;
+	CipTcpIpInterfaceConfiguration if_cfg;
+	CipUdint tmp_ip;
 
-        case 6: { /* host name */
-          CipString tmp_host_name = {
-            .length = 0u,
-            .string = NULL
-          };
-          CipUint host_name_length =
-            GetUintFromMessage(&(message_router_request->data) );
-          if (host_name_length > 64) {  /* see RFC 1123 on more details */
-            message_router_response->general_status = kCipErrorTooMuchData;
-            break;
-          }
-          SetCipStringByData(&tmp_host_name,
-                             host_name_length,
-                             message_router_request->data);
-          host_name_length = (host_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
-          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n",
-                            host_name_length,
-                            tmp_host_name.string);
-          message_router_request->data += host_name_length;
-          if (!IsValidNameLabel(tmp_host_name.string) ) {
-            message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
-            break;
-          }
-          OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
-          CipString *const host_name = (CipString *)attribute->data;
-          /* Free first and then making a shallow copy of tmp_host_name is ok,
-           * because tmp_host_name goes out of scope now. */
-          FreeCipString(host_name);
-          *host_name = tmp_host_name;
-          /* Tell that this configuration change becomes active after a reset */
-          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
-          message_router_response->general_status = kCipErrorSuccess;
-        }
-        break;
+	if (IsIOConnectionActive()) {
+		message_router_response->general_status = kCipErrorDeviceStateConflict;
+		return number_of_decoded_bytes;
+	}
+	if (kTcpipCfgCtrlStaticIp
+			!= (g_tcpip.config_control & kTcpipCfgCtrlMethodMask)) {
+		message_router_response->general_status = kCipErrorObjectStateConflict;
+		return number_of_decoded_bytes;
+	}
+	memset(&if_cfg, 0, sizeof if_cfg);
+	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+	if_cfg.ip_address = htonl(tmp_ip);
+	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+	if_cfg.network_mask = htonl(tmp_ip);
+	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+	if_cfg.gateway = htonl(tmp_ip);
+	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+	if_cfg.name_server = htonl(tmp_ip);
+	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
+	if_cfg.name_server_2 = htonl(tmp_ip);
+
+	CipUint domain_name_length = GetUintFromMessage(
+			&(message_router_request->data));
+	if (domain_name_length > 48) { /* see Vol. 2, Table 5-4.3 Instance Attributes */
+		message_router_response->general_status = kCipErrorTooMuchData;
+		return number_of_decoded_bytes;
+	}
+	SetCipStringByData(&if_cfg.domain_name, domain_name_length,
+			message_router_request->data);
+	domain_name_length = (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
+	OPENER_TRACE_INFO("Domain: ds %hu '%s'\n",
+			domain_name_length,
+			if_cfg.domain_name.string);
+
+	if (!IsValidNetworkConfig(&if_cfg)
+			|| (domain_name_length > 0
+					&& !IsValidDomain(if_cfg.domain_name.string))) {
+		message_router_response->general_status =
+				kCipErrorInvalidAttributeValue;
+		return number_of_decoded_bytes;
+	}
+
+	(*(CipTcpIpInterfaceConfiguration*) (data)) = if_cfg; //write data to attribute
+	number_of_decoded_bytes = 20 + domain_name_length;
+
+	/* Tell that this configuration change becomes active after a reset */
+	g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+	message_router_response->general_status = kCipErrorSuccess;
+
+	return number_of_decoded_bytes;
+
+}
+
+int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
+		const CipString *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
+
+	int number_of_decoded_bytes = -1;
+
+	          CipString tmp_host_name = {
+	            .length = 0u,
+	            .string = NULL
+	          };
+	          CipUint host_name_length =
+	            GetUintFromMessage(&(message_router_request->data) );
+	          if (host_name_length > 64) {  /* see RFC 1123 on more details */
+	            message_router_response->general_status = kCipErrorTooMuchData;
+	            return number_of_decoded_bytes;
+	          }
+	          SetCipStringByData(&tmp_host_name,
+	                             host_name_length,
+	                             message_router_request->data);
+	          host_name_length = (host_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
+	          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n",
+	                            host_name_length,
+	                            tmp_host_name.string);
+
+	          if (!IsValidNameLabel(tmp_host_name.string) ) {
+	            message_router_response->general_status =
+	              kCipErrorInvalidAttributeValue;
+	            return number_of_decoded_bytes;
+	          }
+
+	          (*(CipString*) (data)) = tmp_host_name; //write data to attribute
+
+	          /* Tell that this configuration change becomes active after a reset */
+	          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+	          message_router_response->general_status = kCipErrorSuccess;
+
+	return number_of_decoded_bytes;
+
+}
+
 #endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
-        case 13: {
+int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
+		const CipUint *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
-          CipUint inactivity_timeout_received = GetUintFromMessage(
-            &(message_router_request->data) );
+	int number_of_decoded_bytes = -1;
 
-          if (inactivity_timeout_received > 3600) {
-            message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
-          } else {
+	CipUint inactivity_timeout_received = GetUintFromMessage(
+			&(message_router_request->data));
 
-            OPENER_TRACE_INFO("setAttribute %d\n", attribute_number);
+	if (inactivity_timeout_received > 3600) {
+		message_router_response->general_status =
+				kCipErrorInvalidAttributeValue;
+	} else {
 
-            if (attribute->data != NULL) {
-              CipUint *data = (CipUint *) attribute->data;
+		(*(EipUint16*) (data)) = inactivity_timeout_received;
+		message_router_response->general_status = kCipErrorSuccess;
+		number_of_decoded_bytes = 2;
 
-              *(data) = inactivity_timeout_received;
-              message_router_response->general_status = kCipErrorSuccess;
-            } else {
-              message_router_response->general_status = kCipErrorNotEnoughData;
-            }
-          }
-        }
-        break;
+	}
 
-        default:
-          message_router_response->general_status =
-            kCipErrorAttributeNotSetable;
-          break;
-      }
+	return number_of_decoded_bytes;
 
-      /* Call the PostSetCallback if enabled. */
-      if ( (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc) )
-           && NULL != instance->cip_class->PostSetCallback ) {
-        CipUsint service = message_router_request->service;
-        if (kCipErrorSuccess != message_router_response->general_status) {
-          service |= 0x80;    /* Flag no update, TODO: remove this workaround*/
-        }
-        instance->cip_class->PostSetCallback(instance, attribute, service);
-      }
-    } else {
-      message_router_response->general_status = kCipErrorAttributeNotSetable;
-    }
-  } else {
-    /* we don't have this attribute */
-    message_router_response->general_status = kCipErrorAttributeNotSupported;
-  }
-
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
-  return kEipStatusOkSend;
 }
+
 
 EipStatus CipTcpIpInterfaceInit() {
   CipClass *tcp_ip_class = NULL;
@@ -607,7 +563,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   3,
                   kCipDword,
                   EncodeCipDword,
-				  DecodeCipWord,
+				  DecodeTcpIpInterfaceConfigurationControl,
                   &g_tcpip.config_control,
                   kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
   InsertAttribute(instance,
@@ -617,20 +573,42 @@ EipStatus CipTcpIpInterfaceInit() {
 				  NULL,
                   &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
+
+#if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
+          0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
   InsertAttribute(instance,
                   5,
                   kCipUdintUdintUdintUdintUdintString,
-                  EncoodeCipTcpIpInterfaceConfiguration,
-				  NULL,
+                  EncodeCipTcpIpInterfaceConfiguration,
+				  DecodeCipTcpIpInterfaceConfiguration,
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
   InsertAttribute(instance,
 		  	  	  6,
 				  kCipString,
 				  EncodeCipString,
-				  NULL,
+				  DecodeCipTcpIpInterfaceHostName,
 				  &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
+
+#else
+  InsertAttribute(instance,
+                  5,
+                  kCipUdintUdintUdintUdintUdintString,
+                  EncodeCipTcpIpInterfaceConfiguration,
+  				  NULL, //not settable
+                  &g_tcpip.interface_configuration,
+                  kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
+    InsertAttribute(instance,
+  		  	  	  6,
+  				  kCipString,
+  				  EncodeCipString,
+  				  NULL, //not settable
+  				  &g_tcpip.hostname,
+                  kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
+
+#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+
   InsertAttribute(instance,
                   7,
                   kCipAny,
@@ -666,13 +644,17 @@ EipStatus CipTcpIpInterfaceInit() {
 				  NULL,
                   &dummy_data_field,
                   kGetableAllDummy);
-  InsertAttribute(instance, 12, kCipBool, EncodeCipBool, NULL,
+  InsertAttribute(instance,
+		  	  	  12,
+				  kCipBool,
+				  EncodeCipBool,
+				  NULL,
 		  	  	  &dummy_data_field, kGetableAllDummy);
   InsertAttribute(instance,
                   13,
                   kCipUint,
                   EncodeCipUint,
-				  DecodeCipUint,
+				  DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout,
                   &g_tcpip.encapsulation_inactivity_timeout,
                   kSetAndGetAble | kNvDataFunc);
 
@@ -684,8 +666,8 @@ EipStatus CipTcpIpInterfaceInit() {
                 "GetAttributeAll");
 
   InsertService(tcp_ip_class, kSetAttributeSingle,
-                &SetAttributeSingleTcpIpInterface,
-                "SetAttributeSingleTcpIpInterface");
+		  	  	  &SetAttributeSingle,
+		          "SetAttributeSingle");
 
   return kEipStatusOk;
 }
