@@ -47,6 +47,13 @@ CipUsint GetUsintFromMessage(const CipOctet **const buffer_address) {
   return data;
 }
 
+CipBool GetBoolFromMessage(const EipBool8 **const buffer_address) {
+  const EipBool8 *buffer = *buffer_address;
+  EipBool8 data = buffer[0];
+  *buffer_address += 1;
+  return data;
+}
+
 /* little-endian-to-host unsigned 16 bit*/
 
 /**

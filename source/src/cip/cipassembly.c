@@ -14,7 +14,7 @@
 #include "trace.h"
 #include "cipconnectionmanager.h"
 
-/**@brief Retrieve the given data according to CIP encoding from the
+/** @brief Retrieve the given data according to CIP encoding from the
  * 		message buffer.
  *
  *  Implementation of the decode function for the SetAttributeSingle CIP service for Assembly
@@ -26,7 +26,7 @@
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeCipAssemblyAttribute3(const CipByteArray *const data,
+int DecodeCipAssemblyAttribute3(CipByteArray *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 
@@ -125,21 +125,21 @@ CipInstance *CreateAssemblyObject(const EipUint32 instance_id,
   assembly_byte_array->data = data;
 
   InsertAttribute(instance,
-                   3,
-                   kCipByteArray,
-                   EncodeCipByteArray,
-				   DecodeCipAssemblyAttribute3, // special decode function for attribute 3
-                   assembly_byte_array,
-                   kSetAndGetAble | kPreGetFunc | kPostSetFunc);
+                  3,
+                  kCipByteArray,
+                  EncodeCipByteArray,
+                  DecodeCipAssemblyAttribute3,
+                  assembly_byte_array,
+                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
 
   InsertAttribute(instance,
-                    4,
-                    kCipUint,
-                    EncodeCipUint,
-					NULL,
-                    &(assembly_byte_array->length),
-                    kGetableSingle);
+                  4,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  &(assembly_byte_array->length),
+                  kGetableSingle);
 
   return instance;
 }
@@ -163,33 +163,33 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
   return AfterAssemblyDataReceived(instance);
 }
 
-int DecodeCipAssemblyAttribute3(const CipByteArray *const data,
+int DecodeCipAssemblyAttribute3(CipByteArray *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	const EipUint8 **const cip_message = message_router_request->data;
 
-	CipInstance *instance = GetCipInstance(
+	CipInstance *const instance = GetCipInstance(
 			GetCipClass(message_router_request->request_path.class_id),
 			message_router_request->request_path.instance_number);
 
 	int number_of_decoded_bytes = -1;
 	OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
-	CipByteArray *cip_byte_array = (CipByteArray*) data;
+	CipByteArray *cip_byte_array = data;
 
 	if (message_router_request->request_path_size < data->length) {
 		OPENER_TRACE_INFO(
 				"DecodeCipByteArray: not enough data received.\n");
 		message_router_response->general_status = kCipErrorNotEnoughData;
 		return number_of_decoded_bytes;
-	} else {
-		if (message_router_request->request_path_size > data->length) {
-			OPENER_TRACE_INFO(
-					"DecodeCipByteArray: too much data received.\n");
-			message_router_response->general_status = kCipErrorTooMuchData;
-			return number_of_decoded_bytes;
-		}
 	}
+	if (message_router_request->request_path_size > data->length) {
+		OPENER_TRACE_INFO(
+				"DecodeCipByteArray: too much data received.\n");
+		message_router_response->general_status = kCipErrorTooMuchData;
+		return number_of_decoded_bytes;
+	}
+
 	// data-length is correct
 	memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
 

@@ -218,7 +218,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                                                 2, /* # of class services */
                                                 0, /* # of instance attributes */
                                                 14, /* # highest instance attribute number*/
-												7,   /* # of instance services */
+                                                7, /* # of instance services */
                                                 1, /* # of instances */
                                                 "connection manager", /* class name */
                                                 1, /* revision */
@@ -236,7 +236,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 "GetAttributeAll");
   InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
   InsertService(connection_manager, kLargeForwardOpen, &LargeForwardOpen,
-		  	  	  "LargeForwardOpen");
+                "LargeForwardOpen");
   InsertService(connection_manager, kForwardClose, &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager,
@@ -244,7 +244,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 &GetConnectionOwner,
                 "GetConnectionOwner");
   InsertService(connection_manager, kGetConnectionData, &GetConnectionData,
-                  "GetConnectionData");
+                "GetConnectionData");
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
 

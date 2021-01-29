@@ -122,7 +122,7 @@ EipStatus GetAndClearEthernetLink(
  *          -1 .. error
  */
 int DecodeCipEthernetLinkInterfaceControl(
-		const CipEthernetLinkInterfaceControl *const data,
+		CipEthernetLinkInterfaceControl *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 #endif
@@ -283,21 +283,21 @@ EipStatus CipEthernetLinkInit(void) {
                       1,
                       kCipUdint,
                       EncodeCipUdint,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].interface_speed,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
                       2,
                       kCipDword,
                       EncodeCipDword,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].interface_flags,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
                       3,
                       kCip6Usint,
                       EncodeCipEthernetLinkPhyisicalAddress,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].physical_address,
                       kGetableSingleAndAll);
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
@@ -305,29 +305,29 @@ EipStatus CipEthernetLinkInit(void) {
                       4,
                       kCipUsint,
                       EncodeCipUsint,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].interface_cntrs,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
-    		  	  	  5,
-					  kCipUsint,
-					  EncodeCipUsint,
-					  NULL,
+                      5,
+                      kCipUsint,
+                      EncodeCipUsint,
+                      NULL,
                       &g_ethernet_link[idx].media_cntrs,
-					  kGetableSingleAndAll);
+                      kGetableSingleAndAll);
 #else
       InsertAttribute(ethernet_link_instance,
                       4,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceCounters,
-					  NULL,
+                      NULL,
                       &dummy_attribute_udint,
                       kGetableAllDummy);
       InsertAttribute(ethernet_link_instance,
                       5,
                       kCipAny,
                       EncodeCipEthernetLinkMediaCounters,
-					  NULL,
+                      NULL,
                       &dummy_attribute_udint,
                       kGetableAllDummy);
 #endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
@@ -339,7 +339,7 @@ EipStatus CipEthernetLinkInit(void) {
                         6,
                         kCipAny,
                         EncodeCipEthernetLinkInterfaceControl,
-						DecodeCipEthernetLinkInterfaceControl,
+                        DecodeCipEthernetLinkInterfaceControl,
                         &g_ethernet_link[idx].interface_control,
                         IFACE_CTRL_ACCESS_MODE & ~kSetable);
       } else {
@@ -347,7 +347,7 @@ EipStatus CipEthernetLinkInit(void) {
                         6,
                         kCipAny,
                         EncodeCipEthernetLinkInterfaceControl,
-						DecodeCipEthernetLinkInterfaceControl,
+                        DecodeCipEthernetLinkInterfaceControl,
                         &g_ethernet_link[idx].interface_control,
                         IFACE_CTRL_ACCESS_MODE);
       }
@@ -356,42 +356,42 @@ EipStatus CipEthernetLinkInit(void) {
                       6,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceControl,
-					  NULL,
+                      NULL,
                       &s_interface_control,
                       kGetableAll);
 #endif
       InsertAttribute(ethernet_link_instance,
-    		  	  	  7,
-					  kCipUsint,
-					  EncodeCipUsint,
-					  NULL,
+                      7,
+                      kCipUsint,
+                      EncodeCipUsint,
+                      NULL,
                       &g_ethernet_link[idx].interface_type,
                       kGetableSingleAndAll);
       InsertAttribute(ethernet_link_instance,
-    		  	  	  8,
-					  kCipUsint,
-					  EncodeCipUsint,
-					  NULL,
+                      8,
+                      kCipUsint,
+                      EncodeCipUsint,
+                      NULL,
                       &dummy_attribute_usint,
-					  kGetableAllDummy);
+                      kGetableAllDummy);
       InsertAttribute(ethernet_link_instance,
-    		  	  	  9,
-					  kCipUsint,
-					  EncodeCipUsint,
-					  NULL,
+                      9,
+                      kCipUsint,
+                      EncodeCipUsint,
+                      NULL,
                       &dummy_attribute_usint, kGetableAllDummy);
       InsertAttribute(ethernet_link_instance,
                       10,
                       kCipShortString,
                       EncodeCipShortString,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].interface_label,
                       IFACE_LABEL_ACCESS_MODE);
       InsertAttribute(ethernet_link_instance,
                       11,
                       kCipAny,
                       EncodeCipEthernetLinkInterfaceCaps,
-					  NULL,
+                      NULL,
                       &g_ethernet_link[idx].interface_caps,
                       kGetableSingleAndAll);
     }
@@ -561,11 +561,11 @@ static bool IsIfaceControlAllowed(CipUdint instance_id,
 }
 
 int DecodeCipEthernetLinkInterfaceControl(
-		const CipEthernetLinkInterfaceControl *const data,
+		CipEthernetLinkInterfaceControl *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
-	CipInstance *instance = GetCipInstance(
+	CipInstance *const instance = GetCipInstance(
 				GetCipClass(message_router_request->request_path.class_id),
 				message_router_request->request_path.instance_number);
 
@@ -600,7 +600,7 @@ int DecodeCipEthernetLinkInterfaceControl(
 					return number_of_decoded_bytes;
 				}
 			}
-			(*(CipEthernetLinkInterfaceControl*) (data)) = if_cntrl; //write data to attribute
+			*data = if_cntrl; //write data to attribute
 			message_router_response->general_status = kCipErrorSuccess;
 			number_of_decoded_bytes = 4;
 		}

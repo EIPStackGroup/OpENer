@@ -364,7 +364,7 @@ void EncodeCipLastConflictDetected(const void *const data,
 
 
 int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
-		const CipDword *const data,
+		CipDword *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -383,7 +383,7 @@ int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
 		configuration_control_received &= (kTcpipCfgCtrlMethodMask
 				| kTcpipCfgCtrlDnsEnable);
 
-		(*(EipUint32*) (data)) = configuration_control_received;
+		*data = configuration_control_received;
 		number_of_decoded_bytes = 4;
 		message_router_response->general_status = kCipErrorSuccess;
 	}
@@ -395,7 +395,7 @@ int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
           0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
-		const CipTcpIpInterfaceConfiguration *const data, //kCipUdintUdintUdintUdintUdintString
+		CipTcpIpInterfaceConfiguration *const data, //kCipUdintUdintUdintUdintUdintString
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -446,7 +446,7 @@ int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
 		return number_of_decoded_bytes;
 	}
 
-	(*(CipTcpIpInterfaceConfiguration*) (data)) = if_cfg; //write data to attribute
+	*data = if_cfg; //write data to attribute
 	number_of_decoded_bytes = 20 + domain_name_length;
 
 	/* Tell that this configuration change becomes active after a reset */
@@ -458,7 +458,7 @@ int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
 }
 
 int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
-		const CipString *const data,
+		CipString *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -488,7 +488,7 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 	            return number_of_decoded_bytes;
 	          }
 
-	          (*(CipString*) (data)) = tmp_host_name; //write data to attribute
+	          *data = tmp_host_name; //write data to attribute
 
 	          /* Tell that this configuration change becomes active after a reset */
 	          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
@@ -501,7 +501,7 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 #endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
-		const CipUint *const data,
+		CipUint *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -515,7 +515,7 @@ int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
 				kCipErrorInvalidAttributeValue;
 	} else {
 
-		(*(EipUint16*) (data)) = inactivity_timeout_received;
+		*data = inactivity_timeout_received;
 		message_router_response->general_status = kCipErrorSuccess;
 		number_of_decoded_bytes = 2;
 
@@ -546,31 +546,31 @@ EipStatus CipTcpIpInterfaceInit() {
   CipInstance *instance = GetCipInstance(tcp_ip_class, 1); /* bind attributes to the instance #1 that was created above */
 
   InsertAttribute(instance,
-		  	  	  1,
-				  kCipDword,
-				  EncodeCipDword,
-				  NULL,
-				  &g_tcpip.status,
+                  1,
+                  kCipDword,
+                  EncodeCipDword,
+                  NULL,
+                  &g_tcpip.status,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   2,
                   kCipDword,
                   EncodeCipDword,
-				  NULL,
+                  NULL,
                   &g_tcpip.config_capability,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   3,
                   kCipDword,
                   EncodeCipDword,
-				  DecodeTcpIpInterfaceConfigurationControl,
+                  DecodeTcpIpInterfaceConfigurationControl,
                   &g_tcpip.config_control,
                   kSetAndGetAble | kNvDataFunc | IFACE_CFG_SET_MODE );
   InsertAttribute(instance,
                   4,
                   kCipEpath,
                   EncodeCipEPath,
-				  NULL,
+                  NULL,
                   &g_tcpip.physical_link_object,
                   kGetableSingleAndAll);
 
@@ -580,15 +580,15 @@ EipStatus CipTcpIpInterfaceInit() {
                   5,
                   kCipUdintUdintUdintUdintUdintString,
                   EncodeCipTcpIpInterfaceConfiguration,
-				  DecodeCipTcpIpInterfaceConfiguration,
+                  DecodeCipTcpIpInterfaceConfiguration,
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
   InsertAttribute(instance,
-		  	  	  6,
-				  kCipString,
-				  EncodeCipString,
-				  DecodeCipTcpIpInterfaceHostName,
-				  &g_tcpip.hostname,
+                  6,
+                  kCipString,
+                  EncodeCipString,
+                  DecodeCipTcpIpInterfaceHostName,
+                  &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
 #else
@@ -596,15 +596,15 @@ EipStatus CipTcpIpInterfaceInit() {
                   5,
                   kCipUdintUdintUdintUdintUdintString,
                   EncodeCipTcpIpInterfaceConfiguration,
-  				  NULL, //not settable
+                  NULL, //not settable
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
     InsertAttribute(instance,
-  		  	  	  6,
-  				  kCipString,
-  				  EncodeCipString,
-  				  NULL, //not settable
-  				  &g_tcpip.hostname,
+                  6,
+                  kCipString,
+                  EncodeCipString,
+                  NULL, //not settable
+                  &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
 #endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
@@ -613,48 +613,48 @@ EipStatus CipTcpIpInterfaceInit() {
                   7,
                   kCipAny,
                   EncodeSafetyNetworkNumber,
-				  NULL,
+                  NULL,
                   &dummy_data_field,
                   kGetableAllDummy);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
-				  NULL,
+                  NULL,
                   &g_tcpip.mcast_ttl_value,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   9,
                   kCipAny,
                   EncodeCipTcpIpMulticastConfiguration,
-				  NULL,
+                  NULL,
                   &g_tcpip.mcast_config,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
-		  	  	  10,
-				  kCipBool,
-				  EncodeCipBool,
-				  NULL,
-				  &g_tcpip.select_acd,
+                  10,
+                  kCipBool,
+                  EncodeCipBool,
+                  NULL,
+                  &g_tcpip.select_acd,
                   kGetableAllDummy);
   InsertAttribute(instance,
                   11,
                   kCipBool,
                   EncodeCipLastConflictDetected,
-				  NULL,
+                  NULL,
                   &dummy_data_field,
                   kGetableAllDummy);
   InsertAttribute(instance,
-		  	  	  12,
-				  kCipBool,
-				  EncodeCipBool,
-				  NULL,
-		  	  	  &dummy_data_field, kGetableAllDummy);
+                  12,
+                  kCipBool,
+                  EncodeCipBool,
+                  NULL,
+                  &dummy_data_field, kGetableAllDummy);
   InsertAttribute(instance,
                   13,
                   kCipUint,
                   EncodeCipUint,
-				  DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout,
+                  DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout,
                   &g_tcpip.encapsulation_inactivity_timeout,
                   kSetAndGetAble | kNvDataFunc);
 
@@ -666,8 +666,8 @@ EipStatus CipTcpIpInterfaceInit() {
                 "GetAttributeAll");
 
   InsertService(tcp_ip_class, kSetAttributeSingle,
-		  	  	  &SetAttributeSingle,
-		          "SetAttributeSingle");
+                &SetAttributeSingle,
+                "SetAttributeSingle");
 
   return kEipStatusOk;
 }

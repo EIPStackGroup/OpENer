@@ -68,7 +68,7 @@ static CipQosDscpValues s_active_dscp = {
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeCipQoSAttribute(const CipUsint *const data,
+int DecodeCipQoSAttribute(CipUsint *const data,
 		const CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -81,7 +81,7 @@ int DecodeCipQoSAttribute(const CipUsint *const data,
 		CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
 		if (attribute_value_received < 64U) {
 
-			(*(EipUint8*) (data)) = attribute_value_received; //write value to attribute
+			*data = attribute_value_received; //write value to attribute
 
 			message_router_response->general_status = kCipErrorSuccess;
 			number_of_decoded_bytes = 1;
@@ -150,56 +150,56 @@ EipStatus CipQoSInit() {
                   1,
                   kCipUsint,
                   EncodeCipUsint,
-				  NULL,
+                  NULL,
                   (void *) &g_qos.q_frames_enable,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   2,
                   kCipUsint,
                   EncodeCipUsint,
-				  NULL,
+                  NULL,
                   (void *) &g_qos.dscp.event,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   3,
                   kCipUsint,
                   EncodeCipUsint,
-				  NULL,
+                  NULL,
                   (void *) &g_qos.dscp.general,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   4,
                   kCipUsint,
                   EncodeCipUsint,
-				  DecodeCipQoSAttribute, //special Decode for QoS Attributes
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.urgent,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
                   EncodeCipUsint,
-				  DecodeCipQoSAttribute, //special Decode for QoS Attributes
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.scheduled,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
                   EncodeCipUsint,
-				  DecodeCipQoSAttribute, //special Decode for QoS Attributes
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.high,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
                   EncodeCipUsint,
-				  DecodeCipQoSAttribute, //special Decode for QoS Attributes
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.low,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
-				  DecodeCipQoSAttribute, //special Decode for QoS Attributes
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
