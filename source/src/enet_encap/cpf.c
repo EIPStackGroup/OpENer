@@ -233,7 +233,7 @@ EipStatus CreateCommonPacketFormatStructure(const EipUint8 *data,
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
-  int length_count = 0;
+  size_t length_count = 0;
   CipUint item_count = GetUintFromMessage(&data);
   //OPENER_ASSERT(4U >= item_count);/* Sanitizing data - probably needs to be changed for productive code */
   common_packet_format_data->item_count = item_count;
@@ -257,8 +257,13 @@ EipStatus CreateCommonPacketFormatStructure(const EipUint8 *data,
     common_packet_format_data->data_item.type_id = GetUintFromMessage(&data);
     common_packet_format_data->data_item.length = GetUintFromMessage(&data);
     common_packet_format_data->data_item.data = (EipUint8 *) data;
-    data += common_packet_format_data->data_item.length;
-    length_count += (4 + common_packet_format_data->data_item.length);
+    if(data_length >=
+       length_count + 4 + common_packet_format_data->data_item.length) {
+      data += common_packet_format_data->data_item.length;
+      length_count += (4 + common_packet_format_data->data_item.length);
+    } else {
+      return kEipStatusError;
+    }
 
     CipUsint address_item_count = common_packet_format_data->item_count - 2;
     for(size_t j = 0; j < (address_item_count > 2 ? 2 : address_item_count);
@@ -443,7 +448,7 @@ void EncodeSequenceNumber(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   AddIntToMessage(
-    (EipUint16) common_packet_format_data_item->address_item.data.sequence_number,
+     (EipUint16) common_packet_format_data_item->address_item.data.sequence_number,
     outgoing_message );
 }
 
