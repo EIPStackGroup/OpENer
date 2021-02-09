@@ -79,10 +79,10 @@ EipStatus GetConnectionOwner(CipInstance *instance,
                              const int encapsulation_session);
 
 EipStatus GetConnectionData(CipInstance *instance,
-							CipMessageRouterRequest *message_router_request,
-							CipMessageRouterResponse *message_router_response,
-							const struct sockaddr *originator_address,
-							const int encapsulation_session);
+                            CipMessageRouterRequest *message_router_request,
+                            CipMessageRouterResponse *message_router_response,
+                            const struct sockaddr *originator_address,
+                            const int encapsulation_session);
 
 EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                                       CipMessageRouterResponse *message_router_response,
@@ -234,16 +234,25 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 kGetAttributeAll,
                 &GetAttributeAll,
                 "GetAttributeAll");
-  InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
-  InsertService(connection_manager, kLargeForwardOpen, &LargeForwardOpen,
+  InsertService(connection_manager,
+                kForwardOpen,
+                &ForwardOpen,
+                "ForwardOpen");
+  InsertService(connection_manager,
+                kLargeForwardOpen,
+                &LargeForwardOpen,
                 "LargeForwardOpen");
-  InsertService(connection_manager, kForwardClose, &ForwardClose,
+  InsertService(connection_manager,
+                kForwardClose,
+                &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager,
                 kGetConnectionOwner,
                 &GetConnectionOwner,
                 "GetConnectionOwner");
-  InsertService(connection_manager, kGetConnectionData, &GetConnectionData,
+  InsertService(connection_manager,
+                kGetConnectionData,
+                &GetConnectionData,
                 "GetConnectionData");
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
@@ -712,7 +721,9 @@ EipStatus GetConnectionData(
 	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
 
 	//get Connection Number from request
-	EipUint16 Connection_number = message_router_request->data[0]; //TODO: check if this is correct
+	EipUint16 Connection_number = GetUintFromMessage(&message_router_request->data);//message_router_request->data[0]; //TODO: check if this is correct
+
+	//TODO: check if connection exists
 
 	OPENER_TRACE_INFO("Connection_number: %d\n", Connection_number); //TODO: remove
 
@@ -730,7 +741,7 @@ EipStatus GetConnectionData(
 	/* assemble response message */
 
 	// Connection number UINT
-	AddIntToMessage(1,&message_router_response->message); //TODO: replace with connection number from response
+	AddIntToMessage(Connection_number,&message_router_response->message);
 	// Connection state UINT
 	AddIntToMessage(connection_object->state,&message_router_response->message);
 	// Originator Port UINT
