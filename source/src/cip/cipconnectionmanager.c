@@ -1096,6 +1096,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   const EipUint8 *message = message_router_request->data;
   const size_t connection_path_size = GetUsintFromMessage(&message); /* length in words */
   size_t remaining_path = connection_path_size;
+  OPENER_TRACE_INFO("Received connection path size: %zu \n",
+                    connection_path_size);
   CipClass *class = NULL;
 
   CipDword class_id = 0x0;
@@ -1368,7 +1370,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                 break;
               default:
                 OPENER_TRACE_ERR("Not allowed in connection manager");
-                break;
+                return kCipErrorPathSegmentError;
             }
           }
           break;
@@ -1391,7 +1393,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                 break;
               default:
                 OPENER_TRACE_ERR("Not allowed in connection manager");
-                break;
+                return kCipErrorPathSegmentError;
             }
           }
           break;
@@ -1416,16 +1418,14 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
-  if ( kConnectionObjectTransportClassTriggerTransportClass3 !=
-       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
+  if(kConnectionObjectTransportClassTriggerTransportClass3 !=
+     ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
     /* only close the UDP connection for not class 3 connections */
-    CloseUdpSocket(
-      connection_object->socket[kUdpCommuncationDirectionConsuming]);
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
     connection_object->socket[kUdpCommuncationDirectionConsuming] =
       kEipInvalidSocket;
-    CloseUdpSocket(
-      connection_object->socket[kUdpCommuncationDirectionProducing]);
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
     connection_object->socket[kUdpCommuncationDirectionProducing] =
       kEipInvalidSocket;
   }
