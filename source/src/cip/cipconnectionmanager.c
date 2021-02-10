@@ -78,12 +78,6 @@ EipStatus GetConnectionOwner(CipInstance *instance,
                              const struct sockaddr *originator_address,
                              const int encapsulation_session);
 
-EipStatus GetConnectionData(CipInstance *instance,
-							CipMessageRouterRequest *message_router_request,
-							CipMessageRouterResponse *message_router_response,
-							const struct sockaddr *originator_address,
-							const int encapsulation_session);
-
 EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                                       CipMessageRouterResponse *message_router_response,
                                       EipUint8 general_status,
@@ -218,7 +212,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                                                 2, /* # of class services */
                                                 0, /* # of instance attributes */
                                                 14, /* # highest instance attribute number*/
-                                                7, /* # of instance services */
+                                                6, /* # of instance services */
                                                 1, /* # of instances */
                                                 "connection manager", /* class name */
                                                 1, /* revision */
@@ -243,8 +237,6 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 kGetConnectionOwner,
                 &GetConnectionOwner,
                 "GetConnectionOwner");
-  InsertService(connection_manager, kGetConnectionData, &GetConnectionData,
-                "GetConnectionData");
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
 
@@ -695,89 +687,6 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   (void) instance;
   (void) message_router_request;
   (void) message_router_response;
-
-  return kEipStatusOk;
-}
-
-/* TODO: Not implemented */
-EipStatus GetConnectionData(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-
-	//TODO: add code, remove comment
-	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
-
-	//get Connection Number from request
-	EipUint16 Connection_number = message_router_request->data[0]; //TODO: check if this is correct
-
-	OPENER_TRACE_INFO("Connection_number: %d\n", Connection_number); //TODO: remove
-
-	CIPServiceCode service_code = kGetConnectionData;
-	message_router_response->reply_service = (0x80 | service_code);
-
-	//TODO: check status
-	message_router_response->general_status = kEipStatusOk;
-	message_router_response->size_of_additional_status = 1;
-	message_router_response->additional_status[0] = kEipStatusOk;
-
-	DoublyLinkedListNode *node = connection_list.first; //TODO: remove, first element used for test
-	CipConnectionObject *connection_object = node->data;
-
-	/* assemble response message */
-
-	// Connection number UINT
-	AddIntToMessage(1,&message_router_response->message); //TODO: replace with connection number from response
-	// Connection state UINT
-	AddIntToMessage(connection_object->state,&message_router_response->message);
-	// Originator Port UINT
-	AddIntToMessage(connection_object->originator_address.sin_port,&message_router_response->message); //TODO: check if this is correct
-	// Target Port UINT
-	AddIntToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Connection Serial Number UINT
-	AddIntToMessage(connection_object->connection_serial_number,
-		                  &message_router_response->message);
-	// Originator Vendor ID UINT
-	AddIntToMessage(connection_object->originator_vendor_id,
-		                  &message_router_response->message);
-	// Originator Serial number UDINT
-	AddDintToMessage(connection_object->originator_serial_number,
-		                   &message_router_response->message);
-	// Originator O->T CID UDINT
-	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
-	// Target O->T CID UDINT
-	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
-	// Connection Timeout Multiplier USINT
-	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI O->T UDINT
-	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message);
-	// Originator API O->T UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Originator T->O CID UDINT
-	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
-	// Target T->O CID UDINT
-	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
-	// Connection Timeout Multiplier USINT
-	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI T->O UDINT
-	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message);
-	// Originator API T->O UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
 
   return kEipStatusOk;
 }
