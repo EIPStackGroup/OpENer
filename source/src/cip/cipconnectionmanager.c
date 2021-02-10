@@ -1323,10 +1323,11 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
       for(size_t i = 0; i < number_of_encoded_paths; i++) /* process up to 2 encoded paths */
       {
-        if(kLogicalSegmentLogicalTypeInstanceId ==
-           GetPathLogicalSegmentLogicalType(message)
-           || kLogicalSegmentLogicalTypeConnectionPoint ==
-           GetPathLogicalSegmentLogicalType(message) )                                               /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
+        if(kSegmentTypeLogicalSegment == GetPathSegmentType(message)
+           && (kLogicalSegmentLogicalTypeInstanceId ==
+               GetPathLogicalSegmentLogicalType(message)
+               || kLogicalSegmentLogicalTypeConnectionPoint ==
+               GetPathLogicalSegmentLogicalType(message) ) )                                            /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
           CipConnectionPathEpath connection_epath =
@@ -1529,7 +1530,8 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions) {
+  CloseSessionFunction CloseSessions)
+{
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
