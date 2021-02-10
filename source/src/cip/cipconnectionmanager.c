@@ -1529,8 +1529,7 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions)
-{
+  CloseSessionFunction CloseSessions) {
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
