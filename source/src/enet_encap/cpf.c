@@ -448,7 +448,7 @@ void EncodeSequenceNumber(
   const CipCommonPacketFormatData *const common_packet_format_data_item,
   ENIPMessage *const outgoing_message) {
   AddIntToMessage(
-     (EipUint16) common_packet_format_data_item->address_item.data.sequence_number,
+    (EipUint16) common_packet_format_data_item->address_item.data.sequence_number,
     outgoing_message );
 }
 

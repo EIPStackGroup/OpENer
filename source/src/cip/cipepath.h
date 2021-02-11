@@ -79,7 +79,8 @@ typedef enum segment_type {
   kSegmentTypeDataSegment, /**< Data segment */
   kSegmentTypeDataTypeConstructed, /**< Data type constructed */
   kSegmentTypeDataTypeElementary, /**< Data type elementary */
-  kSegmentTypeReserved /**< Reserved segment type */
+  kSegmentTypeReserved, /**< Reserved segment type */
+  kSegmentTypeInvalid /**< Invalid segment type */
 } SegmentType;
 
 /** @brief Port Segment flags */
@@ -96,7 +97,8 @@ typedef enum logical_segment_type {
   kLogicalSegmentLogicalTypeAttributeId, /**< Attribute ID */
   kLogicalSegmentLogicalTypeSpecial, /**< Special */
   kLogicalSegmentLogicalTypeServiceId, /**< Service ID */
-  kLogicalSegmentLogicalTypeExtendedLogical /**< Extended Logical */
+  kLogicalSegmentLogicalTypeExtendedLogical, /**< Extended Logical */
+  kLogicalSegmentLogicalTypeInvalid /**< Invalid segment type */
 } LogicalSegmentLogicalType;
 
 typedef enum logical_segment_extended_logical_type {
@@ -106,7 +108,8 @@ typedef enum logical_segment_extended_logical_type {
   kLogicalSegmentExtendedLogicalTypeBitIndex,
   kLogicalSegmentExtendedLogicalTypeIndirectBitIndex,
   kLogicalSegmentExtendedLogicalTypeStructureMemberNumber,
-  kLogicalSegmentExtendedLogicalTypeStructureMemberHandle
+  kLogicalSegmentExtendedLogicalTypeStructureMemberHandle,
+  kLogicalSegmentExtendedLogicalTypeInvalid
 } LogicalSegmentExtendedLogicalType;
 
 /** @brief Enum containing values how long the encoded value will be (8, 16, or
@@ -114,7 +117,8 @@ typedef enum logical_segment_extended_logical_type {
 typedef enum logical_segment_logical_format {
   kLogicalSegmentLogicalFormatEightBit,
   kLogicalSegmentLogicalFormatSixteenBit,
-  kLogicalSegmentLogicalFormatThirtyTwoBit
+  kLogicalSegmentLogicalFormatThirtyTwoBit,
+  kLogicalSegmentLogicalFormatInvalid
 } LogicalSegmentLogicalFormat;
 
 typedef enum logical_segment_special_type_logical_format {

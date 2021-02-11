@@ -20,7 +20,7 @@ const unsigned int kPortSegmentExtendedPort = 15; /**< Reserved port segment por
 SegmentType GetPathSegmentType(const CipOctet *const cip_path) {
   const unsigned int kSegmentTypeMask = 0xE0;
   const unsigned int segment_type = *cip_path & kSegmentTypeMask;
-  SegmentType result = kSegmentTypeReserved;
+  SegmentType result = kSegmentTypeInvalid;
   switch(segment_type) {
     case SEGMENT_TYPE_PORT_SEGMENT:
       result = kSegmentTypePortSegment;
@@ -49,7 +49,6 @@ SegmentType GetPathSegmentType(const CipOctet *const cip_path) {
     default:
       OPENER_TRACE_ERR(
         "Invalid Segment type in the message! We should never come here!\n");
-      OPENER_ASSERT(false);
       break;
   }
   return result;
@@ -162,7 +161,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   const unsigned int kLogicalTypeMask = 0x1C;
   const unsigned int logical_type = (*cip_path) & kLogicalTypeMask;
-  LogicalSegmentLogicalType result = kLogicalSegmentLogicalTypeExtendedLogical;
+  LogicalSegmentLogicalType result = kLogicalSegmentLogicalTypeInvalid;
   switch(logical_type) {
     case LOGICAL_SEGMENT_TYPE_CLASS_ID:
       result = kLogicalSegmentLogicalTypeClassId;
@@ -190,8 +189,7 @@ LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
       break;
     default:
       OPENER_TRACE_ERR(
-        "Logical segment/logical type: It is not possible to reach this point!\n");
-      OPENER_ASSERT(false);
+        "Logical segment/logical type: Invalid input!\n");
       break;
   }
   return result;
@@ -238,7 +236,7 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
   OPENER_ASSERT(kSegmentTypeLogicalSegment == GetPathSegmentType(cip_path) );
   const unsigned int kLogicalFormatMask = 0x03;
   const unsigned int logical_format = (*cip_path) & kLogicalFormatMask;
-  LogicalSegmentLogicalFormat result = kLogicalSegmentLogicalFormatEightBit;
+  LogicalSegmentLogicalFormat result = kLogicalSegmentLogicalFormatInvalid;
   switch(logical_format) {
     case LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
       result = kLogicalSegmentLogicalFormatEightBit;
@@ -252,7 +250,6 @@ LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
     default:
       OPENER_TRACE_ERR(
         "Logical segment/logical type: Invalid logical type detected!\n");
-      OPENER_ASSERT(false);
       break;
   }
   return result;
@@ -283,7 +280,7 @@ void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
 CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
   LogicalSegmentLogicalFormat logical_format =
     GetPathLogicalSegmentLogicalFormat(*message);
-  CipDword data = 0;
+  CipDword data = kLogicalSegmentLogicalFormatInvalid;
   (*message) += 1; /* Move to logical value */
   switch(logical_format) {
     case kLogicalSegmentLogicalFormatEightBit:
@@ -298,7 +295,8 @@ CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
       data = GetDwordFromMessage(message);
       break;
     default:
-      OPENER_ASSERT(false);/* shall not happen! */
+      OPENER_TRACE_ERR(
+        "Logical segment/logical type: Invalid logical value detected!\n");
       break;
   }
   return data;
@@ -333,7 +331,7 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
                   cip_path) );
   const unsigned int extended_logical_type = *(cip_path + 1);
   LogicalSegmentExtendedLogicalType result =
-    kLogicalSegmentExtendedLogicalTypeReserved;
+    kLogicalSegmentExtendedLogicalTypeInvalid;
   switch(extended_logical_type) {
     case LOGICAL_SEGMENT_EXTENDED_TYPE_ARRAY_INDEX:
       result = kLogicalSegmentExtendedLogicalTypeArrayIndex;
@@ -353,8 +351,12 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
     case LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_HANDLE:
       result = kLogicalSegmentExtendedLogicalTypeStructureMemberHandle;
       break;
-    default:
+    case LOGICAL_SEGMENT_EXTENDED_TYPE_RESERVED:
       result = kLogicalSegmentExtendedLogicalTypeReserved;
+      break;
+    default:
+      OPENER_TRACE_ERR(
+        "Logical segment/logical type: Invalid extended type detected!\n");
   }
   return result;
 }

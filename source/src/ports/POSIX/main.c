@@ -138,7 +138,7 @@ int main(int argc,
 #ifdef FUZZING_AFL
   fuzzHandlePacketFlow();
   return EXIT_SUCCESS;
-#endif 
+#endif
 
   /* The CIP objects are now created and initialized with their default values.
    *  After that any NV data values are loaded to change the attribute contents
@@ -300,7 +300,7 @@ static void fuzzHandlePacketFlow(void) {
   ENIPMessage outgoing_message;
 
   /* AFL persistent mode */
-  while(__AFL_LOOP(100000)) {
+  while(__AFL_LOOP(100000) ) {
     /* Read input from STDIN and enter the handle receive flow */
     memset(buff, 0, 512);
     ssize_t received_size = read(STDIN_FILENO, buff, 512);
@@ -312,7 +312,12 @@ static void fuzzHandlePacketFlow(void) {
     //EipStatus need_to_send = HandleReceivedExplictUdpData(socket_fd, &from_address, receive_buffer, received_size, &remaining_bytes, true, &outgoing_message);
 
     // Fuzz TCP
-    EipStatus need_to_send = HandleReceivedExplictTcpData(socket_fd, receive_buffer, received_size, &remaining_bytes, &from_address, &outgoing_message);
+    EipStatus need_to_send = HandleReceivedExplictTcpData(socket_fd,
+                                                          receive_buffer,
+                                                          received_size,
+                                                          &remaining_bytes,
+                                                          &from_address,
+                                                          &outgoing_message);
   }
 #endif
 }
