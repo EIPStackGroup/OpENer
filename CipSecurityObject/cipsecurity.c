@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Rockwell Automation, Inc.
+ * Copyright (c) 2021, Rockwell Automation, Inc.
  * All rights reserved.
  *
  ******************************************************************************/
@@ -112,11 +112,55 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint,
-                   (void *) &class->revision,
-                   kGetableSingleAndAll ); /* revision */
+  InsertAttribute((CipInstance *) class,
+                  1,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &class->revision,
+                  kGetableSingleAndAll);  /* revision */
+  InsertAttribute((CipInstance *) class,
+                  2,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &class->number_of_instances,
+                  kGetableSingleAndAll); /*  largest instance number */
+  InsertAttribute((CipInstance *) class,
+                  3,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &class->number_of_instances,
+                  kGetableSingle); /* number of instances currently existing*/
+  InsertAttribute((CipInstance *) class,
+                  4,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &kCipUintZero,
+                  kNotSetOrGetable); /* optional attribute list - default = 0 */
+  InsertAttribute((CipInstance *) class,
+                  5,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &kCipUintZero,
+                  kNotSetOrGetable); /* optional service list - default = 0 */
+  InsertAttribute((CipInstance *) class,
+                  6,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &meta_class->highest_attribute_number,
+                  kGetableSingleAndAll); /* max class attribute number*/
+  InsertAttribute((CipInstance *) class,
+                  7,
+                  kCipUint,
+                  EncodeCipUint,
+                  (void *) &class->highest_attribute_number,
+                  kGetableSingleAndAll); /* max instance attribute number*/
 
-  /* Add services to the class */
+  /* Add class services to the meta class */
+  InsertService(meta_class,
+                kGetAttributeAll,
+                &GetAttributeAll,
+                "GetAttributeAll"
+  );
   InsertService(meta_class,
                 kGetAttributeSingle,
                 &GetAttributeSingle,
@@ -135,9 +179,9 @@ EipStatus CipSecurityInit(void) {
 
   cip_security_object_class =
       CreateCipClass(kCipSecurityObjectClassCode,
-                     1, /* # class attributes */
-                     1, /* # highest class attribute number */
-                     2, /* # class services */
+                     0, /* # class attributes */
+                     7, /* # highest class attribute number */
+                     3, /* # class services */
                      2, /* # instance attributes */
                      2, /* # highest instance attribute number */
                      6, /* # instance services */
