@@ -21,6 +21,8 @@ static const CipUint kEIPSecurityObjectKickTimerServiceCode = 0x4CU;
 static const CipUint kEIPSecurityObjectApplyConfigServiceCode = 0x4DU;
 /** @brief EtherNet/IP Security object Abort_Config service code */
 static const CipUint kEIPSecurityObjectAbortConfigServiceCode = 0x4EU;
+/** @brief EtherNet/IP Security object Reset service code */
+static const CipUint kEIPSecurityObjectResetServiceCode = 0x05U;
 
 /* *****************************************************************************
  * Type declarations
