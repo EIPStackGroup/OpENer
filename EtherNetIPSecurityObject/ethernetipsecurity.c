@@ -176,6 +176,96 @@ EipStatus SetAttributeSingleEIPSecurityObject(
   OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
   switch (attribute_number) {
+    case 4: { /** Attribute 4: Allowed Cipher Suites **/
+      CipUsint number_of_cipher_suites = GetUsintFromMessage(
+          &(message_router_request->data));
+
+      EIPSecurityObjectCipherSuites *allowed_cipher_suites = data;
+
+      //TODO: Cleanup old CipherSuiteIds
+
+      allowed_cipher_suites->number_of_cipher_suites = number_of_cipher_suites;
+      if (number_of_cipher_suites>0) {
+        EIPSecurityObjectCipherSuiteId *cipher_suite_ids =
+            CipCalloc(number_of_cipher_suites, sizeof(EIPSecurityObjectCipherSuiteId));
+
+        for (size_t i = 0; i < number_of_cipher_suites; i++) {
+          cipher_suite_ids[i].iana_first_byte = GetUsintFromMessage(
+              &(message_router_request->data));
+          cipher_suite_ids[i].iana_second_byte = GetUsintFromMessage(
+              &(message_router_request->data));
+        }
+
+        allowed_cipher_suites->cipher_suite_ids = cipher_suite_ids;
+      } else {
+        allowed_cipher_suites->cipher_suite_ids = NULL;
+      }
+      message_router_response->general_status = kCipErrorSuccess;
+    }
+      break;
+
+    case 5: { /** Attribute 5: Pre-Shared Keys **/
+      CipUsint number_of_psk = GetUsintFromMessage(&(message_router_request->data));
+      EIPSecurityObjectPreSharedKeys *pre_shared_keys = data;
+
+      // At present, a maximum of 1 PSK may be configured
+      if (number_of_psk > 1) {
+        message_router_response->general_status = kCipErrorInvalidAttributeValue;
+        break;
+      }
+
+      if (number_of_psk == 1) {
+        EIPSecurityObjectPreSharedKey *psk_structure =
+            CipCalloc(number_of_psk, sizeof(EIPSecurityObjectPreSharedKey));
+
+        psk_structure->psk_identity_size = GetUsintFromMessage(&(message_router_request->data));
+
+        if (psk_structure->psk_identity_size <= SIZE_MAX_PSK_IDENTITY){
+          CipOctet *psk_identity = CipCalloc(psk_structure->psk_identity_size, sizeof(CipOctet));
+
+          for (int i=0; i<psk_structure->psk_identity_size; i++) {
+            psk_identity[i] = GetByteFromMessage(&(message_router_request->data));
+          }
+
+          psk_structure->psk_identity = psk_identity;
+          psk_structure->psk_size = GetUsintFromMessage(&(message_router_request->data));
+
+          if(psk_structure->psk_size <= SIZE_MAX_PSK) {
+            CipOctet *psk = CipCalloc(psk_structure->psk_size, sizeof(CipOctet));
+
+            for (int i=0; i<psk_structure->psk_size; i++) {
+              psk[i] = GetByteFromMessage(&(message_router_request->data));
+            }
+
+            psk_structure->psk = psk;
+            //TODO: Cleanup existing PSKs
+            pre_shared_keys->pre_shared_keys = psk_structure;
+            message_router_response->general_status = kCipErrorSuccess;
+          } else {
+            if (psk_identity != NULL){
+              CipFree(psk_identity);
+              psk_structure->psk_identity = NULL;
+            }
+            if (psk_structure != NULL) {
+              CipFree(psk_structure);
+            }
+            message_router_response->general_status = kCipErrorInvalidAttributeValue;
+          }
+        } else {
+          if (psk_structure != NULL) {
+            CipFree(psk_structure);
+          }
+          message_router_response->general_status = kCipErrorInvalidAttributeValue;
+        }
+      } else {
+        //TODO: Cleanup existing PSKs
+        pre_shared_keys->number_of_pre_shared_keys = number_of_psk; //0
+        pre_shared_keys->pre_shared_keys=NULL;
+        message_router_response->general_status = kCipErrorSuccess;
+      }
+    }
+      break;
+
     default:
       message_router_response->general_status = kCipErrorAttributeNotSetable;
       break;
