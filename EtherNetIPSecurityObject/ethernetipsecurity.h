@@ -24,6 +24,14 @@ static const CipUint kEIPSecurityObjectAbortConfigServiceCode = 0x4EU;
 /** @brief EtherNet/IP Security object Reset service code */
 static const CipUint kEIPSecurityObjectResetServiceCode = 0x05U;
 
+/** @brief Maximum length of PSK Identity in octets
+ * see Volume 8, Chapter 5-4.4.5
+ */
+static const CipUsint SIZE_MAX_PSK_IDENTITY = 128;
+
+/** @brief Maximum length of PSK in octets. See Volume 8, Chapter 5-4.4.5 */
+static const CipUsint SIZE_MAX_PSK = 64;
+
 /* *****************************************************************************
  * Type declarations
  */
