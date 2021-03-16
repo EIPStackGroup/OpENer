@@ -122,6 +122,72 @@ EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance){
 
 }
 
+void FinalizeMessage(CipUsint general_status,
+                     CipMessageRouterRequest *message_router_request,
+                     CipMessageRouterResponse *message_router_response) {
+  message_router_response->general_status = general_status;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
+}
+
+EipStatus SetAttributeSingleEIPSecurityObject(
+    CipInstance *instance,
+    CipMessageRouterRequest *message_router_request,
+    CipMessageRouterResponse *message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+
+  EipUint16 attribute_number = message_router_request->request_path.attribute_number;
+  CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
+
+  /* we don't have this attribute */
+  if (NULL == attribute) {
+    FinalizeMessage(kCipErrorAttributeNotSupported,
+                    message_router_request,
+                    message_router_response);
+    return kEipStatusOkSend;
+  }
+
+  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[
+      CalculateIndex(attribute_number)
+  ]);
+  if !(set_bit_mask & (1 << ((attribute_number) % 8))) {
+    FinalizeMessage(kCipErrorAttributeNotSetable,
+                    message_router_request,
+                    message_router_response);
+    return kEipStatusOkSend;
+  }
+
+  if (attribute->data == NULL) {
+    FinalizeMessage(kCipErrorNotEnoughData,
+                    message_router_request,
+                    message_router_response);
+    return kEipStatusOkSend;
+  }
+
+  // Execute PreSetCallback iff available
+  if ((attribute->attribute_flags & kPreSetFunc) && instance->cip_class->PreSetCallback ) {
+    instance->cip_class->PreSetCallback(instance, attribute, message_router_request->service);
+  }
+
+  CipDword *data = (CipDword *) attribute->data;
+
+  OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+
+  switch (attribute_number) {
+    default:
+      message_router_response->general_status = kCipErrorAttributeNotSetable;
+      break;
+  } //end of switch
+
+  message_router_response->size_of_additional_status = 0;
+  message_router_response->data_length = 0;
+  message_router_response->reply_service = (0x80 | message_router_request->service);
+
+  return kEipStatusOkSend;
+}
+
 void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
                                           ENIPMessage *const outgoing_message)
 {
@@ -337,8 +403,8 @@ EipStatus EipSecurityInit(void) {
   );
   InsertService(eip_security_object_class,
                 kSetAttributeSingle,
-                &SetAttributeSingle,
-                "SetAttributeSingle"
+                &SetAttributeSingleEIPSecurityObject,
+                "SetAttributeSingleEIPSecurityObject"
   );
   InsertService(eip_security_object_class,
                 kEIPSecurityObjectBeginConfigServiceCode,
