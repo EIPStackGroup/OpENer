@@ -189,12 +189,15 @@ EipStatus SetAttributeSingleEIPSecurityObject(
         EIPSecurityObjectCipherSuiteId *cipher_suite_ids =
             CipCalloc(number_of_cipher_suites, sizeof(EIPSecurityObjectCipherSuiteId));
 
-        for (size_t i = 0; i < number_of_cipher_suites; i++) {
-          cipher_suite_ids[i].iana_first_byte = GetUsintFromMessage(
-              &(message_router_request->data));
-          cipher_suite_ids[i].iana_second_byte = GetUsintFromMessage(
-              &(message_router_request->data));
-        }
+        memcpy(cipher_suite_ids,
+               message_router_request->data,
+               number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId));
+//        for (size_t i = 0; i < number_of_cipher_suites; i++) {
+//          cipher_suite_ids[i].iana_first_byte = GetUsintFromMessage(
+//              &(message_router_request->data));
+//          cipher_suite_ids[i].iana_second_byte = GetUsintFromMessage(
+//              &(message_router_request->data));
+//        }
 
         allowed_cipher_suites->cipher_suite_ids = cipher_suite_ids;
       } else {
@@ -223,9 +226,13 @@ EipStatus SetAttributeSingleEIPSecurityObject(
         if (psk_structure->psk_identity_size <= SIZE_MAX_PSK_IDENTITY){
           CipOctet *psk_identity = CipCalloc(psk_structure->psk_identity_size, sizeof(CipOctet));
 
-          for (int i=0; i<psk_structure->psk_identity_size; i++) {
-            psk_identity[i] = GetByteFromMessage(&(message_router_request->data));
-          }
+          memcpy(psk_identity,
+                 message_router_request->data,
+                 psk_structure->psk_identity_size);
+          message_router_request->data += psk_structure->psk_identity_size;
+//          for (int i=0; i<psk_structure->psk_identity_size; i++) {
+//            psk_identity[i] = GetByteFromMessage(&(message_router_request->data));
+//          }
 
           psk_structure->psk_identity = psk_identity;
           psk_structure->psk_size = GetUsintFromMessage(&(message_router_request->data));
@@ -233,9 +240,10 @@ EipStatus SetAttributeSingleEIPSecurityObject(
           if(psk_structure->psk_size <= SIZE_MAX_PSK) {
             CipOctet *psk = CipCalloc(psk_structure->psk_size, sizeof(CipOctet));
 
-            for (int i=0; i<psk_structure->psk_size; i++) {
-              psk[i] = GetByteFromMessage(&(message_router_request->data));
-            }
+            memcpy(psk, message_router_request->data, psk_structure->psk_size);
+//            for (int i=0; i<psk_structure->psk_size; i++) {
+//              psk[i] = GetByteFromMessage(&(message_router_request->data));
+//            }
 
             psk_structure->psk = psk;
             //TODO: Cleanup existing PSKs
