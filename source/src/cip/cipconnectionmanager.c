@@ -80,9 +80,14 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 
 EipStatus GetConnectionData(CipInstance *instance,
                             CipMessageRouterRequest *message_router_request,
-                            CipMessageRouterResponse *message_router_response,
-                            const struct sockaddr *originator_address,
-                            const int encapsulation_session);
+                            CipMessageRouterResponse *message_router_response);
+
+EipStatus SearchConnectionData(CipInstance *instance,
+                               CipMessageRouterRequest *message_router_request,
+                               CipMessageRouterResponse *message_router_response);
+
+void AssembleConnectionDataResponseMessage(CipMessageRouterResponse *message_router_response,
+                                    CipConnectionObject *connection_object);
 
 EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                                       CipMessageRouterResponse *message_router_response,
@@ -218,7 +223,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                                                 2, /* # of class services */
                                                 0, /* # of instance attributes */
                                                 14, /* # highest instance attribute number*/
-                                                7, /* # of instance services */
+                                                8, /* # of instance services */
                                                 1, /* # of instances */
                                                 "connection manager", /* class name */
                                                 1, /* revision */
@@ -254,6 +259,10 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 kGetConnectionData,
                 &GetConnectionData,
                 "GetConnectionData");
+  InsertService(connection_manager,
+                kSearchConnectionData,
+                &SearchConnectionData,
+                "SearchConnectionData");
 
   g_incarnation_id = ( (EipUint32) unique_connection_id ) << 16;
 
@@ -708,89 +717,168 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   return kEipStatusOk;
 }
 
-/* TODO: Not implemented */
 EipStatus GetConnectionData(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
-
-	//TODO: add code, remove comment
-	OPENER_TRACE_INFO("Right now get_connection_data is not implemented\n");
-
-	//get Connection Number from request
-	EipUint16 Connection_number = GetUintFromMessage(&message_router_request->data);//message_router_request->data[0]; //TODO: check if this is correct
-
-	//TODO: check if connection exists
-
-	OPENER_TRACE_INFO("Connection_number: %d\n", Connection_number); //TODO: remove
+  CipMessageRouterResponse *message_router_response) {
 
 	CIPServiceCode service_code = kGetConnectionData;
 	message_router_response->reply_service = (0x80 | service_code);
 
-	//TODO: check status
-	message_router_response->general_status = kEipStatusOk;
-	message_router_response->size_of_additional_status = 1;
-	message_router_response->additional_status[0] = kEipStatusOk;
+	//get Connection Number from request
+	EipUint16 Connection_number = GetUintFromMessage(&message_router_request->data);
 
-	DoublyLinkedListNode *node = connection_list.first; //TODO: remove, first element used for test
-	CipConnectionObject *connection_object = node->data;
+	OPENER_TRACE_INFO("GetConnectionData for Connection_number: %d\n", Connection_number);
 
-	/* assemble response message */
+	//search connection
+	DoublyLinkedListNode *iterator = connection_list.first;
+	CipConnectionObject *search_connection_object = NULL;
+	CipConnectionObject *connection_object = NULL;
 
-	// Connection number UINT
-	AddIntToMessage(Connection_number,&message_router_response->message);
-	// Connection state UINT
-	AddIntToMessage(connection_object->state,&message_router_response->message);
-	// Originator Port UINT
-	AddIntToMessage(connection_object->originator_address.sin_port,&message_router_response->message); //TODO: check if this is correct
-	// Target Port UINT
-	AddIntToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Connection Serial Number UINT
-	AddIntToMessage(connection_object->connection_serial_number,
-		                  &message_router_response->message);
-	// Originator Vendor ID UINT
-	AddIntToMessage(connection_object->originator_vendor_id,
-		                  &message_router_response->message);
-	// Originator Serial number UDINT
-	AddDintToMessage(connection_object->originator_serial_number,
-		                   &message_router_response->message);
-	// Originator O->T CID UDINT
-	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
-	// Target O->T CID UDINT
-	AddDintToMessage(connection_object->cip_consumed_connection_id ,&message_router_response->message);
-	// Connection Timeout Multiplier USINT
-	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI O->T UDINT
-	AddDintToMessage(connection_object->o_to_t_requested_packet_interval ,&message_router_response->message);
-	// Originator API O->T UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
-	// Originator T->O CID UDINT
-	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
-	// Target T->O CID UDINT
-	AddDintToMessage(connection_object->cip_produced_connection_id ,&message_router_response->message);
-	// Connection Timeout Multiplier USINT
-	AddSintToMessage(connection_object->connection_timeout_multiplier, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Reserved USINT
-	AddSintToMessage(0, &message_router_response->message);
-	// Originator RPI T->O UDINT
-	AddDintToMessage(connection_object->t_to_o_requested_packet_interval ,&message_router_response->message);
-	// Originator API T->O UDINT
-	AddDintToMessage(0 ,&message_router_response->message); //TODO: replace with correct value
+	while (NULL != iterator) {
+		search_connection_object = iterator->data;
+
+		if ((search_connection_object->connection_number
+				== Connection_number)) {
+			connection_object = search_connection_object;
+			break;
+		}
+		iterator = iterator->next;
+	}
+
+	if(NULL != connection_object)
+	{
+		/* assemble response message */
+		AssembleConnectionDataResponseMessage(message_router_response, connection_object);
+		message_router_response->general_status = kEipStatusOk;
+		OPENER_TRACE_INFO("Connection found!\n");
+	}
+	else{
+		 message_router_response->general_status = kCipErrorPathDestinationUnknown;
+		 OPENER_TRACE_INFO("Connection not found!\n");
+	}
+
+	return kEipStatusOk;
+}
+
+EipStatus SearchConnectionData(
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response) {
+
+	CIPServiceCode service_code = kSearchConnectionData;
+	message_router_response->reply_service = (0x80 | service_code);
+
+	//connection data (connection triad) from request
+	EipUint16 Connection_serial_number = GetUintFromMessage(&message_router_request->data);
+	EipUint16 Originator_vendor_id = GetUintFromMessage(&message_router_request->data);
+	EipUint32 Originator_serial_number = GetUdintFromMessage(&message_router_request->data);
+
+	OPENER_TRACE_INFO("SearchConnectionData for ConnSerNo: %d, OrigVendId: %d, OrigSerNo: %ld,\n",
+			Connection_serial_number, Originator_vendor_id, Originator_serial_number);
+
+
+	//search connection
+	DoublyLinkedListNode *iterator = connection_list.first;
+	CipConnectionObject *search_connection_object = NULL;
+	CipConnectionObject *connection_object = NULL;
+
+	while (NULL != iterator) {
+		search_connection_object = iterator->data;
+
+		if ((search_connection_object->connection_serial_number
+				== Connection_serial_number)
+				&& (search_connection_object->originator_vendor_id
+						== Originator_vendor_id)
+				&& (search_connection_object->originator_serial_number
+						== Originator_serial_number)) {
+
+			connection_object = search_connection_object;
+			break;
+		}
+		iterator = iterator->next;
+	}
+	 if(NULL != connection_object)
+	 {
+		/* assemble response message */
+		AssembleConnectionDataResponseMessage(message_router_response, connection_object);
+		message_router_response->general_status = kEipStatusOk;
+		OPENER_TRACE_INFO("Connection found!\n");
+	 }
+	 else{
+		 message_router_response->general_status = kCipErrorPathDestinationUnknown;
+		 OPENER_TRACE_INFO("Connection not found!\n");
+	 }
 
   return kEipStatusOk;
+}
+
+void AssembleConnectionDataResponseMessage(CipMessageRouterResponse *message_router_response,
+                                    CipConnectionObject *connection_object) {
+
+    // Connection number UINT
+    AddIntToMessage(connection_object->connection_number,
+                    &message_router_response->message);
+    // Connection state UINT
+    AddIntToMessage(connection_object->state,
+                     &message_router_response->message);
+    // Originator Port UINT
+    AddIntToMessage(connection_object->originator_address.sin_port,
+                     &message_router_response->message);
+    // Target Port UINT
+    AddIntToMessage(connection_object->remote_address.sin_port,
+                     &message_router_response->message);
+    // Connection Serial Number UINT
+    AddIntToMessage(connection_object->connection_serial_number,
+                     &message_router_response->message);
+    // Originator Vendor ID UINT
+    AddIntToMessage(connection_object->originator_vendor_id,
+                     &message_router_response->message);
+    // Originator Serial number UDINT
+    AddDintToMessage(connection_object->originator_serial_number,
+                     &message_router_response->message);
+    // Originator O->T CID UDINT
+    AddDintToMessage(connection_object->cip_consumed_connection_id,
+                     &message_router_response->message);
+    // Target O->T CID UDINT
+    AddDintToMessage(connection_object->cip_consumed_connection_id,
+                     &message_router_response->message);
+    // Connection Timeout Multiplier USINT
+    AddSintToMessage(connection_object->connection_timeout_multiplier,
+                     &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Originator RPI O->T UDINT
+    AddDintToMessage(connection_object->o_to_t_requested_packet_interval,
+                     &message_router_response->message);
+    // Originator API O->T UDINT
+    AddDintToMessage(connection_object->transmission_trigger_timer,
+                     &message_router_response->message);
+    // Originator T->O CID UDINT
+    AddDintToMessage(connection_object->cip_produced_connection_id,
+                     &message_router_response->message);
+    // Target T->O CID UDINT
+    AddDintToMessage(connection_object->cip_produced_connection_id,
+                     &message_router_response->message);
+    // Connection Timeout Multiplier USINT
+    AddSintToMessage(connection_object->connection_timeout_multiplier,
+                     &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Reserved USINT
+    AddSintToMessage(0, &message_router_response->message);
+    // Originator RPI T->O UDINT
+    AddDintToMessage(connection_object->t_to_o_requested_packet_interval,
+                     &message_router_response->message);
+    // Originator API T->O UDINT
+    AddDintToMessage(connection_object->transmission_trigger_timer,
+                     &message_router_response->message);
 }
 
 EipStatus ManageConnections(MilliSeconds elapsed_time) {
