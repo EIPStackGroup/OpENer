@@ -60,7 +60,7 @@
  * defines
  */
 /** The implemented class revision is 5 */
-define ETHERNET_IP_SECURITY_OBJECT_REVISION 5
+#define ETHERNET_IP_SECURITY_OBJECT_REVISION 5
 
 /* ********************************************************************
  * global public variables
@@ -194,7 +194,7 @@ EipStatus EipSecurityInit(void) {
                      8, /* # instance services */
                      1, /* # instances*/
                      "EtherNet/IP Security Object",
-                     ETHERNET_IIP_SECURITY_OBJECT_REVISION, /* # class revision */
+                     ETHERNET_IP_SECURITY_OBJECT_REVISION, /* # class revision */
                      NULL /* # function pointer for initialization */
       );
 
