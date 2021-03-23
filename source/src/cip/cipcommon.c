@@ -800,6 +800,58 @@ EipStatus GetAttributeAll(CipInstance *instance,
   return kEipStatusOkSend;
 }
 
+EipStatus GetAttributeList(CipInstance *instance,
+		CipMessageRouterRequest *message_router_request,
+		CipMessageRouterResponse *message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
+
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+	//message_router_response->general_status = kCipErrorAttributeListError;
+	message_router_response->general_status = kCipErrorSuccess;
+	message_router_response->size_of_additional_status = 0;
+
+	CipUint attribute_count_request = GetUintFromMessage(
+			&message_router_request->data);
+
+	EipUint16 attribute_number = 0;
+	CipAttributeStruct *attribute = NULL;
+
+	AddIntToMessage(attribute_count_request,
+			&message_router_response->message);
+
+	for (size_t j = 0; j < attribute_count_request; j++) {
+		/* for each instance attribute of this class */
+
+		attribute_number = GetUintFromMessage(&message_router_request->data);
+		attribute = GetCipAttribute(instance, attribute_number);
+
+		AddIntToMessage(attribute_number, &message_router_response->message);
+
+		if (NULL != attribute) {
+
+			//TODO: check if attribute gettable
+
+			AddSintToMessage(kCipErrorSuccess,
+					&message_router_response->message); // Attribute status
+			AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+
+			attribute->encode(attribute->data,
+					&message_router_response->message); // write Attribute data
+		} else {
+			AddSintToMessage(kCipErrorAttributeNotSupported,
+					&message_router_response->message); // status
+			AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+			message_router_response->general_status =
+					kCipErrorAttributeListError;
+		}
+	}
+
+	return kEipStatusOkSend;
+}
+
 void EncodeEPath(CipEpath *epath,
                  ENIPMessage *message) {
   unsigned int length = epath->path_size;

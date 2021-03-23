@@ -75,6 +75,24 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           const struct sockaddr *originator_address,
                           const int encapsulation_session);
 
+/** @brief Generic implementation of the GetAttributeList CIP service
+ *
+ * Copy the contents of the selected gettable attributes of the specified
+ * object class or instance into the global message buffer.
+ * @param instance pointer to object instance with data.
+ * @param message_router_request pointer to MR request.
+ * @param message_router_response pointer for MR response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return length of data stream >0 .. success
+ *              0 .. no reply to send
+ */
+EipStatus GetAttributeList(CipInstance *instance,
+                          CipMessageRouterRequest *message_router_request,
+                          CipMessageRouterResponse *message_router_response,
+                          const struct sockaddr *originator_address,
+                          const int encapsulation_session);
+
 /** @brief Decodes padded EPath
  *  @param epath EPath object to the receiving element
  *  @param message pointer to the message to decode
