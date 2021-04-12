@@ -80,6 +80,7 @@ EIPSecurityObject g_eip_security;
  */
 EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance){
 
+   return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Begin_Config service
@@ -89,7 +90,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance){
  */
 EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Kick_Timer service
@@ -99,7 +100,7 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
  */
 EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Apply_Config service
@@ -109,7 +110,7 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
  */
 EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Abort_Config service
@@ -119,7 +120,7 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance){
  */
 EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 void FinalizeMessage(CipUsint general_status,
@@ -152,7 +153,7 @@ EipStatus SetAttributeSingleEIPSecurityObject(
   uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[
       CalculateIndex(attribute_number)
   ]);
-  if !(set_bit_mask & (1 << ((attribute_number) % 8))) {
+  if (set_bit_mask & (1 << ((attribute_number) % 8))) {
     FinalizeMessage(kCipErrorAttributeNotSetable,
                     message_router_request,
                     message_router_response);
@@ -280,7 +281,6 @@ EipStatus SetAttributeSingleEIPSecurityObject(
   } //end of switch
 
   message_router_response->size_of_additional_status = 0;
-  message_router_response->data_length = 0;
   message_router_response->reply_service = (0x80 | message_router_request->service);
 
   return kEipStatusOkSend;
@@ -316,7 +316,7 @@ void EncodeEIPSecurityObjectPath(const void *const data,
   EIPSecurityObjectPath *path = (EIPSecurityObjectPath *) data;
 
   EncodeCipUsint(&(path->path_size), outgoing_message);
-  EncodeCipEpath(&(path->path), outgoing_message);
+  EncodeCipEPath(&(path->path), outgoing_message);
 
 }
 
@@ -344,11 +344,11 @@ void EncodeEIPSecurityObjectPreSharedKeys(const void *const data,
 }
 
 
-EipStatus EipSecurityInit(void) {
+EipStatus EIPSecurityInit(void) {
   CipClass *eip_security_object_class = NULL;
   CipInstance *eip_security_object_instance;
 
-  cip_security_object_class =
+  eip_security_object_class =
       CreateCipClass(kEIPSecurityObjectClassCode,
                      0, /* # class attributes */
                      7, /* # highest class attribute number */
