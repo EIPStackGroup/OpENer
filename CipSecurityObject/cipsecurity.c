@@ -66,6 +66,7 @@ CipSecurityObject g_security;
 EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance){
 
 /** TODO: call Reset Service of each existing EtherNet/IP Security Object */
+   return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Begin_Config service
@@ -75,7 +76,7 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance){
  */
 EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief CIP Security Object End_Config service
@@ -85,7 +86,7 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
  */
 EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Kick_Timer service
@@ -95,7 +96,7 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance){
  */
 EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
 
-
+   return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Object_Cleanup service
@@ -105,7 +106,7 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
  */
 EipStatus CipSecurityObjectCleanup(CipClass *RESTRICT const cip_class){
 
-
+   return kEipStatusOk;
 }
 
 void CipSecurityObjectInitializeClassSettings(CipClass *class) {
