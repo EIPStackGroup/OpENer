@@ -27,8 +27,6 @@
 #include "cipqos.h"
 #include "udp_protocol.h"
 
-#include "../../cip_objects/OpENerFileObject/cipfile.h"
-
 #define MAX_NO_OF_TCP_SOCKETS 10
 
 /* ----- Windows size_t PRI macros ------------- */
@@ -435,7 +433,6 @@ EipStatus NetworkHandlerProcessOnce(void) {
   if(g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
     /* call manage_connections() in connection manager every kOpenerTimerTickInMilliSeconds ms */
     ManageConnections(g_network_status.elapsed_time);
-    CipFileSessionTimerCheck(g_network_status.elapsed_time);
     g_network_status.elapsed_time = 0;
   }
   return kEipStatusOk;
