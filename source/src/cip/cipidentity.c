@@ -189,25 +189,25 @@ void InitializeCipIdentity(CipClass *class) {
   CipClass *meta_class = class->class_instance.cip_class;
 
   InsertAttribute( (CipInstance *) class, 1, kCipUint,
-                   EncodeCipUint,
+                   EncodeCipUint, NULL,
                    (void *) &class->revision,
                    kGetableSingleAndAll );                 /* revision */
   InsertAttribute( (CipInstance *) class, 2, kCipUint,
-                   EncodeCipUint,
+                   EncodeCipUint, NULL,
                    (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
   InsertAttribute( (CipInstance *) class, 3, kCipUint,
-                   EncodeCipUint,
+                   EncodeCipUint, NULL,
                    (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
-  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, NULL,
                    (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional attribute list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, NULL,
                    (void *) &kCipUintZero,
                    kNotSetOrGetable ); /* optional service list - default = 0 */
-  InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint, NULL,
                    (void *) &meta_class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max class attribute number*/
-  InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint,
+  InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint, NULL,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll );                 /* max instance attribute number*/
 
@@ -248,42 +248,49 @@ EipStatus CipIdentityInit() {
                   1,
                   kCipUint,
                   EncodeCipUint,
+				  NULL,
                   &g_identity.vendor_id,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   2,
                   kCipUint,
                   EncodeCipUint,
+				  NULL,
                   &g_identity.device_type,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   3,
                   kCipUint,
                   EncodeCipUint,
+				  NULL,
                   &g_identity.product_code,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   4,
                   kCipUsintUsint,
                   EncodeRevision,
+				  NULL,
                   &g_identity.revision,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   5,
                   kCipWord,
                   EncodeCipWord,
+				  NULL,
                   &g_identity.status,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   6,
                   kCipUdint,
                   EncodeCipUdint,
+				  NULL,
                   &g_identity.serial_number,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   7,
                   kCipShortString,
                   EncodeCipShortString,
+				  NULL,
                   &g_identity.product_name,
                   kGetableSingleAndAll);
 

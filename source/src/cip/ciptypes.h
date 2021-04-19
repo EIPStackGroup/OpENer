@@ -99,7 +99,8 @@ typedef enum {
   kLargeForwardOpen = 0x5B,
   kForwardClose = 0x4E,
   kUnconnectedSend = 0x52,
-  kGetConnectionOwner = 0x5A
+  kGetConnectionOwner = 0x5A,
+  kGetConnectionData = 0x56
 /* End CIP object-specific services */
 } CIPServiceCode;
 
@@ -275,12 +276,18 @@ typedef struct {
 typedef void (*CipAttributeEncodeInMessage)(const void *const data,
                                             ENIPMessage *const outgoing_message);
 
+/** @brief self-describing data decoding for CIP types */
+typedef int (*CipAttributeDecodeFromMessage)(const void *const data,
+									const CipMessageRouterRequest *const message_router_request,
+									CipMessageRouterResponse *const message_router_response);
+
 /** @brief Structure to describe a single CIP attribute of an object
  */
 typedef struct {
   EipUint16 attribute_number; /**< The attribute number of this attribute. */
   EipUint8 type;  /**< The @ref CipDataType of this attribute. */
   CipAttributeEncodeInMessage encode; /**< Self-describing its data encoding */
+  CipAttributeDecodeFromMessage decode; /**< Self-describing its data decoding */
   CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration for valid values. */
   void *data;
 } CipAttributeStruct;

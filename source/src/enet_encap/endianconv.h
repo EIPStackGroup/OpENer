@@ -30,6 +30,8 @@ CipByte GetByteFromMessage(const CipOctet **const buffer_address);
 
 CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
 
+CipBool GetBoolFromMessage(const EipBool8 **const buffer_address);
+
 /** @ingroup ENCAP
  *
  * @brief Get an 16Bit integer from the network buffer, and moves pointer beyond the 16 bit value
