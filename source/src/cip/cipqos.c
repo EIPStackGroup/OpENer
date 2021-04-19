@@ -55,67 +55,49 @@ static CipQosDscpValues s_active_dscp = {
 };
 
 /************** Functions ****************************************/
-EipStatus SetAttributeSingleQoS(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response,
-  const struct sockaddr *originator_address,
-  const int encapsulation_session) {
 
-  CipAttributeStruct *attribute = GetCipAttribute(
-    instance, message_router_request->request_path.attribute_number);
-  (void) instance;   /*Suppress compiler warning */
-  EipUint16 attribute_number =
-    message_router_request->request_path.attribute_number;
-  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[CalculateIndex(
-                                                              attribute_number)
-                          ]);
 
-  if( NULL != attribute &&
-      ( set_bit_mask & ( 1 << ( (attribute_number) % 8 ) ) ) ) {
-    CipUsint attribute_value_received = GetUsintFromMessage(
-      &(message_router_request->data) );
+/**@brief Retrieve the given data according to CIP encoding from the
+ * 		message buffer.
+ *
+ *  Implementation of the decode function for the SetAttributeSingle CIP service for QoS
+ *  Objects.
+ *  @param data pointer to value to be written.
+ *  @param message_router_request pointer to the request where the data should be taken from
+ *  @param message_router_response pointer to the response where status should be set
+ *  @return length of taken bytes
+ *          -1 .. error
+ */
+int DecodeCipQoSAttribute(CipUsint *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
-    if( attribute_value_received < 64U ) {
-      OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
+	const EipUint8 **const cip_message = message_router_request->data;
 
-      if(NULL != attribute->data) {
-        /* Call the PreSetCallback if enabled. */
-        if ( (attribute->attribute_flags & kPreSetFunc)
-             && NULL != instance->cip_class->PreSetCallback ) {
-          instance->cip_class->PreSetCallback(instance, attribute,
-                                              message_router_request->service);
-        }
+	int number_of_decoded_bytes = -1;
 
-        CipUsint *data = (CipUsint *) attribute->data;
-        *(data) = attribute_value_received;
+	if (NULL != cip_message) {
 
-        /* Call the PostSetCallback if enabled. */
-        if ( (attribute->attribute_flags & (kPostSetFunc | kNvDataFunc) )
-             && NULL != instance->cip_class->PostSetCallback ) {
-          instance->cip_class->PostSetCallback(instance, attribute,
-                                               message_router_request->service);
-        }
+		CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
+		if (attribute_value_received < 64U) {
 
-        message_router_response->general_status = kCipErrorSuccess;
-      } else {
-        message_router_response->general_status = kCipErrorNotEnoughData;
-        OPENER_TRACE_INFO("CIP QoS not enough data\n");
-      }
-    } else {
-      message_router_response->general_status = kCipErrorInvalidAttributeValue;
-    }
-  } else {
-    /* we don't have this attribute */
-    message_router_response->general_status = kCipErrorAttributeNotSupported;
-  }
+			*data = attribute_value_received; //write value to attribute
 
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+			message_router_response->general_status = kCipErrorSuccess;
+			number_of_decoded_bytes = 1;
 
-  return kEipStatusOkSend;
+		} else {
+			message_router_response->general_status =
+					kCipErrorInvalidAttributeValue;
+		}
+	} else {
+
+		message_router_response->general_status = kCipErrorNotEnoughData;
+		OPENER_TRACE_INFO("CIP QoS not enough data\n");
+	}
+
+	return number_of_decoded_bytes;
+
 }
 
 CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
@@ -168,55 +150,63 @@ EipStatus CipQoSInit() {
                   1,
                   kCipUsint,
                   EncodeCipUsint,
+                  NULL,
                   (void *) &g_qos.q_frames_enable,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   2,
                   kCipUsint,
                   EncodeCipUsint,
+                  NULL,
                   (void *) &g_qos.dscp.event,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   3,
                   kCipUsint,
                   EncodeCipUsint,
+                  NULL,
                   (void *) &g_qos.dscp.general,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   4,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.urgent,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.scheduled,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.high,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.low,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipQoSAttribute,
                   (void *) &g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
-  InsertService(qos_class, kSetAttributeSingle, &SetAttributeSingleQoS,
-                "SetAttributeSingleQoS");
+  InsertService(qos_class, kSetAttributeSingle, &SetAttributeSingle,
+                  "SetAttributeSingle");
 
   return kEipStatusOk;
 }
