@@ -144,6 +144,8 @@ struct cip_connection_object {
   CipUint originator_vendor_id;
   CipUdint originator_serial_number;
 
+  CipUint connection_number;
+
   CipUdint o_to_t_requested_packet_interval;
   CipDword o_to_t_network_connection_parameters;
 
@@ -358,6 +360,15 @@ CipUdint ConnectionObjectGetOriginatorSerialNumber(
 void ConnectionObjectSetOriginatorSerialNumber(
   CipConnectionObject *connection_object,
   CipUdint originator_serial_number);
+
+void ConnectionObjectGetConnectionNumber(
+  CipConnectionObject *connection_object,
+  const CipUint connection_number);
+
+void ConnectionObjectSetConnectionNumber(
+  CipConnectionObject *connection_object);
+
+CipUint GenerateRandomConnectionNumber(void);
 
 CipUdint ConnectionObjectGetOToTRequestedPacketInterval(
   const CipConnectionObject *const connection_object);

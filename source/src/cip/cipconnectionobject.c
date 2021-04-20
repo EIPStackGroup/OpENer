@@ -11,6 +11,7 @@
 #include "endianconv.h"
 #include "trace.h"
 #include "cipconnectionmanager.h"
+#include "stdlib.h"
 
 #define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U
@@ -135,6 +136,8 @@ void ConnectionObjectInitializeFromMessage(const CipOctet **message,
                                         GetUintFromMessage(message) );
   ConnectionObjectSetOriginatorSerialNumber(connection_object,
                                             GetUdintFromMessage(message) );
+
+  ConnectionObjectSetConnectionNumber(connection_object);
 
   /* keep it to none existent till the setup is done this eases error handling and
    * the state changes within the forward open request can not be detected from
@@ -642,6 +645,36 @@ void ConnectionObjectSetOriginatorSerialNumber(
   CipConnectionObject *connection_object,
   CipUdint originator_serial_number) {
   connection_object->originator_serial_number = originator_serial_number;
+}
+
+CipUdint ConnectionObjectGetConnectionlNumber(
+  const CipConnectionObject *const connection_object) {
+  return connection_object->connection_number;
+}
+
+void ConnectionObjectSetConnectionNumber(
+  CipConnectionObject *connection_object) {
+  connection_object->connection_number = GenerateRandomConnectionNumber();
+}
+
+CipUint GenerateRandomConnectionNumber(void) {
+	CipUint rand_num = (CipUint)rand(); //TODO: update to random.c functions
+
+	//search for existing connection_numbers
+	DoublyLinkedListNode *iterator = connection_list.first;
+	CipConnectionObject *search_connection_object = NULL;
+
+	while (NULL != iterator) {
+		search_connection_object = iterator->data;
+
+		if ((search_connection_object->connection_number == rand_num)) {
+
+			rand_num = GenerateRandomConnectionNumber();
+		}
+		iterator = iterator->next;
+	}
+
+	return rand_num;
 }
 
 CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
