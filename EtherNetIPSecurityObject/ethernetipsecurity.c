@@ -374,6 +374,7 @@ EipStatus EIPSecurityInit(void) {
                   1,
                   kCipUsint,
                   EncodeCipUsint,
+                  NULL,
                   &g_eip_security.state,
                   kGetableSingleAndAll
   );
@@ -381,6 +382,7 @@ EipStatus EIPSecurityInit(void) {
                   2,
                   kCipWord,
                   EncodeCipDword,
+                  NULL,
                   &g_eip_security.capability_flags,
                   kGetableSingleAndAll
   );
@@ -388,6 +390,7 @@ EipStatus EIPSecurityInit(void) {
                   3,
                   kCipAny,
                   EncodeEIPSecurityObjectCipherSuites,
+                  NULL,
                   &g_eip_security.available_cipher_suites,
                   kGetableSingleAndAll
   );
@@ -395,6 +398,7 @@ EipStatus EIPSecurityInit(void) {
                   4,
                   kCipAny,
                   EncodeEIPSecurityObjectCipherSuites,
+                  NULL, //TODO: add decode function
                   &g_eip_security.allowed_cipher_suites,
                   kSetAndGetAble
   );
@@ -402,6 +406,7 @@ EipStatus EIPSecurityInit(void) {
                   5,
                   kCipAny,
                   EncodeEIPSecurityObjectPreSharedKeys,
+                  NULL, //TODO: add decode function
                   &g_eip_security.pre_shared_keys,
                   kSetAndGetAble
   );
@@ -409,6 +414,7 @@ EipStatus EIPSecurityInit(void) {
                   6,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
+                  NULL, //TODO: add decode function
                   &g_eip_security.active_device_certificates,
                   kSetAndGetAble
   );
@@ -416,6 +422,7 @@ EipStatus EIPSecurityInit(void) {
                   7,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
+                  NULL, //TODO: add decode function
                   &g_eip_security.trusted_authorities,
                   kSetAndGetAble
   );
@@ -423,6 +430,7 @@ EipStatus EIPSecurityInit(void) {
                   8,
                   kCipAny,
                   EncodeEIPSecurityObjectPath,
+                  NULL, //TODO: add decode function
                   &g_eip_security.certificate_revocation_list,
                   kSetAndGetAble
   );
@@ -430,6 +438,7 @@ EipStatus EIPSecurityInit(void) {
                   9,
                   kCipBool,
                   EncodeCipBool,
+                  DecodeCipBool,
                   &g_eip_security.verify_client_certificate,
                   kSetAndGetAble
   );
@@ -437,6 +446,7 @@ EipStatus EIPSecurityInit(void) {
                   10,
                   kCipBool,
                   EncodeCipBool,
+                  DecodeCipBool,
                   &g_eip_security.send_certificate_chain,
                   kSetAndGetAble
   );
@@ -444,6 +454,7 @@ EipStatus EIPSecurityInit(void) {
                   11,
                   kCipBool,
                   EncodeCipBool,
+                  DecodeCipBool,
                   &g_eip_security.check_expiration,
                   kSetAndGetAble
   );
@@ -451,6 +462,7 @@ EipStatus EIPSecurityInit(void) {
                   12,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
+                  NULL, //TODO: add decode function
                   &g_eip_security.trusted_identities,
                   kSetAndGetAble
   );
@@ -458,6 +470,7 @@ EipStatus EIPSecurityInit(void) {
                   13,
                   kCipBool,
                   EncodeCipBool,
+                  NULL,
                   &g_eip_security.pull_model_enabled,
                   kGetableSingleAndAll
   );
@@ -465,6 +478,7 @@ EipStatus EIPSecurityInit(void) {
                   14,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   &g_eip_security.pull_model_status,
                   kGetableSingleAndAll
   );
@@ -472,6 +486,7 @@ EipStatus EIPSecurityInit(void) {
                   15,
                   kCipUint,
                   EncodeCipUint,
+                  DecodeCipUint,
                   &g_eip_security.dtls_timeout,
                   kSetAndGetAble
   );
@@ -479,6 +494,7 @@ EipStatus EIPSecurityInit(void) {
                   16,
                   kCipUsint,
                   EncodeCipUsint,
+                  DecodeCipUsint,
                   &g_eip_security.udp_only_policy,
                   kSetAndGetAble
   );
