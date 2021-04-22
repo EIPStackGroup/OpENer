@@ -316,7 +316,9 @@ void EncodeEIPSecurityObjectPath(const void *const data,
   EIPSecurityObjectPath *path = (EIPSecurityObjectPath *) data;
 
   EncodeCipUsint(&(path->path_size), outgoing_message);
-  EncodeCipEPath(&(path->path), outgoing_message);
+  if(0 != path->path_size){
+    EncodeCipEPath(&(path->path), outgoing_message);
+  }
 
 }
 
