@@ -117,42 +117,49 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                   1,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &class->revision,
                   kGetableSingleAndAll);  /* revision */
   InsertAttribute((CipInstance *) class,
                   2,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &class->number_of_instances,
                   kGetableSingleAndAll); /*  largest instance number */
   InsertAttribute((CipInstance *) class,
                   3,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &class->number_of_instances,
                   kGetableSingle); /* number of instances currently existing*/
   InsertAttribute((CipInstance *) class,
                   4,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &kCipUintZero,
                   kNotSetOrGetable); /* optional attribute list - default = 0 */
   InsertAttribute((CipInstance *) class,
                   5,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &kCipUintZero,
                   kNotSetOrGetable); /* optional service list - default = 0 */
   InsertAttribute((CipInstance *) class,
                   6,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &meta_class->highest_attribute_number,
                   kGetableSingleAndAll); /* max class attribute number*/
   InsertAttribute((CipInstance *) class,
                   7,
                   kCipUint,
                   EncodeCipUint,
+                  NULL,
                   (void *) &class->highest_attribute_number,
                   kGetableSingleAndAll); /* max instance attribute number*/
 
@@ -204,6 +211,7 @@ EipStatus CipSecurityInit(void) {
                   1,
                   kCipUsint,
                   EncodeCipUsint,
+                  NULL,
                   &g_security.state,
                   kGetableSingleAndAll
   );
@@ -211,6 +219,7 @@ EipStatus CipSecurityInit(void) {
                   2,
                   kCipWord,
                   EncodeCipWord,
+                  NULL,
                   &g_security.security_profile,
                   kGetableSingleAndAll
   );
