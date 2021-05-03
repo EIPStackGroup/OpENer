@@ -46,6 +46,11 @@
  */
 /** The implemented class revision is 3 */
 #define CIP_SECURITY_OBJECT_REVISION 3
+/* state attribute values*/
+#define FACTORY_DEFAULT_CONFIGURATION 0
+#define CONFIGURATION_IN_PROGRESS 1
+#define CONFIGURED 2
+#define INCOMPLETE_CONFIGURATION 3
 
 /* ********************************************************************
  * global public variables
@@ -63,10 +68,28 @@ CipSecurityObject g_security;
  * Factory Default Configuration State.
  * See Vol.8 Section 5-3.5.1
  */
-EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance){
+EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-/** TODO: call Reset Service of each existing EtherNet/IP Security Object */
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorAttributeNotSupported;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute 1: state
+
+	if (NULL != attribute) {
+		g_security.state = FACTORY_DEFAULT_CONFIGURATION;
+		message_router_response->general_status = kCipErrorSuccess;
+		OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
+
+	}
+
+	return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Begin_Config service
