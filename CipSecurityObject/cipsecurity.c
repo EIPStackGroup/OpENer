@@ -47,11 +47,6 @@
  */
 /** The implemented class revision is 3 */
 #define CIP_SECURITY_OBJECT_REVISION 3
-/* state attribute values*/
-#define FACTORY_DEFAULT_CONFIGURATION 0
-#define CONFIGURATION_IN_PROGRESS 1
-#define CONFIGURED 2
-#define INCOMPLETE_CONFIGURATION 3
 
 /* ********************************************************************
  * global public variables
@@ -84,7 +79,7 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute 1: state
 
 	if (NULL != attribute) {
-		g_security.state = FACTORY_DEFAULT_CONFIGURATION;
+		g_security.state = kCipSecurityObjectStateFactoryDefaultConfiguration;
 		message_router_response->general_status = kCipErrorSuccess;
 		OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
 
@@ -214,8 +209,8 @@ EipStatus CipSecurityInit(void) {
                      0, /* # class attributes */
                      7, /* # highest class attribute number */
                      3, /* # class services */
-                     2, /* # instance attributes */
-                     2, /* # highest instance attribute number */
+                     3, /* # instance attributes */
+                     3, /* # highest instance attribute number */
                      6, /* # instance services */
                      1, /* # instances*/
                      "CIP Security Object",
