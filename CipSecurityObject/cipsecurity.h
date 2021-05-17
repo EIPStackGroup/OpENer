@@ -62,7 +62,8 @@ typedef enum cip_security_object_security_profiles_values {
  */
 typedef struct {
   CipUsint state; /** Attribute #1 */
-  CipWord security_profile; /** Attribute #2 */
+  CipWord security_profiles; /** Attribute #2 */
+  CipWord security_profiles_configured; /** Attribute #3 */
 } CipSecurityObject;
 
 
