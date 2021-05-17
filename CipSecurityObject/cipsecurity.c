@@ -16,6 +16,7 @@
  *  ----------------------
  *  - Attribute  1: State
  *  - Attribute  2: Security Profiles
+ *  - Attribute  3: Security Profiles Configured
  *
  *  Implemented Services
  *  --------------------
@@ -243,7 +244,15 @@ EipStatus CipSecurityInit(void) {
                   kCipWord,
                   EncodeCipWord,
                   NULL,
-                  &g_security.security_profile,
+                  &g_security.security_profiles,
+                  kGetableSingleAndAll
+  );
+  InsertAttribute(cip_security_object_instance,
+                  3,
+                  kCipWord,
+                  EncodeCipWord,
+                  NULL,
+                  &g_security.security_profiles_configured,
                   kGetableSingleAndAll
   );
 
