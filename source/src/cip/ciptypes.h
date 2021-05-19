@@ -100,7 +100,8 @@ typedef enum {
   kForwardClose = 0x4E,
   kUnconnectedSend = 0x52,
   kGetConnectionOwner = 0x5A,
-  kGetConnectionData = 0x56
+  kGetConnectionData = 0x56,
+  kSearchConnectionData = 0x57
 /* End CIP object-specific services */
 } CIPServiceCode;
 
