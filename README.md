@@ -6,7 +6,7 @@
 [![Join the chat at https://gitter.im/EIPStackGroupOpENer/Lobby](https://badges.gitter.im/EIPStackGroupOpENer/Lobby.svg)](https://gitter.im/EIPStackGroupOpENer/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
-OpENer Version 2.1.0
+OpENer Version 2.3.0
 ====================
 
 Welcome to OpENer!

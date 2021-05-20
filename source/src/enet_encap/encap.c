@@ -125,7 +125,7 @@ void EncapsulationInit(void) {
   snprintf((char*) g_service_information.name_of_service, sizeof(g_service_information.name_of_service), "Communications");
 }
 
-EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t length, int *remaining_bytes, struct sockaddr *originator_address,
+EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t length, int *number_of_remaining_bytes, struct sockaddr *originator_address,
     ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO("Handles data for TCP socket: %d\n", socket);
   EipStatus return_value = kEipStatusOk;
@@ -133,11 +133,19 @@ EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t leng
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
-  *remaining_bytes = CreateEncapsulationStructure(buffer, length, &encapsulation_data);
+  const int remaining_bytes = CreateEncapsulationStructure(buffer, length, &encapsulation_data);
+
+  if(remaining_bytes >= 0) {
+    *number_of_remaining_bytes = remaining_bytes;
+  } else {
+    OPENER_TRACE_ERR("Fragmented packet detected! Fragmented packets are not supported!\n");
+    *number_of_remaining_bytes = 0;
+    return kEipStatusError;
+  }
 
   if(kEncapsulationHeaderOptionsFlag == encapsulation_data.options) /*TODO generate appropriate error response*/
   {
-    if(*remaining_bytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
+    if(*number_of_remaining_bytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
     {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
@@ -203,7 +211,7 @@ EipStatus HandleReceivedExplictUdpData(const int socket, const struct sockaddr_i
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
-  int remaining_bytes = CreateEncapsulationStructure(buffer, buffer_length, &encapsulation_data);
+  const int remaining_bytes = CreateEncapsulationStructure(buffer, buffer_length, &encapsulation_data);
 
   if(remaining_bytes >= 0) {
     *number_of_remaining_bytes = remaining_bytes;
