@@ -133,7 +133,7 @@ EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t leng
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
-  int remaining_bytes = CreateEncapsulationStructure(buffer, length, &encapsulation_data);
+  const int remaining_bytes = CreateEncapsulationStructure(buffer, length, &encapsulation_data);
 
   if(remaining_bytes >= 0) {
     *number_of_remaining_bytes = remaining_bytes;
@@ -211,7 +211,7 @@ EipStatus HandleReceivedExplictUdpData(const int socket, const struct sockaddr_i
   /* eat the encapsulation header*/
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
-  int remaining_bytes = CreateEncapsulationStructure(buffer, buffer_length, &encapsulation_data);
+  const int remaining_bytes = CreateEncapsulationStructure(buffer, buffer_length, &encapsulation_data);
 
   if(remaining_bytes >= 0) {
     *number_of_remaining_bytes = remaining_bytes;
