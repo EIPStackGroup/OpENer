@@ -233,7 +233,7 @@ EipStatus CipIdentityInit() {
                                    2, /* # of class services*/
                                    7, /* # of instance attributes*/
                                    7, /* # highest instance attribute number*/
-                                   3, /* # of instance services*/
+                                   4, /* # of instance services*/
                                    1, /* # of instances*/
                                    "identity", /* # class name (for debug)*/
                                    1, /* # class revision*/
@@ -298,6 +298,8 @@ EipStatus CipIdentityInit() {
                 "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
   InsertService(class, kReset, &Reset, "Reset");
+  InsertService(class, kGetAttributeList, &GetAttributeList,
+                "GetAttributeList");
 
   return kEipStatusOk;
 }
