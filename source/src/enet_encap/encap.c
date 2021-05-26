@@ -593,7 +593,7 @@ int GetFreeSessionIndex(void) {
  *                      >0 .. more than one packet received
  *                      <0 .. only fragment of data portion received
  */
-EipInt16 CreateEncapsulationStructure(const EipUint8 *receive_buffer, int receive_buffer_length, EncapsulationData *const encapsulation_data) {
+int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer, int receive_buffer_length, EncapsulationData *const encapsulation_data) {
   encapsulation_data->communication_buffer_start = (EipUint8*) receive_buffer;
   encapsulation_data->command_code = GetUintFromMessage(&receive_buffer);
   encapsulation_data->data_length = GetUintFromMessage(&receive_buffer);
