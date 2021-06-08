@@ -49,11 +49,13 @@ typedef enum cip_security_object_state_values {
  */
 typedef enum cip_security_object_security_profiles_values {
   /** The device supports the EtherNet/IP Integrity Profile (Obsoleted) */
-  kCipSecurityObjectEtherNetIpIntegrityProfile = 0,
+  kCipSecurityObjectEtherNetIpIntegrityProfile = 0x01U,
   /** The device supports the EtherNet/IP Confidentiality Profile */
-  kCipSecurityObjectEtherNetIpConfidentialityProfile,
+  kCipSecurityObjectEtherNetIpConfidentialityProfile = 0x02U,
   /** The device supports the CIP Authorization Profile */
-  kCipSecurityObjectCipAuthorizationProfile,
+  kCipSecurityObjectCipAuthorizationProfile = 0x04U,
+  /** The device supports the CIP User Authentication Profile */
+  kCipSecurityObjectCipUserAuthenticationProfile = 0x08U
 } CipSecurityObjectSecurityProfileValue;
 
 /** @brief Type declaration for the CIP Security object
