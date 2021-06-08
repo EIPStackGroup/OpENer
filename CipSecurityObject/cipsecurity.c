@@ -54,6 +54,12 @@
 /**< definition of CIP Security object instance 1 data */
 CipSecurityObject g_security;
 
+CipSecurityObject g_security = {
+		.state = kCipSecurityObjectStateFactoryDefaultConfiguration,
+		.security_profiles = kCipSecurityObjectEtherNetIpConfidentialityProfile,
+		.security_profiles_configured = kCipSecurityObjectEtherNetIpConfidentialityProfile
+};
+
 /* ********************************************************************
  * public functions
  */
@@ -79,9 +85,16 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute 1: state
 
 	if (NULL != attribute) {
-		g_security.state = kCipSecurityObjectStateFactoryDefaultConfiguration;
-		message_router_response->general_status = kCipErrorSuccess;
-		OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
+		if (message_router_request->request_path_size > 0) {
+			message_router_response->general_status = kCipErrorTooMuchData;
+		} else {
+			g_security.state =
+					kCipSecurityObjectStateFactoryDefaultConfiguration;
+			message_router_response->general_status = kCipErrorSuccess;
+			OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
+
+			//TODO: perform a reset on each Ethernet/IP Security Object instances present
+		}
 
 	}
 
@@ -103,9 +116,19 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
  * Ends the configuration session.
  * See Vol.8 Section 5-3.7.3
  */
-EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance){
+EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Kick_Timer service
@@ -113,9 +136,19 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance){
  * Causes the object to reset the configuration session timer.
  * See Vol.8 Section 5-3.7.2
  */
-EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
+EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Object_Cleanup service
