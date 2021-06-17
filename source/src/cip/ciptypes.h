@@ -45,7 +45,7 @@ typedef enum cip_data_types {
                              length indicator */
   kCipTime = 0xDB, /**< Duration in milli-seconds; range of DINT */
   kCipEpath = 0xDC, /**< CIP path segments*/
-  kCipEngUnit = 0xDD, /**< Engineering Units*/
+  kCipEngUnit = 0xDD, /**< Engineering Units, range of UINT*/
   /* definition of some CIP structs */
   /* need to be validated in IEC 61131-3 subclause 2.3.3 */
   /* TODO: Check these codes */
@@ -59,6 +59,13 @@ typedef enum cip_data_types {
                             figure out the right way to handle it */
   kCipStringI
 } CipDataType;
+
+/** @brief returns the size of CIP data types in bytes
+ * @param type CIP data type
+ * @param data use data pointer if data length is variable, else set NULL
+ * @return size of CIP data type in bytes
+ * */
+int GetCipDataTypeLength(EipUint8 type, const EipUint8 *data);
 
 /** @brief Definition of CIP service codes
  *
