@@ -65,7 +65,7 @@ typedef enum cip_data_types {
  * @param data use data pointer if data length is variable, else set NULL
  * @return size of CIP data type in bytes
  * */
-int GetCipDataTypeLength(EipUint8 type, const EipUint8 *data);
+size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data);
 
 /** @brief Definition of CIP service codes
  *

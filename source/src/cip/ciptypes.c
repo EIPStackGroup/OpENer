@@ -8,9 +8,9 @@
 #include <trace.h>
 
 /* functions*/
-int GetCipDataTypeLength(EipUint8 type, const EipUint8 *data) {
+size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data) {
 
-	int length = 0;
+	size_t length = 0;
 
 	switch (type) {
 		case kCipBool:
