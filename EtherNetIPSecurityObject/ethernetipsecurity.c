@@ -66,7 +66,7 @@
  * global public variables
  */
 /**< definition of EtherNet/IP Security object instance 1 data */
-EIPSecurityObject g_eip_security;
+EIPSecurityObject g_eip_security; //TODO: add object configuration
 
 /* ********************************************************************
  * public functions
@@ -78,9 +78,42 @@ EIPSecurityObject g_eip_security;
  * Factory Default Configuration State.
  * See Vol.8 Section 5-4.5.1
  */
-EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance){
+EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorPrivilegeViolation; //TODO: check error status
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	// TODO: if state is factory-default: do nothing
+	//use: kEIPSecurityObjectStateFactoryDefaultConfiguration
+
+	CipBool enable_pull_model = true; //optional request parameter (true if not received)
+
+	enable_pull_model = GetBoolFromMessage(&message_router_request->data); //TODO: check if data is sent
+
+	OPENER_TRACE_INFO("DEBUG: enable_pull_model %d\n", enable_pull_model); //TODO: remove
+
+	//TODO: set attribute 13
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 13); //attribute 13: pull model enable
+
+	attribute->data = enable_pull_model; //TODO: check this
+
+	/* TODO:  Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
+	//TODO: set attributes: 4 - 12, 15,16
+//		for (CipInstance *ins = instance->cip_class->instances; ins; ins =
+//				ins->next) /* follow the list*/
+//				{
+//			OPENER_TRACE_INFO("DEBUG: ethernetip_security_object instance  %d\n", ins->instance_number);
+//
+//
+//		}
+	return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Begin_Config service
@@ -88,9 +121,21 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance){
  * Causes the object to transition to the Configuration In Progress state.
  * See Vol.8 Section 5-4.7.1
  */
-EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
+EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorSuccess;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	//TODO: implement service
+
+	return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Kick_Timer service
@@ -98,9 +143,21 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
  * Causes the object to reset the configuration session timer.
  * See Vol.8 Section 5-4.7.2
  */
-EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
+EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	//TODO: implement service
+
+	return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Apply_Config service
@@ -108,9 +165,21 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance){
  * Applies the configuration and places the object in the Configured state.
  * See Vol.8 Section 5-4.7.3
  */
-EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance){
+EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	//TODO: implement service
+
+	return kEipStatusOk;
 }
 
 /** @brief EtherNet/IP Security Object Abort_Config service
@@ -118,9 +187,21 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance){
  * Abort the current configuration and discard pending changes.
  * See Vol.8 Section 5-4.7.4
  */
-EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance){
+EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	//TODO: implement service
+
+	return kEipStatusOk;
 }
 
 void FinalizeMessage(CipUsint general_status,
@@ -345,6 +426,73 @@ void EncodeEIPSecurityObjectPreSharedKeys(const void *const data,
   AddSintToMessage(0, outgoing_message);
 }
 
+void EIPSecurityObjectInitializeClassSettings(CipClass *class) {
+
+  CipClass *meta_class = class->class_instance.cip_class;
+
+  InsertAttribute((CipInstance *) class,
+                  1,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &class->revision,
+                  kGetableSingleAndAll);  /* revision */
+  InsertAttribute((CipInstance *) class,
+                  2,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &class->number_of_instances,
+                  kGetableSingleAndAll); /*  largest instance number */
+  InsertAttribute((CipInstance *) class,
+                  3,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &class->number_of_instances,
+                  kGetableSingle); /* number of instances currently existing*/
+  InsertAttribute((CipInstance *) class,
+                  4,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &kCipUintZero,
+                  kNotSetOrGetable); /* optional attribute list - default = 0 */
+  InsertAttribute((CipInstance *) class,
+                  5,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &kCipUintZero,
+                  kNotSetOrGetable); /* optional service list - default = 0 */
+  InsertAttribute((CipInstance *) class,
+                  6,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &meta_class->highest_attribute_number,
+                  kGetableSingleAndAll); /* max class attribute number*/
+  InsertAttribute((CipInstance *) class,
+                  7,
+                  kCipUint,
+                  EncodeCipUint,
+                  NULL,
+                  (void *) &class->highest_attribute_number,
+                  kGetableSingleAndAll); /* max instance attribute number*/
+
+  /* Add class services to the meta class */
+  InsertService(meta_class,
+                kGetAttributeAll,
+                &GetAttributeAll,
+                "GetAttributeAll"
+  );
+  InsertService(meta_class,
+                kGetAttributeSingle,
+                &GetAttributeSingle,
+                "GetAttributeSingle"
+  );
+}
+
 
 EipStatus EIPSecurityInit(void) {
   CipClass *eip_security_object_class = NULL;
@@ -361,7 +509,7 @@ EipStatus EIPSecurityInit(void) {
                      1, /* # instances*/
                      "EtherNet/IP Security Object",
                      ETHERNET_IP_SECURITY_OBJECT_REVISION, /* # class revision */
-                     NULL /* # function pointer for initialization */
+                     &EIPSecurityObjectInitializeClassSettings /* # function pointer for initialization */
       );
 
   if (NULL == eip_security_object_class) {
