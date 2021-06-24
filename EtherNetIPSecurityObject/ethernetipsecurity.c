@@ -258,37 +258,6 @@ EipStatus SetAttributeSingleEIPSecurityObject(
   OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
 
   switch (attribute_number) {
-    case 4: { /** Attribute 4: Allowed Cipher Suites **/
-      CipUsint number_of_cipher_suites = GetUsintFromMessage(
-          &(message_router_request->data));
-
-      EIPSecurityObjectCipherSuites *allowed_cipher_suites = data;
-
-      //TODO: Cleanup old CipherSuiteIds
-
-      allowed_cipher_suites->number_of_cipher_suites = number_of_cipher_suites;
-      if (number_of_cipher_suites>0) {
-        EIPSecurityObjectCipherSuiteId *cipher_suite_ids =
-            CipCalloc(number_of_cipher_suites, sizeof(EIPSecurityObjectCipherSuiteId));
-
-        memcpy(cipher_suite_ids,
-               message_router_request->data,
-               number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId));
-//        for (size_t i = 0; i < number_of_cipher_suites; i++) {
-//          cipher_suite_ids[i].iana_first_byte = GetUsintFromMessage(
-//              &(message_router_request->data));
-//          cipher_suite_ids[i].iana_second_byte = GetUsintFromMessage(
-//              &(message_router_request->data));
-//        }
-
-        allowed_cipher_suites->cipher_suite_ids = cipher_suite_ids;
-      } else {
-        allowed_cipher_suites->cipher_suite_ids = NULL;
-      }
-      message_router_response->general_status = kCipErrorSuccess;
-    }
-      break;
-
     case 5: { /** Attribute 5: Pre-Shared Keys **/
       CipUsint number_of_psk = GetUsintFromMessage(&(message_router_request->data));
       EIPSecurityObjectPreSharedKeys *pre_shared_keys = data;
@@ -375,6 +344,37 @@ void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
 
   EncodeCipUsint(&(cipher_suite_id->iana_first_byte), outgoing_message);
   EncodeCipUsint(&(cipher_suite_id->iana_second_byte), outgoing_message);
+}
+
+int DecodeEIPSecurityObjectCipherSuites(
+    EIPSecurityObjectCipherSuites *const data,
+    const CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response
+    ) {
+
+  int number_of_decoded_bytes = -1;
+
+  CipUsint number_of_cipher_suites = GetUsintFromMessage(&(message_router_request->data));
+  number_of_decoded_bytes = sizeof(number_of_cipher_suites);
+  CipFree(data->cipher_suite_ids);
+
+  if (number_of_cipher_suites > 0) {
+    EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
+        number_of_cipher_suites, sizeof(EIPSecurityObjectCipherSuiteId));
+
+    memcpy(cipher_suite_ids, &(message_router_request->data),
+           number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId));
+
+    number_of_decoded_bytes += number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId);
+
+    data->number_of_cipher_suites = number_of_cipher_suites;
+    data->cipher_suite_ids = cipher_suite_ids;
+  } else {
+    data->cipher_suite_ids = NULL;
+  }
+
+  message_router_response->general_status = kCipErrorSuccess;
+  return number_of_decoded_bytes;
 }
 
 void EncodeEIPSecurityObjectCipherSuites(const void *const data,
@@ -548,7 +548,7 @@ EipStatus EIPSecurityInit(void) {
                   4,
                   kCipAny,
                   EncodeEIPSecurityObjectCipherSuites,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectCipherSuites,
                   &g_eip_security.allowed_cipher_suites,
                   kSetAndGetAble
   );
