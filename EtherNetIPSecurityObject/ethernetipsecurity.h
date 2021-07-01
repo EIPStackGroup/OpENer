@@ -99,20 +99,12 @@ typedef struct {
   EIPSecurityObjectPreSharedKey *pre_shared_keys;
 } EIPSecurityObjectPreSharedKeys;
 
-/** @brief Type declaration for a path to a
- *  Certificate Management Object instance or a File Object instance
- */
-typedef struct {
-  CipUsint path_size;
-  CipEpath path;
-} EIPSecurityObjectPath;
-
 /** @brief Type declaration for a list of paths to
  *  Certificate Management Object instances or a File Object instances
  */
 typedef struct {
   CipUsint number_of_paths;
-  EIPSecurityObjectPath *paths;
+  CipEpath *paths;
 } EIPSecurityObjectPathList;
 
 /** @brief Type declaration for the EtherNet/IP Security object
@@ -127,7 +119,7 @@ typedef struct {
   EIPSecurityObjectPreSharedKeys pre_shared_keys;        /** Attribute #5 */
   EIPSecurityObjectPathList active_device_certificates;  /** Attribute #6 */
   EIPSecurityObjectPathList trusted_authorities;         /** Attribute #7 */
-  EIPSecurityObjectPath certificate_revocation_list;     /** Attribute #8 */
+  CipEpath certificate_revocation_list;                  /** Attribute #8 */
   CipBool verify_client_certificate;                     /** Attribute #9 */
   CipBool send_certificate_chain;                        /** Attribute #10 */
   CipBool check_expiration;                              /** Attribute #11 */
