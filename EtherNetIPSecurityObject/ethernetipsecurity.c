@@ -66,7 +66,40 @@
  * global public variables
  */
 /**< definition of EtherNet/IP Security object instance 1 data */
-EIPSecurityObject g_eip_security; //TODO: add object configuration
+
+//TODO: remove section ######################################################
+CipEpath dummy_CMO_Paths[1] = {  // dummy Certificate Management object path
+		{
+				2, /* PathSize in 16 Bit chunks */
+				0x5F, /* Class Code */
+				0x01, /* Instance # */
+				0 /* Attribute # */
+} };
+
+ EIPSecurityObjectPathList const dummy_CMO_path_list = {
+		  1,
+		  dummy_CMO_Paths
+ };
+ // #########################################################################
+
+EIPSecurityObject g_eip_security = { //TODO: add object configuration
+		.state = kEIPSecurityObjectStateFactoryDefaultConfiguration,     /** Attribute #1 */
+		.active_device_certificates = dummy_CMO_path_list,               /** Attribute #6 */
+		.pre_shared_keys.number_of_pre_shared_keys = 0,                  /** Attribute #5 */
+		.pull_model_enabled = true,  //default: true                     /** Attribute #13 */
+		.pull_model_enabled = 0x0000,                                    /** Attribute #14 */
+		.dtls_timeout = 0x0C //default: 12 seconds                       /** Attribute #15 */
+};
+//  .capability_flags =0,                           /** Attribute #2 */
+//  .available_cipher_suites = 0,                   /** Attribute #3 */
+//  .allowed_cipher_suites,                         /** Attribute #4 */
+//  .trusted_authorities,                           /** Attribute #7 */
+//  .certificate_revocation_list,                   /** Attribute #8 */
+//  .verify_client_certificate,                     /** Attribute #9 */
+//  .send_certificate_chain,                        /** Attribute #10 */
+//  .check_expiration,                              /** Attribute #11 */
+//  .trusted_identities,                            /** Attribute #12 */
+//  .udp_only_policy                                /** Attribute #16 */
 
 /* ********************************************************************
  * public functions
@@ -110,8 +143,6 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 //				ins->next) /* follow the list*/
 //				{
 //			OPENER_TRACE_INFO("DEBUG: ethernetip_security_object instance  %d\n", ins->instance_number);
-//
-//
 //		}
 	return kEipStatusOk;
 }
@@ -133,7 +164,13 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
+	if ((kEIPSecurityObjectStatePullModelDisabled
+					|| kEIPSecurityObjectStatePullModelCompleted
+					|| kEIPSecurityObjectStateConfigured) == g_eip_security.state) {
+		message_router_response->general_status = kCipErrorObjectStateConflict;
+	} else {
+		g_eip_security.state = kEIPSecurityObjectStateConfigurationInProgress;
+	}
 
 	return kEipStatusOk;
 }
@@ -155,7 +192,9 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
+	if (kEIPSecurityObjectStateConfigurationInProgress == g_eip_security.state) {
+			message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return kEipStatusOk;
 }
@@ -213,7 +252,7 @@ void FinalizeMessage(CipUsint general_status,
   message_router_response->reply_service = (0x80 | message_router_request->service);
 }
 
-EipStatus SetAttributeSingleEIPSecurityObject(
+EipStatus SetAttributeSingleEIPSecurityObject(  //TODO: remove - use SetAttributeSingle
     CipInstance *instance,
     CipMessageRouterRequest *message_router_request,
     CipMessageRouterResponse *message_router_response,
@@ -347,34 +386,37 @@ void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
 }
 
 int DecodeEIPSecurityObjectCipherSuites(
-    EIPSecurityObjectCipherSuites *const data,
-    const CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response
-    ) {
+		EIPSecurityObjectCipherSuites *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
-  int number_of_decoded_bytes = -1;
+	int number_of_decoded_bytes = -1;
 
-  CipUsint number_of_cipher_suites = GetUsintFromMessage(&(message_router_request->data));
-  number_of_decoded_bytes = sizeof(number_of_cipher_suites);
-  CipFree(data->cipher_suite_ids);
+	CipUsint number_of_cipher_suites = GetUsintFromMessage(
+			&(message_router_request->data));
+	number_of_decoded_bytes = sizeof(number_of_cipher_suites);
+	CipFree(data->cipher_suite_ids);
 
-  if (number_of_cipher_suites > 0) {
-    EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
-        number_of_cipher_suites, sizeof(EIPSecurityObjectCipherSuiteId));
+	if (number_of_cipher_suites > 0) {
+		EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
+				number_of_cipher_suites,
+				sizeof(EIPSecurityObjectCipherSuiteId));
 
-    memcpy(cipher_suite_ids, &(message_router_request->data),
-           number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId));
+		memcpy(cipher_suite_ids, &(message_router_request->data),
+				number_of_cipher_suites
+						* sizeof(EIPSecurityObjectCipherSuiteId));
 
-    number_of_decoded_bytes += number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId);
+		number_of_decoded_bytes += number_of_cipher_suites
+				* sizeof(EIPSecurityObjectCipherSuiteId);
 
-    data->number_of_cipher_suites = number_of_cipher_suites;
-    data->cipher_suite_ids = cipher_suite_ids;
-  } else {
-    data->cipher_suite_ids = NULL;
-  }
+		data->number_of_cipher_suites = number_of_cipher_suites;
+		data->cipher_suite_ids = cipher_suite_ids;
+	} else {
+		data->cipher_suite_ids = NULL;
+	}
 
-  message_router_response->general_status = kCipErrorSuccess;
-  return number_of_decoded_bytes;
+	message_router_response->general_status = kCipErrorSuccess;
+	return number_of_decoded_bytes;
 }
 
 void EncodeEIPSecurityObjectCipherSuites(const void *const data,
@@ -391,16 +433,26 @@ void EncodeEIPSecurityObjectCipherSuites(const void *const data,
   }
 }
 
-void EncodeEIPSecurityObjectPath(const void *const data,
-                                       ENIPMessage *const outgoing_message)
-{
-  EIPSecurityObjectPath *path = (EIPSecurityObjectPath *) data;
+void EncodeEIPSecurityObjectPath(const CipEpath *const data,
+		ENIPMessage *const outgoing_message) {
+	AddSintToMessage(data->path_size, outgoing_message);
+	if(0 != data->path_size){
+		EncodeEPath((CipEpath*) data, outgoing_message);
+	}
+}
 
-  EncodeCipUsint(&(path->path_size), outgoing_message);
-  if(0 != path->path_size){
-    EncodeCipEPath(&(path->path), outgoing_message);
-  }
+int DecodeEIPSecurityObjectPath(
+		CipEpath *const epath,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
 
+	int number_of_decoded_bytes = -1;
+
+	//TODO: implement function
+	//number_of_decoded_bytes = DecodePaddedEPath(epath, &message_router_request->data);
+
+	//TODO: update message_router_response->general_status
+	return number_of_decoded_bytes;
 }
 
 void EncodeEIPSecurityObjectPathList(const void *const data,
@@ -415,6 +467,25 @@ void EncodeEIPSecurityObjectPathList(const void *const data,
   }
 }
 
+int DecodeEIPSecurityObjectPathList(
+		EIPSecurityObjectPathList *const path_list,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
+
+	int number_of_decoded_bytes = -1;
+
+	const EipUint8 **const cip_message = message_router_request->data;
+	path_list->number_of_paths = GetUsintFromMessage(&cip_message);
+	number_of_decoded_bytes = 1;
+
+	//TODO: implement function
+	// loop over Epaths in list
+
+	//TODO: update message_router_response->general_status
+
+	return number_of_decoded_bytes;
+}
+
 /**
  * When accessed via Get_Attributes_All or Get_Attribute_Single, the Size of
  * PSK element shall be 0, and 0 bytes of PSK value shall be returned.
@@ -424,6 +495,20 @@ void EncodeEIPSecurityObjectPathList(const void *const data,
 void EncodeEIPSecurityObjectPreSharedKeys(const void *const data,
                                          ENIPMessage *const outgoing_message) {
   AddSintToMessage(0, outgoing_message);
+}
+
+int DecodeEIPSecurityObjectPreSharedKeys(
+		EIPSecurityObjectPreSharedKeys *const pre_shared_keys,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
+
+	int number_of_decoded_bytes = -1;
+
+	//TODO: implement function
+
+	//TODO: update message_router_response->general_status
+
+	return number_of_decoded_bytes;
 }
 
 void EIPSecurityObjectInitializeClassSettings(CipClass *class) {
@@ -556,7 +641,7 @@ EipStatus EIPSecurityInit(void) {
                   5,
                   kCipAny,
                   EncodeEIPSecurityObjectPreSharedKeys,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectPreSharedKeys, //TODO: implement decode function
                   &g_eip_security.pre_shared_keys,
                   kSetAndGetAble
   );
@@ -564,7 +649,7 @@ EipStatus EIPSecurityInit(void) {
                   6,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectPathList, //TODO: implement decode function
                   &g_eip_security.active_device_certificates,
                   kSetAndGetAble
   );
@@ -572,15 +657,15 @@ EipStatus EIPSecurityInit(void) {
                   7,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectPathList, //TODO: implement decode function
                   &g_eip_security.trusted_authorities,
                   kSetAndGetAble
   );
   InsertAttribute(eip_security_object_instance,
                   8,
-                  kCipAny,
+                  kCipEpath,
                   EncodeEIPSecurityObjectPath,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectPath, //TODO: implement decode function
                   &g_eip_security.certificate_revocation_list,
                   kSetAndGetAble
   );
@@ -612,7 +697,7 @@ EipStatus EIPSecurityInit(void) {
                   12,
                   kCipAny,
                   EncodeEIPSecurityObjectPathList,
-                  NULL, //TODO: add decode function
+                  DecodeEIPSecurityObjectPathList, //TODO: implement decode function
                   &g_eip_security.trusted_identities,
                   kSetAndGetAble
   );
@@ -636,7 +721,7 @@ EipStatus EIPSecurityInit(void) {
                   15,
                   kCipUint,
                   EncodeCipUint,
-                  DecodeCipUint,
+                  DecodeCipUint, //TODO: implement DecodeDTLSTimeout (value check + error status)
                   &g_eip_security.dtls_timeout,
                   kSetAndGetAble
   );
@@ -667,8 +752,8 @@ EipStatus EIPSecurityInit(void) {
   );
   InsertService(eip_security_object_class,
                 kSetAttributeSingle,
-                &SetAttributeSingleEIPSecurityObject,
-                "SetAttributeSingleEIPSecurityObject"
+                &SetAttributeSingle,
+                "SetAttributeSingle"
   );
   InsertService(eip_security_object_class,
                 kEIPSecurityObjectBeginConfigServiceCode,
