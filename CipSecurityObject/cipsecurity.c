@@ -52,7 +52,6 @@
  * global public variables
  */
 /**< definition of CIP Security object instance 1 data */
-CipSecurityObject g_security;
 
 CipSecurityObject g_security = {
 		.state = kCipSecurityObjectStateFactoryDefaultConfiguration,
