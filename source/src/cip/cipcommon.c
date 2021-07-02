@@ -31,7 +31,6 @@
 #include "ciptypes.h"
 
 /* private functions*/
-void EncodeEPath(CipEpath *epath, ENIPMessage *message);
 
 EipStatus CipStackInit(const EipUint16 unique_connection_id) {
   /* The message router is the first CIP object be initialized!!! */
@@ -561,6 +560,7 @@ void EncodeCipByteArray(const CipByteArray *const data, ENIPMessage *const outgo
 }
 
 void EncodeCipEPath(const CipEpath *const data, ENIPMessage *const outgoing_message) {
+  AddIntToMessage(data->path_size, outgoing_message);
   EncodeEPath((CipEpath*) data, outgoing_message);
 }
 
@@ -982,10 +982,9 @@ EipStatus SetAttributeList(CipInstance *instance,
 	return kEipStatusOkSend;
 }
 
-void EncodeEPath(CipEpath *epath, ENIPMessage *message) {
+void EncodeEPath(const CipEpath *const epath, ENIPMessage *const message) {
   unsigned int length = epath->path_size;
   size_t start_length = message->used_message_length;
-  AddIntToMessage(epath->path_size, message);
 
   if(epath->class_id < 256) {
     AddSintToMessage(0x20, message); /* 8 Bit Class Id */
@@ -1024,7 +1023,7 @@ void EncodeEPath(CipEpath *epath, ENIPMessage *message) {
     }
   }
 
-  OPENER_ASSERT(2 + epath->path_size * 2 == message->used_message_length - start_length); /* path size is in 16 bit chunks according to the specification */
+  OPENER_ASSERT(epath->path_size * 2 == message->used_message_length - start_length); /* path size is in 16 bit chunks according to the specification */
 }
 
 int DecodePaddedEPath(CipEpath *epath, const EipUint8 **message) {
