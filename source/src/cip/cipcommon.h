@@ -65,7 +65,7 @@ void GenerateSetAttributeSingleHeader(
 /** @brief Generic implementation of the SetAttributeSingle CIP service
  *
  *  Modifies an attribute value if the requested object has
- *  the appropriate attribute implemented and if the attribute is setable.
+ *  the appropriate attribute implemented and if the attribute is settable.
  *
  * @param instance pointer to instance.
  * @param message_router_request pointer to request.
@@ -114,6 +114,24 @@ EipStatus GetAttributeAll(CipInstance *instance,
  *              0 .. no reply to send
  */
 EipStatus GetAttributeList(CipInstance *instance,
+                          CipMessageRouterRequest *message_router_request,
+                          CipMessageRouterResponse *message_router_response,
+                          const struct sockaddr *originator_address,
+                          const int encapsulation_session);
+
+/** @brief Generic implementation of the SetAttributeList CIP service
+ *
+ * Sets the values of selected attributes of the specified object class
+ * or instance.
+ * @param instance pointer to object instance with data.
+ * @param message_router_request pointer to MR request.
+ * @param message_router_response pointer to MR response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return length of data stream >0 .. success
+ *              0 .. no reply to send
+ */
+EipStatus SetAttributeList(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
