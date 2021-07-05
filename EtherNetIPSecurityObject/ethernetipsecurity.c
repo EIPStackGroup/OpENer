@@ -386,37 +386,37 @@ void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
 }
 
 int DecodeEIPSecurityObjectCipherSuites(
-		EIPSecurityObjectCipherSuites *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+        EIPSecurityObjectCipherSuites *const data,
+        const CipMessageRouterRequest *const message_router_request,
+        CipMessageRouterResponse *const message_router_response) {
 
-	int number_of_decoded_bytes = -1;
+    int number_of_decoded_bytes = -1;
 
-	CipUsint number_of_cipher_suites = GetUsintFromMessage(
-			&(message_router_request->data));
-	number_of_decoded_bytes = sizeof(number_of_cipher_suites);
-	CipFree(data->cipher_suite_ids);
+    CipUsint number_of_cipher_suites = GetUsintFromMessage(
+         &(message_router_request->data));
+    number_of_decoded_bytes = sizeof(number_of_cipher_suites);
+    CipFree(data->cipher_suite_ids);
 
-	if (number_of_cipher_suites > 0) {
-		EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
-				number_of_cipher_suites,
-				sizeof(EIPSecurityObjectCipherSuiteId));
+     if (number_of_cipher_suites > 0) {
+         EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
+                number_of_cipher_suites,
+                sizeof(EIPSecurityObjectCipherSuiteId));
 
-		memcpy(cipher_suite_ids, &(message_router_request->data),
-				number_of_cipher_suites
-						* sizeof(EIPSecurityObjectCipherSuiteId));
+         memcpy(cipher_suite_ids, &(message_router_request->data),
+                number_of_cipher_suites
+                * sizeof(EIPSecurityObjectCipherSuiteId));
 
-		number_of_decoded_bytes += number_of_cipher_suites
-				* sizeof(EIPSecurityObjectCipherSuiteId);
+         number_of_decoded_bytes += number_of_cipher_suites
+         * sizeof(EIPSecurityObjectCipherSuiteId);
 
-		data->number_of_cipher_suites = number_of_cipher_suites;
-		data->cipher_suite_ids = cipher_suite_ids;
-	} else {
-		data->cipher_suite_ids = NULL;
-	}
+         data->number_of_cipher_suites = number_of_cipher_suites;
+         data->cipher_suite_ids = cipher_suite_ids;
+    } else {
+       data->cipher_suite_ids = NULL;
+    }
 
-	message_router_response->general_status = kCipErrorSuccess;
-	return number_of_decoded_bytes;
+    message_router_response->general_status = kCipErrorSuccess;
+    return number_of_decoded_bytes;
 }
 
 void EncodeEIPSecurityObjectCipherSuites(const void *const data,
@@ -509,6 +509,24 @@ int DecodeEIPSecurityObjectPreSharedKeys(
 	//TODO: update message_router_response->general_status
 
 	return number_of_decoded_bytes;
+}
+
+int DecodeDTLSTimeout(CipUint *const data,
+		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
+
+	if (kEIPSecurityObjectStateConfigurationInProgress
+			== g_eip_security.state) {
+		int dtls_timeout = GetUintFromMessage(&message_router_request->data);
+
+		if (0 <= dtls_timeout && 3600 >= dtls_timeout) {
+			*data = dtls_timeout;
+			message_router_response->general_status = kCipErrorSuccess;
+			return 2;
+		}
+	}
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	return -1;
 }
 
 void EIPSecurityObjectInitializeClassSettings(CipClass *class) {
@@ -721,7 +739,7 @@ EipStatus EIPSecurityInit(void) {
                   15,
                   kCipUint,
                   EncodeCipUint,
-                  DecodeCipUint, //TODO: implement DecodeDTLSTimeout (value check + error status)
+                  DecodeDTLSTimeout,
                   &g_eip_security.dtls_timeout,
                   kSetAndGetAble
   );
