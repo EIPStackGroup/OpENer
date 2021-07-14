@@ -127,6 +127,8 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
+	//TODO: implement service
+
 	return kEipStatusOk;
 }
 
@@ -147,6 +149,8 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
+	//TODO: implement service
+
 	return kEipStatusOk;
 }
 
@@ -155,9 +159,21 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
  * Remove unused object instances related to security configuration
  * See Vol.8 Section 5-3.7.4
  */
-EipStatus CipSecurityObjectCleanup(CipClass *RESTRICT const cip_class){
+EipStatus CipSecurityObjectCleanup(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	//TODO: implement service
+
+	return kEipStatusOk;
 }
 
 void CipSecurityObjectInitializeClassSettings(CipClass *class) {
