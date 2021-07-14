@@ -128,7 +128,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*) attribute->data;
 
-	if (kEIPSecurityObjectStateConfigurationInProgress == state) { //if state is factory-default: do nothing
+	if (kEIPSecurityObjectStateFactoryDefaultConfiguration == state) { //if state is factory-default: do nothing
 		message_router_response->general_status = kCipErrorSuccess;
 		return kEipStatusOk;
 	} else {
@@ -142,16 +142,50 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 		CipAttributeStruct *attribute = GetCipAttribute(instance, 13); //attribute #13 pull model enable
 		attribute->data = (void*) &enable_pull_model; //TODO: check this
 
-		/* TODO:  Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
+		/*Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
 		//TODO: set attributes: 4 - 12, 15,16
-		//		for (CipInstance *ins = instance->cip_class->instances; ins; ins =
-		//				ins->next) /* follow the list*/
-		//				{
-		//			OPENER_TRACE_INFO("DEBUG: ethernetip_security_object instance  %d\n", ins->instance_number);
-		//		}
+		for (CipInstance *ins = instance->cip_class->instances; ins;
+				ins = ins->next) /* follow the list*/
+				{
+			OPENER_TRACE_INFO("DEBUG: ethernetip_security_object instance  %d\n", ins->instance_number);
+			CipAttributeStruct *attribute = NULL;
+
+			attribute = GetCipAttribute(instance, 4);
+			attribute->data = (void*) &g_eip_security.allowed_cipher_suites;
+
+			attribute = GetCipAttribute(instance, 5);
+			attribute->data = (void*) &g_eip_security.pre_shared_keys;
+
+			attribute = GetCipAttribute(instance, 6);
+			attribute->data = (void*) &g_eip_security.active_device_certificates;
+
+			attribute = GetCipAttribute(instance, 7);
+			attribute->data = (void*) &g_eip_security.trusted_authorities;
+
+			attribute = GetCipAttribute(instance, 8);
+			attribute->data = (void*) &g_eip_security.certificate_revocation_list;
+
+			attribute = GetCipAttribute(instance, 9);
+			attribute->data = (void*) &g_eip_security.verify_client_certificate;
+
+			attribute = GetCipAttribute(instance, 10);
+			attribute->data = (void*) &g_eip_security.send_certificate_chain;
+
+			attribute = GetCipAttribute(instance, 11);
+			attribute->data = (void*) &g_eip_security.check_expiration;
+
+			attribute = GetCipAttribute(instance, 12);
+			attribute->data = (void*) &g_eip_security.trusted_identities;
+
+			attribute = GetCipAttribute(instance, 15);
+			attribute->data = (void*) &g_eip_security.dtls_timeout;
+
+			attribute = GetCipAttribute(instance, 16);
+			attribute->data = (void*) &g_eip_security.udp_only_policy;
+		}
 	}
 
-	//TODO: update message_router_response->general_status
+	message_router_response->general_status = kCipErrorSuccess;
 	return kEipStatusOk;
 }
 
@@ -182,6 +216,8 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 					|| kEIPSecurityObjectStateConfigured) == state) {
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
+
+		//TODO: save current instance config before startin new config
 		state = kEIPSecurityObjectStateConfigurationInProgress;
 		attribute->data = (void*) &state;
 	}
@@ -210,7 +246,8 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	CipUsint state = *(CipUsint*)attribute->data;
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
-			message_router_response->general_status = kCipErrorSuccess;
+		//TODO: reset timer
+		message_router_response->general_status = kCipErrorSuccess;
 	}
 
 	return kEipStatusOk;
@@ -233,8 +270,28 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
-	//TODO: update message_router_response->general_status
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+	CipUsint state = *(CipUsint*) attribute->data;
+
+	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
+
+		//TODO: implement service
+
+		CipWord apply_behavior_flags = GetWordFromMessage(
+		         &(message_router_request->data));
+		CipUint close_delay = GetUintFromMessage(
+				         &(message_router_request->data));
+
+		//TODO: check bits of apply_behavior_flags
+		if (apply_behavior_flags & (1 << 0)){
+
+		}
+
+		//TODO: change state to configured
+//		state = kEIPSecurityObjectStateConfigured;
+//		attribute->data = (void*) &state;
+		message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return kEipStatusOk;
 }
@@ -256,8 +313,18 @@ EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
-	//TODO: update message_router_response->general_status
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+	CipUsint state = *(CipUsint*) attribute->data;
+
+	if (kEIPSecurityObjectStateConfigurationInProgress == state){
+
+		//TODO: implement service
+
+		//TODO: change back to state before configuration in progress
+		state = kEIPSecurityObjectStateConfigured; //TODO: remove
+		attribute->data = (void*) &state;
+		message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return kEipStatusOk;
 }
