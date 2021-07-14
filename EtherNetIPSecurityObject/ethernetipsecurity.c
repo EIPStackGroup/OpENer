@@ -125,7 +125,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*) attribute->data;
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state) { //if state is factory-default: do nothing
@@ -139,7 +139,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 		OPENER_TRACE_INFO("DEBUG: enable_pull_model %d\n", enable_pull_model); //TODO: remove
 
 		//set attribute 13 - enable_pull_model
-		CipAttributeStruct *attribute = GetCipAttribute(instance, 13); //attribute 13: pull model enable
+		CipAttributeStruct *attribute = GetCipAttribute(instance, 13); //attribute #13 pull model enable
 		attribute->data = (void*) &enable_pull_model; //TODO: check this
 
 		/* TODO:  Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
@@ -172,7 +172,7 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
 	if ((kEIPSecurityObjectStatePullModelDisabled
@@ -206,7 +206,7 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
@@ -260,138 +260,6 @@ EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance,
 	//TODO: update message_router_response->general_status
 
 	return kEipStatusOk;
-}
-
-void FinalizeMessage(CipUsint general_status,
-                     CipMessageRouterRequest *message_router_request,
-                     CipMessageRouterResponse *message_router_response) {
-  message_router_response->general_status = general_status;
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
-}
-
-EipStatus SetAttributeSingleEIPSecurityObject(  //TODO: remove - use SetAttributeSingle
-    CipInstance *instance,
-    CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
-
-  EipUint16 attribute_number = message_router_request->request_path.attribute_number;
-  CipAttributeStruct *attribute = GetCipAttribute(instance, attribute_number);
-
-  /* we don't have this attribute */
-  if (NULL == attribute) {
-    FinalizeMessage(kCipErrorAttributeNotSupported,
-                    message_router_request,
-                    message_router_response);
-    return kEipStatusOkSend;
-  }
-
-  uint8_t set_bit_mask = (instance->cip_class->set_bit_mask[
-      CalculateIndex(attribute_number)
-  ]);
-  if (set_bit_mask & (1 << ((attribute_number) % 8))) {
-    FinalizeMessage(kCipErrorAttributeNotSetable,
-                    message_router_request,
-                    message_router_response);
-    return kEipStatusOkSend;
-  }
-
-  if (attribute->data == NULL) {
-    FinalizeMessage(kCipErrorNotEnoughData,
-                    message_router_request,
-                    message_router_response);
-    return kEipStatusOkSend;
-  }
-
-  // Execute PreSetCallback iff available
-  if ((attribute->attribute_flags & kPreSetFunc) && instance->cip_class->PreSetCallback ) {
-    instance->cip_class->PreSetCallback(instance, attribute, message_router_request->service);
-  }
-
-  CipDword *data = (CipDword *) attribute->data;
-
-  OPENER_TRACE_INFO(" setAttribute %d\n", attribute_number);
-
-  switch (attribute_number) {
-    case 5: { /** Attribute 5: Pre-Shared Keys **/
-      CipUsint number_of_psk = GetUsintFromMessage(&(message_router_request->data));
-      EIPSecurityObjectPreSharedKeys *pre_shared_keys = data;
-
-      // At present, a maximum of 1 PSK may be configured
-      if (number_of_psk > 1) {
-        message_router_response->general_status = kCipErrorInvalidAttributeValue;
-        break;
-      }
-
-      if (number_of_psk == 1) {
-        EIPSecurityObjectPreSharedKey *psk_structure =
-            CipCalloc(number_of_psk, sizeof(EIPSecurityObjectPreSharedKey));
-
-        psk_structure->psk_identity_size = GetUsintFromMessage(&(message_router_request->data));
-
-        if (psk_structure->psk_identity_size <= SIZE_MAX_PSK_IDENTITY){
-          CipOctet *psk_identity = CipCalloc(psk_structure->psk_identity_size, sizeof(CipOctet));
-
-          memcpy(psk_identity,
-                 message_router_request->data,
-                 psk_structure->psk_identity_size);
-          message_router_request->data += psk_structure->psk_identity_size;
-//          for (int i=0; i<psk_structure->psk_identity_size; i++) {
-//            psk_identity[i] = GetByteFromMessage(&(message_router_request->data));
-//          }
-
-          psk_structure->psk_identity = psk_identity;
-          psk_structure->psk_size = GetUsintFromMessage(&(message_router_request->data));
-
-          if(psk_structure->psk_size <= SIZE_MAX_PSK) {
-            CipOctet *psk = CipCalloc(psk_structure->psk_size, sizeof(CipOctet));
-
-            memcpy(psk, message_router_request->data, psk_structure->psk_size);
-//            for (int i=0; i<psk_structure->psk_size; i++) {
-//              psk[i] = GetByteFromMessage(&(message_router_request->data));
-//            }
-
-            psk_structure->psk = psk;
-            //TODO: Cleanup existing PSKs
-            pre_shared_keys->pre_shared_keys = psk_structure;
-            message_router_response->general_status = kCipErrorSuccess;
-          } else {
-            if (psk_identity != NULL){
-              CipFree(psk_identity);
-              psk_structure->psk_identity = NULL;
-            }
-            if (psk_structure != NULL) {
-              CipFree(psk_structure);
-            }
-            message_router_response->general_status = kCipErrorInvalidAttributeValue;
-          }
-        } else {
-          if (psk_structure != NULL) {
-            CipFree(psk_structure);
-          }
-          message_router_response->general_status = kCipErrorInvalidAttributeValue;
-        }
-      } else {
-        //TODO: Cleanup existing PSKs
-        pre_shared_keys->number_of_pre_shared_keys = number_of_psk; //0
-        pre_shared_keys->pre_shared_keys=NULL;
-        message_router_response->general_status = kCipErrorSuccess;
-      }
-    }
-      break;
-
-    default:
-      message_router_response->general_status = kCipErrorAttributeNotSetable;
-      break;
-  } //end of switch
-
-  message_router_response->size_of_additional_status = 0;
-  message_router_response->reply_service = (0x80 | message_router_request->service);
-
-  return kEipStatusOkSend;
 }
 
 void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
@@ -590,14 +458,82 @@ void EncodeEIPSecurityObjectPreSharedKeys(const void *const data,
 
 int DecodeEIPSecurityObjectPreSharedKeys(
 		EIPSecurityObjectPreSharedKeys *const pre_shared_keys,
-		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
 
 	//TODO: implement function
+	CipUsint number_of_psk = GetUsintFromMessage(
+			&(message_router_request->data));
 
-	//TODO: update message_router_response->general_status
+	// At present, a maximum of 1 PSK may be configured
+	if (number_of_psk > 1) {
+		message_router_response->general_status =
+				kCipErrorInvalidAttributeValue;
+		return number_of_decoded_bytes;
+	}
+
+	if (number_of_psk == 1) {
+		EIPSecurityObjectPreSharedKey *psk_structure = CipCalloc(number_of_psk,
+				sizeof(EIPSecurityObjectPreSharedKey));
+
+		psk_structure->psk_identity_size = GetUsintFromMessage(
+				&(message_router_request->data));
+
+		if (psk_structure->psk_identity_size <= SIZE_MAX_PSK_IDENTITY) {
+			CipOctet *psk_identity = CipCalloc(psk_structure->psk_identity_size,
+					sizeof(CipOctet));
+
+			memcpy(psk_identity, message_router_request->data,
+					psk_structure->psk_identity_size);
+			message_router_request->data += psk_structure->psk_identity_size;
+			//          for (int i=0; i<psk_structure->psk_identity_size; i++) {
+			//            psk_identity[i] = GetByteFromMessage(&(message_router_request->data));
+			//          }
+
+			psk_structure->psk_identity = psk_identity;
+			psk_structure->psk_size = GetUsintFromMessage(
+					&(message_router_request->data));
+
+			if (psk_structure->psk_size <= SIZE_MAX_PSK) {
+				CipOctet *psk = CipCalloc(psk_structure->psk_size,
+						sizeof(CipOctet));
+
+				memcpy(psk, message_router_request->data,
+						psk_structure->psk_size);
+				//            for (int i=0; i<psk_structure->psk_size; i++) {
+				//              psk[i] = GetByteFromMessage(&(message_router_request->data));
+				//            }
+
+				psk_structure->psk = psk;
+				//TODO: Cleanup existing PSKs
+				pre_shared_keys->pre_shared_keys = psk_structure;
+				message_router_response->general_status = kCipErrorSuccess;
+			} else {
+				if (psk_identity != NULL) {
+					CipFree(psk_identity);
+					psk_structure->psk_identity = NULL;
+				}
+				if (psk_structure != NULL) {
+					CipFree(psk_structure);
+				}
+				message_router_response->general_status =
+						kCipErrorInvalidAttributeValue;
+			}
+		} else {
+			if (psk_structure != NULL) {
+				CipFree(psk_structure);
+			}
+			message_router_response->general_status =
+					kCipErrorInvalidAttributeValue;
+		}
+	} else {
+		//TODO: Cleanup existing PSKs
+		pre_shared_keys->number_of_pre_shared_keys = number_of_psk; //0
+		pre_shared_keys->pre_shared_keys = NULL;
+		message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return number_of_decoded_bytes;
 }
@@ -610,12 +546,12 @@ int DecodeDTLSTimeout(CipUint *const data,
 				GetCipClass(message_router_request->request_path.class_id),
 				message_router_request->request_path.instance_number);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state){
 
-		CipUint dtls_timeout = GetUintFromMessage(&message_router_request->data);
+		CipUint dtls_timeout = GetUintFromMessage(&(message_router_request->data));
 
 		if (0 <= dtls_timeout && 3600 >= dtls_timeout) {
 			*data = dtls_timeout;
@@ -761,7 +697,7 @@ EipStatus EIPSecurityInit(void) {
                   5,
                   kCipAny,
                   EncodeEIPSecurityObjectPreSharedKeys,
-                  DecodeEIPSecurityObjectPreSharedKeys, //TODO: implement decode function
+                  DecodeEIPSecurityObjectPreSharedKeys,
                   &g_eip_security.pre_shared_keys,
                   kSetAndGetAble
   );
