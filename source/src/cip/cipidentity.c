@@ -149,12 +149,12 @@ static EipStatus Reset(CipInstance *instance,
   message_router_response->size_of_additional_status = 0;
   message_router_response->general_status = kCipErrorSuccess;
 
-  if (message_router_request->request_path_size > 1) {
+  if (message_router_request->request_data_size > 1) {
     message_router_response->general_status = kCipErrorTooMuchData;
   }
   else {
     CipOctet reset_type = 0;  /* The default type if type parameter was omitted. */
-    if (message_router_request->request_path_size == 1) {
+    if (message_router_request->request_data_size == 1) {
       reset_type = message_router_request->data[0];
     }
     switch (reset_type) {

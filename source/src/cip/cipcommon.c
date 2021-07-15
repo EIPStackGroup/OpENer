@@ -646,13 +646,13 @@ int DecodeCipByteArray(CipByteArray *const data, const CipMessageRouterRequest *
   OPENER_TRACE_INFO(" -> set attribute byte array\r\n");
   CipByteArray *cip_byte_array = data;
 
-  if(message_router_request->request_path_size < data->length) {
+  if(message_router_request->request_data_size < data->length) {
     OPENER_TRACE_INFO(
         "DecodeCipByteArray: not enough data received.\n");
     message_router_response->general_status = kCipErrorNotEnoughData;
     return number_of_decoded_bytes;
   }
-  if(message_router_request->request_path_size > data->length) {
+  if(message_router_request->request_data_size > data->length) {
     OPENER_TRACE_INFO(
         "DecodeCipByteArray: too much data received.\n");
     message_router_response->general_status = kCipErrorTooMuchData;
