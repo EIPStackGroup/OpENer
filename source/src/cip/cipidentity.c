@@ -233,10 +233,10 @@ EipStatus CipIdentityInit() {
                                    2, /* # of class services*/
                                    7, /* # of instance attributes*/
                                    7, /* # highest instance attribute number*/
-                                   4, /* # of instance services*/
+                                   5, /* # of instance services*/
                                    1, /* # of instances*/
                                    "identity", /* # class name (for debug)*/
-                                   1, /* # class revision*/
+                                   1, /* # class revision*/ //TODO: change revision to 2 - check
                                    &InitializeCipIdentity); /* # function pointer for initialization*/
 
   if (class == 0) {
@@ -300,6 +300,8 @@ EipStatus CipIdentityInit() {
   InsertService(class, kReset, &Reset, "Reset");
   InsertService(class, kGetAttributeList, &GetAttributeList,
                 "GetAttributeList");
+  InsertService(class, kSetAttributeList, &SetAttributeList,
+                  "SetAttributeList");
 
   return kEipStatusOk;
 }

@@ -364,7 +364,10 @@ void EncodeCipByteArray(const CipByteArray *const data,
                         ENIPMessage *const outgoing_message);
 
 void EncodeCipEPath(const CipEpath *const data,
-                    ENIPMessage *const outgoing_message);
+                    ENIPMessage *const outgoing_message); //path_size UINT
+
+void EncodeEPath(const CipEpath *const data,
+                 ENIPMessage *const outgoing_message); //path_size not encoded
 
 void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
                                            ENIPMessage *const outgoing_message);
