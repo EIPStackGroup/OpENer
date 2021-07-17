@@ -810,14 +810,14 @@ int CreateUdpSocket(void) {
   OPENER_TRACE_INFO("networkhandler: UDP socket %d\n",
                     g_network_status.udp_io_messaging);
 
-    int option_value = 1;
+  int option_value = 1;
   if (setsockopt(g_network_status.udp_io_messaging, SOL_SOCKET, SO_REUSEADDR,
                  (char *)&option_value, sizeof(option_value)) < 0) {
-      OPENER_TRACE_ERR(
+    OPENER_TRACE_ERR(
         "error setting socket option SO_REUSEADDR on %s UDP socket\n");
     CloseUdpSocket(g_network_status.udp_io_messaging);
-      return kEipInvalidSocket;
-    }
+    return kEipInvalidSocket;
+  }
 
   /* The bind on UDP sockets is necessary as the ENIP spec wants the source port to be specified to 2222 */
   struct sockaddr_in source_addr = {
@@ -827,18 +827,18 @@ int CreateUdpSocket(void) {
   
   if (bind(g_network_status.udp_io_messaging, (struct sockaddr *)&source_addr,
            sizeof(source_addr)) < 0) {
-      int error_code = GetSocketErrorNumber();
-      char *error_message = GetErrorMessage(error_code);
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("error on bind UDP for producing messages: %d - %s\n", error_code,
-          error_message);
-      FreeErrorMessage(error_message);
+        error_message);
+    FreeErrorMessage(error_message);
     CloseUdpSocket(g_network_status.udp_io_messaging);
-      return kEipInvalidSocket;
-    }
+    return kEipInvalidSocket;
+  }
 
   /* add new socket to the master list */
   FD_SET(g_network_status.udp_io_messaging, &master_socket);
-
+ 
 
   if (g_network_status.udp_io_messaging > highest_socket_handle) {
     OPENER_TRACE_INFO("New highest socket: %d\n",
@@ -873,31 +873,31 @@ int SetSocketOptionsMulticastProduce(void) {
     if (setsockopt(g_network_status.udp_io_messaging, IPPROTO_IP,
                    IP_MULTICAST_TTL, NWBUF_CAST & g_tcpip.mcast_ttl_value,
                    sizeof(g_tcpip.mcast_ttl_value)) < 0) {
-          int error_code = GetSocketErrorNumber();
-          char *error_message = GetErrorMessage(error_code);
-          OPENER_TRACE_ERR(
-              "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
-              g_tcpip.mcast_ttl_value, error_code, error_message);
-          FreeErrorMessage(error_message);
+      int error_code = GetSocketErrorNumber();
+      char *error_message = GetErrorMessage(error_code);
+      OPENER_TRACE_ERR(
+          "networkhandler: could not set the TTL to: %d, error: %d - %s\n",
+          g_tcpip.mcast_ttl_value, error_code, error_message);
+      FreeErrorMessage(error_message);
       return error_code;
-        }
-      }
+    }
+  }
   /* Need to specify the interface for outgoing multicast packets on a
    device with multiple interfaces. */
-        struct in_addr my_addr = { .s_addr = g_network_status.ip_address };
+  struct in_addr my_addr = {.s_addr = g_network_status.ip_address};
   if (setsockopt(g_network_status.udp_io_messaging, IPPROTO_IP, IP_MULTICAST_IF,
                  NWBUF_CAST & my_addr.s_addr, sizeof my_addr.s_addr) < 0) {
-          int error_code = GetSocketErrorNumber();
-          char *error_message = GetErrorMessage(error_code);
-          OPENER_TRACE_ERR(
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR(
         "networkhandler: could not set the multicast interface, error: %d "
         "- %s\n",
         error_code, error_message);
-          FreeErrorMessage(error_message);
+    FreeErrorMessage(error_message);
     return error_code;
-        }
+  }
   return 0;
-    }
+}
 
 /** @brief Get the peer address
  *
@@ -908,15 +908,15 @@ EipUint32 GetPeerAddress(void) {
 
   if (getpeername(g_current_active_tcp_socket, (struct sockaddr *)&peer_address,
                   &peer_address_length) < 0) {
-      int error_code = GetSocketErrorNumber();
-      char *error_message = GetErrorMessage(error_code);
-      OPENER_TRACE_ERR("networkhandler: could not get peername: %d - %s\n",
+    int error_code = GetSocketErrorNumber();
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR("networkhandler: could not get peername: %d - %s\n",
                      error_code, error_message);
-      FreeErrorMessage(error_message);
+    FreeErrorMessage(error_message);
     return htonl(INADDR_ANY);
-    }
-  return peer_address.sin_addr.s_addr;
   }
+  return peer_address.sin_addr.s_addr;
+}
 
 void CheckAndHandleConsumingUdpSocket(void) {
   DoublyLinkedListNode *iterator = connection_list.first;
