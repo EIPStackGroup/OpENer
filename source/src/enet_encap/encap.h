@@ -21,9 +21,6 @@
 
 #define ENCAPSULATION_HEADER_LENGTH     24
 
-/** @brief Ethernet/IP standard port */
-static const int kOpenerEthernetPort = 0xAF12;
-
 /** @brief definition of status codes in encapsulation protocol
  * All other codes are either legacy codes, or reserved for future use
  *  */

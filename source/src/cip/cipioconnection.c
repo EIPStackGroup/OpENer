@@ -20,9 +20,6 @@
 #include "trace.h"
 #include "endianconv.h"
 
-/*The port to be used per default for I/O messages on UDP.*/
-const int kOpenerEipIoUdpPort = 0x08AE;
-
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.
  */
@@ -373,34 +370,30 @@ EipStatus OpenConsumingPointToPointConnection(
     j = 1;
   }
 
-  struct sockaddr_in addr =
-  { .sin_family = AF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = htons(
-      kOpenerEipIoUdpPort) };
-
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(kUdpCommuncationDirectionConsuming,
-                               &addr,
-                               qos_for_socket);                                          /* the address is only needed for bind used if consuming */
-  if(socket == kEipInvalidSocket) {
+  int error = SetQos(qos_for_socket);
+  if (error != 0) {
     OPENER_TRACE_ERR(
-      "cannot create UDP socket in OpenPointToPointConnection\n");
+      "cannot set QoS for UDP socket in OpenPointToPointConnection\n");
     return kEipStatusError;
   }
+  /* store the address of the originator for packet scanning */
+  connection_object->originator_address.sin_family = AF_INET;
+  connection_object->originator_address.sin_addr.s_addr = GetPeerAddress();
+  connection_object->originator_address.sin_port = htons(kOpenerEipIoUdpPort);
 
-  connection_object->originator_address = addr; /* store the address of the originator for packet scanning */
-  addr.sin_addr.s_addr = INADDR_ANY; /* restore the address */
-  connection_object->socket[kUdpCommuncationDirectionConsuming] = socket;
+  connection_object->socket[kUdpCommuncationDirectionConsuming] = 
+      g_network_status.udp_io_messaging;
 
   common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].type_id =
     kCipItemIdSocketAddressInfoOriginatorToTarget;
 
-  common_packet_format_data->address_info_item[j].sin_port = addr.sin_port;
 /*TODO should we add our own address here? */
-  common_packet_format_data->address_info_item[j].sin_addr =
-    addr.sin_addr.s_addr;
-  memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
+  common_packet_format_data->address_info_item[j].sin_addr = htonl(INADDR_ANY);
+  common_packet_format_data->address_info_item[j].sin_port = htons(kOpenerEipIoUdpPort);
+  memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
 
   return kEipStatusOk;
 }
@@ -409,7 +402,8 @@ CipError OpenProducingPointToPointConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data)
 {
-  in_port_t port = htons(kOpenerEipIoUdpPort); /* the default port to be used if no port information is part of the forward open request */
+  /* the default port to be used if no port information is part of the forward open request */
+  in_port_t port = htons(kOpenerEipIoUdpPort); 
 
   if(kCipItemIdSocketAddressInfoTargetToOriginator ==
      common_packet_format_data->address_info_item[0].type_id) {
@@ -422,20 +416,19 @@ CipError OpenProducingPointToPointConnection(
   }
 
   connection_object->remote_address.sin_family = AF_INET;
-  connection_object->remote_address.sin_addr.s_addr = 0; /* we don't know the address of the originate will be set in the IApp_CreateUDPSocket */
+  connection_object->remote_address.sin_addr.s_addr = GetPeerAddress(); 
   connection_object->remote_address.sin_port = port;
 
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(kUdpCommuncationDirectionProducing,
-                               &connection_object->remote_address,
-                               qos_for_socket);                                                                       /* the address is only needed for bind used if consuming */
-  if(socket == kEipInvalidSocket) {
+  int error = SetQos(qos_for_socket);
+  if (error != 0) {
     OPENER_TRACE_ERR(
-      "cannot create UDP socket in OpenPointToPointConnection\n");
-    /* *pa_pnExtendedError = 0x0315; miscellaneous*/
-    return kCipErrorConnectionFailure;
+        "cannot set QoS for UDP socket in OpenPointToPointConnection\n");
+    return kEipStatusError;
   }
-  connection_object->socket[kUdpCommuncationDirectionProducing] = socket;
+
+  connection_object->socket[kUdpCommuncationDirectionProducing] =
+      g_network_status.udp_io_messaging;
 
   return kCipErrorSuccess;
 }
@@ -563,10 +556,10 @@ EipStatus OpenMulticastConnection(UdpCommuncationDirection direction,
   }
 
   if(kCipItemIdSocketAddressInfoTargetToOriginator ==
-     common_packet_format_data->address_info_item[j].type_id) {                                                /* we are using an unused item initialize it with the default multicast address */
+     common_packet_format_data->address_info_item[j].type_id) {
+    /* we are using an unused item initialize it with the default multicast address */
     common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
-    common_packet_format_data->address_info_item[j].sin_port = htons(
-      kOpenerEipIoUdpPort);
+    common_packet_format_data->address_info_item[j].sin_port = htons(kOpenerEipIoUdpPort);
     common_packet_format_data->address_info_item[j].sin_addr =
       g_tcpip.mcast_config.starting_multicast_address;
     memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
@@ -590,14 +583,21 @@ EipStatus OpenMulticastConnection(UdpCommuncationDirection direction,
     common_packet_format_data->address_info_item[j].sin_port;
 
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
-  int socket = CreateUdpSocket(direction, &socket_address, qos_for_socket); /* the address is only needed for bind used if consuming */
-  if(socket == kEipInvalidSocket) {
-    OPENER_TRACE_ERR("cannot create UDP socket in OpenMulticastConnection\n");
+  int error = SetQos(qos_for_socket);
+  if (error != 0) {
+    OPENER_TRACE_ERR(
+        "cannot set QoS for UDP socket in OpenMulticastConnection\n");
     return kEipStatusError;
   }
-  connection_object->socket[direction] = socket;
+  if (direction == kUdpCommuncationDirectionProducing) {
+    SetSocketOptionsMulticastProduce();
+  }
+
+  connection_object->socket[direction] = g_network_status.udp_io_messaging;
 
   if(direction == kUdpCommuncationDirectionConsuming) {
+    /* store the originators address */
+    socket_address.sin_addr.s_addr = GetPeerAddress();
     common_packet_format_data->address_info_item[j].type_id =
       kCipItemIdSocketAddressInfoOriginatorToTarget;
     connection_object->originator_address = socket_address;
@@ -737,7 +737,8 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
         break;
       case kConnectionObjectInstanceTypeIOInputOnly:
         if(kEipInvalidSocket !=
-           connection_object->socket[kUdpCommuncationDirectionProducing]) {                    /* we are the controlling input only connection find a new controller*/
+           connection_object->socket[kUdpCommuncationDirectionProducing]) {
+          /* we are the controlling input only connection find a new controller*/
           CipConnectionObject *next_non_control_master_connection =
             GetNextNonControlMasterConnection(
               connection_object->produced_path.instance_id);
@@ -778,7 +779,8 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   common_packet_format_data->item_count = 2;
   if(kConnectionObjectTransportClassTriggerTransportClass0 !=
      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
-  {                                                                                                                                      /* use Sequenced Address Items if not Connection Class 0 */
+  /* use Sequenced Address Items if not Connection Class 0 */
+  {                                          
     common_packet_format_data->address_item.type_id =
       kCipItemIdSequencedAddressItem;
     common_packet_format_data->address_item.length = 8;
@@ -854,8 +856,6 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   outgoing_message.used_message_length += producing_instance_attributes->length;
 
   return SendUdpData(&connection_object->remote_address,
-                     connection_object->socket[
-                       kUdpCommuncationDirectionProducing],
                      &outgoing_message);
 }
 
@@ -913,6 +913,9 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
 CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
   CipError cip_error = kCipErrorSuccess;
+
+  CreateUdpSocket(); /* open UDP socket for IO messaging*/
+  
 /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
   CipCommonPacketFormatData *common_packet_format_data =
     &g_common_packet_format_data_item;
@@ -925,7 +928,8 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
 /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
   if(originator_to_target_connection_type ==
-     kConnectionObjectConnectionTypeMulticast)                                       /* Multicast consuming */
+     kConnectionObjectConnectionTypeMulticast)
+  /* Multicast consuming */
   {
     if(OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                connection_object,
@@ -934,7 +938,8 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
       return kCipErrorConnectionFailure;
     }
   } else if(originator_to_target_connection_type ==
-            kConnectionObjectConnectionTypePointToPoint)                                       /* Point to Point consuming */
+            kConnectionObjectConnectionTypePointToPoint)
+  /* Point to Point consuming */
   {
     if(OpenConsumingPointToPointConnection(connection_object,
                                            common_packet_format_data) ==
@@ -945,7 +950,8 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
   }
 
   if(target_to_originator_connection_type ==
-     kConnectionObjectConnectionTypeMulticast)                                       /* Multicast producing */
+     kConnectionObjectConnectionTypeMulticast)  
+  /* Multicast producing */
   {
     if(OpenProducingMulticastConnection(connection_object,
                                         common_packet_format_data) ==
@@ -954,7 +960,8 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
       return kCipErrorConnectionFailure;
     }
   } else if(target_to_originator_connection_type ==
-            kConnectionObjectConnectionTypePointToPoint)                                       /* Point to Point producing */
+            kConnectionObjectConnectionTypePointToPoint)  
+  /* Point to Point producing */
   {
 
     if(OpenProducingPointToPointConnection(connection_object,
@@ -969,16 +976,15 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
   CipConnectionObject *connection_object) {
-  CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
+  CloseUdpSocket(g_network_status.udp_io_messaging);
 
   connection_object->socket[kUdpCommuncationDirectionConsuming] =
     kEipInvalidSocket;
-
-  CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
 
   connection_object->socket[kUdpCommuncationDirectionProducing] =
     kEipInvalidSocket;
 
   RemoveFromActiveConnections(connection_object);
   ConnectionObjectInitializeEmpty(connection_object);
+  OPENER_TRACE_INFO("cipioconnection: CloseCommunicationChannelsAndRemoveFromActiveConnectionsList\n");
 }

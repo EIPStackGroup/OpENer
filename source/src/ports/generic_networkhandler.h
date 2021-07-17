@@ -27,6 +27,11 @@
 #include "appcontype.h"
 #include "socket_timer.h"
 
+
+/** @brief Ethernet/IP standard ports */
+#define kOpenerEthernetPort   44818     /** Port to be used per default for messages on TCP */
+#define kOpenerEipIoUdpPort   2222      /** Port to be used per default for I/O messages on UDP.*/
+
 SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
 //EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
@@ -52,6 +57,7 @@ typedef struct {
   int tcp_listener; /**< TCP listener socket */
   int udp_unicast_listener; /**< UDP unicast listener socket */
   int udp_global_broadcast_listener; /**< UDP global network broadcast listener */
+  int udp_io_messaging; /**< UDP IO messaging socket */
   CipUdint ip_address; /**< IP being valid during NetworkHandlerInitialize() */
   CipUdint network_mask; /**< network mask being valid during NetworkHandlerInitialize() */
   MilliSeconds elapsed_time;
@@ -91,5 +97,20 @@ int GetMaxSocket(int socket1,
                  int socket2,
                  int socket3,
                  int socket4);
+
+/** @brief Set the Qos the socket for implicit IO messaging
+ *
+ * @return 0 if successful, else the error code */
+int SetQos(CipUsint qos_for_socket);
+
+/** @brief Set the socket options for Multicast Producer
+ *
+ * @return 0 if successful, else the error code */
+int SetSocketOptionsMulticastProduce(void);
+
+/** @brief Get the peer address
+ *
+ * @return peer address if successful, else any address (0) */
+EipUint32 GetPeerAddress(void);
 
 #endif /* GENERIC_NETWORKHANDLER_H_ */

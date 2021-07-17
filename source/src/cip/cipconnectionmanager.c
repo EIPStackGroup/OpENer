@@ -1607,6 +1607,9 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
+  OPENER_TRACE_INFO("cipconnectionmanager: CloseConnection, trigger: %d \n",
+  	ConnectionObjectGetTransportClassTriggerTransportClass(connection_object));
+
   if(kConnectionObjectTransportClassTriggerTransportClass3 !=
      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
