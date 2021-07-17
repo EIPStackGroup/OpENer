@@ -10,7 +10,6 @@
 
 extern "C" {
 #include "ciptypes.h"
-#include "udp_protocol.h"
 }
 
 TEST_GROUP(UdpProtocol) {
