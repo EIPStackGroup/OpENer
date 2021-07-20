@@ -153,7 +153,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	*(CipUint*) attribute->data = pull_model_status; //set value
 
 	attribute = GetCipAttribute(instance, 1); //attribute #1 state
-	*(CipUint*) attribute->data = state; //set value
+	*(CipUsint*) attribute->data = state; //set value
 
 	/*Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
 	//TODO: set attributes: 4 - 12, 15,16
@@ -229,9 +229,8 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
 
-		//TODO: save current instance config before startin new config
-		state = kEIPSecurityObjectStateConfigurationInProgress;
-		attribute->data = (void*) &state;
+		//TODO: save current instance config before starting new config
+		*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigurationInProgress; //set state
 	}
 
 	return kEipStatusOk;
@@ -333,8 +332,7 @@ EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance,
 		//TODO: implement service
 
 		//TODO: change back to state before configuration in progress
-		state = kEIPSecurityObjectStateConfigured; //TODO: remove
-		attribute->data = (void*) &state;
+		*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigured; //TODO: remove
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 
