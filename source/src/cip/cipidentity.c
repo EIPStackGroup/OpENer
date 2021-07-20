@@ -248,49 +248,49 @@ EipStatus CipIdentityInit() {
                   1,
                   kCipUint,
                   EncodeCipUint,
-				  NULL,
+                  NULL,
                   &g_identity.vendor_id,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   2,
                   kCipUint,
                   EncodeCipUint,
-				  NULL,
+                  NULL,
                   &g_identity.device_type,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   3,
                   kCipUint,
                   EncodeCipUint,
-				  NULL,
+                  NULL,
                   &g_identity.product_code,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   4,
                   kCipUsintUsint,
                   EncodeRevision,
-				  NULL,
+                  NULL,
                   &g_identity.revision,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   5,
                   kCipWord,
                   EncodeCipWord,
-				  NULL,
+                  NULL,
                   &g_identity.status,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   6,
                   kCipUdint,
                   EncodeCipUdint,
-				  NULL,
+                  NULL,
                   &g_identity.serial_number,
                   kGetableSingleAndAll);
   InsertAttribute(instance,
                   7,
                   kCipShortString,
                   EncodeCipShortString,
-				  NULL,
+                  NULL,
                   &g_identity.product_name,
                   kGetableSingleAndAll);
 
@@ -301,7 +301,7 @@ EipStatus CipIdentityInit() {
   InsertService(class, kGetAttributeList, &GetAttributeList,
                 "GetAttributeList");
   InsertService(class, kSetAttributeList, &SetAttributeList,
-                  "SetAttributeList");
+                "SetAttributeList");
 
   return kEipStatusOk;
 }

@@ -65,7 +65,8 @@ typedef enum cip_data_types {
  * @param data use data pointer if data length is variable, else set NULL
  * @return size of CIP data type in bytes
  * */
-size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data);
+size_t GetCipDataTypeLength(EipUint8 type,
+                            const EipUint8 *data);
 
 /** @brief Definition of CIP service codes
  *
@@ -286,8 +287,10 @@ typedef void (*CipAttributeEncodeInMessage)(const void *const data,
 
 /** @brief self-describing data decoding for CIP types */
 typedef int (*CipAttributeDecodeFromMessage)(const void *const data,
-									const CipMessageRouterRequest *const message_router_request,
-									CipMessageRouterResponse *const message_router_response);
+                                             const CipMessageRouterRequest *
+                                             const message_router_request,
+                                             CipMessageRouterResponse *const
+                                             message_router_response);
 
 /** @brief Structure to describe a single CIP attribute of an object
  */

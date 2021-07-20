@@ -15,7 +15,7 @@
 #include "cipconnectionmanager.h"
 
 /** @brief Retrieve the given data according to CIP encoding from the
- * 		message buffer.
+ *              message buffer.
  *
  *  Implementation of the decode function for the SetAttributeSingle CIP service for Assembly
  *  Objects.
@@ -27,8 +27,8 @@
  *          -1 .. error
  */
 int DecodeCipAssemblyAttribute3(CipByteArray *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                                const CipMessageRouterRequest *const message_router_request,
+                                CipMessageRouterResponse *const message_router_response);
 
 static EipStatus AssemblyPreGetCallback
 (
@@ -62,18 +62,18 @@ CipClass *CreateAssemblyClass(void) {
                                             "assembly", /* name */
                                             2, /* Revision, according to the CIP spec currently this has to be 2 */
                                             NULL); /* # function pointer for initialization*/
-	if (NULL != assembly_class) {
-		InsertService(assembly_class, kGetAttributeSingle, &GetAttributeSingle,
-				"GetAttributeSingle");
+  if (NULL != assembly_class) {
+    InsertService(assembly_class, kGetAttributeSingle, &GetAttributeSingle,
+                  "GetAttributeSingle");
 
-		InsertService(assembly_class, kSetAttributeSingle, &SetAttributeSingle,
-				"SetAttributeSingle");
+    InsertService(assembly_class, kSetAttributeSingle, &SetAttributeSingle,
+                  "SetAttributeSingle");
 
-		InsertGetSetCallback(assembly_class, AssemblyPreGetCallback,
-				kPreGetFunc);
-		InsertGetSetCallback(assembly_class, AssemblyPostSetCallback,
-				kPostSetFunc);
-	}
+    InsertGetSetCallback(assembly_class, AssemblyPreGetCallback,
+                         kPreGetFunc);
+    InsertGetSetCallback(assembly_class, AssemblyPostSetCallback,
+                         kPostSetFunc);
+  }
 
   return assembly_class;
 }
@@ -164,53 +164,54 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
 }
 
 int DecodeCipAssemblyAttribute3(CipByteArray *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+                                const CipMessageRouterRequest *const message_router_request,
+                                CipMessageRouterResponse *const message_router_response)
+{
 
-	const EipUint8 **const cip_message = message_router_request->data;
+  const EipUint8 **const cip_message = message_router_request->data;
 
-	CipInstance *const instance = GetCipInstance(
-			GetCipClass(message_router_request->request_path.class_id),
-			message_router_request->request_path.instance_number);
+  CipInstance *const instance = GetCipInstance(
+    GetCipClass(message_router_request->request_path.class_id),
+    message_router_request->request_path.instance_number);
 
-	int number_of_decoded_bytes = -1;
-	OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
-	CipByteArray *cip_byte_array = data;
+  int number_of_decoded_bytes = -1;
+  OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
+  CipByteArray *cip_byte_array = data;
 
-	if (message_router_request->request_path_size < data->length) {
-		OPENER_TRACE_INFO(
-				"DecodeCipByteArray: not enough data received.\n");
-		message_router_response->general_status = kCipErrorNotEnoughData;
-		return number_of_decoded_bytes;
-	}
-	if (message_router_request->request_path_size > data->length) {
-		OPENER_TRACE_INFO(
-				"DecodeCipByteArray: too much data received.\n");
-		message_router_response->general_status = kCipErrorTooMuchData;
-		return number_of_decoded_bytes;
-	}
+  if (message_router_request->request_path_size < data->length) {
+    OPENER_TRACE_INFO(
+      "DecodeCipByteArray: not enough data received.\n");
+    message_router_response->general_status = kCipErrorNotEnoughData;
+    return number_of_decoded_bytes;
+  }
+  if (message_router_request->request_path_size > data->length) {
+    OPENER_TRACE_INFO(
+      "DecodeCipByteArray: too much data received.\n");
+    message_router_response->general_status = kCipErrorTooMuchData;
+    return number_of_decoded_bytes;
+  }
 
-	// data-length is correct
-	memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
+  // data-length is correct
+  memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
 
-	if (AfterAssemblyDataReceived(instance) != kEipStatusOk) {
-		/* punt early without updating the status... though I don't know
-		 * how much this helps us here, as the attribute's data has already
-		 * been overwritten.
-		 *
-		 * however this is the task of the application side which will
-		 * take the data. In addition we have to inform the sender that the
-		 * data was not ok.
-		 */
-		message_router_response->general_status =
-				kCipErrorInvalidAttributeValue;
-	} else {
-		message_router_response->general_status = kCipErrorSuccess;
-	}
+  if (AfterAssemblyDataReceived(instance) != kEipStatusOk) {
+    /* punt early without updating the status... though I don't know
+     * how much this helps us here, as the attribute's data has already
+     * been overwritten.
+     *
+     * however this is the task of the application side which will
+     * take the data. In addition we have to inform the sender that the
+     * data was not ok.
+     */
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
+  } else {
+    message_router_response->general_status = kCipErrorSuccess;
+  }
 
-	number_of_decoded_bytes = cip_byte_array->length;
+  number_of_decoded_bytes = cip_byte_array->length;
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 }
 
 static EipStatus AssemblyPreGetCallback
