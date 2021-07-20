@@ -41,25 +41,19 @@
 #include "devicedata.h"
 
 /** @brief Definition of the global Identity Object */
-CipIdentityObject g_identity =
-{
-  .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attribute 1: Vendor ID */
-  .device_type = OPENER_DEVICE_TYPE, /* Attribute 2: Device Type */
-  .product_code = OPENER_DEVICE_PRODUCT_CODE, /* Attribute 3: Product Code */
-  .revision = { /* Attribute 4: Revision / CipUsint Major, CipUsint Minor */
-    OPENER_DEVICE_MAJOR_REVISION,
-    OPENER_DEVICE_MINOR_REVISION
-  },
-  .status = 0, /* Attribute 5: Status */
-  .ext_status = kSelftestingUnknown,  /* Attribute 5: Extended Device Status field */
-  .serial_number = 0, /* Attribute 6: Serial Number */
-  .product_name = { /* Attribute 7: Product Name */
-    sizeof(OPENER_DEVICE_NAME) - 1,
-    (EipByte *)OPENER_DEVICE_NAME
-  },
-  .state = 255,
-};
-
+CipIdentityObject g_identity = { .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attribute 1: Vendor ID */
+                                 .device_type = OPENER_DEVICE_TYPE, /* Attribute 2: Device Type */
+                                 .product_code = OPENER_DEVICE_PRODUCT_CODE, /* Attribute 3: Product Code */
+                                 .revision = { /* Attribute 4: Revision / CipUsint Major, CipUsint Minor */
+                                   OPENER_DEVICE_MAJOR_REVISION,
+                                   OPENER_DEVICE_MINOR_REVISION
+                                 }, .status = 0, /* Attribute 5: Status */
+                                 .ext_status = kSelftestingUnknown, /* Attribute 5: Extended Device Status field */
+                                 .serial_number = 0, /* Attribute 6: Serial Number */
+                                 .product_name = { /* Attribute 7: Product Name */
+                                   sizeof(OPENER_DEVICE_NAME) - 1,
+                                   (EipByte *) OPENER_DEVICE_NAME
+                                 }, .state = 255, };
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
@@ -136,36 +130,35 @@ void CipIdentitySetExtendedDeviceStatus(
 static EipStatus Reset(CipInstance *instance,
 /* pointer to instance*/
                        CipMessageRouterRequest *message_router_request,
-                       /* pointer to message router request*/
-                       CipMessageRouterResponse *message_router_response,  /* pointer to message router response*/
+/* pointer to message router request*/
+                       CipMessageRouterResponse *message_router_response, /* pointer to message router response*/
                        const struct sockaddr *originator_address,
                        const int encapsulation_session) {
   (void) instance;
 
   EipStatus eip_status = kEipStatusOkSend;
 
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
   message_router_response->size_of_additional_status = 0;
   message_router_response->general_status = kCipErrorSuccess;
 
-  if (message_router_request->request_path_size > 1) {
+  if(message_router_request->request_data_size > 1) {
     message_router_response->general_status = kCipErrorTooMuchData;
-  }
-  else {
-    CipOctet reset_type = 0;  /* The default type if type parameter was omitted. */
-    if (message_router_request->request_path_size == 1) {
+  } else {
+    CipOctet reset_type = 0; /* The default type if type parameter was omitted. */
+    if(message_router_request->request_data_size == 1) {
       reset_type = message_router_request->data[0];
     }
-    switch (reset_type) {
+    switch(reset_type) {
       case 0: /* Reset type 0 -> Emulate power cycle */
-        if ( kEipStatusError == ResetDevice() ) {
+        if(kEipStatusError == ResetDevice() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
       case 1: /* Reset type 1 -> Return to factory defaults & power cycle*/
-        if ( kEipStatusError == ResetDeviceToInitialConfiguration() ) {
+        if(kEipStatusError == ResetDeviceToInitialConfiguration() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
@@ -185,35 +178,32 @@ static EipStatus Reset(CipInstance *instance,
 
 void InitializeCipIdentity(CipClass *class) {
 
-
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute( (CipInstance *) class, 1, kCipUint,
-                   EncodeCipUint, NULL,
-                   (void *) &class->revision,
-                   kGetableSingleAndAll );                 /* revision */
-  InsertAttribute( (CipInstance *) class, 2, kCipUint,
-                   EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingleAndAll ); /*  largest instance number */
-  InsertAttribute( (CipInstance *) class, 3, kCipUint,
-                   EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
+  InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint, NULL,
+                   (void *) &class->revision, kGetableSingleAndAll );                                                      /* revision */
+  InsertAttribute( (CipInstance *) class, 2, kCipUint, EncodeCipUint, NULL,
+                   (void *) &class->number_of_instances, kGetableSingleAndAll );                                                      /*  largest instance number */
+  InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint, NULL,
+                   (void *) &class->number_of_instances, kGetableSingle );                                                      /* number of instances currently existing*/
   InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero,
-                   kNotSetOrGetable ); /* optional attribute list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional attribute list - default = 0 */
   InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero,
-                   kNotSetOrGetable ); /* optional service list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional service list - default = 0 */
   InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint, NULL,
                    (void *) &meta_class->highest_attribute_number,
-                   kGetableSingleAndAll );                 /* max class attribute number*/
+                   kGetableSingleAndAll );                                                                                                      /* max class attribute number*/
   InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint, NULL,
                    (void *) &class->highest_attribute_number,
-                   kGetableSingleAndAll );                 /* max instance attribute number*/
+                   kGetableSingleAndAll );                                                                                                 /* max instance attribute number*/
 
-  InsertService(meta_class, kGetAttributeAll, &GetAttributeAll,
-                "GetAttributeAll");                         /* bind instance services to the metaclass*/
-  InsertService(meta_class, kGetAttributeSingle, &GetAttributeSingle,
+  InsertService(meta_class,
+                kGetAttributeAll,
+                &GetAttributeAll,
+                "GetAttributeAll");                                                 /* bind instance services to the metaclass*/
+  InsertService(meta_class,
+                kGetAttributeSingle,
+                &GetAttributeSingle,
                 "GetAttributeSingle");
 
 }
@@ -227,8 +217,7 @@ void EncodeRevision(const void *const data,
 
 EipStatus CipIdentityInit() {
 
-  CipClass *class = CreateCipClass(kCipIdentityClassCode,
-                                   0, /* # of non-default class attributes */
+  CipClass *class = CreateCipClass(kCipIdentityClassCode, 0, /* # of non-default class attributes */
                                    7, /* # highest class attribute number*/
                                    2, /* # of class services*/
                                    7, /* # of instance attributes*/
@@ -239,62 +228,29 @@ EipStatus CipIdentityInit() {
                                    1, /* # class revision*/ //TODO: change revision to 2 - check
                                    &InitializeCipIdentity); /* # function pointer for initialization*/
 
-  if (class == 0) {
+  if(class == 0) {
     return kEipStatusError;
   }
 
   CipInstance *instance = GetCipInstance(class, 1);
-  InsertAttribute(instance,
-                  1,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  &g_identity.vendor_id,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  2,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  &g_identity.device_type,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  3,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  &g_identity.product_code,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  4,
-                  kCipUsintUsint,
-                  EncodeRevision,
-                  NULL,
-                  &g_identity.revision,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  5,
-                  kCipWord,
-                  EncodeCipWord,
-                  NULL,
-                  &g_identity.status,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  6,
-                  kCipUdint,
-                  EncodeCipUdint,
-                  NULL,
-                  &g_identity.serial_number,
-                  kGetableSingleAndAll);
-  InsertAttribute(instance,
-                  7,
-                  kCipShortString,
-                  EncodeCipShortString,
-                  NULL,
-                  &g_identity.product_name,
-                  kGetableSingleAndAll);
+  InsertAttribute(instance, 1, kCipUint, EncodeCipUint,
+                  NULL, &g_identity.vendor_id, kGetableSingleAndAll);
+  InsertAttribute(instance, 2, kCipUint, EncodeCipUint,
+                  NULL, &g_identity.device_type, kGetableSingleAndAll);
+  InsertAttribute(instance, 3, kCipUint, EncodeCipUint,
+                  NULL, &g_identity.product_code, kGetableSingleAndAll);
+  InsertAttribute(instance, 4, kCipUsintUsint, EncodeRevision,
+                  NULL, &g_identity.revision, kGetableSingleAndAll);
+  InsertAttribute(instance, 5, kCipWord, EncodeCipWord,
+                  NULL, &g_identity.status, kGetableSingleAndAll);
+  InsertAttribute(instance, 6, kCipUdint, EncodeCipUdint,
+                  NULL, &g_identity.serial_number, kGetableSingleAndAll);
+  InsertAttribute(instance, 7, kCipShortString, EncodeCipShortString,
+                  NULL, &g_identity.product_name, kGetableSingleAndAll);
 
-  InsertService(class, kGetAttributeSingle, &GetAttributeSingle,
+  InsertService(class,
+                kGetAttributeSingle,
+                &GetAttributeSingle,
                 "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
   InsertService(class, kReset, &Reset, "Reset");

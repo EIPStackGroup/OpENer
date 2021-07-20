@@ -778,13 +778,13 @@ int DecodeCipByteArray(CipByteArray *const data,
   OPENER_TRACE_INFO(" -> set attribute byte array\r\n");
   CipByteArray *cip_byte_array = data;
 
-  if(message_router_request->request_path_size < data->length) {
+  if(message_router_request->request_data_size < data->length) {
     OPENER_TRACE_INFO(
       "DecodeCipByteArray: not enough data received.\n");
     message_router_response->general_status = kCipErrorNotEnoughData;
     return number_of_decoded_bytes;
   }
-  if(message_router_request->request_path_size > data->length) {
+  if(message_router_request->request_data_size > data->length) {
     OPENER_TRACE_INFO(
       "DecodeCipByteArray: too much data received.\n");
     message_router_response->general_status = kCipErrorTooMuchData;
@@ -1017,56 +1017,49 @@ EipStatus GetAttributeList(CipInstance *instance,
                            const int encapsulation_session) {
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 
   CipUint attribute_count_request = GetUintFromMessage(
     &message_router_request->data);
 
-  if (0 != attribute_count_request) {
+  if(0 != attribute_count_request) {
 
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
 
-    AddIntToMessage(attribute_count_request,
-                    &message_router_response->message);             // number of attributes in the response
+    AddIntToMessage(attribute_count_request, &message_router_response->message); // number of attributes in the response
 
-    for (size_t j = 0; j < attribute_count_request; j++) {
+    for(size_t j = 0; j < attribute_count_request; j++) {
 
-      attribute_number = GetUintFromMessage(
-        &message_router_request->data);
+      attribute_number = GetUintFromMessage(&message_router_request->data);
       attribute = GetCipAttribute(instance, attribute_number);
 
-      AddIntToMessage(attribute_number,
-                      &message_router_response->message);                   // Attribute-ID
+      AddIntToMessage(attribute_number, &message_router_response->message); // Attribute-ID
 
-      if (NULL != attribute) {
+      if(NULL != attribute) {
 
         uint8_t get_bit_mask =
           (instance->cip_class->get_single_bit_mask[CalculateIndex(
                                                       attribute_number)]);
-        if (0 != (get_bit_mask & (1 << (attribute_number % 8) ) ) ) {                      //check if attribute is gettable
-          AddSintToMessage(kCipErrorSuccess,
-                           &message_router_response->message);                              // Attribute status
-          AddSintToMessage(0, &message_router_response->message);                               // Reserved, shall be 0
-          attribute->encode(attribute->data,
-                            &message_router_response->message);                             // write Attribute data to response
+        if(0 != (get_bit_mask & (1 << (attribute_number % 8) ) ) ) { //check if attribute is gettable
+          AddSintToMessage(kCipErrorSuccess, &message_router_response->message); // Attribute status
+          AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+          attribute->encode(attribute->data, &message_router_response->message); // write Attribute data to response
         } else {
           AddSintToMessage(kCipErrorAttributeNotGettable,
-                           &message_router_response->message);                              // Attribute status
-          AddSintToMessage(0, &message_router_response->message);                               // Reserved, shall be 0
-          message_router_response->general_status =
-            kCipErrorAttributeListError;
+                           &message_router_response->message);                                // Attribute status
+          AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+          message_router_response->general_status = kCipErrorAttributeListError;
         }
 
       } else {
         AddSintToMessage(kCipErrorAttributeNotSupported,
-                         &message_router_response->message);                        // status
-        AddSintToMessage(0, &message_router_response->message);                         // Reserved, shall be 0
-        message_router_response->general_status =
-          kCipErrorAttributeListError;
+                         &message_router_response->message);                                 // status
+        AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+        message_router_response->general_status = kCipErrorAttributeListError;
       }
     }
   } else {
@@ -1083,66 +1076,60 @@ EipStatus SetAttributeList(CipInstance *instance,
                            const int encapsulation_session) {
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 
   CipUint attribute_count_request = GetUintFromMessage(
     &message_router_request->data);
 
-  if (0 != attribute_count_request) {
+  if(0 != attribute_count_request) {
 
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
 
-    AddIntToMessage(attribute_count_request,
-                    &message_router_response->message);             // number of attributes in the response
+    AddIntToMessage(attribute_count_request, &message_router_response->message); // number of attributes in the response
 
-    for (size_t j = 0; j < attribute_count_request; j++) {
+    for(size_t j = 0; j < attribute_count_request; j++) {
 
-      attribute_number = GetUintFromMessage(
-        &message_router_request->data);
+      attribute_number = GetUintFromMessage(&message_router_request->data);
       attribute = GetCipAttribute(instance, attribute_number);
 
-      AddIntToMessage(attribute_number,
-                      &message_router_response->message);                   // Attribute-ID
+      AddIntToMessage(attribute_number, &message_router_response->message); // Attribute-ID
 
-      if (NULL != attribute) {
+      if(NULL != attribute) {
 
         uint8_t set_bit_mask =
-          (instance->cip_class->set_bit_mask[CalculateIndex(
-                                               attribute_number)]);
-        if (0 != (set_bit_mask & (1 << (attribute_number % 8) ) ) ) {                      //check if attribute is settable
-          AddSintToMessage(kCipErrorSuccess,
-                           &message_router_response->message);                              // Attribute status
-          AddSintToMessage(0, &message_router_response->message);                               // Reserved, shall be 0
-          attribute->decode(attribute->data, message_router_request,
-                            message_router_response);                             // write data to attribute
+          (instance->cip_class->set_bit_mask[CalculateIndex(attribute_number)]);
+        if(0 != (set_bit_mask & (1 << (attribute_number % 8) ) ) ) { //check if attribute is settable
+          AddSintToMessage(kCipErrorSuccess, &message_router_response->message); // Attribute status
+          AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+          attribute->decode(attribute->data,
+                            message_router_request,
+                            message_router_response);                                          // write data to attribute
         } else {
           AddSintToMessage(kCipErrorAttributeNotSetable,
-                           &message_router_response->message);                              // Attribute status
-          AddSintToMessage(0, &message_router_response->message);                               // Reserved, shall be 0
+                           &message_router_response->message);                               // Attribute status
+          AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
 
           //move request message pointer
-          int attribute_data_length = GetCipDataTypeLength(
-            attribute->type, message_router_request->data);
-          if (0 != attribute_data_length) {
+          int attribute_data_length = GetCipDataTypeLength(attribute->type,
+                                                           message_router_request->data);
+          if(0 != attribute_data_length) {
             message_router_request->data += attribute_data_length;
             message_router_response->general_status =
               kCipErrorAttributeListError;
           } else {
-            message_router_response->general_status =
-              kCipErrorPartialTransfer;
+            message_router_response->general_status = kCipErrorPartialTransfer;
             return kEipStatusOkSend;
           }
         }
       } else {
         AddSintToMessage(kCipErrorAttributeNotSupported,
-                         &message_router_response->message);                        // status
-        AddSintToMessage(0, &message_router_response->message);                         // Reserved, shall be 0
-        message_router_response->general_status =
-          kCipErrorAttributeListError;
+                         &message_router_response->message);                                 // status
+        AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
+        message_router_response->general_status = kCipErrorAttributeListError;
       }
     }
   } else {

@@ -188,21 +188,21 @@ void InitializeConnectionManager(CipClass *class) {
   CipClass *meta_class = class->class_instance.cip_class;
 
   InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->revision, kGetableSingleAndAll );                                                /* revision */
+                   (void *) &class->revision, kGetableSingleAndAll );                                                      /* revision */
   InsertAttribute( (CipInstance *) class, 2, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingleAndAll );                                                /*  largest instance number */
+                   (void *) &class->number_of_instances, kGetableSingleAndAll );                                                      /*  largest instance number */
   InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingle );                                                /* number of instances currently existing*/
+                   (void *) &class->number_of_instances, kGetableSingle );                                                      /* number of instances currently existing*/
   InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero, kNotSetOrGetable );                                                /* optional attribute list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional attribute list - default = 0 */
   InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero, kNotSetOrGetable );                                                /* optional service list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional service list - default = 0 */
   InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint, NULL,
                    (void *) &meta_class->highest_attribute_number,
-                   kGetableSingleAndAll );                                                                                                /* max class attribute number*/
+                   kGetableSingleAndAll );                                                                                                      /* max class attribute number*/
   InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint, NULL,
                    (void *) &class->highest_attribute_number,
-                   kGetableSingleAndAll );                                                                                           /* max instance attribute number*/
+                   kGetableSingleAndAll );                                                                                                 /* max instance attribute number*/
 
   InsertService(meta_class,
                 kGetAttributeAll,
@@ -240,17 +240,12 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id) {
                 kGetAttributeAll,
                 &GetAttributeAll,
                 "GetAttributeAll");
-  InsertService(connection_manager,
-                kForwardOpen,
-                &ForwardOpen,
-                "ForwardOpen");
+  InsertService(connection_manager, kForwardOpen, &ForwardOpen, "ForwardOpen");
   InsertService(connection_manager,
                 kLargeForwardOpen,
                 &LargeForwardOpen,
                 "LargeForwardOpen");
-  InsertService(connection_manager,
-                kForwardClose,
-                &ForwardClose,
+  InsertService(connection_manager, kForwardClose, &ForwardClose,
                 "ForwardClose");
   InsertService(connection_manager,
                 kGetConnectionOwner,
@@ -718,10 +713,9 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   return kEipStatusOk;
 }
 
-EipStatus GetConnectionData(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+EipStatus GetConnectionData(CipInstance *instance,
+                            CipMessageRouterRequest *message_router_request,
+                            CipMessageRouterResponse *message_router_response) {
 
   CIPServiceCode service_code = kGetConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
@@ -738,26 +732,23 @@ EipStatus GetConnectionData(
   CipConnectionObject *search_connection_object = NULL;
   CipConnectionObject *connection_object = NULL;
 
-  while (NULL != iterator) {
+  while(NULL != iterator) {
     search_connection_object = iterator->data;
 
-    if ( (search_connection_object->connection_number
-          == Connection_number) ) {
+    if( (search_connection_object->connection_number == Connection_number) ) {
       connection_object = search_connection_object;
       break;
     }
     iterator = iterator->next;
   }
 
-  if(NULL != connection_object)
-  {
+  if(NULL != connection_object) {
     /* assemble response message */
     AssembleConnectionDataResponseMessage(message_router_response,
                                           connection_object);
     message_router_response->general_status = kEipStatusOk;
     OPENER_TRACE_INFO("Connection found!\n");
-  }
-  else{
+  } else {
     message_router_response->general_status = kCipErrorPathDestinationUnknown;
     OPENER_TRACE_INFO("Connection not found!\n");
   }
@@ -765,10 +756,10 @@ EipStatus GetConnectionData(
   return kEipStatusOk;
 }
 
-EipStatus SearchConnectionData(
-  CipInstance *instance,
-  CipMessageRouterRequest *message_router_request,
-  CipMessageRouterResponse *message_router_response) {
+EipStatus SearchConnectionData(CipInstance *instance,
+                               CipMessageRouterRequest *message_router_request,
+                               CipMessageRouterResponse *message_router_response)
+{
 
   CIPServiceCode service_code = kSearchConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
@@ -787,36 +778,33 @@ EipStatus SearchConnectionData(
     Originator_vendor_id,
     Originator_serial_number);
 
-
   //search connection
   DoublyLinkedListNode *iterator = connection_list.first;
   CipConnectionObject *search_connection_object = NULL;
   CipConnectionObject *connection_object = NULL;
 
-  while (NULL != iterator) {
+  while(NULL != iterator) {
     search_connection_object = iterator->data;
 
-    if ( (search_connection_object->connection_serial_number
-          == Connection_serial_number)
-         && (search_connection_object->originator_vendor_id
-             == Originator_vendor_id)
-         && (search_connection_object->originator_serial_number
-             == Originator_serial_number) ) {
+    if( (search_connection_object->connection_serial_number ==
+         Connection_serial_number)
+        && (search_connection_object->originator_vendor_id ==
+            Originator_vendor_id)
+        && (search_connection_object->originator_serial_number ==
+            Originator_serial_number) ) {
 
       connection_object = search_connection_object;
       break;
     }
     iterator = iterator->next;
   }
-  if(NULL != connection_object)
-  {
+  if(NULL != connection_object) {
     /* assemble response message */
     AssembleConnectionDataResponseMessage(message_router_response,
                                           connection_object);
     message_router_response->general_status = kEipStatusOk;
     OPENER_TRACE_INFO("Connection found!\n");
-  }
-  else{
+  } else {
     message_router_response->general_status = kCipErrorPathDestinationUnknown;
     OPENER_TRACE_INFO("Connection not found!\n");
   }
@@ -832,8 +820,7 @@ void AssembleConnectionDataResponseMessage(
   AddIntToMessage(connection_object->connection_number,
                   &message_router_response->message);
   // Connection state UINT
-  AddIntToMessage(connection_object->state,
-                  &message_router_response->message);
+  AddIntToMessage(connection_object->state, &message_router_response->message);
   // Originator Port UINT
   AddIntToMessage(connection_object->originator_address.sin_port,
                   &message_router_response->message);
@@ -1312,14 +1299,14 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   }
 
   if( (header_length + remaining_path * 2) <
-      message_router_request->request_path_size ) {
+      message_router_request->request_data_size ) {
     /* the received packet is larger than the data in the path */
     *extended_error = 0;
     return kCipErrorTooMuchData;
   }
 
   if( (header_length + remaining_path * 2) >
-      message_router_request->request_path_size ) {
+      message_router_request->request_data_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;
     OPENER_TRACE_INFO("Message not long enough for path\n");
@@ -1730,7 +1717,8 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions) {
+  CloseSessionFunction CloseSessions)
+{
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
