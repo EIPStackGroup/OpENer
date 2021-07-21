@@ -84,7 +84,7 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute 1: state
 
 	if (NULL != attribute) {
-		if (message_router_request->request_path_size > 0) {
+		if (message_router_request->request_data_size > 0) {
 			message_router_response->general_status = kCipErrorTooMuchData;
 		} else {
 			g_security.state =

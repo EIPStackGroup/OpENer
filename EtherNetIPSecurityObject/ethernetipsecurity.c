@@ -131,7 +131,7 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipUint pull_model_status = 0x0000;
 	CipUint state = 0;
 
-	if (message_router_request->request_path_size == 1) {
+	if (message_router_request->request_data_size == 1) {
 		//enable_pull_model = message_router_request->data[0];
 		enable_pull_model = GetBoolFromMessage(&message_router_request->data);
 
