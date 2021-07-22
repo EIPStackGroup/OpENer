@@ -65,6 +65,20 @@ typedef enum ethernet_ip_security_object_capability_flags {
   kEIPSecurityObjectSecureRenegotiation = 0x01,
 } EIPSecurityObjectCapabilityFlags;
 
+/** @brief Extended status error codes for Apply_Config service
+ *  see Volume 8, Chapter 5-4.8.1
+ */
+typedef enum {
+	/**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
+	kEIPSecurityObjectApplyConfigOnlyPSKAllowed = 0x0001,
+	/**< Only certificate suites allowed, but no certificates configured */
+	kEIPSecurityObjectApplyConfigOnlyCertSuites = 0x0002,
+	/**< Certificate suites allowed but none consistent with the device private key type */
+	kEIPSecurityObjectApplyConfigCertSuitesNoneConsistent = 0x0003,
+	/**< No Active Cipher Suites configured */
+	kEIPSecurityObjectApplyConfigNoActiveCipherSuites = 0x0004
+} EIPSecurityObjectApplyConfigErrorExtended;
+
 /** @brief Type declaration for a single IANA Cipher Suite ID
  *  see Volume 8, Chapter 5-4.4.3
  */
