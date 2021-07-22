@@ -288,19 +288,31 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
 
 		//TODO: implement service
 
-		CipWord apply_behavior_flags = GetWordFromMessage(
-		         &(message_router_request->data));
-		CipUint close_delay = GetUintFromMessage(
-				         &(message_router_request->data));
+		/* The default values if parameters were omitted. */
+		CipWord apply_behavior_flags = 0;
+		CipUint close_delay = 0;
 
-		//TODO: check bits of apply_behavior_flags
-		if (apply_behavior_flags & (1 << 0)){
-
+		if (0 < message_router_request->request_data_size) {
+			apply_behavior_flags = GetWordFromMessage(
+					         &(message_router_request->data));
+			close_delay = GetUintFromMessage(
+							         &(message_router_request->data));
 		}
 
+		//check apply behavior
+		if (apply_behavior_flags & (1 << 0)){ //Bit 0 set
+			//TODO: close existing connections once close_delay has elapsed
+		}
+		if (apply_behavior_flags & (1 << 1)){ //Bit 1 set
+			//TODO: run Object_Cleanup service of the CIP Security Object after applying changes
+		}
+
+		//TODO: Apply config
+		/*device shall begin using the new attribute
+			settings when establishing new (D)TLS sessions. */
+
 		//TODO: change state to configured
-//		state = kEIPSecurityObjectStateConfigured;
-//		attribute->data = (void*) &state;
+		//*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigured;
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 
