@@ -58,6 +58,7 @@
 /** The implemented class revision is 1 */
 #define CERTIFICATE_MANAGEMENT_OBJECT_REVISION 1
 
+
 /** @brief Certificate Management Object Create service
  *
  * The Create service shall be used to create a dynamic instance.
@@ -68,7 +69,7 @@ EipStatus CertificateManagementObjectCreate(CipInstance *RESTRICT const instance
                                  CipMessageRouterResponse *const message_router_response,
                                  const struct sockaddr *originator_address,
                                  const int encapsulation_session) {
-
+	return kEipStatusOk;
 }
 
 /** @brief Certificate Management Object Delete service
@@ -82,7 +83,7 @@ EipStatus CertificateManagementObjectDelete(CipInstance *RESTRICT const instance
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
-
+	return kEipStatusOk;
 }
 
 /** @brief Certificate Management Object Create CSR service
@@ -96,7 +97,7 @@ EipStatus CertificateManagementObjectCreateCSR(CipInstance *RESTRICT const insta
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
-
+	return kEipStatusOk;
 }
 
 /** @brief Certificate Management Object Verify Certificate service
@@ -111,7 +112,7 @@ EipStatus CertificateManagementObjectVerifyCertificate(CipInstance *RESTRICT con
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
-
+	return kEipStatusOk;
 }
 
 void EncodeCertificateManagementObjectCertificate(const void *const data,
@@ -131,7 +132,7 @@ void EncodeCertificateManagementObjectCertificateList(const void *const data,
 
 }
 
-void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
+void CertificateManagementObjectInitializeClassSettings(CertificateManagementObjectClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
@@ -203,7 +204,7 @@ void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
                   kCipDword,
                   EncodeCipDword,
                   NULL,
-                  (void *) &class->certificate_encoding_flags,
+                  (void *) &class->certificate_encodings_flag,
                   kGetableSingleAndAll); /* Certificate encodings supported*/
 
   /* Add class services to the meta class */
