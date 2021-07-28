@@ -105,7 +105,6 @@ typedef struct {
  */
 typedef struct {
   CipUsint number_of_certificates;
-  CipShortString certificate_name;
   Certificate *certificate_list;
 } CertificateList;
 
