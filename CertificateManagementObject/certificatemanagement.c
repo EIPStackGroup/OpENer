@@ -115,21 +115,29 @@ EipStatus CertificateManagementObjectVerifyCertificate(CipInstance *RESTRICT con
 	return kEipStatusOk;
 }
 
-void EncodeCertificateManagementObjectCertificate(const void *const data,
+void EncodeCertificateManagementObjectCertificate(const Certificate *const certificate,
                                           ENIPMessage *const outgoing_message) {
-
+    AddSintToMessage(certificate->certificate_status, outgoing_message);
+    AddSintToMessage(certificate->path.path_size, outgoing_message);
+    if(0 != certificate->path.path_size){
+          EncodeEPath(&certificate->path, outgoing_message);
+    }
 }
 
 void DecodeCertificateManagementObjectCertificate(
     Certificate *const data,
     const CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response) {
-
 }
 
 void EncodeCertificateManagementObjectCertificateList(const void *const data,
                                                       ENIPMessage *const outgoing_message) {
+  CertificateList *cert_list = (CertificateList *) data;
 
+  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
+  for (int i=0; i<cert_list->number_of_certificates; i++) {
+      EncodeCertificateManagementObjectCertificate(&(cert_list->certificate_list[i]), outgoing_message);
+    }
 }
 
 void CertificateManagementObjectInitializeClassSettings(CertificateManagementObjectClass *class) {
