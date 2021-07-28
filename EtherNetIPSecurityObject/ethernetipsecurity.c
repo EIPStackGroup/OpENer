@@ -56,6 +56,7 @@
 #include "opener_api.h"
 #include "trace.h"
 #include "cipepath.h"
+#include "certificatemanagement.h"
 
 /* ********************************************************************
  * defines
@@ -68,25 +69,22 @@
  */
 /**< definition of EtherNet/IP Security object instance 1 data */
 
-// #########################################################################   TODO: remove section
-CipEpath dummy_CMO_Paths[1] = {  // dummy Certificate Management object path
+CipEpath CMO_Paths[1] = {  //Certificate Management object paths
 		{
 				2, /* PathSize in 16 Bit chunks */
-				0x5F, /* Class Code */
+				kCertificateManagementObjectClassCode, /* Class Code */
 				0x01, /* Instance # */
-				0 /* Attribute # */
 		}
 };
 
- EIPSecurityObjectPathList const dummy_CMO_path_list = {
+EIPSecurityObjectPathList const active_device_certificates = { //at present, a maximum of 1 entry may be configured
 		  1,
-		  dummy_CMO_Paths
+		  CMO_Paths
  };
- // #########################################################################
 
 EIPSecurityObject g_eip_security = { //TODO: add object configuration
 		.state = kEIPSecurityObjectStateFactoryDefaultConfiguration,     /** Attribute #1 */
-		.active_device_certificates = dummy_CMO_path_list,               /** Attribute #6 */
+		.active_device_certificates = active_device_certificates,        /** Attribute #6 */
 		.pre_shared_keys.number_of_pre_shared_keys = 0,                  /** Attribute #5 */
 		.pull_model_enabled = true,  //default: true                     /** Attribute #13 */
 		.pull_model_status = 0x0000,                                     /** Attribute #14 */
