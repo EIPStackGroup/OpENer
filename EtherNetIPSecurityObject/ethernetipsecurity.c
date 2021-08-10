@@ -105,6 +105,48 @@ EIPSecurityObject g_eip_security = { //TODO: add object configuration
  * public functions
  */
 
+/** @brief EtherNet/IP Security Object Reset settable attributes
+ *
+ * Return all settable instance attributes to the
+ * Factory Default Configuration value
+ */
+void EIPSecurityObjectResetSettableAttributes(CipInstance *instance){
+	CipAttributeStruct *attribute = NULL;
+
+			attribute = GetCipAttribute(instance, 4);
+			attribute->data = (void*) &g_eip_security.allowed_cipher_suites;
+
+			attribute = GetCipAttribute(instance, 5);
+			attribute->data = (void*) &g_eip_security.pre_shared_keys;
+
+			attribute = GetCipAttribute(instance, 6);
+			attribute->data = (void*) &g_eip_security.active_device_certificates;
+
+			attribute = GetCipAttribute(instance, 7);
+			attribute->data = (void*) &g_eip_security.trusted_authorities;
+
+			attribute = GetCipAttribute(instance, 8);
+			attribute->data = (void*) &g_eip_security.certificate_revocation_list;
+
+			attribute = GetCipAttribute(instance, 9);
+			attribute->data = (void*) &g_eip_security.verify_client_certificate;
+
+			attribute = GetCipAttribute(instance, 10);
+			attribute->data = (void*) &g_eip_security.send_certificate_chain;
+
+			attribute = GetCipAttribute(instance, 11);
+			attribute->data = (void*) &g_eip_security.check_expiration;
+
+			attribute = GetCipAttribute(instance, 12);
+			attribute->data = (void*) &g_eip_security.trusted_identities;
+
+			attribute = GetCipAttribute(instance, 15);
+			attribute->data = (void*) &g_eip_security.dtls_timeout;
+
+			attribute = GetCipAttribute(instance, 16);
+			attribute->data = (void*) &g_eip_security.udp_only_policy;
+}
+
 /** @brief EtherNet/IP Security Object Reset service
  *
  * Return this EtherNet/IP Security Object Instance to the
@@ -123,6 +165,8 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
+	//TODO: check for valid TLS connection
+
 	CipAttributeStruct *attribute = NULL;
 
 	CipBool enable_pull_model = false; /* The default value if parameter was omitted. */
@@ -130,7 +174,6 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	CipUint state = 0;
 
 	if (message_router_request->request_data_size == 1) {
-		//enable_pull_model = message_router_request->data[0];
 		enable_pull_model = GetBoolFromMessage(&message_router_request->data);
 
 		if (enable_pull_model) { // data: 01
@@ -154,45 +197,10 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 	*(CipUsint*) attribute->data = state; //set value
 
 	/*Reset settable attributes of each existing EtherNet/IP Security Object to factory default*/
-	//TODO: set attributes: 4 - 12, 15,16
 	for (CipInstance *ins = instance->cip_class->instances; ins; ins =
 			ins->next) /* follow the list*/
 			{
-		OPENER_TRACE_INFO("DEBUG: ethernetip_security_object instance  %d\n", ins->instance_number);
-		CipAttributeStruct *attribute = NULL;
-
-		attribute = GetCipAttribute(instance, 4);
-		attribute->data = (void*) &g_eip_security.allowed_cipher_suites;
-
-		attribute = GetCipAttribute(instance, 5);
-		attribute->data = (void*) &g_eip_security.pre_shared_keys;
-
-		attribute = GetCipAttribute(instance, 6);
-		attribute->data = (void*) &g_eip_security.active_device_certificates;
-
-		attribute = GetCipAttribute(instance, 7);
-		attribute->data = (void*) &g_eip_security.trusted_authorities;
-
-		attribute = GetCipAttribute(instance, 8);
-		attribute->data = (void*) &g_eip_security.certificate_revocation_list;
-
-		attribute = GetCipAttribute(instance, 9);
-		attribute->data = (void*) &g_eip_security.verify_client_certificate;
-
-		attribute = GetCipAttribute(instance, 10);
-		attribute->data = (void*) &g_eip_security.send_certificate_chain;
-
-		attribute = GetCipAttribute(instance, 11);
-		attribute->data = (void*) &g_eip_security.check_expiration;
-
-		attribute = GetCipAttribute(instance, 12);
-		attribute->data = (void*) &g_eip_security.trusted_identities;
-
-		attribute = GetCipAttribute(instance, 15);
-		attribute->data = (void*) &g_eip_security.dtls_timeout;
-
-		attribute = GetCipAttribute(instance, 16);
-		attribute->data = (void*) &g_eip_security.udp_only_policy;
+		EIPSecurityObjectResetSettableAttributes(ins);
 	}
 
 	message_router_response->general_status = kCipErrorSuccess;
@@ -229,6 +237,8 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 
 		//TODO: save current instance config before starting new config
 		*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigurationInProgress; //set state
+
+		//TODO: start configuration session timer
 	}
 
 	return kEipStatusOk;
@@ -255,7 +265,7 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	CipUsint state = *(CipUsint*)attribute->data;
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
-		//TODO: reset timer
+		//TODO: reset configuration session timer
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 
