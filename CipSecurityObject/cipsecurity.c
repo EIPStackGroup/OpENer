@@ -36,6 +36,7 @@
 #include <stdio.h>
 
 #include "cipsecurity.h"
+#include "ethernetipsecurity.h"
 
 #include "cipcommon.h"
 #include "endianconv.h"
@@ -92,7 +93,29 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 			message_router_response->general_status = kCipErrorSuccess;
 			OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
 
-			//TODO: perform a reset on each Ethernet/IP Security Object instances present
+			/*perform a reset on each Ethernet/IP Security Object instances present*/
+			CipInstance *eip_security_object_instance = GetCipInstance(
+					GetCipClass(kEIPSecurityObjectClassCode), 1);
+
+			if (NULL != eip_security_object_instance) {
+				for (CipInstance *ins =
+						eip_security_object_instance->cip_class->instances; ins;
+						ins = ins->next) /* follow the list*/
+						{
+					attribute = GetCipAttribute(ins, 13); //attribute #13 pull model enable
+					*(CipBool*) attribute->data = true;
+
+					attribute = GetCipAttribute(ins, 14); //attribute #14 pull model status
+					*(CipUint*) attribute->data = 0x0000;
+
+					attribute = GetCipAttribute(ins, 1); //attribute #1 state
+					*(CipUsint*) attribute->data =
+							kEIPSecurityObjectStateFactoryDefaultConfiguration;
+
+					EIPSecurityObjectResetSettableAttributes(ins); //reset settable attributes of ins
+				}
+			}
+
 		}
 
 	}

@@ -161,4 +161,11 @@ extern EIPSecurityObject g_eip_security;
  */
 EipStatus EIPSecurityInit(void);
 
+/** @brief EtherNet/IP Security Object Reset settable attributes
+ *
+ * Return all settable instance attributes to the
+ * Factory Default Configuration value
+ */
+void EIPSecurityObjectResetSettableAttributes(CipInstance *instance);
+
 #endif  // OPENER_ETHERNETIPSECURITY_H
