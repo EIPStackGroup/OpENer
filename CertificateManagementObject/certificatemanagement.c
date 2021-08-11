@@ -43,7 +43,7 @@
 #include "string.h"
 #include <stdio.h>
 
-#include "cipsecurity.h"
+#include "opener-security/CipSecurityObject/cipsecurity.h"
 
 #include "cipcommon.h"
 #include "endianconv.h"
