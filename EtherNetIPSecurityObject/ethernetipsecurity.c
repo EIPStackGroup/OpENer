@@ -56,7 +56,7 @@
 #include "opener_api.h"
 #include "trace.h"
 #include "cipepath.h"
-#include "certificatemanagement.h"
+#include "opener-security/CertificateManagementObject/certificatemanagement.h"
 
 /* ********************************************************************
  * defines
