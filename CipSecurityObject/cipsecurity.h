@@ -24,6 +24,11 @@ static const CipUint kCipSecurityObjectCleanupServiceCode = 0x4EU;
 /** @brief CIP Security object reset service code */
 static const CipUint kCipSecurityObjectResetServiceCode = 0x05U;
 
+/** @brief CIP Security object specific error codes */
+typedef enum {
+  kCipSecurityErrorNoOrphanObjects = 0xD0 /**< No orphan objects for cleanup */
+} CipSecurityError;
+
 /* *****************************************************************************
  * Type declarations
  */
