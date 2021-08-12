@@ -128,9 +128,42 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
  * Begins a security configuration session.
  * See Vol.8 Section 5-3.7.1
  */
-EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance){
+EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
-   return kEipStatusOk;
+	message_router_response->general_status = kCipErrorPrivilegeViolation;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+	CipUsint state = *(CipUsint*) attribute->data;
+
+	if ((kCipSecurityObjectStateConfigurationInProgress) == state) {
+		message_router_response->general_status = kCipErrorObjectStateConflict;
+	} else {
+		if ((kCipSecurityObjectStateConfigured) == state) {
+
+			//TODO: check if command is sent over valid TLS connection, else:
+			message_router_response->general_status =
+					kCipErrorPrivilegeViolation;
+		} else {
+			//TODO: check if other configuration in progress
+
+			*(CipUsint*) attribute->data =
+					kCipSecurityObjectStateConfigurationInProgress; //set state
+			message_router_response->general_status = kCipErrorSuccess;
+
+			//TODO: start configuration session timer
+		}
+
+	}
+
+	return kEipStatusOk;
 }
 
 /** @brief CIP Security Object End_Config service
@@ -150,7 +183,14 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+		CipUsint state = *(CipUsint*) attribute->data;
+
+		if ((kCipSecurityObjectStateConfigurationInProgress) == state) {
+			message_router_response->general_status = kCipErrorSuccess;
+			*(CipUsint*) attribute->data =
+								kCipSecurityObjectStateConfigured; //set state
+		}
 
 	return kEipStatusOk;
 }
@@ -172,7 +212,13 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	//TODO: implement service
+	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+	CipUsint state = *(CipUsint*) attribute->data;
+
+	if (kCipSecurityObjectStateConfigurationInProgress == state) {
+		//TODO: reset configuration session timer
+		message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return kEipStatusOk;
 }
@@ -188,7 +234,7 @@ EipStatus CipSecurityObjectCleanup(CipInstance *RESTRICT const instance,
 		const struct sockaddr *originator_address,
 		const int encapsulation_session) {
 
-	message_router_response->general_status = kCipErrorObjectStateConflict;
+	message_router_response->general_status = kCipSecurityErrorNoOrphanObjects;
 	message_router_response->size_of_additional_status = 0;
 	InitializeENIPMessage(&message_router_response->message);
 	message_router_response->reply_service = (0x80
