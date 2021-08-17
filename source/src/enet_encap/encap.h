@@ -36,22 +36,22 @@ typedef enum {
 
 /*** structs ***/
 typedef struct encapsulation_data {
-    CipUint command_code;
-    CipUint data_length;
-    CipUdint session_handle;
-    CipUdint status;
-    CipOctet sender_context[8]; /**< length of 8, according to the specification */
-    CipUdint options;
-    const EipUint8 *communication_buffer_start; /**< Pointer to the communication buffer used for this message */
-    const EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
+  CipUint command_code;
+  CipUint data_length;
+  CipUdint session_handle;
+  CipUdint status;
+  CipOctet sender_context[8]; /**< length of 8, according to the specification */
+  CipUdint options;
+  const EipUint8 *communication_buffer_start; /**< Pointer to the communication buffer used for this message */
+  const EipUint8 *current_communication_buffer_position; /**< The current position in the communication buffer during the decoding process */
 } EncapsulationData;
 
 typedef struct encapsulation_service_information {
-    EipUint16 type_code;
-    EipUint16 length;
-    EipUint16 encapsulation_protocol_version;
-    EipUint16 capability_flags;
-    EipInt8 name_of_service[16];
+  EipUint16 type_code;
+  EipUint16 length;
+  EipUint16 encapsulation_protocol_version;
+  EipUint16 capability_flags;
+  EipInt8 name_of_service[16];
 } EncapsulationServiceInformation;
 
 /*** global variables (public) ***/

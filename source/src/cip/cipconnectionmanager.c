@@ -689,7 +689,7 @@ EipStatus ForwardClose(CipInstance *instance,
   if(kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound
      == connection_status) {
     OPENER_TRACE_INFO(
-      "Connection not found! Requested connection triad: %u, %u, %u\n",
+      "Connection not found! Requested connection tried: %u, %u, %lu\n",
       connection_serial_number,
       originator_vendor_id,
       originator_serial_number);
@@ -1284,7 +1284,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   const EipUint8 *message = message_router_request->data;
   const size_t connection_path_size = GetUsintFromMessage(&message); /* length in words */
   size_t remaining_path = connection_path_size;
-  OPENER_TRACE_INFO("Received connection path size: %zu \n",
+  OPENER_TRACE_INFO("Received connection path size: %" PRIuSZT "\n", 
                     connection_path_size);
   CipClass *class = NULL;
 
