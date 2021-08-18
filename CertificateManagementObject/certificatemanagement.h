@@ -22,6 +22,12 @@ static const CipUint kCertificateManagementObjectCreateCSRServiceCode = 0x4BU;
 /** @brief Certificate Management object Verify Certificate service code */
 static const CipUint kCertificateManagementObjectVerifyCertificateServiceCode = 0x4CU;
 
+/** @brief Certificate management object specific error codes
+ * see Volume 8, Chapter 5-5.8.1 */
+typedef enum {
+  kCertificateManagementErrorVerificationFailed = 0xD0 /**< Verification of the requested certificate failed */
+} CertificateManagementError;
+
 /* *****************************************************************************
  * Type declarations
  */
