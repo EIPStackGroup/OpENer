@@ -58,6 +58,20 @@
 /** The implemented class revision is 1 */
 #define CERTIFICATE_MANAGEMENT_OBJECT_REVISION 1
 
+/**
+ * declaration of Certificate Management object instance 1 data
+ */
+
+char instance_1_name[] = "Default Device Certificate";
+
+CipShortString const name = {
+		.length = sizeof(instance_1_name),
+		.string = (EipByte*)(&instance_1_name)
+};
+
+CertificateManagementObject g_certificate_management = {
+	.name = name  /*Attribute 1 */
+};
 
 /** @brief Certificate Management Object Create service
  *
