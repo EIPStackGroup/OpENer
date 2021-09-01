@@ -1,0 +1,16 @@
+
+add Config Session timer 
+
+ListIdentity Extension - add Cip Security item einfügen - see Opener-repository Issue_233
+
+mbedtls library
+	- build
+	- add to project
+
+TLS connection - TLS handshake ??  - mbedtls library
+
+
+
+Certificate Management - add/update object specific services
+
+add FileObject - used in Management object
