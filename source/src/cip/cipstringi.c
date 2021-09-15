@@ -76,16 +76,12 @@ void *CipStringICreateStringStructure(CipStringIStruct *const to) {
   switch(to->char_string_struct) {
     case kCipShortString:
       return to->string = CipCalloc(1, sizeof(CipShortString) );
-      break;
     case kCipString:
       return to->string = CipCalloc(1, sizeof(CipString) );
-      break;
     case kCipString2:
       return to->string = CipCalloc(1, sizeof(CipString2) );
-      break;
     case kCipStringN:
       return to->string = CipCalloc(1, sizeof(CipStringN) );
-      break;
     default:
       OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
   }
