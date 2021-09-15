@@ -12,7 +12,7 @@ opener_common_includes()
 #######################################
 opener_platform_support("INCLUDES")
 
-set( CIP_SRC appcontype.c cipassembly.c cipclass3connection.c cipcommon.c cipconnectionobject.c cipconnectionmanager.c cipdlr.c ciperror.h cipethernetlink.c cipidentity.c cipioconnection.c cipmessagerouter.c ciptcpipinterface.c ciptypes.h cipepath.c cipelectronickey.c cipstring.c cipqos.c ciptypes.c)
+set( CIP_SRC appcontype.c cipassembly.c cipclass3connection.c cipcommon.c cipconnectionobject.c cipconnectionmanager.c cipdlr.c ciperror.h cipethernetlink.c cipidentity.c cipioconnection.c cipmessagerouter.c ciptcpipinterface.c ciptypes.h cipepath.c cipelectronickey.c cipstring.c cipstringi.c cipqos.c ciptypes.c)
 
 add_library( CIP ${CIP_SRC} )
 
