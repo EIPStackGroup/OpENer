@@ -140,10 +140,11 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-	CipUsint state = *(CipUsint*) attribute->data;
+//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+//	CipUsint state = *(CipUsint*) attribute->data;   //TODO: check
+	CipUsint state = g_security.state;
 
-	if ((kCipSecurityObjectStateConfigurationInProgress) == state) {
+	if (kCipSecurityObjectStateConfigurationInProgress == state) {
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
 		if ((kCipSecurityObjectStateConfigured) == state) {
@@ -154,11 +155,13 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 		} else {
 			//TODO: check if other configuration in progress
 
-			*(CipUsint*) attribute->data =
-					kCipSecurityObjectStateConfigurationInProgress; //set state
-			message_router_response->general_status = kCipErrorSuccess;
+//			*(CipUsint*) attribute->data =
+//					kCipSecurityObjectStateConfigurationInProgress; //set state  //TODO: check
 
-			//TODO: start configuration session timer
+			g_security.state = kCipSecurityObjectStateConfigurationInProgress;
+			g_security_session_start_time = GetMilliSeconds(); //TODO: check
+
+			message_router_response->general_status = kCipErrorSuccess;
 		}
 
 	}
@@ -183,13 +186,15 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-		CipUsint state = *(CipUsint*) attribute->data;
+//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+//	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
+	CipUsint state = g_security.state;
 
 		if ((kCipSecurityObjectStateConfigurationInProgress) == state) {
 			message_router_response->general_status = kCipErrorSuccess;
-			*(CipUsint*) attribute->data =
-								kCipSecurityObjectStateConfigured; //set state
+//			*(CipUsint*) attribute->data =
+//								kCipSecurityObjectStateConfigured; //set state
+			g_security.state = kCipSecurityObjectStateConfigured;
 		}
 
 	return kEipStatusOk;
@@ -212,11 +217,13 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	message_router_response->reply_service = (0x80
 			| message_router_request->service);
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-	CipUsint state = *(CipUsint*) attribute->data;
+//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
+//	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
+	CipUsint state = g_security.state;
 
 	if (kCipSecurityObjectStateConfigurationInProgress == state) {
-		//TODO: reset configuration session timer
+		//reset configuration session timer
+		g_security_session_start_time = GetMilliSeconds(); //actual time TODO: check
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 

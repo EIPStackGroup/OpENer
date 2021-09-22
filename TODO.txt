@@ -1,7 +1,8 @@
 
-add Config Session timer 
+Config Session timer - timer check added in generic_networkhandler.c
 
-ListIdentity Extension - add Cip Security item einfügen - see Opener-repository Issue_233
+ListIdentity Extension - add Cip Security item - see Opener-repository Issue_233 - done
+	- update get current port state
 
 mbedtls library
 	- build
@@ -14,3 +15,7 @@ TLS connection - TLS handshake ??  - mbedtls library
 Certificate Management - add/update object specific services
 
 add FileObject - used in Management object
+
+CipSecurity Object
+	- begin_config: check if command is sent over valid TLS connection
+	- object_cleanup: implement service
