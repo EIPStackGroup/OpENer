@@ -55,7 +55,8 @@
 #include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
-#include "cipepath.h"
+//#include "cipepath.h"
+#include "opener-security/CipSecurityObject/cipsecurity.h"
 #include "opener-security/CertificateManagementObject/certificatemanagement.h"
 
 /* ********************************************************************
@@ -294,8 +295,6 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
 
 	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
 
-		//TODO: implement service
-
 		/* The default values if parameters were omitted. */
 		CipWord apply_behavior_flags = 0;
 		CipUint close_delay = 0;
@@ -417,95 +416,6 @@ void EncodeEIPSecurityObjectCipherSuites(const void *const data,
   }
 }
 
-void EncodeEIPSecurityObjectPath(const CipEpath *const data,
-		ENIPMessage *const outgoing_message) {
-	AddSintToMessage(data->path_size, outgoing_message);
-	if(0 != data->path_size){
-		EncodeEPath((CipEpath*) data, outgoing_message);
-	}
-}
-
-int DecodeEIPSecurityObjectPath(CipEpath *const epath,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
-
-	const EipUint8 *message_runner = (message_router_request->data);
-
-	/* get data from message */
-	EipUint8 path_size = GetUsintFromMessage(&message_runner);
-	EipUint16 class_id = 0;
-	EipUint16 instance_number = 0;
-	EipUint16 attribute_number = 0;
-
-	int number_of_decoded_bytes = 0;
-
-	while (number_of_decoded_bytes < (path_size * 2)) {
-
-		switch (*message_runner) {
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			class_id = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
-
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			class_id = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
-
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			instance_number = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
-
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			instance_number = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
-
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			attribute_number = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
-
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			attribute_number = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
-
-		default:
-			OPENER_TRACE_ERR("ERROR wrong path requested\n");
-			message_router_response->general_status = kCipErrorPathSegmentError;
-			return kEipStatusError;
-		}
-
-	} // end while
-
-	/* copy epath to attribute structure */
-	epath->path_size = path_size;
-	epath->class_id = class_id;
-	epath->instance_number = instance_number;
-	epath->attribute_number = attribute_number;
-
-	OPENER_ASSERT(path_size * 2 == number_of_decoded_bytes); /* path size is in 16 bit chunks according to the specification */
-
-	message_router_request->data = message_runner; //update message-pointer
-
-	message_router_response->general_status = kCipErrorSuccess;
-	return number_of_decoded_bytes += 1; // + 1 byte for path size
-}
-
 void EncodeEIPSecurityObjectPathList(const void *const data,
                                        ENIPMessage *const outgoing_message)
 {
@@ -514,7 +424,7 @@ void EncodeEIPSecurityObjectPathList(const void *const data,
   EncodeCipUsint(&(path_list->number_of_paths), outgoing_message);
 
   for (int i=0; i<path_list->number_of_paths; i++) {
-    EncodeEIPSecurityObjectPath(&(path_list->paths[i]), outgoing_message);
+    EncodeCipSecurityObjectPath(&(path_list->paths[i]), outgoing_message);
   }
 }
 
@@ -530,7 +440,7 @@ int DecodeEIPSecurityObjectPathList(EIPSecurityObjectPathList *const path_list,
 
 	if (0 != path_list->number_of_paths) {
 		for (int i = 0; i < path_list->number_of_paths; i++) {
-			number_of_decoded_bytes += DecodeEIPSecurityObjectPath(
+			number_of_decoded_bytes += DecodeCipSecurityObjectPath(
 					&(path_list->paths[i]), message_router_request,
 					message_router_response);
 		}
@@ -560,7 +470,6 @@ int DecodeEIPSecurityObjectPreSharedKeys(
 
 	int number_of_decoded_bytes = -1;
 
-	//TODO: implement function
 	CipUsint number_of_psk = GetUsintFromMessage(
 			&(message_router_request->data));
 
@@ -817,8 +726,8 @@ EipStatus EIPSecurityInit(void) {
   InsertAttribute(eip_security_object_instance,
                   8,
                   kCipEpath,
-                  EncodeEIPSecurityObjectPath,
-                  DecodeEIPSecurityObjectPath,
+                  EncodeCipSecurityObjectPath,
+                  DecodeCipSecurityObjectPath,
                   &g_eip_security.certificate_revocation_list,
                   kSetAndGetAble
   );

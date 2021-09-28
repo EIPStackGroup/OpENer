@@ -42,6 +42,7 @@
 #include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
+#include "cipepath.h"
 
 /* ********************************************************************
  * defines
@@ -250,6 +251,95 @@ EipStatus CipSecurityObjectCleanup(CipInstance *RESTRICT const instance,
 	//TODO: implement service
 
 	return kEipStatusOk;
+}
+
+void EncodeCipSecurityObjectPath(const CipEpath *const epath,
+		ENIPMessage *const outgoing_message) {
+	AddSintToMessage(epath->path_size, outgoing_message);
+	if(0 != epath->path_size){
+		EncodeEPath((CipEpath*) epath, outgoing_message);
+	}
+}
+
+int DecodeCipSecurityObjectPath(CipEpath *const epath,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response) {
+
+	const EipUint8 *message_runner = (message_router_request->data);
+
+	/* get data from message */
+	EipUint8 path_size = GetUsintFromMessage(&message_runner);
+	EipUint16 class_id = 0;
+	EipUint16 instance_number = 0;
+	EipUint16 attribute_number = 0;
+
+	int number_of_decoded_bytes = 0;
+
+	while (number_of_decoded_bytes < (path_size * 2)) {
+
+		switch (*message_runner) {
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+			message_runner++;
+			class_id = GetUsintFromMessage(&message_runner);
+			number_of_decoded_bytes += 2;
+			break;
+
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+			message_runner += 2;
+			class_id = GetUintFromMessage(&message_runner);
+			number_of_decoded_bytes += 4;
+			break;
+
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+			message_runner++;
+			instance_number = GetUsintFromMessage(&message_runner);
+			number_of_decoded_bytes += 2;
+			break;
+
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+			message_runner += 2;
+			instance_number = GetUintFromMessage(&message_runner);
+			number_of_decoded_bytes += 4;
+			break;
+
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+			message_runner++;
+			attribute_number = GetUsintFromMessage(&message_runner);
+			number_of_decoded_bytes += 2;
+			break;
+
+		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+			message_runner += 2;
+			attribute_number = GetUintFromMessage(&message_runner);
+			number_of_decoded_bytes += 4;
+			break;
+
+		default:
+			OPENER_TRACE_ERR("ERROR wrong path requested\n");
+			message_router_response->general_status = kCipErrorPathSegmentError;
+			return kEipStatusError;
+		}
+
+	} // end while
+
+	/* copy epath to attribute structure */
+	epath->path_size = path_size;
+	epath->class_id = class_id;
+	epath->instance_number = instance_number;
+	epath->attribute_number = attribute_number;
+
+	OPENER_ASSERT(path_size * 2 == number_of_decoded_bytes); /* path size is in 16 bit chunks according to the specification */
+
+	message_router_request->data = message_runner; //update message-pointer
+
+	message_router_response->general_status = kCipErrorSuccess;
+	return number_of_decoded_bytes += 1; // + 1 byte for path size
 }
 
 void CipSecurityObjectInitializeClassSettings(CipClass *class) {
