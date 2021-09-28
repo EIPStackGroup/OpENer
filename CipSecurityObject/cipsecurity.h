@@ -92,4 +92,29 @@ static const MilliSeconds cipSecuritySessionDefaultTimeout = 10000; // 10 second
  */
 EipStatus CipSecurityInit(void);
 
+/** @brief Produce the data according to CIP encoding onto the message buffer.
+ *
+ * This function may be used in own services for sending object path data back to the
+ * requester (e.g., getAttributeSingle).
+ *  @param epath pointer to the object EPATH to encode
+ *  @param outgoing_message pointer to the message to be sent
+ */
+void EncodeCipSecurityObjectPath(const CipEpath *const epath,
+		ENIPMessage *const outgoing_message);
+
+/** @brief Retrieve the given object instance EPATH according to
+ * CIP encoding from the message buffer.
+ *
+ * This function may be used for writing various object paths
+ * from the request message (e.g., setAttributeSingle).
+ *  @param epath pointer to EPATH of the object instance to be written.
+ *  @param message_router_request pointer to the request where the data should be taken from
+ *  @param message_router_response pointer to the response where status should be set
+ *  @return length of taken bytes
+ *          -1 .. error
+ */
+int DecodeCipSecurityObjectPath(CipEpath *const epath,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
+
 #endif  // OPENER_CIPSECURITY_H
