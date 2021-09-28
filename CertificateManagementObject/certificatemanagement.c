@@ -42,8 +42,7 @@
  */
 #include "string.h"
 #include <stdio.h>
-
-#include "opener-security/CipSecurityObject/cipsecurity.h"
+#include <string.h>
 
 #include "cipcommon.h"
 #include "endianconv.h"
@@ -51,6 +50,7 @@
 #include "trace.h"
 
 #include "certificatemanagement.h"
+#include "opener-security/CipSecurityObject/cipsecurity.h"
 
 /* ********************************************************************
  * defines
@@ -62,15 +62,28 @@
  * declaration of Certificate Management object instance 1 data
  */
 
-char instance_1_name[] = "Default Device Certificate";
+const char instance_1_name[] = "Default Device Certificate";
 
 CipShortString const name = {
-		.length = sizeof(instance_1_name),
+		.length = strlen(instance_1_name),
 		.string = (EipByte*)(&instance_1_name)
 };
 
-CertificateManagementObject g_certificate_management = {
-	.name = name  /*Attribute 1 */
+const Certificate device_certificate = {
+		.certificate_status = kCertificateManagementObjectCertificateStateValueVerified
+		//TODO: add path
+};
+
+const Certificate ca_certificate = {
+		.certificate_status = kCertificateManagementObjectCertificateStateValueVerified
+		//TODO: add path
+};
+
+CertificateManagementObject g_certificate_management = { //TODO: add attributes
+	.name = name,  /*Attribute 1 */
+	.state = kCertificateManagementObjectStateValueVerified, /*Attribute 2*/
+	.device_certificate = device_certificate,
+	.ca_certificate = ca_certificate
 };
 
 /** @brief Certificate Management Object Create service
@@ -83,6 +96,15 @@ EipStatus CertificateManagementObjectCreate(CipInstance *RESTRICT const instance
                                  CipMessageRouterResponse *const message_router_response,
                                  const struct sockaddr *originator_address,
                                  const int encapsulation_session) {
+
+	message_router_response->general_status = kCipErrorSuccess;
+		message_router_response->size_of_additional_status = 0;
+		InitializeENIPMessage(&message_router_response->message);
+		message_router_response->reply_service = (0x80
+				| message_router_request->service);
+
+		//TODO: implement service
+
 	return kEipStatusOk;
 }
 
@@ -97,6 +119,8 @@ EipStatus CertificateManagementObjectDelete(CipInstance *RESTRICT const instance
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
+	//TODO: implement service
+
 	return kEipStatusOk;
 }
 
@@ -111,6 +135,8 @@ EipStatus CertificateManagementObjectCreateCSR(CipInstance *RESTRICT const insta
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
+	//TODO: implement service
+
 	return kEipStatusOk;
 }
 
@@ -126,22 +152,38 @@ EipStatus CertificateManagementObjectVerifyCertificate(CipInstance *RESTRICT con
                                             CipMessageRouterResponse *const message_router_response,
                                             const struct sockaddr *originator_address,
                                             const int encapsulation_session) {
+
+	//TODO: implement service
+
 	return kEipStatusOk;
 }
 
 void EncodeCertificateManagementObjectCertificate(const Certificate *const certificate,
                                           ENIPMessage *const outgoing_message) {
     AddSintToMessage(certificate->certificate_status, outgoing_message);
-    AddSintToMessage(certificate->path.path_size, outgoing_message);
-    if(0 != certificate->path.path_size){
-          EncodeEPath(&certificate->path, outgoing_message);
-    }
+
+    EncodeCipSecurityObjectPath(&(certificate->path), outgoing_message);
 }
 
-void DecodeCertificateManagementObjectCertificate(
-    Certificate *const data,
-    const CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response) {
+int DecodeCertificateManagementObjectCertificate(
+    Certificate *const certificate,
+	CipMessageRouterRequest *const message_router_request,
+	CipMessageRouterResponse *const message_router_response) {
+
+	int number_of_decoded_bytes = -1;
+
+	certificate->certificate_status = GetUsintFromMessage(
+			&message_router_request->data);
+	number_of_decoded_bytes = 1;
+
+	//write EPATH to the file object instance
+	number_of_decoded_bytes += DecodeCipSecurityObjectPath(
+						&(certificate->path),
+						message_router_request,
+						message_router_response);
+
+	OPENER_TRACE_INFO("Number_of_decoded bytes: %d\n", number_of_decoded_bytes);
+	return number_of_decoded_bytes;
 }
 
 void EncodeCertificateManagementObjectCertificateList(const void *const data,
@@ -178,7 +220,7 @@ void CertificateManagementObjectInitializeClassSettings(CertificateManagementObj
                   EncodeCipUint,
                   NULL,
                   (void *) &class->number_of_instances,
-                  kGetableSingle); /* number of instances currently existing*/
+                  kGetableSingleAndAll); /* number of instances currently existing*/
   InsertAttribute((CipInstance *) class,
                   4,
                   kCipUint,
