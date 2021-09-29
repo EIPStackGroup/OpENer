@@ -155,7 +155,7 @@ void FreeCipShortString(CipShortString *const cip_string);
  * @return The CipShortString address
  */
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-                                        CipUsint str_len,
+                                        const CipUsint str_len,
                                         const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipShortString under the expectation, that each C-String element is a CipShortString octet

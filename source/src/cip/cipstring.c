@@ -231,7 +231,7 @@ void FreeCipShortString(CipShortString *const cip_string) {
  * @return The CipShortString address
  */
 CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
-                                        CipUsint str_len,
+                                        const CipUsint str_len,
                                         const CipOctet *const data) {
   CipShortString *result = cip_string;
 

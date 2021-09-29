@@ -19,6 +19,7 @@
 #include "cpf.h"
 #include "trace.h"
 #include "endianconv.h"
+#include "opener_error.h"
 
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.
@@ -102,15 +103,13 @@ void SetIoConnectionCallbacks(CipConnectionObject *const io_connection_object) {
 
 EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
   CipConnectionObject *const io_connection_object,
-  CipConnectionObject *const RESTRICT connection_object
-  ) {
+  CipConnectionObject *const RESTRICT connection_object) {
   CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
   CipInstance *instance = NULL;
-  if ( NULL
-       != ( instance =
-              GetCipInstance(
-                assembly_class,
-                io_connection_object->consumed_path.instance_id) ) ) {
+  if( NULL !=
+      (instance =
+         GetCipInstance(assembly_class,
+                        io_connection_object->consumed_path.instance_id) ) ) {
     /* consuming Connection Point is present */
     io_connection_object->consuming_instance = instance;
     io_connection_object->consumed_connection_path_length = 6;
@@ -118,7 +117,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
        io_connection_object->connection_path.class_id;
        io_connection_object->consumed_connection_path.instance_number =
        io_connection_object->connection_path.connection_point[
-        kConnectionPointConsumer];*/
+       kConnectionPointConsumer];*/
     io_connection_object->consumed_path.attribute_id_or_connection_point = 3;
     int data_size = ConnectionObjectGetOToTConnectionSize(io_connection_object);
     int diff_size = 0;
@@ -130,21 +129,22 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
 #endif
-    if ( kConnectionObjectTransportClassTriggerTransportClass1
-         == ConnectionObjectGetTransportClassTriggerTransportClass(
-           io_connection_object) ) {
+    if(kConnectionObjectTransportClassTriggerTransportClass1 ==
+       ConnectionObjectGetTransportClassTriggerTransportClass(
+         io_connection_object) )
+    {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    if ( (data_size > 0) && (!is_heartbeat) ) {
+    if( (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
 #endif
-    if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
+    if( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size */
       connection_object->correct_originator_to_target_size =
         ( (CipByteArray *) attribute->data )->length + diff_size;
@@ -158,51 +158,46 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
 
 EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   CipConnectionObject *const io_connection_object,
-  CipConnectionObject *const RESTRICT connection_object
-  ) {
+  CipConnectionObject *const RESTRICT connection_object) {
   DoublyLinkedListNode *node = connection_list.first;
-  while (NULL != node &&
-         kConnectionObjectConnectionTypeMulticast ==
-         ConnectionObjectGetTToOConnectionType(io_connection_object) ) {
+  while(NULL != node &&
+        kConnectionObjectConnectionTypeMulticast ==
+        ConnectionObjectGetTToOConnectionType(io_connection_object) ) {
     CipConnectionObject *iterator = node->data;
     if(io_connection_object->produced_path.instance_id ==
        iterator->produced_path.instance_id) {
       //Check parameters
-      if( ConnectionObjectGetTToORequestedPacketInterval(io_connection_object)
-          !=
-          ConnectionObjectGetTToORequestedPacketInterval(iterator) ) {
+      if(ConnectionObjectGetTToORequestedPacketInterval(io_connection_object) !=
+         ConnectionObjectGetTToORequestedPacketInterval(iterator) ) {
         return kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable;
       }
-      if( ConnectionObjectGetTToOConnectionSizeType(
-            io_connection_object) !=
-          ConnectionObjectGetTToOConnectionSizeType(
-            iterator) ) {
+      if(ConnectionObjectGetTToOConnectionSizeType(io_connection_object) !=
+         ConnectionObjectGetTToOConnectionSizeType(iterator) ) {
         return
           kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionFixVar;
       }
-      if ( ConnectionObjectGetTToOPriority(io_connection_object) !=
-           ConnectionObjectGetTToOPriority(iterator) ) {
+      if(ConnectionObjectGetTToOPriority(io_connection_object) !=
+         ConnectionObjectGetTToOPriority(iterator) ) {
         return
           kConnectionManagerExtendedStatusCodeMismatchedTToONetworkConnectionPriority;
       }
 
-      if( ConnectionObjectGetTransportClassTriggerTransportClass(
-            io_connection_object) !=
-          ConnectionObjectGetTransportClassTriggerTransportClass(iterator) ) {
+      if(ConnectionObjectGetTransportClassTriggerTransportClass(
+           io_connection_object) !=
+         ConnectionObjectGetTransportClassTriggerTransportClass(iterator) ) {
         return kConnectionManagerExtendedStatusCodeMismatchedTransportClass;
       }
 
-
-      if( ConnectionObjectGetTransportClassTriggerProductionTrigger(
-            io_connection_object) !=
-          ConnectionObjectGetTransportClassTriggerProductionTrigger(iterator) )
+      if(ConnectionObjectGetTransportClassTriggerProductionTrigger(
+           io_connection_object)
+         != ConnectionObjectGetTransportClassTriggerProductionTrigger(iterator) )
       {
         return
           kConnectionManagerExtendedStatusCodeMismatchedTToOProductionTrigger;
       }
 
-      if( ConnectionObjectGetProductionInhibitTime(io_connection_object) !=
-          ConnectionObjectGetProductionInhibitTime(iterator) ) {
+      if(ConnectionObjectGetProductionInhibitTime(io_connection_object) !=
+         ConnectionObjectGetProductionInhibitTime(iterator) ) {
         return
           kConnectionManagerExtendedStatusCodeMismatchedTToOProductionInhibitTimeSegment;
       }
@@ -215,11 +210,10 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
   /*setup producer side*/
   CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
   CipInstance *instance = NULL;
-  if ( NULL
-       != ( instance =
-              GetCipInstance(
-                assembly_class,
-                io_connection_object->produced_path.instance_id) ) ) {
+  if( NULL !=
+      (instance =
+         GetCipInstance(assembly_class,
+                        io_connection_object->produced_path.instance_id) ) ) {
 
     io_connection_object->producing_instance = instance;
     int data_size = ConnectionObjectGetTToOConnectionSize(io_connection_object);
@@ -232,9 +226,10 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
 #ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
 #endif
-    if ( kConnectionObjectTransportClassTriggerTransportClass1 ==
-         ConnectionObjectGetTransportClassTriggerTransportClass(
-           io_connection_object) ) {
+    if(kConnectionObjectTransportClassTriggerTransportClass1 ==
+       ConnectionObjectGetTransportClassTriggerTransportClass(
+         io_connection_object) )
+    {
       /* class 1 connection */
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
@@ -246,7 +241,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       diff_size += 4;
     }
 #endif
-    if ( ( (CipByteArray *) attribute->data )->length != data_size ) {
+    if( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
         ( (CipByteArray *) attribute->data )->length + diff_size;
@@ -271,8 +266,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
  */
 CipError EstablishIoConnection(
   CipConnectionObject *RESTRICT const connection_object,
-  EipUint16 *const extended_error
-  ) {
+  EipUint16 *const extended_error) {
   CipError cip_error = kCipErrorSuccess;
 
   CipConnectionObject *io_connection_object = GetIoConnectionForConnectionData(
@@ -309,46 +303,45 @@ CipError EstablishIoConnection(
   io_connection_object->producing_instance = NULL;
   io_connection_object->produced_connection_path_length = 0;
 
-/* we don't need to check for zero as this is handled in the connection path parsing */
+  /* we don't need to check for zero as this is handled in the connection path parsing */
 
-  if (originator_to_target_connection_type !=
-      kConnectionObjectConnectionTypeNull) { /*setup consumer side*/
+  if(originator_to_target_connection_type !=
+     kConnectionObjectConnectionTypeNull) {                                         /*setup consumer side*/
     *extended_error = SetupIoConnectionOriginatorToTargetConnectionPoint(
       io_connection_object,
       connection_object);
-    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+    if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
   }
 
-  if (target_to_originator_connection_type !=
-      kConnectionObjectConnectionTypeNull) { /*setup producer side*/
+  if(target_to_originator_connection_type !=
+     kConnectionObjectConnectionTypeNull) {                                         /*setup producer side*/
     *extended_error = SetupIoConnectionTargetToOriginatorConnectionPoint(
       io_connection_object,
       connection_object);
-    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+    if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
   }
 
-  if (NULL != g_config_data_buffer) { /* config data has been sent with this forward open request */
+  if(NULL != g_config_data_buffer) { /* config data has been sent with this forward open request */
     *extended_error = HandleConfigData(io_connection_object);
-    if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
+    if(kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
     }
   }
 
   cip_error = OpenCommunicationChannels(io_connection_object);
-  if (kCipErrorSuccess != cip_error) {
+  if(kCipErrorSuccess != cip_error) {
     *extended_error = 0; /*TODO find out the correct extended error code*/
     return cip_error;
   }
 
   AddNewActiveConnection(io_connection_object);
-  CheckIoConnectionEvent(
-    io_connection_object->consumed_path.instance_id,
-    io_connection_object->produced_path.instance_id,
-    kIoConnectionEventOpened);
+  CheckIoConnectionEvent(io_connection_object->consumed_path.instance_id,
+                         io_connection_object->produced_path.instance_id,
+                         kIoConnectionEventOpened);
   return cip_error;
 }
 
@@ -369,7 +362,6 @@ EipStatus OpenConsumingPointToPointConnection(
   } else if(common_packet_format_data->address_info_item[1].type_id == 0) {
     j = 1;
   }
-
   CipUsint qos_for_socket = ConnectionObjectGetTToOPriority(connection_object);
   int error = SetQos(qos_for_socket);
   if (error != 0) {
@@ -437,7 +429,7 @@ EipStatus OpenProducingMulticastConnection(
   CipConnectionObject *connection_object,
   CipCommonPacketFormatData *common_packet_format_data)
 {
-/* Here we look for existing multi-cast IO connections only. */
+  /* Here we look for existing multi-cast IO connections only. */
   CipConnectionObject *existing_connection_object =
     GetExistingProducerIoConnection(true,
                                     connection_object->produced_path.instance_id);
@@ -469,7 +461,7 @@ EipStatus OpenProducingMulticastConnection(
       existing_connection_object->cip_produced_connection_id;
   }
 
-/* we have a connection reuse the data and the socket */
+  /* we have a connection reuse the data and the socket */
 
   if(kConnectionObjectInstanceTypeIOExclusiveOwner ==
      connection_object->instance_type) {
@@ -543,7 +535,7 @@ EipStatus OpenMulticastConnection(UdpCommuncationDirection direction,
     j = address_info_item_which_contains_t_to_o;
   }
 
-/*****************/
+  /*****************/
 
   if(-1 == j) {
     OPENER_TRACE_ERR(
@@ -573,7 +565,7 @@ EipStatus OpenMulticastConnection(UdpCommuncationDirection direction,
     return kEipStatusError;
   }
 
-/* allocate an unused sockaddr struct to use */
+  /* allocate an unused sockaddr struct to use */
   struct sockaddr_in socket_address = { 0 };
   socket_address.sin_family = ntohs(
     common_packet_format_data->address_info_item[j].sin_family);
@@ -767,15 +759,15 @@ void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
 
 EipStatus SendConnectedData(CipConnectionObject *connection_object) {
 
-/* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
+  /* TODO think of adding an own send buffer to each connection object in order to preset up the whole message on connection opening and just change the variable data items e.g., sequence number */
 
   CipCommonPacketFormatData *common_packet_format_data =
     &g_common_packet_format_data_item;
-/* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
+  /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order to remove the code here or even better allocate memory in the connection object for storing the message to send and just change the application data*/
 
   connection_object->eip_level_sequence_count_producing++;
 
-/* assembleCPFData */
+  /* assembleCPFData */
   common_packet_format_data->item_count = 2;
   if(kConnectionObjectTransportClassTriggerTransportClass0 !=
      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
@@ -801,13 +793,13 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
     (CipByteArray *) connection_object->producing_instance->attributes->data;
   common_packet_format_data->data_item.length = 0;
 
-/* notify the application that data will be sent immediately after the call */
+  /* notify the application that data will be sent immediately after the call */
   if(BeforeAssemblyDataSend(connection_object->producing_instance) ) {
     /* the data has changed increase sequence counter */
     connection_object->sequence_count_producing++;
   }
 
-/* set AddressInfo Items to invalid Type */
+  /* set AddressInfo Items to invalid Type */
   common_packet_format_data->address_info_item[0].type_id = 0;
   common_packet_format_data->address_info_item[1].type_id = 0;
 
@@ -865,7 +857,7 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
 
   OPENER_TRACE_INFO("Starting data length: %d\n", data_length);
   bool no_new_data = false;
-/* check class 1 sequence number*/
+  /* check class 1 sequence number*/
   if(kConnectionObjectTransportClassTriggerTransportClass1 ==
      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
@@ -882,7 +874,7 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
   if(data_length > 0) {
     /* we have no heartbeat connection */
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    EipUint32 nRunIdleBuf = GetUdintFromMessage( &(data) );
+    EipUint32 nRunIdleBuf = GetUdintFromMessage(&(data) );
     OPENER_TRACE_INFO("Run/Idle handler: 0x%x\n", nRunIdleBuf);
     const uint32_t kRunBitMask = 0x0001;
     if( (kRunBitMask & nRunIdleBuf) == 1 ) {
@@ -891,7 +883,7 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
       CipIdentitySetExtendedDeviceStatus(
         kAtLeastOneIoConnectionEstablishedAllInIdleMode);
     }
-    if (g_run_idle_state != nRunIdleBuf) {
+    if(g_run_idle_state != nRunIdleBuf) {
       RunIdleChanged(nRunIdleBuf);
     }
     g_run_idle_state = nRunIdleBuf;
@@ -913,7 +905,6 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
 CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
   CipError cip_error = kCipErrorSuccess;
-
   CreateUdpSocket(); /* open UDP socket for IO messaging*/
   
 /*get pointer to the CPF data, currently we have just one global instance of the struct. This may change in the future*/
@@ -926,7 +917,7 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
   ConnectionObjectConnectionType target_to_originator_connection_type =
     ConnectionObjectGetTToOConnectionType(connection_object);
 
-/* open a connection "point to point" or "multicast" based on the ConnectionParameter */
+  /* open a connection "point to point" or "multicast" based on the ConnectionParameter */
   if(originator_to_target_connection_type ==
      kConnectionObjectConnectionTypeMulticast)
   /* Multicast consuming */
