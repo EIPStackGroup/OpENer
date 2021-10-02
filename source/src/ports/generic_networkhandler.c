@@ -28,16 +28,6 @@
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
-/* ----- Windows size_t PRI macros ------------- */
-#if defined (__MINGW32__) /* This is a Mingw compiler */
-#define PRIuSZT PRIuPTR
-#define PRIxSZT PRIxPTR
-#else
-/* Even the Visual Studio compilers / libraries since VS2015 know that now. */
-#define PRIuSZT "zu"
-#define PRIxSZT "zx"
-#endif  /* if defined(__MINGW32__) */
-
 #if defined(_WIN32)
 /* Most network functions take their I/O buffers as (char *) pointers that
  *  triggers a warning with our CipOctet (aka unsigned char) buffers. */

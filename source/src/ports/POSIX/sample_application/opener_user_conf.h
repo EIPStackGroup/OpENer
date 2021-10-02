@@ -29,6 +29,15 @@
 
 #include "typedefs.h"
 
+/* ----- Windows size_t PRI macros ------------- */
+#if defined (__MINGW32__) /* This is a Mingw compiler */
+#define PRIuSZT PRIuPTR
+#define PRIxSZT PRIxPTR
+#else
+/* Even the Visual Studio compilers / libraries since VS2015 know that now. */
+#define PRIuSZT "zu"
+#define PRIxSZT "zx"
+#endif  /* if defined(__MINGW32__) */
 
 /** @brief Set this define if you have a DLR capable device
  *
