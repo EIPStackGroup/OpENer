@@ -6,6 +6,7 @@
 /** @file
  * @brief Implements the Certificate Management object
  * @author Markus Pešek <markus.pesek@tuwien.ac.at>
+ * @author Michael Satovich <michael.satovich@tuwien.ac.at>
  *
  *  Certificate Management object
  *  =============================
@@ -59,7 +60,7 @@
 #define CERTIFICATE_MANAGEMENT_OBJECT_REVISION 1
 
 /**
- * declaration of Certificate Management object instance 1 data
+ * declaration of (static) Certificate Management object instance 1 data
  */
 
 const char instance_1_name[] = "Default Device Certificate";
@@ -79,31 +80,174 @@ const Certificate ca_certificate = {
 		//TODO: add path
 };
 
-CertificateManagementObject g_certificate_management = { //TODO: add attributes
-	.name = name,  /*Attribute 1 */
-	.state = kCertificateManagementObjectStateValueVerified, /*Attribute 2*/
-	.device_certificate = device_certificate,
-	.ca_certificate = ca_certificate
+CertificateManagementObject g_certificate_management = {
+	.name = name,                                                               /*Attribute 1*/
+	.state = kCertificateManagementObjectStateValueVerified,                    /*Attribute 2*/
+	.device_certificate = device_certificate,                                   /*Attribute 3*/
+	.ca_certificate = ca_certificate,                                           /*Attribute 4*/
+	.certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM  /*Attribute 5*/
 };
+
+/** @brief Produce the data according to CIP encoding onto the message buffer.
+ *
+ * This function may be used in own services for sending object data back to the
+ * requester (e.g., getAttributeSingle).
+ *  @param certificate pointer to the certificate object to encode
+ *  @param outgoing_message pointer to the message to be sent
+ */
+void EncodeCertificateManagementObjectCertificate(const Certificate *const certificate,
+                                          ENIPMessage *const outgoing_message) {
+    AddSintToMessage(certificate->certificate_status, outgoing_message);
+
+    EncodeCipSecurityObjectPath(&(certificate->path), outgoing_message);
+}
+
+/** @brief Retrieve the given object instance EPATH according to
+ * CIP encoding from the message buffer.
+ *
+ * This function may be used for writing certificate object data
+ * received from the request message (e.g., setAttributeSingle).
+ *  @param certificate pointer to certificate object to be written.
+ *  @param message_router_request pointer to the request where the data should be taken from
+ *  @param message_router_response pointer to the response where status should be set
+ *  @return length of taken bytes
+ *          -1 .. error
+ */
+int DecodeCertificateManagementObjectCertificate(
+    Certificate *const certificate,
+	CipMessageRouterRequest *const message_router_request,
+	CipMessageRouterResponse *const message_router_response) {
+
+	int number_of_decoded_bytes = -1;
+
+	certificate->certificate_status = GetUsintFromMessage(
+			&message_router_request->data);
+	number_of_decoded_bytes = 1;
+
+	//write EPATH to the file object instance
+	number_of_decoded_bytes += DecodeCipSecurityObjectPath(
+						&(certificate->path),
+						message_router_request,
+						message_router_response);
+
+	OPENER_TRACE_INFO("Number_of_decoded bytes: %d\n", number_of_decoded_bytes);
+	return number_of_decoded_bytes;
+}
+
+/** @brief Produce the data according to CIP encoding onto the message buffer.
+ *
+ * This function may be used in own services for sending object data back to the
+ * requester (e.g., getAttributeSingle).
+ *  @param data pointer to the certificate list to encode
+ *  @param outgoing_message pointer to the message to be sent
+ */
+void EncodeCertificateManagementObjectCertificateList(const void *const data,
+                                                      ENIPMessage *const outgoing_message) {
+  CertificateList *cert_list = (CertificateList *) data;
+
+  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
+  for (int i=0; i<cert_list->number_of_certificates; i++) {
+      EncodeCertificateManagementObjectCertificate(&(cert_list->certificate_list[i]), outgoing_message);
+    }
+}
+
+/** @brief Bind attribute values to the object instance
+ *
+ *  @param instance pointer to the object where attributes should be written.
+ *  @param cmo object containing data to be written
+ */
+void CertificateManagementObjectBindAttributes(CipInstance *instance,
+		CertificateManagementObject *cmo) {
+
+    InsertAttribute(instance,
+                    1,
+                    kCipShortString,
+                    EncodeCipShortString,
+                    NULL,
+                    &cmo->name,
+                    kGetableSingleAndAll
+    );
+    InsertAttribute(instance,
+                    2,
+                    kCipUsint,
+                    EncodeCipUsint,
+                    NULL,
+                    &cmo->state,
+                    kGetableSingleAndAll
+    );
+    InsertAttribute(instance,
+                    3,
+                    kCipAny,
+                    EncodeCertificateManagementObjectCertificate,
+                    DecodeCertificateManagementObjectCertificate,
+                    &cmo->device_certificate,
+                    kSetAndGetAble
+    );
+    InsertAttribute(instance,
+                    4,
+                    kCipAny,
+                    EncodeCertificateManagementObjectCertificate,
+                    DecodeCertificateManagementObjectCertificate,
+                    &cmo->ca_certificate,
+                    kSetAndGetAble
+    );
+    InsertAttribute(instance,
+                    5,
+                    kCipUsint,
+                    EncodeCipUsint,
+                    NULL,
+                    &cmo->certificate_encoding,
+                    kGetableSingleAndAll
+    );
+}
+
 
 /** @brief Certificate Management Object Create service
  *
  * The Create service shall be used to create a dynamic instance.
  * See Vol.8 Section 5-5.5.1
  */
-EipStatus CertificateManagementObjectCreate(CipInstance *RESTRICT const instance,
-                                 CipMessageRouterRequest *const message_router_request,
-                                 CipMessageRouterResponse *const message_router_response,
-                                 const struct sockaddr *originator_address,
-                                 const int encapsulation_session) {
+EipStatus CertificateManagementObjectCreate(
+		CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 
 	message_router_response->general_status = kCipErrorSuccess;
-		message_router_response->size_of_additional_status = 0;
-		InitializeENIPMessage(&message_router_response->message);
-		message_router_response->reply_service = (0x80
-				| message_router_request->service);
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
 
-		//TODO: implement service
+	if (message_router_request->request_data_size > 0) {
+
+		CipClass *certificate_management_object_class = GetCipClass(
+				kCertificateManagementObjectClassCode);
+
+		CipInstance *certificate_management_object_instance = AddCipInstances(
+				certificate_management_object_class, 1); /* add 1 instance*/
+
+		CertificateManagementObject *new_cmo =
+				(CertificateManagementObject*) CipCalloc(1,
+						sizeof(CertificateManagementObject));
+
+		new_cmo->name.length = GetUsintFromMessage(
+				&message_router_request->data);
+
+		new_cmo->name.string = (CipByte*) CipCalloc(
+				new_cmo->name.length, sizeof(CipByte));
+
+		memcpy(new_cmo->name.string, message_router_request->data,
+				new_cmo->name.length);
+
+		new_cmo->state = kCertificateManagementObjectStateValueCreated;
+
+		CertificateManagementObjectBindAttributes(
+				certificate_management_object_instance, new_cmo);
+	} else {
+		message_router_response->general_status = kCipErrorNotEnoughData;
+	}
 
 	return kEipStatusOk;
 }
@@ -156,44 +300,6 @@ EipStatus CertificateManagementObjectVerifyCertificate(CipInstance *RESTRICT con
 	//TODO: implement service
 
 	return kEipStatusOk;
-}
-
-void EncodeCertificateManagementObjectCertificate(const Certificate *const certificate,
-                                          ENIPMessage *const outgoing_message) {
-    AddSintToMessage(certificate->certificate_status, outgoing_message);
-
-    EncodeCipSecurityObjectPath(&(certificate->path), outgoing_message);
-}
-
-int DecodeCertificateManagementObjectCertificate(
-    Certificate *const certificate,
-	CipMessageRouterRequest *const message_router_request,
-	CipMessageRouterResponse *const message_router_response) {
-
-	int number_of_decoded_bytes = -1;
-
-	certificate->certificate_status = GetUsintFromMessage(
-			&message_router_request->data);
-	number_of_decoded_bytes = 1;
-
-	//write EPATH to the file object instance
-	number_of_decoded_bytes += DecodeCipSecurityObjectPath(
-						&(certificate->path),
-						message_router_request,
-						message_router_response);
-
-	OPENER_TRACE_INFO("Number_of_decoded bytes: %d\n", number_of_decoded_bytes);
-	return number_of_decoded_bytes;
-}
-
-void EncodeCertificateManagementObjectCertificateList(const void *const data,
-                                                      ENIPMessage *const outgoing_message) {
-  CertificateList *cert_list = (CertificateList *) data;
-
-  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
-  for (int i=0; i<cert_list->number_of_certificates; i++) {
-      EncodeCertificateManagementObjectCertificate(&(cert_list->certificate_list[i]), outgoing_message);
-    }
 }
 
 void CertificateManagementObjectInitializeClassSettings(CertificateManagementObjectClass *class) {
@@ -312,49 +418,10 @@ EipStatus CertificateManagementObjectInit(void) {
     return kEipStatusError;
   }
 
-  /* Bind attributes to the instance created above */
   certificate_management_object_instance = GetCipInstance(certificate_management_object_class, 1);
 
-  InsertAttribute(certificate_management_object_instance,
-                  1,
-                  kCipShortString,
-                  EncodeCipShortString,
-                  NULL,
-                  &g_certificate_management.name,
-                  kGetableSingleAndAll
-  );
-  InsertAttribute(certificate_management_object_instance,
-                  2,
-                  kCipUsint,
-                  EncodeCipUsint,
-                  NULL,
-                  &g_certificate_management.state,
-                  kGetableSingleAndAll
-  );
-  InsertAttribute(certificate_management_object_instance,
-                  3,
-                  kCipAny,
-                  EncodeCertificateManagementObjectCertificate,
-                  DecodeCertificateManagementObjectCertificate,
-                  &g_certificate_management.device_certificate,
-                  kSetAndGetAble
-  );
-  InsertAttribute(certificate_management_object_instance,
-                  4,
-                  kCipAny,
-                  EncodeCertificateManagementObjectCertificate,
-                  DecodeCertificateManagementObjectCertificate,
-                  &g_certificate_management.ca_certificate,
-                  kSetAndGetAble
-  );
-  InsertAttribute(certificate_management_object_instance,
-                  5,
-                  kCipUsint,
-                  EncodeCipUsint,
-                  NULL,
-                  &g_certificate_management.certificate_encoding,
-                  kGetableSingleAndAll
-  );
+  /* Bind attributes to the instance */
+  CertificateManagementObjectBindAttributes(certificate_management_object_instance, &g_certificate_management);
 
   /* Add services to the instance */
   InsertService(certificate_management_object_class,
