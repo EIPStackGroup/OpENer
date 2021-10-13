@@ -803,7 +803,7 @@ EipStatus EIPSecurityInit(void) {
                 "GetAttributeAll"
   );
   InsertService(eip_security_object_class,
-                kEIPSecurityObjectResetServiceCode,
+                kReset,
                 &EIPSecurityObjectReset,
                 "EIPSecurityObjectReset"
   );
@@ -818,22 +818,22 @@ EipStatus EIPSecurityInit(void) {
                 "SetAttributeSingle"
   );
   InsertService(eip_security_object_class,
-                kEIPSecurityObjectBeginConfigServiceCode,
+                kBeginConfig,
                 &EIPSecurityObjectBeginConfig,
                 "EIPSecurityObjectBeginConfig"
   );
   InsertService(eip_security_object_class,
-                kEIPSecurityObjectKickTimerServiceCode,
+                kKickTimer,
                 &EIPSecurityObjectKickTimer,
                 "EIPSecurityObjectKickTimer"
   );
   InsertService(eip_security_object_class,
-                kEIPSecurityObjectApplyConfigServiceCode,
+                kApplyConfig,
                 &EIPSecurityObjectApplyConfig,
                 "EIPSecurityObjectApplyConfig"
   );
   InsertService(eip_security_object_class,
-                kEIPSecurityObjectAbortConfigServiceCode,
+                kAbortConfig,
                 &EIPSecurityObjectAbortConfig,
                 "EIPSecurityObjectAbortConfig"
   );
