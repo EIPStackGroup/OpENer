@@ -389,7 +389,7 @@ void CertificateManagementObjectInitializeClassSettings(CertificateManagementObj
                 "GetAttributeSingle"
   );
   InsertService(meta_class,
-                kCertificateManagementObjectCreateServiceCode,
+                kCreate,
                 &CertificateManagementObjectCreate,
                 "CertificateManagementObjectCreate"
   );
@@ -430,7 +430,7 @@ EipStatus CertificateManagementObjectInit(void) {
                 "GetAttributeAll"
   );
   InsertService(certificate_management_object_class,
-                kCertificateManagementObjectDeleteServiceCode,
+                kDelete,
                 &CertificateManagementObjectDelete,
                 "CertificateManagementObjectDelete"
   );
@@ -445,12 +445,12 @@ EipStatus CertificateManagementObjectInit(void) {
                 "SetAttributeSingle"
   );
   InsertService(certificate_management_object_class,
-                kCertificateManagementObjectCreateCSRServiceCode,
+                kCreateCSR,
                 &CertificateManagementObjectCreateCSR,
                 "CertificateManagementObjectCreateCSR"
   );
   InsertService(certificate_management_object_class,
-                kCertificateManagementObjectVerifyCertificateServiceCode,
+                kVerifyCertificate,
                 &CertificateManagementObjectVerifyCertificate,
                 "CertificateManagementObjectVerifyCertificate"
   );
