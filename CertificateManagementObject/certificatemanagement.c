@@ -147,7 +147,7 @@ void EncodeCertificateManagementObjectCertificateList(const void *const data,
 
   EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
   for (int i=0; i<cert_list->number_of_certificates; i++) {
-      EncodeCertificateManagementObjectCertificate(&(cert_list->certificate_list[i]), outgoing_message);
+      EncodeCertificateManagementObjectCertificate(&(cert_list->certificates[i]), outgoing_message);
     }
 }
 
