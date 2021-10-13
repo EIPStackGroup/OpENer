@@ -13,17 +13,6 @@
 /** @brief EtherNet/IP Security object class code */
 static const CipUint kEIPSecurityObjectClassCode = 0x5EU;
 
-/** @brief EtherNet/IP Security object Begin_Config service code */
-static const CipUint kEIPSecurityObjectBeginConfigServiceCode = 0x4BU;
-/** @brief EtherNet/IP Security object Kick_Timer service code */
-static const CipUint kEIPSecurityObjectKickTimerServiceCode = 0x4CU;
-/** @brief EtherNet/IP Security object Apply_Config service code */
-static const CipUint kEIPSecurityObjectApplyConfigServiceCode = 0x4DU;
-/** @brief EtherNet/IP Security object Abort_Config service code */
-static const CipUint kEIPSecurityObjectAbortConfigServiceCode = 0x4EU;
-/** @brief EtherNet/IP Security object Reset service code */
-static const CipUint kEIPSecurityObjectResetServiceCode = 0x05U;
-
 /** @brief Maximum length of PSK Identity in octets
  * see Volume 8, Chapter 5-4.4.5
  */
@@ -35,6 +24,19 @@ static const CipUsint SIZE_MAX_PSK = 64;
 /* *****************************************************************************
  * Type declarations
  */
+/** @brief EtherNet/IP Security object specific service codes
+ * see Volume 8, Chapter 5-4.7 */
+typedef enum {
+  /** @brief EtherNet/IP Security object Begin_Config service code */
+  kBeginConfig = 0x4B,
+  /** @brief EtherNet/IP Security object Kick_Timer service code */
+  kKickTimer = 0x4C,
+  /** @brief EtherNet/IP Security object Apply_Config service code */
+  kApplyConfig = 0x4D,
+  /** @brief EtherNet/IP Security object Abort_Config service code */
+  kAbortConfig = 0x4E,
+} EIPSecurityObjectServiceCode;
+
 /** @brief Valid values for EtherNet/IP Security Object State (attribute #1)
  *  The State attribute reports the EtherNet/IP Security Object’s current state.
  *  see Volume 8, Chapter 5-4.4.1
