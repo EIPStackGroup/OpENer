@@ -13,14 +13,14 @@
 /** @brief Certificate Management object class code */
 static const CipUint kCertificateManagementObjectClassCode = 0x5FU;
 
-/** @brief Certificate Management object Create service code */
-static const CipUint kCertificateManagementObjectCreateServiceCode = 0x08U;
-/** @brief Certificate Management object Delete service code */
-static const CipUint kCertificateManagementObjectDeleteServiceCode = 0x09U;
-/** @brief Certificate Management object Create CSR service code */
-static const CipUint kCertificateManagementObjectCreateCSRServiceCode = 0x4BU;
-/** @brief Certificate Management object Verify Certificate service code */
-static const CipUint kCertificateManagementObjectVerifyCertificateServiceCode = 0x4CU;
+/** @brief Certificate management object specific service codes
+ * see Volume 8, Chapter 5-5.7 */
+typedef enum {
+  /** @brief Certificate Management object Create CSR service code */
+  kCreateCSR = 0x4BU,
+  /** @brief Certificate Management object Verify Certificate service code */
+  kVerifyCertificate = 0x4CU,
+} CertificateManagementObjectServiceCode;
 
 /** @brief Certificate management object specific error codes
  * see Volume 8, Chapter 5-5.8.1 */
