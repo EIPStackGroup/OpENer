@@ -245,6 +245,10 @@ EipStatus CertificateManagementObjectCreate(
 
 		CertificateManagementObjectBindAttributes(
 				certificate_management_object_instance, new_cmo);
+
+		OPENER_TRACE_INFO("CMO instance number %d created\n",
+				certificate_management_object_instance->instance_number);
+
 	} else {
 		message_router_response->general_status = kCipErrorNotEnoughData;
 	}
@@ -258,12 +262,59 @@ EipStatus CertificateManagementObjectCreate(
  * (static instances shall return status code 0x2D, Instance Not Deletable).
  * See Vol.8 Section 5-5.5.2
  */
-EipStatus CertificateManagementObjectDelete(CipInstance *RESTRICT const instance,
-                                            CipMessageRouterRequest *const message_router_request,
-                                            CipMessageRouterResponse *const message_router_response,
-                                            const struct sockaddr *originator_address,
-                                            const int encapsulation_session) {
+EipStatus CertificateManagementObjectDelete(
+		CipInstance *RESTRICT const instance,
+		CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response,
+		const struct sockaddr *originator_address,
+		const int encapsulation_session) {
 	//TODO: implement service
+	message_router_response->general_status = kCipErrorInstanceNotDeletable;
+	message_router_response->size_of_additional_status = 0;
+	InitializeENIPMessage(&message_router_response->message);
+	message_router_response->reply_service = (0x80
+			| message_router_request->service);
+
+	CipClass *const cmo_class = GetCipClass(
+			kCertificateManagementObjectClassCode);
+
+	if (instance->instance_number != 1) { //static instance 1 should not be deleted
+
+		CipInstance *instances = cmo_class->instances;
+
+		// update pointers in instance list
+		instances = cmo_class->instances; /* pointer to first instance */
+		if (instances->instance_number == instance->instance_number) { //if instance to delete is head
+			cmo_class->instances = instances->next;
+		} else {
+			while (NULL != instances->next) /* as long as what next points to is not zero */
+			{
+				CipInstance *next_instance = instances->next;
+				if (next_instance->instance_number
+						== instance->instance_number) {
+					instances->next = next_instance->next;
+					break;
+				}
+				instances = instances->next;
+			}
+		}
+		OPENER_TRACE_INFO("CMO instance number %d deleted\n",
+						instance->instance_number);
+
+		CipFree(instance); //delete instance
+		//TODO: free all allocated elements of instance
+
+		cmo_class->number_of_instances -= 1; /* update the total number of instances recorded by the class - Attr. 3 */
+
+		//update largest instance number (class Attribute 2)
+		instances = cmo_class->instances;
+		while (NULL != instances->next) { //get last element - should be largest number
+			instances = instances->next;
+		}
+		cmo_class->max_instance = instances->instance_number;
+
+		message_router_response->general_status = kCipErrorSuccess;
+	}
 
 	return kEipStatusOk;
 }
@@ -318,7 +369,7 @@ void CertificateManagementObjectInitializeClassSettings(CertificateManagementObj
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *) &class->number_of_instances,
+                  (void *) &class->max_instance,
                   kGetableSingleAndAll); /*  largest instance number */
   InsertAttribute((CipInstance *) class,
                   3,

@@ -136,6 +136,8 @@ typedef struct cmo_class {
   EipUint16 revision;   /**< class revision*/
   EipUint16 number_of_instances;   /**< number of instances in the class (not
                                       including instance 0) */
+  EipUint16 max_instance;   /**< Highest instance number of currently existing objects
+                                          in this class level*/
   EipUint16 number_of_attributes;   /**< number of attributes of each instance */
   EipUint16 highest_attribute_number;   /**< highest defined attribute number
                                            (attribute numbers are not necessarily
