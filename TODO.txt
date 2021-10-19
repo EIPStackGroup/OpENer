@@ -1,5 +1,6 @@
 
-Config Session timer - timer check added in generic_networkhandler.c
+Config Session timer - timer check added in generic_networkhandler.c 
+		-> update to elapsed time format
 
 ListIdentity Extension - add Cip Security item - see Opener-repository Issue_233 - done
 	- update get current port state
@@ -12,7 +13,11 @@ TLS connection - TLS handshake ??  - mbedtls library
 
 
 
-Certificate Management - add/update object specific services
+Certificate Management
+	* add/update object specific services
+	* use general class struct + add class specific attributes (class level)
+	* delete service: free all dynamic allocated elements of instance
+	* create + delete service -> move to common services ??
 
 add FileObject - used in Management object
 
