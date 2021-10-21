@@ -13,25 +13,27 @@
 /** @brief CIP Security object class code */
 static const CipUint kCipSecurityObjectClassCode = 0x5DU;
 
-/** @brief CIP Security object Begin_Config service code */
-static const CipUint kCipSecurityObjectBeginConfigServiceCode = 0x4BU;
-/** @brief CIP Security object Kick_Timer service code */
-static const CipUint kCipSecurityObjectKickTimerServiceCode = 0x4CU;
-/** @brief CIP Security object End_Config service code */
-static const CipUint kCipSecurityObjectEndConfigServiceCode = 0x4DU;
-/** @brief CIP Security object Object_Cleanup service code */
-static const CipUint kCipSecurityObjectCleanupServiceCode = 0x4EU;
-/** @brief CIP Security object reset service code */
-static const CipUint kCipSecurityObjectResetServiceCode = 0x05U;
-
-/** @brief CIP Security object specific error codes */
-typedef enum {
-  kCipSecurityErrorNoOrphanObjects = 0xD0 /**< No orphan objects for cleanup */
-} CipSecurityError;
-
 /* *****************************************************************************
  * Type declarations
  */
+
+/** @brief CIP Security object specific service codes
+ * see Volume 8, Chapter 5-3.7 */
+typedef enum {
+  /** CIP Security object Begin_Config and Kick_Timer service codes are equal to
+   *  the EtherNet/IP object service codes and defined there */
+
+  /** @brief CIP Security object End_Config service code */
+  kEndConfig = 0x4D,
+  /** @brief CIP Security object Object_Cleanup service code */
+  kObjectCleanup = 0x4E,
+} CIPSecurityObjectServiceCode;
+
+/** @brief CIP Security object specific error codes */
+typedef enum {
+  kNoOrphanObjects = 0xD0 /**< No orphan objects for cleanup */
+} CipSecurityObjectErrorCode;
+
 /** @brief Valid values for CIP Security Object State (attribute #1)
  *  The State attribute reports the CIP Security Object’s current state.
  *  see Volume 8, Chapter 5-3.4.1
