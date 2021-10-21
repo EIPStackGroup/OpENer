@@ -242,7 +242,7 @@ EipStatus CipSecurityObjectCleanup(CipInstance *RESTRICT const instance,
 		const struct sockaddr *originator_address,
 		const int encapsulation_session) {
 
-	message_router_response->general_status = kCipSecurityErrorNoOrphanObjects;
+	message_router_response->general_status = kNoOrphanObjects;
 	message_router_response->size_of_additional_status = 0;
 	InitializeENIPMessage(&message_router_response->message);
 	message_router_response->reply_service = (0x80
@@ -407,8 +407,7 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                 &GetAttributeSingle,
                 "GetAttributeSingle"
   );
-  InsertService(meta_class,
-                kCipSecurityObjectCleanupServiceCode,
+  InsertService(meta_class, kObjectCleanup,
                 &CipSecurityObjectCleanup,
                 "CipSecurityObjectCleanup"
   );
@@ -477,22 +476,19 @@ EipStatus CipSecurityInit(void) {
                 "GetAttributeAll"
   );
   InsertService(cip_security_object_class,
-                kCipSecurityObjectResetServiceCode,
+                kReset,
                 &CipSecurityObjectReset,
                 "CipSecurityObjectReset"
   );
-  InsertService(cip_security_object_class,
-                kCipSecurityObjectBeginConfigServiceCode,
+  InsertService(cip_security_object_class, kBeginConfig,
                 &CipSecurityObjectBeginConfig,
                 "CipSecurityObjectBeginConfig"
   );
-  InsertService(cip_security_object_class,
-                kCipSecurityObjectKickTimerServiceCode,
+  InsertService(cip_security_object_class, kKickTimer,
                 &CipSecurityObjectKickTimer,
                 "CipSecurityObjectKickTimer"
   );
-  InsertService(cip_security_object_class,
-                kCipSecurityObjectEndConfigServiceCode,
+  InsertService(cip_security_object_class, kEndConfig,
                 &CipSecurityObjectEndConfig,
                 "CipSecurityObjectEndConfig"
   );
