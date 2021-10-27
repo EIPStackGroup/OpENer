@@ -71,21 +71,21 @@ CipShortString const name = {
 };
 
 const Certificate device_certificate = {
-		.certificate_status = kCertificateManagementObjectCertificateStateValueVerified
-		//TODO: add path
+    .certificate_status = kCertificateVerified
+    // TODO: add path
 };
 
 const Certificate ca_certificate = {
-		.certificate_status = kCertificateManagementObjectCertificateStateValueVerified
-		//TODO: add path
+    .certificate_status = kCertificateVerified
+    // TODO: add path
 };
 
 CertificateManagementObject g_certificate_management = {
 	.name = name,                                                               /*Attribute 1*/
-	.state = kCertificateManagementObjectStateValueVerified,                    /*Attribute 2*/
+	.state = kVerified,                    /*Attribute 2*/
 	.device_certificate = device_certificate,                                   /*Attribute 3*/
 	.ca_certificate = ca_certificate,                                           /*Attribute 4*/
-	.certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM  /*Attribute 5*/
+	.certificate_encoding = kCertificateEncodingPEM /*Attribute 5*/
 };
 
 /** @brief Produce the data according to CIP encoding onto the message buffer.
@@ -238,20 +238,15 @@ EipStatus CertificateManagementObjectCreate(
 		new_cmo->name.string = (CipByte*) CipCalloc(
 				new_cmo->name.length, sizeof(CipByte));
 
-		memcpy(new_cmo->name.string, message_router_request->data,
-				new_cmo->name.length);
+          memcpy(new_cmo->name.string, message_router_request->data, new_cmo->name.length);
+          CertificateManagementObjectBindAttributes(certificate_management_object_instance, new_cmo);
 
-		new_cmo->state = kCertificateManagementObjectStateValueCreated;
-
-		CertificateManagementObjectBindAttributes(
-				certificate_management_object_instance, new_cmo);
-
-		OPENER_TRACE_INFO("CMO instance number %d created\n",
-				certificate_management_object_instance->instance_number);
-
-	} else {
-		message_router_response->general_status = kCipErrorNotEnoughData;
-	}
+          new_cmo->state = kCreated;
+          OPENER_TRACE_INFO("CMO instance number %d created\n",
+                            certificate_management_object_instance->instance_number);
+        } else {
+          message_router_response->general_status = kCipErrorNotEnoughData;
+        }
 
 	return kEipStatusOk;
 }

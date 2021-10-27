@@ -41,19 +41,19 @@ typedef enum {
  *  The State attribute reports the EtherNet/IP Security Object’s current state.
  *  see Volume 8, Chapter 5-4.4.1
  */
-typedef enum ethernet_ip_security_object_state_values {
+typedef enum {
   /** Factory Default Configuration */
-  kEIPSecurityObjectStateFactoryDefaultConfiguration = 0,
+  kEIPFactoryDefaultConfiguration = 0,
   /** Configuration In Progress */
-  kEIPSecurityObjectStateConfigurationInProgress,
+  kEIPConfigurationInProgress,
   /** Configured */
-  kEIPSecurityObjectStateConfigured,
+  kEIPConfigured,
   /** Pull Model In Progress */
-  kEIPSecurityObjectStatePullModelInProgress,
+  kPullModelInProgress,
   /** Pull Model Completed */
-  kEIPSecurityObjectStatePullModelCompleted,
+  kPullModelCompleted,
   /** Pull Model Disabled */
-  kEIPSecurityObjectStatePullModelDisabled,
+  kPullModelDisabled,
 } EIPSecurityObjectStateValue;
 
 /** @brief Provide bit masks for the Capability Flags attribute (#2)
@@ -61,25 +61,25 @@ typedef enum ethernet_ip_security_object_state_values {
  *  supports optional capabilities related to TLS and DTLS.
  *  see Volume 8, Chapter 5-4.4.2
  */
-typedef enum ethernet_ip_security_object_capability_flags {
+typedef enum {
   /** Indicates whether or not the device supports secure renegotiation via the
       Renegotiation Indication Extension defined in RFC 5746. */
-  kEIPSecurityObjectSecureRenegotiation = 0x01,
-} EIPSecurityObjectCapabilityFlags;
+  kSecureRenegotiation = 0x01,
+} EIPSecurityObjectCapabilityFlag;
 
 /** @brief Extended status error codes for Apply_Config service
  *  see Volume 8, Chapter 5-4.8.1
  */
 typedef enum {
-	/**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
-	kEIPSecurityObjectApplyConfigOnlyPSKAllowed = 0x0001,
-	/**< Only certificate suites allowed, but no certificates configured */
-	kEIPSecurityObjectApplyConfigOnlyCertSuites = 0x0002,
-	/**< Certificate suites allowed but none consistent with the device private key type */
-	kEIPSecurityObjectApplyConfigCertSuitesNoneConsistent = 0x0003,
-	/**< No Active Cipher Suites configured */
-	kEIPSecurityObjectApplyConfigNoActiveCipherSuites = 0x0004
-} EIPSecurityObjectApplyConfigErrorExtended;
+  /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
+  kNoPSKConfigured = 0x0001,
+  /**< Only certificate suites allowed, but no certificates configured */
+  kNoCertificatesConfigured = 0x0002,
+  /**< Certificate suites allowed but none consistent with the device private key type */
+  kCertificateSuitesNoneConsistent = 0x0003,
+  /**< No Active Cipher Suites configured */
+  kNoActiveCipherSuitesConfigured = 0x0004
+} EIPSecurityObjectApplyConfigErrorCodeExtended;
 
 /** @brief Type declaration for a single IANA Cipher Suite ID
  *  see Volume 8, Chapter 5-4.4.3
