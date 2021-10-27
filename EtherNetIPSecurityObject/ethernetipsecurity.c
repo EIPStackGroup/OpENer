@@ -84,7 +84,7 @@ EIPSecurityObjectPathList const active_device_certificates = { //at present, a m
  };
 
 EIPSecurityObject g_eip_security = { //TODO: add object configuration
-		.state = kEIPSecurityObjectStateFactoryDefaultConfiguration,     /** Attribute #1 */
+		.state = kEIPFactoryDefaultConfiguration,     /** Attribute #1 */
 		.active_device_certificates = active_device_certificates,        /** Attribute #6 */
 		.pre_shared_keys.number_of_pre_shared_keys = 0,                  /** Attribute #5 */
 		.pull_model_enabled = true,  //default: true                     /** Attribute #13 */
@@ -179,10 +179,10 @@ EipStatus EIPSecurityObjectReset(CipInstance *RESTRICT const instance,
 
 		if (enable_pull_model) { // data: 01
 			pull_model_status = 0x0000; //TODO: 0x0000 not allowed - check
-			state = kEIPSecurityObjectStateFactoryDefaultConfiguration;
+			state = kEIPFactoryDefaultConfiguration;
 		} else { // data: 00
 			pull_model_status = 0xFFFF;
-			state = kEIPSecurityObjectStatePullModelDisabled;
+			state = kPullModelDisabled;
 		}
 	} else {
 		pull_model_status = 0xFFFF;
@@ -228,16 +228,12 @@ EipStatus EIPSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
-	if ((kEIPSecurityObjectStatePullModelDisabled
-					|| kEIPSecurityObjectStatePullModelCompleted
-					|| kEIPSecurityObjectStateConfigurationInProgress
-					|| kEIPSecurityObjectStatePullModelInProgress
-					|| kEIPSecurityObjectStateConfigured) == state) {
+	if (kEIPFactoryDefaultConfiguration != state) {
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
 
 		//TODO: save current instance config before starting new config
-		*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigurationInProgress; //set state
+		*(CipUsint*) attribute->data = kEIPConfigurationInProgress; //set state
 
 		//TODO: start configuration session timer
 	}
@@ -265,7 +261,7 @@ EipStatus EIPSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
-	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
+	if (kEIPConfigurationInProgress == state) {
 		//TODO: reset configuration session timer
 		message_router_response->general_status = kCipErrorSuccess;
 	}
@@ -293,7 +289,7 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*) attribute->data;
 
-	if (kEIPSecurityObjectStateConfigurationInProgress == state) {
+	if (kEIPConfigurationInProgress == state) {
 
 		/* The default values if parameters were omitted. */
 		CipWord apply_behavior_flags = 0;
@@ -319,7 +315,7 @@ EipStatus EIPSecurityObjectApplyConfig(CipInstance *RESTRICT const instance,
 			settings when establishing new (D)TLS sessions. */
 
 		//TODO: change state to configured
-		//*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigured;
+		//*(CipUsint*) attribute->data = kEIPConfigured;
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 
@@ -346,12 +342,12 @@ EipStatus EIPSecurityObjectAbortConfig(CipInstance *RESTRICT const instance,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*) attribute->data;
 
-	if (kEIPSecurityObjectStateConfigurationInProgress == state){
+	if (kEIPConfigurationInProgress == state){
 
 		//TODO: implement service
 
 		//TODO: change back to state before configuration in progress
-		*(CipUsint*) attribute->data = kEIPSecurityObjectStateConfigured; //TODO: remove
+		*(CipUsint*) attribute->data = kEIPConfigured; //TODO: remove
 		message_router_response->general_status = kCipErrorSuccess;
 	}
 
@@ -555,7 +551,7 @@ int DecodeDTLSTimeout(CipUint *const data,
 	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
 	CipUsint state = *(CipUsint*)attribute->data;
 
-	if (kEIPSecurityObjectStateConfigurationInProgress == state){
+	if (kEIPConfigurationInProgress == state){
 
 		CipUint dtls_timeout = GetUintFromMessage(&(message_router_request->data));
 

@@ -38,15 +38,15 @@ typedef enum {
  *  The State attribute reports the CIP Security Object’s current state.
  *  see Volume 8, Chapter 5-3.4.1
  */
-typedef enum cip_security_object_state_values {
+typedef enum {
   /** Factory Default Configuration */
-  kCipSecurityObjectStateFactoryDefaultConfiguration = 0,
+  kFactoryDefaultConfiguration = 0,
   /** ConfigurationIn Progress */
-  kCipSecurityObjectStateConfigurationInProgress,
+  kConfigurationInProgress,
   /** Configured */
-  kCipSecurityObjectStateConfigured,
+  kConfigured,
   /** Incomplete Configuration */
-  kCipSecurityObjectStateIncompleteConfiguration
+  kIncompleteConfiguration
 } CipSecurityObjectStateValue;
 
 /** @brief Valid values for CIP Security Object Security Profiles (attribute #2)
@@ -54,15 +54,15 @@ typedef enum cip_security_object_state_values {
  *  that the device implements.
  *  see Volume 8, Chapter 5-3.4.2
  */
-typedef enum cip_security_object_security_profiles_values {
+typedef enum {
   /** The device supports the EtherNet/IP Integrity Profile (Obsoleted) */
-  kCipSecurityObjectEtherNetIpIntegrityProfile = 0x01U,
+  kEtherNetIpIntegrityProfile = 0x01U,
   /** The device supports the EtherNet/IP Confidentiality Profile */
-  kCipSecurityObjectEtherNetIpConfidentialityProfile = 0x02U,
+  kEtherNetIpConfidentialityProfile = 0x02U,
   /** The device supports the CIP Authorization Profile */
-  kCipSecurityObjectCipAuthorizationProfile = 0x04U,
+  kCipAuthorizationProfile = 0x04U,
   /** The device supports the CIP User Authentication Profile */
-  kCipSecurityObjectCipUserAuthenticationProfile = 0x08U
+  kCipUserAuthenticationProfile = 0x08U
 } CipSecurityObjectSecurityProfileValue;
 
 /** @brief Type declaration for the CIP Security object
