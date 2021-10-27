@@ -56,9 +56,9 @@
 /**< definition of CIP Security object instance 1 data */
 
 CipSecurityObject g_security = {
-		.state = kCipSecurityObjectStateFactoryDefaultConfiguration,
-		.security_profiles = kCipSecurityObjectEtherNetIpConfidentialityProfile,
-		.security_profiles_configured = kCipSecurityObjectEtherNetIpConfidentialityProfile
+    .state = kFactoryDefaultConfiguration,
+    .security_profiles = kEtherNetIpConfidentialityProfile,
+    .security_profiles_configured = kEtherNetIpConfidentialityProfile
 };
 
 /* ********************************************************************
@@ -89,8 +89,7 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 		if (message_router_request->request_data_size > 0) {
 			message_router_response->general_status = kCipErrorTooMuchData;
 		} else {
-			g_security.state =
-					kCipSecurityObjectStateFactoryDefaultConfiguration;
+			g_security.state = kFactoryDefaultConfiguration;
 			message_router_response->general_status = kCipErrorSuccess;
 			OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
 
@@ -111,7 +110,7 @@ EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
 
 					attribute = GetCipAttribute(ins, 1); //attribute #1 state
 					*(CipUsint*) attribute->data =
-							kEIPSecurityObjectStateFactoryDefaultConfiguration;
+                                            kEIPFactoryDefaultConfiguration;
 
 					EIPSecurityObjectResetSettableAttributes(ins); //reset settable attributes of ins
 				}
@@ -145,10 +144,10 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 //	CipUsint state = *(CipUsint*) attribute->data;   //TODO: check
 	CipUsint state = g_security.state;
 
-	if (kCipSecurityObjectStateConfigurationInProgress == state) {
+	if (kConfigurationInProgress == state) {
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
-		if ((kCipSecurityObjectStateConfigured) == state) {
+		if (kConfigured == state) {
 
 			//TODO: check if command is sent over valid TLS connection, else:
 			message_router_response->general_status =
@@ -157,9 +156,9 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 			//TODO: check if other configuration in progress
 
 //			*(CipUsint*) attribute->data =
-//					kCipSecurityObjectStateConfigurationInProgress; //set state  //TODO: check
+//					kConfigurationInProgress; //set state  //TODO: check
 
-			g_security.state = kCipSecurityObjectStateConfigurationInProgress;
+			g_security.state = kConfigurationInProgress;
 			g_security_session_start_time = GetMilliSeconds(); //TODO: check
 
 			message_router_response->general_status = kCipErrorSuccess;
@@ -191,11 +190,10 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
 //	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
 	CipUsint state = g_security.state;
 
-		if ((kCipSecurityObjectStateConfigurationInProgress) == state) {
+		if (kConfigurationInProgress == state) {
 			message_router_response->general_status = kCipErrorSuccess;
-//			*(CipUsint*) attribute->data =
-//								kCipSecurityObjectStateConfigured; //set state
-			g_security.state = kCipSecurityObjectStateConfigured;
+//			*(CipUsint*) attribute->data = kConfigured; //set state
+			g_security.state = kConfigured;
 		}
 
 	return kEipStatusOk;
@@ -222,7 +220,7 @@ EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
 //	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
 	CipUsint state = g_security.state;
 
-	if (kCipSecurityObjectStateConfigurationInProgress == state) {
+	if (kConfigurationInProgress == state) {
 		//reset configuration session timer
 		g_security_session_start_time = GetMilliSeconds(); //actual time TODO: check
 		message_router_response->general_status = kCipErrorSuccess;

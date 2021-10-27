@@ -17,16 +17,16 @@ static const CipUint kCertificateManagementObjectClassCode = 0x5FU;
  * see Volume 8, Chapter 5-5.7 */
 typedef enum {
   /** @brief Certificate Management object Create CSR service code */
-  kCreateCSR = 0x4BU,
+  kCreateCSR = 0x4B,
   /** @brief Certificate Management object Verify Certificate service code */
-  kVerifyCertificate = 0x4CU,
+  kVerifyCertificate = 0x4C,
 } CertificateManagementObjectServiceCode;
 
 /** @brief Certificate management object specific error codes
  * see Volume 8, Chapter 5-5.8.1 */
 typedef enum {
-  kCertificateManagementErrorVerificationFailed = 0xD0 /**< Verification of the requested certificate failed */
-} CertificateManagementError;
+  kVerificationFailed = 0xD0 /**< Verification of the requested certificate failed */
+} CertificateManagementObjectErrorCode;
 
 /* *****************************************************************************
  * Type declarations
@@ -36,65 +36,65 @@ typedef enum {
  *  capabilities related to certificate enrollment.
  *  see Volume 8, Chapter 5-5.3.1
  */
-typedef enum certificate_management_object_capability_flags {
+typedef enum {
   /** Push */
-  kCertificateManagementObjectCapabilityFlagsPushModel = 1,
+  kPushModel = 1,
   /** Pull */
-  kCertificateManagementObjectCapabilityFlagsPullModel = 2,
-} CertificateManagementObjectCapabilityFlags;
+  kPullModel = 2,
+} CertificateManagementObjectCapabilityFlag;
 
 /** @brief Valid values for Certificate Management Object Certificate Encoding Flags (class attribute #10)
  *  The Certificate Encodings Flag attribute contains an indication
  *  of what certificate encodings the device supports.
  *  see Volume 8, Chapter 5-5.3.3
  */
-typedef enum certificate_management_object_certificate_encoding_flags {
+typedef enum {
   /** PEM Encoding */
-  kCertificateManagementObjectCertificateEncodingFlagsPEM = 1,
+  kEncodingFlagPEM = 1,
   /** PKCS#7 Encoding */
-  kCertificateManagementObjectCertificateEncodingFlagsPKCS7 = 2,
-} CertificateManagementObjectCertificateEncodingFlags;
+  kEncodingFlagPKCS7 = 2,
+} CertificateManagementObjectCertificateEncodingFlag;
 
 /** @brief Valid values for Certificate Management Object State (attribute #2)
  *  The State attribute reports the Certificate Management Object instance’s current state.
  *  see Volume 8, Chapter 5-5.4.2
  */
-typedef enum certificate_management_object_state_values {
+typedef enum {
   /** Non existent */
-  kCertificateManagementObjectStateValueNonExistent = 0,
+  kNonExistent = 0,
   /** Created */
-  kCertificateManagementObjectStateValueCreated,
+  kCreated,
   /** Configuring */
-  kCertificateManagementObjectStateValueConfiguring,
+  kConfiguring,
   /** Verified */
-  kCertificateManagementObjectStateValueVerified,
+  kVerified,
   /** Invalid */
-  kCertificateManagementObjectStateValueInvalid,
-} CertificateManagementObjectStateValues;
+  kInvalid,
+} CertificateManagementObjectStateValue;
 
 /** @brief Valid values for Certificate Management Object Certificate State (attribute #3 & #4)
  *  The Certificate State reports the Certificate Management Object Device or CA certificate's current state.
  *  see Volume 8, Chapter 5-5.4.3
  */
-typedef enum certificate_management_object_certificate_state_values {
+typedef enum {
   /** Not Verified */
-  kCertificateManagementObjectCertificateStateValueNotVerified = 0,
+  kCertificateNotVerified = 0,
   /** Verified */
-  kCertificateManagementObjectCertificateStateValueVerified,
+  kCertificateVerified,
   /** Invalid */
-  kCertificateManagementObjectCertificateStateValueInvalid,
-} CertificateManagementObjectCertificateStateValues;
+  kCertificateInvalid,
+} CertificateManagementObjectCertificateStateValue;
 
 /** @brief Valid values for Certificate Management Object Certificate Encoding (attribute #5)
  *  The Certificate Encoding contains a value which represents how the certificates
  *  corresponding to this Certificate Management Object Instance are encoded.
  *  see Volume 8, Chapter 5-5.4.5
  */
-typedef enum certificate_management_object_certificate_encoding {
+typedef enum {
   /** PEM Encoding */
-  kCertificateManagementObjectCertificateEncodingPEM = 0,
+  kCertificateEncodingPEM = 0,
   /** PKCS#7 Encoding */
-  kCertificateManagementObjectCertificateEncodingPKCS7,
+  kCertificateEncodingPKCS7,
 } CertificateManagementObjectCertificateEncoding;
 
 /** @brief Type declaration for a X.509 certificate
