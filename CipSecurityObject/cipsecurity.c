@@ -147,7 +147,7 @@ EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
 	if (kConfigurationInProgress == state) {
 		message_router_response->general_status = kCipErrorObjectStateConflict;
 	} else {
-		if (kConfigured == state) {
+		if (kCIPSecurityConfigured == state) {
 
 			//TODO: check if command is sent over valid TLS connection, else:
 			message_router_response->general_status =
@@ -192,8 +192,8 @@ EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
 
 		if (kConfigurationInProgress == state) {
 			message_router_response->general_status = kCipErrorSuccess;
-//			*(CipUsint*) attribute->data = kConfigured; //set state
-			g_security.state = kConfigured;
+//			*(CipUsint*) attribute->data = kCIPSecurityConfigured; //set state
+			g_security.state = kCIPSecurityConfigured;
 		}
 
 	return kEipStatusOk;
