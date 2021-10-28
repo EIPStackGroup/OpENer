@@ -151,10 +151,10 @@ void EncodeCertificateManagementObjectCertificateList(const void *const data,
     }
 }
 
-/** @brief Bind attribute values to the object instance
+/** @brief Bind attribute values to a certificate management object instance
  *
- *  @param instance pointer to the object where attributes should be written.
- *  @param cmo object containing data to be written
+ *  @param instance pointer to the object where attributes should be written
+ *  @param cmo certificate management object containing data to be written
  */
 void CertificateManagementObjectBindAttributes(CipInstance *instance,
 		CertificateManagementObject *cmo) {
@@ -466,8 +466,9 @@ EipStatus CertificateManagementObjectInit(void) {
 
   certificate_management_object_instance = GetCipInstance(certificate_management_object_class, 1);
 
-  /* Bind attributes to the instance */
-  CertificateManagementObjectBindAttributes(certificate_management_object_instance, &g_certificate_management);
+  /* Bind attributes to the static instance number 1 (default certificates)*/
+  CertificateManagementObjectBindAttributes(
+      certificate_management_object_instance, &g_certificate_management);
 
   /* Add services to the instance */
   InsertService(certificate_management_object_class,

@@ -14,83 +14,71 @@
 static const CipUint kEIPSecurityObjectClassCode = 0x5EU;
 
 /** @brief Maximum length of PSK Identity in octets
- * see Volume 8, Chapter 5-4.4.5
- */
+ *  @see Volume 8, Chapter 5-4.4.5 */
 static const CipUsint SIZE_MAX_PSK_IDENTITY = 128;
 
-/** @brief Maximum length of PSK in octets. See Volume 8, Chapter 5-4.4.5 */
+/** @brief Maximum length of PSK in octets
+ *  @see Volume 8, Chapter 5-4.4.5 */
 static const CipUsint SIZE_MAX_PSK = 64;
 
 /* *****************************************************************************
  * Type declarations
  */
 /** @brief EtherNet/IP Security object specific service codes
- * see Volume 8, Chapter 5-4.7 */
+ *  @see Volume 8, Chapter 5-4.7 */
 typedef enum {
-  /** @brief EtherNet/IP Security object Begin_Config service code */
-  kBeginConfig = 0x4B,
-  /** @brief EtherNet/IP Security object Kick_Timer service code */
-  kKickTimer = 0x4C,
-  /** @brief EtherNet/IP Security object Apply_Config service code */
-  kApplyConfig = 0x4D,
-  /** @brief EtherNet/IP Security object Abort_Config service code */
-  kAbortConfig = 0x4E,
+  kEIPSecurityBeginConfig = 0x4B, /**< EtherNet/IP Security object Begin_Config service code */
+  kEIPSecurityKickTimer = 0x4C,   /**< EtherNet/IP Security object Kick_Timer service code */
+  kEIPSecurityApplyConfig = 0x4D, /**< EtherNet/IP Security object Apply_Config service code */
+  kEIPSecurityAbortConfig = 0x4E, /**< EtherNet/IP Security object Abort_Config service code */
 } EIPSecurityObjectServiceCode;
 
 /** @brief Valid values for EtherNet/IP Security Object State (attribute #1)
+ *
  *  The State attribute reports the EtherNet/IP Security Object’s current state.
- *  see Volume 8, Chapter 5-4.4.1
+ *  @see Volume 8, Chapter 5-4.4.1
  */
 typedef enum {
-  /** Factory Default Configuration */
-  kEIPFactoryDefaultConfiguration = 0,
-  /** Configuration In Progress */
-  kEIPConfigurationInProgress,
-  /** Configured */
-  kEIPConfigured,
-  /** Pull Model In Progress */
-  kPullModelInProgress,
-  /** Pull Model Completed */
-  kPullModelCompleted,
-  /** Pull Model Disabled */
-  kPullModelDisabled,
+  kEIPFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
+  kEIPConfigurationInProgress,         /**< Configuration In Progress */
+  kEIPConfigured,                      /**< Configured */
+  kPullModelInProgress,                /**< Pull Model In Progress */
+  kPullModelCompleted,                 /**< Pull Model Completed */
+  kPullModelDisabled,                  /**< Pull Model Disabled */
 } EIPSecurityObjectStateValue;
 
 /** @brief Provide bit masks for the Capability Flags attribute (#2)
+ *
  *  The Capability Flags attribute contains an indication of whether the device
  *  supports optional capabilities related to TLS and DTLS.
- *  see Volume 8, Chapter 5-4.4.2
+ *  @see Volume 8, Chapter 5-4.4.2
  */
 typedef enum {
-  /** Indicates whether or not the device supports secure renegotiation via the
-      Renegotiation Indication Extension defined in RFC 5746. */
-  kSecureRenegotiation = 0x01,
+  kSecureRenegotiation = 0x01, /**< Indicates whether or not the device supports
+                                * secure renegotiation via the Renegotiation
+                                * Indication Extension defined in RFC 5746. */
 } EIPSecurityObjectCapabilityFlag;
 
 /** @brief Extended status error codes for Apply_Config service
- *  see Volume 8, Chapter 5-4.8.1
+ *  @see Volume 8, Chapter 5-4.8.1
  */
 typedef enum {
-  /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
-  kNoPSKConfigured = 0x0001,
-  /**< Only certificate suites allowed, but no certificates configured */
-  kNoCertificatesConfigured = 0x0002,
-  /**< Certificate suites allowed but none consistent with the device private key type */
-  kCertificateSuitesNoneConsistent = 0x0003,
-  /**< No Active Cipher Suites configured */
-  kNoActiveCipherSuitesConfigured = 0x0004
+  kNoPSKConfigured = 0x0001,                 /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
+  kNoCertificatesConfigured = 0x0002,        /**< Only certificate suites allowed, but no certificates configured */
+  kCertificateSuitesNoneConsistent = 0x0003, /**< Certificate suites allowed but none consistent with the device private key type */
+  kNoActiveCipherSuitesConfigured = 0x0004,  /**< No Active Cipher Suites configured */
 } EIPSecurityObjectApplyConfigErrorCodeExtended;
 
-/** @brief Type declaration for a single IANA Cipher Suite ID
- *  see Volume 8, Chapter 5-4.4.3
+/** @brief Type declaration for a single IANA cipher suite ID
+ *  @see Volume 8, Chapter 5-4.4.3 and 5-4.4.4
  */
 typedef struct {
-  CipUsint iana_first_byte;
-  CipUsint iana_second_byte;
+  CipUsint iana_first_byte;  /**< First byte of IANA cipher suite ID */
+  CipUsint iana_second_byte; /**< Second byte of IANA cipher suite ID */
 } EIPSecurityObjectCipherSuiteId;
 
-/** @brief Type declaration for a list of Cipher Suites
- *
+/** @brief Type declaration for a list of cipher suites
+ *  @see Volume 8, Chapter 5-4.4.3 and 5-4.4.4
  */
 typedef struct {
   CipUsint number_of_cipher_suites;
@@ -98,7 +86,7 @@ typedef struct {
 } EIPSecurityObjectCipherSuites;
 
 /** @brief Type declaration for a pre-shared key
- *  see Volume 8, Chapter 5-4.4.5
+ *  @see Volume 8, Chapter 5-4.4.5
  */
 typedef struct {
   CipUsint psk_identity_size;
@@ -108,7 +96,7 @@ typedef struct {
 } EIPSecurityObjectPreSharedKey;
 
 /** @brief Type declaration for pre-shared keys to use with PSK cipher suites
- *  see Volume 8, Chapter 5-4.4.5
+ *  @see Volume 8, Chapter 5-4.4.5
  */
 typedef struct {
   CipUsint number_of_pre_shared_keys;
@@ -126,6 +114,7 @@ typedef struct {
 /** @brief Type declaration for the EtherNet/IP Security object
  *
  *  This is the type declaration for the EtherNet/IP Security object.
+ *  @see Volume 8, Chapter 5-4.4
  */
 typedef struct {
   CipUsint state;                                        /** Attribute #1 */
@@ -149,24 +138,22 @@ typedef struct {
 /* ********************************************************************
  * global public variables
  */
-/**
- * declaration of EtherNet/IP Security object instance 1 data
- */
-extern EIPSecurityObject g_eip_security;
+
+extern EIPSecurityObject g_eip_security; /**< declaration of EtherNet/IP Security object instance 1 data */
 
 /* ********************************************************************
  * public functions
  */
 /** @brief Initializing the data structures of the EtherNet/IP Security object
  *
- * @return kEipStatusOk on success, otherwise kEipStatusError
+ *  @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus EIPSecurityInit(void);
 
 /** @brief EtherNet/IP Security Object Reset settable attributes
  *
- * Return all settable instance attributes to the
- * Factory Default Configuration value
+ *  Return all settable instance attributes to the
+ *  Factory Default Configuration value.
  */
 void EIPSecurityObjectResetSettableAttributes(CipInstance *instance);
 

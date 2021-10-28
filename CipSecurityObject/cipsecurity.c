@@ -405,7 +405,7 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                 &GetAttributeSingle,
                 "GetAttributeSingle"
   );
-  InsertService(meta_class, kObjectCleanup,
+  InsertService(meta_class, kCIPSecurityObjectCleanup,
                 &CipSecurityObjectCleanup,
                 "CipSecurityObjectCleanup"
   );
@@ -478,15 +478,15 @@ EipStatus CipSecurityInit(void) {
                 &CipSecurityObjectReset,
                 "CipSecurityObjectReset"
   );
-  InsertService(cip_security_object_class, kBeginConfig,
+  InsertService(cip_security_object_class, kCIPSecurityBeginConfig,
                 &CipSecurityObjectBeginConfig,
                 "CipSecurityObjectBeginConfig"
   );
-  InsertService(cip_security_object_class, kKickTimer,
+  InsertService(cip_security_object_class, kCIPSecurityKickTimer,
                 &CipSecurityObjectKickTimer,
                 "CipSecurityObjectKickTimer"
   );
-  InsertService(cip_security_object_class, kEndConfig,
+  InsertService(cip_security_object_class, kCIPSecurityEndConfig,
                 &CipSecurityObjectEndConfig,
                 "CipSecurityObjectEndConfig"
   );
