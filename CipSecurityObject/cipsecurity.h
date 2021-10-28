@@ -40,7 +40,7 @@ typedef enum {
 typedef enum {
   kFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
   kConfigurationInProgress,         /**< ConfigurationIn Progress */
-  kConfigured,                      /**< Configured */
+  kCIPSecurityConfigured,           /**< Configured */
   kIncompleteConfiguration,         /**< Incomplete Configuration */
 } CipSecurityObjectStateValue;
 
