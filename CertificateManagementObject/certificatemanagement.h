@@ -14,87 +14,78 @@
 static const CipUint kCertificateManagementObjectClassCode = 0x5FU;
 
 /** @brief Certificate management object specific service codes
- * see Volume 8, Chapter 5-5.7 */
+ *  @see Volume 8, Chapter 5-5.7 */
 typedef enum {
-  /** @brief Certificate Management object Create CSR service code */
-  kCreateCSR = 0x4B,
-  /** @brief Certificate Management object Verify Certificate service code */
-  kVerifyCertificate = 0x4C,
+  kCreateCSR = 0x4B,         /**< Certificate Management object Create CSR service code */
+  kVerifyCertificate = 0x4C, /**< Certificate Management object Verify Certificate service code */
 } CertificateManagementObjectServiceCode;
 
 /** @brief Certificate management object specific error codes
- * see Volume 8, Chapter 5-5.8.1 */
+ *  @see Volume 8, Chapter 5-5.8.1 */
 typedef enum {
-  kVerificationFailed = 0xD0 /**< Verification of the requested certificate failed */
+  kVerificationFailed = 0xD0, /**< Verification of the requested certificate failed */
 } CertificateManagementObjectErrorCode;
 
 /* *****************************************************************************
  * Type declarations
  */
 /** @brief Valid values for Certificate Management Object Capability Flags (class attribute #8)
+ *
  *  The Capability Flags attribute contains an indication of whether the device supports
  *  capabilities related to certificate enrollment.
- *  see Volume 8, Chapter 5-5.3.1
+ *  @see Volume 8, Chapter 5-5.3.1
  */
 typedef enum {
-  /** Push */
-  kPushModel = 1,
-  /** Pull */
-  kPullModel = 2,
+  kPushModel = 1, /**< Push model for certificate configuration */
+  kPullModel = 2, /**< Pull model for certificate configuration */
 } CertificateManagementObjectCapabilityFlag;
 
 /** @brief Valid values for Certificate Management Object Certificate Encoding Flags (class attribute #10)
+ *
  *  The Certificate Encodings Flag attribute contains an indication
  *  of what certificate encodings the device supports.
- *  see Volume 8, Chapter 5-5.3.3
+ *
+ *  WARNING: This is not equal to the certificate encoding values (Volume 8, Chapter 5-5.4.5)!
+ *  @see Volume 8, Chapter 5-5.3.3
  */
 typedef enum {
-  /** PEM Encoding */
-  kEncodingFlagPEM = 1,
-  /** PKCS#7 Encoding */
-  kEncodingFlagPKCS7 = 2,
+  kEncodingFlagPEM = 1,   /**< device supports PEM Encoding */
+  kEncodingFlagPKCS7 = 2, /**< device supports PKCS#7 Encoding */
 } CertificateManagementObjectCertificateEncodingFlag;
 
 /** @brief Valid values for Certificate Management Object State (attribute #2)
+ *
  *  The State attribute reports the Certificate Management Object instance’s current state.
- *  see Volume 8, Chapter 5-5.4.2
+ *  @see Volume 8, Chapter 5-5.4.2
  */
 typedef enum {
-  /** Non existent */
-  kNonExistent = 0,
-  /** Created */
-  kCreated,
-  /** Configuring */
-  kConfiguring,
-  /** Verified */
-  kVerified,
-  /** Invalid */
-  kInvalid,
+  kNonExistent = 0, /**< The instance doesn't exist */
+  kCreated,         /**< The instance has been created, dynamically or static */
+  kConfiguring,     /**< One of the certificates are being configured */
+  kVerified,        /**< Both certificates, Device Certificate and CA Certificate, have successfully been verified */
+  kInvalid,         /**< At least one of the certificates is invalid */
 } CertificateManagementObjectStateValue;
 
 /** @brief Valid values for Certificate Management Object Certificate State (attribute #3 & #4)
+ *
  *  The Certificate State reports the Certificate Management Object Device or CA certificate's current state.
- *  see Volume 8, Chapter 5-5.4.3
+ *  @see Volume 8, Chapter 5-5.4.3
  */
 typedef enum {
-  /** Not Verified */
-  kCertificateNotVerified = 0,
-  /** Verified */
-  kCertificateVerified,
-  /** Invalid */
-  kCertificateInvalid,
+  kCertificateNotVerified = 0, /**< Not Verified */
+  kCertificateVerified,        /**< Verified */
+  kCertificateInvalid,         /**< Invalid */
 } CertificateManagementObjectCertificateStateValue;
 
 /** @brief Valid values for Certificate Management Object Certificate Encoding (attribute #5)
+ *
  *  The Certificate Encoding contains a value which represents how the certificates
  *  corresponding to this Certificate Management Object Instance are encoded.
- *  see Volume 8, Chapter 5-5.4.5
+ *  @see Volume 8, Chapter 5-5.4.5
  */
 typedef enum {
-  /** PEM Encoding */
-  kCertificateEncodingPEM = 0,
-  /** PKCS#7 Encoding */
-  kCertificateEncodingPKCS7,
+  kCertificateEncodingPEM = 0, /**< PEM Encoding */
+  kCertificateEncodingPKCS7,   /**< PKCS#7 Encoding */
 } CertificateManagementObjectCertificateEncoding;
 
 /** @brief Type declaration for a X.509 certificate
@@ -117,7 +108,8 @@ typedef struct {
 
 /** @brief Type declaration for the Certificate Management object
  *
- * This is the type declaration for the Certificate Management object.
+ *  This is the type declaration for the Certificate Management object.
+ *  @see Volume 8, Chapter 5-5.4
  */
 typedef struct {
   CipShortString name;             /** Attribute #1 */
@@ -177,17 +169,15 @@ typedef struct cmo_class {
 /* ********************************************************************
  * global public variables
  */
-/**
- * declaration of Certificate Management object instance 1 data
- */
-CertificateManagementObject g_certificate_management;
+
+CertificateManagementObject g_certificate_management; /**< declaration of Certificate Management object instance 1 data */
 
 /* ********************************************************************
  * public functions
  */
 /** @brief Initializing the data structures of the Certificate Management object
  *
- * @return kEipStatusOk on success, otherwise kEipStatusError
+ *  @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus CertificateManagementObjectInit(void);
 
