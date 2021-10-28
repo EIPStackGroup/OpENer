@@ -814,22 +814,22 @@ EipStatus EIPSecurityInit(void) {
                 "SetAttributeSingle"
   );
   InsertService(eip_security_object_class,
-                kBeginConfig,
+                kEIPSecurityBeginConfig,
                 &EIPSecurityObjectBeginConfig,
                 "EIPSecurityObjectBeginConfig"
   );
   InsertService(eip_security_object_class,
-                kKickTimer,
+                kEIPSecurityKickTimer,
                 &EIPSecurityObjectKickTimer,
                 "EIPSecurityObjectKickTimer"
   );
   InsertService(eip_security_object_class,
-                kApplyConfig,
+                kEIPSecurityApplyConfig,
                 &EIPSecurityObjectApplyConfig,
                 "EIPSecurityObjectApplyConfig"
   );
   InsertService(eip_security_object_class,
-                kAbortConfig,
+                kEIPSecurityAbortConfig,
                 &EIPSecurityObjectAbortConfig,
                 "EIPSecurityObjectAbortConfig"
   );
