@@ -55,9 +55,10 @@
 #include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
-//#include "cipepath.h"
-#include "opener-security/CipSecurityObject/cipsecurity.h"
-#include "opener-security/CertificateManagementObject/certificatemanagement.h"
+
+#include "CipSecurityObject/cipsecurity.h"
+#include "CertificateManagementObject/certificatemanagement.h"
+#include "ethernetipsecurity.h"
 
 /* ********************************************************************
  * defines
