@@ -49,8 +49,6 @@
 #include "string.h"
 #include <stdio.h>
 
-#include "ethernetipsecurity.h"
-
 #include "cipcommon.h"
 #include "endianconv.h"
 #include "opener_api.h"
