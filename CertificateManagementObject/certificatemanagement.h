@@ -96,16 +96,6 @@ typedef struct {
   CipEpath path;
 } Certificate;
 
-/** @brief Type declaration for a certificate list
- * The Certificate List attribute contains a list of created certificate instances
- * see Volume 8, Chapter 5-5.3.2
- */
-typedef struct {
-  CipUsint number_of_certificates;
-  Certificate *certificates;
-} CertificateList;
-
-
 /** @brief Type declaration for the Certificate Management object
  *
  *  This is the type declaration for the Certificate Management object.
@@ -119,52 +109,13 @@ typedef struct {
   CipUsint certificate_encoding;   /** Attribute #5 */
 } CertificateManagementObject;
 
-/** @brief Type definition of CipClass that is a subclass of CipInstance */
-typedef struct cmo_class {
-  CipInstance class_instance;   /**< This is the instance that contains the
-                                   class attributes of this class. */
-  /* the rest of these are specific to the Class class only. */
-  CipUdint class_code;   /**< class code */
-  EipUint16 revision;   /**< class revision*/
-  EipUint16 number_of_instances;   /**< number of instances in the class (not
-                                      including instance 0) */
-  EipUint16 max_instance;   /**< Highest instance number of currently existing objects
-                                          in this class level*/
-  EipUint16 number_of_attributes;   /**< number of attributes of each instance */
-  EipUint16 highest_attribute_number;   /**< highest defined attribute number
-                                           (attribute numbers are not necessarily
-                                           consecutive) */
-  uint8_t *get_single_bit_mask;   /**< bit mask for GetAttributeSingle */
-  uint8_t *set_bit_mask;   /**< bit mask for SetAttributeSingle */
-  uint8_t *get_all_bit_mask;   /**< bit mask for GetAttributeAll */
-
-  EipUint16 number_of_services;   /**< number of services supported */
-  CipInstance *instances;   /**< pointer to the list of instances */
-  struct cip_service_struct *services;   /**< pointer to the array of services */
-  char *class_name;   /**< class name */
-  /** Is called in GetAttributeSingle* before the response is assembled from
-   * the object's attributes */
-  CipGetSetCallback PreGetCallback;
-  /** Is called in GetAttributeSingle* after the response has been sent. */
-  CipGetSetCallback PostGetCallback;
-  /** Is called in SetAttributeSingle* before the received data is moved
-   * to the object's attributes */
-  CipGetSetCallback PreSetCallback;
-  /** Is called in SetAttributeSingle* after the received data was set
-   * in the object's attributes. */
-  CipGetSetCallback PostSetCallback;
-
-  /**Class specific attributes*/
-
-  /**The Capability Flags attribute contains an indication of whether the
-   * device supports capabilities related to certificate enrollment*/
-  CipDword capability_flags;
-  /**The Certificate List attribute contains a list of created certificate instances */
-  CipDword certificate_list;
-  /**The Certificate Encodings Flag attribute contains an indication of what
-   * certificate encodings the device supports*/
-  CipDword certificate_encodings_flag;
-} CertificateManagementObjectClass;
+/** @brief Certificate Management Object specific class attributes
+ *  @see Volume 8, Chapter 5-5.3 */
+typedef struct cmo_class_attributes {
+  CipDword capability_flags;           /** Class Attribute #8 */
+  CipBool certificate_list_dummy;      /** Class Attribute #9 */
+  CipDword certificate_encodings_flag; /** Class Attribute #10 */
+} CertificateManagementObjectClassAttributes;
 
 /* ********************************************************************
  * global public variables
