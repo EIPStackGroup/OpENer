@@ -51,7 +51,7 @@
 #include "trace.h"
 
 #include "certificatemanagement.h"
-#include "opener-security/CipSecurityObject/cipsecurity.h"
+#include "CipSecurityObject/cipsecurity.h"
 
 /* ********************************************************************
  * defines

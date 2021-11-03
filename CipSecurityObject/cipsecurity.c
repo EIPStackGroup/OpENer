@@ -36,7 +36,7 @@
 #include <stdio.h>
 
 #include "cipsecurity.h"
-#include "opener-security/EtherNetIPSecurityObject/ethernetipsecurity.h"
+#include "EtherNetIPSecurityObject/ethernetipsecurity.h"
 
 #include "cipcommon.h"
 #include "endianconv.h"
