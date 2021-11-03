@@ -62,6 +62,11 @@
 /**
  * declaration of (static) Certificate Management object instance 1 data
  */
+CertificateManagementObjectClassAttributes cmo_class_attr = {
+    .capability_flags = kPushModel,
+    .certificate_list_dummy = 0,
+    .certificate_encodings_flag = kEncodingFlagPEM | kEncodingFlagPKCS7,
+};
 
 const char instance_1_name[] = "Default Device Certificate";
 
@@ -143,12 +148,13 @@ int DecodeCertificateManagementObjectCertificate(
  */
 void EncodeCertificateManagementObjectCertificateList(const void *const data,
                                                       ENIPMessage *const outgoing_message) {
-  CertificateList *cert_list = (CertificateList *) data;
-
-  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
-  for (int i=0; i<cert_list->number_of_certificates; i++) {
-      EncodeCertificateManagementObjectCertificate(&(cert_list->certificates[i]), outgoing_message);
-    }
+//  TODO: Create certificate list dynamically from all instances
+//  CertificateList *cert_list = (CertificateList *) data;
+//
+//  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
+//  for (int i=0; i<cert_list->number_of_certificates; i++) {
+//      EncodeCertificateManagementObjectCertificate(&(cert_list->certificates[i]), outgoing_message);
+//    }
 }
 
 /** @brief Bind attribute values to a certificate management object instance
@@ -348,7 +354,7 @@ EipStatus CertificateManagementObjectVerifyCertificate(CipInstance *RESTRICT con
 	return kEipStatusOk;
 }
 
-void CertificateManagementObjectInitializeClassSettings(CertificateManagementObjectClass *class) {
+void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
@@ -406,21 +412,21 @@ void CertificateManagementObjectInitializeClassSettings(CertificateManagementObj
                   kCipDword,
                   EncodeCipDword,
                   NULL,
-                  (void *) &class->capability_flags,
+                  (void *) &cmo_class_attr.capability_flags,
                   kGetableSingleAndAll); /* Certificate Management capabilities*/
   InsertAttribute((CipInstance *) class,
                   9,
                   kCipAny,
                   EncodeCertificateManagementObjectCertificateList,
                   NULL,
-                  (void *) &class->certificate_list,
+                  (void *) &cmo_class_attr.certificate_list_dummy,
                   kGetableSingleAndAll); /* List of device certificates*/
   InsertAttribute((CipInstance *) class,
                   10,
                   kCipDword,
                   EncodeCipDword,
                   NULL,
-                  (void *) &class->certificate_encodings_flag,
+                  (void *) &cmo_class_attr.certificate_encodings_flag,
                   kGetableSingleAndAll); /* Certificate encodings supported*/
 
   /* Add class services to the meta class */
