@@ -146,15 +146,25 @@ int DecodeCertificateManagementObjectCertificate(
  *  @param data pointer to the certificate list to encode
  *  @param outgoing_message pointer to the message to be sent
  */
-void EncodeCertificateManagementObjectCertificateList(const void *const data,
-                                                      ENIPMessage *const outgoing_message) {
-//  TODO: Create certificate list dynamically from all instances
-//  CertificateList *cert_list = (CertificateList *) data;
-//
-//  EncodeCipUsint(&(cert_list->number_of_certificates), outgoing_message);
-//  for (int i=0; i<cert_list->number_of_certificates; i++) {
-//      EncodeCertificateManagementObjectCertificate(&(cert_list->certificates[i]), outgoing_message);
-//    }
+void EncodeCertificateManagementObjectCertificateList(
+    const void *const data, ENIPMessage *const outgoing_message) {
+  CipClass *class = GetCipClass(kCertificateManagementObjectClassCode);
+
+  CipUsint number_of_instances = class->number_of_instances;
+  EncodeCipUsint(&number_of_instances, outgoing_message);
+
+  for (CipInstance *instance = class->instances; instance; instance = instance->next) {
+    CipAttributeStruct *instance_name = GetCipAttribute(instance, 1);
+    EncodeCipShortString((CipShortString *)instance_name->data, outgoing_message);
+
+    CipEpath path = {
+        .path_size = 2,
+        .class_id = kCertificateManagementObjectClassCode,
+        .instance_number = instance->instance_number,
+    };
+    EncodeCipUsint(&path.path_size, outgoing_message);
+    EncodeEPath(&path, outgoing_message);
+  }
 }
 
 /** @brief Bind attribute values to a certificate management object instance
