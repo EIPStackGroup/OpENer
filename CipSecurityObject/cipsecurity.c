@@ -58,7 +58,7 @@
 CipSecurityObject g_security = {
     .state = kFactoryDefaultConfiguration,
     .security_profiles = kEtherNetIpConfidentialityProfile,
-    .security_profiles_configured = kEtherNetIpConfidentialityProfile
+    .security_profiles_configured = kEtherNetIpConfidentialityProfile,
 };
 
 /* ********************************************************************
@@ -67,277 +67,263 @@ CipSecurityObject g_security = {
 
 /** @brief CIP Security Object Reset service
  *
- * Return this CIP Security Object Instance to the
- * Factory Default Configuration State.
- * See Vol.8 Section 5-3.5.1
+ *  Return this CIP Security Object Instance to the
+ *  Factory Default Configuration State.
+ *  @See Vol.8, Chapter 5-3.5.1
  */
-EipStatus CipSecurityObjectReset(CipInstance *RESTRICT const instance,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response,
-		const struct sockaddr *originator_address,
-		const int encapsulation_session) {
+EipStatus CipSecurityObjectReset(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+  message_router_response->general_status = kCipErrorAttributeNotSupported;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
 
-	message_router_response->general_status = kCipErrorAttributeNotSupported;
-	message_router_response->size_of_additional_status = 0;
-	InitializeENIPMessage(&message_router_response->message);
-	message_router_response->reply_service = (0x80
-			| message_router_request->service);
+  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);  // attribute 1: state
 
-	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute 1: state
+  if (NULL != attribute) {
+    if (message_router_request->request_data_size > 0) {
+      message_router_response->general_status = kCipErrorTooMuchData;
+    } else {
+      g_security.state = kFactoryDefaultConfiguration;
+      message_router_response->general_status = kCipErrorSuccess;
+      OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n",
+                        instance->instance_number);
 
-	if (NULL != attribute) {
-		if (message_router_request->request_data_size > 0) {
-			message_router_response->general_status = kCipErrorTooMuchData;
-		} else {
-			g_security.state = kFactoryDefaultConfiguration;
-			message_router_response->general_status = kCipErrorSuccess;
-			OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n", instance->instance_number);
+      /*perform a reset on each Ethernet/IP Security Object instances present*/
+      CipInstance *eip_security_object_instance =
+          GetCipInstance(GetCipClass(kEIPSecurityObjectClassCode), 1);
 
-			/*perform a reset on each Ethernet/IP Security Object instances present*/
-			CipInstance *eip_security_object_instance = GetCipInstance(
-					GetCipClass(kEIPSecurityObjectClassCode), 1);
+      if (NULL != eip_security_object_instance) {
+        for (CipInstance *ins = eip_security_object_instance->cip_class->instances; ins; ins = ins->next) /* follow the list*/
+        {
+          attribute = GetCipAttribute(ins, 13);  // attribute #13 pull model enable
+          *(CipBool *)attribute->data = true;
 
-			if (NULL != eip_security_object_instance) {
-				for (CipInstance *ins =
-						eip_security_object_instance->cip_class->instances; ins;
-						ins = ins->next) /* follow the list*/
-						{
-					attribute = GetCipAttribute(ins, 13); //attribute #13 pull model enable
-					*(CipBool*) attribute->data = true;
+          attribute = GetCipAttribute(ins, 14);  // attribute #14 pull model status
+          *(CipUint *)attribute->data = 0x0000;
 
-					attribute = GetCipAttribute(ins, 14); //attribute #14 pull model status
-					*(CipUint*) attribute->data = 0x0000;
+          attribute = GetCipAttribute(ins, 1);  // attribute #1 state
+          *(CipUsint *)attribute->data = kEIPFactoryDefaultConfiguration;
 
-					attribute = GetCipAttribute(ins, 1); //attribute #1 state
-					*(CipUsint*) attribute->data =
-                                            kEIPFactoryDefaultConfiguration;
+          EIPSecurityObjectResetSettableAttributes(ins);  // reset settable attributes of ins
+        }
+      }
+    }
+  }
 
-					EIPSecurityObjectResetSettableAttributes(ins); //reset settable attributes of ins
-				}
-			}
-
-		}
-
-	}
-
-	return kEipStatusOk;
+  return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Begin_Config service
  *
- * Begins a security configuration session.
- * See Vol.8 Section 5-3.7.1
+ *  Begins a security configuration session.
+ *  @See Vol.8, Chapter 5-3.7.1
  */
-EipStatus CipSecurityObjectBeginConfig(CipInstance *RESTRICT const instance,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response,
-		const struct sockaddr *originator_address,
-		const int encapsulation_session) {
+EipStatus CipSecurityObjectBeginConfig(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+  message_router_response->general_status = kCipErrorPrivilegeViolation;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
 
-	message_router_response->general_status = kCipErrorPrivilegeViolation;
-	message_router_response->size_of_additional_status = 0;
-	InitializeENIPMessage(&message_router_response->message);
-	message_router_response->reply_service = (0x80
-			| message_router_request->service);
+//  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+//  attribute #1 state CipUsint state = *(CipUsint*) attribute->data; //TODO: check
+  CipUsint state = g_security.state;
 
-//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-//	CipUsint state = *(CipUsint*) attribute->data;   //TODO: check
-	CipUsint state = g_security.state;
+  if (kConfigurationInProgress == state) {
+    message_router_response->general_status = kCipErrorObjectStateConflict;
+  } else {
+    if (kCIPSecurityConfigured == state) {
+      // TODO: check if command is sent over valid TLS connection, else:
+      message_router_response->general_status = kCipErrorPrivilegeViolation;
+    } else {
+      // TODO: check if other configuration in progress
 
-	if (kConfigurationInProgress == state) {
-		message_router_response->general_status = kCipErrorObjectStateConflict;
-	} else {
-		if (kCIPSecurityConfigured == state) {
+      // *(CipUsint*) attribute->data = kConfigurationInProgress; //set state  TODO: check
 
-			//TODO: check if command is sent over valid TLS connection, else:
-			message_router_response->general_status =
-					kCipErrorPrivilegeViolation;
-		} else {
-			//TODO: check if other configuration in progress
+      g_security.state = kConfigurationInProgress;
+      g_security_session_start_time = GetMilliSeconds();  // TODO: check
 
-//			*(CipUsint*) attribute->data =
-//					kConfigurationInProgress; //set state  //TODO: check
+      message_router_response->general_status = kCipErrorSuccess;
+    }
+  }
 
-			g_security.state = kConfigurationInProgress;
-			g_security_session_start_time = GetMilliSeconds(); //TODO: check
-
-			message_router_response->general_status = kCipErrorSuccess;
-		}
-
-	}
-
-	return kEipStatusOk;
+  return kEipStatusOk;
 }
 
 /** @brief CIP Security Object End_Config service
  *
- * Ends the configuration session.
- * See Vol.8 Section 5-3.7.3
+ *  Ends the configuration session.
+ *  @See Vol.8, Chapter 5-3.7.3
  */
-EipStatus CipSecurityObjectEndConfig(CipInstance *RESTRICT const instance,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response,
-		const struct sockaddr *originator_address,
-		const int encapsulation_session) {
+EipStatus CipSecurityObjectEndConfig(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+  message_router_response->general_status = kCipErrorObjectStateConflict;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
 
-	message_router_response->general_status = kCipErrorObjectStateConflict;
-	message_router_response->size_of_additional_status = 0;
-	InitializeENIPMessage(&message_router_response->message);
-	message_router_response->reply_service = (0x80
-			| message_router_request->service);
+//  CipAttributeStruct *attribute = GetCipAttribute(instance, 1); // attribute #1 state
+//  CipUsint state = *(CipUsint*) attribute->data; //TODO: check
+  CipUsint state = g_security.state;
 
-//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-//	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
-	CipUsint state = g_security.state;
+  if (kConfigurationInProgress == state) {
+    message_router_response->general_status = kCipErrorSuccess;
+//    *(CipUsint *)attribute->data = kCIPSecurityConfigured;  // set state
+    g_security.state = kCIPSecurityConfigured;
+  }
 
-		if (kConfigurationInProgress == state) {
-			message_router_response->general_status = kCipErrorSuccess;
-//			*(CipUsint*) attribute->data = kCIPSecurityConfigured; //set state
-			g_security.state = kCIPSecurityConfigured;
-		}
-
-	return kEipStatusOk;
+  return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Kick_Timer service
  *
- * Causes the object to reset the configuration session timer.
- * See Vol.8 Section 5-3.7.2
+ *  Causes the object to reset the configuration session timer.
+ *  @See Vol.8, Chapter 5-3.7.2
  */
-EipStatus CipSecurityObjectKickTimer(CipInstance *RESTRICT const instance,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response,
-		const struct sockaddr *originator_address,
-		const int encapsulation_session) {
+EipStatus CipSecurityObjectKickTimer(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+  message_router_response->general_status = kCipErrorObjectStateConflict;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
 
-	message_router_response->general_status = kCipErrorObjectStateConflict;
-	message_router_response->size_of_additional_status = 0;
-	InitializeENIPMessage(&message_router_response->message);
-	message_router_response->reply_service = (0x80
-			| message_router_request->service);
+//  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);               // attribute #1 state
+//  CipUsint state = *(CipUsint *)attribute->data;  // TODO: check
+  CipUsint state = g_security.state;
 
-//	CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //attribute #1 state
-//	CipUsint state = *(CipUsint*) attribute->data; //TODO: check
-	CipUsint state = g_security.state;
+  if (kConfigurationInProgress == state) {
+    // reset configuration session timer
+    g_security_session_start_time = GetMilliSeconds();  // actual time TODO: check
+    message_router_response->general_status = kCipErrorSuccess;
+  }
 
-	if (kConfigurationInProgress == state) {
-		//reset configuration session timer
-		g_security_session_start_time = GetMilliSeconds(); //actual time TODO: check
-		message_router_response->general_status = kCipErrorSuccess;
-	}
-
-	return kEipStatusOk;
+  return kEipStatusOk;
 }
 
 /** @brief CIP Security Object Object_Cleanup service
  *
- * Remove unused object instances related to security configuration
- * See Vol.8 Section 5-3.7.4
+ *  Remove unused object instances related to security configuration
+ *  @See Vol.8, Chapter 5-3.7.4
  */
-EipStatus CipSecurityObjectCleanup(CipInstance *RESTRICT const instance,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response,
-		const struct sockaddr *originator_address,
-		const int encapsulation_session) {
+EipStatus CipSecurityObjectCleanup(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session) {
+  message_router_response->general_status = kNoOrphanObjects;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
 
-	message_router_response->general_status = kNoOrphanObjects;
-	message_router_response->size_of_additional_status = 0;
-	InitializeENIPMessage(&message_router_response->message);
-	message_router_response->reply_service = (0x80
-			| message_router_request->service);
+  // TODO: implement service
 
-	//TODO: implement service
-
-	return kEipStatusOk;
+  return kEipStatusOk;
 }
 
 void EncodeCipSecurityObjectPath(const CipEpath *const epath,
-		ENIPMessage *const outgoing_message) {
-	AddSintToMessage(epath->path_size, outgoing_message);
-	if(0 != epath->path_size){
-		EncodeEPath((CipEpath*) epath, outgoing_message);
-	}
+                                 ENIPMessage *const outgoing_message) {
+  AddSintToMessage(epath->path_size, outgoing_message);
+  if (0 != epath->path_size) {
+    EncodeEPath((CipEpath *)epath, outgoing_message);
+  }
 }
 
-int DecodeCipSecurityObjectPath(CipEpath *const epath,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+int DecodeCipSecurityObjectPath(
+    CipEpath *const epath,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response) {
+  const EipUint8 *message_runner = (message_router_request->data);
 
-	const EipUint8 *message_runner = (message_router_request->data);
+  /* get data from message */
+  EipUint8 path_size = GetUsintFromMessage(&message_runner);
+  EipUint16 class_id = 0;
+  EipUint16 instance_number = 0;
+  EipUint16 attribute_number = 0;
 
-	/* get data from message */
-	EipUint8 path_size = GetUsintFromMessage(&message_runner);
-	EipUint16 class_id = 0;
-	EipUint16 instance_number = 0;
-	EipUint16 attribute_number = 0;
+  int number_of_decoded_bytes = 0;
 
-	int number_of_decoded_bytes = 0;
+  while (number_of_decoded_bytes < (path_size * 2)) {
+    switch (*message_runner) {
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+          LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+        message_runner++;
+        class_id = GetUsintFromMessage(&message_runner);
+        number_of_decoded_bytes += 2;
+        break;
 
-	while (number_of_decoded_bytes < (path_size * 2)) {
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
+          LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+        message_runner += 2;
+        class_id = GetUintFromMessage(&message_runner);
+        number_of_decoded_bytes += 4;
+        break;
 
-		switch (*message_runner) {
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			class_id = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+          LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+        message_runner++;
+        instance_number = GetUsintFromMessage(&message_runner);
+        number_of_decoded_bytes += 2;
+        break;
 
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_CLASS_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			class_id = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
+          LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+        message_runner += 2;
+        instance_number = GetUintFromMessage(&message_runner);
+        number_of_decoded_bytes += 4;
+        break;
 
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			instance_number = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+          LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
+        message_runner++;
+        attribute_number = GetUsintFromMessage(&message_runner);
+        number_of_decoded_bytes += 2;
+        break;
 
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_INSTANCE_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			instance_number = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
+      case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
+          LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
+        message_runner += 2;
+        attribute_number = GetUintFromMessage(&message_runner);
+        number_of_decoded_bytes += 4;
+        break;
 
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
-		LOGICAL_SEGMENT_FORMAT_EIGHT_BIT:
-			message_runner++;
-			attribute_number = GetUsintFromMessage(&message_runner);
-			number_of_decoded_bytes += 2;
-			break;
+      default:
+        OPENER_TRACE_ERR("ERROR wrong path requested\n");
+        message_router_response->general_status = kCipErrorPathSegmentError;
+        return kEipStatusError;
+    }
 
-		case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID +
-		LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
-			message_runner += 2;
-			attribute_number = GetUintFromMessage(&message_runner);
-			number_of_decoded_bytes += 4;
-			break;
+  }  // end while
 
-		default:
-			OPENER_TRACE_ERR("ERROR wrong path requested\n");
-			message_router_response->general_status = kCipErrorPathSegmentError;
-			return kEipStatusError;
-		}
+  /* copy epath to attribute structure */
+  epath->path_size = path_size;
+  epath->class_id = class_id;
+  epath->instance_number = instance_number;
+  epath->attribute_number = attribute_number;
 
-	} // end while
+  OPENER_ASSERT(path_size * 2 == number_of_decoded_bytes); /* path size is in 16 bit chunks according to the specification */
 
-	/* copy epath to attribute structure */
-	epath->path_size = path_size;
-	epath->class_id = class_id;
-	epath->instance_number = instance_number;
-	epath->attribute_number = attribute_number;
+  message_router_request->data = message_runner;  // update message-pointer
 
-	OPENER_ASSERT(path_size * 2 == number_of_decoded_bytes); /* path size is in 16 bit chunks according to the specification */
-
-	message_router_request->data = message_runner; //update message-pointer
-
-	message_router_response->general_status = kCipErrorSuccess;
-	return number_of_decoded_bytes += 1; // + 1 byte for path size
+  message_router_response->general_status = kCipErrorSuccess;
+  return number_of_decoded_bytes += 1;  // + 1 byte for path size
 }
 
 void CipSecurityObjectInitializeClassSettings(CipClass *class) {
