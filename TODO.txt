@@ -15,9 +15,8 @@ TLS connection - TLS handshake ??  - mbedtls library
 
 Certificate Management
 	* add/update object specific services
-	* use general class struct + add class specific attributes (class level)
 	* delete service: free all dynamic allocated elements of instance
-	* create + delete service -> move to common services ??
+	* create + delete service -> move to common services for general use
 
 add FileObject - used in Management object
 
