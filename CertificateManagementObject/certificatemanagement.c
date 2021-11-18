@@ -239,11 +239,11 @@ EipStatus CertificateManagementObjectCreate(
 
     new_cmo->name.length = GetUsintFromMessage(&message_router_request->data);
     new_cmo->name.string = (CipByte *)CipCalloc(new_cmo->name.length, sizeof(CipByte));
+    new_cmo->state = kCreated;
 
     memcpy(new_cmo->name.string, message_router_request->data, new_cmo->name.length);
     CertificateManagementObjectBindAttributes( certificate_management_object_instance, new_cmo);
 
-    new_cmo->state = kCreated;
     OPENER_TRACE_INFO("CMO instance number %d created\n",
                       certificate_management_object_instance->instance_number);
   } else {
@@ -269,7 +269,7 @@ EipStatus CertificateManagementObjectDelete(
     CipMessageRouterResponse *const message_router_response,
     const struct sockaddr *originator_address,
     const int encapsulation_session) {
-  // TODO: implement service
+
   message_router_response->general_status = kCipErrorInstanceNotDeletable;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
@@ -297,10 +297,14 @@ EipStatus CertificateManagementObjectDelete(
         instances = instances->next;
       }
     }
-    OPENER_TRACE_INFO("CMO instance number %d deleted\n", instance->instance_number);
-
+    // free all allocated elements of instance
+    const CipAttributeStruct *const attribute = GetCipAttribute(instance, 1); //name
+    if(NULL != attribute) {
+      CipFree(attribute->data);
+    }
+    //TODO: free cmo struct here
     CipFree(instance);  // delete instance
-    // TODO: free all allocated elements of instance
+    OPENER_TRACE_INFO("CMO instance number %d deleted\n", instance->instance_number);
 
     cmo_class->number_of_instances -= 1; /* update the total number of instances
                                             recorded by the class - Attr. 3 */
