@@ -226,6 +226,8 @@ EipStatus CertificateManagementObjectCreate(
     const struct sockaddr *originator_address,
     const int encapsulation_session) {
   message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
 
   if (message_router_request->request_data_size > 0) {
     CipClass *certificate_management_object_class =
@@ -244,14 +246,14 @@ EipStatus CertificateManagementObjectCreate(
     memcpy(new_cmo->name.string, message_router_request->data, new_cmo->name.length);
     CertificateManagementObjectBindAttributes( certificate_management_object_instance, new_cmo);
 
+    AddIntToMessage(certificate_management_object_instance->instance_number, &(message_router_response->message));
+
     OPENER_TRACE_INFO("CMO instance number %d created\n",
                       certificate_management_object_instance->instance_number);
   } else {
     message_router_response->general_status = kCipErrorNotEnoughData;
   }
 
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80 | message_router_request->service);
 
   return kEipStatusOk;
