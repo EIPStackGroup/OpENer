@@ -27,10 +27,10 @@ static const CipUsint SIZE_MAX_PSK = 64;
 /** @brief EtherNet/IP Security object specific service codes
  *  @see Volume 8, Chapter 5-4.7 */
 typedef enum {
-  kEIPSecurityBeginConfig = 0x4B, /**< EtherNet/IP Security object Begin_Config service code */
-  kEIPSecurityKickTimer = 0x4C,   /**< EtherNet/IP Security object Kick_Timer service code */
-  kEIPSecurityApplyConfig = 0x4D, /**< EtherNet/IP Security object Apply_Config service code */
-  kEIPSecurityAbortConfig = 0x4E, /**< EtherNet/IP Security object Abort_Config service code */
+  kEIPSecurityObjectServiceCodeBeginConfig = 0x4B, /**< EtherNet/IP Security object Begin_Config service code */
+  kEIPSecurityObjectServiceCodeKickTimer = 0x4C,   /**< EtherNet/IP Security object Kick_Timer service code */
+  kEIPSecurityObjectServiceCodeApplyConfig = 0x4D, /**< EtherNet/IP Security object Apply_Config service code */
+  kEIPSecurityObjectServiceCodeAbortConfig = 0x4E, /**< EtherNet/IP Security object Abort_Config service code */
 } EIPSecurityObjectServiceCode;
 
 /** @brief Valid values for EtherNet/IP Security Object State (attribute #1)
@@ -39,12 +39,12 @@ typedef enum {
  *  @see Volume 8, Chapter 5-4.4.1
  */
 typedef enum {
-  kEIPFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
-  kEIPConfigurationInProgress,         /**< Configuration In Progress */
-  kEIPConfigured,                      /**< Configured */
-  kPullModelInProgress,                /**< Pull Model In Progress */
-  kPullModelCompleted,                 /**< Pull Model Completed */
-  kPullModelDisabled,                  /**< Pull Model Disabled */
+  kEIPSecurityObjectStateValueFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
+  kEIPSecurityObjectStateValueConfigurationInProgress,         /**< Configuration In Progress */
+  kEIPSecurityObjectStateValueConfigured,                      /**< Configured */
+  kEIPSecurityObjectStateValuePullModelInProgress,             /**< Pull Model In Progress */
+  kEIPSecurityObjectStateValuePullModelCompleted,              /**< Pull Model Completed */
+  kEIPSecurityObjectStateValuePullModelDisabled,               /**< Pull Model Disabled */
 } EIPSecurityObjectStateValue;
 
 /** @brief Provide bit masks for the Capability Flags attribute (#2)
@@ -54,19 +54,19 @@ typedef enum {
  *  @see Volume 8, Chapter 5-4.4.2
  */
 typedef enum {
-  kSecureRenegotiation = 0x01, /**< Indicates whether or not the device supports
-                                * secure renegotiation via the Renegotiation
-                                * Indication Extension defined in RFC 5746. */
+  kEIPSecurityObjectCapabilityFlagSecureRenegotiation = 0x01, /**< Indicates whether or not the device supports
+                                                               * secure renegotiation via the Renegotiation
+                                                               * Indication Extension defined in RFC 5746. */
 } EIPSecurityObjectCapabilityFlag;
 
 /** @brief Extended status error codes for Apply_Config service
  *  @see Volume 8, Chapter 5-4.8.1
  */
 typedef enum {
-  kNoPSKConfigured = 0x0001,                 /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
-  kNoCertificatesConfigured = 0x0002,        /**< Only certificate suites allowed, but no certificates configured */
-  kCertificateSuitesNoneConsistent = 0x0003, /**< Certificate suites allowed but none consistent with the device private key type */
-  kNoActiveCipherSuitesConfigured = 0x0004,  /**< No Active Cipher Suites configured */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoPSKConfigured = 0x0001,                 /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoCertificatesConfigured = 0x0002,        /**< Only certificate suites allowed, but no certificates configured */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedCertificateSuitesNoneConsistent = 0x0003, /**< Certificate suites allowed but none consistent with the device private key type */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoActiveCipherSuitesConfigured = 0x0004,  /**< No Active Cipher Suites configured */
 } EIPSecurityObjectApplyConfigErrorCodeExtended;
 
 /** @brief Type declaration for a single IANA cipher suite ID
