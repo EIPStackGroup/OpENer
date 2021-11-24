@@ -20,16 +20,16 @@ static const CipUint kCipSecurityObjectClassCode = 0x5DU;
 /** @brief CIP Security object specific service codes
  *  @see Volume 8, Chapter 5-3.7 */
 typedef enum {
-  kCIPSecurityBeginConfig = 0x4B,   /**< CIP Security object Begin_Config service code */
-  kCIPSecurityKickTimer = 0x4C,     /**< CIP Security object Kick_Timer service code */
-  kCIPSecurityEndConfig = 0x4D,     /**< CIP Security object End_Config service code */
-  kCIPSecurityObjectCleanup = 0x4E, /**< CIP Security object Object_Cleanup service code */
+  kCIPSecurityObjectServiceCodeBeginConfig = 0x4B,   /**< CIP Security object Begin_Config service code */
+  kCIPSecurityObjectServiceCodeKickTimer = 0x4C,     /**< CIP Security object Kick_Timer service code */
+  kCIPSecurityObjectServiceCodeEndConfig = 0x4D,     /**< CIP Security object End_Config service code */
+  kCIPSecurityObjectServiceCodeObjectCleanup = 0x4E, /**< CIP Security object Object_Cleanup service code */
 } CIPSecurityObjectServiceCode;
 
 /** @brief CIP Security object specific error codes
  *  @see Volume 8, Chapter 5-3.8 */
 typedef enum {
-  kNoOrphanObjects = 0xD0, /**< No orphan objects for cleanup */
+  kCipSecurityObjectErrorCodeNoOrphanObjects = 0xD0, /**< No orphan objects for cleanup */
 } CipSecurityObjectErrorCode;
 
 /** @brief Valid values for CIP Security Object State (attribute #1)
@@ -38,10 +38,10 @@ typedef enum {
  *  @see Volume 8, Chapter 5-3.4.1
  */
 typedef enum {
-  kFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
-  kConfigurationInProgress,         /**< ConfigurationIn Progress */
-  kCIPSecurityConfigured,           /**< Configured */
-  kIncompleteConfiguration,         /**< Incomplete Configuration */
+  kCipSecurityObjectStateValueFactoryDefaultConfiguration = 0, /**< Factory Default Configuration */
+  kCipSecurityObjectStateValueConfigurationInProgress,         /**< ConfigurationIn Progress */
+  kCipSecurityObjectStateValueCIPSecurityConfigured,           /**< Configured */
+  kCipSecurityObjectStateValueIncompleteConfiguration,         /**< Incomplete Configuration */
 } CipSecurityObjectStateValue;
 
 /** @brief Valid values for CIP Security Object Security Profiles (attribute #2)
@@ -51,10 +51,10 @@ typedef enum {
  *  @see Volume 8, Chapter 5-3.4.2
  */
 typedef enum {
-  kEtherNetIpIntegrityProfile = 0x01U,       /**< The device supports the EtherNet/IP Integrity Profile (Obsoleted) */
-  kEtherNetIpConfidentialityProfile = 0x02U, /**< The device supports the EtherNet/IP Confidentiality Profile */
-  kCipAuthorizationProfile = 0x04U,          /**< The device supports the CIP Authorization Profile */
-  kCipUserAuthenticationProfile = 0x08U,     /**< The device supports the CIP User Authentication Profile */
+  kCipSecurityObjectSecurityProfileValueEtherNetIpIntegrityProfile = 0x01U,       /**< The device supports the EtherNet/IP Integrity Profile (Obsoleted) */
+  kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile = 0x02U, /**< The device supports the EtherNet/IP Confidentiality Profile */
+  kCipSecurityObjectSecurityProfileValueCipAuthorizationProfile = 0x04U,          /**< The device supports the CIP Authorization Profile */
+  kCipSecurityObjectSecurityProfileValueCipUserAuthenticationProfile = 0x08U,     /**< The device supports the CIP User Authentication Profile */
 } CipSecurityObjectSecurityProfileValue;
 
 /** @brief Type declaration for the CIP Security object

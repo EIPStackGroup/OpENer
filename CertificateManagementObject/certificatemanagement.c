@@ -63,9 +63,11 @@
  * declaration of (static) Certificate Management object instance 1 data
  */
 CertificateManagementObjectClassAttributes cmo_class_attr = {
-    .capability_flags = kPushModel,
+    .capability_flags = kCertificateManagementObjectCapabilityFlagPushModel,
     .certificate_list_dummy = 0,
-    .certificate_encodings_flag = kEncodingFlagPEM | kEncodingFlagPKCS7,
+    .certificate_encodings_flag =
+        kCertificateManagementObjectCertificateEncodingFlagPEM |
+        kCertificateManagementObjectCertificateEncodingFlagPKCS7,
 };
 
 const char instance_1_name[] = "Default Device Certificate";
@@ -77,21 +79,21 @@ const CipShortString name = {
 };
 
 const Certificate device_certificate = {
-    .certificate_status = kCertificateVerified
+    .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
 const Certificate ca_certificate = {
-    .certificate_status = kCertificateVerified
+    .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
 CertificateManagementObject g_certificate_management = {
     .name = name,                                    /*Attribute 1*/
-    .state = kVerified,                              /*Attribute 2*/
+    .state = kCertificateManagementObjectStateValueVerified,                              /*Attribute 2*/
     .device_certificate = device_certificate,        /*Attribute 3*/
     .ca_certificate = ca_certificate,                /*Attribute 4*/
-    .certificate_encoding = kCertificateEncodingPEM, /*Attribute 5*/
+    .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM, /*Attribute 5*/
 };
 
 /** @brief Produce the data according to CIP encoding onto the message buffer.
@@ -241,7 +243,7 @@ EipStatus CertificateManagementObjectCreate(
 
     new_cmo->name.length = GetUsintFromMessage(&message_router_request->data);
     new_cmo->name.string = (CipByte *)CipCalloc(new_cmo->name.length, sizeof(CipByte));
-    new_cmo->state = kCreated;
+    new_cmo->state = kCertificateManagementObjectStateValueCreated;
 
     memcpy(new_cmo->name.string, message_router_request->data, new_cmo->name.length);
     CertificateManagementObjectBindAttributes( certificate_management_object_instance, new_cmo);
@@ -504,12 +506,12 @@ EipStatus CertificateManagementObjectInit(void) {
                 "SetAttributeSingle"
   );
   InsertService(certificate_management_object_class,
-                kCreateCSR,
+                kCertificateManagementObjectServiceCodeCreateCSR,
                 &CertificateManagementObjectCreateCSR,
                 "CertificateManagementObjectCreateCSR"
   );
   InsertService(certificate_management_object_class,
-                kVerifyCertificate,
+                kCertificateManagementObjectServiceCodeVerifyCertificate,
                 &CertificateManagementObjectVerifyCertificate,
                 "CertificateManagementObjectVerifyCertificate"
   );
