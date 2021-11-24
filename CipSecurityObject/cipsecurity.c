@@ -107,7 +107,7 @@ EipStatus CipSecurityObjectReset(
           *(CipUint *)attribute->data = 0x0000;
 
           attribute = GetCipAttribute(ins, 1);  // attribute #1 state
-          *(CipUsint *)attribute->data = kEIPFactoryDefaultConfiguration;
+          *(CipUsint *)attribute->data = kCipSecurityObjectStateValueFactoryDefaultConfiguration;
 
           EIPSecurityObjectResetSettableAttributes(ins);  // reset settable attributes of ins
         }
