@@ -73,26 +73,26 @@ CertificateManagementObjectClassAttributes cmo_class_attr = {
 const char instance_1_name[] = "Default Device Certificate";
 const EipUint8 instance_1_length = 26; // excluding trailing \0
 
-const CipShortString name = {
+const CipShortString default_name = {
     .length = instance_1_length,
     .string = (EipByte *)(&instance_1_name),
 };
 
-const Certificate device_certificate = {
+const Certificate default_device_certificate = {
     .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
-const Certificate ca_certificate = {
+const Certificate default_ca_certificate = {
     .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
 CertificateManagementObject g_certificate_management = {
-    .name = name,                                    /*Attribute 1*/
+    .name = default_name,                                    /*Attribute 1*/
     .state = kCertificateManagementObjectStateValueVerified,                              /*Attribute 2*/
-    .device_certificate = device_certificate,        /*Attribute 3*/
-    .ca_certificate = ca_certificate,                /*Attribute 4*/
+    .device_certificate = default_device_certificate,        /*Attribute 3*/
+    .ca_certificate = default_ca_certificate,                /*Attribute 4*/
     .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM, /*Attribute 5*/
 };
 
@@ -167,18 +167,26 @@ void EncodeCertificateManagementObjectCertificateList(
 
 /** @brief Bind attribute values to a certificate management object instance
  *
- *  @param instance pointer to the object where attributes should be written
- *  @param cmo certificate management object containing data to be written
+ *  @param instance Pointer to the object where attributes should be written
+ *  @param name Name of the certificate management instance
+ *  @param state Object instance state
+ *  @param device_certificate X.509 device certificate
+ *  @param ca_certificate X.509 certificate of the authority for the device certificate
+ *  @param certificate_encoding Encoding method of the certificate
  */
 void CertificateManagementObjectBindAttributes(CipInstance *instance,
-		CertificateManagementObject *cmo) {
+                                               CipShortString *name,
+                                               CipUsint *state,
+                                               Certificate *device_certificate,
+                                               Certificate *ca_certificate,
+                                               CipUsint *certificate_encoding) {
 
     InsertAttribute(instance,
                     1,
                     kCipShortString,
                     EncodeCipShortString,
                     NULL,
-                    &cmo->name,
+                    name,
                     kGetableSingleAndAll
     );
     InsertAttribute(instance,
@@ -186,7 +194,7 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
                     kCipUsint,
                     EncodeCipUsint,
                     NULL,
-                    &cmo->state,
+                    state,
                     kGetableSingleAndAll
     );
     InsertAttribute(instance,
@@ -194,7 +202,7 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
                     kCipAny,
                     EncodeCertificateManagementObjectCertificate,
                     DecodeCertificateManagementObjectCertificate,
-                    &cmo->device_certificate,
+                    device_certificate,
                     kSetAndGetAble
     );
     InsertAttribute(instance,
@@ -202,7 +210,7 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
                     kCipAny,
                     EncodeCertificateManagementObjectCertificate,
                     DecodeCertificateManagementObjectCertificate,
-                    &cmo->ca_certificate,
+                    ca_certificate,
                     kSetAndGetAble
     );
     InsertAttribute(instance,
@@ -210,7 +218,7 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
                     kCipUsint,
                     EncodeCipUsint,
                     NULL,
-                    &cmo->certificate_encoding,
+                    certificate_encoding,
                     kGetableSingleAndAll
     );
 }
@@ -229,6 +237,7 @@ EipStatus CertificateManagementObjectCreate(
     const int encapsulation_session) {
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
+  message_router_response->reply_service = (0x80 | message_router_request->service);
   InitializeENIPMessage(&message_router_response->message);
 
   if (message_router_request->request_data_size > 0) {
@@ -237,16 +246,23 @@ EipStatus CertificateManagementObjectCreate(
 
     CipInstance *certificate_management_object_instance = AddCipInstances(
         certificate_management_object_class, 1); /* add 1 instance*/
+    //TODO: handle possible error of "AddCipInstances", instance!=0
 
-    CertificateManagementObject *new_cmo =
-        (CertificateManagementObject *)CipCalloc(1, sizeof(CertificateManagementObject));
+    CipShortString *name = (CipShortString *)CipCalloc(1, sizeof(CipShortString));
+    name->length = GetUsintFromMessage(&message_router_request->data);
+    name->string = (CipByte *)CipCalloc(name->length, sizeof(CipByte));
+    memcpy(name->string, message_router_request->data, name->length);
 
-    new_cmo->name.length = GetUsintFromMessage(&message_router_request->data);
-    new_cmo->name.string = (CipByte *)CipCalloc(new_cmo->name.length, sizeof(CipByte));
-    new_cmo->state = kCertificateManagementObjectStateValueCreated;
+    CipUsint *state = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+    *state = kCertificateManagementObjectStateValueCreated;
 
-    memcpy(new_cmo->name.string, message_router_request->data, new_cmo->name.length);
-    CertificateManagementObjectBindAttributes( certificate_management_object_instance, new_cmo);
+    Certificate *device_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
+    Certificate *ca_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
+    CipUsint *certificate_encoding = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+
+    CertificateManagementObjectBindAttributes(
+        certificate_management_object_instance,
+        name, state, device_certificate, ca_certificate, certificate_encoding);
 
     AddIntToMessage(certificate_management_object_instance->instance_number, &(message_router_response->message));
 
@@ -255,8 +271,6 @@ EipStatus CertificateManagementObjectCreate(
   } else {
     message_router_response->general_status = kCipErrorNotEnoughData;
   }
-
-  message_router_response->reply_service = (0x80 | message_router_request->service);
 
   return kEipStatusOk;
 }
@@ -482,7 +496,12 @@ EipStatus CertificateManagementObjectInit(void) {
 
   /* Bind attributes to the static instance number 1 (default certificates)*/
   CertificateManagementObjectBindAttributes(
-      certificate_management_object_instance, &g_certificate_management);
+      certificate_management_object_instance,
+      &g_certificate_management.name,
+      &g_certificate_management.state,
+      &g_certificate_management.device_certificate,
+      &g_certificate_management.ca_certificate,
+      &g_certificate_management.certificate_encoding);
 
   /* Add services to the instance */
   InsertService(certificate_management_object_class,
