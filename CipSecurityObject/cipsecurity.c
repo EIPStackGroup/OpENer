@@ -56,9 +56,9 @@
 /**< definition of CIP Security object instance 1 data */
 
 CipSecurityObject g_security = {
-    .state = kFactoryDefaultConfiguration,
-    .security_profiles = kEtherNetIpConfidentialityProfile,
-    .security_profiles_configured = kEtherNetIpConfidentialityProfile,
+    .state = kCipSecurityObjectStateValueFactoryDefaultConfiguration,
+    .security_profiles = kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile,
+    .security_profiles_configured = kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile,
 };
 
 /* ********************************************************************
@@ -88,7 +88,7 @@ EipStatus CipSecurityObjectReset(
     if (message_router_request->request_data_size > 0) {
       message_router_response->general_status = kCipErrorTooMuchData;
     } else {
-      g_security.state = kFactoryDefaultConfiguration;
+      g_security.state = kCipSecurityObjectStateValueFactoryDefaultConfiguration;
       message_router_response->general_status = kCipErrorSuccess;
       OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n",
                         instance->instance_number);
@@ -138,18 +138,18 @@ EipStatus CipSecurityObjectBeginConfig(
 //  attribute #1 state CipUsint state = *(CipUsint*) attribute->data; //TODO: check
   CipUsint state = g_security.state;
 
-  if (kConfigurationInProgress == state) {
+  if (kCipSecurityObjectStateValueConfigurationInProgress == state) {
     message_router_response->general_status = kCipErrorObjectStateConflict;
   } else {
-    if (kCIPSecurityConfigured == state) {
+    if (kCipSecurityObjectStateValueCIPSecurityConfigured == state) {
       // TODO: check if command is sent over valid TLS connection, else:
       message_router_response->general_status = kCipErrorPrivilegeViolation;
     } else {
       // TODO: check if other configuration in progress
 
-      // *(CipUsint*) attribute->data = kConfigurationInProgress; //set state  TODO: check
+      // *(CipUsint*) attribute->data = kCipSecurityObjectStateValueConfigurationInProgress; //set state  TODO: check
 
-      g_security.state = kConfigurationInProgress;
+      g_security.state = kCipSecurityObjectStateValueConfigurationInProgress;
       g_security_session_start_time = GetMilliSeconds();  // TODO: check
 
       message_router_response->general_status = kCipErrorSuccess;
@@ -179,10 +179,10 @@ EipStatus CipSecurityObjectEndConfig(
 //  CipUsint state = *(CipUsint*) attribute->data; //TODO: check
   CipUsint state = g_security.state;
 
-  if (kConfigurationInProgress == state) {
+  if (kCipSecurityObjectStateValueConfigurationInProgress == state) {
     message_router_response->general_status = kCipErrorSuccess;
-//    *(CipUsint *)attribute->data = kCIPSecurityConfigured;  // set state
-    g_security.state = kCIPSecurityConfigured;
+//    *(CipUsint *)attribute->data = kCipSecurityObjectStateValueCIPSecurityConfigured;  // set state
+    g_security.state = kCipSecurityObjectStateValueCIPSecurityConfigured;
   }
 
   return kEipStatusOk;
@@ -208,7 +208,7 @@ EipStatus CipSecurityObjectKickTimer(
 //  CipUsint state = *(CipUsint *)attribute->data;  // TODO: check
   CipUsint state = g_security.state;
 
-  if (kConfigurationInProgress == state) {
+  if (kCipSecurityObjectStateValueConfigurationInProgress == state) {
     // reset configuration session timer
     g_security_session_start_time = GetMilliSeconds();  // actual time TODO: check
     message_router_response->general_status = kCipErrorSuccess;
@@ -228,7 +228,7 @@ EipStatus CipSecurityObjectCleanup(
     CipMessageRouterResponse *const message_router_response,
     const struct sockaddr *originator_address,
     const int encapsulation_session) {
-  message_router_response->general_status = kNoOrphanObjects;
+  message_router_response->general_status = kCipSecurityObjectErrorCodeNoOrphanObjects;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80 | message_router_request->service);
@@ -391,7 +391,8 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                 &GetAttributeSingle,
                 "GetAttributeSingle"
   );
-  InsertService(meta_class, kCIPSecurityObjectCleanup,
+  InsertService(meta_class,
+                kCIPSecurityObjectServiceCodeObjectCleanup,
                 &CipSecurityObjectCleanup,
                 "CipSecurityObjectCleanup"
   );
@@ -464,15 +465,18 @@ EipStatus CipSecurityInit(void) {
                 &CipSecurityObjectReset,
                 "CipSecurityObjectReset"
   );
-  InsertService(cip_security_object_class, kCIPSecurityBeginConfig,
+  InsertService(cip_security_object_class,
+                kCIPSecurityObjectServiceCodeBeginConfig,
                 &CipSecurityObjectBeginConfig,
                 "CipSecurityObjectBeginConfig"
   );
-  InsertService(cip_security_object_class, kCIPSecurityKickTimer,
+  InsertService(cip_security_object_class,
+                kCIPSecurityObjectServiceCodeKickTimer,
                 &CipSecurityObjectKickTimer,
                 "CipSecurityObjectKickTimer"
   );
-  InsertService(cip_security_object_class, kCIPSecurityEndConfig,
+  InsertService(cip_security_object_class,
+                kCIPSecurityObjectServiceCodeEndConfig,
                 &CipSecurityObjectEndConfig,
                 "CipSecurityObjectEndConfig"
   );
