@@ -316,13 +316,29 @@ EipStatus CertificateManagementObjectDelete(
       }
     }
     // free all allocated elements of instance
-    const CipAttributeStruct *const attribute = GetCipAttribute(instance, 1); //name
+    CipAttributeStruct *attribute = GetCipAttribute(instance, 1); //name
     if(NULL != attribute) {
-      CipFree(attribute->data);
+      CipFree(attribute);
     }
-    //TODO: free cmo struct here
-    CipFree(instance);  // delete instance
+    attribute = GetCipAttribute(instance, 2); //state
+    if(NULL != attribute) {
+      CipFree(attribute);
+    }
+    attribute = GetCipAttribute(instance, 3); //device_certificate
+    if(NULL != attribute) {
+      CipFree(attribute);
+    }
+    attribute = GetCipAttribute(instance, 4); //ca_certificate
+    if(NULL != attribute) {
+      CipFree(attribute);
+    }
+    attribute = GetCipAttribute(instance, 5); //certificate_encoding
+    if(NULL != attribute) {
+      CipFree(attribute);
+    }
+
     OPENER_TRACE_INFO("CMO instance number %d deleted\n", instance->instance_number);
+    CipFree(instance);  // delete instance
 
     cmo_class->number_of_instances -= 1; /* update the total number of instances
                                             recorded by the class - Attr. 3 */
