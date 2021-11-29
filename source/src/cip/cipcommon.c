@@ -1264,6 +1264,45 @@ int DecodePaddedEPath(CipEpath *epath,
   return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
 }
 
+EipStatus Create(CipInstance *RESTRICT const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response,
+                             const struct sockaddr *originator_address,
+                             const int encapsulation_session) {
+
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service =
+      (0x80 | message_router_request->service);
+  message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+
+  CipClass *class = GetCipClass(message_router_request->request_path.class_id);
+
+  EipStatus internal_state = kEipStatusOk;
+
+  /* Call the PreCreateCallback if the class provides one. */
+  if( NULL != class->PreCreateCallback) {
+    internal_state = class->PreCreateCallback(instance, message_router_request, message_router_response);
+  }
+
+  if (kEipStatusOk == internal_state) {
+    CipInstance *new_instance = AddCipInstances(class, 1); /* add 1 instance to class*/
+    // TODO: handle possible error of "AddCipInstances", instance!=0
+
+    /* Call the PostSetCallback if the class provides one. */
+    if (NULL != class->PostSetCallback) {
+      class->PostSetCallback(new_instance, message_router_request,
+                             message_router_response);
+    }
+    OPENER_TRACE_INFO("Instance number %d created\n",
+                      new_instance->instance_number);
+  }
+  return kEipStatusOkSend;
+}
+
+
+//TODO: add delete service
+
 void AllocateAttributeMasks(CipClass *target_class) {
   unsigned size = 1 + CalculateIndex(target_class->highest_attribute_number);
   OPENER_TRACE_INFO(

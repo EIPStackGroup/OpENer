@@ -333,6 +333,23 @@ typedef EipStatus (*CipGetSetCallback)(CipInstance *const instance,
                                        CipAttributeStruct *const attribute,
                                        CipByte service);
 
+/** @ingroup CIP_API
+ *  @typedef EipStatus (*CipCallback)(
+ *    CipInstance *const instance,
+ *    CipMessageRouterRequest *message_router_request,
+ *    CipMessageRouterResponse *message_router_response
+ *  )
+ *  @brief Signature definition of callback functions for CIP services
+ *
+ *  @param  instance  CIP instance involved in common services
+ *  @param  message_router_request pointer to request.
+ *  @param  message_router_response pointer to response.
+ *  @return           status of kEipStatusOk or kEipStatusError on failure
+ */
+typedef EipStatus (*CipCallback)(CipInstance *const instance,
+                const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterResponse *const message_router_response);
+
 /** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {
   CipInstance class_instance;   /**< This is the instance that contains the
@@ -365,6 +382,11 @@ typedef struct cip_class {
   /** Is called in SetAttributeSingle* after the received data was set
    * in the object's attributes. */
   CipGetSetCallback PostSetCallback;
+
+  /** Is called in Create before the instance is created. */
+  CipCallback PreCreateCallback;
+  /** Is called in Create after the instance has been created. */
+  CipCallback PostCreateCallback;
 } CipClass;
 
 /** @ingroup CIP_API
