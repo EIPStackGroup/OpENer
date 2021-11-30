@@ -1290,8 +1290,8 @@ EipStatus Create(CipInstance *RESTRICT const instance,
     // TODO: handle possible error of "AddCipInstances", instance!=0
 
     /* Call the PostSetCallback if the class provides one. */
-    if (NULL != class->PostSetCallback) {
-      class->PostSetCallback(new_instance, message_router_request,
+    if (NULL != class->PostCreateCallback) {
+      class->PostCreateCallback(new_instance, message_router_request,
                              message_router_response);
     }
     OPENER_TRACE_INFO("Instance number %d created\n",
