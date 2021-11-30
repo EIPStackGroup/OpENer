@@ -1272,8 +1272,7 @@ EipStatus Create(CipInstance *RESTRICT const instance,
                              const int encapsulation_session) {
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-      (0x80 | message_router_request->service);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 
@@ -1288,15 +1287,13 @@ EipStatus Create(CipInstance *RESTRICT const instance,
 
   if (kEipStatusOk == internal_state) {
     CipInstance *new_instance = AddCipInstances(class, 1); /* add 1 instance to class*/
-    // TODO: handle possible error of "AddCipInstances", instance!=0
+    OPENER_ASSERT(NULL != new_instance); /* fail if run out of memory */
 
     /* Call the PostSetCallback if the class provides one. */
     if (NULL != class->PostCreateCallback) {
-      class->PostCreateCallback(new_instance, message_router_request,
-                             message_router_response);
+      class->PostCreateCallback(new_instance, message_router_request, message_router_response);
     }
-    OPENER_TRACE_INFO("Instance number %d created\n",
-                      new_instance->instance_number);
+    OPENER_TRACE_INFO("Instance number %d created\n", new_instance->instance_number);
   }
   return kEipStatusOkSend;
 }
