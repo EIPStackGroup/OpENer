@@ -223,55 +223,53 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
     );
 }
 
-
-/** @brief Certificate Management Object Create service
+/** @brief Certificate Management Object PreCreateCallback
  *
- *  The Create service shall be used to create a dynamic instance.
+ *  Used for common Create service before new instance is created
  *  @See Vol.8, Chapter 5-5.5.1
  */
-EipStatus CertificateManagementObjectCreate(
+EipStatus CertificateManagementObjectPreCreateCallback(
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
-  message_router_response->general_status = kCipErrorSuccess;
-  message_router_response->size_of_additional_status = 0;
-  message_router_response->reply_service = (0x80 | message_router_request->service);
-  InitializeENIPMessage(&message_router_response->message);
+    CipMessageRouterResponse *const message_router_response
+) {
 
   if (message_router_request->request_data_size > 0) {
-    CipClass *certificate_management_object_class =
-        GetCipClass(kCertificateManagementObjectClassCode);
-
-    CipInstance *certificate_management_object_instance = AddCipInstances(
-        certificate_management_object_class, 1); /* add 1 instance*/
-    //TODO: handle possible error of "AddCipInstances", instance!=0
-
-    CipShortString *name = (CipShortString *)CipCalloc(1, sizeof(CipShortString));
-    name->length = GetUsintFromMessage(&message_router_request->data);
-    name->string = (CipByte *)CipCalloc(name->length, sizeof(CipByte));
-    memcpy(name->string, message_router_request->data, name->length);
-
-    CipUsint *state = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
-    *state = kCertificateManagementObjectStateValueCreated;
-
-    Certificate *device_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
-    Certificate *ca_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
-    CipUsint *certificate_encoding = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
-
-    CertificateManagementObjectBindAttributes(
-        certificate_management_object_instance,
-        name, state, device_certificate, ca_certificate, certificate_encoding);
-
-    AddIntToMessage(certificate_management_object_instance->instance_number, &(message_router_response->message));
-
-    OPENER_TRACE_INFO("CMO instance number %d created\n",
-                      certificate_management_object_instance->instance_number);
+    return kEipStatusOk;
   } else {
     message_router_response->general_status = kCipErrorNotEnoughData;
+    return kEipStatusError;
   }
+}
 
+/** @brief Certificate Management Object PostCreateCallback
+ *
+ *  Used for common Create service after new instance is created
+ *  @See Vol.8, Chapter 5-5.5.1
+ */
+EipStatus CertificateManagementObjectPostCreateCallback(
+    CipInstance *RESTRICT const new_instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response
+) {
+
+  CipShortString *name = (CipShortString *)CipCalloc(1, sizeof(CipShortString));
+  name->length = GetUsintFromMessage(&message_router_request->data);
+  name->string = (CipByte *)CipCalloc(name->length, sizeof(CipByte));
+  memcpy(name->string, message_router_request->data, name->length);
+
+  CipUsint *state = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+  *state = kCertificateManagementObjectStateValueCreated;
+
+  Certificate *device_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
+  Certificate *ca_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
+  CipUsint *certificate_encoding = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+
+  CertificateManagementObjectBindAttributes(
+      new_instance,
+      name, state, device_certificate, ca_certificate, certificate_encoding);
+
+  AddIntToMessage(new_instance->instance_number, &(message_router_response->message));
   return kEipStatusOk;
 }
 
@@ -281,7 +279,7 @@ EipStatus CertificateManagementObjectCreate(
  *  (static instances shall return status code 0x2D, Instance Not Deletable).
  *  @See Vol.8, Chapter 5-5.5.2
  */
-EipStatus CertificateManagementObjectDelete(
+EipStatus CertificateManagementObjectDelete( //TODO: use common delete service
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response,
@@ -465,9 +463,14 @@ void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
   );
   InsertService(meta_class,
                 kCreate,
-                &CertificateManagementObjectCreate,
-                "CertificateManagementObjectCreate"
+                &Create,
+                "Create"
   );
+  // add Callback function pointers
+  class->PreCreateCallback = &CertificateManagementObjectPreCreateCallback;
+  class->PostCreateCallback = &CertificateManagementObjectPostCreateCallback;
+  //TODO: add reset + delete callbacks
+
 }
 
 EipStatus CertificateManagementObjectInit(void) {
