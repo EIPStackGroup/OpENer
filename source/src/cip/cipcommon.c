@@ -230,6 +230,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   /* initialize the class-specific fields of the Class struct*/
   cip_class->class_code = class_code; /* the class remembers the class ID */
   cip_class->revision = revision; /* the class remembers the class ID */
+  cip_class->max_instance = 0; /* the largest instance number of a created object in this class */
   cip_class->number_of_instances = 0; /* the number of instances initially zero (more created below) */
   cip_class->instances = 0;
   cip_class->number_of_attributes = number_of_instance_attributes; /* the class remembers the number of instances of that class */
@@ -288,7 +289,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                      NULL, (void *) &cip_class->revision,
                      kGetableSingleAndAll );                   /* revision */
     InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
-                     NULL, (void *) &cip_class->number_of_instances,
+                     NULL, (void *) &cip_class->max_instance,
                      kGetableSingleAndAll );                              /* #2 Max instance no. */
     InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
                      NULL, (void *) &cip_class->number_of_instances,
