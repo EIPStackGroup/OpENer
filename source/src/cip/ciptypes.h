@@ -388,6 +388,10 @@ typedef struct cip_class {
   CipCallback PreCreateCallback;
   /** Is called in Create after the instance has been created. */
   CipCallback PostCreateCallback;
+  /** Is called in Delete before the instance is deleted. */
+  CipCallback PreDeleteCallback;
+  /** Is called in Delete after the instance has been deleted. */
+  CipCallback PostDeleteCallback;
 } CipClass;
 
 /** @ingroup CIP_API

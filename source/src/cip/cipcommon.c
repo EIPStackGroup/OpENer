@@ -1289,7 +1289,7 @@ EipStatus Create(CipInstance *RESTRICT const instance,
     CipInstance *new_instance = AddCipInstances(class, 1); /* add 1 instance to class*/
     OPENER_ASSERT(NULL != new_instance); /* fail if run out of memory */
 
-    /* Call the PostSetCallback if the class provides one. */
+    /* Call the PostCreateCallback if the class provides one. */
     if (NULL != class->PostCreateCallback) {
       class->PostCreateCallback(new_instance, message_router_request, message_router_response);
     }
@@ -1298,8 +1298,81 @@ EipStatus Create(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
+EipStatus Delete(CipInstance *RESTRICT const instance,
+                 CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterResponse *const message_router_response,
+                 const struct sockaddr *originator_address,
+                 const int encapsulation_session) {
 
-//TODO: add delete service
+  message_router_response->general_status = kCipErrorInstanceNotDeletable;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
+
+  EipStatus internal_state = kEipStatusOk;
+
+  CipClass *const class = instance->cip_class;
+
+  /* Call the PreDeleteCallback if the class provides one. */
+  if (NULL != class->PreDeleteCallback) {
+    internal_state = class->PreDeleteCallback(instance, message_router_request,
+                                              message_router_response);
+  }
+
+  if (kEipStatusOk == internal_state) {
+    CipInstance *instances = class->instances;
+
+    // update pointers in instance list
+    instances = class->instances; /* pointer to first instance */
+    if (instances->instance_number ==
+        instance->instance_number) {  // if instance to delete is head
+      class->instances = instances->next;
+    } else {
+      while (NULL !=
+             instances->next)  // as long as what next points to is not zero
+      {
+        CipInstance *next_instance = instances->next;
+        if (next_instance->instance_number == instance->instance_number) {
+          instances->next = next_instance->next;
+          break;
+        }
+        instances = instances->next;
+      }
+    }
+    // free all allocated attributes of instance
+    CipAttributeStruct *attribute =
+        instance->attributes; /* init pointer to array of attributes*/
+    for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
+      CipFree(attribute->data);
+      ++attribute;
+    }
+    CipFree(instance->attributes);
+
+    /* Call the PostDeleteCallback if the class provides one. */
+    if (NULL != class->PostDeleteCallback) {
+      class->PostDeleteCallback(instance, message_router_request,
+                                message_router_response);
+    }
+
+    OPENER_TRACE_INFO("Instance number %d deleted\n",
+                      instance->instance_number);
+    CipFree(instance);  // delete instance
+
+    class->number_of_instances -= 1; /* update the total number of instances
+                                            recorded by the class - Attr. 3 */
+
+    // update largest instance number (class Attribute 2)
+    instances = class->instances;
+    while (NULL !=
+           instances->next) {  // get last element - should be largest number
+      instances = instances->next;
+    }
+    class->max_instance = instances->instance_number;
+
+    message_router_response->general_status = kCipErrorSuccess;
+  }
+  return kEipStatusOk;
+}
 
 void AllocateAttributeMasks(CipClass *target_class) {
   unsigned size = 1 + CalculateIndex(target_class->highest_attribute_number);
