@@ -146,6 +146,16 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
 ####################################################
 # Internal cache holding the available CIP objects #
 ####################################################
+
+# Add definitions for additional CIP Objects
+string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT)
+if (OpENer_HAS_ADDITIONAL_OBJECT)
+    string(REPLACE " " ";" OpENer_ADD_CIP_OBJECTS_LIST ${OpENer_ADD_CIP_OBJECTS})
+    foreach (CIP_OBJECT IN LISTS OpENer_ADD_CIP_OBJECTS_LIST)
+        add_definitions(-D${CIP_OBJECT})
+    endforeach ()
+endif ()
+
 set( OpENer_ADD_CIP_OBJECTS "" CACHE INTERNAL STRING )
 set( OpENer_ADD_CIP_OBJECTS_INCLUDES "" CACHE INTERNAL STRING )
 

@@ -30,6 +30,15 @@
 #include "stdlib.h"
 #include "ciptypes.h"
 
+#if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
+  #include "OpENerFileObject/cipfile.h"
+#endif
+
+#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
+  #include "SecurityObjects/CipSecurityObject/cipsecurity.h"
+  #include "SecurityObjects/EtherNetIPSecurityObject/ethernetipsecurity.h"
+  #include "SecurityObjects/CertificateManagementObject/certificatemanagement.h"
+#endif
 /* private functions*/
 
 EipStatus CipStackInit(const EipUint16 unique_connection_id) {
@@ -52,6 +61,21 @@ EipStatus CipStackInit(const EipUint16 unique_connection_id) {
 #endif
   eip_status = CipQoSInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
+
+#if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
+  eip_status = CipFileInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+#endif
+
+#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
+  eip_status = CipSecurityInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = EIPSecurityInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CertificateManagementObjectInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+#endif
+
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
   OPENER_ASSERT(kEipStatusOk == eip_status);
