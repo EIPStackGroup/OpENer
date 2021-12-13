@@ -392,6 +392,11 @@ typedef struct cip_class {
   CipCallback PreDeleteCallback;
   /** Is called in Delete after the instance has been deleted. */
   CipCallback PostDeleteCallback;
+  /** Is called in Reset service */
+  CipCallback PreResetCallback;
+  /** Is called in Reset service. */
+  CipCallback PostResetCallback;
+
 } CipClass;
 
 /** @ingroup CIP_API
