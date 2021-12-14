@@ -422,8 +422,6 @@ void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
   class->PreCreateCallback = &CertificateManagementObjectPreCreateCallback;
   class->PostCreateCallback = &CertificateManagementObjectPostCreateCallback;
   class->PreDeleteCallback = &CertificateManagementObjectPreDeleteCallback;
-  //TODO: add reset callbacks
-
 }
 
 EipStatus CertificateManagementObjectInit(void) {
