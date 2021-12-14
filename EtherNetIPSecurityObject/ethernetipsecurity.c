@@ -147,28 +147,32 @@ void EIPSecurityObjectResetSettableAttributes(CipInstance *instance) {
   attribute->data = (void *)&g_eip_security.udp_only_policy;
 }
 
-/** @brief EtherNet/IP Security Object Reset service
+/** EtherNet/IP Security Object PreResetCallback
+ *
+ *  Used for common Reset service
  *
  *  Return this EtherNet/IP Security Object Instance to the
  *  Factory Default Configuration State.
  *  @See Vol.8, Chapter 5-4.5.1
  */
-EipStatus EIPSecurityObjectReset(
+EipStatus EIPSecurityObjectPreResetCallback(
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
-  message_router_response->general_status = kCipErrorPrivilegeViolation;  // TODO: check error status
+    CipMessageRouterResponse *const message_router_response) {
+
+  message_router_response->general_status =
+      kCipErrorPrivilegeViolation;  // TODO: check error status
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->reply_service =
+      (0x80 | message_router_request->service);
 
   // TODO: check for valid TLS connection
 
   CipAttributeStruct *attribute = NULL;
 
-  CipBool enable_pull_model = false; /* The default value if parameter was omitted. */
+  CipBool enable_pull_model =
+      false; /* The default value if parameter was omitted. */
   CipUint pull_model_status = 0x0000;
   CipUint state = 0;
 
@@ -197,7 +201,8 @@ EipStatus EIPSecurityObjectReset(
 
   /* Reset settable attributes of each existing EtherNet/IP Security Object to
    * factory default */
-  for (CipInstance *ins = instance->cip_class->instances; ins; ins = ins->next) /* follow the list*/
+  for (CipInstance *ins = instance->cip_class->instances; ins;
+       ins = ins->next) /* follow the list*/
   {
     EIPSecurityObjectResetSettableAttributes(ins);
   }
@@ -614,6 +619,8 @@ void EIPSecurityObjectInitializeClassSettings(CipClass *class) {
                 &GetAttributeSingle,
                 "GetAttributeSingle"
   );
+  // add Callback function pointers
+  class->PreResetCallback = &EIPSecurityObjectPreResetCallback;
 }
 
 
@@ -780,8 +787,8 @@ EipStatus EIPSecurityInit(void) {
   );
   InsertService(eip_security_object_class,
                 kReset,
-                &EIPSecurityObjectReset,
-                "EIPSecurityObjectReset"
+                &Reset,
+                "Reset"
   );
   InsertService(eip_security_object_class,
                 kGetAttributeSingle,
