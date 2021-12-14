@@ -65,30 +65,28 @@ CipSecurityObject g_security = {
  * public functions
  */
 
-/** @brief CIP Security Object Reset service
+/** @brief Cip Security Object PreResetCallback
+ *
+ *  Used for common Reset service
  *
  *  Return this CIP Security Object Instance to the
  *  Factory Default Configuration State.
  *  @See Vol.8, Chapter 5-3.5.1
  */
-EipStatus CipSecurityObjectReset(
+EipStatus CipSecurityObjectPreResetCallback(
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
-  message_router_response->general_status = kCipErrorAttributeNotSupported;
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+    CipMessageRouterResponse *const message_router_response) {
 
-  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);  // attribute 1: state
+  CipAttributeStruct *attribute =
+      GetCipAttribute(instance, 1);  // attribute 1: state
 
   if (NULL != attribute) {
     if (message_router_request->request_data_size > 0) {
       message_router_response->general_status = kCipErrorTooMuchData;
     } else {
-      g_security.state = kCipSecurityObjectStateValueFactoryDefaultConfiguration;
+      g_security.state =
+          kCipSecurityObjectStateValueFactoryDefaultConfiguration;
       message_router_response->general_status = kCipErrorSuccess;
       OPENER_TRACE_INFO("Reset attribute 1 (state) of instance %d\n",
                         instance->instance_number);
@@ -98,23 +96,27 @@ EipStatus CipSecurityObjectReset(
           GetCipInstance(GetCipClass(kEIPSecurityObjectClassCode), 1);
 
       if (NULL != eip_security_object_instance) {
-        for (CipInstance *ins = eip_security_object_instance->cip_class->instances; ins; ins = ins->next) /* follow the list*/
+        for (CipInstance *ins =
+                 eip_security_object_instance->cip_class->instances;
+             ins; ins = ins->next) /* follow the list*/
         {
-          attribute = GetCipAttribute(ins, 13);  // attribute #13 pull model enable
+          attribute =
+              GetCipAttribute(ins, 13);  // attribute #13 pull model enable
           *(CipBool *)attribute->data = true;
 
-          attribute = GetCipAttribute(ins, 14);  // attribute #14 pull model status
+          attribute =
+              GetCipAttribute(ins, 14);  // attribute #14 pull model status
           *(CipUint *)attribute->data = 0x0000;
 
           attribute = GetCipAttribute(ins, 1);  // attribute #1 state
-          *(CipUsint *)attribute->data = kCipSecurityObjectStateValueFactoryDefaultConfiguration;
+          *(CipUsint *)attribute->data =
+              kCipSecurityObjectStateValueFactoryDefaultConfiguration;
 
           EIPSecurityObjectResetSettableAttributes(ins);  // reset settable attributes of ins
         }
       }
     }
   }
-
   return kEipStatusOk;
 }
 
@@ -342,7 +344,7 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *) &class->number_of_instances,
+                  (void *) &class->max_instance,
                   kGetableSingleAndAll); /*  largest instance number */
   InsertAttribute((CipInstance *) class,
                   3,
@@ -396,6 +398,8 @@ void CipSecurityObjectInitializeClassSettings(CipClass *class) {
                 &CipSecurityObjectCleanup,
                 "CipSecurityObjectCleanup"
   );
+  // add Callback function pointers
+  class->PreResetCallback = &CipSecurityObjectPreResetCallback;
 }
 
 EipStatus CipSecurityInit(void) {
@@ -462,8 +466,8 @@ EipStatus CipSecurityInit(void) {
   );
   InsertService(cip_security_object_class,
                 kReset,
-                &CipSecurityObjectReset,
-                "CipSecurityObjectReset"
+                &Reset,
+                "Reset"
   );
   InsertService(cip_security_object_class,
                 kCIPSecurityObjectServiceCodeBeginConfig,
