@@ -1399,15 +1399,15 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
 }
 
 EipStatus Reset(CipInstance *RESTRICT const instance,
-                 CipMessageRouterRequest *const message_router_request,
-                 CipMessageRouterResponse *const message_router_response,
-                 const struct sockaddr *originator_address,
-                 const int encapsulation_session) {
-
+                CipMessageRouterRequest *const message_router_request,
+                CipMessageRouterResponse *const message_router_response,
+                const struct sockaddr *originator_address,
+                const int encapsulation_session) {
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->reply_service =
+      (0x80 | message_router_request->service);
 
   EipStatus internal_state = kEipStatusOk;
 
@@ -1416,18 +1416,17 @@ EipStatus Reset(CipInstance *RESTRICT const instance,
   /* Call the PreResetCallback if the class provides one. */
   if (NULL != class->PreResetCallback) {
     internal_state = class->PreResetCallback(instance, message_router_request,
-                                              message_router_response);
+                                             message_router_response);
   }
 
-	if (kEipStatusOk == internal_state) {
-
-		/* Call the PostResetCallback if the class provides one. */
-		if (NULL != class->PostResetCallback) {
-			class->PostResetCallback(instance, message_router_request,
-					message_router_response);
-		}
-	}
-	return kEipStatusOk;
+  if (kEipStatusError != internal_state) {
+    /* Call the PostResetCallback if the class provides one. */
+    if (NULL != class->PostResetCallback) {
+      class->PostResetCallback(instance, message_router_request,
+                               message_router_response);
+    }
+  }
+  return internal_state;
 }
 
 void AllocateAttributeMasks(CipClass *target_class) {
