@@ -1517,11 +1517,11 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                GetPathLogicalSegmentLogicalType(message) ) )                                            /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
-          CipConnectionPathEpath connection_epath =
+          CipConnectionPathEpath path =
           { .class_id = class_id, .instance_id = attribute_id,
             .attribute_id_or_connection_point = 0 };
-          memcpy(paths_to_encode[i], &connection_epath,
-                 sizeof(connection_object->produced_path) );
+          memcpy( paths_to_encode[i], &path,
+                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
             attribute_id);
