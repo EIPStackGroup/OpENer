@@ -182,7 +182,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
                                                      &g_common_packet_format_data_item,
                                                      outgoing_message);
 
-            CipOctet *buffer = outgoing_message->current_message_position;
+            CipOctet *pos = outgoing_message->current_message_position;
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
             GenerateEncapsulationHeader(received_data,
@@ -190,7 +190,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
                                         received_data->session_handle,
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
-            outgoing_message->current_message_position = buffer;
+            outgoing_message->current_message_position = pos;
             memcpy(&connection_object->last_reply_sent,
                    outgoing_message,
                    sizeof(ENIPMessage) );
