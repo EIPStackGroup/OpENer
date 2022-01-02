@@ -45,7 +45,7 @@ EipStatus RegisterCipClass(CipClass *cip_class);
  * @return kEipStatusOk on success. otherwise kEipStatusError
  */
 CipError CreateMessageRouterRequestStructure(const EipUint8 *data,
-                                             EipInt16 data_length,
+                                             size_t data_length,
                                              CipMessageRouterRequest *message_router_request);
 
 void InitializeCipMessageRouterClass(CipClass *cip_class) {
@@ -175,7 +175,7 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 }
 
 EipStatus NotifyMessageRouter(EipUint8 *data,
-                              int data_length,
+                              size_t data_length,
                               CipMessageRouterResponse *message_router_response,
                               const struct sockaddr *const originator_address,
                               const int encapsulation_session) {
@@ -241,7 +241,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
 }
 
 CipError CreateMessageRouterRequestStructure(const EipUint8 *data,
-                                             EipInt16 data_length,
+                                             size_t data_length,
                                              CipMessageRouterRequest *message_router_request)
 {
 
