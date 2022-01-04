@@ -273,7 +273,7 @@ void SkipEncapsulationHeader(ENIPMessage *const outgoing_message) {
   outgoing_message->current_message_position += ENCAPSULATION_HEADER_LENGTH;
 }
 
-void GenerateEncapsulationHeader(const EncapsulationData *const receive_data, const size_t command_specific_data_length, const size_t session_handle,
+void GenerateEncapsulationHeader(const EncapsulationData *const receive_data, const size_t command_specific_data_length, const CipUdint session_handle,
     const EncapsulationProtocolErrorCode encapsulation_protocol_status, ENIPMessage *const outgoing_message) {
   AddIntToMessage(receive_data->command_code, outgoing_message);
   AddIntToMessage(command_specific_data_length, outgoing_message);
@@ -412,7 +412,7 @@ void DetermineDelayTime(const EipByte *buffer_start, DelayedEncapsulationMessage
   delayed_message_buffer->time_out = rand() % maximum_delay_time;
 }
 
-void EncapsulateRegisterSessionCommandResponseMessage(const EncapsulationData *const receive_data, const size_t session_handle,
+void EncapsulateRegisterSessionCommandResponseMessage(const EncapsulationData *const receive_data, const CipUdint session_handle,
     const EncapsulationProtocolErrorCode encapsulation_protocol_status, ENIPMessage *const outgoing_message) {
 
   /* Encapsulation header */
@@ -430,7 +430,7 @@ void EncapsulateRegisterSessionCommandResponseMessage(const EncapsulationData *c
  */
 void HandleReceivedRegisterSessionCommand(socket_platform_t socket, const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message) {
   int session_index = 0;
-  size_t session_handle = 0;
+  CipUdint session_handle = 0;
   EncapsulationProtocolErrorCode encapsulation_protocol_status = kEncapsulationProtocolSuccess;
 
   EipUint16 protocol_version = GetUintFromMessage((const EipUint8** const ) &receive_data->current_communication_buffer_position);
@@ -439,7 +439,7 @@ void HandleReceivedRegisterSessionCommand(socket_platform_t socket, const Encaps
   /* check if requested protocol version is supported and the register session option flag is zero*/
   if((0 < protocol_version) && (protocol_version <= kSupportedProtocolVersion) && (0 == option_flag)) { /*Option field should be zero*/
     /* check if the socket has already a session open */
-    for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+    for(unsigned int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
       if(g_registered_sessions[i] == socket) {
         /* the socket has already registered a session this is not allowed*/
         OPENER_TRACE_INFO(
@@ -486,7 +486,7 @@ EipStatus HandleReceivedUnregisterSessionCommand(const EncapsulationData *const 
   OPENER_TRACE_INFO("encap.c: Unregister Session Command\n");
   if((0 < receive_data->session_handle) && (receive_data->session_handle <=
   OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
-    size_t i = receive_data->session_handle - 1;
+    CipUdint i = receive_data->session_handle - 1;
     if(kEipInvalidSocket != g_registered_sessions[i]) {
       CloseTcpSocket(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
@@ -639,7 +639,7 @@ SessionStatus CheckRegisteredSessions(const EncapsulationData *const receive_dat
 
 void CloseSessionBySessionHandle(const CipConnectionObject *const connection_object) {
   OPENER_TRACE_INFO("encap.c: Close session by handle\n");
-  size_t session_handle = connection_object->associated_encapsulation_session;
+  CipUdint session_handle = connection_object->associated_encapsulation_session;
   CloseTcpSocket(g_registered_sessions[session_handle - 1]);
   g_registered_sessions[session_handle - 1] = kEipInvalidSocket;
   OPENER_TRACE_INFO("encap.c: Close session by handle done\n");
@@ -647,7 +647,7 @@ void CloseSessionBySessionHandle(const CipConnectionObject *const connection_obj
 
 void CloseSession(socket_platform_t socket) {
   OPENER_TRACE_INFO("encap.c: Close session\n");
-  for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+  for(unsigned int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(g_registered_sessions[i] == socket) {
       CloseTcpSocket(socket);
       g_registered_sessions[i] = kEipInvalidSocket;
@@ -659,7 +659,7 @@ void CloseSession(socket_platform_t socket) {
 
 void RemoveSession(const socket_platform_t socket) {
   OPENER_TRACE_INFO("encap.c: Removing session\n");
-  for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+  for(unsigned int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(g_registered_sessions[i] == socket) {
       g_registered_sessions[i] = kEipInvalidSocket;
       CloseClass3ConnectionBasedOnSession(i + 1);
@@ -713,8 +713,8 @@ void CloseEncapsulationSessionBySockAddr(const CipConnectionObject *const connec
   }
 }
 
-size_t GetSessionFromSocket(const socket_platform_t socket_handle) {
-  for(size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
+CipUdint GetSessionFromSocket(const socket_platform_t socket_handle) {
+  for(unsigned int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
     if(socket_handle == g_registered_sessions[i]) {
       return i;
     }
@@ -722,7 +722,7 @@ size_t GetSessionFromSocket(const socket_platform_t socket_handle) {
   return OPENER_NUMBER_OF_SUPPORTED_SESSIONS;
 }
 
-void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle) {
+void CloseClass3ConnectionBasedOnSession(CipUdint encapsulation_session_handle) {
   DoublyLinkedListNode *node = connection_list.first;
   while(NULL != node) {
     CipConnectionObject *connection_object = node->data;
