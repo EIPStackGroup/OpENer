@@ -178,7 +178,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
                               size_t data_length,
                               CipMessageRouterResponse *message_router_response,
                               const struct sockaddr *const originator_address,
-                              const int encapsulation_session) {
+                              const CipUdint encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   CipError status = kCipErrorSuccess;
 

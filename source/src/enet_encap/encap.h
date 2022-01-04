@@ -81,7 +81,7 @@ void EncapsulationShutDown(void);
  */
 void ManageEncapsulationMessages(const MilliSeconds elapsed_time);
 
-size_t GetSessionFromSocket(const socket_platform_t socket_handle);
+CipUdint GetSessionFromSocket(const socket_platform_t socket_handle);
 
 void RemoveSession(const socket_platform_t socket);
 
@@ -89,7 +89,7 @@ void CloseSessionBySessionHandle(const CipConnectionObject *const connection_obj
 
 void CloseEncapsulationSessionBySockAddr(const CipConnectionObject *const connection_object);
 
-void CloseClass3ConnectionBasedOnSession(size_t encapsulation_session_handle);
+void CloseClass3ConnectionBasedOnSession(CipUdint encapsulation_session_handle);
 
 /* No reason to use this functions outside the encapsulation layer, they are here for testing */
 typedef struct enip_message ENIPMessage;
@@ -102,8 +102,11 @@ int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
 
 void SkipEncapsulationHeader(ENIPMessage *const outgoing_message);
 
-void GenerateEncapsulationHeader(const EncapsulationData *const receive_data, const size_t command_specific_data_length, const size_t session_handle,
-    const EncapsulationProtocolErrorCode encapsulation_protocol_status, ENIPMessage *const outgoing_message);
+void GenerateEncapsulationHeader(const EncapsulationData *const receive_data,
+                                 const size_t command_specific_data_length,
+                                 const CipUdint session_handle,
+                                 const EncapsulationProtocolErrorCode encapsulation_protocol_status,
+                                 ENIPMessage *const outgoing_message);
 
 void HandleReceivedListServicesCommand(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 

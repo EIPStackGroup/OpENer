@@ -1145,7 +1145,7 @@ void CheckEncapsulationInactivity(socket_platform_t socket_handle) {
       if(diff_milliseconds >=
          (MilliSeconds) (1000UL * g_tcpip.encapsulation_inactivity_timeout) ) {
 
-        size_t encapsulation_session_handle =
+        CipUdint encapsulation_session_handle =
           GetSessionFromSocket(socket_handle);
 
         CloseClass3ConnectionBasedOnSession(encapsulation_session_handle);

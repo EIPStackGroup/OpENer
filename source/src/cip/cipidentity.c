@@ -133,7 +133,7 @@ static EipStatus Reset(CipInstance *instance,
 /* pointer to message router request*/
                        CipMessageRouterResponse *message_router_response, /* pointer to message router response*/
                        const struct sockaddr *originator_address,
-                       const int encapsulation_session) {
+                       const CipUdint encapsulation_session) {
   (void) instance;
   (void) originator_address;
   (void) encapsulation_session;

@@ -77,7 +77,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
                       const struct sockaddr *originator_address,
-                      const int encapsulation_session) {
+                      const CipUdint encapsulation_session) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
   EipUint16 instance_number =
@@ -449,7 +449,7 @@ EipStatus GetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+                             const CipUdint encapsulation_session) {
   (void) originator_address;
   (void) encapsulation_session;
 
@@ -702,7 +702,7 @@ EipStatus SetAttributeSingle(CipInstance *const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+                             const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)originator_address;
   (void)encapsulation_session;
@@ -990,7 +990,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
-                          const int encapsulation_session) {
+                          const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)originator_address;
   (void)encapsulation_session;
@@ -1031,7 +1031,7 @@ EipStatus GetAttributeList(CipInstance *instance,
                            CipMessageRouterRequest *message_router_request,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
-                           const int encapsulation_session) {
+                           const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)originator_address;
   (void)encapsulation_session;
@@ -1093,7 +1093,7 @@ EipStatus SetAttributeList(CipInstance *instance,
                            CipMessageRouterRequest *message_router_request,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
-                           const int encapsulation_session) {
+                           const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)originator_address;
   (void)encapsulation_session;

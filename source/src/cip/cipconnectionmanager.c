@@ -58,25 +58,25 @@ EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response,
                       const struct sockaddr *originator_address,
-                      const int encapsulation_session);
+                      const CipUdint encapsulation_session);
 
 EipStatus LargeForwardOpen(CipInstance *instance,
                            CipMessageRouterRequest *message_router_request,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
-                           const int encapsulation_session);
+                           const CipUdint encapsulation_session);
 
 EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
                        CipMessageRouterResponse *message_router_response,
                        const struct sockaddr *originator_address,
-                       const int encapsulation_session);
+                       const CipUdint encapsulation_session);
 
 EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session);
+                             const CipUdint encapsulation_session);
 
 EipStatus GetConnectionData(CipInstance *instance,
                             CipMessageRouterRequest *message_router_request,
@@ -515,7 +515,7 @@ EipStatus ForwardOpenRoutine(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session);
+                             const CipUdint encapsulation_session);
 
 /** @brief Check if resources for new connection available, generate ForwardOpen Reply message.
  *
@@ -525,7 +525,7 @@ EipStatus LargeForwardOpen(CipInstance *instance,
                            CipMessageRouterRequest *message_router_request,
                            CipMessageRouterResponse *message_router_response,
                            const struct sockaddr *originator_address,
-                           const int encapsulation_session) {
+                           const CipUdint encapsulation_session) {
   g_dummy_connection_object.is_large_forward_open = true;
   return ForwardOpenRoutine(instance,
                             message_router_request,
@@ -559,7 +559,7 @@ EipStatus ForwardOpen(CipInstance *instance,
                       CipMessageRouterRequest *message_router_request,
                       CipMessageRouterResponse *message_router_response,
                       const struct sockaddr *originator_address,
-                      const int encapsulation_session) {
+                      const CipUdint encapsulation_session) {
   g_dummy_connection_object.is_large_forward_open = false;
   return ForwardOpenRoutine(instance,
                             message_router_request,
@@ -571,7 +571,7 @@ EipStatus ForwardOpenRoutine(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+                             const CipUdint encapsulation_session) {
   (void) instance; /*suppress compiler warning */
 
   bool is_null_request = false; /* 1 = Null Request, 0 =  Non-Null Request  */
@@ -654,7 +654,7 @@ EipStatus ForwardClose(CipInstance *instance,
                        CipMessageRouterRequest *message_router_request,
                        CipMessageRouterResponse *message_router_response,
                        const struct sockaddr *originator_address,
-                       const int encapsulation_session) {
+                       const CipUdint encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
   (void) encapsulation_session;
@@ -728,7 +728,7 @@ EipStatus GetConnectionOwner(CipInstance *instance,
                              CipMessageRouterRequest *message_router_request,
                              CipMessageRouterResponse *message_router_response,
                              const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+                             const CipUdint encapsulation_session) {
   /* suppress compiler warnings */
   (void) instance;
   (void) message_router_request;
