@@ -79,6 +79,14 @@ typedef unsigned long long MicroSeconds;
 typedef CipUint CipInstanceNum;
 
 
+/** @brief Session handle type.
+ *
+ * Data type for storing session identifiers as described by @cite CipVol2,
+ * 2-3.4; data type is derived from @cite CipVol2, Table 2-3.1.
+ */
+typedef CipUdint CipSessionHandle;
+
+
 /**
 
    The following are generally true regarding return status:

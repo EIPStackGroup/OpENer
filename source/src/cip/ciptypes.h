@@ -416,7 +416,7 @@ typedef struct cip_class {
  *  @typedef  EipStatus (*CipServiceFunction)(CipInstance *const instance,
  *    CipMessageRouterRequest *const message_router_request,
  *    CipMessageRouterResponse *const message_router_response,
- *    const struct sockaddr *originator_address, const int encapsulation_session)
+ *    const struct sockaddr *originator_address, const CipSessionHandle encapsulation_session)
  *  @brief Signature definition for the implementation of CIP services.
  *
  *  CIP services have to follow this signature in order to be handled correctly
@@ -438,7 +438,7 @@ typedef EipStatus (*CipServiceFunction)(CipInstance *const instance,
                                         message_router_response,
                                         const struct sockaddr *
                                         originator_address,
-                                        const int encapsulation_session);
+                                        const CipSessionHandle encapsulation_session);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {

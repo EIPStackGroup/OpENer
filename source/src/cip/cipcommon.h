@@ -31,7 +31,7 @@ EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       CipMessageRouterRequest *const message_router_request,
                       CipMessageRouterResponse *const message_router_response,
                       const struct sockaddr *originator_address,
-                      const int encapsulation_session);
+                      const CipSessionHandle encapsulation_session);
 
 /** @brief Get largest instance_number present in class instances
  *
@@ -63,7 +63,7 @@ EipStatus GetAttributeSingle(
   CipMessageRouterResponse *const
   message_router_response,
   const struct sockaddr *originator_address,
-  const int encapsulation_session);
+  const CipSessionHandle encapsulation_session);
 
 void GenerateSetAttributeSingleHeader(
   const CipMessageRouterRequest *const message_router_request,
@@ -89,7 +89,7 @@ EipStatus SetAttributeSingle(
   CipMessageRouterResponse *const
   message_router_response,
   const struct sockaddr *originator_address,
-  const int encapsulation_session);
+  const CipSessionHandle encapsulation_session);
 
 /** @brief Generic implementation of the GetAttributeAll CIP service
  *
@@ -106,7 +106,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
-                          const int encapsulation_session);
+                          const CipSessionHandle encapsulation_session);
 
 /** @brief Generic implementation of the GetAttributeList CIP service
  *
@@ -124,7 +124,7 @@ EipStatus GetAttributeList(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
-                          const int encapsulation_session);
+                          const CipSessionHandle encapsulation_session);
 
 /** @brief Generic implementation of the SetAttributeList CIP service
  *
@@ -142,7 +142,7 @@ EipStatus SetAttributeList(CipInstance *instance,
                           CipMessageRouterRequest *message_router_request,
                           CipMessageRouterResponse *message_router_response,
                           const struct sockaddr *originator_address,
-                          const int encapsulation_session);
+                          const CipSessionHandle encapsulation_session);
 
 /** @brief Decodes padded EPath
  *  @param epath EPath object to the receiving element
@@ -171,7 +171,7 @@ EipStatus CipCreateService(
     CipMessageRouterResponse *const
         message_router_response,
     const struct sockaddr *originator_address,
-    const int encapsulation_session);
+    const CipSessionHandle encapsulation_session);
 
 /** @brief Generic implementation of the CIP Delete service
  *
@@ -192,7 +192,7 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
     CipMessageRouterResponse *const
         message_router_response,
     const struct sockaddr *originator_address,
-    const int encapsulation_session);
+    const CipSessionHandle encapsulation_session);
 
 /** @brief Generic implementation of the CIP Reset service
  *
@@ -214,6 +214,6 @@ EipStatus CipResetService(CipInstance *RESTRICT const instance,
     CipMessageRouterResponse *const
         message_router_response,
     const struct sockaddr *originator_address,
-    const int encapsulation_session);
+    const CipSessionHandle encapsulation_session);
 
 #endif /* OPENER_CIPCOMMON_H_ */
