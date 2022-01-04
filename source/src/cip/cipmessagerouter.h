@@ -38,7 +38,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
                               int data_length,
                               CipMessageRouterResponse *message_router_response,
                               const struct sockaddr *const originator_address,
-                              const int encapsulation_session);
+                              const CipSessionHandle encapsulation_session);
 
 /*! Register a class at the message router.
  *  In order that the message router can deliver

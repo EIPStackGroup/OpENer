@@ -107,7 +107,7 @@ EipStatus GetAndClearEthernetLink(
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
-  const int encapsulation_session);
+  const CipSessionHandle encapsulation_session);
 #endif  /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
@@ -503,7 +503,7 @@ EipStatus GetAndClearEthernetLink(
   CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
-  const int encapsulation_session) {
+  const CipSessionHandle encapsulation_session) {
 
   CipAttributeStruct *attribute = GetCipAttribute(
     instance, message_router_request->request_path.attribute_number);
