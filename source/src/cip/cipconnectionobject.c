@@ -323,7 +323,6 @@ bool ConnectionObjectIsTypeNonLOIOConnection(
     default:
       return false;
   }
-  return false;
 }
 
 bool ConnectionObjectIsTypeIOConnection(
@@ -337,7 +336,6 @@ bool ConnectionObjectIsTypeIOConnection(
     default:
       return false;
   }
-  return false;
 }
 
 ConnectionObjectTransportClassTriggerDirection
