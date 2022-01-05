@@ -26,7 +26,7 @@
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeCipAssemblyAttribute3(CipByteArray *const data,
+int DecodeCipAssemblyAttribute3(void *const data,
                                 CipMessageRouterRequest *const message_router_request,
                                 CipMessageRouterResponse *const message_router_response);
 
@@ -152,7 +152,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
   return AfterAssemblyDataReceived(instance);
 }
 
-int DecodeCipAssemblyAttribute3(CipByteArray *const data,
+int DecodeCipAssemblyAttribute3(void *const data,
                                 CipMessageRouterRequest *const message_router_request,
                                 CipMessageRouterResponse *const message_router_response)
 {
@@ -163,15 +163,15 @@ int DecodeCipAssemblyAttribute3(CipByteArray *const data,
 
   int number_of_decoded_bytes = -1;
   OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
-  CipByteArray *cip_byte_array = data;
+  CipByteArray *cip_byte_array = (CipByteArray *)data;
 
-  if(message_router_request->request_data_size < data->length) {
+  if(message_router_request->request_data_size < cip_byte_array->length) {
     OPENER_TRACE_INFO(
       "DecodeCipByteArray: not enough data received.\n");
     message_router_response->general_status = kCipErrorNotEnoughData;
     return number_of_decoded_bytes;
   }
-  if(message_router_request->request_data_size > data->length) {
+  if(message_router_request->request_data_size > cip_byte_array->length) {
     OPENER_TRACE_INFO(
       "DecodeCipByteArray: too much data received.\n");
     message_router_response->general_status = kCipErrorTooMuchData;

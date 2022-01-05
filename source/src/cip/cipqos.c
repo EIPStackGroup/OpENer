@@ -68,7 +68,7 @@ static CipQosDscpValues s_active_dscp = {
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeCipQoSAttribute(CipUsint *const data,
+int DecodeCipQoSAttribute(void *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -81,7 +81,7 @@ int DecodeCipQoSAttribute(CipUsint *const data,
 		CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
 		if (attribute_value_received < 64U) {
 
-			*data = attribute_value_received; //write value to attribute
+			*(CipUsint *)data = attribute_value_received; //write value to attribute
 
 			message_router_response->general_status = kCipErrorSuccess;
 			number_of_decoded_bytes = 1;

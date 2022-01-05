@@ -373,7 +373,7 @@ void EncodeCipLastConflictDetected(const void *const data,
 
 
 int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
-		CipDword *const data,
+		void *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -392,7 +392,7 @@ int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
 		configuration_control_received &= (kTcpipCfgCtrlMethodMask
 				| kTcpipCfgCtrlDnsEnable);
 
-		*data = configuration_control_received;
+		*(CipDword *)data = configuration_control_received;
 		number_of_decoded_bytes = 4;
 		message_router_response->general_status = kCipErrorSuccess;
 	}
@@ -510,7 +510,7 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 #endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
-		CipUint *const data,
+		void *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
@@ -524,7 +524,7 @@ int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
 				kCipErrorInvalidAttributeValue;
 	} else {
 
-		*data = inactivity_timeout_received;
+		*(CipUint *)data = inactivity_timeout_received;
 		message_router_response->general_status = kCipErrorSuccess;
 		number_of_decoded_bytes = 2;
 
