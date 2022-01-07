@@ -573,7 +573,7 @@ typedef struct cip_connection_object CipConnectionObject;
  *
  * @return CIP error code
  */
-typedef EipStatus (*OpenConnectionFunction)(
+typedef CipError (*OpenConnectionFunction)(
   CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error_code);
 
