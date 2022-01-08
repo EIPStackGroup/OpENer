@@ -844,7 +844,7 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
 }
 
 int DecodeCipBool(CipBool *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetBoolFromMessage(&message_router_request->data);
@@ -853,7 +853,7 @@ int DecodeCipBool(CipBool *const data,
 }
 
 int DecodeCipByte(CipByte *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetByteFromMessage(&message_router_request->data);
@@ -893,7 +893,7 @@ int DecodeCipByteArray(CipByteArray *const data,
 }
 
 int DecodeCipWord(CipWord *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetWordFromMessage(&message_router_request->data);
@@ -902,7 +902,7 @@ int DecodeCipWord(CipWord *const data,
 }
 
 int DecodeCipDword(CipDword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -911,7 +911,7 @@ int DecodeCipDword(CipDword *const data,
 }
 
 int DecodeCipLword(CipLword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -920,7 +920,7 @@ int DecodeCipLword(CipLword *const data,
 }
 
 int DecodeCipUsint(CipUsint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUsintFromMessage(&message_router_request->data);
@@ -929,7 +929,7 @@ int DecodeCipUsint(CipUsint *const data,
 }
 
 int DecodeCipUint(CipUint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUintFromMessage(&message_router_request->data);
@@ -938,7 +938,7 @@ int DecodeCipUint(CipUint *const data,
 }
 
 int DecodeCipUdint(CipUdint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUdintFromMessage(&message_router_request->data);
@@ -947,7 +947,7 @@ int DecodeCipUdint(CipUdint *const data,
 }
 
 int DecodeCipUlint(CipUlint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -956,7 +956,7 @@ int DecodeCipUlint(CipUlint *const data,
 }
 
 int DecodeCipSint(CipSint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetSintFromMessage(&message_router_request->data);
@@ -965,7 +965,7 @@ int DecodeCipSint(CipSint *const data,
 }
 
 int DecodeCipInt(CipInt *const data,
-                 const CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterRequest *const message_router_request,
                  CipMessageRouterResponse *const message_router_response) {
 
   *data = GetIntFromMessage(&message_router_request->data);
@@ -974,7 +974,7 @@ int DecodeCipInt(CipInt *const data,
 }
 
 int DecodeCipDint(CipDint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -983,7 +983,7 @@ int DecodeCipDint(CipDint *const data,
 }
 
 int DecodeCipLint(CipLint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -992,7 +992,7 @@ int DecodeCipLint(CipLint *const data,
 }
 
 int DecodeCipReal(CipReal *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -1001,7 +1001,7 @@ int DecodeCipReal(CipReal *const data,
 }
 
 int DecodeCipLreal(CipLreal *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
