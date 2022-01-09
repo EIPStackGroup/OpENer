@@ -80,11 +80,15 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 
 EipStatus GetConnectionData(CipInstance *instance,
                             CipMessageRouterRequest *message_router_request,
-                            CipMessageRouterResponse *message_router_response);
+                            CipMessageRouterResponse *message_router_response,
+                            const struct sockaddr *originator_address,
+                            const CipUdint encapsulation_session);
 
 EipStatus SearchConnectionData(CipInstance *instance,
                                CipMessageRouterRequest *message_router_request,
-                               CipMessageRouterResponse *message_router_response);
+                               CipMessageRouterResponse *message_router_response,
+                               const struct sockaddr *originator_address,
+                               const CipUdint encapsulation_session);
 
 void AssembleConnectionDataResponseMessage(
   CipMessageRouterResponse *message_router_response,
@@ -748,9 +752,13 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 
 EipStatus GetConnectionData(CipInstance *instance,
                             CipMessageRouterRequest *message_router_request,
-                            CipMessageRouterResponse *message_router_response) {
+                            CipMessageRouterResponse *message_router_response,
+                            const struct sockaddr *originator_address,
+                            const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)instance;
+  (void)originator_address;
+  (void)encapsulation_session;
 
   CIPServiceCode service_code = kGetConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
@@ -793,10 +801,13 @@ EipStatus GetConnectionData(CipInstance *instance,
 
 EipStatus SearchConnectionData(CipInstance *instance,
                                CipMessageRouterRequest *message_router_request,
-                               CipMessageRouterResponse *message_router_response)
-{
+                               CipMessageRouterResponse *message_router_response,
+                               const struct sockaddr *originator_address,
+                               const CipUdint encapsulation_session) {
   /* Suppress unused parameter compiler warning. */
   (void)instance;
+  (void)originator_address;
+  (void)encapsulation_session;
 
   CIPServiceCode service_code = kSearchConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
