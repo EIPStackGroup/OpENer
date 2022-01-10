@@ -208,7 +208,7 @@ typedef struct cip_type_string_i_struct {
   CipUsint language_char_3;
   CipUint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
   CipUint character_set;   /**< Character set of the string */
-  CipOctet *string;   /**< Pointer to the string data */
+  void *string;   /**< Pointer to CipString, CipString2, CipShortString, or CipStringN. */
 } CipStringIStruct;
 
 /** @brief Struct for padded EPATHs
