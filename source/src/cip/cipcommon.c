@@ -1206,7 +1206,7 @@ void EncodeEPath(const CipEpath *const epath,
   if(0 < length) {
     if(epath->instance_number < 256) {
       AddSintToMessage(0x24, message); /*8Bit Instance Id */
-      AddSintToMessage(epath->instance_number, message);
+      AddSintToMessage( (EipUint8) epath->instance_number, message);
       length -= 1;
     } else {
       AddSintToMessage(0x25, message); /*16Bit Instance Id */
@@ -1218,7 +1218,7 @@ void EncodeEPath(const CipEpath *const epath,
     if(0 < length) {
       if(epath->attribute_number < 256) {
         AddSintToMessage(0x30, message); /*8Bit Attribute Id */
-        AddSintToMessage(epath->attribute_number, message);
+        AddSintToMessage( (EipUint8) epath->attribute_number, message);
         length -= 1;
       } else {
         AddSintToMessage(0x31, message); /*16Bit Attribute Id */
