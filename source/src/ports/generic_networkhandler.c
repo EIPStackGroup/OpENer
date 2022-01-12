@@ -49,10 +49,12 @@
 
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
-#pragma \
-  GCC warning "MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function"
-#pragma \
-  message("MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function")
+#define MSG_NOSIGNAL_PRAGMA_MESSAGE "MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function"
+#if defined(_WIN32)
+#pragma message(MSG_NOSIGNAL_PRAGMA_MESSAGE)
+#else
+#pragma GCC warning MSG_NOSIGNAL_PRAGMA_MESSAGE
+#endif /* defined(_WIN32) */
 #endif
 
 /** @brief handle any connection request coming in the TCP server socket.
