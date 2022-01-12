@@ -785,9 +785,6 @@ int DecodeCipByteArray(CipByteArray *const data,
                        const CipMessageRouterRequest *const message_router_request,
                        CipMessageRouterResponse *const message_router_response)
 {
-
-  const EipUint8 **const cip_message = message_router_request->data;
-
   int number_of_decoded_bytes = -1;
   OPENER_TRACE_INFO(" -> set attribute byte array\r\n");
   CipByteArray *cip_byte_array = data;
@@ -806,7 +803,9 @@ int DecodeCipByteArray(CipByteArray *const data,
   }
 
   // data-length is correct
-  memcpy(cip_byte_array->data, &cip_message, cip_byte_array->length);
+  memcpy(cip_byte_array->data,
+         message_router_request->data,
+         cip_byte_array->length);
   number_of_decoded_bytes = cip_byte_array->length;
 
   message_router_response->general_status = kCipErrorSuccess;
