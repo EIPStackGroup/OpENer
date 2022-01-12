@@ -156,9 +156,6 @@ int DecodeCipAssemblyAttribute3(CipByteArray *const data,
                                 CipMessageRouterRequest *const message_router_request,
                                 CipMessageRouterResponse *const message_router_response)
 {
-
-  const EipUint8 **const cip_message = message_router_request->data;
-
   CipInstance *const instance =
     GetCipInstance(GetCipClass(
                      message_router_request->request_path.class_id),
@@ -182,7 +179,9 @@ int DecodeCipAssemblyAttribute3(CipByteArray *const data,
   }
 
   // data-length is correct
-  memcpy(cip_byte_array->data, cip_message, cip_byte_array->length);
+  memcpy(cip_byte_array->data,
+         message_router_request->data,
+         cip_byte_array->length);
 
   if(AfterAssemblyDataReceived(instance) != kEipStatusOk) {
     /* punt early without updating the status... though I don't know
