@@ -971,7 +971,7 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
     if(OpenProducingPointToPointConnection(connection_object,
                                            common_packet_format_data) !=
-       kEipStatusOk) {
+       kCipErrorSuccess) {
       OPENER_TRACE_ERR("error in PointToPoint producing connection\n");
       return kCipErrorConnectionFailure;
     }
