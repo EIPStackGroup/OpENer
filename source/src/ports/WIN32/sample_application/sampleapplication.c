@@ -186,8 +186,8 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
 }
 
 void *
-CipCalloc(unsigned pa_nNumberOfElements,
-          unsigned pa_nSizeOfElement) {
+CipCalloc(size_t pa_nNumberOfElements,
+          size_t pa_nSizeOfElement) {
   return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
 }
 
