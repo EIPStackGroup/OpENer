@@ -236,7 +236,24 @@ CipClass *CreateCipClass(const CipUdint class_code,
   cip_class->highest_attribute_number = highest_instance_attribute_number; /* indicate which attributes are included in instance getAttributeAll */
   cip_class->number_of_services = number_of_instance_services; /* the class manages the behavior of the instances */
   cip_class->services = 0;
-  cip_class->class_name = name; /* initialize the class-specific fields of the metaClass struct */
+
+  /* Allocate and initialize the class name string. */
+  OPENER_ASSERT(name != NULL);
+  const size_t name_len = strlen(name); /* Length does not include termination byte. */
+  OPENER_ASSERT(name_len > 0); /* Cannot be an empty string. */
+  cip_class->class_name = CipCalloc(name_len + 1, 1); /* Allocate length plus termination byte. */
+  OPENER_ASSERT(cip_class->class_name != NULL);
+
+  /*
+   * memcpy is used here, instead of a strcpy variant, to avoid Visual Studio
+   * depreciation warnings arising from strcpy use, and the recommended
+   * alternatives, e.g. strcpy_s, are not available on all systems. In this
+   * case the size of the source string is already known, so memcpy() is
+   * suitable.
+   */
+  memcpy(cip_class->class_name, name, name_len + 1);
+
+  /* initialize the class-specific fields of the metaClass struct */
   meta_class->class_code = 0xffffffff; /* set metaclass ID (this should never be referenced) */
   meta_class->number_of_instances = 1; /* the class object is the only instance of the metaclass */
   meta_class->instances = (CipInstance *) cip_class;
