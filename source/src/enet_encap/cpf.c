@@ -66,6 +66,7 @@ EipStatus NotifyCommonPacketFormat(const EncapsulationData *const received_data,
           EipStatus status = AssembleLinearMessage(&message_router_response,
                                                    &g_common_packet_format_data_item,
                                                    outgoing_message);
+          (void)status; /* Suppress unused variable warning. */
 
           /* Save pointer and move to start for Encapusulation Header */
           CipOctet *buffer = outgoing_message->current_message_position;
@@ -181,6 +182,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
             EipStatus status = AssembleLinearMessage(&message_router_response,
                                                      &g_common_packet_format_data_item,
                                                      outgoing_message);
+            (void)status; /* Suppress unused variable warning. */
 
             CipOctet *pos = outgoing_message->current_message_position;
             outgoing_message->current_message_position =
