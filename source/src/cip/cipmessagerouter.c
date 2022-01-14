@@ -299,6 +299,7 @@ void DeleteAllClasses(void) {
 
     /* free class data*/
     CipClass *cip_class = message_router_object_to_delete->cip_class;
+    CipFree(cip_class->class_name);
     CipFree(cip_class->get_single_bit_mask);
     CipFree(cip_class->set_bit_mask);
     CipFree(cip_class->get_all_bit_mask);
