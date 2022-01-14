@@ -29,6 +29,29 @@
 
 #include "typedefs.h"
 
+/** @brief Set this define if you have a CIP File capable device
+ *
+ *  This define changes the OpENer device configuration in a way that
+ *  the File object is initialized.
+ *
+ *  This define should be set from the CMake command line using
+ *  "-DCIP_FILE_OBJECT:BOOL=ON"
+ */
+#ifndef CIP_FILE_OBJECT
+  #define CIP_FILE_OBJECT 0
+#endif
+
+/** @brief Set this define if you have a CIP Security capable device
+ *
+ *  This define changes the OpENer device configuration in a way that
+ *  the Security related objects are initialized.
+ *
+ *  This define should be set from the CMake command line using
+ *  "-DCIP_SECURITY_OBJECTS:BOOL=ON"
+ */
+#ifndef CIP_SECURITY_OBJECTS
+  #define CIP_SECURITY_OBJECTS 0
+#endif
 
 /** @brief Set this define if you have a DLR capable device
  *
