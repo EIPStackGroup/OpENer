@@ -9,6 +9,7 @@
 
 #include "trace.h"
 #include "opener_api.h"
+#include "appcontype.h"
 #include "ciptcpipinterface.h"
 #include "cipqos.h"
 #include "nvdata.h"
