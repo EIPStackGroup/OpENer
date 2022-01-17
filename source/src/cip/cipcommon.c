@@ -121,8 +121,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
   /* handle error replies*/
   message_router_response->size_of_additional_status = 0; /* fill in the rest of the reply with not much of anything*/
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);                                        /* except the reply code is an echo of the command + the reply flag */
+  message_router_response->reply_service = message_router_request->service; /* except the reply code is an echo of the command */
 
   return kEipStatusOkSend;
 }
@@ -455,8 +454,7 @@ void GenerateGetAttributeSingleHeader(
   const CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response) {
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 }
@@ -709,8 +707,7 @@ void GenerateSetAttributeSingleHeader(
   const CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response) {
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 }
@@ -1018,8 +1015,7 @@ EipStatus GetAttributeAll(CipInstance *instance,
 
   if(0 == instance->cip_class->number_of_attributes) {
     /*there are no attributes to be sent back*/
-    message_router_response->reply_service =
-      (0x80 | message_router_request->service);
+    message_router_response->reply_service = message_router_request->service;
     message_router_response->general_status = kCipErrorServiceNotSupported;
     message_router_response->size_of_additional_status = 0;
   } else {
@@ -1053,8 +1049,7 @@ EipStatus GetAttributeList(CipInstance *instance,
   (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 
@@ -1115,8 +1110,7 @@ EipStatus SetAttributeList(CipInstance *instance,
   (void)encapsulation_session;
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 

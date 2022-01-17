@@ -140,8 +140,7 @@ static EipStatus Reset(CipInstance *instance,
 
   EipStatus eip_status = kEipStatusOkSend;
 
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->size_of_additional_status = 0;
   message_router_response->general_status = kCipErrorSuccess;
 

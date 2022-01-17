@@ -97,7 +97,7 @@ EipStatus NvTcpipSetCallback(CipInstance *const instance,
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
     /* Workaround: Update only if service is not flagged. */
-    if (0 == (0x80 & service) ) {
+    if ( 0 == (kServiceCodeReply & service) ) {
       OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                         instance->cip_class->class_name,
                         instance->instance_number,

@@ -192,8 +192,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
     message_router_response->general_status = status;
     message_router_response->size_of_additional_status = 0;
     message_router_response->reserved = 0;
-    message_router_response->reply_service =
-      (0x80 | g_message_router_request.service);
+    message_router_response->reply_service = g_message_router_request.service;
   } else {
     /* forward request to appropriate Object if it is registered*/
     CipMessageRouterObject *registered_object = GetRegisteredObject(
@@ -205,8 +204,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
       message_router_response->general_status = kCipErrorPathDestinationUnknown; /*according to the test tool this should be the correct error flag instead of CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
       message_router_response->size_of_additional_status = 0;
       message_router_response->reserved = 0;
-      message_router_response->reply_service =
-        (0x80 | g_message_router_request.service);
+      message_router_response->reply_service = g_message_router_request.service;
     } else {
       /* call notify function from Object with ClassID (gMRRequest.RequestPath.ClassID)
          object will or will not make an reply into gMRResponse*/

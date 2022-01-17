@@ -109,8 +109,15 @@ typedef enum {
   kUnconnectedSend = 0x52,
   kGetConnectionOwner = 0x5A,
   kGetConnectionData = 0x56,
-  kSearchConnectionData = 0x57
+  kSearchConnectionData = 0x57,
 /* End CIP object-specific services */
+
+  /*
+   * This is not an actual service code, but rather the flag added to a
+   * service code indicating a reply. See CIP Networks Library, Volume 1,
+   * Common Industrial Protocol, Edition 3.3, November 2007, 3-5.5.4.
+   */
+  kServiceCodeReply = 0x80
 } CIPServiceCode;
 
 /** @brief Definition of Get and Set Flags for CIP Attributes */
@@ -267,8 +274,10 @@ typedef struct enip_message ENIPMessage;
  *
  */
 typedef struct {
-  CipUsint reply_service;   /**< Reply service code, the requested service code +
-                               0x80 */
+  CipUsint reply_service;   /**< Reply service code, the requested service code.
+                                This does not include the MSB reply bit; that is
+                                added automatically when the response is encoded
+                                for transmission. */
   CipOctet reserved;   /**< Reserved; Shall be zero */
   CipUsint general_status;   /**< One of the General Status codes listed in CIP
                                 Specification Volume 1, Appendix B */
