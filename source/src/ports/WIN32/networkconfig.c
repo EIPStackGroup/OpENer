@@ -456,6 +456,12 @@ EipStatus IfaceWaitForIp(const char *const iface,
         return kEipStatusError;
       }
 
+/*
+ * Suppress NULL pointer warning for the following for loop;
+ * the pmib_ipaddr_table is non-NULL by this point.
+ */
+#pragma warning(suppress : 6011)
+
       /* Search entry matching the interface index and determine IP address. */
       for(int i = 0; i < (int) pmib_ipaddr_table->dwNumEntries; i++) {
         if(pmib_ipaddr_table->table[i].dwIndex == iface_idx) {
