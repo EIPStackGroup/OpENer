@@ -463,7 +463,8 @@ void EncodeSequenceNumber(
 void EncodeReplyService(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddSintToMessage(message_router_response->reply_service, outgoing_message);
+  const EipUint8 reply_service = message_router_response->reply_service | kServiceCodeReply;
+  AddSintToMessage(reply_service, outgoing_message);
 }
 
 /**

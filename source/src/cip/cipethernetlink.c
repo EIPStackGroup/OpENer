@@ -509,8 +509,7 @@ EipStatus GetAndClearEthernetLink(
     instance, message_router_request->request_path.attribute_number);
 
   message_router_response->data_length = 0;
-  message_router_response->reply_service = (0x80
-                                            | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 

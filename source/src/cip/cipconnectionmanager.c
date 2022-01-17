@@ -759,8 +759,7 @@ EipStatus GetConnectionData(CipInstance *instance,
   (void)originator_address;
   (void)encapsulation_session;
 
-  CIPServiceCode service_code = kGetConnectionData;
-  message_router_response->reply_service = (0x80 | service_code);
+  message_router_response->reply_service = kGetConnectionData;
 
   //get Connection Number from request
   EipUint16 Connection_number =
@@ -809,8 +808,7 @@ EipStatus SearchConnectionData(CipInstance *instance,
   (void)originator_address;
   (void)encapsulation_session;
 
-  CIPServiceCode service_code = kSearchConnectionData;
-  message_router_response->reply_service = (0x80 | service_code);
+  message_router_response->reply_service = kSearchConnectionData;
 
   //connection data (connection triad) from request
   EipUint16 Connection_serial_number = GetUintFromMessage(
@@ -1028,12 +1026,11 @@ EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
 
   AddNullAddressItem(cip_common_packet_format_data);
 
-  CIPServiceCode service_code = kForwardOpen;
+  message_router_response->reply_service = kForwardOpen;
   if(connection_object->is_large_forward_open) {
-    service_code = kLargeForwardOpen;
+    message_router_response->reply_service = kLargeForwardOpen;
   }
 
-  message_router_response->reply_service = (0x80 | service_code);
   message_router_response->general_status = general_status;
 
   if(kCipErrorSuccess == general_status) {
@@ -1169,8 +1166,7 @@ EipStatus AssembleForwardCloseResponse(EipUint16 connection_serial_number,
   AddIntToMessage(originatior_vendor_id, &message_router_response->message);
   AddDintToMessage(originator_serial_number, &message_router_response->message);
 
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
+  message_router_response->reply_service = message_router_request->service;
   /* Excepted length is 10 if there is no application specific data */
 
   if(kConnectionManagerExtendedStatusCodeSuccess == extended_error_code) {
