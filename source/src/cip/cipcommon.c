@@ -1289,7 +1289,7 @@ int DecodePaddedEPath(CipEpath *epath,
   return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
 }
 
-EipStatus Create(CipInstance *RESTRICT const instance,
+EipStatus CipCreateService(CipInstance *RESTRICT const instance,
                              CipMessageRouterRequest *const message_router_request,
                              CipMessageRouterResponse *const message_router_response,
                              const struct sockaddr *originator_address,
@@ -1322,7 +1322,7 @@ EipStatus Create(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-EipStatus Delete(CipInstance *RESTRICT const instance,
+EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
                  CipMessageRouterRequest *const message_router_request,
                  CipMessageRouterResponse *const message_router_response,
                  const struct sockaddr *originator_address,
@@ -1352,8 +1352,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
         instance->instance_number) {  // if instance to delete is head
       class->instances = instances->next;
     } else {
-      while (NULL !=
-             instances->next)  // as long as what next points to is not zero
+      while (NULL != instances->next)  // as long as pointer in not NULL
       {
         CipInstance *next_instance = instances->next;
         if (next_instance->instance_number == instance->instance_number) {
@@ -1366,7 +1365,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
     // free all allocated attributes of instance
     CipAttributeStruct *attribute =
         instance->attributes; /* init pointer to array of attributes*/
-    for (int i = 0; i < instance->cip_class->number_of_attributes; i++) {
+    for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
       CipFree(attribute->data);
       ++attribute;
     }
@@ -1382,7 +1381,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
                       instance->instance_number);
     CipFree(instance);  // delete instance
 
-    class->number_of_instances -= 1; /* update the total number of instances
+    class->number_of_instances--; /* update the total number of instances
                                             recorded by the class - Attr. 3 */
 
     // update largest instance number (class Attribute 2)
@@ -1398,7 +1397,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
   return kEipStatusOk;
 }
 
-EipStatus Reset(CipInstance *RESTRICT const instance,
+EipStatus CipResetService(CipInstance *RESTRICT const instance,
                 CipMessageRouterRequest *const message_router_request,
                 CipMessageRouterResponse *const message_router_response,
                 const struct sockaddr *originator_address,

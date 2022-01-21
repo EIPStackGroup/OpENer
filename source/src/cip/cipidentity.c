@@ -246,7 +246,7 @@ EipStatus CipIdentityInit() {
                 &GetAttributeSingle,
                 "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
-  InsertService(class, kReset, &Reset, "Reset");
+  InsertService(class, kReset, &CipResetService, "Reset");
   InsertService(class, kGetAttributeList, &GetAttributeList,
                 "GetAttributeList");
   InsertService(class, kSetAttributeList, &SetAttributeList,

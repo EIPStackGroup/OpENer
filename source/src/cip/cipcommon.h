@@ -145,7 +145,7 @@ EipStatus SetAttributeList(CipInstance *instance,
 int DecodePaddedEPath(CipEpath *epath,
                       const EipUint8 **message);
 
-/** @brief Generic implementation of the Create CIP service
+/** @brief Generic implementation of the CIP Create service
  *
  *  Creates dynamically allocated object instance within the specified class.
  *
@@ -157,7 +157,7 @@ int DecodePaddedEPath(CipEpath *epath,
  * @return status  >0 .. success
  *          -1 .. requested instance not created
  */
-EipStatus Create(
+EipStatus CipCreateService(
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const
         message_router_request,
@@ -166,7 +166,7 @@ EipStatus Create(
     const struct sockaddr *originator_address,
     const int encapsulation_session);
 
-/** @brief Generic implementation of the Delete CIP service
+/** @brief Generic implementation of the CIP Delete service
  *
  *  Deletes dynamically allocated object instance within the specified class
  *  and updates referred class attributes
@@ -179,7 +179,7 @@ EipStatus Create(
  * @return status  >0 .. success
  *          -1 .. requested instance not deleted
  */
-EipStatus Delete(CipInstance *RESTRICT const instance,
+EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const
         message_router_request,
     CipMessageRouterResponse *const
@@ -187,7 +187,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
     const struct sockaddr *originator_address,
     const int encapsulation_session);
 
-/** @brief Generic implementation of the Reset CIP service
+/** @brief Generic implementation of the CIP Reset service
  *
  *  Causes a transition to a default state or mode of
  *  the object instance within the specified class
@@ -201,7 +201,7 @@ EipStatus Delete(CipInstance *RESTRICT const instance,
  * @return status  >0 .. success
  *          -1 .. requested instance not reseted
  */
-EipStatus Reset(CipInstance *RESTRICT const instance,
+EipStatus CipResetService(CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const
         message_router_request,
     CipMessageRouterResponse *const
