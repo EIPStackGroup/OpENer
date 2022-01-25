@@ -188,7 +188,14 @@ typedef struct {
 /** @brief STRINGI definition
  *
  */
-typedef struct cip_type_string_i_struct CipStringIStruct;
+typedef struct cip_type_string_i_struct {
+  CipUsint language_char_1;
+  CipUsint language_char_2;
+  CipUsint language_char_3;
+  CipUint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
+  CipUint character_set;   /**< Character set of the string */
+  void *string;   /**< Pointer to CipString, CipString2, CipShortString, or CipStringN. */
+} CipStringIStruct;
 
 typedef struct cip_string_i {
   CipUsint number_of_strings;
@@ -208,15 +215,6 @@ typedef enum cip_type_string_i_character_set {
   kCipStringICharSet_ISO_10646_UCS_2 = 1000,
   kCipStringICharSet_ISO_10646_UCS_4 = 1001
 } CipStringICharacterSet;
-
-typedef struct cip_type_string_i_struct {
-  CipUsint language_char_1;
-  CipUsint language_char_2;
-  CipUsint language_char_3;
-  CipUint char_string_struct;   /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
-  CipUint character_set;   /**< Character set of the string */
-  void *string;   /**< Pointer to CipString, CipString2, CipShortString, or CipStringN. */
-} CipStringIStruct;
 
 /** @brief Struct for padded EPATHs
  *
@@ -267,8 +265,6 @@ typedef struct {
 } CipMessageRouterRequest;
 
 #define MAX_SIZE_OF_ADD_STATUS 2 /* for now we support extended status codes up to 2 16bit values there is mostly only one 16bit value used */
-
-typedef struct enip_message ENIPMessage;
 
 /** @brief CIP Message Router Response
  *
