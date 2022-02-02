@@ -24,6 +24,10 @@
 
  #include "typedefs.h"
 
+#ifdef OPENER_UNIT_TEST
+  #include "test_assert.h"
+#endif /* OPENER_UNIT_TEST */
+
 typedef unsigned short in_port_t;
 
 /** @brief Set this define if you have a DLR capable device
@@ -159,6 +163,12 @@ typedef unsigned short in_port_t;
  */
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
+/*
+ * Omit assertion definitions when building unit tests. These will
+ * be defined with versions suitable for the unit test environment.
+ */
+#ifndef OPENER_UNIT_TEST
+
 #ifdef OPENER_WITH_TRACES
 /* If we have tracing enabled provide LOG_TRACE macro */
     #include <stdio.h>
@@ -208,6 +218,8 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
     #endif
 
 #endif  /* ifdef OPENER_WITH_TRACES */
+
+#endif /* ifndef OPENER_UNIT_TEST */
 
 /** @brief The number of bytes used for the Ethernet message buffer on
  * the PC port. For different platforms it may makes sense to
