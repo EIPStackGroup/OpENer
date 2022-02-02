@@ -135,6 +135,7 @@ if( OpENer_TESTS )
   # The used CppUTest framework does not support parallel jobs
   SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE OpENer_Tests EXCLUDE "tests/*" "src/ports/*/sample_application/*" "${CPPUTEST_HOME}/*")
   add_test_includes()
+  add_definitions( -DOPENER_UNIT_TEST )
   add_subdirectory( tests )
 endif( OpENer_TESTS )
 
