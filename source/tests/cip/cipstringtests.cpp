@@ -68,7 +68,7 @@ TEST (CipString, CreateStringNFromCString) {
   SetCipStringNByCstr(string, data, 3);
   CHECK_EQUAL(3, string->size);
   CHECK_EQUAL(4, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL(data, string->string, strlen(data) );
 }
 
 /*** CipString2 ***/
@@ -116,7 +116,7 @@ TEST (CipString, CreateString2FromCString) {
   string = (CipString2 *) CipCalloc(1, sizeof(CipString2) );
   SetCipString2ByCstr(string, data);
   CHECK_EQUAL(6, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL(data, string->string, strlen(data) );
 }
 
 /*** CipString ***/
@@ -164,7 +164,7 @@ TEST (CipString, CreateStringFromCString) {
   string = (CipString *) CipCalloc(1, sizeof(CipString) );
   SetCipStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL(data, string->string, strlen(data) );
 }
 
 /*** CipShortString ***/
@@ -212,5 +212,5 @@ TEST (CipString, CreateShortStringFromCString) {
   string = (CipShortString *) CipCalloc(1, sizeof(CipShortString) );
   SetCipShortStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL(data, string->string, strlen(data) );
 }
