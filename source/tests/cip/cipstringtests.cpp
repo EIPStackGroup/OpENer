@@ -40,6 +40,7 @@ TEST (CipString, ClearCipStringNWithContent) {
   CHECK_EQUAL(0, string->size);
   CHECK_EQUAL(0, string->length);
   POINTERS_EQUAL(NULL, string->string);
+  FreeCipStringN(string);
 };
 
 TEST (CipString, FreeCipStringNWithContent) {
@@ -59,6 +60,7 @@ TEST (CipString, CreateStringNFromData) {
   CHECK_EQUAL(3, string->size);
   CHECK_EQUAL(4, string->length);
   MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  FreeCipStringN(string);
 }
 
 TEST (CipString, CreateStringNFromCString) {
@@ -69,6 +71,7 @@ TEST (CipString, CreateStringNFromCString) {
   CHECK_EQUAL(3, string->size);
   CHECK_EQUAL(4, string->length);
   MEMCMP_EQUAL(data, string->string, strlen(data) );
+  FreeCipStringN(string);
 }
 
 /*** CipString2 ***/
@@ -91,6 +94,7 @@ TEST (CipString, ClearCipString2WithContent) {
   POINTERS_EQUAL(string, returned_ptr);
   CHECK_EQUAL(0, string->length);
   POINTERS_EQUAL(NULL, string->string);
+  FreeCipString2(string);
 };
 
 TEST (CipString, FreeCipString2WithContent) {
@@ -108,6 +112,7 @@ TEST (CipString, CreateString2FromData) {
   SetCipString2ByData(string, 6, data);
   CHECK_EQUAL(6, string->length);
   MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  FreeCipString2(string);
 }
 
 TEST (CipString, CreateString2FromCString) {
@@ -117,6 +122,7 @@ TEST (CipString, CreateString2FromCString) {
   SetCipString2ByCstr(string, data);
   CHECK_EQUAL(6, string->length);
   MEMCMP_EQUAL(data, string->string, strlen(data) );
+  FreeCipString2(string);
 }
 
 /*** CipString ***/
@@ -139,6 +145,7 @@ TEST (CipString, ClearCipStringWithContent) {
   POINTERS_EQUAL(string, returned_ptr);
   CHECK_EQUAL(0, string->length);
   POINTERS_EQUAL(NULL, string->string);
+  FreeCipString(string);
 };
 
 TEST (CipString, FreeCipStringWithContent) {
@@ -156,6 +163,7 @@ TEST (CipString, CreateStringFromData) {
   SetCipStringByData(string, sizeof(data), data);
   CHECK_EQUAL(12, string->length);
   MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  FreeCipString(string);
 }
 
 TEST (CipString, CreateStringFromCString) {
@@ -165,6 +173,7 @@ TEST (CipString, CreateStringFromCString) {
   SetCipStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
   MEMCMP_EQUAL(data, string->string, strlen(data) );
+  FreeCipString(string);
 }
 
 /*** CipShortString ***/
@@ -187,6 +196,7 @@ TEST (CipString, ClearCipShortStringWithContent) {
   POINTERS_EQUAL(string, returned_ptr);
   CHECK_EQUAL(0, string->length);
   POINTERS_EQUAL(NULL, string->string);
+  FreeCipShortString(string);
 };
 
 TEST (CipString, FreeCipShortStringWithContent) {
@@ -204,6 +214,7 @@ TEST (CipString, CreateShortStringFromData) {
   SetCipShortStringByData(string, sizeof(data), data);
   CHECK_EQUAL(12, string->length);
   MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  FreeCipShortString(string);
 }
 
 TEST (CipString, CreateShortStringFromCString) {
@@ -213,4 +224,5 @@ TEST (CipString, CreateShortStringFromCString) {
   SetCipShortStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
   MEMCMP_EQUAL(data, string->string, strlen(data) );
+  FreeCipShortString(string);
 }
