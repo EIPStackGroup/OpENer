@@ -4,6 +4,7 @@
 
 #include "OpENerTests.h"
 #include "CppUTest/TestRegistry.h"
+#include "CppUTestExt/MockSupportPlugin.h"
 
 extern "C" {
 #include "endianconv.h"
@@ -36,12 +37,17 @@ int main(int argc,
 
   DetermineEndianess();
 
+  TestRegistry* reg = TestRegistry::getCurrentRegistry();
+
+  MockSupportPlugin mockPlugin;
+  reg->installPlugin(&mockPlugin);
+
   /*
    * Enable the Cpputest SetPointerPlugin to automatically reset the
    * assert_jump_enabled pointer after each test.
    */
   SetPointerPlugin assert_restore("AssertJumpRestore");
-  TestRegistry::getCurrentRegistry()->installPlugin(&assert_restore);
+  reg->installPlugin(&assert_restore);
 
   return CommandLineTestRunner::RunAllTests(argc, argv);
 }
