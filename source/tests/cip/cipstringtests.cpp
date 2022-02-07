@@ -5,6 +5,7 @@
 *****************************************************I*************************/
 
 #include <CppUTest/TestHarness.h>
+#include <CppUTestExt/MockSupport.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -16,7 +17,10 @@ extern "C" {
 }
 
 TEST_GROUP (CipString) {
-
+  void setup()
+  {
+    mock().disable();
+  }
 };
 
 TEST (CipString, CipStringNClearNullPointer) {
