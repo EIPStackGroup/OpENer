@@ -145,4 +145,68 @@ EipStatus SetAttributeList(CipInstance *instance,
 int DecodePaddedEPath(CipEpath *epath,
                       const EipUint8 **message);
 
+/** @brief Generic implementation of the CIP Create service
+ *
+ *  Creates dynamically allocated object instance within the specified class.
+ *
+ * @param instance pointer to instance.
+ * @param message_router_request pointer to request.
+ * @param message_router_response pointer to response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return status  >0 .. success
+ *          -1 .. requested instance not created
+ */
+EipStatus CipCreateService(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const
+        message_router_request,
+    CipMessageRouterResponse *const
+        message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session);
+
+/** @brief Generic implementation of the CIP Delete service
+ *
+ *  Deletes dynamically allocated object instance within the specified class
+ *  and updates referred class attributes
+ *
+ * @param instance pointer to instance.
+ * @param message_router_request pointer to request.
+ * @param message_router_response pointer to response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return status  >0 .. success
+ *          -1 .. requested instance not deleted
+ */
+EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const
+        message_router_request,
+    CipMessageRouterResponse *const
+        message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session);
+
+/** @brief Generic implementation of the CIP Reset service
+ *
+ *  Causes a transition to a default state or mode of
+ *  the object instance within the specified class
+ *
+ *
+ * @param instance pointer to instance.
+ * @param message_router_request pointer to request.
+ * @param message_router_response pointer to response.
+ * @param originator_address address struct of the originator as received
+ * @param encapsulation_session associated encapsulation session of the explicit message
+ * @return status  >0 .. success
+ *          -1 .. requested instance not reseted
+ */
+EipStatus CipResetService(CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const
+        message_router_request,
+    CipMessageRouterResponse *const
+        message_router_response,
+    const struct sockaddr *originator_address,
+    const int encapsulation_session);
+
 #endif /* OPENER_CIPCOMMON_H_ */

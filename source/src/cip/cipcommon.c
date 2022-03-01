@@ -30,6 +30,15 @@
 #include "stdlib.h"
 #include "ciptypes.h"
 
+#if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
+  #include "OpENerFileObject/cipfile.h"
+#endif
+
+#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
+  #include "SecurityObjects/CipSecurityObject/cipsecurity.h"
+  #include "SecurityObjects/EtherNetIPSecurityObject/ethernetipsecurity.h"
+  #include "SecurityObjects/CertificateManagementObject/certificatemanagement.h"
+#endif
 /* private functions*/
 
 EipStatus CipStackInit(const EipUint16 unique_connection_id) {
@@ -52,6 +61,21 @@ EipStatus CipStackInit(const EipUint16 unique_connection_id) {
 #endif
   eip_status = CipQoSInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
+
+#if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
+  eip_status = CipFileInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+#endif
+
+#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
+  eip_status = CipSecurityInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = EIPSecurityInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+  eip_status = CertificateManagementObjectInit();
+  OPENER_ASSERT(kEipStatusOk == eip_status);
+#endif
+
   /* the application has to be initialized at last */
   eip_status = ApplicationInitialization();
   OPENER_ASSERT(kEipStatusOk == eip_status);
@@ -230,6 +254,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   /* initialize the class-specific fields of the Class struct*/
   cip_class->class_code = class_code; /* the class remembers the class ID */
   cip_class->revision = revision; /* the class remembers the class ID */
+  cip_class->max_instance = 0; /* the largest instance number of a created object in this class */
   cip_class->number_of_instances = 0; /* the number of instances initially zero (more created below) */
   cip_class->instances = 0;
   cip_class->number_of_attributes = number_of_instance_attributes; /* the class remembers the number of instances of that class */
@@ -288,7 +313,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                      NULL, (void *) &cip_class->revision,
                      kGetableSingleAndAll );                   /* revision */
     InsertAttribute( (CipInstance *) cip_class, 2, kCipUint, EncodeCipUint,
-                     NULL, (void *) &cip_class->number_of_instances,
+                     NULL, (void *) &cip_class->max_instance,
                      kGetableSingleAndAll );                              /* #2 Max instance no. */
     InsertAttribute( (CipInstance *) cip_class, 3, kCipUint, EncodeCipUint,
                      NULL, (void *) &cip_class->number_of_instances,
@@ -1262,6 +1287,145 @@ int DecodePaddedEPath(CipEpath *epath,
 
   *message = message_runner;
   return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+}
+
+EipStatus CipCreateService(CipInstance *RESTRICT const instance,
+                             CipMessageRouterRequest *const message_router_request,
+                             CipMessageRouterResponse *const message_router_response,
+                             const struct sockaddr *originator_address,
+                             const int encapsulation_session) {
+
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+
+  CipClass *class = GetCipClass(message_router_request->request_path.class_id);
+
+  EipStatus internal_state = kEipStatusOk;
+
+  /* Call the PreCreateCallback if the class provides one. */
+  if( NULL != class->PreCreateCallback) {
+    internal_state = class->PreCreateCallback(instance, message_router_request, message_router_response);
+  }
+
+  if (kEipStatusOk == internal_state) {
+    CipInstance *new_instance = AddCipInstances(class, 1); /* add 1 instance to class*/
+    OPENER_ASSERT(NULL != new_instance); /* fail if run out of memory */
+
+    /* Call the PostCreateCallback if the class provides one. */
+    if (NULL != class->PostCreateCallback) {
+      class->PostCreateCallback(new_instance, message_router_request, message_router_response);
+    }
+    OPENER_TRACE_INFO("Instance number %d created\n", new_instance->instance_number);
+  }
+  return kEipStatusOkSend;
+}
+
+EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
+                 CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterResponse *const message_router_response,
+                 const struct sockaddr *originator_address,
+                 const int encapsulation_session) {
+
+  message_router_response->general_status = kCipErrorInstanceNotDeletable;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service = (0x80 | message_router_request->service);
+
+  EipStatus internal_state = kEipStatusOk;
+
+  CipClass *const class = instance->cip_class;
+
+  /* Call the PreDeleteCallback if the class provides one. */
+  if (NULL != class->PreDeleteCallback) {
+    internal_state = class->PreDeleteCallback(instance, message_router_request,
+                                              message_router_response);
+  }
+
+  if (kEipStatusOk == internal_state) {
+    CipInstance *instances = class->instances;
+
+    // update pointers in instance list
+    instances = class->instances; /* pointer to first instance */
+    if (instances->instance_number ==
+        instance->instance_number) {  // if instance to delete is head
+      class->instances = instances->next;
+    } else {
+      while (NULL != instances->next)  // as long as pointer in not NULL
+      {
+        CipInstance *next_instance = instances->next;
+        if (next_instance->instance_number == instance->instance_number) {
+          instances->next = next_instance->next;
+          break;
+        }
+        instances = instances->next;
+      }
+    }
+    // free all allocated attributes of instance
+    CipAttributeStruct *attribute =
+        instance->attributes; /* init pointer to array of attributes*/
+    for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
+      CipFree(attribute->data);
+      ++attribute;
+    }
+    CipFree(instance->attributes);
+
+    /* Call the PostDeleteCallback if the class provides one. */
+    if (NULL != class->PostDeleteCallback) {
+      class->PostDeleteCallback(instance, message_router_request,
+                                message_router_response);
+    }
+
+    OPENER_TRACE_INFO("Instance number %d deleted\n",
+                      instance->instance_number);
+    CipFree(instance);  // delete instance
+
+    class->number_of_instances--; /* update the total number of instances
+                                            recorded by the class - Attr. 3 */
+
+    // update largest instance number (class Attribute 2)
+    instances = class->instances;
+    while (NULL !=
+           instances->next) {  // get last element - should be largest number
+      instances = instances->next;
+    }
+    class->max_instance = instances->instance_number;
+
+    message_router_response->general_status = kCipErrorSuccess;
+  }
+  return kEipStatusOk;
+}
+
+EipStatus CipResetService(CipInstance *RESTRICT const instance,
+                CipMessageRouterRequest *const message_router_request,
+                CipMessageRouterResponse *const message_router_response,
+                const struct sockaddr *originator_address,
+                const int encapsulation_session) {
+  message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service =
+      (0x80 | message_router_request->service);
+
+  EipStatus internal_state = kEipStatusOk;
+
+  CipClass *const class = instance->cip_class;
+
+  /* Call the PreResetCallback if the class provides one. */
+  if (NULL != class->PreResetCallback) {
+    internal_state = class->PreResetCallback(instance, message_router_request,
+                                             message_router_response);
+  }
+
+  if (kEipStatusError != internal_state) {
+    /* Call the PostResetCallback if the class provides one. */
+    if (NULL != class->PostResetCallback) {
+      class->PostResetCallback(instance, message_router_request,
+                               message_router_response);
+    }
+  }
+  return internal_state;
 }
 
 void AllocateAttributeMasks(CipClass *target_class) {

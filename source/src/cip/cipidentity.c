@@ -120,28 +120,20 @@ void CipIdentitySetExtendedDeviceStatus(
   MergeStatusAndExtStatus();
 }
 
-/** @brief Reset service
+/** @brief Identity Object PreResetCallback
  *
- * @param instance
- * @param message_router_request
- * @param message_router_response
+ *  Used for common Reset service
+ *
  * @returns Currently always kEipOkSend is returned
  */
-static EipStatus Reset(CipInstance *instance,
-/* pointer to instance*/
-                       CipMessageRouterRequest *message_router_request,
-/* pointer to message router request*/
-                       CipMessageRouterResponse *message_router_response, /* pointer to message router response*/
-                       const struct sockaddr *originator_address,
-                       const int encapsulation_session) {
+EipStatus IdentityObjectPreResetCallback(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response
+) {
   (void) instance;
 
   EipStatus eip_status = kEipStatusOkSend;
-
-  message_router_response->reply_service =
-    (0x80 | message_router_request->service);
-  message_router_response->size_of_additional_status = 0;
-  message_router_response->general_status = kCipErrorSuccess;
 
   if(message_router_request->request_data_size > 1) {
     message_router_response->general_status = kCipErrorTooMuchData;
@@ -163,18 +155,16 @@ static EipStatus Reset(CipInstance *instance,
         }
         break;
 
-      /* case 2: Not supported Reset type 2 ->
-         Return to factory defaults except communications parameters & power cycle*/
+        /* case 2: Not supported Reset type 2 ->
+           Return to factory defaults except communications parameters & power cycle*/
 
       default:
         message_router_response->general_status = kCipErrorInvalidParameter;
         break;
     }
   }
-
-  InitializeENIPMessage(&message_router_response->message);
   return eip_status;
-}
+  }
 
 void InitializeCipIdentity(CipClass *class) {
 
@@ -205,6 +195,9 @@ void InitializeCipIdentity(CipClass *class) {
                 kGetAttributeSingle,
                 &GetAttributeSingle,
                 "GetAttributeSingle");
+
+  // add Callback function pointers
+  class->PreResetCallback = &IdentityObjectPreResetCallback;
 
 }
 
@@ -253,7 +246,7 @@ EipStatus CipIdentityInit() {
                 &GetAttributeSingle,
                 "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
-  InsertService(class, kReset, &Reset, "Reset");
+  InsertService(class, kReset, &CipResetService, "Reset");
   InsertService(class, kGetAttributeList, &GetAttributeList,
                 "GetAttributeList");
   InsertService(class, kSetAttributeList, &SetAttributeList,
