@@ -1332,7 +1332,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
   CipClass *class = NULL;
 
   CipDword class_id = 0x0;
-  CipDword instance_id = 0x0;
+  CipInstanceNum instance_id = 0x0;
 
   /* with 256 we mark that we haven't got a PIT segment */
   ConnectionObjectSetProductionInhibitTime(connection_object, 256);
@@ -1463,16 +1463,18 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
     if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
        kLogicalSegmentLogicalTypeInstanceId ==
        GetPathLogicalSegmentLogicalType(message) ) {                                                                                                     /* store the configuration ID for later checking in the application connection types */
-      instance_id = CipEpathGetLogicalValue(&message);
+      const CipDword temp_id = CipEpathGetLogicalValue(&message);
 
       OPENER_TRACE_INFO("Configuration instance id %" PRId32 "\n",
-                        instance_id);
-      if(NULL == GetCipInstance(class, instance_id) ) {
+                        temp_id);
+      if( (temp_id > kCipInstanceNumMax) ||
+          ( NULL == GetCipInstance(class, (CipInstanceNum)temp_id) ) ) {
         /*according to the test tool we should respond with this extended error code */
         *extended_error =
           kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
         return kCipErrorConnectionFailure;
       }
+      instance_id = (CipInstanceNum)temp_id;
       /* 1 or 2 16Bit words for the configuration instance part of the path  */
       remaining_path -= (instance_id > 0xFF) ? 2 : 1; //TODO: 32 bit case missing
     } else {
@@ -1562,23 +1564,32 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                || kLogicalSegmentLogicalTypeConnectionPoint ==
                GetPathLogicalSegmentLogicalType(message) ) )                                            /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
-          CipDword attribute_id = CipEpathGetLogicalValue(&message);
+
+          /* Validate encoded instance number. */
+          const CipDword temp_instance_id = CipEpathGetLogicalValue(&message);
+          if (temp_instance_id > kCipInstanceNumMax) {
+            *extended_error =
+              kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
+            return kCipErrorConnectionFailure;
+          }
+          instance_id = (CipInstanceNum)temp_instance_id;
+
           CipConnectionPathEpath path;
           path.class_id = class_id;
-          path.instance_id = attribute_id;
+          path.instance_id = instance_id;
           path.attribute_id_or_connection_point = 0;
           memcpy(paths_to_encode[i], &path,
                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
             attribute_id);
-          if(NULL == GetCipInstance(class, attribute_id) ) { /* Old code - Probably here the attribute ID marks the instance for the assembly object  */
+          if( NULL == GetCipInstance(class, instance_id) ) {
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
             return kCipErrorConnectionFailure;
           }
           /* 1 or 2 16Bit word for the connection point part of the path */
-          remaining_path -= (attribute_id > 0xFF) ? 2 : 1;
+          remaining_path -= (instance_id > 0xFF) ? 2 : 1;
         } else {
           *extended_error =
             kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
@@ -1712,7 +1723,7 @@ void RemoveFromActiveConnections(CipConnectionObject *const connection_object) {
   } OPENER_TRACE_ERR("Connection not found in active connection list\n");
 }
 
-EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
+EipBool8 IsConnectedOutputAssembly(const CipInstanceNum instance_number) {
   EipBool8 is_connected = false;
 
   DoublyLinkedListNode *node = connection_list.first;

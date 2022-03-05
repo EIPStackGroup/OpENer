@@ -275,7 +275,7 @@ EipStatus CipEthernetLinkInit(void) {
 #endif
 
     /* bind attributes to the instance */
-    for (unsigned int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+    for (CipInstanceNum idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
       CipInstance *ethernet_link_instance =
         GetCipInstance(ethernet_link_class, idx + 1);
 
@@ -550,7 +550,7 @@ EipStatus GetAndClearEthernetLink(
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
   0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
-static bool IsIfaceControlAllowed(CipUdint instance_id,
+static bool IsIfaceControlAllowed(CipInstanceNum instance_id,
                                   CipEthernetLinkInterfaceControl const *iface_cntrl)
 {
   const CipUsint duplex_mode =

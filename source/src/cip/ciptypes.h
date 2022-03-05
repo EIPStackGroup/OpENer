@@ -218,6 +218,16 @@ typedef struct cip_type_string_i_struct {
   void *string;   /**< Pointer to CipString, CipString2, CipShortString, or CipStringN. */
 } CipStringIStruct;
 
+
+/** @brief Highest CIP instance number.
+ *
+ * Largest value that can be used to represent or count CIP instances;
+ * intentended for use when validating instance numbers encoded as data types
+ * that can contain illegal values.
+ */
+extern const CipInstanceNum kCipInstanceNumMax;
+
+
 /** @brief Struct for padded EPATHs
  *
  * Here the class code is referenced as class ID - see Vol. 1 C-1.4.2
@@ -226,7 +236,7 @@ typedef struct cip_type_string_i_struct {
 typedef struct {
   EipUint8 path_size;   /**< Path size in 16 bit words (path_size * 16 bit) */
   EipUint16 class_id;   /**< Class ID of the linked object */
-  EipUint16 instance_number;   /**< Requested Instance Number of the linked object */
+  CipInstanceNum instance_number;   /**< Requested Instance Number of the linked object */
   EipUint16 attribute_number;   /**< Requested Attribute Number of the linked object */
 } CipEpath;
 
@@ -317,7 +327,7 @@ typedef struct {
  *  pointer of the @ref CipClass structure.
  */
 typedef struct cip_instance {
-  EipUint32 instance_number;   /**< this instance's number (unique within the class) */
+  CipInstanceNum instance_number;   /**< this instance's number (unique within the class) */
   CipAttributeStruct *attributes;   /**< pointer to an array of attributes which
                                        is unique to this instance */
   struct cip_class *cip_class;   /**< class the instance belongs to */

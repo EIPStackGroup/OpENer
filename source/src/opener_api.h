@@ -128,7 +128,7 @@ CipClass *GetCipClass(const CipUdint class_code);
  *          0 if instance is not in the object
  */
 CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_object,
-                            const EipUint32 instance_number);
+                            const CipInstanceNum instance_number);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance's attribute
@@ -173,7 +173,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const EipUint16 number_of_instance_attributes,
                          const EipUint16 highest_instance_attribute_number,
                          const EipUint16 number_of_instance_services,
-                         const int number_of_instances,
+                         const CipInstanceNum number_of_instances,
                          const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer);
@@ -198,7 +198,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
  */
 CipInstance *AddCipInstances(
   CipClass *RESTRICT const cip_object_to_add_instances,
-  const int number_of_instances);
+  const CipInstanceNum number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -211,7 +211,7 @@ CipInstance *AddCipInstances(
  *
  */
 CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
-                            const EipUint32 instance_id);
+                            const CipInstanceNum instance_id);
 
 /** @ingroup CIP_API
  * @brief Insert an attribute in an instance of a CIP class
@@ -474,7 +474,7 @@ int DecodeCipShortString(CipShortString *const dst,
  * The notification on received configuration data is handled with the
  * AfterAssemblyDataReceived.
  */
-CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
+CipInstance *CreateAssemblyObject(const CipInstanceNum instance_number,
                                   EipByte *const data,
                                   const EipUint16 data_length);
 
