@@ -137,7 +137,7 @@ CipClass *GetCipClass(const CipUdint class_code) {
 }
 
 CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_class,
-                            const EipUint32 instance_number) {
+                            const CipInstanceNum instance_number) {
 
   if(instance_number == 0) {
     return (CipInstance *) cip_class; /* if the instance number is zero, return the class object itself*/

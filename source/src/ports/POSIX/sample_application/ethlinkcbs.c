@@ -66,7 +66,7 @@ EipStatus EthLnkPreGetCallback
 
   CipUint attr_no = attribute->attribute_number;
   /* ATTENTION: Array indices run from 0..(N-1), instance numbers from 1..N */
-  CipUdint inst_no  = instance->instance_number;
+  CipInstanceNum inst_no  = instance->instance_number;
   unsigned idx = inst_no-1;
   switch (attr_no) {
   case 4: {
@@ -133,7 +133,7 @@ EipStatus EthLnkPostGetCallback
   CipByte service
 )
 {
-  CipUdint  inst_no = instance->instance_number;
+  CipInstanceNum inst_no = instance->instance_number;
   EipStatus status = kEipStatusOk;
 
   if (kEthLinkGetAndClear == (service & 0x7f)) {
