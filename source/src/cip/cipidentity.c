@@ -128,7 +128,7 @@ void CipIdentitySetExtendedDeviceStatus(
  */
 EipStatus IdentityObjectPreResetCallback(
     CipInstance *const instance,
-    CipMessageRouterRequest *const message_router_request,
+    const CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response
 ) {
   (void) instance;
