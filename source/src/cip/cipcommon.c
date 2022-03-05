@@ -105,7 +105,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       const int encapsulation_session) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
-  EipUint16 instance_number =
+  CipInstanceNum instance_number =
     message_router_request->request_path.instance_number;                           /* get the instance number */
   CipInstance *instance = GetCipInstance(cip_class, instance_number); /* look up the instance (note that if inst==0 this will be the class itself) */
   if(instance) /* if instance is found */
@@ -165,10 +165,10 @@ CipUint GetMaxInstanceNumber(CipClass *RESTRICT const cip_class) {
 }
 
 CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
-                             const int number_of_instances) {
+                             const CipInstanceNum number_of_instances) {
   CipInstance **next_instance = NULL;
   CipInstance *first_instance = NULL; /* Initialize to error result */
-  EipUint32 instance_number = 1; /* the first instance is number 1 */
+  CipInstanceNum instance_number = 1; /* the first instance is number 1 */
   int new_instances = 0;
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n",
@@ -248,7 +248,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class,
-                            const EipUint32 instance_id) {
+                            const CipInstanceNum instance_id) {
   CipInstance *instance = GetCipInstance(cip_class, instance_id);
 
   if(NULL == instance) { /*we have no instance with given id*/
@@ -268,7 +268,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const int number_of_instance_attributes,
                          const EipUint32 highest_instance_attribute_number,
                          const int number_of_instance_services,
-                         const int number_of_instances,
+                         const CipInstanceNum number_of_instances,
                          const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer) {
@@ -331,7 +331,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   cip_class->class_instance.cip_class = meta_class; /* the class's class is the metaclass (like SmallTalk)*/
   cip_class->class_instance.next = 0; /* the next link will always be zero, since there is only one instance of any particular class object */
 
-  meta_class->class_instance.instance_number = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
+  meta_class->class_instance.instance_number = 0xffff; /*the metaclass object does not really have a valid instance number*/
   meta_class->class_instance.attributes = NULL;/* the metaclass has no attributes*/
   meta_class->class_instance.cip_class = NULL; /* the metaclass has no class*/
   meta_class->class_instance.next = NULL; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
@@ -1355,7 +1355,7 @@ void EncodeEPath(const CipEpath *const epath,
   if(0 < length) {
     if(epath->instance_number < 256) {
       AddSintToMessage(0x24, message); /*8Bit Instance Id */
-      AddSintToMessage(epath->instance_number, message);
+      AddSintToMessage( (EipUint8)epath->instance_number, message );
       length -= 1;
     } else {
       AddSintToMessage(0x25, message); /*16Bit Instance Id */
