@@ -75,7 +75,7 @@ int main(int argc, char *arg[]) {
 	/* unique_connection_id should be sufficiently random or incremented and stored
 	*  in non-volatile memory each time the device boots.
 	*/
-	EipUint16 unique_connection_id = rand();
+	EipUint16 unique_connection_id = (EipUint16)rand();
 
 	/* Setup the CIP Layer. All objects are initialized with the default
 	* values for the attribute contents. */
