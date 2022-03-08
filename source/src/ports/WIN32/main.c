@@ -79,7 +79,7 @@ int main(int argc, char *arg[]) {
 	*  the PRNG to ensure we don't get the same value on every startup.
 	*/
 	srand(time(NULL));
-	EipUint16 unique_connection_id = rand();
+	EipUint16 unique_connection_id = (EipUint16)rand();
 
 	/* Setup the CIP Layer. All objects are initialized with the default
 	* values for the attribute contents. */
