@@ -135,10 +135,10 @@ struct cip_connection_object {
   CipUint requested_produced_connection_size;
   CipUint requested_consumed_connection_size;
 
-  uint64_t transmission_trigger_timer;
-  uint64_t inactivity_watchdog_timer;
-  uint64_t last_package_watchdog_timer;
-  uint64_t production_inhibit_timer;
+  MilliSeconds transmission_trigger_timer;
+  MilliSeconds inactivity_watchdog_timer;
+  MilliSeconds last_package_watchdog_timer;
+  MilliSeconds production_inhibit_timer;
 
   CipUint connection_serial_number;
   CipUint originator_vendor_id;

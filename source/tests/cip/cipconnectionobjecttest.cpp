@@ -407,3 +407,55 @@ TEST(CipConnectionObject, ParseConnectionData) {
               transport_class);
 
 }
+
+
+/*******************************************************************************
+ * Inactivity watchdog timer tests.
+ ******************************************************************************/
+TEST_GROUP(WatchdogTimer)
+{
+
+};
+
+
+/* Confirm the correct timeout multipler application upon reset. */
+TEST(WatchdogTimer, ResetMultiplier)
+{
+  CipConnectionObject co;
+  co.o_to_t_requested_packet_interval = 1000;
+
+  for (co.connection_timeout_multiplier = 0;
+       co.connection_timeout_multiplier < 8;
+       co.connection_timeout_multiplier++) {
+    unsigned int expected;
+    ConnectionObjectResetInactivityWatchdogTimerValue(&co);
+    switch (co.connection_timeout_multiplier)
+    {
+      case 0:
+        expected = 4;
+        break;
+      case 1:
+        expected = 8;
+        break;
+      case 2:
+        expected = 16;
+        break;
+      case 3:
+        expected = 32;
+        break;
+      case 4:
+        expected = 64;
+        break;
+      case 5:
+        expected = 128;
+        break;
+      case 6:
+        expected = 256;
+        break;
+      case 7:
+        expected = 512;
+        break;
+    }
+    CHECK_EQUAL(expected, co.inactivity_watchdog_timer);
+  }
+}

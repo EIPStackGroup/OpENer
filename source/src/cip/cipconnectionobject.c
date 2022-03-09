@@ -93,7 +93,18 @@ void CipConnectionObjectListArrayFree(DoublyLinkedListNode **node) {
 }
 
 /* Private methods declaration */
-uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
+
+/**
+ * @brief Computes the inactivity watchdog timer interval.
+ *
+ * The interval is calculated based on the RPI and enumerated multiplier
+ * per @cite CipVol1, 3-4.4.18 and Table 3-5.12.
+ *
+ * @param[in] connection_object Object containing the watchdog timer parameters.
+ *
+ * @return The inactivity watchdog timer interval in milliseconds.
+ */
+MilliSeconds ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   const CipConnectionObject *const connection_object);
 
 void ConnectionObjectSetInitialInactivityWatchdogTimerValue(
@@ -584,8 +595,8 @@ void ConnectionObjectSetProductionInhibitTime(
 /*setup the preconsumption timer: max(ConnectionTimeoutMultiplier * ExpectedPacketRate, 10s) */
 void ConnectionObjectSetInitialInactivityWatchdogTimerValue(
   CipConnectionObject *const connection_object) {
-  const uint64_t kMinimumInitialTimeoutValue = 10000;
-  const uint64_t calculated_timeout_value =
+  const MilliSeconds kMinimumInitialTimeoutValue = 10000;
+  const MilliSeconds calculated_timeout_value =
     ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
       connection_object);
   connection_object->inactivity_watchdog_timer =
@@ -608,11 +619,48 @@ void ConnectionObjectResetLastPackageInactivityTimerValue(
       connection_object);
 }
 
-uint64_t ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
+MilliSeconds ConnectionObjectCalculateRegularInactivityWatchdogTimerValue(
   const CipConnectionObject *const connection_object) {
-  return ( ( (uint64_t)(connection_object->o_to_t_requested_packet_interval) /
-             (uint64_t) 1000 ) <<
-           (2 + connection_object->connection_timeout_multiplier) );
+
+  /* Convert RPI from uS to mS. */
+  const MilliSeconds rpi_mS =
+    connection_object->o_to_t_requested_packet_interval / 1000;
+
+  unsigned int multiplier = 0;
+  switch (connection_object->connection_timeout_multiplier) {
+    case 0:
+      multiplier = 4;
+      break;
+    case 1:
+      multiplier = 8;
+      break;
+    case 2:
+      multiplier = 16;
+      break;
+    case 3:
+      multiplier = 32;
+      break;
+    case 4:
+      multiplier = 64;
+      break;
+    case 5:
+      multiplier = 128;
+      break;
+    case 6:
+      multiplier = 256;
+      break;
+    case 7:
+      multiplier = 512;
+      break;
+    default:
+      OPENER_ASSERT(false); /* Undefined enumeration. */
+      break;
+  }
+
+  const MilliSeconds timeout_mS = rpi_mS * multiplier;
+  OPENER_ASSERT(timeout_mS > rpi_mS); /* Check for overflow. */
+
+  return timeout_mS;
 }
 
 CipUint ConnectionObjectGetConnectionSerialNumber(
