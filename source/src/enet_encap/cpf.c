@@ -271,7 +271,9 @@ EipStatus CreateCommonPacketFormatStructure(const EipUint8 *data,
       return kEipStatusError;
     }
 
-    CipUsint address_item_count = common_packet_format_data->item_count - 2;
+    /* Data type per CIP Volume 2, Edition 1.4, Table 2-6.1. */
+    CipUint address_item_count = (CipUint)(common_packet_format_data->item_count - 2U);
+
     for(size_t j = 0; j < (address_item_count > 2 ? 2 : address_item_count);
         j++)                                                                      /* TODO there needs to be a limit check here???*/
     {
