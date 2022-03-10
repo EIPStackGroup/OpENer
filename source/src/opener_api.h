@@ -300,73 +300,73 @@ void InsertGetSetCallback(CipClass *const cip_class,
  *  @param message_router_response The message router response construct
  */
 
-void EncodeCipBool(const CipBool *const data,
+void EncodeCipBool(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipByte(const CipByte *const data,
+void EncodeCipByte(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipWord(const CipWord *const data,
+void EncodeCipWord(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipDword(const CipDword *const data,
+void EncodeCipDword(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipLword(const CipLword *const data,
+void EncodeCipLword(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUsint(const CipUsint *const data,
+void EncodeCipUsint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUint(const CipUint *const data,
+void EncodeCipUint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipUdint(const CipUdint *const data,
+void EncodeCipUdint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUlint(const CipUlint *const data,
+void EncodeCipUlint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipSint(const CipSint *const data,
+void EncodeCipSint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipInt(const CipInt *const data,
+void EncodeCipInt(const void *const data,
                   ENIPMessage *const outgoing_message);
 
-void EncodeCipDint(const CipDint *const data,
+void EncodeCipDint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipLint(const CipLint *const data,
+void EncodeCipLint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipReal(const CipReal *const data,
+void EncodeCipReal(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipLreal(const CipLreal *const data,
+void EncodeCipLreal(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipShortString(const CipShortString *const data,
+void EncodeCipShortString(const void *const data,
                           ENIPMessage *const outgoing_message);
 
-void EncodeCipString(const CipString *const data,
+void EncodeCipString(const void *const data,
                      ENIPMessage *const outgoing_message);
 
-void EncodeCipString2(const CipString2 *const data,
+void EncodeCipString2(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipStringN(const CipStringN *const data,
+void EncodeCipStringN(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipStringI(const CipStringI *const data,
+void EncodeCipStringI(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipByteArray(const CipByteArray *const data,
+void EncodeCipByteArray(const void *const data,
                         ENIPMessage *const outgoing_message);
 
-void EncodeCipEPath(const CipEpath *const data,
+void EncodeCipEPath(const void *const data,
                     ENIPMessage *const outgoing_message); //path_size UINT
 
-void EncodeEPath(const CipEpath *const data,
+void EncodeEPath(const void *const data,
                  ENIPMessage *const outgoing_message); //path_size not encoded
 
 void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
