@@ -58,6 +58,27 @@ CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
 
 /** @ingroup ENCAP
  *
+ * @brief Extracts a 32-bit floating-point number from a network buffer.
+ *
+ * @param[in] buffer Source buffer. Target pointer will be incremented past the consumed data.
+ *
+ * @return Extracted real value.
+ */
+CipReal GetRealFromMessage(const CipOctet **const buffer);
+
+/** @ingroup ENCAP
+ *
+ * @brief Extracts a 64-bit floating-point number from a network buffer.
+ *
+ * @param[in] buffer Source buffer. Target pointer will be incremented past the
+ * consumed data.
+ *
+ * @return Extracted long real value.
+ */
+CipLreal GetLrealFromMessage(const CipOctet **const buffer);
+
+/** @ingroup ENCAP
+ *
  * @brief converts UINT8 data from host to little endian an writes it to buffer.
  * @param data value to be written
  * @param buffer pointer where data should be written.

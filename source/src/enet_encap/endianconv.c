@@ -19,6 +19,20 @@
 
 OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 
+
+/* Used to convert between 32-bit integers and floating-points. */
+union int_float_32 {
+  CipDint as_integer;
+  CipReal as_float;
+};
+
+/* Used to convert between 64-bit integers and floating-points. */
+union int_float_64 {
+  CipLint as_integer;
+  CipLreal as_float;
+};
+
+
 /* THESE ROUTINES MODIFY THE BUFFER POINTER*/
 
 /**
@@ -108,6 +122,18 @@ CipUdint GetDwordFromMessage(const CipOctet **const buffer_address) {
                   24;
   *buffer_address += 4;
   return data;
+}
+
+CipReal GetRealFromMessage(const CipOctet **const buffer) {
+  union int_float_32 convert;
+  convert.as_integer = GetDintFromMessage(buffer);
+  return convert.as_float;
+}
+
+CipLreal GetLrealFromMessage(const CipOctet **const buffer) {
+  union int_float_64 convert;
+  convert.as_integer = GetLintFromMessage(buffer);
+  return convert.as_float;
 }
 
 /**

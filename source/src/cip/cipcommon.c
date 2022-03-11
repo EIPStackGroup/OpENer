@@ -952,7 +952,7 @@ int DecodeCipReal(CipReal *const data,
                   CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
-  *data = GetDintFromMessage(&message_router_request->data);
+  *data = GetRealFromMessage(&message_router_request->data);
   message_router_response->general_status = kCipErrorSuccess;
   return 4;
 }
@@ -961,7 +961,7 @@ int DecodeCipLreal(CipLreal *const data,
                    CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
-  *data = GetLintFromMessage(&message_router_request->data);
+  *data = GetLrealFromMessage(&message_router_request->data);
   message_router_response->general_status = kCipErrorSuccess;
   return 8;
 }

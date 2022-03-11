@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include <CppUTest/TestHarness.h>
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -122,6 +123,23 @@ TEST(EndianConversion, GetLintFromMessage) {
 
   LONGS_EQUAL(0x0706050403020100, returned_value);
   POINTERS_EQUAL(test_message + 8, *message);
+}
+
+TEST(EndianConversion, GetRealFromMessage) {
+  const CipOctet msg[] = {0xdb, 0x0f, 0x49, 0x40};
+  const CipOctet *p = msg;
+  CipReal actual = GetRealFromMessage(&p);
+  CHECK_EQUAL( (CipReal)M_PI, actual );
+  POINTERS_EQUAL(&msg[sizeof(msg)], p);
+}
+
+TEST(EndianConversion, GetLrealFromMessage) {
+  const CipOctet msg[] = {0x18, 0x2d, 0x44, 0x54, 0xfb, 0x21, 0x09, 0x40};
+  const CipOctet *p = msg;
+  CipLreal actual = GetLrealFromMessage(&p);
+  CHECK_EQUAL(M_PI, actual);
+  MEMCMP_EQUAL( msg, &actual, sizeof(CipLreal) );
+  POINTERS_EQUAL(&msg[sizeof(msg)], p);
 }
 
 TEST(EndianConversion, AddIntToMessage) {
