@@ -160,18 +160,14 @@ void AddDintToMessage(const EipUint32 data,
  */
 EipUint64 GetLintFromMessage(const EipUint8 **const buffer) {
   const EipUint8 *buffer_address = *buffer;
-  EipUint64 data =
-    ( ( ( (EipUint64) buffer_address[0] ) << 56 ) & 0xFF00000000000000LL ) +
-    ( ( ( (EipUint64) buffer_address[1] ) << 48 ) & 0x00FF000000000000LL )
-    + ( ( ( (EipUint64) buffer_address[2] ) << 40 ) &
-        0x0000FF0000000000LL ) +
-    ( ( ( (EipUint64) buffer_address[3] ) << 32 ) & 0x000000FF00000000LL )
-    + ( ( ( (EipUint64) buffer_address[4] ) << 24 ) &
-        0x00000000FF000000 ) +
-    ( ( ( (EipUint64) buffer_address[5] ) << 16 ) & 0x0000000000FF0000 )
-    + ( ( ( (EipUint64) buffer_address[6] ) << 8 ) &
-        0x000000000000FF00 ) +
-    ( ( (EipUint64) buffer_address[7] ) & 0x00000000000000FF );
+  EipUint64 data = ( (EipUint64)buffer_address[7] << 56
+                     | (EipUint64)buffer_address[6] << 48
+                     | (EipUint64)buffer_address[5] << 40
+                     | (EipUint64)buffer_address[4] << 32
+                     | (EipUint64)buffer_address[3] << 24
+                     | (EipUint64)buffer_address[2] << 16
+                     | (EipUint64)buffer_address[1] << 8
+                     | (EipUint64)buffer_address[0] );
   *buffer += 8;
   return data;
 }

@@ -114,12 +114,13 @@ TEST(EndianConversion, GetDwordFromMessage) {
 }
 
 TEST(EndianConversion, GetLintFromMessage) {
-  const CipOctet test_message[] = {81, 126, 166, 15, 70, 97, 208, 236};
+  const CipOctet test_message[] =
+  {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
   const CipOctet *message_pointer = test_message;
   const CipOctet **const message = &message_pointer;
   EipUint64 returned_value = GetLintFromMessage(message);
 
-  LONGS_EQUAL(5872313548673241324, returned_value);
+  LONGS_EQUAL(0x0706050403020100, returned_value);
   POINTERS_EQUAL(test_message + 8, *message);
 }
 
