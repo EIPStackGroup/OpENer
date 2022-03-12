@@ -629,6 +629,7 @@ LogicalSegmentLogicalFormat CipEpathGetNeededLogicalFormatForValue(
 }
 
 //TODO: Does not match the actual interface anymore, check how to fix
+/*
 size_t CipEpathEncodeConnectionEpath(
   const CipConnectionPathEpath *const connection_epath,
   CipOctet **encoded_path) {
@@ -678,6 +679,7 @@ size_t CipEpathEncodeConnectionEpath(
   }
   return encoded_path_length += 1;
 }
+*/
 
 bool CipEpathEqual(const CipOctet *const path1,
                    const CipUint path1_length,
