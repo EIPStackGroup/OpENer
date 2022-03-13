@@ -374,7 +374,7 @@ void EncodeCipLastConflictDetected(const void *const data,
 
 int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
 		void *const data,
-		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
@@ -405,7 +405,7 @@ int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
 
 int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
 		CipTcpIpInterfaceConfiguration *const data, //kCipUdintUdintUdintUdintUdintString
-		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
@@ -468,7 +468,7 @@ int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
 
 int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 		CipString *const data,
-		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
@@ -511,7 +511,7 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
 		void *const data,
-		const CipMessageRouterRequest *const message_router_request,
+		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
 	int number_of_decoded_bytes = -1;
