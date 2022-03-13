@@ -1006,7 +1006,7 @@ EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                      &message_router_response->message);
   } else {
     /* we have an connection creation error */
-    OPENER_TRACE_INFO("AssembleForwardOpenResponse: sending error response\n");
+    OPENER_TRACE_WARN("AssembleForwardOpenResponse: sending error response, general/extended status=%d/%d\n", general_status, extended_status);
     ConnectionObjectSetState(connection_object,
                              kConnectionObjectStateNonExistent);
     /* Expected data length is 10 octets */
