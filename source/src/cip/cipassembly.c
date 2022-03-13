@@ -27,7 +27,7 @@
  *          -1 .. error
  */
 int DecodeCipAssemblyAttribute3(CipByteArray *const data,
-                                const CipMessageRouterRequest *const message_router_request,
+                                CipMessageRouterRequest *const message_router_request,
                                 CipMessageRouterResponse *const message_router_response);
 
 static EipStatus AssemblyPreGetCallback(CipInstance *const instance,
@@ -153,7 +153,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
 }
 
 int DecodeCipAssemblyAttribute3(CipByteArray *const data,
-                                const CipMessageRouterRequest *const message_router_request,
+                                CipMessageRouterRequest *const message_router_request,
                                 CipMessageRouterResponse *const message_router_response)
 {
 
