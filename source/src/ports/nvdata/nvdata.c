@@ -65,6 +65,11 @@ EipStatus NvQosSetCallback(CipInstance *const instance,
   /* Suppress unused parameter compiler warning. */
   (void)service;
 
+  /* Suppress parameters used only for trace macros. */
+#ifndef OPENER_WITH_TRACES
+  (void)instance;
+#endif /* OPENER_WITH_TRACES */
+
   EipStatus status = kEipStatusOk;
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
@@ -93,6 +98,11 @@ EipStatus NvQosSetCallback(CipInstance *const instance,
 EipStatus NvTcpipSetCallback(CipInstance *const instance,
                              CipAttributeStruct *const attribute,
                              CipByte service) {
+  /* Suppress parameters used only for trace macros. */
+#ifndef OPENER_WITH_TRACES
+  (void)instance;
+#endif /* OPENER_WITH_TRACES */
+
   EipStatus status = kEipStatusOk;
 
   if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
