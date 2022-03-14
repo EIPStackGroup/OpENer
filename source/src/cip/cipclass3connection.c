@@ -24,7 +24,7 @@ void Class3ConnectionTimeoutHandler(CipConnectionObject *connection_object) {
 
 /**** Implementation ****/
 CipError EstablishClass3Connection(
-  const CipConnectionObject *RESTRICT const connection_object,
+  CipConnectionObject *RESTRICT const connection_object,
   EipUint16 *const extended_error) {
   CipError cip_error = kCipErrorSuccess;
 
