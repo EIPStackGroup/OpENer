@@ -40,6 +40,12 @@ int NvQosLoad(CipQosObject *p_qos) {
 
   FILE  *p_file = ConfFileOpen(false, QOS_CFG_NAME);
   if (NULL != p_file) {
+
+/* Disable VS fscanf depreciation warning. */
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif /* _MSC_VER */
+
     /* Read input data */
     rd_cnt = fscanf(p_file,
                     " %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 ", %" SCNu8 "\n",
@@ -48,6 +54,11 @@ int NvQosLoad(CipQosObject *p_qos) {
                     &dscp_high,
                     &dscp_low,
                     &dscp_explicit);
+
+/* Restore default depreciation warning behavior. */
+#ifdef _MSC_VER
+#pragma warning(default : 4996)
+#endif /* _MSC_VER */
 
     /* Need to try to close all stuff in any case. */
     eip_status = ConfFileClose(&p_file);
