@@ -466,7 +466,7 @@ EipStatus CipSecurityInit(void) {
   );
   InsertService(cip_security_object_class,
                 kReset,
-                &Reset,
+                &CipResetService,
                 "Reset"
   );
   InsertService(cip_security_object_class,
