@@ -415,7 +415,7 @@ void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
   );
   InsertService(meta_class,
                 kCreate,
-                &Create,
+                &CipCreateService,
                 "Create"
   );
   // add Callback function pointers
@@ -467,7 +467,7 @@ EipStatus CertificateManagementObjectInit(void) {
   );
   InsertService(certificate_management_object_class,
                 kDelete,
-                &Delete,
+                &CipDeleteService,
                 "Delete"
   );
   InsertService(certificate_management_object_class,
