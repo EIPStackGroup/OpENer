@@ -787,7 +787,7 @@ EipStatus EIPSecurityInit(void) {
   );
   InsertService(eip_security_object_class,
                 kReset,
-                &Reset,
+                &CipResetService,
                 "Reset"
   );
   InsertService(eip_security_object_class,
