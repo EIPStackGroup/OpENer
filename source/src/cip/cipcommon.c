@@ -969,19 +969,16 @@ int DecodeCipLreal(CipLreal *const data,
 int DecodeCipString(CipString *const data,
                     CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response) {
-
-  const EipUint8 **const cip_message = message_router_request->data;
-
   int number_of_decoded_bytes = -1;
   CipString *string = data;
-  string->length = GetIntFromMessage(&cip_message);
-  memcpy(string->string, cip_message, string->length);
-  *cip_message += string->length;
+  string->length = GetIntFromMessage(&message_router_request->data);
+  memcpy(string->string, message_router_request->data, string->length);
+  message_router_request->data += string->length;
 
   number_of_decoded_bytes = string->length + 2; /* we have a two byte length field */
   if(number_of_decoded_bytes & 0x01) {
     /* we have an odd byte count */
-    ++(*cip_message);
+    message_router_request->data++;
     number_of_decoded_bytes++;
   }
   message_router_response->general_status = kCipErrorSuccess;
@@ -992,17 +989,15 @@ int DecodeCipShortString(CipShortString *const data,
                          CipMessageRouterRequest *const message_router_request,
                          CipMessageRouterResponse *const message_router_response)
 {
-
-  const EipUint8 **const cip_message = message_router_request->data;
-
   int number_of_decoded_bytes = -1;
   CipShortString *short_string = data;
 
-  short_string->length = **cip_message;
-  ++(*cip_message);
+  short_string->length = GetUsintFromMessage(&message_router_request->data);
 
-  memcpy(short_string->string, &cip_message, short_string->length);
-  *cip_message += short_string->length;
+  memcpy(short_string->string,
+         &message_router_request->data,
+         short_string->length);
+  message_router_request->data += short_string->length;
 
   number_of_decoded_bytes = short_string->length + 1;
   message_router_response->general_status = kCipErrorSuccess;
