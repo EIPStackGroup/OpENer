@@ -83,7 +83,18 @@ static FILE *FopenMkdir(char *p_path,
     *sep = '/';
     VERBOSE(stdout, "%s", "\n");
   }
+
+/* Disable VS fopen depreciation warning. */
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif /* _MSC_VER */
+
   return fopen(p_path, mode);
+
+/* Restore default depreciation warning behavior. */
+#ifdef _MSC_VER
+#pragma warning(default : 4996)
+#endif /* _MSC_VER */
 }
 
 
