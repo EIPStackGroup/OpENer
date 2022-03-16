@@ -4,6 +4,13 @@
  *
  ******************************************************************************/
 
+/*
+ * The following definition is needed for MinGW-w64 to enable C99 scanf
+ * specifiers as required by fscanf() in NvQosLoad().
+ */
+#define __USE_MINGW_ANSI_STDIO 1
+
+
 /** @file nvqos.c
  *  @brief This file implements the functions to handle QoS object's NV data.
  *
