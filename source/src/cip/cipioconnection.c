@@ -366,9 +366,10 @@ EipStatus OpenConsumingPointToPointConnection(
     j = 1;
   }
 
-  struct sockaddr_in addr =
-  { .sin_family = AF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = htons(
-      kOpenerEipIoUdpPort) };
+  struct sockaddr_in addr;
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_port = htons(kOpenerEipIoUdpPort);
 
   // retrieve network adapter to bind only this one
   struct sockaddr_in producing_address;

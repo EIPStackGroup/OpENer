@@ -204,10 +204,10 @@ EipStatus NetworkHandlerInitialize(void) {
     return kEipStatusError;
   }
 
-  struct sockaddr_in my_address = { .sin_family = AF_INET, .sin_port = htons(
-                                      kOpenerEthernetPort),
-                                    .sin_addr.s_addr =
-                                      g_network_status.ip_address };
+  struct sockaddr_in my_address;
+  my_address.sin_family = AF_INET;
+  my_address.sin_port = htons(kOpenerEthernetPort);
+  my_address.sin_addr.s_addr = g_network_status.ip_address;
 
   /* bind the new socket to port 0xAF12 (CIP) */
   if( (bind(g_network_status.tcp_listener, (struct sockaddr *) &my_address,
@@ -246,9 +246,10 @@ EipStatus NetworkHandlerInitialize(void) {
     /* print message but don't abort by intent */
   }
 
-  struct sockaddr_in global_broadcast_address =
-  { .sin_family = AF_INET, .sin_port = htons(kOpenerEthernetPort),
-    .sin_addr.s_addr = htonl(INADDR_ANY) };
+  struct sockaddr_in global_broadcast_address;
+  global_broadcast_address.sin_family = AF_INET;
+  global_broadcast_address.sin_port = htons(kOpenerEthernetPort);
+  global_broadcast_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
   /* enable the UDP socket to receive broadcast messages */
   set_socket_option_value = 1;
@@ -657,12 +658,12 @@ EipStatus SendUdpData(const struct sockaddr_in *const address,
                       const ENIPMessage *const outgoing_message) {
 
   OPENER_TRACE_INFO("UDP port to be sent to: %x\n", ntohs(address->sin_port) );
-  UDPHeader header = { .source_port = 2222, .destination_port = ntohs(
-                         address->sin_port), .packet_length = kUdpHeaderLength
-                                                              +
-                                                              outgoing_message->
-                                                              used_message_length,
-                       .checksum = 0 };
+  UDPHeader header;
+  header.source_port = 2222;
+  header.destination_port = ntohs(address->sin_port);
+  header.packet_length = kUdpHeaderLength +
+                         outgoing_message->used_message_length;
+  header.checksum = 0;
 
   char complete_message[PC_OPENER_ETHERNET_BUFFER_SIZE];
   memcpy(complete_message + kUdpHeaderLength,
@@ -995,7 +996,8 @@ socket_platform_t CreateUdpSocket(UdpCommuncationDirection communication_directi
       {
         /* Need to specify the interface for outgoing multicast packets on a device
            with multiple interfaces. */
-        struct in_addr my_addr = { .s_addr = g_network_status.ip_address };
+        struct in_addr my_addr;
+        my_addr.s_addr = g_network_status.ip_address;
         if(setsockopt(new_socket, IPPROTO_IP, IP_MULTICAST_IF,
                       NWBUF_CAST & my_addr.s_addr, sizeof my_addr.s_addr) < 0) {
           int error_code = GetSocketErrorNumber();

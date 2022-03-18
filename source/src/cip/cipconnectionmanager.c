@@ -1498,9 +1498,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
         return kCipErrorConnectionFailure;
       }
       /* Configuration connection point is producing connection point */
-      CipConnectionPathEpath connection_epath =
-      { .class_id = class_id, .instance_id = instance_id,
-        .attribute_id_or_connection_point = 0 };
+      CipConnectionPathEpath connection_epath;
+      connection_epath.class_id = class_id;
+      connection_epath.instance_id = instance_id;
+      connection_epath.attribute_id_or_connection_point = 0;
 
       memcpy(&(connection_object->configuration_path),
              &connection_epath,
@@ -1510,9 +1511,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
       /* End class 3 connection handling */
     } else { /* we have an IO connection */
-      CipConnectionPathEpath connection_epath =
-      { .class_id = class_id, .instance_id = instance_id,
-        .attribute_id_or_connection_point = 0 };
+      CipConnectionPathEpath connection_epath;
+      connection_epath.class_id = class_id;
+      connection_epath.instance_id = instance_id;
+      connection_epath.attribute_id_or_connection_point = 0;
       memcpy(&(connection_object->configuration_path),
              &connection_epath,
              sizeof(connection_object->configuration_path) );
@@ -1561,9 +1563,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                GetPathLogicalSegmentLogicalType(message) ) )                                            /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
-          CipConnectionPathEpath path =
-          { .class_id = class_id, .instance_id = attribute_id,
-            .attribute_id_or_connection_point = 0 };
+          CipConnectionPathEpath path;
+          path.class_id = class_id;
+          path.instance_id = attribute_id;
+          path.attribute_id_or_connection_point = 0;
           memcpy(paths_to_encode[i], &path,
                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
