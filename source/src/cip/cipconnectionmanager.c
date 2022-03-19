@@ -31,8 +31,8 @@
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 const size_t g_kLargeForwardOpenHeaderLength = 40; /**< the length in bytes of the large forward open command specific data till the start of the connection path (including con path size)*/
 
-static const int g_kNumberOfConnectableObjects = 2 +
-                                                 OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
+static const unsigned int g_kNumberOfConnectableObjects = 2 +
+                                                          OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
 
 typedef struct {
   EipUint32 class_id;
@@ -1737,7 +1737,7 @@ EipStatus AddConnectableObject(const CipUdint class_code,
   EipStatus status = kEipStatusError;
 
   /*parsing is now finished all data is available and check now establish the connection */
-  for(size_t i = 0; i < g_kNumberOfConnectableObjects; ++i) {
+  for(unsigned int i = 0; i < g_kNumberOfConnectableObjects; ++i) {
     if( (0 == g_connection_management_list[i].class_id) ||
         (class_code == g_connection_management_list[i].class_id) ) {
       g_connection_management_list[i].class_id = class_code;
@@ -1756,7 +1756,7 @@ GetConnectionManagementEntry(const EipUint32 class_id) {
 
   ConnectionManagementHandling *connection_management_entry = NULL;
 
-  for(size_t i = 0; i < g_kNumberOfConnectableObjects; ++i) {
+  for(unsigned int i = 0; i < g_kNumberOfConnectableObjects; ++i) {
     if(class_id == g_connection_management_list[i].class_id) {
       connection_management_entry = &(g_connection_management_list[i]);
       break;
