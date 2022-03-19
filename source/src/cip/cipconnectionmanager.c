@@ -1352,14 +1352,14 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
     header_length = g_kLargeForwardOpenHeaderLength;
   }
 
-  if( (header_length + remaining_path * 2) <
+  if( ( header_length + remaining_path * sizeof(CipWord) ) <
       message_router_request->request_data_size ) {
     /* the received packet is larger than the data in the path */
     *extended_error = 0;
     return kCipErrorTooMuchData;
   }
 
-  if( (header_length + remaining_path * 2) >
+  if( ( header_length + remaining_path * sizeof(CipWord) ) >
       message_router_request->request_data_size ) {
     /*there is not enough data in received packet */
     *extended_error = 0;
