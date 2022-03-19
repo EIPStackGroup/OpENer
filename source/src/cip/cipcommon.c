@@ -1378,8 +1378,10 @@ void EncodeEPath(const CipEpath *const epath,
     }
   }
 
+  /* path size is in 16 bit chunks according to the specification */
   OPENER_ASSERT(
-    epath->path_size * 2 == message->used_message_length - start_length);             /* path size is in 16 bit chunks according to the specification */
+    epath->path_size * sizeof(CipWord) ==
+    message->used_message_length - start_length);
 }
 
 int DecodePaddedEPath(CipEpath *epath,
