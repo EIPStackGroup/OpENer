@@ -971,7 +971,7 @@ int DecodeCipString(CipString *const data,
                     CipMessageRouterResponse *const message_router_response) {
   int number_of_decoded_bytes = -1;
   CipString *string = data;
-  string->length = GetIntFromMessage(&message_router_request->data);
+  string->length = GetUintFromMessage(&message_router_request->data);
   memcpy(string->string, message_router_request->data, string->length);
   message_router_request->data += string->length;
 
