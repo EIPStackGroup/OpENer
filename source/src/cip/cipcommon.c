@@ -23,6 +23,7 @@
   #include "cipdlr.h"
 #endif
 #include "cipqos.h"
+#include "cipstring.h"
 #include "cpf.h"
 #include "trace.h"
 #include "appcontype.h"
@@ -966,41 +967,65 @@ int DecodeCipLreal(CipLreal *const data,
   return 8;
 }
 
-int DecodeCipString(CipString *const data,
+int DecodeCipString(CipString *const dst,
                     CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response) {
   int number_of_decoded_bytes = -1;
-  CipString *string = data;
-  string->length = GetUintFromMessage(&message_router_request->data);
-  memcpy(string->string, message_router_request->data, string->length);
-  message_router_request->data += string->length;
 
-  number_of_decoded_bytes = string->length + 2; /* we have a two byte length field */
-  if(number_of_decoded_bytes & 0x01) {
-    /* we have an odd byte count */
-    message_router_request->data++;
-    number_of_decoded_bytes++;
+  /* Decode the length. */
+  const CipUint len = GetUintFromMessage(&message_router_request->data);
+
+  /* Attempt to allocate storage for the string data. */
+  const CipString *const result = SetCipStringByData(dst,
+                                                     len,
+                                                     message_router_request->data);
+
+  /* Update request pointer position if storage allocation was successful. */
+  if (result != NULL) {
+    message_router_request->data += dst->length;
+    number_of_decoded_bytes = dst->length + 2; /* we have a two byte length field */
+    if(number_of_decoded_bytes & 0x01) {
+      /* we have an odd byte count */
+      message_router_request->data++;
+      number_of_decoded_bytes++;
+    }
+    message_router_response->general_status = kCipErrorSuccess;
   }
-  message_router_response->general_status = kCipErrorSuccess;
+
+  /* Storage allocation failure. */
+  else {
+    message_router_response->general_status = kCipErrorResourceUnavailable;
+  }
+
   return number_of_decoded_bytes;
 }
 
-int DecodeCipShortString(CipShortString *const data,
+int DecodeCipShortString(CipShortString *const dst,
                          CipMessageRouterRequest *const message_router_request,
                          CipMessageRouterResponse *const message_router_response)
 {
   int number_of_decoded_bytes = -1;
-  CipShortString *short_string = data;
 
-  short_string->length = GetUsintFromMessage(&message_router_request->data);
+  /* Decode the length. */
+  const CipUsint len = GetUsintFromMessage(&message_router_request->data);
 
-  memcpy(short_string->string,
-         &message_router_request->data,
-         short_string->length);
-  message_router_request->data += short_string->length;
+  /* Attempt to allocate storage for the string data. */
+  const CipShortString *const result = SetCipShortStringByData(dst,
+                                                               len,
+                                                               message_router_request->data);
 
-  number_of_decoded_bytes = short_string->length + 1;
-  message_router_response->general_status = kCipErrorSuccess;
+  /* Update request pointer position if storage allocation was successful. */
+  if (result != NULL) {
+    message_router_request->data += dst->length;
+    number_of_decoded_bytes = dst->length + 1;
+    message_router_response->general_status = kCipErrorSuccess;
+  }
+
+  /* Storage allocation failure. */
+  else {
+    message_router_response->general_status = kCipErrorResourceUnavailable;
+  }
+
   return number_of_decoded_bytes;
 }
 

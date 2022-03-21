@@ -449,11 +449,11 @@ int DecodeCipLreal(CipLreal *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 
-int DecodeCipString(CipString *const data,
+int DecodeCipString(CipString *const dst,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 
-int DecodeCipShortString(CipShortString *const data,
+int DecodeCipShortString(CipShortString *const dst,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 

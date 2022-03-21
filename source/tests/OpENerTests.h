@@ -14,3 +14,5 @@ IMPORT_TEST_GROUP (SocketTimer);
 IMPORT_TEST_GROUP (DoublyLinkedList);
 IMPORT_TEST_GROUP (EncapsulationProtocol);
 IMPORT_TEST_GROUP (CipString);
+IMPORT_TEST_GROUP (StringDecode);
+IMPORT_TEST_GROUP (ShortStringDecode);
