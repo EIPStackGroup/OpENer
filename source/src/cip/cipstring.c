@@ -168,8 +168,13 @@ void FreeCipString(CipString *const cip_string) {
 }
 
 CipString *SetCipStringByData(CipString *const cip_string,
-                              CipUint str_len,
+                              size_t str_len,
                               const CipOctet *const data) {
+  /* Length must fit in an unsigned, 16-bit integer. */
+  if (str_len > UINT16_MAX) {
+    return NULL;
+  }
+
   CipString *result = cip_string;
 
   (void) ClearCipString(cip_string);

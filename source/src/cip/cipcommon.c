@@ -967,10 +967,10 @@ int DecodeCipLreal(CipLreal *const data,
   return 8;
 }
 
-int DecodeCipString(CipString *const dst,
-                    CipMessageRouterRequest *const message_router_request,
-                    CipMessageRouterResponse *const message_router_response) {
-  int number_of_decoded_bytes = -1;
+size_t DecodeCipString(CipString *const dst,
+                       CipMessageRouterRequest *const message_router_request,
+                       CipMessageRouterResponse *const message_router_response) {
+  size_t number_of_decoded_bytes = 0;
 
   /* Decode the length. */
   const CipUint len = GetUintFromMessage(&message_router_request->data);

@@ -121,7 +121,7 @@ TEST(StringDecode, ZeroLength)
   request.request_data_size = sizeof(data);
   request.data = data;
 
-  int bytes = DecodeCipString(dst_string, &request, &response);
+  size_t bytes = DecodeCipString(dst_string, &request, &response);
 
   CHECK_EQUAL(sizeof(data), bytes);
   CHECK_EQUAL(0, dst_string->length);
@@ -151,7 +151,7 @@ TEST(StringDecode, MaxLength)
   request.request_data_size = data_size;
   request.data = data;
 
-  int bytes = DecodeCipString(dst_string, &request, &response);
+  size_t bytes = DecodeCipString(dst_string, &request, &response);
 
   CHECK_EQUAL(data_size, bytes);
   CHECK_EQUAL(UINT16_MAX, dst_string->length);
@@ -179,7 +179,7 @@ TEST(StringDecode, OverwriteEmpty)
   size_t string_len = sizeof(data)
                       - sizeof(CipUint); /* Less length field. */
 
-  int bytes = DecodeCipString(dst_string, &request, &response);
+  size_t bytes = DecodeCipString(dst_string, &request, &response);
 
   CHECK_EQUAL(sizeof(data), bytes);
   CHECK_EQUAL(string_len, dst_string->length);
@@ -205,7 +205,7 @@ TEST(StringDecode, OddLength)
                       - sizeof(CipUint) /* Less length field. */
                       - 1;              /* Less pad. */
 
-  int bytes = DecodeCipString(dst_string, &request, &response);
+  size_t bytes = DecodeCipString(dst_string, &request, &response);
 
   CHECK_EQUAL(sizeof(data), bytes);
   CHECK_EQUAL(string_len, dst_string->length);
@@ -229,7 +229,7 @@ TEST(StringDecode, EvenLength)
   size_t string_len = sizeof(data)
                       - sizeof(CipUint); /* Less length field. */
 
-  int bytes = DecodeCipString(dst_string, &request, &response);
+  size_t bytes = DecodeCipString(dst_string, &request, &response);
 
   CHECK_EQUAL(sizeof(data), bytes);
   CHECK_EQUAL(string_len, dst_string->length);

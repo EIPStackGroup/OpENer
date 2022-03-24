@@ -449,7 +449,7 @@ int DecodeCipLreal(CipLreal *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 
-int DecodeCipString(CipString *const dst,
+size_t DecodeCipString(CipString *const dst,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response);
 

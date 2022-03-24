@@ -110,21 +110,25 @@ void FreeCipString(CipString *const cip_string);
 /** @brief Sets length and data for a CipString based on an octet stream and symbol length
  *
  * @param cip_string The string to be set
- * @param str_len Amount of CipString symbols
+ * @param str_len Amount of CipString symbols. Must fit in an unsigned,
+ *                16-bit integer.
  * @param data The octet stream
  *
- * @return The CipString address
+ * @return The CipString address, or @c NULL if @p str_len was an invalid
+ *         value or a memory allocation error occurred.
  */
 CipString *SetCipStringByData(CipString *const cip_string,
-                              CipUint str_len,
+                              size_t str_len,
                               const CipOctet *const data);
 
 /** @brief Copies the content of C-string to a CipString under the expectation, that each C-String element is a CipString octet
  *
  * @param cip_string Target CipString
- * @param string Source C-string
+ * @param string Source C-string. Length must fit in an unsigned, 16-bit
+ *               integer.
  *
- * @return Target CipString
+ * @return Target CipString, or @c NULL if @p string was too long or a memory
+ *         allocation error occurred.
  *
  */
 CipString *SetCipStringByCstr(CipString *const cip_string,
