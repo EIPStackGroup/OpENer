@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, Rockwell Automation, Inc.
+ * Copyright (c) 2022, Rockwell Automation, Inc.
  * All rights reserved.
  *
  ******************************************************************************/
@@ -11,6 +11,7 @@
 #include "opener_api.h"
 #include "cipstring.h"
 #include "trace.h"
+#include "endianconv.h"
 
 void CipStringIDelete(CipStringI *const string) {
   for(size_t i = 0; i < string->number_of_strings; ++i) {
@@ -154,3 +155,81 @@ void CipStringICopy(CipStringI *const to,
     CipStringIDeepCopyInternalString(toStruct, fromStruct);
   }
 }
+
+void CipStringIDecodeFromMessage(CipStringI *data_to,
+		CipMessageRouterRequest *const message_router_request) {
+
+	CipStringI *target_stringI = data_to;
+
+	target_stringI->number_of_strings = GetUsintFromMessage(
+			&message_router_request->data);
+
+	target_stringI->array_of_string_i_structs = CipCalloc(
+			target_stringI->number_of_strings, sizeof(CipStringIStruct));
+
+	for (size_t i = 0; i < target_stringI->number_of_strings; ++i) {
+
+		target_stringI->array_of_string_i_structs[i].language_char_1 =
+				GetUsintFromMessage(&message_router_request->data);
+		target_stringI->array_of_string_i_structs[i].language_char_2 =
+				GetUsintFromMessage(&message_router_request->data);
+		target_stringI->array_of_string_i_structs[i].language_char_3 =
+				GetUsintFromMessage(&message_router_request->data);
+		target_stringI->array_of_string_i_structs[i].char_string_struct =
+				GetUsintFromMessage(&message_router_request->data);
+		target_stringI->array_of_string_i_structs[i].character_set =
+				GetUintFromMessage(&message_router_request->data);
+
+		switch (target_stringI->array_of_string_i_structs[i].char_string_struct) {
+		case kCipShortString: {
+			target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+					sizeof(CipShortString));
+			CipShortString *short_string =
+					(CipShortString*) (target_stringI->array_of_string_i_structs[i].string);
+			CipUsint length = GetUsintFromMessage(
+					&message_router_request->data);
+			SetCipShortStringByData(short_string, length,
+					message_router_request->data);
+			message_router_request->data += length;
+
+		}
+			break;
+		case kCipString: {
+			target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+					sizeof(CipString));
+			CipString *const string =
+					(CipString* const ) target_stringI->array_of_string_i_structs[i].string;
+			CipUint length = GetUintFromMessage(&message_router_request->data);
+			SetCipStringByData(string, length, message_router_request->data);
+			message_router_request->data += length;
+		}
+			break;
+		case kCipString2: {
+			target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+					sizeof(CipString2));
+			CipString2 *const string =
+					(CipString2* const ) target_stringI->array_of_string_i_structs[i].string;
+			CipUint length = GetUintFromMessage(&message_router_request->data);
+			SetCipString2ByData(string, length, message_router_request->data);
+			message_router_request->data += length * 2 * sizeof(CipOctet);
+		}
+			break;
+		case kCipStringN: {
+			CipUint size = GetUintFromMessage(&message_router_request->data);
+			CipUint length = GetUintFromMessage(&message_router_request->data);
+
+			target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+					sizeof(CipStringN));
+			CipStringN *const string =
+					(CipStringN* const ) target_stringI->array_of_string_i_structs[i].string;
+			SetCipStringNByData(string, length, size,
+					message_router_request->data);
+			message_router_request->data += length * size;
+		}
+			break;
+		default:
+			OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
+		}
+	} //end for
+}
+
