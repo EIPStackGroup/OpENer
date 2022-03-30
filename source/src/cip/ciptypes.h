@@ -357,7 +357,7 @@ typedef struct cip_class {
   /* the rest of these are specific to the Class class only. */
   CipUdint class_code;   /**< class code */
   EipUint16 revision;   /**< class revision*/
-  EipUint16 max_instance;   /** largest instance number existing in the class */
+  EipUint16 max_instance;   /**< largest instance number existing in the class */
   EipUint16 number_of_instances;   /**< number of instances in the class (not
                                       including instance 0) */
   EipUint16 number_of_attributes;   /**< number of attributes of each instance */
