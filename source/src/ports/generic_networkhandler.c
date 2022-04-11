@@ -55,6 +55,22 @@
   message("MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function")
 #endif
 
+SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
+
+//EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
+/* global vars */
+fd_set master_socket;
+fd_set read_socket;
+
+int highest_socket_handle; 
+int g_current_active_tcp_socket;
+
+struct timeval g_time_value;
+MilliSeconds g_actual_time;
+MilliSeconds g_last_time;
+
+NetworkStatus g_network_status;
+
 /** @brief handle any connection request coming in the TCP server socket.
  *
  */
