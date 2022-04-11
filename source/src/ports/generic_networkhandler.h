@@ -27,24 +27,24 @@
 #include "appcontype.h"
 #include "socket_timer.h"
 
-SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
+extern SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 
 //EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
 
-fd_set master_socket;
-fd_set read_socket;
+extern fd_set master_socket;
+extern fd_set read_socket;
 
-int highest_socket_handle; /**< temporary file descriptor for select() */
+extern int highest_socket_handle; /**< temporary file descriptor for select() */
 
 /** @brief This variable holds the TCP socket the received to last explicit message.
  * It is needed for opening point to point connection to determine the peer's
  * address.
  */
-int g_current_active_tcp_socket;
+extern int g_current_active_tcp_socket;
 
-struct timeval g_time_value;
-MilliSeconds g_actual_time;
-MilliSeconds g_last_time;
+extern struct timeval g_time_value;
+extern MilliSeconds g_actual_time;
+extern MilliSeconds g_last_time;
 /** @brief Struct representing the current network status
  *
  */
@@ -57,7 +57,7 @@ typedef struct {
   MilliSeconds elapsed_time;
 } NetworkStatus;
 
-NetworkStatus g_network_status; /**< Global variable holding the current network status */
+extern NetworkStatus g_network_status; /**< Global variable holding the current network status */
 
 /** @brief The platform independent part of network handler initialization routine
  *
