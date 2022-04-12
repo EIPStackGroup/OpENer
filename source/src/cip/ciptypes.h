@@ -314,6 +314,7 @@ typedef struct cip_instance {
   struct cip_class *cip_class;   /**< class the instance belongs to */
   struct cip_instance *next;   /**< next instance, all instances of a class live
                                   in a linked list */
+  void *data; /**< pointer to instance data struct */
 } CipInstance;
 
 /** @ingroup CIP_API
