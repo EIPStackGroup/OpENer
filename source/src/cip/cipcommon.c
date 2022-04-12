@@ -1362,14 +1362,15 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
         instances = instances->next;
       }
     }
-    // free all allocated attributes of instance
-    CipAttributeStruct *attribute =
-        instance->attributes; /* init pointer to array of attributes*/
-    for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
-      CipFree(attribute->data);
-      ++attribute;
-    }
-    CipFree(instance->attributes);
+//    // free all allocated attributes of instance  TODO: move section to instance delete function
+//    CipAttributeStruct *attribute =
+//        instance->attributes; /* init pointer to array of attributes*/
+//    for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
+//      CipFree(attribute->data);
+//      ++attribute;
+//    }
+//    CipFree(instance->attributes);
+
 
     /* Call the PostDeleteCallback if the class provides one. */
     if (NULL != class->PostDeleteCallback) {
@@ -1377,8 +1378,6 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
                                 message_router_response);
     }
 
-    OPENER_TRACE_INFO("Instance number %d deleted\n",
-                      instance->instance_number);
     CipFree(instance);  // delete instance
 
     class->number_of_instances--; /* update the total number of instances
@@ -1386,11 +1385,14 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
 
     // update largest instance number (class Attribute 2)
     instances = class->instances;
-    while (NULL !=
-           instances->next) {  // get last element - should be largest number
+    EipUint16 max_instance = 0;
+    while (NULL != instances->next) {
+    	if(instances->instance_number > max_instance){
+    		max_instance = instances->instance_number;
+    	}
       instances = instances->next;
     }
-    class->max_instance = instances->instance_number;
+    class->max_instance = max_instance;
 
     message_router_response->general_status = kCipErrorSuccess;
   }
