@@ -233,3 +233,30 @@ void CipStringIDecodeFromMessage(CipStringI *data_to,
 	} //end for
 }
 
+bool CipStringICompare(const CipStringI *const stringI_1,
+		const CipStringI *const stringI_2) {
+
+	//TODO: add switch/case for different string types
+	//TODO: add loop for struct with multiple strings
+	CipShortString *string_1 = stringI_1->array_of_string_i_structs[0].string;
+	CipShortString *string_2 = stringI_2->array_of_string_i_structs[0].string;
+
+	EipUint8 len_1 = string_1->length;
+	EipUint8 len_2 = string_2->length;
+
+	if (len_1 != len_2) {
+		return false;
+	}
+
+	char str_1[len_1];
+	strcpy(str_1, string_1->string);
+
+	char str_2[len_2];
+	strcpy(str_2, string_2->string);
+
+	if (0 == strcmp(str_1, str_2)) {
+		return true;
+	}
+	return false;
+}
+
