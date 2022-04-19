@@ -1362,15 +1362,6 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
         instances = instances->next;
       }
     }
-//    // free all allocated attributes of instance  TODO: move section to instance delete function
-//    CipAttributeStruct *attribute =
-//        instance->attributes; /* init pointer to array of attributes*/
-//    for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
-//      CipFree(attribute->data);
-//      ++attribute;
-//    }
-//    CipFree(instance->attributes);
-
 
     /* Call the PostDeleteCallback if the class provides one. */
     if (NULL != class->PostDeleteCallback) {
