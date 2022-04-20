@@ -162,15 +162,27 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
                     number_of_instances,
                     cip_class->class_name);
 
-  next_instance = &cip_class->instances; /* get address of pointer to head of chain */
-  while(*next_instance) /* as long as what pp points to is not zero */
-  {
-    next_instance = &(*next_instance)->next; /* follow the chain until pp points to pointer that contains a zero */
-    instance_number++; /* keep track of what the first new instance number will be */
-  }
-
   /* Allocate and initialize all needed instances one by one. */
   for(new_instances = 0; new_instances < number_of_instances; new_instances++) {
+
+	/* Find next free instance number */
+	CipBool found_free_number = false;
+	while (!found_free_number) {
+		found_free_number = true;
+		next_instance = &cip_class->instances; /* get address of pointer to head of chain */
+		/* loop through instances */
+		while (*next_instance) /* as long as what pp points to is not zero */
+		{
+			/* check if instance number in use */
+			if(instance_number == (*next_instance)->instance_number){
+				instance_number++; /* try next instance number */
+				found_free_number = false;
+				break;
+			}
+			next_instance = &(*next_instance)->next; /* follow the chain until pp points to pointer that contains a zero */
+		}
+	}
+
     CipInstance *current_instance =
       (CipInstance *) CipCalloc(1, sizeof(CipInstance) );
     OPENER_ASSERT(NULL != current_instance); /* fail if run out of memory */
