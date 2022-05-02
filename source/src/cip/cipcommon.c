@@ -165,23 +165,23 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
   /* Allocate and initialize all needed instances one by one. */
   for(new_instances = 0; new_instances < number_of_instances; new_instances++) {
 
-	/* Find next free instance number */
-	CipBool found_free_number = false;
-	while (!found_free_number) {
-		found_free_number = true;
-		next_instance = &cip_class->instances; /* get address of pointer to head of chain */
-		/* loop through instances */
-		while (*next_instance) /* as long as what pp points to is not zero */
-		{
-			/* check if instance number in use */
-			if(instance_number == (*next_instance)->instance_number){
-				instance_number++; /* try next instance number */
-				found_free_number = false;
-				break;
-			}
-			next_instance = &(*next_instance)->next; /* follow the chain until pp points to pointer that contains a zero */
-		}
-	}
+    /* Find next free instance number */
+    CipBool found_free_number = false;
+    while (!found_free_number) {
+      found_free_number = true;
+      next_instance = &cip_class->instances;           /* get address of pointer to head of chain */
+      /* loop through instances */
+      while (*next_instance)           /* as long as what pp points to is not zero */
+      {
+        /* check if instance number in use */
+        if(instance_number == (*next_instance)->instance_number) {
+          instance_number++;                       /* try next instance number */
+          found_free_number = false;
+          break;
+        }
+        next_instance = &(*next_instance)->next;                 /* follow the chain until pp points to pointer that contains a zero */
+      }
+    }
 
     CipInstance *current_instance =
       (CipInstance *) CipCalloc(1, sizeof(CipInstance) );
@@ -1302,13 +1302,14 @@ int DecodePaddedEPath(CipEpath *epath,
 }
 
 EipStatus CipCreateService(CipInstance *RESTRICT const instance,
-                             CipMessageRouterRequest *const message_router_request,
-                             CipMessageRouterResponse *const message_router_response,
-                             const struct sockaddr *originator_address,
-                             const int encapsulation_session) {
+                           CipMessageRouterRequest *const message_router_request,
+                           CipMessageRouterResponse *const message_router_response,
+                           const struct sockaddr *originator_address,
+                           const int encapsulation_session) {
 
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
 
@@ -1318,7 +1319,9 @@ EipStatus CipCreateService(CipInstance *RESTRICT const instance,
 
   /* Call the PreCreateCallback if the class provides one. */
   if( NULL != class->PreCreateCallback) {
-    internal_state = class->PreCreateCallback(instance, message_router_request, message_router_response);
+    internal_state = class->PreCreateCallback(instance,
+                                              message_router_request,
+                                              message_router_response);
   }
 
   if (kEipStatusOk == internal_state) {
@@ -1327,23 +1330,27 @@ EipStatus CipCreateService(CipInstance *RESTRICT const instance,
 
     /* Call the PostCreateCallback if the class provides one. */
     if (NULL != class->PostCreateCallback) {
-      class->PostCreateCallback(new_instance, message_router_request, message_router_response);
+      class->PostCreateCallback(new_instance,
+                                message_router_request,
+                                message_router_response);
     }
-    OPENER_TRACE_INFO("Instance number %d created\n", new_instance->instance_number);
+    OPENER_TRACE_INFO("Instance number %d created\n",
+                      new_instance->instance_number);
   }
   return kEipStatusOkSend;
 }
 
 EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
-                 CipMessageRouterRequest *const message_router_request,
-                 CipMessageRouterResponse *const message_router_response,
-                 const struct sockaddr *originator_address,
-                 const int encapsulation_session) {
+                           CipMessageRouterRequest *const message_router_request,
+                           CipMessageRouterResponse *const message_router_response,
+                           const struct sockaddr *originator_address,
+                           const int encapsulation_session) {
 
   message_router_response->general_status = kCipErrorInstanceNotDeletable;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service = (0x80 | message_router_request->service);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
 
   EipStatus internal_state = kEipStatusOk;
 
@@ -1390,9 +1397,9 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
     instances = class->instances;
     EipUint16 max_instance = 0;
     while (NULL != instances->next) {
-    	if(instances->instance_number > max_instance){
-    		max_instance = instances->instance_number;
-    	}
+      if(instances->instance_number > max_instance) {
+        max_instance = instances->instance_number;
+      }
       instances = instances->next;
     }
     class->max_instance = max_instance;
@@ -1403,15 +1410,15 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
 }
 
 EipStatus CipResetService(CipInstance *RESTRICT const instance,
-                CipMessageRouterRequest *const message_router_request,
-                CipMessageRouterResponse *const message_router_response,
-                const struct sockaddr *originator_address,
-                const int encapsulation_session) {
+                          CipMessageRouterRequest *const message_router_request,
+                          CipMessageRouterResponse *const message_router_response,
+                          const struct sockaddr *originator_address,
+                          const int encapsulation_session) {
   message_router_response->general_status = kCipErrorSuccess;
   message_router_response->size_of_additional_status = 0;
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service =
-      (0x80 | message_router_request->service);
+    (0x80 | message_router_request->service);
 
   EipStatus internal_state = kEipStatusOk;
 

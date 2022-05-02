@@ -348,8 +348,10 @@ typedef EipStatus (*CipGetSetCallback)(CipInstance *const instance,
  *  @return           status of kEipStatusOk or kEipStatusError on failure
  */
 typedef EipStatus (*CipCallback)(CipInstance *const instance,
-                const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                                 const CipMessageRouterRequest *const
+                                 message_router_request,
+                                 CipMessageRouterResponse *const
+                                 message_router_response);
 
 /** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {
