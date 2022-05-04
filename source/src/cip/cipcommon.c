@@ -167,20 +167,27 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 
     /* Find next free instance number */
     CipBool found_free_number = false;
+
     while (!found_free_number) {
-      found_free_number = true;
-      next_instance = &cip_class->instances;           /* get address of pointer to head of chain */
-      /* loop through instances */
-      while (*next_instance)           /* as long as what pp points to is not zero */
+      next_instance = &cip_class->instances;           /* set pointer to head of existing instances chain */
+
+      found_free_number = true; /* anticipate instance_number is not in use*/
+
+      /* loop through existing instances */
+      while (*next_instance)           /* as long as what next_instance points to is not zero */
       {
         /* check if instance number in use */
         if(instance_number == (*next_instance)->instance_number) {
-          instance_number++;                       /* try next instance number */
-          found_free_number = false;
+          found_free_number = false;  /* instance number exists already */
           break;
         }
-        next_instance = &(*next_instance)->next;                 /* follow the chain until pp points to pointer that contains a zero */
+        next_instance = &(*next_instance)->next;                /* get next instance in instances chain*/
       }
+
+      if(!found_free_number){
+    	  instance_number++;                       /* try next instance_number and loop again through existing instances */
+      }
+
     }
 
     CipInstance *current_instance =
