@@ -248,32 +248,33 @@ bool CipStringICompare(const CipStringI *const stringI_1,
   /*loop through struct 1 strings*/
   for (size_t i = 0; i < stringI_1->number_of_strings; ++i) {
     // String 1
-    CipShortString *string_1 =
-      stringI_1->array_of_string_i_structs[i].string;
-    EipUint16 len_1 = string_1->length;
+    void *string_1 = stringI_1->array_of_string_i_structs[i].string;
+    void *string_1_data = NULL;
+    CipUint len_1 = 0; //size of string-struct in bytes
 
     switch (stringI_1->array_of_string_i_structs[i].char_string_struct) {
-      case kCipShortString:
-        //default
-        break;
-      case kCipString: {
-        CipString *string_1 =
-          stringI_1->array_of_string_i_structs[i].string;
-        EipUint8 len_1 = string_1->length;
+      case kCipShortString: {
+        len_1 = ((CipShortString *)string_1)->length;
+        string_1_data = ((CipShortString *)string_1)->string;
       }
       break;
+      case kCipString: {
+        len_1 = ((CipString *)string_1)->length;
+        string_1_data = ((CipString *)string_1)->string;
+      }
+
+      break;
       case kCipString2: {
-        CipString2 *string_1 =
-          stringI_1->array_of_string_i_structs[i].string;
-        EipUint16 len_1 = string_1->length;
+        len_1 = ((CipString2 *)string_1)->length * 2;
+        string_1_data = ((CipString2 *)string_1)->string;
       }
       break;
       case kCipStringN: {
-        CipStringN *string_1 =
-          stringI_1->array_of_string_i_structs[i].string;
-        EipUint16 length = string_1->length;
-        EipUint16 size = string_1->size;                 //bytes per symbol
+        CipUint length = ((CipStringN *)string_1)->length;
+        CipUint size = ((CipStringN *)string_1)->size; //bytes per symbol
         len_1 = length * size;
+        string_1_data = ((CipStringN *)string_1)->string;
+
       }
       break;
       default:
@@ -281,43 +282,44 @@ bool CipStringICompare(const CipStringI *const stringI_1,
     }
 
     /*loop through struct 2 strings*/
-    for (size_t i = 0; i < stringI_2->number_of_strings; ++i) {
+    for (size_t j = 0; j < stringI_2->number_of_strings; ++j) {
       // String 2
-      CipShortString *string_2 =
-        stringI_2->array_of_string_i_structs[i].string;
-      EipUint16 len_2 = string_2->length;
+      void *string_2 = stringI_2->array_of_string_i_structs[j].string;
+      void *string_2_data = NULL;
+      CipUint len_2 = 0; //size of string-struct in bytes
 
-      switch (stringI_2->array_of_string_i_structs[i].char_string_struct) {
-        case kCipShortString:
-          //default
-          break;
-        case kCipString: {
-          CipString *string_2 =
-            stringI_2->array_of_string_i_structs[i].string;
-          EipUint8 len_2 = string_2->length;
+      switch (stringI_2->array_of_string_i_structs[j].char_string_struct) {
+        case kCipShortString: {
+          len_2 = ((CipShortString *)string_2)->length;
+          string_2_data = ((CipShortString *)string_2)->string;
         }
         break;
+        case kCipString: {
+          len_2 = ((CipString *)string_2)->length;
+          string_2_data = ((CipString *)string_2)->string;
+        }
+
+        break;
         case kCipString2: {
-          CipString2 *string_2 =
-            stringI_2->array_of_string_i_structs[i].string;
-          EipUint16 len_2 = string_2->length;
+          len_2 = ((CipString2 *)string_2)->length * 2;
+          string_2_data = ((CipString2 *)string_2)->string;
         }
         break;
         case kCipStringN: {
-          CipStringN *string_2 =
-            stringI_2->array_of_string_i_structs[i].string;
-          EipUint16 length = string_2->length;
-          EipUint16 size = string_2->size;                       //bytes per symbol
+          CipUint length = ((CipStringN *)string_2)->length;
+          CipUint size = ((CipStringN *)string_2)->size; //bytes per symbol
           len_2 = length * size;
+          string_2_data = ((CipStringN *)string_2)->string;
+
         }
         break;
         default:
           OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
       }
 
-      /*compare strings*/
+      /*compare strings*/ //TODO: compare works only for same data types
       if (len_1 == len_2) {
-        if (0 == memcmp(string_1->string, string_2->string, len_1) ) {
+        if (0 == memcmp(string_1_data, string_2_data, len_1) ) {
           return true;
         }
       }
