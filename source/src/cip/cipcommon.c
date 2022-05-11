@@ -184,8 +184,8 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
         next_instance = &(*next_instance)->next;                /* get next instance in instances chain*/
       }
 
-      if(!found_free_number){
-    	  instance_number++;                       /* try next instance_number and loop again through existing instances */
+      if(!found_free_number) {
+        instance_number++;                         /* try next instance_number and loop again through existing instances */
       }
 
     }
