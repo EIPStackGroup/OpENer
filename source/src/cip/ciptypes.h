@@ -314,6 +314,7 @@ typedef struct cip_instance {
   struct cip_class *cip_class;   /**< class the instance belongs to */
   struct cip_instance *next;   /**< next instance, all instances of a class live
                                   in a linked list */
+  void *data; /**< pointer to instance data struct */
 } CipInstance;
 
 /** @ingroup CIP_API
@@ -347,8 +348,10 @@ typedef EipStatus (*CipGetSetCallback)(CipInstance *const instance,
  *  @return           status of kEipStatusOk or kEipStatusError on failure
  */
 typedef EipStatus (*CipCallback)(CipInstance *const instance,
-                const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                                 const CipMessageRouterRequest *const
+                                 message_router_request,
+                                 CipMessageRouterResponse *const
+                                 message_router_response);
 
 /** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {

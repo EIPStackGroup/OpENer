@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, Rockwell Automation, Inc.
+ * Copyright (c) 2022, Rockwell Automation, Inc.
  * All rights reserved.
  *
  ******************************************************************************/
@@ -11,6 +11,7 @@
 #include "opener_api.h"
 #include "cipstring.h"
 #include "trace.h"
+#include "endianconv.h"
 
 void CipStringIDelete(CipStringI *const string) {
   for(size_t i = 0; i < string->number_of_strings; ++i) {
@@ -21,19 +22,19 @@ void CipStringIDelete(CipStringI *const string) {
     switch(string->array_of_string_i_structs[i].char_string_struct) {
       case kCipShortString:
         ClearCipShortString(
-           (CipShortString *) &string->array_of_string_i_structs[i].string );
+          (CipShortString *) &string->array_of_string_i_structs[i].string );
         break;
       case kCipString:
         ClearCipString(
-           (CipString *) &string->array_of_string_i_structs[i].string );
+          (CipString *) &string->array_of_string_i_structs[i].string );
         break;
       case kCipString2:
         ClearCipString2(
-           (CipString2 *) &string->array_of_string_i_structs[i].string );
+          (CipString2 *) &string->array_of_string_i_structs[i].string );
         break;
       case kCipStringN:
         ClearCipStringN(
-           (CipStringN *) &string->array_of_string_i_structs[i].string );
+          (CipStringN *) &string->array_of_string_i_structs[i].string );
         break;
       default:
         OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
@@ -154,3 +155,177 @@ void CipStringICopy(CipStringI *const to,
     CipStringIDeepCopyInternalString(toStruct, fromStruct);
   }
 }
+
+void CipStringIDecodeFromMessage(CipStringI *data_to,
+                                 CipMessageRouterRequest *const message_router_request)
+{
+
+  CipStringI *target_stringI = data_to;
+
+  target_stringI->number_of_strings = GetUsintFromMessage(
+    &message_router_request->data);
+
+  target_stringI->array_of_string_i_structs = CipCalloc(
+    target_stringI->number_of_strings, sizeof(CipStringIStruct) );
+
+  for (size_t i = 0; i < target_stringI->number_of_strings; ++i) {
+
+    target_stringI->array_of_string_i_structs[i].language_char_1 =
+      GetUsintFromMessage(&message_router_request->data);
+    target_stringI->array_of_string_i_structs[i].language_char_2 =
+      GetUsintFromMessage(&message_router_request->data);
+    target_stringI->array_of_string_i_structs[i].language_char_3 =
+      GetUsintFromMessage(&message_router_request->data);
+    target_stringI->array_of_string_i_structs[i].char_string_struct =
+      GetUsintFromMessage(&message_router_request->data);
+    target_stringI->array_of_string_i_structs[i].character_set =
+      GetUintFromMessage(&message_router_request->data);
+
+    switch (target_stringI->array_of_string_i_structs[i].char_string_struct) {
+      case kCipShortString: {
+        target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+                                                                        sizeof(
+                                                                          CipShortString) );
+        CipShortString *short_string =
+          (CipShortString *) (target_stringI->array_of_string_i_structs[i].
+                              string);
+        CipUsint length = GetUsintFromMessage(
+          &message_router_request->data);
+        SetCipShortStringByData(short_string, length,
+                                message_router_request->data);
+        message_router_request->data += length;
+
+      }
+      break;
+      case kCipString: {
+        target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+                                                                        sizeof(
+                                                                          CipString) );
+        CipString *const string =
+          (CipString *const ) target_stringI->array_of_string_i_structs[i].
+          string;
+        CipUint length = GetUintFromMessage(&message_router_request->data);
+        SetCipStringByData(string, length, message_router_request->data);
+        message_router_request->data += length;
+      }
+      break;
+      case kCipString2: {
+        target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+                                                                        sizeof(
+                                                                          CipString2) );
+        CipString2 *const string =
+          (CipString2 *const ) target_stringI->array_of_string_i_structs[i].
+          string;
+        CipUint length = GetUintFromMessage(&message_router_request->data);
+        SetCipString2ByData(string, length, message_router_request->data);
+        message_router_request->data += length * 2 * sizeof(CipOctet);
+      }
+      break;
+      case kCipStringN: {
+        CipUint size = GetUintFromMessage(&message_router_request->data);
+        CipUint length = GetUintFromMessage(&message_router_request->data);
+
+        target_stringI->array_of_string_i_structs[i].string = CipCalloc(1,
+                                                                        sizeof(
+                                                                          CipStringN) );
+        CipStringN *const string =
+          (CipStringN *const ) target_stringI->array_of_string_i_structs[i].
+          string;
+        SetCipStringNByData(string, length, size,
+                            message_router_request->data);
+        message_router_request->data += length * size;
+      }
+      break;
+      default:
+        OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
+    }
+  }       //end for
+}
+
+bool CipStringICompare(const CipStringI *const stringI_1,
+                       const CipStringI *const stringI_2) {
+
+  /*loop through struct 1 strings*/
+  for (size_t i = 0; i < stringI_1->number_of_strings; ++i) {
+    // String 1
+    void *string_1 = stringI_1->array_of_string_i_structs[i].string;
+    void *string_1_data = NULL;
+    CipUint len_1 = 0; //size of string-struct in bytes
+
+    switch (stringI_1->array_of_string_i_structs[i].char_string_struct) {
+      case kCipShortString: {
+        len_1 = ((CipShortString *)string_1)->length;
+        string_1_data = ((CipShortString *)string_1)->string;
+      }
+      break;
+      case kCipString: {
+        len_1 = ((CipString *)string_1)->length;
+        string_1_data = ((CipString *)string_1)->string;
+      }
+
+      break;
+      case kCipString2: {
+        len_1 = ((CipString2 *)string_1)->length * 2;
+        string_1_data = ((CipString2 *)string_1)->string;
+      }
+      break;
+      case kCipStringN: {
+        CipUint length = ((CipStringN *)string_1)->length;
+        CipUint size = ((CipStringN *)string_1)->size; //bytes per symbol
+        len_1 = length * size;
+        string_1_data = ((CipStringN *)string_1)->string;
+
+      }
+      break;
+      default:
+        OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
+    }
+
+    /*loop through struct 2 strings*/
+    for (size_t j = 0; j < stringI_2->number_of_strings; ++j) {
+      // String 2
+      void *string_2 = stringI_2->array_of_string_i_structs[j].string;
+      void *string_2_data = NULL;
+      CipUint len_2 = 0; //size of string-struct in bytes
+
+      switch (stringI_2->array_of_string_i_structs[j].char_string_struct) {
+        case kCipShortString: {
+          len_2 = ((CipShortString *)string_2)->length;
+          string_2_data = ((CipShortString *)string_2)->string;
+        }
+        break;
+        case kCipString: {
+          len_2 = ((CipString *)string_2)->length;
+          string_2_data = ((CipString *)string_2)->string;
+        }
+
+        break;
+        case kCipString2: {
+          len_2 = ((CipString2 *)string_2)->length * 2;
+          string_2_data = ((CipString2 *)string_2)->string;
+        }
+        break;
+        case kCipStringN: {
+          CipUint length = ((CipStringN *)string_2)->length;
+          CipUint size = ((CipStringN *)string_2)->size; //bytes per symbol
+          len_2 = length * size;
+          string_2_data = ((CipStringN *)string_2)->string;
+
+        }
+        break;
+        default:
+          OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
+      }
+
+      /*compare strings*/ //TODO: compare works only for same data types
+      if (len_1 == len_2) {
+        if (0 == memcmp(string_1_data, string_2_data, len_1) ) {
+          return true;
+        }
+      }
+    }             //end for 1
+  }       //end for 2
+
+  return false;
+}
+
