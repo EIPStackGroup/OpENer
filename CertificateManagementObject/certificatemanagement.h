@@ -117,6 +117,11 @@ typedef struct cmo_class_attributes {
   CipDword certificate_encodings_flag; /** Class Attribute #10 */
 } CertificateManagementObjectClassAttributes;
 
+/** @brief Certificate Management Object additional instance data */
+typedef struct certificate_management_object_values {
+  CipServiceFunction delete_instance_data;
+} CertificateManagementObjectValues;
+
 /* ********************************************************************
  * global public variables
  */

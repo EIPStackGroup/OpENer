@@ -224,6 +224,34 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
     );
 }
 
+/** @brief Certificate Management Object Delete Instance Data
+ *
+ *  Used for common Delete service to delete instance struct before instance is deleted
+ */
+EipStatus CertificateManagementObjectDeleteInstanceData(
+    CipInstance *RESTRICT const instance,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response
+) {
+
+  // free all allocated attributes of instance
+  CipAttributeStruct *attribute =
+      instance->attributes; /* init pointer to array of attributes*/
+  for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
+    CipFree(attribute->data);
+    ++attribute;
+  }
+  CipFree(instance->attributes);
+
+  /*get instance data struct and free all dynamically allocated elements*/
+  CertificateManagementObjectValues *instance_data_struct = instance->data;
+  //currently no additional element allocated
+  CipFree(instance_data_struct);
+  instance_data_struct = NULL;
+
+  return kEipStatusOk;
+}
+
 /** @brief Certificate Management Object PreCreateCallback
  *
  *  Used for common Create service before new instance is created
@@ -270,6 +298,11 @@ EipStatus CertificateManagementObjectPostCreateCallback(
       new_instance,
       name, state, device_certificate, ca_certificate, certificate_encoding);
 
+  //create new CMO data struct for additional data
+  CertificateManagementObjectValues *CMO_instance_data = CipCalloc(1, sizeof(CertificateManagementObjectValues));
+  new_instance->data = CMO_instance_data;
+  CMO_instance_data->delete_instance_data = &CertificateManagementObjectDeleteInstanceData; //delete instance data function
+
   AddIntToMessage(new_instance->instance_number, &(message_router_response->message));
   return kEipStatusOk;
 }
@@ -284,12 +317,20 @@ EipStatus CertificateManagementObjectPreDeleteCallback(
     CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response
 ) {
-  if (DEFAULT_DEVICE_CERTIFICATE_INSTANCE_NUMBER ==
-      instance->instance_number) {  // static instance 1 should not be deleted
+  EipStatus internal_state = kEipStatusOk;
+
+  CertificateManagementObjectValues *CMO_instance_data = instance->data;
+
+  if (DEFAULT_DEVICE_CERTIFICATE_INSTANCE_NUMBER == instance->instance_number || // static instance 1 should not be deleted
+      NULL == CMO_instance_data->delete_instance_data) {  //check if delete function is assigned
     message_router_response->general_status = kCipErrorInstanceNotDeletable;
-    return kEipStatusError;
+    internal_state = kEipStatusError;
   }
-  return kEipStatusOk;
+  else{
+    internal_state = CertificateManagementObjectDeleteInstanceData(instance, message_router_request,
+                                               message_router_response);
+  }
+  return internal_state;
 }
 
 /** @brief Certificate Management Object Create CSR service
