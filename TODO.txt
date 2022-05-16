@@ -15,10 +15,8 @@ TLS connection - TLS handshake ??  - mbedtls library
 
 Certificate Management
 	* add/update object specific services
-	* delete service: free all dynamic allocated elements of instance
-	* create + delete service -> move to common services for general use
 
-add FileObject - used in Management object
+add FileObject - used in CMO object
 
 CipSecurity Object
 	- begin_config: check if command is sent over valid TLS connection
