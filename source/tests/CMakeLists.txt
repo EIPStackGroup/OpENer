@@ -28,7 +28,7 @@ add_subdirectory( ports )
 add_subdirectory( enet_encap )
 add_subdirectory( utils )
 
-add_executable( OpENer_Tests OpENerTests.cpp )
+add_executable( OpENer_Tests OpENerTests.cpp callback_mock.cpp)
 
 find_library ( CPPUTEST_LIBRARY CppUTest ${CPPUTEST_HOME}/cpputest_build/lib )
 find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/lib )

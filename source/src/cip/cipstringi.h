@@ -14,4 +14,7 @@ void CipStringICopy(CipStringI *const to,
                     const CipStringI *const from);
 
 void CipStringIDecodeFromMessage(CipStringI *data_to,
-		CipMessageRouterRequest *const message_router_request);
+                                 CipMessageRouterRequest *const message_router_request);
+
+bool CipStringICompare(const CipStringI *const stringI_1,
+                       const CipStringI *const stringI_2);
