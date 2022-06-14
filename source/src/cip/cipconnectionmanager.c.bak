@@ -937,7 +937,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
                 "sending of UDP data in manage Connection failed\n");
             }
             /* reload the timer value */
-            connection_object->transmission_trigger_timer +=
+            connection_object->transmission_trigger_timer =
               ConnectionObjectGetRequestedPacketInterval(connection_object);
             if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
                ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -945,8 +945,9 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
               /* non cyclic connections have to reload the production inhibit timer */
               ConnectionObjectResetProductionInhibitTimer(connection_object);
             }
+          } else {
+            connection_object->transmission_trigger_timer -= elapsed_time;
           }
-          connection_object->transmission_trigger_timer -= elapsed_time;
         }
       }
     }
