@@ -221,13 +221,4 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifndef OPENER_UNIT_TEST */
 
-/** @brief The number of bytes used for the Ethernet message buffer on
- * the PC port. For different platforms it may makes sense to
- * have more than one buffer.
- *
- *  This buffer size will be used for any received message.
- *  The same buffer is used for the replied explicit message.
- */
-#define PC_OPENER_ETHERNET_BUFFER_SIZE 512
-
 #endif /*OPENER_USER_CONF_H_*/
