@@ -64,7 +64,8 @@ OpENer also now has a real-time capable POSIX startup via the OpENer_RT option, 
 If you want to use OpENer_RT, instead of step 2, the  ``sudo setcap cap_net_raw,cap_ipc_lock,cap_sys_nice+ep ./src/ports/POSIX/OpENer
 `` has to be run to grant OpENEr ``CAP_SYS_NICE``, ``CAP_IPC_LOCK``, and the ``CAP_NET_RAW`` capabilities, needed for the RT mode
 
-Shared library support has been added to CMakeLists file and is enabled by setting OPENER_BUILD_SHARED_LIBS=ON. It has only been tested under Linux/POSIX platform.
+Shared library support has been added to CMakeLists file and is enabled by setting `-DBUILD_SHARED_LIBS=ON` when calling cmake.
+It has only been tested under Linux/POSIX platform.
 
 
 Compile for Windows XP/7/8 via Visual Studio:
