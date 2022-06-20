@@ -16,7 +16,7 @@ set( CIP_SRC appcontype.c cipassembly.c cipclass3connection.c cipcommon.c cipcon
 
 add_library( CIP ${CIP_SRC} )
 
-if( BUILD_SHARED_LIBS )
+if( OPENER_INSTALL_AS_LIB )
   target_link_libraries(CIP ENET_ENCAP)
   install(TARGETS CIP
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -12,7 +12,7 @@
 
 #ifdef OPENER_WITH_TRACES
 
-#ifndef BUILD_SHARED_LIBS
+#ifndef OPENER_INSTALL_AS_LIB
 #include "opener_user_conf.h"
 #endif
 

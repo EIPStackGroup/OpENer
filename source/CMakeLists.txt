@@ -36,7 +36,8 @@ INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
 option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
 option(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER "Will consumed data from OpENer also include a run idle header?" TRUE)
-option(BUILD_SHARED_LIBS "Builds OpENer as separate lib and sample application" FALSE)
+option(OPENER_INSTALL_AS_LIB "Build and install OpENer as a library" FALSE)
+option(BUILD_SHARED_LIBS "Build OpENer as shared library" FALSE)
 
 if(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
   add_definitions(-DOPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
