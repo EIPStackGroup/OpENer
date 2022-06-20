@@ -18,7 +18,7 @@ opener_common_includes()
 
 opener_platform_support( "INCLUDES" )
 
-if( BUILD_SHARED_LIBS )
+if( OPENER_INSTALL_AS_LIB )
   install(DIRECTORY .
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h"

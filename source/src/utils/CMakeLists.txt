@@ -6,7 +6,7 @@ set( UTILS_SRC random.c xorshiftrandom.c doublylinkedlist.c  enipmessage.c)
 
 add_library( Utils ${UTILS_SRC} )
 
-if( BUILD_SHARED_LIBS )
+if( OPENER_INSTALL_AS_LIB )
   install(TARGETS Utils
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
