@@ -111,6 +111,30 @@ EipStatus CipStackInit(const EipUint16 unique_connection_id);
 void ShutdownCipStack(void);
 
 /** @ingroup CIP_API
+ * @brief Enable the Run/Idle header for consumed (O->T) cyclic data
+ * @param onoff if set (default), OpENer expects 4 byte Run/Idle header from scanner
+ */
+void CipRunIdleHeaderSetO2T(bool onoff);
+
+/** @ingroup CIP_API
+ * @brief Get current setting of the O->T Run/Idle header
+ * @return current setting of the O->T Run/Idle header
+ */
+bool CipRunIdleHeaderGetO2T(void);
+
+/** @ingroup CIP_API
+ * @brief Enable the Run/Idle header for produced (T->O) cyclic data
+ * @param onoff if set (not default), OpENer includes a 4 byte Run/Idle header in responses to scanner
+ */
+void CipRunIdleHeaderSetT2O(bool onoff);
+
+/** @ingroup CIP_API
+ * @brief Get current setting of the T->O Run/Idle header
+ * @return current setting of the T->O Run/Idle header
+ */
+bool CipRunIdleHeaderGetT2O(void);
+
+/** @ingroup CIP_API
  * @brief Get a pointer to a CIP object with given class code
  *
  * @param class_code class code of the object to retrieve
