@@ -88,6 +88,20 @@ void SetDeviceRevision(EipUint8 major, EipUint8 minor);
 void SetDeviceSerialNumber(const EipUint32 serial_number);
 
 /** @ingroup CIP_API
+ * @brief Set the DeviceType of the device's identity object.
+ *
+ * @param type 16 bit unsigned number representing the CIP device type
+ */
+void SetDeviceType(const EipUint16 type);
+
+/** @ingroup CIP_API
+ * @brief Set the ProductCode of the device's identity object.
+ *
+ * @param type 16 bit unsigned number representing the product code
+ */
+void SetDeviceProductCode(const EipUint16 code);
+
+/** @ingroup CIP_API
  * @brief Set the device's Status word also updating the Extended Device Status
  *
  * @param status    complete Identity Object's Status word content
