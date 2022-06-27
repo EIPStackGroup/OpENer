@@ -73,6 +73,14 @@ EipStatus IfaceWaitForIp(const char *const iface,
 void GetHostName(CipString *hostname);
 
 /** @ingroup CIP_API
+ * @brief Set the CIP revision of the device's identity object.
+ *
+ * @param major unsigned 8 bit major revision
+ * @param minor unsigned 8 bit minor revision
+ */
+void SetDeviceRevision(EipUint8 major, EipUint8 minor);
+
+/** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
  *
  * @param serial_number unique 32 bit number identifying the device
