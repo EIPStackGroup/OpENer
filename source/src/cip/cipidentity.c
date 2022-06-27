@@ -31,6 +31,7 @@
 
 #include "opener_user_conf.h"
 #include "cipcommon.h"
+#include "cipstring.h"
 #include "cipmessagerouter.h"
 #include "ciperror.h"
 #include "endianconv.h"
@@ -50,10 +51,8 @@ CipIdentityObject g_identity = { .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attrib
                                  }, .status = 0, /* Attribute 5: Status */
                                  .ext_status = kSelftestingUnknown, /* Attribute 5: Extended Device Status field */
                                  .serial_number = 0, /* Attribute 6: Serial Number */
-                                 .product_name = { /* Attribute 7: Product Name */
-                                   sizeof(OPENER_DEVICE_NAME) - 1,
-                                   (EipByte *) OPENER_DEVICE_NAME
-                                 }, .state = 255, };
+                                 /* Attribute 7: Product Name, set by CipIdentityInit() */
+                                 };
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
@@ -64,6 +63,29 @@ void SetDeviceSerialNumber(const EipUint32 serial_number) {
 void SetDeviceStatus(const CipWord status) {
   g_identity.status = status;
   g_identity.ext_status = status & kExtStatusMask;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceVendorId(CipUint vendor_id) {
+  g_identity.vendor_id = vendor_id;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+CipUint GetDeviceVendorId(void) {
+  return g_identity.vendor_id;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceProductName(const CipOctet *product_name) {
+  if (!product_name)
+    return;
+
+  SetCipShortStringByCstr(&g_identity.product_name, product_name);
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+CipShortString *GetDeviceProductName(void) {
+  return &g_identity.product_name;
 }
 
 static inline void MergeStatusAndExtStatus(void) {
@@ -224,6 +246,9 @@ EipStatus CipIdentityInit() {
   if(class == 0) {
     return kEipStatusError;
   }
+
+  if (g_identity.product_name.length == 0)
+    SetDeviceProductName(OPENER_DEVICE_NAME);
 
   CipInstance *instance = GetCipInstance(class, 1);
   InsertAttribute(instance, 1, kCipUint, EncodeCipUint,

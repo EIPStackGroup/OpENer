@@ -90,6 +90,44 @@ void SetDeviceSerialNumber(const EipUint32 serial_number);
 void SetDeviceStatus(const CipWord status);
 
 /** @ingroup CIP_API
+ * @breif Set device's CIP VendorId
+ *
+ * @param vendor_id vendor ID, can be zero
+ *
+ * When OpENer is used as a library, multiple CIP adapters may use it
+ * and may want to set the VendorId.  Note: some applications allow
+ * the use of VendorId 0.
+ */
+void SetDeviceVendorId(CipUint vendor_id);
+
+/** @ingroup CIP_API
+ * @brief Get device's CIP VendorId
+ *
+ * @returns the currently used VendorId
+ */
+CipUint GetDeviceVendorId(void);
+
+/** @ingroup CIP_API
+ * @breif Set device's CIP ProductName
+ *
+ * @param product_name C-string to use as ProducName
+ *
+ * When OpENer is used as a library, multiple CIP adapters may use it
+ * and will need to change the product name.
+ */
+void SetDeviceProductName(const CipOctet *product_name);
+
+/** @ingroup CIP_API
+ * @brief Get device's current CIP ProductName
+ *
+ * Hint, use GetCstrFromCipShortString() to get a printable/logable C
+ * string, since CipShortString's aren't NUL terminated.
+ *
+ * @returns the CipShortString for the product name
+ */
+CipShortString *GetDeviceProductName(void);
+
+/** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
  *
  * @param unique_connection_id value passed to Connection_Manager_Init() to form
