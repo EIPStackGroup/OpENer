@@ -55,6 +55,12 @@ CipIdentityObject g_identity = { .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attrib
                                  };
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceRevision(EipUint8 major, EipUint8 minor) {
+  g_identity.revision.major_revision = major;
+  g_identity.revision.minor_revision = minor;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
   g_identity.serial_number = serial_number;
 }
