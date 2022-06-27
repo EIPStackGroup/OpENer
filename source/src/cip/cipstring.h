@@ -169,4 +169,15 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
 CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
                                         const char *const string);
 
+/** @brief Returns a NUL terminated C-string from a CipShortString
+ *
+ * @param string The CipShortString to extract from
+ * @param buf Pointer to a buffer to store the contents in
+ * @param len Length of buffer
+ *
+ * @return POSIX OK(0) if the complete string fit in @param buf, otherwise non-zero.
+ */
+int GetCstrFromCipShortString(CipShortString *const string, char *buf,
+			      size_t len);
+
 #endif /* of OPENER_CIPSTRING_H_ */

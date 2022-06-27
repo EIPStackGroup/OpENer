@@ -263,3 +263,24 @@ CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
   return SetCipShortStringByData(cip_string, (CipUsint) strlen(string),
                                  (const CipOctet *) string);
 }
+
+/* Ensures buf is NUL terminated, provided initial validation is successful */
+int GetCstrFromCipShortString(CipShortString *const string, char *buf, size_t len) {
+  size_t num;
+  int rc = 0;
+
+  if (!string || !buf || len < 1)
+    return -1;
+
+  num = (size_t)string->length;
+  if (len <= num) {
+    rc = (int)(num - len - 1);
+    num = len - 1;
+  }
+  len = num;
+
+  memcpy(buf, string->string, num);
+  buf[len] = 0;
+
+  return rc;
+}
