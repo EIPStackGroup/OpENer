@@ -66,6 +66,16 @@ void SetDeviceSerialNumber(const EipUint32 serial_number) {
 }
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceType(const EipUint16 type) {
+  g_identity.device_type = type;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
+void SetDeviceProductCode(const EipUint16 code) {
+  g_identity.product_code = code;
+}
+
+/* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceStatus(const CipWord status) {
   g_identity.status = status;
   g_identity.ext_status = status & kExtStatusMask;
