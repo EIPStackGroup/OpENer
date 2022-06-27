@@ -137,7 +137,7 @@ CipUint GetDeviceVendorId(void);
  * When OpENer is used as a library, multiple CIP adapters may use it
  * and will need to change the product name.
  */
-void SetDeviceProductName(const CipOctet *product_name);
+void SetDeviceProductName(const char *product_name);
 
 /** @ingroup CIP_API
  * @brief Get device's current CIP ProductName

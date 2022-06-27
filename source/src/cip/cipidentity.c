@@ -92,7 +92,7 @@ CipUint GetDeviceVendorId(void) {
 }
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
-void SetDeviceProductName(const CipOctet *product_name) {
+void SetDeviceProductName(const char *product_name) {
   if (!product_name)
     return;
 
