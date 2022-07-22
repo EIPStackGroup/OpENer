@@ -152,7 +152,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
   return kEipStatusOkSend;
 }
 
-CipUint GetMaxInstanceNumber(CipClass *RESTRICT const cip_class) {
+CipUint GetMaxInstanceNumber(CipClass *RESTRICT const cip_class){
   CipUint max_instance = 0;
   CipInstance *instance = cip_class->instances;
   while (NULL != instance) { /* loop trough all instances of class */
@@ -235,6 +235,8 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 
   cip_class->max_instance = GetMaxInstanceNumber(cip_class); /* update largest instance number (class Attribute 2) */
 
+  cip_class->max_instance = GetMaxInstanceNumber(cip_class); /* update largest instance number (class Attribute 2) */
+
   if(new_instances != number_of_instances) {
     /* TODO: Free again all attributes and instances allocated so far in this call. */
     OPENER_TRACE_ERR(
@@ -255,7 +257,7 @@ CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class,
     instance = AddCipInstances(cip_class, 1);
     instance->instance_number = instance_id;
   }
-
+ 
   cip_class->max_instance = GetMaxInstanceNumber(cip_class); /* update largest instance number (class Attribute 2) */
 
   return instance;
