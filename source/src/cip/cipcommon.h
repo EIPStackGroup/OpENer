@@ -33,6 +33,13 @@ EipStatus NotifyClass(const CipClass *const RESTRICT cip_class,
                       const struct sockaddr *originator_address,
                       const int encapsulation_session);
 
+/** @brief Get largest instance_number present in class instances
+ *
+ * @param cip_class class to be considered
+ * @return largest instance_number in class instances
+ */
+CipUint GetMaxInstanceNumber(CipClass *RESTRICT const cip_class);                      
+
 void GenerateGetAttributeSingleHeader(
   const CipMessageRouterRequest *const message_router_request,
   CipMessageRouterResponse *const message_router_response);
