@@ -225,21 +225,20 @@ CipConnectionObject *GetExclusiveOwnerConnection(
 CipConnectionObject *GetInputOnlyConnection(
   const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
+  EipUint16 err = 0;
 
   for (size_t i = 0; i < OPENER_CIP_NUM_INPUT_ONLY_CONNS; ++i) {
     if (g_input_only_connections[i].output_assembly
         == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_input_only_connections[i].input_assembly
           != connection_object->produced_path.instance_id) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
-        break;
+        err = kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
+        continue;
       }
       if (g_input_only_connections[i].config_assembly
           != connection_object->configuration_path.instance_id) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
-        break;
+        err = kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
+        continue;
       }
 
       for (size_t j = 0; j < OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH;
@@ -249,8 +248,7 @@ CipConnectionObject *GetInputOnlyConnection(
                                           connection_data[j]) )
             && ConnectionObjectEqualOriginator(connection_object,
                                                &(g_input_only_connections[i].
-                                                 connection_data[j]) ) )
-        {
+                                                 connection_data[j]))) {
           g_input_only_connections[i].connection_data[j].
           connection_close_function(
             &g_input_only_connections[i].connection_data[j]);
@@ -266,41 +264,39 @@ CipConnectionObject *GetInputOnlyConnection(
           return &(g_input_only_connections[i].connection_data[j]);
         }
       }
-      *extended_error =
-        kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
+      err = kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
       break;
     }
   }
+
+  *extended_error = err;
   return NULL;
 }
 
 CipConnectionObject *GetListenOnlyConnection(
   const CipConnectionObject *const RESTRICT connection_object,
   EipUint16 *const extended_error) {
+  EipUint16 err = 0;
 
   for (size_t i = 0; i < OPENER_CIP_NUM_LISTEN_ONLY_CONNS; i++) {
     if (g_listen_only_connections[i].output_assembly
         == connection_object->consumed_path.instance_id) { /* we have the same output assembly */
       if (g_listen_only_connections[i].input_assembly
           != connection_object->produced_path.instance_id) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
-        break;
+        err = kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath;
+        continue;
       }
       if (g_listen_only_connections[i].config_assembly
           != connection_object->configuration_path.instance_id) {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
-        break;
+        err = kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
+        continue;
       }
 
       /* Here we look for both Point-to-Point and Multicast IO connections */
       if ( NULL == GetExistingProducerIoConnection(false,
                                                    connection_object->
-                                                   produced_path.instance_id) )
-      {
-        *extended_error =
-          kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
+                                                   produced_path.instance_id)) {
+        err = kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened;
         break;
       }
 
@@ -311,8 +307,7 @@ CipConnectionObject *GetListenOnlyConnection(
                                           connection_data[j]) )
             && ConnectionObjectEqualOriginator(connection_object,
                                                &(g_listen_only_connections[i].
-                                                 connection_data[j]) ) )
-        {
+                                                 connection_data[j]))) {
           g_listen_only_connections[i].connection_data[j].
           connection_close_function(
             &g_listen_only_connections[i].connection_data[j]);
@@ -328,11 +323,12 @@ CipConnectionObject *GetListenOnlyConnection(
           return &(g_listen_only_connections[i].connection_data[j]);
         }
       }
-      *extended_error =
-        kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
+      err = kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections;
       break;
     }
   }
+
+  *extended_error = err;
   return NULL;
 }
 
