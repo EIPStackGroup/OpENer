@@ -905,6 +905,7 @@ void ConnectionObjectResetSequenceCounts(
   connection_object->eip_level_sequence_count_producing = 0;
   connection_object->sequence_count_producing = 0;
   connection_object->eip_level_sequence_count_consuming = 0;
+  connection_object->eip_first_level_sequence_count_received = false;
   connection_object->sequence_count_consuming = 0;
 }
 
