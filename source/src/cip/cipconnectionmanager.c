@@ -298,13 +298,15 @@ EipStatus HandleReceivedConnectedData(const EipUint8 *const data,
 
           if(SEQ_GT32(g_common_packet_format_data_item.address_item.data.
                       sequence_number,
-                      connection_object->eip_level_sequence_count_consuming) ) {
+                      connection_object->eip_level_sequence_count_consuming) ||
+             !connection_object->eip_first_level_sequence_count_received) {
             /* reset the watchdog timer */
             ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
             /* only inform assembly object if the sequence counter is greater or equal */
             connection_object->eip_level_sequence_count_consuming =
               g_common_packet_format_data_item.address_item.data.sequence_number;
+            connection_object->eip_first_level_sequence_count_received = true;
 
             if(NULL != connection_object->connection_receive_data_function) {
               return connection_object->connection_receive_data_function(
