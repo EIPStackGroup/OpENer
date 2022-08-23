@@ -32,7 +32,7 @@ opener_platform_support("INCLUDES")
 add_library( ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_SRC})
 # Mark executables and/or libraries for installation
 
-if( OPENER_BUILD_SHARED_LIBS )
+if( OPENER_INSTALL_AS_LIB )
   install(TARGETS ${OpENer_PLATFORM}PLATFORM
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -49,7 +49,7 @@ endif()
 
 if( NOT OpENer_TESTS)
   add_executable(OpENer main.c)
-  target_link_libraries( OpENer CIP Utils SAMPLE_APP ENET_ENCAP NVDATA PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} CIP rt cap pthread)
+  target_link_libraries( OpENer PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} CIP Utils SAMPLE_APP ENET_ENCAP NVDATA rt cap pthread)
 endif()
 
 # Add additional CIP Objects

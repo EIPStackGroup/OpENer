@@ -73,11 +73,33 @@ EipStatus IfaceWaitForIp(const char *const iface,
 void GetHostName(CipString *hostname);
 
 /** @ingroup CIP_API
+ * @brief Set the CIP revision of the device's identity object.
+ *
+ * @param major unsigned 8 bit major revision
+ * @param minor unsigned 8 bit minor revision
+ */
+void SetDeviceRevision(EipUint8 major, EipUint8 minor);
+
+/** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
  *
  * @param serial_number unique 32 bit number identifying the device
  */
 void SetDeviceSerialNumber(const EipUint32 serial_number);
+
+/** @ingroup CIP_API
+ * @brief Set the DeviceType of the device's identity object.
+ *
+ * @param type 16 bit unsigned number representing the CIP device type
+ */
+void SetDeviceType(const EipUint16 type);
+
+/** @ingroup CIP_API
+ * @brief Set the ProductCode of the device's identity object.
+ *
+ * @param type 16 bit unsigned number representing the product code
+ */
+void SetDeviceProductCode(const EipUint16 code);
 
 /** @ingroup CIP_API
  * @brief Set the device's Status word also updating the Extended Device Status
@@ -88,6 +110,44 @@ void SetDeviceSerialNumber(const EipUint32 serial_number);
  *  Device Status field in Identity object's ext_status member.
  */
 void SetDeviceStatus(const CipWord status);
+
+/** @ingroup CIP_API
+ * @breif Set device's CIP VendorId
+ *
+ * @param vendor_id vendor ID, can be zero
+ *
+ * When OpENer is used as a library, multiple CIP adapters may use it
+ * and may want to set the VendorId.  Note: some applications allow
+ * the use of VendorId 0.
+ */
+void SetDeviceVendorId(CipUint vendor_id);
+
+/** @ingroup CIP_API
+ * @brief Get device's CIP VendorId
+ *
+ * @returns the currently used VendorId
+ */
+CipUint GetDeviceVendorId(void);
+
+/** @ingroup CIP_API
+ * @breif Set device's CIP ProductName
+ *
+ * @param product_name C-string to use as ProducName
+ *
+ * When OpENer is used as a library, multiple CIP adapters may use it
+ * and will need to change the product name.
+ */
+void SetDeviceProductName(const char *product_name);
+
+/** @ingroup CIP_API
+ * @brief Get device's current CIP ProductName
+ *
+ * Hint, use GetCstrFromCipShortString() to get a printable/logable C
+ * string, since CipShortString's aren't NUL terminated.
+ *
+ * @returns the CipShortString for the product name
+ */
+CipShortString *GetDeviceProductName(void);
 
 /** @ingroup CIP_API
  * @brief Initialize and setup the CIP-stack
@@ -109,6 +169,30 @@ EipStatus CipStackInit(const EipUint16 unique_connection_id);
  * by the application!
  */
 void ShutdownCipStack(void);
+
+/** @ingroup CIP_API
+ * @brief Enable the Run/Idle header for consumed (O->T) cyclic data
+ * @param onoff if set (default), OpENer expects 4 byte Run/Idle header from scanner
+ */
+void CipRunIdleHeaderSetO2T(bool onoff);
+
+/** @ingroup CIP_API
+ * @brief Get current setting of the O->T Run/Idle header
+ * @return current setting of the O->T Run/Idle header
+ */
+bool CipRunIdleHeaderGetO2T(void);
+
+/** @ingroup CIP_API
+ * @brief Enable the Run/Idle header for produced (T->O) cyclic data
+ * @param onoff if set (not default), OpENer includes a 4 byte Run/Idle header in responses to scanner
+ */
+void CipRunIdleHeaderSetT2O(bool onoff);
+
+/** @ingroup CIP_API
+ * @brief Get current setting of the T->O Run/Idle header
+ * @return current setting of the T->O Run/Idle header
+ */
+bool CipRunIdleHeaderGetT2O(void);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to a CIP object with given class code

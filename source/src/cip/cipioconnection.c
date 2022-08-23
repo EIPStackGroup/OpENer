@@ -70,6 +70,38 @@ unsigned int g_config_data_length = 0; /**< length of g_config_data_buffer. Init
 
 EipUint32 g_run_idle_state = 0; /**< buffer for holding the run idle information. */
 
+/**** Local variables, set by API, with build-time defaults ****/
+#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
+static EipUint8 s_consume_run_idle = 1;
+#else
+static EipUint8 s_consume_run_idle = 0;
+#endif
+#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+static EipUint8 s_produce_run_idle = 1;
+#else
+static EipUint8 s_produce_run_idle = 0;
+#endif
+
+void CipRunIdleHeaderSetO2T(bool onoff)
+{
+  s_consume_run_idle = onoff;
+}
+
+bool CipRunIdleHeaderGetO2T(void)
+{
+  return s_consume_run_idle;
+}
+
+void CipRunIdleHeaderSetT2O(bool onoff)
+{
+  s_produce_run_idle = onoff;
+}
+
+bool CipRunIdleHeaderGetT2O(void)
+{
+  return s_produce_run_idle;
+}
+
 EipUint16 ProcessProductionInhibitTime(CipConnectionObject *io_connection_object)
 {
   if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic ==
@@ -129,9 +161,7 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->consumed_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL);
-#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
-#endif
     if(kConnectionObjectTransportClassTriggerTransportClass1 ==
        ConnectionObjectGetTransportClassTriggerTransportClass(
          io_connection_object) )
@@ -140,13 +170,13 @@ EipUint16 SetupIoConnectionOriginatorToTargetConnectionPoint(
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    if( (data_size > 0) && (!is_heartbeat) ) {
+
+    if( s_consume_run_idle && (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
-#endif
+
     if( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size */
       connection_object->correct_originator_to_target_size =
@@ -226,9 +256,7 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
     CipAttributeStruct *attribute = GetCipAttribute(instance,
                                                     io_connection_object->produced_path.attribute_id_or_connection_point);
     OPENER_ASSERT(attribute != NULL);
-#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
     bool is_heartbeat = ( ( (CipByteArray *) attribute->data )->length == 0 );
-#endif
     if(kConnectionObjectTransportClassTriggerTransportClass1 ==
        ConnectionObjectGetTransportClassTriggerTransportClass(
          io_connection_object) )
@@ -237,13 +265,11 @@ EipUint16 SetupIoConnectionTargetToOriginatorConnectionPoint(
       data_size -= 2; /* remove 16-bit sequence count length */
       diff_size += 2;
     }
-#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
-    if ( (data_size > 0) && (!is_heartbeat) ) {
+    if ( s_produce_run_idle && (data_size > 0) && (!is_heartbeat) ) {
       /* we only have an run idle header if it is not an heartbeat connection */
       data_size -= 4; /* remove the 4 bytes needed for run/idle header */
       diff_size += 4;
     }
-#endif
     if( ( (CipByteArray *) attribute->data )->length != data_size ) {
       /*wrong connection size*/
       connection_object->correct_target_to_originator_size =
@@ -824,14 +850,11 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
   MoveMessageNOctets(-2, &outgoing_message);
   common_packet_format_data->data_item.length =
     producing_instance_attributes->length;
-#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+
   bool is_heartbeat = (common_packet_format_data->data_item.length == 0);
-
-
-  if(!is_heartbeat) {
+  if(s_produce_run_idle && !is_heartbeat) {
     common_packet_format_data->data_item.length += 4;
   }
-#endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   if(kConnectionObjectTransportClassTriggerTransportClass1 ==
      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
@@ -846,12 +869,10 @@ EipStatus SendConnectedData(CipConnectionObject *connection_object) {
                     &outgoing_message);
   }
 
-#ifdef OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
-  if(!is_heartbeat) {
+  if(s_produce_run_idle && !is_heartbeat) {
     AddDintToMessage( g_run_idle_state,
                       &outgoing_message );
   }
-#endif /* OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER */
 
   memcpy(outgoing_message.current_message_position,
          producing_instance_attributes->data,
@@ -889,22 +910,22 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
   OPENER_TRACE_INFO("data length after sequence count: %d\n", data_length);
   if(data_length > 0) {
     /* we have no heartbeat connection */
-#ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
-    EipUint32 nRunIdleBuf = GetUdintFromMessage(&(data) );
-    OPENER_TRACE_INFO("Run/Idle handler: 0x%x\n", nRunIdleBuf);
-    const uint32_t kRunBitMask = 0x0001;
-    if( (kRunBitMask & nRunIdleBuf) == 1 ) {
-      CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
-    } else {
-      CipIdentitySetExtendedDeviceStatus(
-        kAtLeastOneIoConnectionEstablishedAllInIdleMode);
+    if(s_consume_run_idle) {
+      EipUint32 nRunIdleBuf = GetUdintFromMessage(&(data) );
+      OPENER_TRACE_INFO("Run/Idle handler: 0x%x\n", nRunIdleBuf);
+      const uint32_t kRunBitMask = 0x0001;
+      if( (kRunBitMask & nRunIdleBuf) == 1 ) {
+        CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
+      } else {
+        CipIdentitySetExtendedDeviceStatus(
+          kAtLeastOneIoConnectionEstablishedAllInIdleMode);
+      }
+      if(g_run_idle_state != nRunIdleBuf) {
+        RunIdleChanged(nRunIdleBuf);
+      }
+      g_run_idle_state = nRunIdleBuf;
+      data_length -= 4;
     }
-    if(g_run_idle_state != nRunIdleBuf) {
-      RunIdleChanged(nRunIdleBuf);
-    }
-    g_run_idle_state = nRunIdleBuf;
-    data_length -= 4;
-#endif /* OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER */
     if(no_new_data) {
       return kEipStatusOk;
     }

@@ -60,9 +60,6 @@ typedef enum {
 
 #define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2 /**< According to EIP spec at least 2 delayed message requests should be supported */
 
-#define ENCAP_MAX_DELAYED_ENCAP_MESSAGE_SIZE ( ENCAPSULATION_HEADER_LENGTH + \
-                                               39 + sizeof(OPENER_DEVICE_NAME) )                             /* currently we only have the size of an encapsulation message */
-
 /* Encapsulation layer data  */
 
 /** @brief Delayed Encapsulation Message structure */
