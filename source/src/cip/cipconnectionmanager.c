@@ -1711,6 +1711,7 @@ EipStatus TriggerConnections(unsigned int output_assembly,
       }
       break;
     }
+    node = node->next;
   }
   return status;
 }
