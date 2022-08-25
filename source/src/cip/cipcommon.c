@@ -1417,16 +1417,7 @@ EipStatus CipDeleteService(CipInstance *RESTRICT const instance,
     class->number_of_instances--; /* update the total number of instances
                                             recorded by the class - Attr. 3 */
 
-    // update largest instance number (class Attribute 2)
-    instances = class->instances;
-    EipUint16 max_instance = 0;
-    while (NULL != instances->next) {
-      if(instances->instance_number > max_instance) {
-        max_instance = instances->instance_number;
-      }
-      instances = instances->next;
-    }
-    class->max_instance = max_instance;
+    class->max_instance = GetMaxInstanceNumber(class); /* update largest instance number (class Attribute 2) */
 
     message_router_response->general_status = kCipErrorSuccess;
   }
