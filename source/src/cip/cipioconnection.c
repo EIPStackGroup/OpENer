@@ -985,15 +985,13 @@ CipError OpenCommunicationChannels(CipConnectionObject *connection_object) {
 
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
   CipConnectionObject *connection_object) {
-  CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
+  if(kEipInvalidSocket !=
+      connection_object->socket[kUdpCommuncationDirectionConsuming])
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
 
-  connection_object->socket[kUdpCommuncationDirectionConsuming] =
-    kEipInvalidSocket;
-
-  CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
-
-  connection_object->socket[kUdpCommuncationDirectionProducing] =
-    kEipInvalidSocket;
+  if(kEipInvalidSocket !=
+      connection_object->socket[kUdpCommuncationDirectionProducing])
+    CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionProducing]);
 
   RemoveFromActiveConnections(connection_object);
   ConnectionObjectInitializeEmpty(connection_object);
