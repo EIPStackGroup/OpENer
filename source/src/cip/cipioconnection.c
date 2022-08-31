@@ -526,15 +526,13 @@ EipStatus OpenProducingMulticastConnection(
       kEipInvalidSocket;
   }
 
-  common_packet_format_data->address_info_item[j].length = 16;
+  memcpy(&connection_object->remote_address, &existing_connection_object->remote_address, sizeof(connection_object->remote_address));
+  connection_object->eip_level_sequence_count_producing = existing_connection_object->eip_level_sequence_count_producing;
+  connection_object->sequence_count_producing = existing_connection_object->sequence_count_producing;
+  connection_object->transmission_trigger_timer = existing_connection_object->transmission_trigger_timer;
 
-  connection_object->remote_address.sin_family = AF_INET;
-  connection_object->remote_address.sin_port =
-    common_packet_format_data->address_info_item[j].sin_port = port;
-  connection_object->remote_address.sin_addr.s_addr =
-    common_packet_format_data->address_info_item[j].sin_addr =
-      g_tcpip.mcast_config.starting_multicast_address;
   memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
+  common_packet_format_data->address_info_item[j].length = 16;
   common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
 
   return kEipStatusOk;
