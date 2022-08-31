@@ -711,14 +711,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
                                                              OPENER_NUMBER_OF_SUPPORTED_SESSIONS,
                                                              socket);
   if(number_of_read_bytes == 0) {
-    int error_code = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
-    OPENER_TRACE_ERR(
-      "networkhandler: socket: %d - connection closed by client: %d - %s\n",
-      socket,
-      error_code,
-      error_message);
-    FreeErrorMessage(error_message);
+    OPENER_TRACE_ERR("networkhandler: socket: %d - connection closed by client.\n", socket);
     RemoveSocketTimerFromList(socket);
     RemoveSession(socket);
     return kEipStatusError;
