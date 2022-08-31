@@ -693,52 +693,50 @@ EipUint16 HandleConfigData(CipConnectionObject *connection_object) {
   return connection_manager_status;
 }
 
+/*
+ * Returns POSIX OK (0) on successful transfer, otherwise non-zero to
+ * trigger closing of connections and sockets associated with object.
+ */
+static int transfer_master_connection(CipConnectionObject *connection_object) {
+  CipConnectionObject *active;
+
+  active = GetNextNonControlMasterConnection(connection_object->produced_path.instance_id);
+  if (!active)
+    return 1;
+
+  OPENER_TRACE_INFO("Transferring socket ownership\n");
+  active->socket[kUdpCommuncationDirectionProducing] = connection_object->socket[kUdpCommuncationDirectionProducing];
+  connection_object->socket[kUdpCommuncationDirectionProducing] = kEipInvalidSocket;
+
+  memcpy(&(active->remote_address), &(connection_object->remote_address), sizeof(active->remote_address));
+  active->eip_level_sequence_count_producing = connection_object->eip_level_sequence_count_producing;
+  active->sequence_count_producing = connection_object->sequence_count_producing;
+  active->transmission_trigger_timer = connection_object->transmission_trigger_timer;
+
+  return 0;
+}
+
+/* Always sync any changes with HandleIoConnectionTimeout() */
 void CloseIoConnection(CipConnectionObject *connection_object) {
+  ConnectionObjectInstanceType instance_type = ConnectionObjectGetInstanceType(connection_object);
+  ConnectionObjectConnectionType conn_type = ConnectionObjectGetTToOConnectionType(connection_object);
 
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
                          connection_object->produced_path.instance_id,
                          kIoConnectionEventClosed);
-  ConnectionObjectSetState(connection_object,
-                           kConnectionObjectStateNonExistent);
+  ConnectionObjectSetState(connection_object, kConnectionObjectStateNonExistent);
 
-  if(kConnectionObjectInstanceTypeIOExclusiveOwner ==
-     ConnectionObjectGetInstanceType(connection_object)
-     || kConnectionObjectInstanceTypeIOInputOnly ==
-     ConnectionObjectGetInstanceType(connection_object) ) {
-    if( (kConnectionObjectConnectionTypeMulticast ==
-         ConnectionObjectGetTToOConnectionType(connection_object) )
-        && (kEipInvalidSocket !=
-            connection_object->socket[kUdpCommuncationDirectionProducing]) ) {
-      OPENER_TRACE_INFO(
-        "Exclusive Owner or Input Only connection closed - Instance type :%d\n",
-        ConnectionObjectGetInstanceType(connection_object) );
-      CipConnectionObject *next_non_control_master_connection =
-        GetNextNonControlMasterConnection(
-          connection_object->produced_path.instance_id);
-      if(NULL != next_non_control_master_connection) {
+  if(kConnectionObjectInstanceTypeIOExclusiveOwner == instance_type ||
+     kConnectionObjectInstanceTypeIOInputOnly == instance_type) {
+    if(kConnectionObjectConnectionTypeMulticast == conn_type &&
+       kEipInvalidSocket != connection_object->socket[kUdpCommuncationDirectionProducing]) {
+      OPENER_TRACE_INFO("Exclusive Owner or Input Only connection closed - Instance type: %d\n", instance_type);
 
-        OPENER_TRACE_INFO("Transfer socket ownership\n");
-        next_non_control_master_connection->socket[
-          kUdpCommuncationDirectionProducing] =
-          connection_object->socket[kUdpCommuncationDirectionProducing];
-
-        connection_object->socket[kUdpCommuncationDirectionProducing] =
-          kEipInvalidSocket;
-        /* End */
-
-        memcpy(&(next_non_control_master_connection->remote_address),
-               &(connection_object->remote_address),
-               sizeof(next_non_control_master_connection->remote_address) );
-        next_non_control_master_connection->eip_level_sequence_count_producing =
-          connection_object->eip_level_sequence_count_producing;
-        next_non_control_master_connection->sequence_count_producing =
-          connection_object->sequence_count_producing;
-        next_non_control_master_connection->transmission_trigger_timer =
-          connection_object->transmission_trigger_timer;
-      } else { /* this was the last master connection close all listen only connections listening on the port */
-        CloseAllConnectionsForInputWithSameType(
-          connection_object->produced_path.instance_id,
-          kConnectionObjectInstanceTypeIOListenOnly);
+      if(transfer_master_connection(connection_object)) {
+        /* No transfer, this was the last master connection, close all
+         * listen only connections listening on the port */
+        CloseAllConnectionsForInputWithSameType(connection_object->produced_path.instance_id,
+                                                kConnectionObjectInstanceTypeIOListenOnly);
       }
     }
   }
@@ -746,53 +744,44 @@ void CloseIoConnection(CipConnectionObject *connection_object) {
   CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(connection_object);
 }
 
+/* Always sync any changes with CloseIoConnection() */
 void HandleIoConnectionTimeOut(CipConnectionObject *connection_object) {
+  ConnectionObjectInstanceType instance_type = ConnectionObjectGetInstanceType(connection_object);
+  ConnectionObjectConnectionType conn_type = ConnectionObjectGetTToOConnectionType(connection_object);
+  int handover = 0;
+
   CheckIoConnectionEvent(connection_object->consumed_path.instance_id,
                          connection_object->produced_path.instance_id,
                          kIoConnectionEventTimedOut);
-
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
-  if(connection_object->last_package_watchdog_timer ==
-     connection_object->inactivity_watchdog_timer) {
+
+  if(connection_object->last_package_watchdog_timer == connection_object->inactivity_watchdog_timer)
     CheckForTimedOutConnectionsAndCloseTCPConnections(connection_object,
                                                       CloseEncapsulationSessionBySockAddr);
+
+  if(kConnectionObjectInstanceTypeIOExclusiveOwner == instance_type ||
+     kConnectionObjectInstanceTypeIOInputOnly == instance_type) {
+    if(kConnectionObjectConnectionTypeMulticast == conn_type &&
+       kEipInvalidSocket != connection_object->socket[kUdpCommuncationDirectionProducing]) {
+      OPENER_TRACE_INFO("Exclusive Owner or Input Only connection timed out - Instance type: %d\n", instance_type);
+      /* we are the controlling input only connection find a new controller*/
+
+      if(transfer_master_connection(connection_object)) {
+        /* No transfer, this was the last master connection, close all
+         * listen only connections listening on the port */
+        CloseAllConnectionsForInputWithSameType(connection_object->produced_path.instance_id,
+                                                kConnectionObjectInstanceTypeIOListenOnly);
+      } else {
+	handover = 1;
+      }
+    }
   }
 
-  if(kConnectionObjectConnectionTypeMulticast ==
-     ConnectionObjectGetTToOConnectionType(connection_object) ) {
-    switch(ConnectionObjectGetInstanceType(connection_object) ) {
-      case kConnectionObjectInstanceTypeIOExclusiveOwner:
-        CloseAllConnectionsForInputWithSameType(
-          connection_object->produced_path.instance_id,
-          kConnectionObjectInstanceTypeIOInputOnly);
-        CloseAllConnectionsForInputWithSameType(
-          connection_object->produced_path.instance_id,
-          kConnectionObjectInstanceTypeIOListenOnly);
-        break;
-      case kConnectionObjectInstanceTypeIOInputOnly:
-        if(kEipInvalidSocket !=
-           connection_object->socket[kUdpCommuncationDirectionProducing]) {                      /* we are the controlling input only connection find a new controller*/
-          CipConnectionObject *next_non_control_master_connection =
-            GetNextNonControlMasterConnection(
-              connection_object->produced_path.instance_id);
-          if(NULL != next_non_control_master_connection) {
-            next_non_control_master_connection->socket[
-              kUdpCommuncationDirectionProducing] =
-              connection_object->socket[kUdpCommuncationDirectionProducing];
-            connection_object->socket[kUdpCommuncationDirectionProducing] =
-              kEipInvalidSocket;
-            next_non_control_master_connection->transmission_trigger_timer =
-              connection_object->transmission_trigger_timer;
-          } else { /* this was the last master connection close all listen only connections listening on the port */
-            CloseAllConnectionsForInputWithSameType(
-              connection_object->produced_path.instance_id,
-              kConnectionObjectInstanceTypeIOListenOnly);
-          }
-        }
-        break;
-      default:
-        break;
-    }
+  if(kConnectionObjectInstanceTypeIOExclusiveOwner == instance_type && !handover) {
+    CloseAllConnectionsForInputWithSameType(connection_object->produced_path.instance_id,
+                                            kConnectionObjectInstanceTypeIOInputOnly);
+    CloseAllConnectionsForInputWithSameType(connection_object->produced_path.instance_id,
+                                            kConnectionObjectInstanceTypeIOListenOnly);
   }
 
   ConnectionObjectSetState(connection_object, kConnectionObjectStateTimedOut);
