@@ -349,10 +349,12 @@ EipStatus NetworkHandlerInitialize(void) {
 }
 
 void CloseUdpSocket(int socket_handle) {
+  OPENER_TRACE_STATE("Closing UDP socket %d\n", socket_handle);
   CloseSocket(socket_handle);
 }
 
 void CloseTcpSocket(int socket_handle) {
+  OPENER_TRACE_STATE("Closing TCP socket %d\n", socket_handle);
   ShutdownSocketPlatform(socket_handle);
   RemoveSocketTimerFromList(socket_handle);
   CloseSocket(socket_handle);
