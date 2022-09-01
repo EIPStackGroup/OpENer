@@ -4,6 +4,7 @@
  *
  ******************************************************************************/
 
+#include <time.h>
 #include "xorshiftrandom.h"
 
 static uint32_t xor_shift_seed; /** < File-global variable holding the current seed*/
@@ -17,6 +18,9 @@ void SetXorShiftSeed(uint32_t seed) {
  * Works directly on the file global variable
  */
 void CalculateNextSeed(void) {
+  if (xor_shift_seed == 0)
+    SetXorShiftSeed(time(NULL));
+
   xor_shift_seed ^= xor_shift_seed << 13;
   xor_shift_seed ^= xor_shift_seed >> 17;
   xor_shift_seed ^= xor_shift_seed << 5;
