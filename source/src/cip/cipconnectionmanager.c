@@ -27,6 +27,7 @@
 #include "cipepath.h"
 #include "cipelectronickey.h"
 #include "cipqos.h"
+#include "xorshiftrandom.h"
 
 const size_t g_kForwardOpenHeaderLength = 36; /**< the length in bytes of the forward open command specific data till the start of the connection path (including con path size)*/
 const size_t g_kLargeForwardOpenHeaderLength = 40; /**< the length in bytes of the large forward open command specific data till the start of the connection path (including con path size)*/
@@ -174,12 +175,24 @@ unsigned int GetPaddedLogicalPath(const EipUint8 **logical_path_segment) {
  * described in the EIP specs.
  *
  * A unique connectionID is formed from the boot-time-specified "incarnation ID"
- * and the per-new-connection-incremented connection number/counter.
+ * and the per-new-connection connection number.  The legacy default is to use
+ * the lower 16-bit as a connection counter, incrementing for each connection.
+ *
+ * Some conformance tests may however fail an adapter due to the connection ID
+ * not being random enough.  To meet such requirements there is an option to
+ * enable fully random connection IDs -- although the upper 16-bits are always
+ * derived from the incarnation ID -- i.e., each time OpENer is started the
+ * upper 16-bits will remain be the same.
+ *
  * @return new 32-bit connection id
  */
 CipUdint GetConnectionId(void) {
+#ifndef OPENER_RANDOMIZE_CONNECTION_ID
   static CipUint connection_id = 18;
   connection_id++;
+#else
+  CipUint connection_id = NextXorShiftUint32();
+#endif
   return (g_incarnation_id | (connection_id & 0x0000FFFF) );
 }
 
