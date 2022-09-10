@@ -75,7 +75,7 @@ void CloseUdpSocket(int socket_handle);
 
 void CloseTcpSocket(int socket_handle);
 
-EipStatus NetworkHandlerProcessOnce(void);
+EipStatus NetworkHandlerProcessCyclic(void);
 
 EipStatus NetworkHandlerFinish(void);
 

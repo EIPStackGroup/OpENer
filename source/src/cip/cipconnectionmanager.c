@@ -188,26 +188,26 @@ void InitializeConnectionManager(CipClass *class) {
   CipClass *meta_class = class->class_instance.cip_class;
 
   InsertAttribute( (CipInstance *) class, 1, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->revision, kGetableSingleAndAll );                                                      /* revision */
+                   (void *) &class->revision, kGetableSingleAndAll ); /* revision */
   InsertAttribute( (CipInstance *) class, 2, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingleAndAll );                                                      /*  largest instance number */
+                   (void *) &class->number_of_instances, kGetableSingleAndAll ); /* largest instance number */
   InsertAttribute( (CipInstance *) class, 3, kCipUint, EncodeCipUint, NULL,
-                   (void *) &class->number_of_instances, kGetableSingle );                                                      /* number of instances currently existing*/
+                   (void *) &class->number_of_instances, kGetableSingle ); /* number of instances currently existing*/
   InsertAttribute( (CipInstance *) class, 4, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional attribute list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable ); /* optional attribute list - default = 0 */
   InsertAttribute( (CipInstance *) class, 5, kCipUint, EncodeCipUint, NULL,
-                   (void *) &kCipUintZero, kNotSetOrGetable );                                                      /* optional service list - default = 0 */
+                   (void *) &kCipUintZero, kNotSetOrGetable ); /* optional service list - default = 0 */
   InsertAttribute( (CipInstance *) class, 6, kCipUint, EncodeCipUint, NULL,
                    (void *) &meta_class->highest_attribute_number,
-                   kGetableSingleAndAll );                                                                                                      /* max class attribute number*/
+                   kGetableSingleAndAll ); /* max class attribute number*/
   InsertAttribute( (CipInstance *) class, 7, kCipUint, EncodeCipUint, NULL,
                    (void *) &class->highest_attribute_number,
-                   kGetableSingleAndAll );                                                                                                 /* max instance attribute number*/
+                   kGetableSingleAndAll ); /* max instance attribute number*/
 
   InsertService(meta_class,
                 kGetAttributeAll,
                 &GetAttributeAll,
-                "GetAttributeAll");                                                 /* bind instance services to the metaclass*/
+                "GetAttributeAll"); /* bind instance services to the metaclass*/
   InsertService(meta_class,
                 kGetAttributeSingle,
                 &GetAttributeSingle,
@@ -281,9 +281,9 @@ EipStatus HandleReceivedConnectedData(const EipUint8 *const data,
     if( (g_common_packet_format_data_item.address_item.type_id ==
          kCipItemIdConnectionAddress)
         || (g_common_packet_format_data_item.address_item.type_id ==
-            kCipItemIdSequencedAddressItem) ) {                                                       /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
+            kCipItemIdSequencedAddressItem) ) { /* found connected address item or found sequenced address item -> for now the sequence number will be ignored */
       if(g_common_packet_format_data_item.data_item.type_id ==
-         kCipItemIdConnectedDataItem) {                                                       /* connected data item received */
+         kCipItemIdConnectedDataItem) { /* connected data item received */
 
         CipConnectionObject *connection_object = GetConnectedObject(
           g_common_packet_format_data_item.address_item.data.connection_identifier);
@@ -446,7 +446,7 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
 
   /*parsing is now finished all data is available and check now establish the connection */
   ConnectionManagementHandling *connection_management_entry =
-    GetConnectionManagementEntry(                                                           /* Gets correct open connection function for the targeted object */
+    GetConnectionManagementEntry( /* Gets correct open connection function for the targeted object */
       g_dummy_connection_object.configuration_path.class_id);
   if(NULL != connection_management_entry) {
     temp = connection_management_entry->open_connection_function(
@@ -685,7 +685,7 @@ EipStatus ForwardClose(CipInstance *instance,
   if(kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound
      == connection_status) {
     OPENER_TRACE_INFO(
-      "Connection not found! Requested connection tried: %u, %u, %lu\n",
+      "Connection not found! Requested connection tried: %u, %u, %i\n",
       connection_serial_number,
       originator_vendor_id,
       originator_serial_number);
@@ -773,7 +773,7 @@ EipStatus SearchConnectionData(CipInstance *instance,
     &message_router_request->data);
 
   OPENER_TRACE_INFO(
-    "SearchConnectionData for ConnSerNo: %d, OrigVendId: %d, OrigSerNo: %ld,\n",
+    "SearchConnectionData for ConnSerNo: %d, OrigVendId: %d, OrigSerNo: %i,\n",
     Connection_serial_number,
     Originator_vendor_id,
     Originator_serial_number);
@@ -895,7 +895,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
        ConnectionObjectGetState(connection_object) ) {
       if( (NULL != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
           (kConnectionObjectTransportClassTriggerDirectionServer ==
-           ConnectionObjectGetTransportClassTriggerDirection(connection_object) ) )                                                    /* all server connections have to maintain an inactivity watchdog timer */
+           ConnectionObjectGetTransportClassTriggerDirection(connection_object) ) ) /* all server connections have to maintain an inactivity watchdog timer */
       {
         if(elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
@@ -914,7 +914,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
         /* client connection */
         if( (0 != ConnectionObjectGetExpectedPacketRate(connection_object) )
             && (kEipInvalidSocket !=
-                connection_object->socket[kUdpCommuncationDirectionProducing]) )                   /* only produce for the master connection */
+                connection_object->socket[kUdpCommuncationDirectionProducing]) ) /* only produce for the master connection */
         {
           if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
              ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -936,17 +936,27 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
               OPENER_TRACE_ERR(
                 "sending of UDP data in manage Connection failed\n");
             }
-            /* reload the timer value */
+            /* add the RPI to the timer value */
             connection_object->transmission_trigger_timer +=
               ConnectionObjectGetRequestedPacketInterval(connection_object);
+            /* decrecment the elapsed time from timer value, if less than timer value */
+            if (connection_object->transmission_trigger_timer > elapsed_time) {
+              connection_object->transmission_trigger_timer -= elapsed_time;
+            } else {  /* elapsed time was longer than RPI */
+              connection_object->transmission_trigger_timer = 0;
+              OPENER_TRACE_INFO("elapsed time: %lu ms was longer than RPI: %u ms\n",
+                                elapsed_time,
+                                ConnectionObjectGetRequestedPacketInterval(connection_object));
+            }
             if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
                ConnectionObjectGetTransportClassTriggerProductionTrigger(
                  connection_object) ) {
               /* non cyclic connections have to reload the production inhibit timer */
               ConnectionObjectResetProductionInhibitTimer(connection_object);
             }
+          } else {
+            connection_object->transmission_trigger_timer -= elapsed_time;
           }
-          connection_object->transmission_trigger_timer -= elapsed_time;
         }
       }
     }
@@ -1130,7 +1140,7 @@ EipStatus AssembleForwardCloseResponse(EipUint16 connection_serial_number,
     message_router_response->size_of_additional_status = 0;
   } else {
     AddSintToMessage(*message_router_request->data,
-                     &message_router_response->message);                                /* remaining path size */
+                     &message_router_response->message); /* remaining path size */
     if(kConnectionManagerExtendedStatusWrongCloser == extended_error_code) {
       message_router_response->general_status = kCipErrorPrivilegeViolation;
     } else {
@@ -1417,7 +1427,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
     /* Get instance ID */
     if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
        kLogicalSegmentLogicalTypeInstanceId ==
-       GetPathLogicalSegmentLogicalType(message) ) {                                                                                                     /* store the configuration ID for later checking in the application connection types */
+       GetPathLogicalSegmentLogicalType(message) ) { /* store the configuration ID for later checking in the application connection types */
       instance_id = CipEpathGetLogicalValue(&message);
 
       OPENER_TRACE_INFO("Configuration instance id %" PRId32 "\n",
@@ -1485,7 +1495,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
       if(kConnectionObjectConnectionTypeNull ==
          originator_to_target_connection_type) {
         if(kConnectionObjectConnectionTypeNull ==
-           target_to_originator_connection_type) {                                        /* configuration only connection */
+           target_to_originator_connection_type) { /* configuration only connection */
           number_of_encoded_paths = 0;
           OPENER_TRACE_WARN("assembly: type invalid\n");
         } else { /* 1 path -> path is for production */
@@ -1495,7 +1505,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
         }
       } else {
         if(kConnectionObjectConnectionTypeNull ==
-           target_to_originator_connection_type) {                                        /* 1 path -> path is for consumption */
+           target_to_originator_connection_type) { /* 1 path -> path is for consumption */
           OPENER_TRACE_INFO("assembly: type consume\n");
           number_of_encoded_paths = 1;
           paths_to_encode[0] = &(connection_object->consumed_path);
@@ -1513,7 +1523,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
            && (kLogicalSegmentLogicalTypeInstanceId ==
                GetPathLogicalSegmentLogicalType(message)
                || kLogicalSegmentLogicalTypeConnectionPoint ==
-               GetPathLogicalSegmentLogicalType(message) ) )                                            /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
+               GetPathLogicalSegmentLogicalType(message) ) ) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
           CipConnectionPathEpath connection_epath =

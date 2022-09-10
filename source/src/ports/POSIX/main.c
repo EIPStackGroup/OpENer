@@ -252,7 +252,7 @@ static void *executeEventLoop(void *pthread_arg) {
 
   /* The event loop. Put other processing you need done continually in here */
   while(!g_end_stack) {
-    if(kEipStatusOk != NetworkHandlerProcessOnce() ) {
+    if(kEipStatusOk != NetworkHandlerProcessCyclic() ) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
       break;
     }

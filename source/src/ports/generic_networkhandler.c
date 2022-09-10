@@ -398,7 +398,7 @@ void CheckAndHandleTcpListenerSocket(void) {
   }
 }
 
-EipStatus NetworkHandlerProcessOnce(void) {
+EipStatus NetworkHandlerProcessCyclic(void) {
 
   read_socket = master_socket;
 
