@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 #include <unistd.h>
 #include <sys/capability.h>
 
@@ -117,8 +118,11 @@ int main(int argc,
   SetDeviceSerialNumber(123456789);
 
   /* unique_connection_id should be sufficiently random or incremented and stored
-   *  in non-volatile memory each time the device boots.
+   *  in non-volatile memory each time the device boots. This is used as the upper
+   *  16 bits of the connection id. Here we use random number approach, first seed
+   *  the PRNG to ensure we don't get the same value on every startup.
    */
+  srand(time(NULL));
   EipUint16 unique_connection_id = rand();
 
   /* Setup the CIP Layer. All objects are initialized with the default
