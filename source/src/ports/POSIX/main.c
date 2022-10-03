@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/capability.h>
 
 #ifdef OPENER_RT
 #include <pthread.h>
@@ -66,35 +65,6 @@ volatile int g_end_stack = 0;
 /******************************************************************************/
 int main(int argc,
          char *arg[]) {
-
-  cap_t capabilities;
-  cap_value_t capabilities_list[1];
-
-  capabilities = cap_get_proc();
-  if(NULL == capabilities) {
-    printf("Could not get capabilities\n");
-    exit(EXIT_FAILURE);
-  }
-
-  capabilities_list[0] = CAP_NET_RAW;
-  if(-1 ==
-     cap_set_flag(capabilities, CAP_EFFECTIVE, 1, capabilities_list,
-                  CAP_SET) ) {
-    cap_free(capabilities);
-    printf("Could not set CAP_NET_RAW capability\n");
-    exit(EXIT_FAILURE);
-  }
-
-  if(-1 == cap_set_proc(capabilities) ) {
-    cap_free(capabilities);
-    printf("Could not push CAP_NET_RAW capability to process\n");
-    exit(EXIT_FAILURE);
-  }
-
-  if(-1 == cap_free(capabilities) ) {
-    printf("Could not free capabilities value\n");
-    exit(EXIT_FAILURE);
-  }
 
   if(argc != 2) {
     fprintf(stderr, "Wrong number of command line parameters!\n");
@@ -286,7 +256,7 @@ static void *executeEventLoop(void *pthread_arg) {
 
   /* The event loop. Put other processing you need done continually in here */
   while(!g_end_stack) {
-    if(kEipStatusOk != NetworkHandlerProcessOnce() ) {
+    if(kEipStatusOk != NetworkHandlerProcessCyclic() ) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
       break;
     }
