@@ -374,6 +374,26 @@ CipError EstablishIoConnection(
   return cip_error;
 }
 
+static SocketAddressInfoItem* AllocateSocketAddressInfoItem(
+  CipCommonPacketFormatData *const common_packet_format_data,
+  CipUint type)
+{
+  const int address_info_item_size =
+    sizeof(common_packet_format_data->address_info_item) /
+      sizeof(common_packet_format_data->address_info_item[0]);
+
+  SocketAddressInfoItem* s = common_packet_format_data->address_info_item;
+
+  for (int i = 0; i < address_info_item_size; i++) {
+    if((s->type_id == 0) || (s->type_id == type)) {
+      return s;
+    }
+    s++;
+  }
+
+  return NULL;
+}
+
 /** @brief Open a Point2Point connection dependent on pa_direction.
  *
  * @param connection_object Pointer to registered Object in ConnectionManager.
@@ -384,12 +404,14 @@ EipStatus OpenConsumingPointToPointConnection(
   CipConnectionObject *const connection_object,
   CipCommonPacketFormatData *const common_packet_format_data) {
 
-  int j = 0;
+  SocketAddressInfoItem* sock_addr_info =
+    AllocateSocketAddressInfoItem(common_packet_format_data,
+                                  kCipItemIdSocketAddressInfoOriginatorToTarget);
 
-  if(common_packet_format_data->address_info_item[0].type_id == 0) { /* it is not used yet */
-    j = 0;
-  } else if(common_packet_format_data->address_info_item[1].type_id == 0) {
-    j = 1;
+  if (NULL == sock_addr_info) {
+    OPENER_TRACE_ERR("OpenConsumingPointToPointConnection: could not allocate "
+                     "socket address info.\n");
+    return kEipStatusError;
   }
 
   struct sockaddr_in addr =
@@ -425,16 +447,13 @@ EipStatus OpenConsumingPointToPointConnection(
   addr.sin_addr.s_addr = INADDR_ANY; /* restore the address */
   connection_object->socket[kUdpCommuncationDirectionConsuming] = socket;
 
-  common_packet_format_data->address_info_item[j].length = 16;
-  common_packet_format_data->address_info_item[j].type_id =
-    kCipItemIdSocketAddressInfoOriginatorToTarget;
-
-  common_packet_format_data->address_info_item[j].sin_port = addr.sin_port;
+  sock_addr_info->length = 16;
+  sock_addr_info->type_id = kCipItemIdSocketAddressInfoOriginatorToTarget;
+  sock_addr_info->sin_port = addr.sin_port;
   /*TODO should we add our own address here? */
-  common_packet_format_data->address_info_item[j].sin_addr =
-    addr.sin_addr.s_addr;
-  memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
-  common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
+  sock_addr_info->sin_addr = addr.sin_addr.s_addr;
+  memset(sock_addr_info->nasin_zero, 0, 8);
+  sock_addr_info->sin_family = htons(AF_INET);
 
   return kEipStatusOk;
 }
@@ -483,22 +502,22 @@ EipStatus OpenProducingMulticastConnection(
     GetExistingProducerIoConnection(true,
                                     connection_object->produced_path.instance_id);
 
-  int j = 0; /* allocate an unused sockaddr struct to use */
-  if(g_common_packet_format_data_item.address_info_item[0].type_id == 0) { /* it is not used yet */
-    j = 0;
-  } else if(g_common_packet_format_data_item.address_info_item[1].type_id ==
-            0) {
-    j = 1;
+  SocketAddressInfoItem* sock_addr_info =
+    AllocateSocketAddressInfoItem(common_packet_format_data,
+                                  kCipItemIdSocketAddressInfoTargetToOriginator);
+
+  if (NULL == sock_addr_info) {
+    OPENER_TRACE_ERR("OpenProducingMulticastConnection: could not allocate "
+                     "socket address info.\n");
+    return kEipStatusError;
   }
 
   int port = htons(kOpenerEipIoUdpPort);
-  if(kCipItemIdSocketAddressInfoTargetToOriginator !=
-     common_packet_format_data->address_info_item[j].type_id) {
-    port = common_packet_format_data->address_info_item[j].sin_port;
+  if(kCipItemIdSocketAddressInfoTargetToOriginator != sock_addr_info->type_id) {
+    port = sock_addr_info->sin_port;
   }
 
-  common_packet_format_data->address_info_item[j].type_id =
-    kCipItemIdSocketAddressInfoTargetToOriginator;
+  sock_addr_info->type_id = kCipItemIdSocketAddressInfoTargetToOriginator;
 
   if(NULL == existing_connection_object) { /* we are the first connection producing for the given Input Assembly */
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
@@ -526,14 +545,14 @@ EipStatus OpenProducingMulticastConnection(
       kEipInvalidSocket;
   }
 
-  memcpy(&connection_object->remote_address, &existing_connection_object->remote_address, sizeof(connection_object->remote_address));
-  connection_object->eip_level_sequence_count_producing = existing_connection_object->eip_level_sequence_count_producing;
-  connection_object->sequence_count_producing = existing_connection_object->sequence_count_producing;
-  connection_object->transmission_trigger_timer = existing_connection_object->transmission_trigger_timer;
+  sock_addr_info->length = 16;
 
-  memset(common_packet_format_data->address_info_item[j].nasin_zero, 0, 8);
-  common_packet_format_data->address_info_item[j].length = 16;
-  common_packet_format_data->address_info_item[j].sin_family = htons(AF_INET);
+  connection_object->remote_address.sin_family = AF_INET;
+  connection_object->remote_address.sin_port = sock_addr_info->sin_port = port;
+  connection_object->remote_address.sin_addr.s_addr = sock_addr_info->sin_addr =
+      g_tcpip.mcast_config.starting_multicast_address;
+  memset(sock_addr_info->nasin_zero, 0, 8);
+  sock_addr_info->sin_family = htons(AF_INET);
 
   return kEipStatusOk;
 }
