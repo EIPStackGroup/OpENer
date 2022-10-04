@@ -742,8 +742,7 @@ EipStatus HandleReceivedExplictUdpData(const int socket_handle,
  *           connection hijacking
  *  @return EIP_OK on success
  */
-EipStatus
-HandleReceivedConnectedData(const EipUint8 *const received_data,
+EipStatus HandleReceivedConnectedData(const EipUint8 *const received_data,
                             int received_data_length,
                             struct sockaddr_in *from_address);
 
@@ -760,8 +759,7 @@ HandleReceivedConnectedData(const EipUint8 *const received_data,
  *
  * @return EIP_OK on success
  */
-EipStatus
-ManageConnections(MilliSeconds elapsed_time);
+EipStatus ManageConnections(MilliSeconds elapsed_time);
 
 /** @ingroup CIP_API
  * @brief Trigger the production of an application triggered connection.
@@ -782,8 +780,7 @@ ManageConnections(MilliSeconds elapsed_time);
  * connection
  * @return EIP_OK on success
  */
-EipStatus
-TriggerConnections(unsigned int output_assembly_id,
+EipStatus TriggerConnections(unsigned int output_assembly_id,
                    unsigned int input_assembly_id);
 
 /** @ingroup CIP_API
@@ -816,8 +813,7 @@ void CloseSession(int socket_handle);
  *  return status EIP_ERROR .. error
  *                EIP_OK ... successful finish
  */
-EipStatus
-ApplicationInitialization(void);
+EipStatus ApplicationInitialization(void);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Allow the device specific application to perform its execution
@@ -858,8 +854,7 @@ void CheckIoConnectionEvent(unsigned int output_assembly_id,
  * The length of the data is already checked within the stack. Therefore the
  * user only has to check if the data is valid.
  */
-EipStatus
-AfterAssemblyDataReceived(CipInstance *instance);
+EipStatus AfterAssemblyDataReceived(CipInstance *instance);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Inform the application that the data of an assembly
@@ -873,8 +868,7 @@ AfterAssemblyDataReceived(CipInstance *instance);
  *          - true assembly data has changed
  *          - false assembly data has not changed
  */
-EipBool8
-BeforeAssemblyDataSend(CipInstance *instance);
+EipBool8 BeforeAssemblyDataSend(CipInstance *instance);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Emulate as close a possible a power cycle of the device
@@ -882,8 +876,7 @@ BeforeAssemblyDataSend(CipInstance *instance);
  * @return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
-EipStatus
-ResetDevice(void);
+EipStatus ResetDevice(void);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Reset the device to the initial configuration and emulate as close as
@@ -892,8 +885,7 @@ ResetDevice(void);
  * @return if the service is supported the function will not return.
  *     EIP_ERROR if this service is not supported
  */
-EipStatus
-ResetDeviceToInitialConfiguration(void);
+EipStatus ResetDeviceToInitialConfiguration(void);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Allocate memory for the CIP stack
@@ -927,37 +919,19 @@ void CipFree(void *data);
 void RunIdleChanged(EipUint32 run_idle_value);
 
 /** @ingroup CIP_CALLBACK_API
- * @brief create a producing or consuming UDP socket
- *
- * @param communication_direction kUdpCommunicationDirectionProducing or kUdpCommunicationDirectionConsuming
- * @param socket_data pointer to the address holding structure
- *     Attention: For producing point-to-point connection the
- *     *pa_pstAddr->sin_addr.s_addr member is set to 0 by OpENer. The network
- *     layer of the application has to set the correct address of the
- *     originator.
- *     Attention: For consuming connection the network layer has to set the
- * pa_pstAddr->sin_addr.s_addr to the correct address of the originator.
- * FIXME add an additional parameter that can be used by the CIP stack to
- * request the originators sockaddr_in data.
- * @param qos_for_socket CIP QoS object parameter value
- * @return socket identifier on success
- *         -1 on error
- */
-int CreateUdpSocket(UdpCommuncationDirection communication_direction,
-                    struct sockaddr_in *socket_data,
-                    CipUsint qos_for_socket);
+ * @brief Create the UDP socket for the implicit IO messaging, 
+ * one socket handles all connections
+ * @return the socket handle if successful, else kEipInvalidSocket
+*/ 
+int CreateUdpSocket(void);
 
 /** @ingroup CIP_CALLBACK_API
- * @brief Create a producing or consuming UDP socket
- *
- * @param socket_data Pointer to the "send to" address
- * @param socket_handle Socket descriptor to send on
+ * @brief Sends the data for the implicit IO messaging via UDP socket
+ * @param socket_data Address message to be sent
  * @param outgoing message The constructed outgoing message
  * @return kEipStatusOk on success
  */
-EipStatus
-SendUdpData(const struct sockaddr_in *const socket_data,
-            const int socket_handle,
+EipStatus SendUdpData(const struct sockaddr_in *const socket_data,
             const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API

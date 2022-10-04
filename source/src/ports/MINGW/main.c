@@ -175,7 +175,7 @@ static void LeaveStack(int signal) {
 static DWORD executeEventLoop(LPVOID thread_arg) {
   /* The event loop. Put other processing you need done continually in here */
   while (0 == g_end_stack) {
-    if ( kEipStatusOk != NetworkHandlerProcessOnce() ) {
+    if ( kEipStatusOk != NetworkHandlerProcessCyclic() ) {
       break;
     }
   }

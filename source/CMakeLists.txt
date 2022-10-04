@@ -34,10 +34,15 @@ find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/buildsuppo
 
 INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake )
 
+option(OPENER_RANDOMIZE_CONNECTION_ID "Use randomized connection IDs also for lower 16-bits?" FALSE)
 option(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER "Shall produced data from OpENer also include a run idle header?" FALSE)
 option(OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER "Will consumed data from OpENer also include a run idle header?" TRUE)
 option(OPENER_INSTALL_AS_LIB "Build and install OpENer as a library" FALSE)
 option(BUILD_SHARED_LIBS "Build OpENer as shared library" FALSE)
+
+if(OPENER_RANDOMIZE_CONNECTION_ID)
+  add_definitions(-DOPENER_RANDOMIZE_CONNECTION_ID)
+endif()
 
 if(OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
   add_definitions(-DOPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER)
