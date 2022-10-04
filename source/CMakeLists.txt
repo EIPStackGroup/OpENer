@@ -24,6 +24,12 @@ endif()
 if( NOT DEFINED OpENer_Device_Config_Device_Name )
   set( OpENer_Device_Config_Device_Name "OpENer PC" CACHE STRING "Device Name" )
 endif()
+if(NOT DEFINED OpENer_Device_Major_Version)
+  set(OpENer_Device_Major_Version ${PROJECT_VERSION_MAJOR} CACHE STRING "Major Version")
+endif()
+if(NOT DEFINED OpENer_Device_Minor_Version)
+  set(OpENer_Device_Minor_Version ${PROJECT_VERSION_MINOR} CACHE STRING "Minor Version")
+endif()
 
 configure_file(  
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
@@ -169,7 +175,7 @@ set( OpENer_ADD_CIP_OBJECTS_INCLUDES "" CACHE INTERNAL STRING )
 set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/src/cip_objects )
 include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
 
-#######################################
+# ######################################
 # Add subdirectories                  #
-#######################################
+# ######################################
 add_subdirectory( src )
