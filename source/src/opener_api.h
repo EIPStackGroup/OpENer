@@ -617,6 +617,13 @@ typedef CipError (*ConnectionReceiveDataFunction)(CipConnectionObject *
                                                   const EipUint8 *data,
                                                   const EipUint16 data_length);
 
+ /** @ingroup CIP_API
+ * @brief Function pointer for timeout checker functions 
+ *
+ * @param elapsed_time elapsed time since last check
+ */
+typedef void (*TimeoutCheckerFunction)(const MilliSeconds elapsed_time);
+
 /** @ingroup CIP_API
  * @brief register open functions for an specific object.
  *
@@ -940,6 +947,13 @@ EipStatus SendUdpData(const struct sockaddr_in *const socket_data,
  * @param socket_handle socket descriptor to close
  */
 void CloseSocket(const int socket_handle);
+
+/** @ingroup CIP_CALLBACK_API
+ * @brief Register function pointer in timeout_checker_array
+ *
+ * @param timeout_checker_function pointer to object specific timeout checker function
+ */
+void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
 
 /** @mainpage OpENer - Open Source EtherNet/IP(TM) Communication Stack
  * Documentation

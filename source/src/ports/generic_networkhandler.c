@@ -74,6 +74,14 @@ MilliSeconds g_last_time;
 
 NetworkStatus g_network_status;
 
+/** @brief Size of the timeout checker function pointer array
+ */
+#define OPENER_TIMEOUT_CHECKER_ARRAY_SIZE 10 
+
+/** @brief function pointer array for timer checker functions
+ */
+TimeoutCheckerFunction timeout_checker_array[OPENER_TIMEOUT_CHECKER_ARRAY_SIZE];
+
 /** @brief handle any connection request coming in the TCP server socket.
  *
  */
@@ -499,6 +507,14 @@ EipStatus NetworkHandlerProcessCyclic(void) {
   if(g_network_status.elapsed_time >= kOpenerTimerTickInMilliSeconds) {
     /* call manage_connections() in connection manager every kOpenerTimerTickInMilliSeconds ms */
     ManageConnections(g_network_status.elapsed_time);
+
+    /* Call timeout checker functions registered in timeout_checker_array */
+    for (size_t i = 0; i < OPENER_TIMEOUT_CHECKER_ARRAY_SIZE; i++) {
+      if (NULL != timeout_checker_array[i]) {
+        (timeout_checker_array[i])(g_network_status.elapsed_time);
+      }
+    }
+
     g_network_status.elapsed_time = 0;
   }
   return kEipStatusOk;
@@ -1126,6 +1142,16 @@ void CheckEncapsulationInactivity(int socket_handle) {
         CloseTcpSocket(socket_handle);
         RemoveSession(socket_handle);
       }
+    }
+  }
+}
+
+void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function)
+{
+  for (size_t i = 0; i < OPENER_TIMEOUT_CHECKER_ARRAY_SIZE; i++) {
+    if (NULL == timeout_checker_array[i]) { // find empty array element
+      timeout_checker_array[i] = timeout_checker_function; // add function pointer to array
+      break;
     }
   }
 }
