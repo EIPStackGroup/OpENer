@@ -74,10 +74,6 @@ typedef struct {
  */
 extern CipSecurityObject g_security;  /**< declaration of CIP Security object instance 1 data */
 
-MilliSeconds g_security_session_start_time; //TODO: check
-
-static const MilliSeconds cipSecuritySessionDefaultTimeout = 10000; // 10 seconds //TODO: check
-
 /* ********************************************************************
  * public functions
  */
