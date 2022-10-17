@@ -50,6 +50,8 @@
 /** The implemented class revision is 3 */
 #define CIP_SECURITY_OBJECT_REVISION 3
 
+#define CIP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT 10000U // 10 sec
+
 /* ********************************************************************
  * global public variables
  */
@@ -60,6 +62,8 @@ CipSecurityObject g_security = {
     .security_profiles = kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile,
     .security_profiles_configured = kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile,
 };
+
+MilliSeconds cipSecurityConfigSessionTimeout = CIP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
 
 /* ********************************************************************
  * public functions
@@ -152,7 +156,6 @@ EipStatus CipSecurityObjectBeginConfig(
       // *(CipUsint*) attribute->data = kCipSecurityObjectStateValueConfigurationInProgress; //set state  TODO: check
 
       g_security.state = kCipSecurityObjectStateValueConfigurationInProgress;
-      g_security_session_start_time = GetMilliSeconds();  // TODO: check
 
       message_router_response->general_status = kCipErrorSuccess;
     }
@@ -206,13 +209,11 @@ EipStatus CipSecurityObjectKickTimer(
   InitializeENIPMessage(&message_router_response->message);
   message_router_response->reply_service = (0x80 | message_router_request->service);
 
-//  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);               // attribute #1 state
-//  CipUsint state = *(CipUsint *)attribute->data;  // TODO: check
   CipUsint state = g_security.state;
 
   if (kCipSecurityObjectStateValueConfigurationInProgress == state) {
     // reset configuration session timer
-    g_security_session_start_time = GetMilliSeconds();  // actual time TODO: check
+    cipSecurityConfigSessionTimeout = CIP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
     message_router_response->general_status = kCipErrorSuccess;
   }
 
@@ -238,6 +239,24 @@ EipStatus CipSecurityObjectCleanup(
   // TODO: implement service
 
   return kEipStatusOk;
+}
+
+/** @brief Checks if config session timed out
+ *
+ */
+void CipSecuritySessionTimeoutChecker(const MilliSeconds elapsed_time) {
+    /* check if CIPSecurity configuration session timed out. */
+  if(kCipSecurityObjectStateValueConfigurationInProgress == g_security.state){
+	  if(elapsed_time > cipSecurityConfigSessionTimeout) {
+		  g_security.state = kCipSecurityObjectStateValueIncompleteConfiguration;
+		  OPENER_TRACE_INFO("CipSecuritySessionTimeoutCheck: CIP Security configuration session timed out\n");
+      cipSecurityConfigSessionTimeout = CIP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
+	  }
+    else {
+        cipSecurityConfigSessionTimeout -= elapsed_time;
+      }
+      OPENER_TRACE_INFO("CipSecurityConfigSession: Time left %" PRIu64 "\n", cipSecurityConfigSessionTimeout);
+  }
 }
 
 void EncodeCipSecurityObjectPath(const CipEpath *const epath,
@@ -484,6 +503,9 @@ EipStatus CipSecurityInit(void) {
                 &CipSecurityObjectEndConfig,
                 "CipSecurityObjectEndConfig"
   );
+
+  /* Register timeout checker function in opener */
+  RegisterTimeoutChecker(CipSecuritySessionTimeoutChecker);
 
   return kEipStatusOk;
 }
