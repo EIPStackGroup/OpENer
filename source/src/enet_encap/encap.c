@@ -24,14 +24,14 @@
 #include "opener_error.h"
 
 /* IP address data taken from TCPIPInterfaceObject*/
-const int kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
+const EipUint16 kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
-const int kEncapsulationHeaderOptionsFlag = 0x00; /**< Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.*/
+const CipUdint kEncapsulationHeaderOptionsFlag = 0x00; /**< Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.*/
 
 const int kEncapsulationHeaderSessionHandlePosition = 4; /**< the position of the session handle within the encapsulation header*/
 
-const int kListIdentityDefaultDelayTime = 2000; /**< Default delay time for List Identity response */
-const int kListIdentityMinimumDelayTime = 500; /**< Minimum delay time for List Identity response */
+const EipUint16 kListIdentityDefaultDelayTime = 2000; /**< Default delay time for List Identity response */
+const EipUint16 kListIdentityMinimumDelayTime = 500; /**< Minimum delay time for List Identity response */
 
 typedef enum {
   kSessionStatusInvalid = -1,
@@ -79,8 +79,9 @@ DelayedEncapsulationMessage g_delayed_encapsulation_messages[ENCAP_NUMBER_OF_SUP
 /*** private functions ***/
 void HandleReceivedListIdentityCommandTcp(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
-void HandleReceivedListIdentityCommandUdp(const int socket, const struct sockaddr_in *const from_address, const EncapsulationData *const receive_data,
-    ENIPMessage *const outgoing_message);
+void HandleReceivedListIdentityCommandUdp(const int socket,
+                                          const struct sockaddr_in *const from_address,
+                                          const EncapsulationData *const receive_data);
 
 EipStatus HandleReceivedUnregisterSessionCommand(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
@@ -237,7 +238,9 @@ EipStatus HandleReceivedExplictUdpData(const int socket, const struct sockaddr_i
           if(unicast == true) {
             HandleReceivedListIdentityCommandTcp(&encapsulation_data, outgoing_message);
           } else {
-            HandleReceivedListIdentityCommandUdp(socket, from_address, &encapsulation_data, outgoing_message);
+            HandleReceivedListIdentityCommandUdp(socket,
+                                                 from_address,
+                                                 &encapsulation_data);
             /* as the response has to be delayed do not send it now */
             return_value = kEipStatusOk;
           }
@@ -324,8 +327,10 @@ void HandleReceivedListIdentityCommandTcp(const EncapsulationData *const receive
   EncapsulateListIdentityResponseMessage(receive_data, outgoing_message);
 }
 
-void HandleReceivedListIdentityCommandUdp(const int socket, const struct sockaddr_in *const from_address, const EncapsulationData *const receive_data,
-    ENIPMessage *const outgoing_message) {
+void HandleReceivedListIdentityCommandUdp(const int socket,
+                                          const struct sockaddr_in *const from_address,
+                                          const EncapsulationData *const receive_data)
+{
   DelayedEncapsulationMessage *delayed_message_buffer = NULL;
   ENIPMessage *p_outgoing_message = NULL;
 
