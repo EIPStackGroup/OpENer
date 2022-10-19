@@ -159,35 +159,30 @@ EipStatus EIPSecurityObjectPreResetCallback(
     CipInstance *RESTRICT const instance,
     CipMessageRouterRequest *const message_router_request,
     CipMessageRouterResponse *const message_router_response) {
+  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);
+  CipUint *state = attribute->data;
 
-  message_router_response->general_status =
-      kCipErrorPrivilegeViolation;  // TODO: check error status
-  message_router_response->size_of_additional_status = 0;
-  InitializeENIPMessage(&message_router_response->message);
-  message_router_response->reply_service =
-      (0x80 | message_router_request->service);
+  if (*state == kEIPSecurityObjectStateValueConfigured) {
+    CipBool sent_over_TLS = false;  // TODO: check for valid TLS connection
+    if (!sent_over_TLS) {
+      message_router_response->general_status =
+          kCipErrorPrivilegeViolation;  // 0x0F Permission Denied
+      return kEipStatusOk;
+    }
+  }
 
-  // TODO: check for valid TLS connection
-
-  CipAttributeStruct *attribute = NULL;
-
-  CipBool enable_pull_model =
-      false; /* The default value if parameter was omitted. */
+  CipBool enable_pull_model = true; /* The default value if parameter was omitted. */
   CipUint pull_model_status = 0x0000;
-  CipUint state = 0;
 
   if (message_router_request->request_data_size == 1) {
     enable_pull_model = GetBoolFromMessage(&message_router_request->data);
+  }
 
-    if (enable_pull_model) {       // data: 01
-      pull_model_status = 0x0000;  // TODO: 0x0000 not allowed - check
-      state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration;
-    } else {  // data: 00
-      pull_model_status = 0xFFFF;
-      state = kEIPSecurityObjectStateValuePullModelDisabled;
-    }
+  if (enable_pull_model) {
+    *state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration;
   } else {
     pull_model_status = 0xFFFF;
+    *state = kEIPSecurityObjectStateValuePullModelDisabled;
   }
 
   attribute = GetCipAttribute(instance, 13);  // attribute #13 pull model enable
@@ -196,16 +191,9 @@ EipStatus EIPSecurityObjectPreResetCallback(
   attribute = GetCipAttribute(instance, 14);  // attribute #14 pull model status
   *(CipUint *)attribute->data = pull_model_status;  // set value
 
-  attribute = GetCipAttribute(instance, 1);  // attribute #1 state
-  *(CipUsint *)attribute->data = state;      // set value
-
   /* Reset settable attributes of each existing EtherNet/IP Security Object to
    * factory default */
-  for (CipInstance *ins = instance->cip_class->instances; ins;
-       ins = ins->next) /* follow the list*/
-  {
-    EIPSecurityObjectResetSettableAttributes(ins);
-  }
+  EIPSecurityObjectResetSettableAttributes(instance);
 
   message_router_response->general_status = kCipErrorSuccess;
   return kEipStatusOk;

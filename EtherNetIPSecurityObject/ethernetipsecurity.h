@@ -157,4 +157,17 @@ EipStatus EIPSecurityInit(void);
  */
 void EIPSecurityObjectResetSettableAttributes(CipInstance *instance);
 
+/** @brief EtherNet/IP Security Object PreResetCallback
+ *
+ *  Used for common Reset service
+ *
+ *  Return this EtherNet/IP Security Object Instance to the
+ *  Factory Default Configuration State.
+ *  @See Vol.8, Chapter 5-4.5.1
+ */
+EipStatus EIPSecurityObjectPreResetCallback(
+    CipInstance *instance,
+    CipMessageRouterRequest *message_router_request,
+    CipMessageRouterResponse *message_router_response);
+
 #endif  // OPENER_ETHERNETIPSECURITY_H
