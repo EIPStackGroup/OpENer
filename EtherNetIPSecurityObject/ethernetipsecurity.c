@@ -406,10 +406,10 @@ int DecodeEIPSecurityObjectCipherSuites(
 
     int number_of_decoded_bytes = -1;
 
-    CipUsint number_of_cipher_suites = GetUsintFromMessage(
-         &(message_router_request->data));
-    number_of_decoded_bytes = sizeof(number_of_cipher_suites);
-    CipFree(data->cipher_suite_ids);
+  CipUsint number_of_cipher_suites =
+      GetUsintFromMessage(&(message_router_request->data));
+  number_of_decoded_bytes = sizeof(number_of_cipher_suites);
+  CipFree(data->cipher_suite_ids);
 
      if (number_of_cipher_suites > 0) {
          EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
@@ -420,8 +420,8 @@ int DecodeEIPSecurityObjectCipherSuites(
                 number_of_cipher_suites
                 * sizeof(EIPSecurityObjectCipherSuiteId));
 
-         number_of_decoded_bytes += number_of_cipher_suites
-         * sizeof(EIPSecurityObjectCipherSuiteId);
+    number_of_decoded_bytes +=
+        number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId);
 
          data->number_of_cipher_suites = number_of_cipher_suites;
          data->cipher_suite_ids = cipher_suite_ids;
@@ -459,15 +459,15 @@ void EncodeEIPSecurityObjectPathList(const void *const data,
   }
 }
 
-int DecodeEIPSecurityObjectPathList(EIPSecurityObjectPathList *const path_list,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+int DecodeEIPSecurityObjectPathList(
+    EIPSecurityObjectPathList *const path_list,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response) {
+  int number_of_decoded_bytes = -1;
 
-	int number_of_decoded_bytes = -1;
-
-	path_list->number_of_paths = GetUsintFromMessage(
-			&message_router_request->data);
-	number_of_decoded_bytes = 1;
+  path_list->number_of_paths =
+      GetUsintFromMessage(&message_router_request->data);
+  number_of_decoded_bytes = 1;
 
 	if (0 != path_list->number_of_paths) {
 		for (int i = 0; i < path_list->number_of_paths; i++) {
@@ -669,19 +669,19 @@ EipStatus EIPSecurityInit(void) {
   CipClass *eip_security_object_class = NULL;
   CipInstance *eip_security_object_instance;
 
-  eip_security_object_class =
-      CreateCipClass(kEIPSecurityObjectClassCode,
-                     0, /* # class attributes */
-                     7, /* # highest class attribute number */
-                     2, /* # class services */
-                     16, /* # instance attributes */
-                     16, /* # highest instance attribute number */
-                     8, /* # instance services */
-                     1, /* # instances*/
-                     "EtherNet/IP Security Object",
-                     ETHERNET_IP_SECURITY_OBJECT_REVISION, /* # class revision */
-                     &EIPSecurityObjectInitializeClassSettings /* # function pointer for initialization */
-      );
+  eip_security_object_class = CreateCipClass(
+      kEIPSecurityObjectClassCode, 0, /* # class attributes */
+      7,                              /* # highest class attribute number */
+      2,                              /* # class services */
+      16,                             /* # instance attributes */
+      16,                             /* # highest instance attribute number */
+      8,                              /* # instance services */
+      1,                              /* # instances*/
+      "EtherNet/IP Security Object",
+      ETHERNET_IP_SECURITY_OBJECT_REVISION,     /* # class revision */
+      &EIPSecurityObjectInitializeClassSettings /* # function pointer for
+                                                   initialization */
+  );
 
   if (NULL == eip_security_object_class) {
     /* Initialization failed */
