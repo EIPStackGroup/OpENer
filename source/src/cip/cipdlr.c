@@ -92,6 +92,9 @@ CipDlrObject g_dlr;  /**< definition of DLR object instance 1 data */
  */
 static void EncodeCipRingSupervisorConfig(const void *const data,
                                           ENIPMessage *const outgoing_message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)data;
+
   const size_t kRingSupStructSize = 12u;
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(0,
                                                        kRingSupStructSize,

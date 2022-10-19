@@ -110,6 +110,9 @@ void ConnectionObjectInitializeEmpty(
 }
 
 CipConnectionObject *CipConnectionObjectCreate(const CipOctet *message) {
+  /* Suppress unused parameter compiler warning. */
+  (void)message;
+
   assert(false); /* NOT IMPLEMENTED */
   return NULL;
 }
@@ -683,8 +686,8 @@ CipUsint ConnectionObjectGetConnectionTimeoutMultiplier(
 }
 
 void ConnectionObjectSetConnectionTimeoutMultiplier(
-  CipConnectionObject *connection_object,
-  CipUsint connection_timeout_multiplier) {
+  CipConnectionObject *const connection_object,
+  const CipUsint connection_timeout_multiplier) {
   connection_object->connection_timeout_multiplier =
     connection_timeout_multiplier;
 }

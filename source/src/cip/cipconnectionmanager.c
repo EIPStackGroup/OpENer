@@ -366,6 +366,11 @@ EipStatus HandleNullNonMatchingForwardOpenRequest(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response) {
+  /* Suppress unused parameter compiler warning. */
+  (void) instance;
+  (void) message_router_request;
+  (void) message_router_response;
+
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(connection_object,
                                      message_router_response,
@@ -390,6 +395,10 @@ EipStatus HandleNullMatchingForwardOpenRequest(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response) {
+  /* Suppress unused parameter compiler warning. */
+  (void) instance;
+  (void) message_router_request;
+
   OPENER_TRACE_INFO("Right now we cannot handle Null requests\n");
   return AssembleForwardOpenResponse(connection_object,
                                      message_router_response,
@@ -413,6 +422,10 @@ EipStatus HandleNonNullMatchingForwardOpenRequest(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response) {
+  /* Suppress unused parameter compiler warning. */
+  (void) instance;
+  (void) message_router_request;
+
   OPENER_TRACE_INFO("Right now we cannot handle reconfiguration requests\n");
   return AssembleForwardOpenResponse(connection_object,
                                      message_router_response,
@@ -435,6 +448,9 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   CipInstance *instance,
   CipMessageRouterRequest *message_router_request,
   CipMessageRouterResponse *message_router_response) {
+  /* Suppress unused parameter compiler warning. */
+  (void) connection_object;
+  (void) instance;
 
   EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
@@ -649,6 +665,7 @@ EipStatus ForwardClose(CipInstance *instance,
                        const int encapsulation_session) {
   /*Suppress compiler warning*/
   (void) instance;
+  (void) encapsulation_session;
 
   /* check connection_serial_number && originator_vendor_id && originator_serial_number if connection is established */
   ConnectionManagerExtendedStatusCode connection_status =
@@ -724,6 +741,8 @@ EipStatus GetConnectionOwner(CipInstance *instance,
   (void) instance;
   (void) message_router_request;
   (void) message_router_response;
+  (void) originator_address;
+  (void) encapsulation_session;
 
   return kEipStatusOk;
 }
@@ -731,6 +750,8 @@ EipStatus GetConnectionOwner(CipInstance *instance,
 EipStatus GetConnectionData(CipInstance *instance,
                             CipMessageRouterRequest *message_router_request,
                             CipMessageRouterResponse *message_router_response) {
+  /* Suppress unused parameter compiler warning. */
+  (void)instance;
 
   CIPServiceCode service_code = kGetConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
@@ -775,6 +796,8 @@ EipStatus SearchConnectionData(CipInstance *instance,
                                CipMessageRouterRequest *message_router_request,
                                CipMessageRouterResponse *message_router_response)
 {
+  /* Suppress unused parameter compiler warning. */
+  (void)instance;
 
   CIPServiceCode service_code = kSearchConnectionData;
   message_router_response->reply_service = (0x80 | service_code);
@@ -1541,10 +1564,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                GetPathLogicalSegmentLogicalType(message) ) ) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
-          CipConnectionPathEpath connection_epath =
+          CipConnectionPathEpath path =
           { .class_id = class_id, .instance_id = attribute_id,
             .attribute_id_or_connection_point = 0 };
-          memcpy(paths_to_encode[i], &connection_epath,
+          memcpy(paths_to_encode[i], &path,
                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
