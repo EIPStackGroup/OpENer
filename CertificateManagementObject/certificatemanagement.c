@@ -91,7 +91,7 @@ const Certificate default_ca_certificate = {
 
 CertificateManagementObject g_certificate_management = {
     .name = default_name,                                    /*Attribute 1*/
-    .state = kCertificateManagementObjectStateValueVerified,                              /*Attribute 2*/
+    .state = kCertificateManagementObjectStateValueVerified, /*Attribute 2*/
     .device_certificate = default_device_certificate,        /*Attribute 3*/
     .ca_certificate = default_ca_certificate,                /*Attribute 4*/
     .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM, /*Attribute 5*/
