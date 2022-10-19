@@ -90,8 +90,8 @@ EipStatus CipSecurityInit(void);
  *  @param epath pointer to the object EPATH to encode
  *  @param outgoing_message pointer to the message to be sent
  */
-void EncodeCipSecurityObjectPath(const CipEpath *const epath,
-		ENIPMessage *const outgoing_message);
+void EncodeCipSecurityObjectPath(const CipEpath *epath,
+		ENIPMessage *outgoing_message);
 
 /** @brief Retrieve the given object instance EPATH according to
  *  CIP encoding from the message buffer.
@@ -104,8 +104,8 @@ void EncodeCipSecurityObjectPath(const CipEpath *const epath,
  *  @return length of taken bytes\n
  *          -1 ... error
  */
-int DecodeCipSecurityObjectPath(CipEpath *const epath,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+int DecodeCipSecurityObjectPath(CipEpath *epath,
+    CipMessageRouterRequest *message_router_request,
+    CipMessageRouterResponse *message_router_response);
 
 #endif  // OPENER_CIPSECURITY_H
