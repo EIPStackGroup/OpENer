@@ -54,8 +54,8 @@
 #include "opener_api.h"
 #include "trace.h"
 
-#include "CipSecurityObject/cipsecurity.h"
-#include "CertificateManagementObject/certificatemanagement.h"
+#include "../CertificateManagementObject/certificatemanagement.h"
+#include "../CipSecurityObject/cipsecurity.h"
 #include "ethernetipsecurity.h"
 
 /* ********************************************************************
@@ -82,24 +82,77 @@ const EIPSecurityObjectPathList active_device_certificates = {
     CMO_Paths,
 };
 
-EIPSecurityObject g_eip_security = { //TODO: add object configuration
-    .state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration,                 /** Attribute #1 */
-    .active_device_certificates = active_device_certificates, /** Attribute #6 */
-    .pre_shared_keys.number_of_pre_shared_keys = 0,           /** Attribute #5 */
-    .pull_model_enabled = true,  // default: true             /** Attribute #13 */
-    .pull_model_status = 0x0000,                              /** Attribute #14 */
-    .dtls_timeout = 0x0C //default: 12 seconds                /** Attribute #15 */
+#define number_of_required_cipher_suites 8
+EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_NULL_SHA256 = {
+    0x00,
+    0x3B,
 };
-//  .capability_flags =0,                           /** Attribute #2 */
-//  .available_cipher_suites = 0,                   /** Attribute #3 */
-//  .allowed_cipher_suites,                         /** Attribute #4 */
+EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_AES_128_CBC_SHA256 = {
+    0x00,
+    0x3C,
+};
+EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_AES_256_CBC_SHA256 = {
+    0x00,
+    0x3D,
+};
+EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_NULL_SHA = {
+    0xC0,
+    0x06,
+};
+EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 = {
+    0xC0,
+    0x23,
+};
+EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384 = {
+    0xC0,
+    0x24,
+};
+EIPSecurityObjectCipherSuiteId TLS_ECDHE_PSK_WITH_NULL_SHA256 = {
+    0xC0,
+    0x3A,
+};
+EIPSecurityObjectCipherSuiteId TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256 = {
+    0xC0,
+    0x37,
+};
+
+//const EIPSecurityObjectCipherSuiteId * cipher_suite_ids[] = {
+//    &TLS_RSA_WITH_NULL_SHA256,
+//    &TLS_RSA_WITH_AES_128_CBC_SHA256,
+//    &TLS_RSA_WITH_AES_256_CBC_SHA256,
+//    &TLS_ECDHE_ECDSA_WITH_NULL_SHA,
+//    &TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+//    &TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+//    &TLS_ECDHE_PSK_WITH_NULL_SHA256,
+//    &TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
+//};
+//
+//const EIPSecurityObjectCipherSuites allowed_cipher_suites = {
+//    8,
+//    cipher_suite_ids,
+//};
+
+EIPSecurityObject g_eip_security = {
+    // TODO: add object configuration
+    .state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration, /** Attribute #1 */
+    .capability_flags = 0,                          /** Attribute #2 */
+    .available_cipher_suites = NULL,                /** Attribute #3 */
+    //.allowed_cipher_suites = allowed_cipher_suites,                         /** Attribute #4 */
+    .active_device_certificates = active_device_certificates, /** Attribute #6 */
+    .pre_shared_keys.number_of_pre_shared_keys = 0, /** Attribute #5 */
+    .check_expiration = 0,                          /** Attribute #11 */
+    .pull_model_enabled = true,  // default: true   /** Attribute #13 */
+    .pull_model_status = 0x0000,                    /** Attribute #14 */
+    .dtls_timeout = 0x0C,  // default: 12 seconds   /** Attribute #15 */
+    .udp_only_policy = 0,                           /** Attribute #16 */
+};
+
+//
 //  .trusted_authorities,                           /** Attribute #7 */
 //  .certificate_revocation_list,                   /** Attribute #8 */
 //  .verify_client_certificate,                     /** Attribute #9 */
 //  .send_certificate_chain,                        /** Attribute #10 */
-//  .check_expiration,                              /** Attribute #11 */
 //  .trusted_identities,                            /** Attribute #12 */
-//  .udp_only_policy                                /** Attribute #16 */
 
 /* ********************************************************************
  * public functions
