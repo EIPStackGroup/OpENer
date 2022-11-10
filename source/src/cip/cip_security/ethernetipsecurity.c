@@ -54,8 +54,8 @@
 #include "opener_api.h"
 #include "trace.h"
 
-#include "../CertificateManagementObject/certificatemanagement.h"
-#include "../CipSecurityObject/cipsecurity.h"
+#include "certificatemanagement.h"
+#include "cipsecurity.h"
 #include "ethernetipsecurity.h"
 
 /* ********************************************************************
