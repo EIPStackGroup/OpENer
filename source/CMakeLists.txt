@@ -63,6 +63,11 @@ if (OPENER_IS_DLR_DEVICE)
   add_definitions(-DOPENER_IS_DLR_DEVICE)
 endif()
 
+option(OPENER_CIP_SECURITY "Is OpENer built with support for Cip Security?" FALSE)
+if (OPENER_CIP_SECURITY)
+  add_definitions(-DOPENER_CIP_SECURITY)
+endif()
+
 # This buffer size will be used for any received message.
 # The same buffer is used for the replied explicit message.
 # There are two uses in OpENer:
