@@ -6,7 +6,6 @@
 /** @file
  * @brief Implements the Certificate Management object
  * @author Markus Pešek <markus.pesek@tuwien.ac.at>
- * @author Michael Satovich <michael.satovich@tuwien.ac.at>
  *
  *  Certificate Management object
  *  =============================
@@ -51,7 +50,7 @@
 #include "trace.h"
 
 #include "certificatemanagement.h"
-#include "CipSecurityObject/cipsecurity.h"
+#include "cipsecurity.h"
 
 /* ********************************************************************
  * defines
