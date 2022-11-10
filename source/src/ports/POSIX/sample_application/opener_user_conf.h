@@ -47,10 +47,10 @@
  *  the Security related objects are initialized.
  *
  *  This define should be set from the CMake command line using
- *  "-DCIP_SECURITY_OBJECTS:BOOL=ON"
+ *  "-OPENER_CIP_SECURITY:BOOL=ON"
  */
-#ifndef CIP_SECURITY_OBJECTS
-  #define CIP_SECURITY_OBJECTS 0
+#ifndef OPENER_CIP_SECURITY
+  #define OPENER_CIP_SECURITY 0 
 #endif
 
 #ifdef OPENER_UNIT_TEST

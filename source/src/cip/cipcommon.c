@@ -34,10 +34,10 @@
   #include "OpENerFileObject/cipfile.h"
 #endif
 
-#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
-  #include "SecurityObjects/CipSecurityObject/cipsecurity.h"
-  #include "SecurityObjects/EtherNetIPSecurityObject/ethernetipsecurity.h"
-  #include "SecurityObjects/CertificateManagementObject/certificatemanagement.h"
+#if defined(OPENER_CIP_SECURITY) && 0 != OPENER_CIP_SECURITY
+  #include "cipsecurity.h"
+  #include "ethernetipsecurity.h"
+  #include "certificatemanagement.h"
 #endif
 /* private functions*/
 
@@ -67,7 +67,7 @@ EipStatus CipStackInit(const EipUint16 unique_connection_id) {
   OPENER_ASSERT(kEipStatusOk == eip_status);
 #endif
 
-#if defined(CIP_SECURITY_OBJECTS) && 0 != CIP_SECURITY_OBJECTS
+#if defined(OPENER_CIP_SECURITY) && 0 != OPENER_CIP_SECURITY
   eip_status = CipSecurityInit();
   OPENER_ASSERT(kEipStatusOk == eip_status);
   eip_status = EIPSecurityInit();
