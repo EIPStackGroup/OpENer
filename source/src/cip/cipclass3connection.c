@@ -60,7 +60,7 @@ CipError EstablishClass3Connection(
  */
 CipConnectionObject *GetFreeExplicitConnection(void) {
   for (size_t i = 0; i < OPENER_CIP_NUM_EXPLICIT_CONNS; ++i) {
-    if (ConnectionObjectGetState(&(explicit_connection_object_pool[i]) ) ==
+    if (ConnectionObjectGetState( &(explicit_connection_object_pool[i]) ) ==
         kConnectionObjectStateNonExistent) {
       return &(explicit_connection_object_pool[i]);
     }

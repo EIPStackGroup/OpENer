@@ -52,10 +52,11 @@ CipIdentityObject g_identity = { .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attrib
                                  .ext_status = kSelftestingUnknown, /* Attribute 5: Extended Device Status field */
                                  .serial_number = 0, /* Attribute 6: Serial Number */
                                  /* Attribute 7: Product Name, set by CipIdentityInit() */
-                                 };
+};
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
-void SetDeviceRevision(EipUint8 major, EipUint8 minor) {
+void SetDeviceRevision(EipUint8 major,
+                       EipUint8 minor) {
   g_identity.revision.major_revision = major;
   g_identity.revision.minor_revision = minor;
 }
@@ -93,8 +94,9 @@ CipUint GetDeviceVendorId(void) {
 
 /* The Doxygen comment is with the function's prototype in opener_api.h. */
 void SetDeviceProductName(const char *product_name) {
-  if (!product_name)
+  if (!product_name) {
     return;
+  }
 
   SetCipShortStringByCstr(&g_identity.product_name, product_name);
 }
@@ -110,8 +112,8 @@ static inline void MergeStatusAndExtStatus(void) {
 
   /* Any major fault will override the current extended status with kMajorFault.
      See comment on Major Fault at Vol. 1, Table 5A-2.4. */
-  if(0 !=
-     (status_flags & (kMajorRecoverableFault | kMajorUnrecoverableFault) ) ) {
+  if( 0 !=
+      ( status_flags & (kMajorRecoverableFault | kMajorUnrecoverableFault) ) ) {
     ext_status = kMajorFault;
   }
   g_identity.status = status_flags | ext_status;
@@ -139,7 +141,7 @@ void CipIdentitySetStatusFlags(const CipWord status_flags) {
  *  value.
  */
 void CipIdentityClearStatusFlags(const CipWord status_flags) {
-  g_identity.status &= ~(status_flags & (~kExtStatusMask) );
+  g_identity.status &= ~( status_flags & (~kExtStatusMask) );
   MergeStatusAndExtStatus();
 }
 
@@ -182,19 +184,19 @@ EipStatus IdentityObjectPreResetCallback(
     }
     switch(reset_type) {
       case 0: /* Reset type 0 -> Emulate power cycle */
-        if(kEipStatusError == ResetDevice() ) {
+        if( kEipStatusError == ResetDevice() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
       case 1: /* Reset type 1 -> Return to factory defaults & power cycle*/
-        if(kEipStatusError == ResetDeviceToInitialConfiguration() ) {
+        if( kEipStatusError == ResetDeviceToInitialConfiguration() ) {
           message_router_response->general_status = kCipErrorInvalidParameter;
         }
         break;
 
-        /* case 2: Not supported Reset type 2 ->
-           Return to factory defaults except communications parameters & power cycle*/
+      /* case 2: Not supported Reset type 2 ->
+         Return to factory defaults except communications parameters & power cycle*/
 
       default:
         message_router_response->general_status = kCipErrorInvalidParameter;
@@ -202,7 +204,7 @@ EipStatus IdentityObjectPreResetCallback(
     }
   }
   return eip_status;
-  }
+}
 
 void InitializeCipIdentity(CipClass *class) {
 
@@ -263,8 +265,9 @@ EipStatus CipIdentityInit() {
     return kEipStatusError;
   }
 
-  if (g_identity.product_name.length == 0)
+  if (g_identity.product_name.length == 0) {
     SetDeviceProductName(OPENER_DEVICE_NAME);
+  }
 
   CipInstance *instance = GetCipInstance(class, 1);
   InsertAttribute(instance, 1, kCipUint, EncodeCipUint,

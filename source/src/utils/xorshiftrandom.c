@@ -18,8 +18,9 @@ void SetXorShiftSeed(uint32_t seed) {
  * Works directly on the file global variable
  */
 void CalculateNextSeed(void) {
-  if (xor_shift_seed == 0)
-    SetXorShiftSeed(time(NULL));
+  if (xor_shift_seed == 0) {
+    SetXorShiftSeed( time(NULL) );
+  }
 
   xor_shift_seed ^= xor_shift_seed << 13;
   xor_shift_seed ^= xor_shift_seed >> 17;

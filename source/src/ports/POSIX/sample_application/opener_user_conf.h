@@ -50,7 +50,7 @@
  *  "-OPENER_CIP_SECURITY:BOOL=ON"
  */
 #ifndef OPENER_CIP_SECURITY
-  #define OPENER_CIP_SECURITY 0 
+  #define OPENER_CIP_SECURITY 0
 #endif
 
 #ifdef OPENER_UNIT_TEST
@@ -233,7 +233,7 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 /* If you still want assertions to stop execution but without tracing,
  *  use the following */
         #define OPENER_ASSERT(assertion)                    \
-  do { if(!(assertion) ) { while(1) {} } } while (0)
+  do { if( !(assertion) ) { while(1) {} } } while (0)
     #elif 0
 /* Even for debug builds remove assertion. May solicit unused variable
  *  warnings. */

@@ -163,7 +163,7 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
 
   }
   *message_router_object =
-    (CipMessageRouterObject *) CipCalloc(1, sizeof(CipMessageRouterObject) );                      /* create a new node at the end of the list*/
+    (CipMessageRouterObject *) CipCalloc( 1, sizeof(CipMessageRouterObject) );                      /* create a new node at the end of the list*/
   if(*message_router_object == 0) {
     return kEipStatusError; /* check for memory error*/
 
@@ -183,10 +183,10 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
   CipError status = kCipErrorSuccess;
 
   OPENER_TRACE_INFO("NotifyMessageRouter: routing unconnected message\n");
-  if(kCipErrorSuccess !=
-     (status =
-        CreateMessageRouterRequestStructure(data, data_length,
-                                            &g_message_router_request) ) ) {                                             /* error from create MR structure*/
+  if( kCipErrorSuccess !=
+      ( status =
+          CreateMessageRouterRequestStructure(data, data_length,
+                                              &g_message_router_request) ) ) {                                           /* error from create MR structure*/
     OPENER_TRACE_ERR(
       "NotifyMessageRouter: error from createMRRequeststructure\n");
     message_router_response->general_status = status;

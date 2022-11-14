@@ -44,8 +44,8 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
 
     /* Need to try to close all stuff in any case. */
     eip_status =
-      (kEipStatusError ==
-       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
+      ( kEipStatusError ==
+        ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   }
 
   return eip_status;
@@ -69,8 +69,8 @@ EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
     EipStatus eip_status = kEipStatusError;
 
     /* Need to try to close all stuff in any case. */
-    return (kEipStatusError ==
-            ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
+    return ( kEipStatusError ==
+             ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   } else {
     return kEipStatusError; /* File could not be openend*/
   }

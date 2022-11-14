@@ -208,7 +208,7 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 /* If you still want assertions to stop execution but without tracing,
  *  use the following */
         #define OPENER_ASSERT(assertion)                    \
-  do { if(!(assertion) ) { while(1) {} } } while (0)
+  do { if( !(assertion) ) { while(1) {} } } while (0)
     #elif 0
 /* Even for debug builds remove assertion. May solicit unused variable
  *  warnings. */

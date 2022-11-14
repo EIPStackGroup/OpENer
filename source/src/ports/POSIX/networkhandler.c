@@ -39,7 +39,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 }
 
 void ShutdownSocketPlatform(int socket_handle) {
-  if(0 != shutdown(socket_handle, SHUT_RDWR) ) {
+  if( 0 != shutdown(socket_handle, SHUT_RDWR) ) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("Failed shutdown() socket %d - Error Code: %d - %s\n",
@@ -66,5 +66,5 @@ int SetQosOnSocket(const int socket,
    *  Note that the DSCP value, if placed directly in the ToS field
    *  in the IP header, must be shifted left 2 bits. */
   int set_tos = qos_value << 2;
-  return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
+  return setsockopt( socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos) );
 }

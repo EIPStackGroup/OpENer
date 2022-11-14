@@ -40,7 +40,7 @@
  *        This service should only implemented for the attributes 4, 5, 12,
  *        13 and 15.
  *  - SetAttributeSingle (0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE)
- *  		This service should only be implemented if attribute 6 is enabled.
+ *              This service should only be implemented if attribute 6 is enabled.
  *
  */
 
@@ -122,9 +122,9 @@ EipStatus GetAndClearEthernetLink(
  *          -1 .. error
  */
 int DecodeCipEthernetLinkInterfaceControl(
-		CipEthernetLinkInterfaceControl *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+  CipEthernetLinkInterfaceControl *const data,
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response);
 #endif
 
 
@@ -270,8 +270,8 @@ EipStatus CipEthernetLinkInit(void) {
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
     0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
     InsertService(ethernet_link_class, kSetAttributeSingle,
-    				&SetAttributeSingle,
-                      "SetAttributeSingle");
+                  &SetAttributeSingle,
+                  "SetAttributeSingle");
 #endif
 
     /* bind attributes to the instance */
@@ -473,7 +473,7 @@ static void EncodeCipEthernetLinkInterfaceControl(const void *const data,
   EncodeCipUint(&interface_control->forced_interface_speed, outgoing_message);
 }
 
-#define NELEMENTS(x)  ( (sizeof(x) / sizeof(x[0]) ) )
+#define NELEMENTS(x)  ( ( sizeof(x) / sizeof(x[0]) ) )
 static void EncodeCipEthernetLinkInterfaceCaps(const void *const data,
                                                ENIPMessage *const outgoing_message)
 {
@@ -488,8 +488,8 @@ static void EncodeCipEthernetLinkInterfaceCaps(const void *const data,
   EncodeCipUsint(&count, outgoing_message);
 
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
-    if (interface_caps->speed_duplex_selector &
-        (1U << i) ) {
+    if ( interface_caps->speed_duplex_selector &
+         (1U << i) ) {
       EncodeCipUint(&speed_duplex_table[i].interface_speed, outgoing_message);
       EncodeCipUsint(&speed_duplex_table[i].interface_duplex_mode,
                      outgoing_message);
@@ -557,8 +557,8 @@ static bool IsIfaceControlAllowed(CipUdint instance_id,
   const CipUsint duplex_mode =
     (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
-    if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
-        (1U << i) ) {
+    if ( g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
+         (1U << i) ) {
       if (duplex_mode == speed_duplex_table[i].interface_duplex_mode &&
           iface_cntrl->forced_interface_speed ==
           speed_duplex_table[i].interface_speed) {
@@ -574,47 +574,47 @@ int DecodeCipEthernetLinkInterfaceControl(
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
-	CipInstance *const instance = GetCipInstance(
-				GetCipClass(message_router_request->request_path.class_id),
-				message_router_request->request_path.instance_number);
+  CipInstance *const instance = GetCipInstance(
+    GetCipClass(message_router_request->request_path.class_id),
+    message_router_request->request_path.instance_number);
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	CipEthernetLinkInterfaceControl if_cntrl;
+  CipEthernetLinkInterfaceControl if_cntrl;
 
-	DecodeCipWord(&if_cntrl.control_bits, message_router_request,
-			message_router_response);
-	DecodeCipUint(&if_cntrl.forced_interface_speed, message_router_request,
-			message_router_response);
+  DecodeCipWord(&if_cntrl.control_bits, message_router_request,
+                message_router_response);
+  DecodeCipUint(&if_cntrl.forced_interface_speed, message_router_request,
+                message_router_response);
 
-	if (if_cntrl.control_bits > kEthLinkIfCntrlMaxValid) {
-		message_router_response->general_status =
-				kCipErrorInvalidAttributeValue;
-		return number_of_decoded_bytes;
+  if (if_cntrl.control_bits > kEthLinkIfCntrlMaxValid) {
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
+    return number_of_decoded_bytes;
 
-	} else {
-		if ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate))
-				&& ((0 != (if_cntrl.control_bits & kEthLinkIfCntrlForceDuplexFD))
-						|| (0 != if_cntrl.forced_interface_speed))) {
-			message_router_response->general_status =
-					kCipErrorObjectStateConflict;
-			return number_of_decoded_bytes;
-		} else {
-			if (0 == (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate)) {
-				/* Need to check if a supported mode is forced. */
-				if (!IsIfaceControlAllowed(instance->instance_number,
-						&if_cntrl)) {
-					message_router_response->general_status =
-							kCipErrorInvalidAttributeValue;
-					return number_of_decoded_bytes;
-				}
-			}
-			*data = if_cntrl; //write data to attribute
-			message_router_response->general_status = kCipErrorSuccess;
-			number_of_decoded_bytes = 4;
-		}
-	}
-	return number_of_decoded_bytes;
+  } else {
+    if ( ( 0 != (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate) )
+         && ( ( 0 != (if_cntrl.control_bits & kEthLinkIfCntrlForceDuplexFD) )
+              || (0 != if_cntrl.forced_interface_speed) ) ) {
+      message_router_response->general_status =
+        kCipErrorObjectStateConflict;
+      return number_of_decoded_bytes;
+    } else {
+      if ( 0 == (if_cntrl.control_bits & kEthLinkIfCntrlAutonegotiate) ) {
+        /* Need to check if a supported mode is forced. */
+        if ( !IsIfaceControlAllowed(instance->instance_number,
+                                    &if_cntrl) ) {
+          message_router_response->general_status =
+            kCipErrorInvalidAttributeValue;
+          return number_of_decoded_bytes;
+        }
+      }
+      *data = if_cntrl;                   //write data to attribute
+      message_router_response->general_status = kCipErrorSuccess;
+      number_of_decoded_bytes = 4;
+    }
+  }
+  return number_of_decoded_bytes;
 }
 
  #endif

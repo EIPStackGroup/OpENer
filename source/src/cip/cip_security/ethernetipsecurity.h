@@ -64,9 +64,12 @@ typedef enum {
  */
 typedef enum {
   kEIPSecurityObjectApplyConfigErrorCodeExtendedNoPSKConfigured = 0x0001,                 /**< Only PSK cipher suited allowed but no Pre-Shared Keys configured */
-  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoCertificatesConfigured = 0x0002,        /**< Only certificate suites allowed, but no certificates configured */
-  kEIPSecurityObjectApplyConfigErrorCodeExtendedCertificateSuitesNoneConsistent = 0x0003, /**< Certificate suites allowed but none consistent with the device private key type */
-  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoActiveCipherSuitesConfigured = 0x0004,  /**< No Active Cipher Suites configured */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoCertificatesConfigured =
+    0x0002,                                                                               /**< Only certificate suites allowed, but no certificates configured */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedCertificateSuitesNoneConsistent
+    = 0x0003,                                                                             /**< Certificate suites allowed but none consistent with the device private key type */
+  kEIPSecurityObjectApplyConfigErrorCodeExtendedNoActiveCipherSuitesConfigured =
+    0x0004,                                                                               /**< No Active Cipher Suites configured */
 } EIPSecurityObjectApplyConfigErrorCodeExtended;
 
 /** @brief Type declaration for a single IANA cipher suite ID
@@ -166,8 +169,8 @@ void EIPSecurityObjectResetSettableAttributes(CipInstance *instance);
  *  @See Vol.8, Chapter 5-4.5.1
  */
 EipStatus EIPSecurityObjectPreResetCallback(
-    CipInstance *instance,
-    CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+  CipInstance *instance,
+  CipMessageRouterRequest *message_router_request,
+  CipMessageRouterResponse *message_router_response);
 
 #endif  // OPENER_ETHERNETIPSECURITY_H

@@ -91,7 +91,8 @@ void CipRunIdleHeaderSetT2O(bool onoff) {
   s_produce_run_idle = onoff;
 }
 
-bool CipRunIdleHeaderGetT2O(void) {
+bool CipRunIdleHeaderGetT2O(void)
+{
   return s_produce_run_idle;
 }
 

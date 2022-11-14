@@ -168,8 +168,8 @@ struct cip_connection_object {
                                                    different
                                                    value than SequenceCountProducing */
   CipBool eip_first_level_sequence_count_received; /**< False if eip_level_sequence_count_consuming
-                                                   hasn't been initialized with a sequence
-                                                   count yet, true otherwise */
+                                                      hasn't been initialized with a sequence
+                                                      count yet, true otherwise */
   CipInt correct_originator_to_target_size;
   CipInt correct_target_to_originator_size;
 

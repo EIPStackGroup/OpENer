@@ -32,7 +32,7 @@ TEST(SocketTimer, NoEmptySocketTimerAvailable) {
 
 TEST(SocketTimer, SetSocket) {
   SocketTimer timer = {
-    socket : -1,
+    socket: -1,
     last_update : 0
   };
   SocketTimerSetSocket(&timer, 1);
@@ -42,7 +42,7 @@ TEST(SocketTimer, SetSocket) {
 
 TEST(SocketTimer, UpdateSocketTimer) {
   SocketTimer timer = {
-    socket : -1,
+    socket: -1,
     last_update : 0
   };
   SocketTimerSetLastUpdate(&timer, 10);
