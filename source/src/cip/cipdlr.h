@@ -48,8 +48,8 @@ typedef enum {
  *  participant of the DLR protocol.
  */
 typedef struct {
-  CipUdint  device_ip;  /**< IP address of a participating DLR node */
-  CipUsint  device_mac[6]; /**< MAC address of a participating DLR node */
+  CipUdint device_ip;   /**< IP address of a participating DLR node */
+  CipUsint device_mac[6];  /**< MAC address of a participating DLR node */
 } CipNodeAddress;
 
 /** @brief Type declaration for the DLR object
@@ -59,10 +59,10 @@ typedef struct {
  *  ring participant.
  */
 typedef struct {
-  CipUsint  network_topology; /**< Attribute #1: */
-  CipUsint  network_status; /**< Attribute #2: */
+  CipUsint network_topology;  /**< Attribute #1: */
+  CipUsint network_status;  /**< Attribute #2: */
   CipNodeAddress active_supervisor_address; /**< Attribute #10: */
-  CipDword  capability_flags; /**< Attribute #12: */
+  CipDword capability_flags;  /**< Attribute #12: */
 } CipDlrObject;
 
 

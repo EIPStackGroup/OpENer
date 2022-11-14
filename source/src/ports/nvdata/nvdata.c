@@ -38,7 +38,7 @@ EipStatus NvdataLoad(void) {
   EipStatus eip_status = NvQosLoad(&g_qos);
   if (kEipStatusError != eip_status) {
     eip_status =
-      (kEipStatusError == NvQosStore(&g_qos) ) ? kEipStatusError : eip_status;
+      ( kEipStatusError == NvQosStore(&g_qos) ) ? kEipStatusError : eip_status;
   }
 
   return eip_status;
@@ -67,7 +67,7 @@ EipStatus NvQosSetCallback(CipInstance *const instance,
 
   EipStatus status = kEipStatusOk;
 
-  if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
+  if ( 0 != (kNvDataFunc & attribute->attribute_flags) ) {
     OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                       instance->cip_class->class_name,
                       instance->instance_number,
@@ -95,9 +95,9 @@ EipStatus NvTcpipSetCallback(CipInstance *const instance,
                              CipByte service) {
   EipStatus status = kEipStatusOk;
 
-  if (0 != (kNvDataFunc & attribute->attribute_flags) ) {
+  if ( 0 != (kNvDataFunc & attribute->attribute_flags) ) {
     /* Workaround: Update only if service is not flagged. */
-    if (0 == (0x80 & service) ) {
+    if ( 0 == (0x80 & service) ) {
       OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                         instance->cip_class->class_name,
                         instance->instance_number,

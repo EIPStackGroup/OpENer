@@ -58,7 +58,7 @@ static CipQosDscpValues s_active_dscp = {
 
 
 /**@brief Retrieve the given data according to CIP encoding from the
- * 		message buffer.
+ *              message buffer.
  *
  *  Implementation of the decode function for the SetAttributeSingle CIP service for QoS
  *  Objects.
@@ -69,34 +69,35 @@ static CipQosDscpValues s_active_dscp = {
  *          -1 .. error
  */
 int DecodeCipQoSAttribute(CipUsint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+                          const CipMessageRouterRequest *const message_router_request,
+                          CipMessageRouterResponse *const message_router_response)
+{
 
-	const EipUint8 **const cip_message = message_router_request->data;
+  const EipUint8 **const cip_message = message_router_request->data;
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	if (NULL != cip_message) {
+  if (NULL != cip_message) {
 
-		CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
-		if (attribute_value_received < 64U) {
+    CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
+    if (attribute_value_received < 64U) {
 
-			*data = attribute_value_received; //write value to attribute
+      *data = attribute_value_received;                   //write value to attribute
 
-			message_router_response->general_status = kCipErrorSuccess;
-			number_of_decoded_bytes = 1;
+      message_router_response->general_status = kCipErrorSuccess;
+      number_of_decoded_bytes = 1;
 
-		} else {
-			message_router_response->general_status =
-					kCipErrorInvalidAttributeValue;
-		}
-	} else {
+    } else {
+      message_router_response->general_status =
+        kCipErrorInvalidAttributeValue;
+    }
+  } else {
 
-		message_router_response->general_status = kCipErrorNotEnoughData;
-		OPENER_TRACE_INFO("CIP QoS not enough data\n");
-	}
+    message_router_response->general_status = kCipErrorNotEnoughData;
+    OPENER_TRACE_INFO("CIP QoS not enough data\n");
+  }
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 
 }
 
@@ -206,7 +207,7 @@ EipStatus CipQoSInit() {
   InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingle,
                 "GetAttributeSingle");
   InsertService(qos_class, kSetAttributeSingle, &SetAttributeSingle,
-                  "SetAttributeSingle");
+                "SetAttributeSingle");
 
   return kEipStatusOk;
 }

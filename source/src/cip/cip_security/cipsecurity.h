@@ -52,7 +52,8 @@ typedef enum {
  */
 typedef enum {
   kCipSecurityObjectSecurityProfileValueEtherNetIpIntegrityProfile = 0x01U,       /**< The device supports the EtherNet/IP Integrity Profile (Obsoleted) */
-  kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile = 0x02U, /**< The device supports the EtherNet/IP Confidentiality Profile */
+  kCipSecurityObjectSecurityProfileValueEtherNetIpConfidentialityProfile =
+    0x02U,                                                                        /**< The device supports the EtherNet/IP Confidentiality Profile */
   kCipSecurityObjectSecurityProfileValueCipAuthorizationProfile = 0x04U,          /**< The device supports the CIP Authorization Profile */
   kCipSecurityObjectSecurityProfileValueCipUserAuthenticationProfile = 0x08U,     /**< The device supports the CIP User Authentication Profile */
 } CipSecurityObjectSecurityProfileValue;
@@ -91,7 +92,7 @@ EipStatus CipSecurityInit(void);
  *  @param outgoing_message pointer to the message to be sent
  */
 void EncodeCipSecurityObjectPath(const CipEpath *epath,
-		ENIPMessage *outgoing_message);
+                                 ENIPMessage *outgoing_message);
 
 /** @brief Retrieve the given object instance EPATH according to
  *  CIP encoding from the message buffer.
@@ -105,7 +106,7 @@ void EncodeCipSecurityObjectPath(const CipEpath *epath,
  *          -1 ... error
  */
 int DecodeCipSecurityObjectPath(CipEpath *epath,
-    CipMessageRouterRequest *message_router_request,
-    CipMessageRouterResponse *message_router_response);
+                                CipMessageRouterRequest *message_router_request,
+                                CipMessageRouterResponse *message_router_response);
 
 #endif  // OPENER_CIPSECURITY_H

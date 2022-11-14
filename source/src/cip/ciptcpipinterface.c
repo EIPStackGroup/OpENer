@@ -120,11 +120,11 @@ static bool isalnum_c(const EipByte byte) {
  *  that has already been enforced on data reception.
  */
 static bool IsValidNameLabel(const EipByte *label) {
-  if (!isalnum_c(*label) ) {
+  if ( !isalnum_c(*label) ) {
     return false;
   }
   ++label;
-  while ('\0' != *label && (isalnum_c(*label) || '-' == *label) ) {
+  while ( '\0' != *label && (isalnum_c(*label) || '-' == *label) ) {
     ++label;
   }
   return ('\0' == *label && '-' != label[-1]);
@@ -186,7 +186,7 @@ static bool IsValidNetmask(in_addr_t netmask) {
 
   v = ~v;   /* Create the host mask */
   ++v;      /* This must be a power of 2 then */
-  bool valid = v && !(v & (v - 1) );  /* Check if it is a power of 2 */
+  bool valid = v && !( v & (v - 1) );  /* Check if it is a power of 2 */
 
   return valid && (INADDR_BROADCAST != netmask);
 }
@@ -255,31 +255,31 @@ static bool IsNetworkOrBroadcastIp(in_addr_t ip_addr,
  * A configured gateway must be reachable according to the network mask.
  */
 static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg) {
-  if (INADDR_ANY == ntohl(if_cfg->ip_address) ) {  /* N0 */
+  if ( INADDR_ANY == ntohl(if_cfg->ip_address) ) {  /* N0 */
     return false;
   }
-  if (INADDR_ANY != ntohl(if_cfg->network_mask) &&  /* MASK */
-      !IsValidNetmask(if_cfg->network_mask) ) {
+  if ( INADDR_ANY != ntohl(if_cfg->network_mask) &&  /* MASK */
+       !IsValidNetmask(if_cfg->network_mask) ) {
     return false;
   }
-  if (!IsInClassAbc(if_cfg->ip_address) ||        /* ABC */
-      !IsInClassAbc(if_cfg->gateway) ||
-      !IsInClassAbc(if_cfg->name_server) ||
-      !IsInClassAbc(if_cfg->name_server_2) ) {
+  if ( !IsInClassAbc(if_cfg->ip_address) ||        /* ABC */
+       !IsInClassAbc(if_cfg->gateway) ||
+       !IsInClassAbc(if_cfg->name_server) ||
+       !IsInClassAbc(if_cfg->name_server_2) ) {
     return false;
   }
-  if (IsOnLoopbackNetwork(if_cfg->ip_address) ||  /* NLCL */
-      IsOnLoopbackNetwork(if_cfg->gateway) ) {
+  if ( IsOnLoopbackNetwork(if_cfg->ip_address) ||  /* NLCL */
+       IsOnLoopbackNetwork(if_cfg->gateway) ) {
     return false;
   }
   /* Check NB */
-  if (IsNetworkOrBroadcastIp(if_cfg->ip_address, if_cfg->network_mask) ||
-      (INADDR_ANY != ntohl(if_cfg->gateway) &&
-       IsNetworkOrBroadcastIp(if_cfg->gateway, if_cfg->network_mask) ) ) {
+  if ( IsNetworkOrBroadcastIp(if_cfg->ip_address, if_cfg->network_mask) ||
+       ( INADDR_ANY != ntohl(if_cfg->gateway) &&
+         IsNetworkOrBroadcastIp(if_cfg->gateway, if_cfg->network_mask) ) ) {
     return false;
   }
-  if (INADDR_ANY != ntohl(if_cfg->gateway) &&
-      INADDR_ANY != ntohl(if_cfg->network_mask) ) {
+  if ( INADDR_ANY != ntohl(if_cfg->gateway) &&
+       INADDR_ANY != ntohl(if_cfg->network_mask) ) {
     /* gateway is configured. Check if it is reachable. */
     if ( (if_cfg->network_mask & if_cfg->ip_address) !=
          (if_cfg->network_mask & if_cfg->gateway) ) {
@@ -294,9 +294,9 @@ static bool IsIOConnectionActive(void) {
 
   while (NULL != node) {
     CipConnectionObject *connection = node->data;
-    if (ConnectionObjectIsTypeIOConnection(connection) &&
-        kConnectionObjectStateTimedOut !=
-        ConnectionObjectGetState(connection) ) {
+    if ( ConnectionObjectIsTypeIOConnection(connection) &&
+         kConnectionObjectStateTimedOut !=
+         ConnectionObjectGetState(connection) ) {
       /* An IO connection is present but is only considered active
        *  if it is NOT in timeout state. */
       return true;
@@ -314,8 +314,7 @@ static CipUsint dummy_data_field = 0; /**< dummy data fiel to provide non-null d
 /************** Functions ****************************************/
 
 void EncodeCipTcpIpInterfaceConfiguration(const void *const data,
-                                           ENIPMessage *const outgoing_message)
-{
+                                          ENIPMessage *const outgoing_message) {
   CipTcpIpInterfaceConfiguration *
     tcp_ip_network_interface_configuration =
     (CipTcpIpInterfaceConfiguration *) data;
@@ -373,164 +372,164 @@ void EncodeCipLastConflictDetected(const void *const data,
 
 
 int DecodeTcpIpInterfaceConfigurationControl( /* Attribute 3 */
-		CipDword *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+  CipDword *const data,
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	CipDword configuration_control_received = GetDintFromMessage(
-			&(message_router_request->data));
-	if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03
-			|| (configuration_control_received & ~kTcpipCfgCtrlMethodMask)) {
-		message_router_response->general_status =
-				kCipErrorInvalidAttributeValue;
+  CipDword configuration_control_received = GetDintFromMessage(
+    &(message_router_request->data) );
+  if ( (configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03
+       || (configuration_control_received & ~kTcpipCfgCtrlMethodMask) ) {
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
 
-	} else {
+  } else {
 
-		/* Set reserved bits to zero on reception. */
-		configuration_control_received &= (kTcpipCfgCtrlMethodMask
-				| kTcpipCfgCtrlDnsEnable);
+    /* Set reserved bits to zero on reception. */
+    configuration_control_received &= (kTcpipCfgCtrlMethodMask
+                                       | kTcpipCfgCtrlDnsEnable);
 
-		*data = configuration_control_received;
-		number_of_decoded_bytes = 4;
-		message_router_response->general_status = kCipErrorSuccess;
-	}
+    *data = configuration_control_received;
+    number_of_decoded_bytes = 4;
+    message_router_response->general_status = kCipErrorSuccess;
+  }
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 }
 
 #if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-          0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
-		CipTcpIpInterfaceConfiguration *const data, //kCipUdintUdintUdintUdintUdintString
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+  CipTcpIpInterfaceConfiguration *const data,               //kCipUdintUdintUdintUdintUdintString
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	CipTcpIpInterfaceConfiguration if_cfg;
-	CipUdint tmp_ip;
+  CipTcpIpInterfaceConfiguration if_cfg;
+  CipUdint tmp_ip;
 
-	if (IsIOConnectionActive()) {
-		message_router_response->general_status = kCipErrorDeviceStateConflict;
-		return number_of_decoded_bytes;
-	}
-	if (kTcpipCfgCtrlStaticIp
-			!= (g_tcpip.config_control & kTcpipCfgCtrlMethodMask)) {
-		message_router_response->general_status = kCipErrorObjectStateConflict;
-		return number_of_decoded_bytes;
-	}
-	memset(&if_cfg, 0, sizeof if_cfg);
-	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
-	if_cfg.ip_address = htonl(tmp_ip);
-	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
-	if_cfg.network_mask = htonl(tmp_ip);
-	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
-	if_cfg.gateway = htonl(tmp_ip);
-	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
-	if_cfg.name_server = htonl(tmp_ip);
-	tmp_ip = GetUdintFromMessage(&(message_router_request->data));
-	if_cfg.name_server_2 = htonl(tmp_ip);
+  if ( IsIOConnectionActive() ) {
+    message_router_response->general_status = kCipErrorDeviceStateConflict;
+    return number_of_decoded_bytes;
+  }
+  if ( kTcpipCfgCtrlStaticIp
+       != (g_tcpip.config_control & kTcpipCfgCtrlMethodMask) ) {
+    message_router_response->general_status = kCipErrorObjectStateConflict;
+    return number_of_decoded_bytes;
+  }
+  memset(&if_cfg, 0, sizeof if_cfg);
+  tmp_ip = GetUdintFromMessage( &(message_router_request->data) );
+  if_cfg.ip_address = htonl(tmp_ip);
+  tmp_ip = GetUdintFromMessage( &(message_router_request->data) );
+  if_cfg.network_mask = htonl(tmp_ip);
+  tmp_ip = GetUdintFromMessage( &(message_router_request->data) );
+  if_cfg.gateway = htonl(tmp_ip);
+  tmp_ip = GetUdintFromMessage( &(message_router_request->data) );
+  if_cfg.name_server = htonl(tmp_ip);
+  tmp_ip = GetUdintFromMessage( &(message_router_request->data) );
+  if_cfg.name_server_2 = htonl(tmp_ip);
 
-	CipUint domain_name_length = GetUintFromMessage(
-			&(message_router_request->data));
-	if (domain_name_length > 48) { /* see Vol. 2, Table 5-4.3 Instance Attributes */
-		message_router_response->general_status = kCipErrorTooMuchData;
-		return number_of_decoded_bytes;
-	}
-	SetCipStringByData(&if_cfg.domain_name, domain_name_length,
-			message_router_request->data);
-	domain_name_length = (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
-	OPENER_TRACE_INFO("Domain: ds %hu '%s'\n",
-			domain_name_length,
-			if_cfg.domain_name.string);
+  CipUint domain_name_length = GetUintFromMessage(
+    &(message_router_request->data) );
+  if (domain_name_length > 48) {       /* see Vol. 2, Table 5-4.3 Instance Attributes */
+    message_router_response->general_status = kCipErrorTooMuchData;
+    return number_of_decoded_bytes;
+  }
+  SetCipStringByData(&if_cfg.domain_name, domain_name_length,
+                     message_router_request->data);
+  domain_name_length = (domain_name_length + 1) & (~0x0001u);       /* Align for possible pad byte */
+  OPENER_TRACE_INFO("Domain: ds %hu '%s'\n",
+                    domain_name_length,
+                    if_cfg.domain_name.string);
 
-	if (!IsValidNetworkConfig(&if_cfg)
-			|| (domain_name_length > 0
-					&& !IsValidDomain(if_cfg.domain_name.string))) {
-		message_router_response->general_status =
-				kCipErrorInvalidAttributeValue;
-		return number_of_decoded_bytes;
-	}
+  if ( !IsValidNetworkConfig(&if_cfg)
+       || ( domain_name_length > 0
+            && !IsValidDomain(if_cfg.domain_name.string) ) ) {
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
+    return number_of_decoded_bytes;
+  }
 
-	*data = if_cfg; //write data to attribute
-	number_of_decoded_bytes = 20 + domain_name_length;
+  *data = if_cfg;       //write data to attribute
+  number_of_decoded_bytes = 20 + domain_name_length;
 
-	/* Tell that this configuration change becomes active after a reset */
-	g_tcpip.status |= kTcpipStatusIfaceCfgPend;
-	message_router_response->general_status = kCipErrorSuccess;
+  /* Tell that this configuration change becomes active after a reset */
+  g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+  message_router_response->general_status = kCipErrorSuccess;
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 
 }
 
 int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
-		CipString *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+  CipString *const data,
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	          CipString tmp_host_name = {
-	            .length = 0u,
-	            .string = NULL
-	          };
-	          CipUint host_name_length =
-	            GetUintFromMessage(&(message_router_request->data) );
-	          if (host_name_length > 64) {  /* see RFC 1123 on more details */
-	            message_router_response->general_status = kCipErrorTooMuchData;
-	            return number_of_decoded_bytes;
-	          }
-	          SetCipStringByData(&tmp_host_name,
-	                             host_name_length,
-	                             message_router_request->data);
-	          host_name_length = (host_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
-	          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n",
-	                            host_name_length,
-	                            tmp_host_name.string);
+  CipString tmp_host_name = {
+    .length = 0u,
+    .string = NULL
+  };
+  CipUint host_name_length =
+    GetUintFromMessage( &(message_router_request->data) );
+  if (host_name_length > 64) {                  /* see RFC 1123 on more details */
+    message_router_response->general_status = kCipErrorTooMuchData;
+    return number_of_decoded_bytes;
+  }
+  SetCipStringByData(&tmp_host_name,
+                     host_name_length,
+                     message_router_request->data);
+  host_name_length = (host_name_length + 1) & (~0x0001u);                  /* Align for possible pad byte */
+  OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n",
+                    host_name_length,
+                    tmp_host_name.string);
 
-	          if (!IsValidNameLabel(tmp_host_name.string) ) {
-	            message_router_response->general_status =
-	              kCipErrorInvalidAttributeValue;
-	            return number_of_decoded_bytes;
-	          }
+  if ( !IsValidNameLabel(tmp_host_name.string) ) {
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
+    return number_of_decoded_bytes;
+  }
 
-	          *data = tmp_host_name; //write data to attribute
+  *data = tmp_host_name;                 //write data to attribute
 
-	          /* Tell that this configuration change becomes active after a reset */
-	          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
-	          message_router_response->general_status = kCipErrorSuccess;
+  /* Tell that this configuration change becomes active after a reset */
+  g_tcpip.status |= kTcpipStatusIfaceCfgPend;
+  message_router_response->general_status = kCipErrorSuccess;
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 
 }
 
 #endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout( /* Attribute 13 */
-		CipUint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+  CipUint *const data,
+  const CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
 
-	int number_of_decoded_bytes = -1;
+  int number_of_decoded_bytes = -1;
 
-	CipUint inactivity_timeout_received = GetUintFromMessage(
-			&(message_router_request->data));
+  CipUint inactivity_timeout_received = GetUintFromMessage(
+    &(message_router_request->data) );
 
-	if (inactivity_timeout_received > 3600) {
-		message_router_response->general_status =
-				kCipErrorInvalidAttributeValue;
-	} else {
+  if (inactivity_timeout_received > 3600) {
+    message_router_response->general_status =
+      kCipErrorInvalidAttributeValue;
+  } else {
 
-		*data = inactivity_timeout_received;
-		message_router_response->general_status = kCipErrorSuccess;
-		number_of_decoded_bytes = 2;
+    *data = inactivity_timeout_received;
+    message_router_response->general_status = kCipErrorSuccess;
+    number_of_decoded_bytes = 2;
 
-	}
+  }
 
-	return number_of_decoded_bytes;
+  return number_of_decoded_bytes;
 
 }
 
@@ -584,7 +583,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   kGetableSingleAndAll);
 
 #if defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-          0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
   InsertAttribute(instance,
                   5,
                   kCipUdintUdintUdintUdintUdintString,
@@ -608,7 +607,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   NULL, //not settable
                   &g_tcpip.interface_configuration,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
-    InsertAttribute(instance,
+  InsertAttribute(instance,
                   6,
                   kCipString,
                   EncodeCipString,
@@ -711,7 +710,7 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip) {
   host_id &= 0x3ff;
 
   tcpip->mcast_config.starting_multicast_address =
-    htonl(cip_mcast_base_addr + (host_id << 5) );
+    htonl( cip_mcast_base_addr + (host_id << 5) );
 }
 
 

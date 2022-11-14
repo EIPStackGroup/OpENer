@@ -339,7 +339,7 @@ TEST(CipEpath, SetLogicalSegmentLogicalFormatThirtyTwoBits) {
 }
 
 TEST(CipEpath, GetLogicalValue8Bit) {
-  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *message = (CipOctet *)calloc ( 6, sizeof(CipOctet) );
   CipOctet *original_address = message;
   message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
   message[1] = 20;
@@ -353,7 +353,7 @@ TEST(CipEpath, GetLogicalValue8Bit) {
 }
 
 TEST(CipEpath, GetLogicalValue16Bit) {
-  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *message = (CipOctet *)calloc ( 6, sizeof(CipOctet) );
   CipOctet *original_address = message;
   message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
                LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT;
@@ -368,7 +368,7 @@ TEST(CipEpath, GetLogicalValue16Bit) {
 }
 
 TEST(CipEpath, GetLogicalValue32Bit) {
-  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+  CipOctet *message = (CipOctet *)calloc ( 6, sizeof(CipOctet) );
   CipOctet *original_address = message;
   message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
                LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT;
@@ -398,10 +398,10 @@ TEST(CipEpath, SetLogicalValue16Bit) {
   CipEpathSetLogicalValue(value,
                           kLogicalSegmentLogicalFormatSixteenBit,
                           &response);
-  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
+  CHECK_EQUAL( value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 4) );
 }
 
 TEST(CipEpath, SetLogicalValue32Bit) {
@@ -411,13 +411,13 @@ TEST(CipEpath, SetLogicalValue32Bit) {
   CipEpathSetLogicalValue(value,
                           kLogicalSegmentLogicalFormatThirtyTwoBit,
                           &response);
-  CHECK_EQUAL(value, *(response.message.message_buffer + 1) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 2) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 3) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 4) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 5) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 6) );
-  CHECK_EQUAL(0, *(response.message.message_buffer + 7) );
+  CHECK_EQUAL( value, *(response.message.message_buffer + 1) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 2) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 3) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 4) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 5) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 6) );
+  CHECK_EQUAL( 0, *(response.message.message_buffer + 7) );
 }
 
 TEST(CipEpath, GetLogicalSegmentExtendedLogicalTypeReserved) {

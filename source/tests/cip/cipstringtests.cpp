@@ -17,8 +17,7 @@ extern "C" {
 }
 
 TEST_GROUP (CipString) {
-  void setup()
-  {
+  void setup() {
     mock().disable();
   }
 };
@@ -59,22 +58,22 @@ TEST (CipString, FreeCipStringNWithContent) {
 TEST (CipString, CreateStringNFromData) {
   const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   CipStringN *string;
-  string = (CipStringN *) CipCalloc(1, sizeof(CipStringN) );
+  string = (CipStringN *) CipCalloc( 1, sizeof(CipStringN) );
   SetCipStringNByData(string, 4, 3, data);
   CHECK_EQUAL(3, string->size);
   CHECK_EQUAL(4, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL( data, string->string, sizeof(data) );
   FreeCipStringN(string);
 }
 
 TEST (CipString, CreateStringNFromCString) {
   const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
   CipStringN *string;
-  string = (CipStringN *) CipCalloc(1, sizeof(CipStringN) );
+  string = (CipStringN *) CipCalloc( 1, sizeof(CipStringN) );
   SetCipStringNByCstr(string, data, 3);
   CHECK_EQUAL(3, string->size);
   CHECK_EQUAL(4, string->length);
-  MEMCMP_EQUAL(data, string->string, strlen(data) );
+  MEMCMP_EQUAL( data, string->string, strlen(data) );
   FreeCipStringN(string);
 }
 
@@ -112,20 +111,20 @@ TEST (CipString, FreeCipString2WithContent) {
 TEST (CipString, CreateString2FromData) {
   const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   CipString2 *string;
-  string = (CipString2 *) CipCalloc(1, sizeof(CipString2) );
+  string = (CipString2 *) CipCalloc( 1, sizeof(CipString2) );
   SetCipString2ByData(string, 6, data);
   CHECK_EQUAL(6, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL( data, string->string, sizeof(data) );
   FreeCipString2(string);
 }
 
 TEST (CipString, CreateString2FromCString) {
   const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
   CipString2 *string;
-  string = (CipString2 *) CipCalloc(1, sizeof(CipString2) );
+  string = (CipString2 *) CipCalloc( 1, sizeof(CipString2) );
   SetCipString2ByCstr(string, data);
   CHECK_EQUAL(6, string->length);
-  MEMCMP_EQUAL(data, string->string, strlen(data) );
+  MEMCMP_EQUAL( data, string->string, strlen(data) );
   FreeCipString2(string);
 }
 
@@ -163,20 +162,20 @@ TEST (CipString, FreeCipStringWithContent) {
 TEST (CipString, CreateStringFromData) {
   const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   CipString *string;
-  string = (CipString *) CipCalloc(1, sizeof(CipString) );
+  string = (CipString *) CipCalloc( 1, sizeof(CipString) );
   SetCipStringByData(string, sizeof(data), data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL( data, string->string, sizeof(data) );
   FreeCipString(string);
 }
 
 TEST (CipString, CreateStringFromCString) {
   const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
   CipString *string;
-  string = (CipString *) CipCalloc(1, sizeof(CipString) );
+  string = (CipString *) CipCalloc( 1, sizeof(CipString) );
   SetCipStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, strlen(data) );
+  MEMCMP_EQUAL( data, string->string, strlen(data) );
   FreeCipString(string);
 }
 
@@ -214,19 +213,19 @@ TEST (CipString, FreeCipShortStringWithContent) {
 TEST (CipString, CreateShortStringFromData) {
   const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   CipShortString *string;
-  string = (CipShortString *) CipCalloc(1, sizeof(CipShortString) );
+  string = (CipShortString *) CipCalloc( 1, sizeof(CipShortString) );
   SetCipShortStringByData(string, sizeof(data), data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, sizeof(data) );
+  MEMCMP_EQUAL( data, string->string, sizeof(data) );
   FreeCipShortString(string);
 }
 
 TEST (CipString, CreateShortStringFromCString) {
   const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
   CipShortString *string;
-  string = (CipShortString *) CipCalloc(1, sizeof(CipShortString) );
+  string = (CipShortString *) CipCalloc( 1, sizeof(CipShortString) );
   SetCipShortStringByCstr(string, data);
   CHECK_EQUAL(12, string->length);
-  MEMCMP_EQUAL(data, string->string, strlen(data) );
+  MEMCMP_EQUAL( data, string->string, strlen(data) );
   FreeCipShortString(string);
 }
