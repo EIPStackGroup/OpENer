@@ -177,7 +177,8 @@ CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
  *
  * @return POSIX OK(0) if the complete string fit in @param buf, otherwise non-zero.
  */
-int GetCstrFromCipShortString(CipShortString *const string, char *buf,
-			      size_t len);
+int GetCstrFromCipShortString(CipShortString *const string,
+                              char *buf,
+                              size_t len);
 
 #endif /* of OPENER_CIPSTRING_H_ */

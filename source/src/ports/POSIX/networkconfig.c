@@ -30,7 +30,7 @@ EipStatus IfaceGetMacAddress(const char *iface,
   size_t if_name_len = strlen(iface);
   EipStatus status = kEipStatusError;
 
-  if(if_name_len < sizeof(ifr.ifr_name) ) {
+  if( if_name_len < sizeof(ifr.ifr_name) ) {
     memcpy(ifr.ifr_name, iface, if_name_len);
     ifr.ifr_name[if_name_len] = '\0';
 
@@ -54,7 +54,7 @@ static EipStatus GetIpAndNetmaskFromInterface(const char *iface,
 {
   struct ifreq ifr;
   size_t if_name_len = strlen(iface);
-  if(if_name_len < sizeof(ifr.ifr_name) ) {
+  if( if_name_len < sizeof(ifr.ifr_name) ) {
     memcpy(ifr.ifr_name, iface, if_name_len);
     ifr.ifr_name[if_name_len] = 0;
   } else {
@@ -103,11 +103,11 @@ static EipStatus GetGatewayFromRoute(const char *iface,
   } else {
     char *needle_start;
     file_buffer[0] = '\0'; /* To enter the while loop */
-    while(NULL ==
-          (needle_start =
-             strstr(file_buffer,
-                    iface) ) &&
-          fgets(file_buffer, sizeof(file_buffer), file_handle) ) {
+    while( NULL ==
+           ( needle_start =
+               strstr(file_buffer,
+                      iface) ) &&
+           fgets(file_buffer, sizeof(file_buffer), file_handle) ) {
       /* Skip each non matching line */
     }
     fclose(file_handle);
@@ -146,8 +146,8 @@ static EipStatus GetGatewayFromRoute(const char *iface,
 #if defined(OPENER_TRACE_ENABLED)
   {
     char ip_str[INET_ADDRSTRLEN];
-    OPENER_TRACE_INFO("Decoded gateway: %s\n",
-                      inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str) );
+    OPENER_TRACE_INFO( "Decoded gateway: %s\n",
+                       inet_ntop(AF_INET, &gateway, ip_str, sizeof ip_str) );
   }
 #endif
 
@@ -206,8 +206,8 @@ static EipStatus GetDnsInfoFromResolvConf(
       /* fall through */
       case 's':
         strtok_r(line, " \t", &strtok_key);
-        if(0 == strcmp("search", line) || 0 == strcmp("domain", line) ) {
-          if(NULL != (value_string = strtok_r(NULL, " \t", &strtok_key) ) ) {
+        if( 0 == strcmp("search", line) || 0 == strcmp("domain", line) ) {
+          if( NULL != ( value_string = strtok_r(NULL, " \t", &strtok_key) ) ) {
             SetCipStringByCstr(&iface_cfg->domain_name, value_string);
           }
         }
@@ -215,8 +215,8 @@ static EipStatus GetDnsInfoFromResolvConf(
 
       case 'n':
         strtok_r(line, " \t", &strtok_key);
-        if(0 == strcmp("nameserver", line) ) {
-          if(NULL != (value_string = strtok_r(NULL, " \t", &strtok_key) ) ) {
+        if( 0 == strcmp("nameserver", line) ) {
+          if( NULL != ( value_string = strtok_r(NULL, " \t", &strtok_key) ) ) {
             inet_pton(AF_INET, value_string, dns);
             /* Adjust destination for next nameserver occurrence. */
             if(dns != &dmy_dns) {
@@ -284,7 +284,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
   int rc;
 
   size_t if_name_len = strlen(iface);
-  if(if_name_len < sizeof(ifr.ifr_name) ) {
+  if( if_name_len < sizeof(ifr.ifr_name) ) {
     memcpy(ifr.ifr_name, iface, if_name_len);
     ifr.ifr_name[if_name_len] = 0;
   } else {
@@ -301,7 +301,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
     do {
       ipaddr = 0U;
 
-      if(0 == (rc = ioctl(fd, SIOCGIFADDR, &ifr) ) ) {
+      if( 0 == ( rc = ioctl(fd, SIOCGIFADDR, &ifr) ) ) {
         ipaddr = ( (struct sockaddr_in *) &ifr.ifr_addr )->sin_addr.s_addr;
       } else {
         if(EADDRNOTAVAIL != errno) {
@@ -312,7 +312,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
         --timeout;
       }
     } while( (0 == ipaddr) && (0 != timeout) && (0 == *p_abort_wait) &&
-             (0 == nanosleep_simple32(WAIT_CYCLE_NS) ) );
+             ( 0 == nanosleep_simple32(WAIT_CYCLE_NS) ) );
 
     OPENER_TRACE_INFO("ip=%08x, timeout=%d\n", ntohl(ipaddr), timeout);
     close(fd);

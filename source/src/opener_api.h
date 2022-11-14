@@ -78,7 +78,8 @@ void GetHostName(CipString *hostname);
  * @param major unsigned 8 bit major revision
  * @param minor unsigned 8 bit minor revision
  */
-void SetDeviceRevision(EipUint8 major, EipUint8 minor);
+void SetDeviceRevision(EipUint8 major,
+                       EipUint8 minor);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -316,7 +317,7 @@ void InsertAttribute(CipInstance *const instance,
                      const EipUint16 attribute_number,
                      const EipUint8 cip_type,
                      CipAttributeEncodeInMessage encode_function,
-					 CipAttributeDecodeFromMessage decode_function,
+                     CipAttributeDecodeFromMessage decode_function,
                      void *const data,
                      const EipByte cip_flags);
 
@@ -470,76 +471,76 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
  *          -1 .. error
  */
 int DecodeCipBool(CipBool *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByte(CipByte *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByteArray(CipByteArray *const data,
-			const CipMessageRouterRequest *const message_router_request,
-			CipMessageRouterResponse *const message_router_response);
+                       const CipMessageRouterRequest *const message_router_request,
+                       CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipWord(CipWord *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDword(CipDword *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLword(CipLword *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUsint(CipUsint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUint(CipUint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUdint(CipUdint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUlint(CipUlint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipSint(CipSint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipInt(CipInt *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                 const CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDint(CipDint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLint(CipLint *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipReal(CipReal *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLreal(CipLreal *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipString(CipString *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                    const CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipShortString(CipShortString *const data,
-		const CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                         const CipMessageRouterRequest *const message_router_request,
+                         CipMessageRouterResponse *const message_router_response);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -617,8 +618,8 @@ typedef EipStatus (*ConnectionReceiveDataFunction)(CipConnectionObject *
                                                   const EipUint8 *data,
                                                   const EipUint16 data_length);
 
- /** @ingroup CIP_API
- * @brief Function pointer for timeout checker functions 
+/** @ingroup CIP_API
+ * @brief Function pointer for timeout checker functions
  *
  * @param elapsed_time elapsed time since last check
  */
@@ -750,8 +751,8 @@ EipStatus HandleReceivedExplictUdpData(const int socket_handle,
  *  @return EIP_OK on success
  */
 EipStatus HandleReceivedConnectedData(const EipUint8 *const received_data,
-                            int received_data_length,
-                            struct sockaddr_in *from_address);
+                                      int received_data_length,
+                                      struct sockaddr_in *from_address);
 
 /** @ingroup CIP_API
  * @brief Check if any of the connection timers (TransmissionTrigger or
@@ -788,7 +789,7 @@ EipStatus ManageConnections(MilliSeconds elapsed_time);
  * @return EIP_OK on success
  */
 EipStatus TriggerConnections(unsigned int output_assembly_id,
-                   unsigned int input_assembly_id);
+                             unsigned int input_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Inform the encapsulation layer that the remote host has closed the
@@ -926,10 +927,10 @@ void CipFree(void *data);
 void RunIdleChanged(EipUint32 run_idle_value);
 
 /** @ingroup CIP_CALLBACK_API
- * @brief Create the UDP socket for the implicit IO messaging, 
+ * @brief Create the UDP socket for the implicit IO messaging,
  * one socket handles all connections
  * @return the socket handle if successful, else kEipInvalidSocket
-*/ 
+ */
 int CreateUdpSocket(void);
 
 /** @ingroup CIP_CALLBACK_API
@@ -939,7 +940,7 @@ int CreateUdpSocket(void);
  * @return kEipStatusOk on success
  */
 EipStatus SendUdpData(const struct sockaddr_in *const socket_data,
-            const ENIPMessage *const outgoing_message);
+                      const ENIPMessage *const outgoing_message);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Close the given socket and clean up the stack

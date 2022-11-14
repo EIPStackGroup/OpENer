@@ -37,7 +37,7 @@ int main(int argc,
 
   DetermineEndianess();
 
-  TestRegistry* reg = TestRegistry::getCurrentRegistry();
+  TestRegistry *reg = TestRegistry::getCurrentRegistry();
 
   MockSupportPlugin mockPlugin;
   reg->installPlugin(&mockPlugin);

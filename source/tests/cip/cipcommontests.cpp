@@ -41,21 +41,21 @@ TEST(CipCommon, EncodeCipByte) {
 TEST(CipCommon, EncodeCipWord) {
   const CipWord value = 53678U;
   EncodeCipWord(&value, &message);
-  CHECK_EQUAL(value, *(CipWord *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipWord *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 2, message.current_message_position);
 }
 
 TEST(CipCommon, EncodeCipDword) {
   const CipDword value = 5357678U;
   EncodeCipDword(&value, &message);
-  CHECK_EQUAL(value, *(CipDword *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipDword *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 4, message.current_message_position);
 }
 
 TEST(CipCommon, EncodeCipLword) {
   const CipLword value = 8353457678U;
   EncodeCipLword(&value, &message);
-  CHECK_EQUAL(value, *(CipLword *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipLword *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position);
 }
 
@@ -70,20 +70,20 @@ TEST(CipCommon, EncodeCipUsint) {
 TEST(CipCommon, EncodeCipUint) {
   const CipUint value = 42568U;
   EncodeCipUint(&value, &message);
-  CHECK_EQUAL(value, *(CipUint *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipUint *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 2, message.current_message_position);
 }
 
 TEST(CipCommon, EncodeCipUdint) {
   const CipUdint value = 1653245U;
   EncodeCipUdint(&value, &message);
-  CHECK_EQUAL(value, *(CipUdint *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipUdint *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 4, message.current_message_position);
 }
 
 TEST(CipCommon, EncodeCipUlint) {
   const CipUlint value = 5357678U;
   EncodeCipUlint(&value, &message);
-  CHECK_EQUAL(value, *(CipUlint *)(message.message_buffer) );
+  CHECK_EQUAL( value, *(CipUlint *)(message.message_buffer) );
   POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position);
 }

@@ -63,37 +63,39 @@
  * declaration of (static) Certificate Management object instance 1 data
  */
 CertificateManagementObjectClassAttributes cmo_class_attr = {
-    .capability_flags = kCertificateManagementObjectCapabilityFlagPushModel,
-    .certificate_list_dummy = 0,
-    .certificate_encodings_flag =
-        kCertificateManagementObjectCertificateEncodingFlagPEM |
-        kCertificateManagementObjectCertificateEncodingFlagPKCS7,
+  .capability_flags = kCertificateManagementObjectCapabilityFlagPushModel,
+  .certificate_list_dummy = 0,
+  .certificate_encodings_flag =
+    kCertificateManagementObjectCertificateEncodingFlagPEM |
+    kCertificateManagementObjectCertificateEncodingFlagPKCS7,
 };
 
 const char instance_1_name[] = "Default Device Certificate";
 const EipUint8 instance_1_length = 26; // excluding trailing \0
 
 const CipShortString default_name = {
-    .length = instance_1_length,
-    .string = (EipByte *)(&instance_1_name),
+  .length = instance_1_length,
+  .string = (EipByte *)(&instance_1_name),
 };
 
 const Certificate default_device_certificate = {
-    .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
+  .certificate_status =
+    kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
 const Certificate default_ca_certificate = {
-    .certificate_status = kCertificateManagementObjectCertificateStateValueVerified
+  .certificate_status =
+    kCertificateManagementObjectCertificateStateValueVerified
     // TODO: add path
 };
 
 CertificateManagementObject g_certificate_management = {
-    .name = default_name,                                    /*Attribute 1*/
-    .state = kCertificateManagementObjectStateValueVerified, /*Attribute 2*/
-    .device_certificate = default_device_certificate,        /*Attribute 3*/
-    .ca_certificate = default_ca_certificate,                /*Attribute 4*/
-    .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM, /*Attribute 5*/
+  .name = default_name,                                      /*Attribute 1*/
+  .state = kCertificateManagementObjectStateValueVerified,   /*Attribute 2*/
+  .device_certificate = default_device_certificate,          /*Attribute 3*/
+  .ca_certificate = default_ca_certificate,                  /*Attribute 4*/
+  .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM,   /*Attribute 5*/
 };
 
 /** @brief Produce the data according to CIP encoding onto the message buffer.
@@ -104,7 +106,8 @@ CertificateManagementObject g_certificate_management = {
  *  @param outgoing_message pointer to the message to be sent
  */
 void EncodeCertificateManagementObjectCertificate(
-    const Certificate *const certificate, ENIPMessage *const outgoing_message) {
+  const Certificate *const certificate,
+  ENIPMessage *const outgoing_message) {
   AddSintToMessage(certificate->certificate_status, outgoing_message);
   EncodeCipSecurityObjectPath(&(certificate->path), outgoing_message);
 }
@@ -121,17 +124,18 @@ void EncodeCertificateManagementObjectCertificate(
  *          -1 .. error
  */
 int DecodeCertificateManagementObjectCertificate(
-    Certificate *const certificate,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response) {
+  Certificate *const certificate,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
   int number_of_decoded_bytes = -1;
 
-  certificate->certificate_status = GetUsintFromMessage(&message_router_request->data);
+  certificate->certificate_status = GetUsintFromMessage(
+    &message_router_request->data);
   number_of_decoded_bytes = 1;
 
   // write EPATH to the file object instance
   number_of_decoded_bytes += DecodeCipSecurityObjectPath(
-      &(certificate->path), message_router_request, message_router_response);
+    &(certificate->path), message_router_request, message_router_response);
 
   OPENER_TRACE_INFO("Number_of_decoded bytes: %d\n", number_of_decoded_bytes);
   return number_of_decoded_bytes;
@@ -145,20 +149,23 @@ int DecodeCertificateManagementObjectCertificate(
  *  @param outgoing_message pointer to the message to be sent
  */
 void EncodeCertificateManagementObjectCertificateList(
-    const void *const data, ENIPMessage *const outgoing_message) {
+  const void *const data,
+  ENIPMessage *const outgoing_message) {
   CipClass *class = GetCipClass(kCertificateManagementObjectClassCode);
 
   CipUsint number_of_instances = class->number_of_instances;
   EncodeCipUsint(&number_of_instances, outgoing_message);
 
-  for (CipInstance *instance = class->instances; instance; instance = instance->next) {
+  for (CipInstance *instance = class->instances; instance;
+       instance = instance->next) {
     CipAttributeStruct *instance_name = GetCipAttribute(instance, 1);
-    EncodeCipShortString((CipShortString *)instance_name->data, outgoing_message);
+    EncodeCipShortString( (CipShortString *)instance_name->data,
+                          outgoing_message );
 
     CipEpath path = {
-        .path_size = 2,
-        .class_id = kCertificateManagementObjectClassCode,
-        .instance_number = instance->instance_number,
+      .path_size = 2,
+      .class_id = kCertificateManagementObjectClassCode,
+      .instance_number = instance->instance_number,
     };
     EncodeCipUsint(&path.path_size, outgoing_message);
     EncodeEPath(&path, outgoing_message);
@@ -181,46 +188,46 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
                                                Certificate *ca_certificate,
                                                CipUsint *certificate_encoding) {
 
-    InsertAttribute(instance,
-                    1,
-                    kCipShortString,
-                    EncodeCipShortString,
-                    NULL,
-                    name,
-                    kGetableSingleAndAll
-    );
-    InsertAttribute(instance,
-                    2,
-                    kCipUsint,
-                    EncodeCipUsint,
-                    NULL,
-                    state,
-                    kGetableSingleAndAll
-    );
-    InsertAttribute(instance,
-                    3,
-                    kCipAny,
-                    EncodeCertificateManagementObjectCertificate,
-                    DecodeCertificateManagementObjectCertificate,
-                    device_certificate,
-                    kSetAndGetAble
-    );
-    InsertAttribute(instance,
-                    4,
-                    kCipAny,
-                    EncodeCertificateManagementObjectCertificate,
-                    DecodeCertificateManagementObjectCertificate,
-                    ca_certificate,
-                    kSetAndGetAble
-    );
-    InsertAttribute(instance,
-                    5,
-                    kCipUsint,
-                    EncodeCipUsint,
-                    NULL,
-                    certificate_encoding,
-                    kGetableSingleAndAll
-    );
+  InsertAttribute(instance,
+                  1,
+                  kCipShortString,
+                  EncodeCipShortString,
+                  NULL,
+                  name,
+                  kGetableSingleAndAll
+                  );
+  InsertAttribute(instance,
+                  2,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  NULL,
+                  state,
+                  kGetableSingleAndAll
+                  );
+  InsertAttribute(instance,
+                  3,
+                  kCipAny,
+                  EncodeCertificateManagementObjectCertificate,
+                  DecodeCertificateManagementObjectCertificate,
+                  device_certificate,
+                  kSetAndGetAble
+                  );
+  InsertAttribute(instance,
+                  4,
+                  kCipAny,
+                  EncodeCertificateManagementObjectCertificate,
+                  DecodeCertificateManagementObjectCertificate,
+                  ca_certificate,
+                  kSetAndGetAble
+                  );
+  InsertAttribute(instance,
+                  5,
+                  kCipUsint,
+                  EncodeCipUsint,
+                  NULL,
+                  certificate_encoding,
+                  kGetableSingleAndAll
+                  );
 }
 
 /** @brief Certificate Management Object Delete Instance Data
@@ -228,14 +235,14 @@ void CertificateManagementObjectBindAttributes(CipInstance *instance,
  *  Used for common Delete service to delete instance struct before instance is deleted
  */
 EipStatus CertificateManagementObjectDeleteInstanceData(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response
-) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response
+  ) {
 
   // free all allocated attributes of instance
   CipAttributeStruct *attribute =
-      instance->attributes; /* init pointer to array of attributes*/
+    instance->attributes;   /* init pointer to array of attributes*/
   for (EipUint16 i = 0; i < instance->cip_class->number_of_attributes; i++) {
     CipFree(attribute->data);
     ++attribute;
@@ -257,10 +264,10 @@ EipStatus CertificateManagementObjectDeleteInstanceData(
  *  @See Vol.8, Chapter 5-5.5.1
  */
 EipStatus CertificateManagementObjectPreCreateCallback(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response
-) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response
+  ) {
 
   if (message_router_request->request_data_size > 0) {
     return kEipStatusOk;
@@ -276,33 +283,39 @@ EipStatus CertificateManagementObjectPreCreateCallback(
  *  @See Vol.8, Chapter 5-5.5.1
  */
 EipStatus CertificateManagementObjectPostCreateCallback(
-    CipInstance *RESTRICT const new_instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response
-) {
+  CipInstance *RESTRICT const new_instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response
+  ) {
 
-  CipShortString *name = (CipShortString *)CipCalloc(1, sizeof(CipShortString));
+  CipShortString *name =
+    (CipShortString *)CipCalloc( 1, sizeof(CipShortString) );
   name->length = GetUsintFromMessage(&message_router_request->data);
-  name->string = (CipByte *)CipCalloc(name->length, sizeof(CipByte));
+  name->string = (CipByte *)CipCalloc( name->length, sizeof(CipByte) );
   memcpy(name->string, message_router_request->data, name->length);
 
-  CipUsint *state = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+  CipUsint *state = (CipUsint *)CipCalloc( 1, sizeof(CipUsint) );
   *state = kCertificateManagementObjectStateValueCreated;
 
-  Certificate *device_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
-  Certificate *ca_certificate = (Certificate *)CipCalloc(1, sizeof(Certificate));
-  CipUsint *certificate_encoding = (CipUsint *)CipCalloc(1, sizeof(CipUsint));
+  Certificate *device_certificate =
+    (Certificate *)CipCalloc( 1, sizeof(Certificate) );
+  Certificate *ca_certificate =
+    (Certificate *)CipCalloc( 1, sizeof(Certificate) );
+  CipUsint *certificate_encoding = (CipUsint *)CipCalloc( 1, sizeof(CipUsint) );
 
   CertificateManagementObjectBindAttributes(
-      new_instance,
-      name, state, device_certificate, ca_certificate, certificate_encoding);
+    new_instance,
+    name, state, device_certificate, ca_certificate, certificate_encoding);
 
   //create new CMO data struct for additional data
-  CertificateManagementObjectValues *CMO_instance_data = CipCalloc(1, sizeof(CertificateManagementObjectValues));
+  CertificateManagementObjectValues *CMO_instance_data =
+    CipCalloc( 1, sizeof(CertificateManagementObjectValues) );
   new_instance->data = CMO_instance_data;
-  CMO_instance_data->delete_instance_data = &CertificateManagementObjectDeleteInstanceData; //delete instance data function
+  CMO_instance_data->delete_instance_data =
+    &CertificateManagementObjectDeleteInstanceData;                                         //delete instance data function
 
-  AddIntToMessage(new_instance->instance_number, &(message_router_response->message));
+  AddIntToMessage( new_instance->instance_number,
+                   &(message_router_response->message) );
   return kEipStatusOk;
 }
 
@@ -312,10 +325,10 @@ EipStatus CertificateManagementObjectPostCreateCallback(
  *  @See Vol.8, Chapter 5-5.5.2
  */
 EipStatus CertificateManagementObjectPreDeleteCallback(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response
-) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response
+  ) {
   EipStatus internal_state = kEipStatusOk;
 
   CertificateManagementObjectValues *CMO_instance_data = instance->data;
@@ -326,8 +339,9 @@ EipStatus CertificateManagementObjectPreDeleteCallback(
     internal_state = kEipStatusError;
   }
   else{
-    internal_state = CertificateManagementObjectDeleteInstanceData(instance, message_router_request,
-                                               message_router_response);
+    internal_state = CertificateManagementObjectDeleteInstanceData(instance,
+                                                                   message_router_request,
+                                                                   message_router_response);
   }
   return internal_state;
 }
@@ -339,11 +353,11 @@ EipStatus CertificateManagementObjectPreDeleteCallback(
  *  @See Vol.8, Chapter 5-5.7.1
  */
 EipStatus CertificateManagementObjectCreateCSR(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session) {
   // TODO: implement service
 
   return kEipStatusOk;
@@ -357,11 +371,11 @@ EipStatus CertificateManagementObjectCreateCSR(
  *  @See Vol.8, Chapter 5-5.7.2
  */
 EipStatus CertificateManagementObjectVerifyCertificate(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
-    const int encapsulation_session) {
+  CipInstance *RESTRICT const instance,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response,
+  const struct sockaddr *originator_address,
+  const int encapsulation_session) {
   // TODO: implement service
 
   return kEipStatusOk;
@@ -371,93 +385,93 @@ void CertificateManagementObjectInitializeClassSettings(CipClass *class) {
 
   CipClass *meta_class = class->class_instance.cip_class;
 
-  InsertAttribute((CipInstance *) class,
-                  1,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &class->revision,
-                  kGetableSingleAndAll);  /* revision */
-  InsertAttribute((CipInstance *) class,
-                  2,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &class->max_instance,
-                  kGetableSingleAndAll); /*  largest instance number */
-  InsertAttribute((CipInstance *) class,
-                  3,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &class->number_of_instances,
-                  kGetableSingleAndAll); /* number of instances currently existing*/
-  InsertAttribute((CipInstance *) class,
-                  4,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &kCipUintZero,
-                  kNotSetOrGetable); /* optional attribute list - default = 0 */
-  InsertAttribute((CipInstance *) class,
-                  5,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &kCipUintZero,
-                  kNotSetOrGetable); /* optional service list - default = 0 */
-  InsertAttribute((CipInstance *) class,
-                  6,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &meta_class->highest_attribute_number,
-                  kGetableSingleAndAll); /* max class attribute number*/
-  InsertAttribute((CipInstance *) class,
-                  7,
-                  kCipUint,
-                  EncodeCipUint,
-                  NULL,
-                  (void *) &class->highest_attribute_number,
-                  kGetableSingleAndAll); /* max instance attribute number*/
-  InsertAttribute((CipInstance *) class,
-                  8,
-                  kCipDword,
-                  EncodeCipDword,
-                  NULL,
-                  (void *) &cmo_class_attr.capability_flags,
-                  kGetableSingleAndAll); /* Certificate Management capabilities*/
-  InsertAttribute((CipInstance *) class,
-                  9,
-                  kCipAny,
-                  EncodeCertificateManagementObjectCertificateList,
-                  NULL,
-                  (void *) &cmo_class_attr.certificate_list_dummy,
-                  kGetableSingleAndAll); /* List of device certificates*/
-  InsertAttribute((CipInstance *) class,
-                  10,
-                  kCipDword,
-                  EncodeCipDword,
-                  NULL,
-                  (void *) &cmo_class_attr.certificate_encodings_flag,
-                  kGetableSingleAndAll); /* Certificate encodings supported*/
+  InsertAttribute( (CipInstance *) class,
+                   1,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &class->revision,
+                   kGetableSingleAndAll ); /* revision */
+  InsertAttribute( (CipInstance *) class,
+                   2,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &class->max_instance,
+                   kGetableSingleAndAll ); /*  largest instance number */
+  InsertAttribute( (CipInstance *) class,
+                   3,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &class->number_of_instances,
+                   kGetableSingleAndAll ); /* number of instances currently existing*/
+  InsertAttribute( (CipInstance *) class,
+                   4,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &kCipUintZero,
+                   kNotSetOrGetable ); /* optional attribute list - default = 0 */
+  InsertAttribute( (CipInstance *) class,
+                   5,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &kCipUintZero,
+                   kNotSetOrGetable ); /* optional service list - default = 0 */
+  InsertAttribute( (CipInstance *) class,
+                   6,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &meta_class->highest_attribute_number,
+                   kGetableSingleAndAll ); /* max class attribute number*/
+  InsertAttribute( (CipInstance *) class,
+                   7,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &class->highest_attribute_number,
+                   kGetableSingleAndAll ); /* max instance attribute number*/
+  InsertAttribute( (CipInstance *) class,
+                   8,
+                   kCipDword,
+                   EncodeCipDword,
+                   NULL,
+                   (void *) &cmo_class_attr.capability_flags,
+                   kGetableSingleAndAll ); /* Certificate Management capabilities*/
+  InsertAttribute( (CipInstance *) class,
+                   9,
+                   kCipAny,
+                   EncodeCertificateManagementObjectCertificateList,
+                   NULL,
+                   (void *) &cmo_class_attr.certificate_list_dummy,
+                   kGetableSingleAndAll ); /* List of device certificates*/
+  InsertAttribute( (CipInstance *) class,
+                   10,
+                   kCipDword,
+                   EncodeCipDword,
+                   NULL,
+                   (void *) &cmo_class_attr.certificate_encodings_flag,
+                   kGetableSingleAndAll ); /* Certificate encodings supported*/
 
   /* Add class services to the meta class */
   InsertService(meta_class,
                 kGetAttributeAll,
                 &GetAttributeAll,
                 "GetAttributeAll"
-  );
+                );
   InsertService(meta_class,
                 kGetAttributeSingle,
                 &GetAttributeSingle,
                 "GetAttributeSingle"
-  );
+                );
   InsertService(meta_class,
                 kCreate,
                 &CipCreateService,
                 "Create"
-  );
+                );
   // add Callback function pointers
   class->PreCreateCallback = &CertificateManagementObjectPreCreateCallback;
   class->PostCreateCallback = &CertificateManagementObjectPostCreateCallback;
@@ -469,18 +483,18 @@ EipStatus CertificateManagementObjectInit(void) {
   CipInstance *certificate_management_object_instance;
 
   certificate_management_object_class = CreateCipClass(
-      kCertificateManagementObjectClassCode,
-      3,  /* # class attributes */
-      10, /* # highest class attribute number */
-      3,  /* # class services */
-      5,  /* # instance attributes */
-      5,  /* # highest instance attribute number */
-      6,  /* # instance services */
-      1,  /* # instances */
-      "Certificate Management Object",
-      CERTIFICATE_MANAGEMENT_OBJECT_REVISION,             /* # class revision */
-      &CertificateManagementObjectInitializeClassSettings /* # function pointer for initialization */
-  );
+    kCertificateManagementObjectClassCode,
+    3,    /* # class attributes */
+    10,   /* # highest class attribute number */
+    3,    /* # class services */
+    5,    /* # instance attributes */
+    5,    /* # highest instance attribute number */
+    6,    /* # instance services */
+    1,    /* # instances */
+    "Certificate Management Object",
+    CERTIFICATE_MANAGEMENT_OBJECT_REVISION,               /* # class revision */
+    &CertificateManagementObjectInitializeClassSettings   /* # function pointer for initialization */
+    );
 
   if (NULL == certificate_management_object_class) {
     /* Initialization failed */
@@ -488,48 +502,48 @@ EipStatus CertificateManagementObjectInit(void) {
   }
 
   certificate_management_object_instance =
-      GetCipInstance(certificate_management_object_class, 1);
+    GetCipInstance(certificate_management_object_class, 1);
 
   /* Bind attributes to the static instance number 1 (default certificates)*/
   CertificateManagementObjectBindAttributes(
-      certificate_management_object_instance,
-      &g_certificate_management.name,
-      &g_certificate_management.state,
-      &g_certificate_management.device_certificate,
-      &g_certificate_management.ca_certificate,
-      &g_certificate_management.certificate_encoding);
+    certificate_management_object_instance,
+    &g_certificate_management.name,
+    &g_certificate_management.state,
+    &g_certificate_management.device_certificate,
+    &g_certificate_management.ca_certificate,
+    &g_certificate_management.certificate_encoding);
 
   /* Add services to the instance */
   InsertService(certificate_management_object_class,
                 kGetAttributeAll,
                 &GetAttributeAll,
                 "GetAttributeAll"
-  );
+                );
   InsertService(certificate_management_object_class,
                 kDelete,
                 &CipDeleteService,
                 "Delete"
-  );
+                );
   InsertService(certificate_management_object_class,
                 kGetAttributeSingle,
                 &GetAttributeSingle,
                 "GetAttributeSingle"
-  );
+                );
   InsertService(certificate_management_object_class,
                 kSetAttributeSingle,
                 &SetAttributeSingle,
                 "SetAttributeSingle"
-  );
+                );
   InsertService(certificate_management_object_class,
                 kCertificateManagementObjectServiceCodeCreateCSR,
                 &CertificateManagementObjectCreateCSR,
                 "CertificateManagementObjectCreateCSR"
-  );
+                );
   InsertService(certificate_management_object_class,
                 kCertificateManagementObjectServiceCodeVerifyCertificate,
                 &CertificateManagementObjectVerifyCertificate,
                 "CertificateManagementObjectVerifyCertificate"
-  );
+                );
 
   return kEipStatusOk;
 }

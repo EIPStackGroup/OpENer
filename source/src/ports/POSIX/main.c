@@ -79,7 +79,7 @@ int main(int argc,
   /* Fetch MAC address from the platform. This tests also if the interface
    *  is present. */
   uint8_t iface_mac[6];
-  if(kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac) ) {
+  if( kEipStatusError == IfaceGetMacAddress(arg[1], iface_mac) ) {
     printf("Network interface %s not found.\n", arg[1]);
     exit(EXIT_FAILURE);
   }
@@ -92,7 +92,7 @@ int main(int argc,
    *  16 bits of the connection id. Here we use random number approach, first seed
    *  the PRNG to ensure we don't get the same value on every startup.
    */
-  srand(time(NULL));
+  srand( time(NULL) );
   EipUint16 unique_connection_id = rand();
 
   /* Setup the CIP Layer. All objects are initialized with the default
@@ -118,7 +118,7 @@ int main(int argc,
    *  After that any NV data values are loaded to change the attribute contents
    *  to the stored configuration.
    */
-  if(kEipStatusError == NvdataLoad() ) {
+  if( kEipStatusError == NvdataLoad() ) {
     OPENER_TRACE_WARN("Loading of some NV data failed. Maybe the first start?\n");
   }
 
@@ -163,7 +163,7 @@ int main(int argc,
   }
 
   /* The network initialization of the EIP stack for the NetworkHandler. */
-  if(!g_end_stack && kEipStatusOk == NetworkHandlerInitialize() ) {
+  if( !g_end_stack && kEipStatusOk == NetworkHandlerInitialize() ) {
 #ifdef OPENER_RT
     int ret;
 
@@ -256,7 +256,7 @@ static void *executeEventLoop(void *pthread_arg) {
 
   /* The event loop. Put other processing you need done continually in here */
   while(!g_end_stack) {
-    if(kEipStatusOk != NetworkHandlerProcessCyclic() ) {
+    if( kEipStatusOk != NetworkHandlerProcessCyclic() ) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
       break;
     }
@@ -274,7 +274,7 @@ static void fuzzHandlePacketFlow(void) {
   ENIPMessage outgoing_message;
 
   /* AFL persistent mode */
-  while(__AFL_LOOP(100000) ) {
+  while( __AFL_LOOP(100000) ) {
     /* Read input from STDIN and enter the handle receive flow */
     memset(buff, 0, 512);
     ssize_t received_size = read(STDIN_FILENO, buff, 512);

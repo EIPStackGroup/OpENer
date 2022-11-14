@@ -77,21 +77,21 @@ EipStatus NvQosStore(const CipQosObject *p_qos) {
   EipStatus eip_status = kEipStatusOk;
   if (NULL != p_file) {
     /* Print output data */
-    if (0 >= fprintf(p_file,
-                     " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8
-                     "\n",
-                     p_qos->dscp.urgent,
-                     p_qos->dscp.scheduled,
-                     p_qos->dscp.high,
-                     p_qos->dscp.low,
-                     p_qos->dscp.explicit_msg) ) {
+    if ( 0 >= fprintf(p_file,
+                      " %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8 ", %" PRIu8
+                      "\n",
+                      p_qos->dscp.urgent,
+                      p_qos->dscp.scheduled,
+                      p_qos->dscp.high,
+                      p_qos->dscp.low,
+                      p_qos->dscp.explicit_msg) ) {
       eip_status = kEipStatusError;
     }
 
     /* Need to try to close all stuff in any case. */
     eip_status =
-      (kEipStatusError ==
-       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
+      ( kEipStatusError ==
+        ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
   }
   return eip_status;
 }

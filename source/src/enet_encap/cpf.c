@@ -30,7 +30,7 @@ CipCommonPacketFormatData g_common_packet_format_data_item; /**< CPF global data
 
 static void InitializeMessageRouterResponse(
   CipMessageRouterResponse *const message_router_response) {
-  memset(message_router_response, 0, sizeof(*message_router_response) );
+  memset( message_router_response, 0, sizeof(*message_router_response) );
   InitializeENIPMessage(&message_router_response->message);
 }
 
@@ -41,13 +41,13 @@ EipStatus NotifyCommonPacketFormat(const EncapsulationData *const received_data,
   CipMessageRouterResponse message_router_response;
   InitializeMessageRouterResponse(&message_router_response);
 
-  if(kEipStatusError
-     == (return_value =
-           CreateCommonPacketFormatStructure(received_data->
-                                             current_communication_buffer_position,
-                                             received_data->data_length,
-                                             &
-                                             g_common_packet_format_data_item) ) )
+  if( kEipStatusError
+      == ( return_value =
+             CreateCommonPacketFormatStructure(received_data->
+                                               current_communication_buffer_position,
+                                               received_data->data_length,
+                                               &
+                                               g_common_packet_format_data_item) ) )
   {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
@@ -145,9 +145,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
           if(connection_object->sequence_count_consuming ==
              g_common_packet_format_data_item.address_item.data.sequence_number)
           {
-            memcpy(outgoing_message,
-                   &(connection_object->last_reply_sent),
-                   sizeof(ENIPMessage) );
+            memcpy( outgoing_message,
+                    &(connection_object->last_reply_sent),
+                    sizeof(ENIPMessage) );
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
             /* Regenerate encapsulation header for new message */
@@ -195,9 +195,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
             outgoing_message->current_message_position = pos;
-            memcpy(&connection_object->last_reply_sent,
-                   outgoing_message,
-                   sizeof(ENIPMessage) );
+            memcpy( &connection_object->last_reply_sent,
+                    outgoing_message,
+                    sizeof(ENIPMessage) );
             return_value = kEipStatusOkSend;
           }
         } else {
@@ -434,11 +434,11 @@ void EncodeDataItemData(
 void EncodeConnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage( (EipUint16) (message_router_response->message.
-                                used_message_length + 4 + 2                                 /* TODO: Magic numbers */
-                                + (2 *
-                                   message_router_response->
-                                   size_of_additional_status) ),
+  AddIntToMessage( (EipUint16) ( message_router_response->message.
+                                 used_message_length + 4 + 2                                /* TODO: Magic numbers */
+                                 + (2 *
+                                    message_router_response->
+                                    size_of_additional_status) ),
                    outgoing_message );
 }
 
@@ -550,11 +550,11 @@ void EncodeExtendedStatus(
 void EncodeUnconnectedDataItemLength(
   const CipMessageRouterResponse *const message_router_response,
   ENIPMessage *const outgoing_message) {
-  AddIntToMessage( (EipUint16) (message_router_response->message.
-                                used_message_length + 4                                 /* TODO: Magic number */
-                                + (2 *
-                                   message_router_response->
-                                   size_of_additional_status) ),
+  AddIntToMessage( (EipUint16) ( message_router_response->message.
+                                 used_message_length + 4                                /* TODO: Magic number */
+                                 + (2 *
+                                    message_router_response->
+                                    size_of_additional_status) ),
                    outgoing_message );
 }
 

@@ -96,7 +96,7 @@ static DWORD ConvertToIndexFromFakeAlias(const char *iface,
 
   (void) mbstowcs(p_if_alias, iface, wc_cnt);
   DWORD cnv_status = ConvertInterfaceAliasToLuid(p_if_alias, &if_luid);
-  if(NETIO_SUCCESS(cnv_status) ) {
+  if( NETIO_SUCCESS(cnv_status) ) {
     cnv_status = ConvertInterfaceLuidToIndex(&if_luid, iface_idx);
   }
   FREE(p_if_alias);
@@ -266,7 +266,7 @@ EipStatus IfaceGetMacAddress(const char *iface,
                              uint8_t *const physical_address) {
   ULONG iface_idx;
 
-  if(kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
+  if( kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
     return kEipStatusError;
   }
 
@@ -275,7 +275,7 @@ EipStatus IfaceGetMacAddress(const char *iface,
                       GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER |
                       GAA_FLAG_SKIP_FRIENDLY_NAME;
   PIP_ADAPTER_ADDRESSES p_addr_table = NULL;
-  if(kEipStatusOk != RetrieveAdapterAddressesTable(flags, &p_addr_table) ) {
+  if( kEipStatusOk != RetrieveAdapterAddressesTable(flags, &p_addr_table) ) {
     return kEipStatusError;
   }
 
@@ -311,7 +311,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
                                 CipTcpIpInterfaceConfiguration *iface_cfg) {
   ULONG iface_idx;
 
-  if(kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
+  if( kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
     return kEipStatusError;
   }
 
@@ -319,7 +319,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
   const ULONG flags = GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST |
                       GAA_FLAG_INCLUDE_GATEWAYS | GAA_FLAG_INCLUDE_PREFIX;
   PIP_ADAPTER_ADDRESSES p_addr_table = NULL;
-  if(kEipStatusOk != RetrieveAdapterAddressesTable(flags, &p_addr_table) ) {
+  if( kEipStatusOk != RetrieveAdapterAddressesTable(flags, &p_addr_table) ) {
     return kEipStatusError;
   }
 
@@ -349,7 +349,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
         PIP_ADAPTER_PREFIX pPrefix = p_addr_entry->FirstPrefix;
         if(NULL != pPrefix) {
           local_cfg.network_mask =
-            htonl(0xffffffff << (32U - pPrefix->PrefixLength) );
+            htonl( 0xffffffff << (32U - pPrefix->PrefixLength) );
         }
       }
       {
@@ -404,7 +404,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
                          volatile int *const abort_wait) {
   ULONG iface_idx;
 
-  if(kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
+  if( kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx) ) {
     return kEipStatusError;
   }
 
@@ -445,10 +445,10 @@ EipStatus IfaceWaitForIp(const char *const iface,
       /* Search entry matching the interface index and determine IP address. */
       for(int i = 0; i < (int) pmib_ipaddr_table->dwNumEntries; i++) {
         if(pmib_ipaddr_table->table[i].dwIndex == iface_idx) {
-          if(0 ==
-             (pmib_ipaddr_table->table[i].wType &
-              (MIB_IPADDR_DELETED | MIB_IPADDR_DISCONNECTED |
-               MIB_IPADDR_TRANSIENT) ) ) {
+          if( 0 ==
+              ( pmib_ipaddr_table->table[i].wType &
+                (MIB_IPADDR_DELETED | MIB_IPADDR_DISCONNECTED |
+                 MIB_IPADDR_TRANSIENT) ) ) {
             ipaddr = pmib_ipaddr_table->table[i].dwAddr;
           }
         }
@@ -458,7 +458,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
         --timeout;
       }
     } while( (0 == ipaddr) && (0 != timeout) && (0 == *abort_wait) &&
-             (0 == SleepEx(WAIT_CYCLE_MS, FALSE) ) );
+             ( 0 == SleepEx(WAIT_CYCLE_MS, FALSE) ) );
 
     OPENER_TRACE_INFO("IP=%08" PRIx32 ", timeout=%d\n",
                       (uint32_t)ntohl(ipaddr),
@@ -489,7 +489,7 @@ void GetHostName(CipString *hostname) {
   }
 
   char name_buf[HOST_NAME_MAX] = "";
-  err = gethostname(name_buf, sizeof(name_buf) );
+  err = gethostname( name_buf, sizeof(name_buf) );
   if(0 != err) {
     int error_code = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
