@@ -193,7 +193,7 @@ CipUdint GetConnectionId(void) {
 #else
   CipUint connection_id = NextXorShiftUint32();
 #endif
-  return (g_incarnation_id | (connection_id & 0x0000FFFF) );
+  return ( g_incarnation_id | (connection_id & 0x0000FFFF) );
 }
 
 void InitializeConnectionManager(CipClass *class) {
@@ -285,8 +285,9 @@ EipStatus HandleReceivedConnectedData(const EipUint8 *const data,
                                       int data_length,
                                       struct sockaddr_in *from_address) {
 
-  if( (CreateCommonPacketFormatStructure(data, data_length,
-                                         &g_common_packet_format_data_item) ) ==
+  if( ( CreateCommonPacketFormatStructure(data, data_length,
+                                          &g_common_packet_format_data_item) )
+      ==
       kEipStatusError ) {
     return kEipStatusError;
   } else {
@@ -455,9 +456,9 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   EipUint16 connection_status = kConnectionManagerExtendedStatusCodeSuccess;
 
   /*check if the trigger type value is invalid or ok */
-  if(kConnectionObjectTransportClassTriggerProductionTriggerInvalid ==
-     ConnectionObjectGetTransportClassTriggerProductionTrigger(&
-                                                               g_dummy_connection_object) )
+  if( kConnectionObjectTransportClassTriggerProductionTriggerInvalid ==
+      ConnectionObjectGetTransportClassTriggerProductionTrigger(&
+                                                                g_dummy_connection_object) )
   {
     return AssembleForwardOpenResponse(&g_dummy_connection_object,
                                        message_router_response,
@@ -591,9 +592,9 @@ EipStatus ForwardOpenRoutine(CipInstance *instance,
   g_dummy_connection_object.associated_encapsulation_session =
     encapsulation_session;
 
-  memcpy(&(g_dummy_connection_object.originator_address),
-         originator_address,
-         sizeof(g_dummy_connection_object.originator_address) );
+  memcpy( &(g_dummy_connection_object.originator_address),
+          originator_address,
+          sizeof(g_dummy_connection_object.originator_address) );
 
   ConnectionObjectConnectionType o_to_t_connection_type =
     ConnectionObjectGetOToTConnectionType(&g_dummy_connection_object);
@@ -640,7 +641,7 @@ EipStatus ForwardOpenRoutine(CipInstance *instance,
   }
 
   /* Check if we have a matching or non matching request */
-  if(NULL != CheckForExistingConnection(&g_dummy_connection_object) ) {
+  if( NULL != CheckForExistingConnection(&g_dummy_connection_object) ) {
     OPENER_TRACE_INFO("We have a Matching request\n");
     is_matching_request = true;
 
@@ -691,10 +692,10 @@ EipStatus ForwardClose(CipInstance *instance,
   while(NULL != node) {
     /* this check should not be necessary as only established connections should be in the active connection list */
     CipConnectionObject *connection_object = node->data;
-    if( (kConnectionObjectStateEstablished ==
-         ConnectionObjectGetState(connection_object) )
-        || (kConnectionObjectStateTimedOut ==
-            ConnectionObjectGetState(connection_object) ) ) {
+    if( ( kConnectionObjectStateEstablished ==
+          ConnectionObjectGetState(connection_object) )
+        || ( kConnectionObjectStateTimedOut ==
+             ConnectionObjectGetState(connection_object) ) ) {
       if( (connection_object->connection_serial_number ==
            connection_serial_number) &&
           (connection_object->originator_vendor_id == originator_vendor_id)
@@ -929,11 +930,11 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
   while(NULL != node) {
     //OPENER_TRACE_INFO("Entering Connection Object loop\n");
     CipConnectionObject *connection_object = node->data;
-    if(kConnectionObjectStateEstablished ==
-       ConnectionObjectGetState(connection_object) ) {
+    if( kConnectionObjectStateEstablished ==
+        ConnectionObjectGetState(connection_object) ) {
       if( (NULL != connection_object->consuming_instance) || /* we have a consuming connection check inactivity watchdog timer */
-          (kConnectionObjectTransportClassTriggerDirectionServer ==
-           ConnectionObjectGetTransportClassTriggerDirection(connection_object) ) ) /* all server connections have to maintain an inactivity watchdog timer */
+          ( kConnectionObjectTransportClassTriggerDirectionServer ==
+            ConnectionObjectGetTransportClassTriggerDirection(connection_object) ) ) /* all server connections have to maintain an inactivity watchdog timer */
       {
         if(elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
@@ -947,16 +948,16 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
         }
       }
       /* only if the connection has not timed out check if data is to be send */
-      if(kConnectionObjectStateEstablished ==
-         ConnectionObjectGetState(connection_object) ) {
+      if( kConnectionObjectStateEstablished ==
+          ConnectionObjectGetState(connection_object) ) {
         /* client connection */
-        if( (0 != ConnectionObjectGetExpectedPacketRate(connection_object) )
+        if( ( 0 != ConnectionObjectGetExpectedPacketRate(connection_object) )
             && (kEipInvalidSocket !=
                 connection_object->socket[kUdpCommuncationDirectionProducing]) ) /* only produce for the master connection */
         {
-          if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
-             ConnectionObjectGetTransportClassTriggerProductionTrigger(
-               connection_object) ) {
+          if( kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
+              ConnectionObjectGetTransportClassTriggerProductionTrigger(
+                connection_object) ) {
             /* non cyclic connections have to decrement production inhibit timer */
             if(elapsed_time <= connection_object->production_inhibit_timer) {
               //The connection is allowed to send again
@@ -982,13 +983,15 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
               connection_object->transmission_trigger_timer -= elapsed_time;
             } else {  /* elapsed time was longer than RPI */
               connection_object->transmission_trigger_timer = 0;
-              OPENER_TRACE_INFO("elapsed time: %lu ms was longer than RPI: %u ms\n",
-                                elapsed_time,
-                                ConnectionObjectGetRequestedPacketInterval(connection_object));
+              OPENER_TRACE_INFO(
+                "elapsed time: %lu ms was longer than RPI: %u ms\n",
+                elapsed_time,
+                ConnectionObjectGetRequestedPacketInterval(
+                  connection_object) );
             }
-            if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
-               ConnectionObjectGetTransportClassTriggerProductionTrigger(
-                 connection_object) ) {
+            if( kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
+                ConnectionObjectGetTransportClassTriggerProductionTrigger(
+                  connection_object) ) {
               /* non cyclic connections have to reload the production inhibit timer */
               ConnectionObjectResetProductionInhibitTimer(connection_object);
             }
@@ -1053,7 +1056,10 @@ EipStatus AssembleForwardOpenResponse(CipConnectionObject *connection_object,
                      &message_router_response->message);
   } else {
     /* we have an connection creation error */
-    OPENER_TRACE_WARN("AssembleForwardOpenResponse: sending error response, general/extended status=%d/%d\n", general_status, extended_status);
+    OPENER_TRACE_WARN(
+      "AssembleForwardOpenResponse: sending error response, general/extended status=%d/%d\n",
+      general_status,
+      extended_status);
     ConnectionObjectSetState(connection_object,
                              kConnectionObjectStateNonExistent);
     /* Expected data length is 10 octets */
@@ -1197,10 +1203,10 @@ CipConnectionObject *GetConnectedObject(const EipUint32 connection_id) {
   DoublyLinkedListNode *iterator = connection_list.first;
 
   while(NULL != iterator) {
-    if(kConnectionObjectStateEstablished ==
-       ConnectionObjectGetState(iterator->data)
-       && connection_id ==
-       ConnectionObjectGetCipConsumedConnectionID(iterator->data) ) {
+    if( kConnectionObjectStateEstablished ==
+        ConnectionObjectGetState(iterator->data)
+        && connection_id ==
+        ConnectionObjectGetCipConsumedConnectionID(iterator->data) ) {
       return iterator->data;
     }
     iterator = iterator->next;
@@ -1215,10 +1221,10 @@ CipConnectionObject *GetConnectedOutputAssembly(
   while(NULL != iterator) {
     if(kConnectionObjectInstanceTypeIOExclusiveOwner ==
        ConnectionObjectGetInstanceType(iterator->data)
-       && (kConnectionObjectStateEstablished ==
-           ConnectionObjectGetState(iterator->data)
-           || kConnectionObjectStateTimedOut ==
-           ConnectionObjectGetState(iterator->data) )
+       && ( kConnectionObjectStateEstablished ==
+            ConnectionObjectGetState(iterator->data)
+            || kConnectionObjectStateTimedOut ==
+            ConnectionObjectGetState(iterator->data) )
        && output_assembly_id ==
        ( (CipConnectionObject *) iterator->data )->produced_path.instance_id) {
       return iterator->data;
@@ -1234,9 +1240,9 @@ CipConnectionObject *CheckForExistingConnection(
   DoublyLinkedListNode *iterator = connection_list.first;
 
   while(NULL != iterator) {
-    if(kConnectionObjectStateEstablished ==
-       ConnectionObjectGetState(iterator->data) ) {
-      if(EqualConnectionTriad(connection_object, iterator->data) ) {
+    if( kConnectionObjectStateEstablished ==
+        ConnectionObjectGetState(iterator->data) ) {
+      if( EqualConnectionTriad(connection_object, iterator->data) ) {
         return iterator->data;
       }
     }
@@ -1286,7 +1292,7 @@ EipStatus CheckElectronicKeyData(EipUint8 key_format,
 
       if(false == compatiblity_mode) {
         /* Major = 0 is valid */
-        if(0 == ElectronicKeyFormat4GetMajorRevision(key_data) ) {
+        if( 0 == ElectronicKeyFormat4GetMajorRevision(key_data) ) {
           return kEipStatusOk;
         }
 
@@ -1362,13 +1368,13 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
   if(remaining_path > 0) {
     /* first look if there is an electronic key */
-    if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) ) {
-      if(kLogicalSegmentLogicalTypeSpecial ==
-         GetPathLogicalSegmentLogicalType(message) ) {
-        if(kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
-           GetPathLogicalSegmentSpecialTypeLogicalType(message) ) {
-          if(kElectronicKeySegmentFormatKeyFormat4 ==
-             GetPathLogicalSegmentElectronicKeyFormat(message) ) {
+    if( kSegmentTypeLogicalSegment == GetPathSegmentType(message) ) {
+      if( kLogicalSegmentLogicalTypeSpecial ==
+          GetPathLogicalSegmentLogicalType(message) ) {
+        if( kLogicalSegmentSpecialTypeLogicalFormatElectronicKey ==
+            GetPathLogicalSegmentSpecialTypeLogicalType(message) ) {
+          if( kElectronicKeySegmentFormatKeyFormat4 ==
+              GetPathLogicalSegmentElectronicKeyFormat(message) ) {
             /* Check if there is enough data for holding the electronic key segment */
             if(remaining_path < 5) {
               *extended_error = 0;
@@ -1395,12 +1401,12 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                                                    electronic_key.key_data),
               ElectronicKeyFormat4GetMinorRevision(connection_object->
                                                    electronic_key.key_data) );
-            if(kEipStatusOk
-               != CheckElectronicKeyData(connection_object->electronic_key.
-                                         key_format,
-                                         connection_object->electronic_key.
-                                         key_data,
-                                         extended_error) ) {
+            if( kEipStatusOk
+                != CheckElectronicKeyData(connection_object->electronic_key.
+                                          key_format,
+                                          connection_object->electronic_key.
+                                          key_data,
+                                          extended_error) ) {
               ElectronicKeyFormat4Delete(&electronic_key);
               return kCipErrorConnectionFailure;
             }
@@ -1414,12 +1420,12 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
     }
 
     //TODO: Refactor this afterwards
-    if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
-       ConnectionObjectGetTransportClassTriggerProductionTrigger(
-         connection_object) )
+    if( kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
+        ConnectionObjectGetTransportClassTriggerProductionTrigger(
+          connection_object) )
     {
       /*non cyclic connections may have a production inhibit */
-      if(kSegmentTypeNetworkSegment == GetPathSegmentType(message) ) {
+      if( kSegmentTypeNetworkSegment == GetPathSegmentType(message) ) {
         NetworkSegmentSubtype network_segment_subtype =
           GetPathNetworkSegmentSubtype(message);
         if(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds ==
@@ -1432,9 +1438,9 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
       }
     }
 
-    if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
-       kLogicalSegmentLogicalTypeClassId ==
-       GetPathLogicalSegmentLogicalType(message) ) {
+    if( kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
+        kLogicalSegmentLogicalTypeClassId ==
+        GetPathLogicalSegmentLogicalType(message) ) {
 
       class_id = CipEpathGetLogicalValue(&message);
       class = GetCipClass(class_id);
@@ -1463,14 +1469,14 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
     remaining_path -= 1; /* 1 16Bit word for the class part of the path */
 
     /* Get instance ID */
-    if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
-       kLogicalSegmentLogicalTypeInstanceId ==
-       GetPathLogicalSegmentLogicalType(message) ) { /* store the configuration ID for later checking in the application connection types */
+    if( kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
+        kLogicalSegmentLogicalTypeInstanceId ==
+        GetPathLogicalSegmentLogicalType(message) ) { /* store the configuration ID for later checking in the application connection types */
       instance_id = CipEpathGetLogicalValue(&message);
 
       OPENER_TRACE_INFO("Configuration instance id %" PRId32 "\n",
                         instance_id);
-      if(NULL == GetCipInstance(class, instance_id) ) {
+      if( NULL == GetCipInstance(class, instance_id) ) {
         /*according to the test tool we should respond with this extended error code */
         *extended_error =
           kConnectionManagerExtendedStatusCodeErrorInvalidSegmentTypeInPath;
@@ -1482,8 +1488,9 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
       OPENER_TRACE_INFO("no config data\n");
     }
 
-    if(kConnectionObjectTransportClassTriggerTransportClass3 ==
-       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
+    if( kConnectionObjectTransportClassTriggerTransportClass3 ==
+        ConnectionObjectGetTransportClassTriggerTransportClass(
+          connection_object) )
     {
       /*we have Class 3 connection*/
       if(remaining_path > 0) {
@@ -1505,20 +1512,20 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
       { .class_id = class_id, .instance_id = instance_id,
         .attribute_id_or_connection_point = 0 };
 
-      memcpy(&(connection_object->configuration_path),
-             &connection_epath,
-             sizeof(connection_object->configuration_path) );
-      memcpy(&(connection_object->produced_path), &connection_epath,
-             sizeof(connection_object->produced_path) );
+      memcpy( &(connection_object->configuration_path),
+              &connection_epath,
+              sizeof(connection_object->configuration_path) );
+      memcpy( &(connection_object->produced_path), &connection_epath,
+              sizeof(connection_object->produced_path) );
 
       /* End class 3 connection handling */
     } else { /* we have an IO connection */
       CipConnectionPathEpath connection_epath =
       { .class_id = class_id, .instance_id = instance_id,
         .attribute_id_or_connection_point = 0 };
-      memcpy(&(connection_object->configuration_path),
-             &connection_epath,
-             sizeof(connection_object->configuration_path) );
+      memcpy( &(connection_object->configuration_path),
+              &connection_epath,
+              sizeof(connection_object->configuration_path) );
       ConnectionObjectConnectionType originator_to_target_connection_type =
         ConnectionObjectGetOToTConnectionType(connection_object);
       ConnectionObjectConnectionType target_to_originator_connection_type =
@@ -1557,22 +1564,22 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
       for(size_t i = 0; i < number_of_encoded_paths; i++) /* process up to 2 encoded paths */
       {
-        if(kSegmentTypeLogicalSegment == GetPathSegmentType(message)
-           && (kLogicalSegmentLogicalTypeInstanceId ==
-               GetPathLogicalSegmentLogicalType(message)
-               || kLogicalSegmentLogicalTypeConnectionPoint ==
-               GetPathLogicalSegmentLogicalType(message) ) ) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
+        if( kSegmentTypeLogicalSegment == GetPathSegmentType(message)
+            && ( kLogicalSegmentLogicalTypeInstanceId ==
+                 GetPathLogicalSegmentLogicalType(message)
+                 || kLogicalSegmentLogicalTypeConnectionPoint ==
+                 GetPathLogicalSegmentLogicalType(message) ) ) /* Connection Point interpreted as InstanceNr -> only in Assembly Objects */
         {   /* Attribute Id or Connection Point */
           CipDword attribute_id = CipEpathGetLogicalValue(&message);
           CipConnectionPathEpath path =
           { .class_id = class_id, .instance_id = attribute_id,
             .attribute_id_or_connection_point = 0 };
-          memcpy(paths_to_encode[i], &path,
-                 sizeof(connection_object->produced_path) );
+          memcpy( paths_to_encode[i], &path,
+                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
             attribute_id);
-          if(NULL == GetCipInstance(class, attribute_id) ) { /* Old code - Probably here the attribute ID marks the instance for the assembly object  */
+          if( NULL == GetCipInstance(class, attribute_id) ) { /* Old code - Probably here the attribute ID marks the instance for the assembly object  */
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
             return kCipErrorConnectionFailure;
@@ -1614,9 +1621,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
               GetPathNetworkSegmentSubtype(message);
             switch(subtype) {
               case kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds:
-                if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic
-                   != ConnectionObjectGetTransportClassTriggerProductionTrigger(
-                     connection_object) ) {
+                if(
+                  kConnectionObjectTransportClassTriggerProductionTriggerCyclic
+                  != ConnectionObjectGetTransportClassTriggerProductionTrigger(
+                    connection_object) ) {
                   /* only non cyclic connections may have a production inhibit */
                   connection_object->production_inhibit_time = message[1];
                   message += 2;
@@ -1653,11 +1661,12 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
 
 void CloseConnection(CipConnectionObject *RESTRICT connection_object) {
 
-  OPENER_TRACE_INFO("cipconnectionmanager: CloseConnection, trigger: %d \n",
-  	ConnectionObjectGetTransportClassTriggerTransportClass(connection_object));
+  OPENER_TRACE_INFO( "cipconnectionmanager: CloseConnection, trigger: %d \n",
+                     ConnectionObjectGetTransportClassTriggerTransportClass(
+                       connection_object) );
 
-  if(kConnectionObjectTransportClassTriggerTransportClass3 !=
-     ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
+  if( kConnectionObjectTransportClassTriggerTransportClass3 !=
+      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
     /* only close the UDP connection for not class 3 connections */
     CloseUdpSocket(connection_object->socket[kUdpCommuncationDirectionConsuming]);
@@ -1697,8 +1706,8 @@ EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number) {
     CipConnectionObject *connection_object = (CipConnectionObject *) node->data;
     CipDword consumed_connection_point =
       connection_object->consumed_path.instance_id;
-    if(instance_number == consumed_connection_point &&
-       true == ConnectionObjectIsTypeIOConnection(connection_object) ) {
+    if( instance_number == consumed_connection_point &&
+        true == ConnectionObjectIsTypeIOConnection(connection_object) ) {
       is_connected = true;
       break;
     }
@@ -1768,18 +1777,17 @@ EipStatus TriggerConnections(unsigned int output_assembly,
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject *const connection_object,
-  CloseSessionFunction CloseSessions)
-{
+  CloseSessionFunction CloseSessions) {
 
   DoublyLinkedListNode *search_node = connection_list.first;
   bool non_timed_out_connection_found = false;
   while(NULL != search_node) {
     CipConnectionObject *search_connection = search_node->data;
-    if(ConnectionObjectEqualOriginator(connection_object,
-                                       search_connection) &&
-       connection_object != search_connection
-       && kConnectionObjectStateTimedOut !=
-       ConnectionObjectGetState(search_connection) ) {
+    if( ConnectionObjectEqualOriginator(connection_object,
+                                        search_connection) &&
+        connection_object != search_connection
+        && kConnectionObjectStateTimedOut !=
+        ConnectionObjectGetState(search_connection) ) {
       non_timed_out_connection_found = true;
       break;
     }
@@ -1791,9 +1799,10 @@ void CheckForTimedOutConnectionsAndCloseTCPConnections(
 }
 
 void InitializeConnectionManagerData() {
-  memset(g_connection_management_list,
-         0,
-         g_kNumberOfConnectableObjects * sizeof(ConnectionManagementHandling) );
+  memset( g_connection_management_list,
+          0,
+          g_kNumberOfConnectableObjects *
+          sizeof(ConnectionManagementHandling) );
   InitializeClass3ConnectionData();
   InitializeIoConnectionData();
 }

@@ -61,16 +61,16 @@ CipStringN *SetCipStringNByData(CipStringN *const cip_string,
     /* No trailing '\0' character! */
     cip_string->length = str_len;
     cip_string->size = size;
-    cip_string->string = CipCalloc(cip_string->length,
-                                   cip_string->size * sizeof(CipOctet) );
+    cip_string->string = CipCalloc( cip_string->length,
+                                    cip_string->size * sizeof(CipOctet) );
     if(NULL == cip_string->string) {
       result = NULL;
       cip_string->length = 0;
       cip_string->size = 0;
     } else {
-      memcpy(cip_string->string,
-             data,
-             cip_string->length * cip_string->size * sizeof(CipOctet) );
+      memcpy( cip_string->string,
+              data,
+              cip_string->length * cip_string->size * sizeof(CipOctet) );
     }
   }
   return result;
@@ -128,12 +128,12 @@ CipString2 *SetCipString2ByData(CipString2 *const cip_string,
 
   if(0 != str_len) {
     /* No trailing '\0' character! */
-    cip_string->string = CipCalloc(str_len, 2 * sizeof(CipOctet) );
+    cip_string->string = CipCalloc( str_len, 2 * sizeof(CipOctet) );
     if(NULL == cip_string->string) {
       result = NULL;
     } else {
       cip_string->length = str_len;
-      memcpy(cip_string->string, data, str_len * 2 * sizeof(CipOctet) );
+      memcpy( cip_string->string, data, str_len * 2 * sizeof(CipOctet) );
     }
   }
   return result;
@@ -176,7 +176,7 @@ CipString *SetCipStringByData(CipString *const cip_string,
 
   if(0 != str_len) {
     /* No trailing '\0' character. */
-    cip_string->string = CipCalloc(str_len, sizeof(CipOctet) );
+    cip_string->string = CipCalloc( str_len, sizeof(CipOctet) );
     if(NULL == cip_string->string) {
       result = NULL;
     } else {
@@ -239,7 +239,7 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
 
   if(0 != str_len) {
     /* No trailing '\0' character. */
-    cip_string->string = CipCalloc(str_len, sizeof(CipOctet) );
+    cip_string->string = CipCalloc( str_len, sizeof(CipOctet) );
     if(NULL == cip_string->string) {
       result = NULL;
     } else {
@@ -265,12 +265,15 @@ CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
 }
 
 /* Ensures buf is NUL terminated, provided initial validation is successful */
-int GetCstrFromCipShortString(CipShortString *const string, char *buf, size_t len) {
+int GetCstrFromCipShortString(CipShortString *const string,
+                              char *buf,
+                              size_t len) {
   size_t num;
   int rc = 0;
 
-  if (!string || !buf || len < 1)
+  if (!string || !buf || len < 1) {
     return -1;
+  }
 
   num = (size_t)string->length;
   if (len <= num) {

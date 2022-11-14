@@ -26,9 +26,9 @@ EipStatus NvQosSetCallback
 
 EipStatus NvTcpipSetCallback
 (
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
+  CipInstance *const instance,
+  CipAttributeStruct *const attribute,
+  CipByte service
 );
 
 #endif  /* ifndef NVDATA_H_ */
