@@ -23,6 +23,12 @@
 #include "socket_timer.h"
 #include "opener_error.h"
 
+#ifdef OPENER_CIP_SECURITY
+  #include "cip_security/cipsecurity.h"
+  #include "cip_security/ethernetipsecurity.h"
+  #include "cip_security/certificatemanagement.h"
+#endif
+
 /* IP address data taken from TCPIPInterfaceObject*/
 const EipUint16 kSupportedProtocolVersion = 1; /**< Supported Encapsulation protocol version */
 
@@ -423,23 +429,23 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
   }
 }
 
-void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
-  const CipUint kCipSecurityItemId = 0x86;
-  const CipUint kCipSecurityItemLength = 5u; /* WORD + USINT + USINT + BYTE*/
-  outgoing_message->used_message_length += AddIntToMessage(kCipSecurityItemId,
-                                                           outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(
-    kCipSecurityItemLength,
-    outgoing_message->current_message_position);
-  outgoing_message->used_message_length += AddIntToMessage(0,
-                                                           outgoing_message->current_message_position);    /* TODO: Security Profiles */
-  outgoing_message->used_message_length += AddSintToMessage(0,
-                                                            outgoing_message->current_message_position);    /* TODO: CIP Security State */
-  outgoing_message->used_message_length += AddSintToMessage(0,
-                                                            outgoing_message->current_message_position);    /* TODO: EtherNet/IP Security State */
-  outgoing_message->used_message_length += AddSintToMessage(0,
-                                                            outgoing_message->current_message_position);    /* TODO: IANA Port State */
-}
+#ifdef OPENER_CIP_SECURITY
+  void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
+    const CipUint kCipSecurityItemId = 0x86; // CIP Security Information Item (0x86)
+    const CipUint kCipSecurityItemLength = 7u; /* WORD + USINT + USINT + BYTE + WORD*/
+    AddIntToMessage(kCipSecurityItemId, outgoing_message);
+    AddIntToMessage(kCipSecurityItemLength, outgoing_message);
+    AddIntToMessage(g_security.security_profiles, outgoing_message);
+    AddSintToMessage(g_security.state, outgoing_message);
+    AddSintToMessage(g_eip_security.state, outgoing_message);
+
+    /* IANA port state, see Vol. 8, 3-5.3.1 */
+    CipByte iana_port_state = 0b00011111; //TODO: all ports open - check
+    AddSintToMessage(iana_port_state, outgoing_message);
+
+    AddIntToMessage(g_security.security_profiles_configured, outgoing_message);
+  }
+#endif
 
 CipUint ListIdentityGetCipIdentityItemLength() {
   return sizeof(CipUint) + sizeof(CipInt) + sizeof(CipUint) + sizeof(CipUdint) +
@@ -498,10 +504,14 @@ void EncapsulateListIdentityResponseMessage(
                               /* Session handle will be ignored by receiver */
                               kEncapsulationProtocolSuccess,
                               outgoing_message);
-
-  AddIntToMessage(1, outgoing_message); /* Item count: one item */
-  EncodeListIdentityCipIdentityItem(outgoing_message);
-
+  #ifdef OPENER_CIP_SECURITY
+    AddIntToMessage(2, outgoing_message); /* Item count: 2 items */
+    EncodeListIdentityCipIdentityItem(outgoing_message);
+    EncodeListIdentitySecurityItem(outgoing_message);
+  #else
+    AddIntToMessage(1, outgoing_message); /* Item count: one item */
+    EncodeListIdentityCipIdentityItem(outgoing_message);
+  #endif
 }
 
 void DetermineDelayTime(const EipByte *buffer_start,
