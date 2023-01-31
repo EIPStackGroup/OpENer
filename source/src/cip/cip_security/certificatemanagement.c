@@ -52,6 +52,9 @@
 #include "certificatemanagement.h"
 #include "cipsecurity.h"
 
+#include "OpENerFileObject/cipfile.h" //TODO: check
+#include "cipepath.h"
+
 /* ********************************************************************
  * defines
  */
@@ -78,25 +81,11 @@ const CipShortString default_name = {
   .string = (EipByte *)(&instance_1_name),
 };
 
-const Certificate default_device_certificate = {
-  .certificate_status =
-    kCertificateManagementObjectCertificateStateValueVerified
-    // TODO: add path
-};
+Certificate default_device_certificate;
 
-const Certificate default_ca_certificate = {
-  .certificate_status =
-    kCertificateManagementObjectCertificateStateValueVerified
-    // TODO: add path
-};
+Certificate default_ca_certificate;
 
-CertificateManagementObject g_certificate_management = {
-  .name = default_name,                                      /*Attribute 1*/
-  .state = kCertificateManagementObjectStateValueVerified,   /*Attribute 2*/
-  .device_certificate = default_device_certificate,          /*Attribute 3*/
-  .ca_certificate = default_ca_certificate,                  /*Attribute 4*/
-  .certificate_encoding = kCertificateManagementObjectCertificateEncodingPEM,   /*Attribute 5*/
-};
+CertificateManagementObject g_certificate_management;
 
 /** @brief Produce the data according to CIP encoding onto the message buffer.
  *
@@ -545,5 +534,41 @@ EipStatus CertificateManagementObjectInit(void) {
                 "CertificateManagementObjectVerifyCertificate"
                 );
 
+  /* create file object for device certificate */
+  CipInstance device_certificate_file_object = CipFileCreateInstance(
+    "Device Certificate");
+
+  default_device_certificate.certificate_status =
+    kCertificateManagementObjectCertificateStateValueVerified;
+
+  //bind epath of file object to certificate
+  default_device_certificate.path = CipEpathCreate(2,
+                                                   kCipFileObjectClassCode,
+                                                   device_certificate_file_object.instance_number,
+                                                   0);
+
+  /* create file object for CA certificate */
+  CipInstance ca_certificate_file_object = CipFileCreateInstance(
+    "CA Certificate");
+
+  default_ca_certificate.certificate_status =
+    kCertificateManagementObjectCertificateStateValueVerified;
+
+  //bind epath of file object to certificate
+  default_ca_certificate.path = CipEpathCreate(2,
+                                               kCipFileObjectClassCode,
+                                               ca_certificate_file_object.instance_number,
+                                               0);
+
+  /* Add data to static instance number 1 (default certificates)*/
+  g_certificate_management.name = default_name;                                      /*Attribute 1*/
+  g_certificate_management.state =
+    kCertificateManagementObjectStateValueVerified;                                  /*Attribute 2*/
+  g_certificate_management.device_certificate = default_device_certificate;          /*Attribute 3*/
+  g_certificate_management.ca_certificate = default_ca_certificate;                  /*Attribute 4*/
+  g_certificate_management.certificate_encoding =
+    kCertificateManagementObjectCertificateEncodingPEM;                                                 /*Attribute 5*/
+
   return kEipStatusOk;
+
 }
