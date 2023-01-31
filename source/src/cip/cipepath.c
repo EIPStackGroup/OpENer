@@ -692,3 +692,18 @@ bool CipEpathEqual(const CipOctet *const path1,
   return true;
 }
 
+CipEpath CipEpathCreate(size_t path_size,
+                        CipUdint class_id,
+                        CipUdint instance_number,
+                        CipUdint attribute_number) {
+  CipEpath epath = {
+    .path_size = path_size,
+    .class_id = class_id,
+    .instance_number = instance_number
+  };
+  if(0 != attribute_number) {
+    epath.attribute_number = attribute_number;
+  }
+  return epath;
+}
+

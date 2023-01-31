@@ -389,4 +389,17 @@ bool CipEpathEqual(const CipOctet *const path1,
                    const CipOctet *const path2,
                    const CipUint path2_length);
 
+/** @brief Create EPath from object functions
+ *
+ * @param path_size EPath size in 16 bit words (path_size * 16 bit)
+ * @param class_id Class ID of the linked object
+ * @param instance_number Instance Number of the linked object
+ * @param attribute_number Attribute Number of the linked object
+ * @return created EPath
+ */
+CipEpath CipEpathCreate(size_t path_size,
+                        CipUdint class_id,
+                        CipUdint instance_number,
+                        CipUdint attribute_number);
+
 #endif /* SRC_CIP_CIPEPATH_H_ */
