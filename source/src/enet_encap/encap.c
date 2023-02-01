@@ -430,21 +430,21 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
 }
 
 #ifdef OPENER_CIP_SECURITY
-  void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
-    const CipUint kCipSecurityItemId = 0x86; // CIP Security Information Item (0x86)
-    const CipUint kCipSecurityItemLength = 7u; /* WORD + USINT + USINT + BYTE + WORD*/
-    AddIntToMessage(kCipSecurityItemId, outgoing_message);
-    AddIntToMessage(kCipSecurityItemLength, outgoing_message);
-    AddIntToMessage(g_security.security_profiles, outgoing_message);
-    AddSintToMessage(g_security.state, outgoing_message);
-    AddSintToMessage(g_eip_security.state, outgoing_message);
+void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
+  const CipUint kCipSecurityItemId = 0x86;   // CIP Security Information Item (0x86)
+  const CipUint kCipSecurityItemLength = 7u;   /* WORD + USINT + USINT + BYTE + WORD*/
+  AddIntToMessage(kCipSecurityItemId, outgoing_message);
+  AddIntToMessage(kCipSecurityItemLength, outgoing_message);
+  AddIntToMessage(g_security.security_profiles, outgoing_message);
+  AddSintToMessage(g_security.state, outgoing_message);
+  AddSintToMessage(g_eip_security.state, outgoing_message);
 
-    /* IANA port state, see Vol. 8, 3-5.3.1 */
-    CipByte iana_port_state = 0b00011111; //TODO: all ports open - check
-    AddSintToMessage(iana_port_state, outgoing_message);
+  /* IANA port state, see Vol. 8, 3-5.3.1 */
+  CipByte iana_port_state = 0b00011111;   //TODO: all ports open - check
+  AddSintToMessage(iana_port_state, outgoing_message);
 
-    AddIntToMessage(g_security.security_profiles_configured, outgoing_message);
-  }
+  AddIntToMessage(g_security.security_profiles_configured, outgoing_message);
+}
 #endif
 
 CipUint ListIdentityGetCipIdentityItemLength() {
@@ -505,12 +505,12 @@ void EncapsulateListIdentityResponseMessage(
                               kEncapsulationProtocolSuccess,
                               outgoing_message);
   #ifdef OPENER_CIP_SECURITY
-    AddIntToMessage(2, outgoing_message); /* Item count: 2 items */
-    EncodeListIdentityCipIdentityItem(outgoing_message);
-    EncodeListIdentitySecurityItem(outgoing_message);
+  AddIntToMessage(2, outgoing_message);   /* Item count: 2 items */
+  EncodeListIdentityCipIdentityItem(outgoing_message);
+  EncodeListIdentitySecurityItem(outgoing_message);
   #else
-    AddIntToMessage(1, outgoing_message); /* Item count: one item */
-    EncodeListIdentityCipIdentityItem(outgoing_message);
+  AddIntToMessage(1, outgoing_message);   /* Item count: one item */
+  EncodeListIdentityCipIdentityItem(outgoing_message);
   #endif
 }
 
