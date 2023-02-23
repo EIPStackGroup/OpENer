@@ -1,6 +1,6 @@
 macro(opener_platform_spec)
   include_directories(${PORTS_SRC_DIR}/${OpENer_PLATFORM} ${PORTS_SRC_DIR}/${OpENer_PLATFORM}/sample_application)
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Werror=implicit-function-declaration -fcommon" )
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Werror=implicit-function-declaration -Wconversion -fcommon")
   if(NOT CMAKE_INSTALL_LIBDIR)
     set( CMAKE_INSTALL_LIBDIR "lib")
   endif()
