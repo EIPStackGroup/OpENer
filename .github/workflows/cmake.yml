@@ -48,7 +48,7 @@ jobs:
     - name: Run sonar-scanner
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }} # Put the name of your token here
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN  }} # Put the name of your token here
       run: |
         cmake --build ${{github.workspace}}/build --target clean
         build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build ${{github.workspace}}/build --config Release
