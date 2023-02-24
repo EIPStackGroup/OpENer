@@ -6,6 +6,7 @@
 # Add subdirectories                  #
 #######################################
 if( OPENER_CIP_SECURITY )
+  find_package(MbedTLS)
   add_subdirectory(cip_security)
   include_directories(cip_security)
 endif()
