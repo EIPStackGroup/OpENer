@@ -26,8 +26,8 @@ jobs:
     - name: Install sonar-scanner and build-wrapper
       uses: SonarSource/sonarcloud-github-c-cpp@v1
     
-    - name: Install libcap
-      run: sudo apt-get install -y libcap-dev
+    - name: Install libcap, lcov, and CppUTest
+      run: sudo apt-get install -y libcap-dev lcov cpputest
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
