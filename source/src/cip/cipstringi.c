@@ -318,7 +318,7 @@ bool CipStringICompare(const CipStringI *const stringI_1,
       }
 
       /*compare strings*/ //TODO: compare works only for same data types
-      if (len_1 == len_2) {
+      if (len_1 == len_2 && string_1_data != NULL && string_2_data != NULL) {
         if (0 == memcmp(string_1_data, string_2_data, len_1) ) {
           return true;
         }
