@@ -339,6 +339,8 @@ EipStatus CertificateManagementObjectPreDeleteCallback(
  *
  *  The Create_CSR service creates a Certificate Signing Request,
  *  suitable for submission to an enrollment server or certificate authority for signing.
+ *  The CSR shall be created as a File Object instance, which allows a client to read the CSR from
+ *  the device.
  *  @See Vol.8, Chapter 5-5.7.1
  */
 EipStatus CertificateManagementObjectCreateCSR(
@@ -347,7 +349,34 @@ EipStatus CertificateManagementObjectCreateCSR(
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
-  // TODO: implement service
+
+  message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
+
+  if (DEFAULT_DEVICE_CERTIFICATE_INSTANCE_NUMBER == instance->instance_number) {
+    message_router_response->general_status = kCipErrorObjectStateConflict;
+  }  
+  else{
+    // TODO: check params in message - see Test spec pdf
+
+    /* create file object for device certificate */
+    CipInstance CSR_file_object = CipFileCreateInstance(""); //no name TODO: check
+
+    /* add data to file object */ //TODO: provide CSR file - mbedTLS
+    CipFileCreateCSRFileInstance(&CSR_file_object);
+
+    CipEpath CSR_file_object_path = CipEpathCreate(2, kCipFileObjectClassCode, CSR_file_object.instance_number, 0);
+    /* add path to message*/
+    EncodeCipSecurityObjectPath(&CSR_file_object_path, &message_router_response->message);
+
+    //set CMO state
+    CipAttributeStruct *attribute = GetCipAttribute(instance, 2);
+    *(CipUsint *)attribute->data = kCertificateManagementObjectStateValueConfiguring;
+
+  }
 
   return kEipStatusOk;
 }
