@@ -1015,22 +1015,25 @@ int DecodeCipString(CipString *const data,
 }
 
 int DecodeCipShortString(CipShortString *const data,
-                         const CipMessageRouterRequest *const message_router_request,
-                         CipMessageRouterResponse *const message_router_response)
-{
-
-  const EipUint8 **const cip_message = message_router_request->data;
+                    const CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterResponse *const message_router_response) {
 
   int number_of_decoded_bytes = -1;
   CipShortString *short_string = data;
 
-  short_string->length = **cip_message;
-  ++(*cip_message);
+  short_string->length = GetUsintFromMessage(&message_router_request->data);
+  //TODO: use SetCipShortStringByData here
+  short_string->string = (CipByte *)CipCalloc( short_string->length, sizeof(CipByte) );
+  if (NULL != short_string->string) {
+    memcpy(short_string->string, message_router_request->data,
+           short_string->length);
+  }  
 
-  memcpy(short_string->string, &cip_message, short_string->length);
-  *cip_message += short_string->length;
+  const CipOctet **const buffer_address = &message_router_request->data;
+  *buffer_address += short_string->length;
 
-  number_of_decoded_bytes = short_string->length + 1;
+  number_of_decoded_bytes = short_string->length + 1; /* we have a one byte length field */
+
   message_router_response->general_status = kCipErrorSuccess;
   return number_of_decoded_bytes;
 }
