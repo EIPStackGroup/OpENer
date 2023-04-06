@@ -46,7 +46,7 @@ typedef struct {
  */
 ConnectionManagementHandling g_connection_management_list[2 +
                                                           OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS
-];
+] = {{0}};
 
 /** buffer connection object needed for forward open */
 CipConnectionObject g_dummy_connection_object;
@@ -480,9 +480,12 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
     GetConnectionManagementEntry( /* Gets correct open connection function for the targeted object */
       g_dummy_connection_object.configuration_path.class_id);
   if(NULL != connection_management_entry) {
-    temp = connection_management_entry->open_connection_function(
-      &g_dummy_connection_object,
-      &connection_status);
+    if (NULL != connection_management_entry->open_connection_function) {
+      temp = connection_management_entry->open_connection_function(
+          &g_dummy_connection_object, &connection_status);
+    } else {
+      connection_status = kConnectionManagerExtendedStatusCodeMiscellaneous;
+    }
   } else {
     temp = kEipStatusError;
     connection_status =
@@ -1329,6 +1332,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                              EipUint16 *extended_error) {
   const EipUint8 *message = message_router_request->data;
   const size_t connection_path_size = GetUsintFromMessage(&message); /* length in words */
+  if(0 == connection_path_size) {
+    // A (large) forward open request needs to have a connection path size larger than 0
+    return kEipStatusError;
+  }
   size_t remaining_path = connection_path_size;
   OPENER_TRACE_INFO("Received connection path size: %zu \n",
                     connection_path_size);

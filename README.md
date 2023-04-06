@@ -1,8 +1,4 @@
-[![Build Status](https://travis-ci.org/EIPStackGroup/OpENer.svg?branch=master)](https://travis-ci.org/EIPStackGroup/OpENer)<a href="https://scan.coverity.com/projects/opener">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/14200/badge.svg?flat=1"/>
-</a> 
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=OpENer&metric=alert_status)](https://sonarcloud.io/dashboard?id=OpENer)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EIPStackGroup_OpENer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=EIPStackGroup_OpENer)
 [![Join the chat at https://gitter.im/EIPStackGroupOpENer/Lobby](https://badges.gitter.im/EIPStackGroupOpENer/Lobby.svg)](https://gitter.im/EIPStackGroupOpENer/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
@@ -53,16 +49,15 @@ Compile for Linux/POSIX:
 2. Change to the <OpENer main folder>/bin/posix
 3. For a standard configuration invoke ``setup_posix.sh``
 	1. Invoke the ``make`` command
-	2. Grant OpENer the right to use raw sockets via ``sudo setcap cap_net_raw+ep ./src/ports/POSIX/OpENer``
-	3. Invoking OpENer:
+	2. Invoking OpENer:
 
 		``./src/ports/POSIX/OpENer <interface_name>``
 
 		e.g. ``./src/ports/POSIX/OpENer eth1``
 
 OpENer also now has a real-time capable POSIX startup via the OpENer_RT option, which requires that the used kernel has the full preemptive RT patches applied and activated.
-If you want to use OpENer_RT, instead of step 2, the  ``sudo setcap cap_net_raw,cap_ipc_lock,cap_sys_nice+ep ./src/ports/POSIX/OpENer
-`` has to be run to grant OpENEr ``CAP_SYS_NICE``, ``CAP_IPC_LOCK``, and the ``CAP_NET_RAW`` capabilities, needed for the RT mode
+If you want to use OpENer_RT, prior to step 2, execute ``sudo setcap cap_ipc_lock,cap_sys_nice+ep ./src/ports/POSIX/OpENer
+`` to grant OpENEr ``CAP_SYS_NICE``, and the ``CAP_IPC_LOCK`` capabilities, which are needed for the RT mode
 
 OpENer can also be built and installed as a library by setting the CMake flag `-DOPENER_INSTALL_AS_LIB`.  To build a shared library,
 the global option `-DBUILD_SHARED_LIBS=ON` should also be set.  It has only been tested under Linux/POSIX platform.
@@ -87,8 +82,6 @@ In order to get the correct interface index enter the command ``route print`` in
 Compile for Windows XP/7/8/10 via Cygwin:
 --------------------------------------
 The POSIX setup file can be reused for Cygwin. Please note, that you cannot use RT mode and you will have to remove the code responsible for checking and getting the needed capabilities, as libcap is not available in Cygwin. The easier and more supported way to build OpENer for Windows is to either use MinGW or Visual Studio.
-
-In order to run OpENer, it has to be run as privileged process, as it needs the rights to use raw sockets.
 
 Compile for MinGW on Windows XP/7/8/10
 -------------------------------

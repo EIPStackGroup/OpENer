@@ -154,7 +154,7 @@ endif( OpENer_TESTS )
 if (OpENer_PLATFORM STREQUAL "WIN32")
   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4" )
 else ()
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wconversion")
 endif ()
 
 ####################################################

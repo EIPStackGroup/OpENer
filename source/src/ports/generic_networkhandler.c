@@ -52,10 +52,12 @@ const uint16_t kOpenerEthernetPort = 0xAF12;
 
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
-#pragma \
-  GCC warning "MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function"
-#pragma \
-  message("MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function")
+#define MSG_NOSIGNAL_PRAGMA_MESSAGE "MSG_NOSIGNAL not defined. Check if your system stops on SIGPIPE, as this can happen with the send() function"
+#if defined(_WIN32)
+#pragma message(MSG_NOSIGNAL_PRAGMA_MESSAGE)
+#else
+#pragma GCC warning MSG_NOSIGNAL_PRAGMA_MESSAGE
+#endif /* defined(_WIN32) */
 #endif
 
 SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
@@ -477,7 +479,7 @@ EipStatus NetworkHandlerProcessCyclic(void) {
     CheckAndHandleUdpGlobalBroadcastSocket();
     CheckAndHandleConsumingUdpSocket();
 
-    for(size_t socket = 0; socket <= highest_socket_handle; socket++) {
+    for(int socket = 0; socket <= highest_socket_handle; socket++) {
       if(true == CheckSocketSet(socket) ) {
         /* if it is still checked it is a TCP receive */
         if(kEipStatusError == HandleDataOnTcpSocket(socket) ) /* if error */
@@ -489,7 +491,7 @@ EipStatus NetworkHandlerProcessCyclic(void) {
     }
   }
 
-  for(size_t socket = 0; socket <= highest_socket_handle; socket++) {
+  for(int socket = 0; socket <= highest_socket_handle; socket++) {
     CheckEncapsulationInactivity(socket);
   }
 

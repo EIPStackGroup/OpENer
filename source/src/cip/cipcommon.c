@@ -1112,17 +1112,42 @@ EipStatus GetAttributeList(CipInstance *instance,
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
 
-    AddIntToMessage(attribute_count_request, &message_router_response->message); // number of attributes in the response
+    CipOctet *attribute_count_responst_position =
+        message_router_response->message.current_message_position;
+
+    MoveMessageNOctets(sizeof(CipInt), &message_router_response->message);  // move the message pointer to reserve memory
 
     for(size_t j = 0; j < attribute_count_request; j++) {
-
       attribute_number = GetUintFromMessage(&message_router_request->data);
       attribute = GetCipAttribute(instance, attribute_number);
 
-      AddIntToMessage(attribute_number, &message_router_response->message); // Attribute-ID
+      const int_fast64_t needed_message_space = NULL != attribute
+          ? (int_fast64_t) GetCipDataTypeLength(attribute->type, attribute->data) : (int_fast64_t) (2 * sizeof(CipSint));
+
+      const int_fast64_t remaining_message_space = (int_fast64_t) PC_OPENER_ETHERNET_BUFFER_SIZE - (int_fast64_t)  message_router_response->message.used_message_length - 33LL; //need 33 bytes extra space for the rest of the ENIP message
+      if (needed_message_space > remaining_message_space) {
+        message_router_response->message.used_message_length -= 2;  // Correct count from Move above
+        CipOctet *const save_current_position =
+            message_router_response->message.current_message_position;
+        message_router_response->message.current_message_position =
+            attribute_count_responst_position;
+        AddIntToMessage(attribute_count_request,
+                        &message_router_response
+                             ->message);  // Add current amount of attributes
+        message_router_response->message.current_message_position =
+            save_current_position;
+        // If there was not alreay an attribute list error, resturn partial
+        // transfer
+        if (message_router_response->general_status !=
+            kCipErrorAttributeListError) {
+          message_router_response->general_status = kCipErrorPartialTransfer;
+        }
+        return kEipStatusOkSend;
+      }
+
+      AddIntToMessage(attribute_number, &message_router_response->message);  // Attribute-ID
 
       if(NULL != attribute) {
-
         uint8_t get_bit_mask =
           (instance->cip_class->get_single_bit_mask[CalculateIndex(
                                                       attribute_number)]);
@@ -1144,6 +1169,15 @@ EipStatus GetAttributeList(CipInstance *instance,
         message_router_response->general_status = kCipErrorAttributeListError;
       }
     }
+    // If we are there, we returned all elements
+    message_router_response->message.used_message_length -= 2;  // Correct count from Move above
+    CipOctet *const save_current_position = message_router_response->message.current_message_position;
+    message_router_response->message.current_message_position = attribute_count_responst_position;
+    AddIntToMessage(
+        attribute_count_request,
+        &message_router_response->message);  // Add current amount of attributes
+    message_router_response->message.current_message_position =
+        save_current_position;
   } else {
     message_router_response->general_status = kCipErrorAttributeListError;
   }
@@ -1174,13 +1208,39 @@ EipStatus SetAttributeList(CipInstance *instance,
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
 
-    AddIntToMessage(attribute_count_request, &message_router_response->message); // number of attributes in the response
+    CipOctet *attribute_count_responst_position =
+        message_router_response->message.current_message_position;
+
+    MoveMessageNOctets(sizeof(CipInt), &message_router_response->message);  // move the message pointer to reserve memory
 
     for(size_t j = 0; j < attribute_count_request; j++) {
-
       attribute_number = GetUintFromMessage(&message_router_request->data);
       attribute = GetCipAttribute(instance, attribute_number);
 
+      const int_fast64_t needed_message_space = NULL != attribute
+          ? (int_fast64_t) GetCipDataTypeLength(attribute->type, attribute->data) : (int_fast64_t) (2 * sizeof(CipSint));
+
+      const int_fast64_t remaining_message_space = (int_fast64_t) PC_OPENER_ETHERNET_BUFFER_SIZE - (int_fast64_t)  message_router_response->message.used_message_length - 33LL; //need 33 bytes extra space for the rest of the ENIP message
+      if (needed_message_space > remaining_message_space) {
+         message_router_response->message.used_message_length -= 2;  // Correct count from Move above
+        CipOctet *const save_current_position =
+            message_router_response->message.current_message_position;
+        message_router_response->message.current_message_position =
+            attribute_count_responst_position;
+        AddIntToMessage(attribute_count_request,
+                        &message_router_response
+                             ->message);  // Add current amount of attributes
+        message_router_response->message.current_message_position =
+            save_current_position;
+        // If there was not alreay an attribute list error, resturn partial
+        // transfer
+        if (message_router_response->general_status !=
+            kCipErrorAttributeListError) {
+          message_router_response->general_status = kCipErrorPartialTransfer;
+        }
+        return kEipStatusOkSend;
+      }
+      
       AddIntToMessage(attribute_number, &message_router_response->message); // Attribute-ID
 
       if(NULL != attribute) {
@@ -1217,6 +1277,18 @@ EipStatus SetAttributeList(CipInstance *instance,
         message_router_response->general_status = kCipErrorAttributeListError;
       }
     }
+    // If we are there, we returned all elements
+    message_router_response->message.used_message_length -=
+        2;  // Correct count from Move above
+    CipOctet *const save_current_position =
+        message_router_response->message.current_message_position;
+    message_router_response->message.current_message_position =
+        attribute_count_responst_position;
+    AddIntToMessage(
+        attribute_count_request,
+        &message_router_response->message);  // Add current amount of attributes
+    message_router_response->message.current_message_position =
+        save_current_position;
   } else {
     message_router_response->general_status = kCipErrorAttributeListError;
   }

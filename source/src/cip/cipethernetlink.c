@@ -275,7 +275,7 @@ EipStatus CipEthernetLinkInit(void) {
 #endif
 
     /* bind attributes to the instance */
-    for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+    for (unsigned int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
       CipInstance *ethernet_link_instance =
         GetCipInstance(ethernet_link_class, idx + 1);
 

@@ -286,7 +286,7 @@ ConnectionObjectInstanceType ConnectionObjectGetInstanceType(
 void ConnectionObjectSetInstanceType(
   CipConnectionObject *const connection_object,
   const ConnectionObjectInstanceType instance_type) {
-  connection_object->instance_type = instance_type;
+  connection_object->instance_type = (CipUsint) instance_type;
 }
 
 CipUsint ConnectionObjectGetInstanceTypeForAttribute(
@@ -323,7 +323,6 @@ bool ConnectionObjectIsTypeNonLOIOConnection(
     default:
       return false;
   }
-  return false;
 }
 
 bool ConnectionObjectIsTypeIOConnection(
@@ -337,7 +336,6 @@ bool ConnectionObjectIsTypeIOConnection(
     default:
       return false;
   }
-  return false;
 }
 
 ConnectionObjectTransportClassTriggerDirection
