@@ -360,12 +360,41 @@ EipStatus CertificateManagementObjectCreateCSR(
     message_router_response->general_status = kCipErrorObjectStateConflict;
   }  
   else{
-    // TODO: check params in message - see Test spec pdf
+    const size_t number_of_strings = 8; //number of Create_CSR Request Parameters
+    CipShortString short_strings[number_of_strings];
+    // 1: Common Name
+    // 2: Organization
+    // 3: Organizational Unit
+    // 4: City / Locality
+    // 5: State / County / Region
+    // 6: Country
+    // 7: Email address
+    // 8: Serial number
+  
+    int number_of_decoded_bytes = 0;
 
+    for(size_t i = 0; i < number_of_strings; i++){
+      number_of_decoded_bytes = DecodeCipShortString(&short_strings[i],message_router_request, message_router_response);
+    }
+
+    // check data
+    if( 2 !=short_strings[5].length && 0 != short_strings[5].length){ // invalid ISO code for country
+        message_router_response->general_status = kCipErrorInvalidParameter;
+        //TODO:   The CMO state does not change after this service call.
+        return kEipStatusOk; //TODO: check
+    }
+
+    // use values from Default Device certificate if items are null
+    for(size_t i = 0; i < number_of_strings; i++){
+        if(0 == short_strings[i].length){
+            //TODO: use value from Default Device certificate
+        }
+    }
+    
     /* create file object for device certificate */
     CipInstance CSR_file_object = CipFileCreateInstance(""); //no name TODO: check
 
-    /* add data to file object */ //TODO: provide CSR file - mbedTLS
+    /* add data to file object */ //TODO: provide CSR file - mbedTLS, use values in short_strings
     CipFileCreateCSRFileInstance(&CSR_file_object);
 
     CipEpath CSR_file_object_path = CipEpathCreate(2, kCipFileObjectClassCode, CSR_file_object.instance_number, 0);
@@ -376,7 +405,9 @@ EipStatus CertificateManagementObjectCreateCSR(
     CipAttributeStruct *attribute = GetCipAttribute(instance, 2);
     *(CipUsint *)attribute->data = kCertificateManagementObjectStateValueConfiguring;
 
-  }
+    // TODO: free short string structures
+
+  } // end else
 
   return kEipStatusOk;
 }
