@@ -54,6 +54,7 @@
 
 #include "OpENerFileObject/cipfile.h" //TODO: check
 #include "cipepath.h"
+#include "cipstring.h"
 
 /* ********************************************************************
  * defines
@@ -339,6 +340,8 @@ EipStatus CertificateManagementObjectPreDeleteCallback(
  *
  *  The Create_CSR service creates a Certificate Signing Request,
  *  suitable for submission to an enrollment server or certificate authority for signing.
+ *  The CSR shall be created as a File Object instance, which allows a client to read the CSR from
+ *  the device.
  *  @See Vol.8, Chapter 5-5.7.1
  */
 EipStatus CertificateManagementObjectCreateCSR(
@@ -347,7 +350,67 @@ EipStatus CertificateManagementObjectCreateCSR(
   CipMessageRouterResponse *const message_router_response,
   const struct sockaddr *originator_address,
   const int encapsulation_session) {
-  // TODO: implement service
+
+  message_router_response->general_status = kCipErrorSuccess;
+  message_router_response->size_of_additional_status = 0;
+  InitializeENIPMessage(&message_router_response->message);
+  message_router_response->reply_service =
+    (0x80 | message_router_request->service);
+
+  if (DEFAULT_DEVICE_CERTIFICATE_INSTANCE_NUMBER == instance->instance_number) { // instance 1
+    message_router_response->general_status = kCipErrorObjectStateConflict;
+  }  
+  else{
+    const size_t number_of_strings = 8; //number of Create_CSR Request Parameters
+    CipShortString short_strings[number_of_strings];
+    memset(short_strings, 0, sizeof(short_strings));
+    // 1: Common Name
+    // 2: Organization
+    // 3: Organizational Unit
+    // 4: City / Locality
+    // 5: State / County / Region
+    // 6: Country
+    // 7: Email address
+    // 8: Serial number
+
+    for(size_t i = 0; i < number_of_strings; i++){
+      DecodeCipShortString(&short_strings[i],message_router_request, message_router_response);
+    }
+
+    // check data
+    if( 2 !=short_strings[5].length && 0 != short_strings[5].length){ // invalid ISO code for country
+        message_router_response->general_status = kCipErrorInvalidParameter;
+        // The CMO state does not change after this service call with invalid parameters
+        return kEipStatusOk;
+    }
+
+    // use values from Default Device certificate if items are null
+    for(size_t i = 0; i < number_of_strings; i++){
+        if(0 == short_strings[i].length){
+            //TODO: use value from Default Device certificate
+        }
+    }
+    
+    /* create file object for device certificate */
+    CipInstance CSR_file_object = CipFileCreateInstance(""); //no name TODO: check
+
+    /* add data to file object */ //TODO: provide CSR file - mbedTLS, use values in short_strings
+    CipFileCreateCSRFileInstance(&CSR_file_object);
+
+    CipEpath CSR_file_object_path = CipEpathCreate(2, kCipFileObjectClassCode, CSR_file_object.instance_number, 0);
+    /* add path to message*/
+    EncodeCipSecurityObjectPath(&CSR_file_object_path, &message_router_response->message);
+
+    // set CMO state
+    CipAttributeStruct *attribute = GetCipAttribute(instance, 2);
+    *(CipUsint *)attribute->data = kCertificateManagementObjectStateValueConfiguring;
+
+    // free short string array
+    for(size_t i = 0; i < 8; i++){
+      ClearCipShortString(short_strings + i);
+    }
+
+  } // end else
 
   return kEipStatusOk;
 }
