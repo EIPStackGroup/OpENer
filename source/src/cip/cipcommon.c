@@ -1011,7 +1011,7 @@ int DecodeCipLreal(CipLreal *const data,
 }
 
 int DecodeCipString(CipString *const data,
-                    const CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response) {
 
   int number_of_decoded_bytes = -1;
@@ -1036,7 +1036,7 @@ int DecodeCipString(CipString *const data,
 }
 
 int DecodeCipShortString(CipShortString *data,
-                    const CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response) {
 
   int number_of_decoded_bytes = -1;
