@@ -133,7 +133,7 @@ TEST(EndianConversion, AddIntToMessage) {
   BYTES_EQUAL(0x99, message.message_buffer[0]);
   BYTES_EQUAL(0x54, message.message_buffer[1]);
 
-  POINTERS_EQUAL(message.message_buffer + 2, message.current_message_position)
+  POINTERS_EQUAL(message.message_buffer + 2, message.current_message_position);
 }
 
 TEST(EndianConversion, AddDintToMessage) {
@@ -148,7 +148,7 @@ TEST(EndianConversion, AddDintToMessage) {
   BYTES_EQUAL(0xE0, message.message_buffer[2]);
   BYTES_EQUAL(0x25, message.message_buffer[3]);
 
-  POINTERS_EQUAL(message.message_buffer + 4, message.current_message_position)
+  POINTERS_EQUAL(message.message_buffer + 4, message.current_message_position);
 }
 
 TEST(EndianConversion, AddLintToMessage) {
@@ -168,7 +168,7 @@ TEST(EndianConversion, AddLintToMessage) {
   BYTES_EQUAL(0x2A, message.message_buffer[6]);
   BYTES_EQUAL(0x2D, message.message_buffer[7]);
 
-  POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position)
+  POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position);
 }
 
 TEST(EndianConversion, EncapsulateIpAddress) {
@@ -188,7 +188,7 @@ TEST(EndianConversion, EncapsulateIpAddress) {
   BYTES_EQUAL(0xE0, message.message_buffer[6]);
   BYTES_EQUAL(0x25, message.message_buffer[7]);
 
-  POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position)
+  POINTERS_EQUAL(message.message_buffer + 8, message.current_message_position);
 }
 
 TEST(EndianConversion, MoveMessageNOctets) {
