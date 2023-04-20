@@ -29,6 +29,7 @@
 #include "cipepath.h"
 #include "stdlib.h"
 #include "ciptypes.h"
+#include "cipstring.h"
 
 #if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
   #include "OpENerFileObject/cipfile.h"
@@ -1013,41 +1014,43 @@ int DecodeCipString(CipString *const data,
                     const CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response) {
 
-  const EipUint8 **const cip_message = message_router_request->data;
-
   int number_of_decoded_bytes = -1;
   CipString *string = data;
-  string->length = GetIntFromMessage(&cip_message);
-  memcpy(string->string, cip_message, string->length);
-  *cip_message += string->length;
+
+  const CipUint length = GetUintFromMessage(&message_router_request->data);
+
+  string = SetCipStringByData(string, length, message_router_request->data);
+
+  const CipOctet **const buffer_address = &message_router_request->data;
+  *buffer_address += string->length;
 
   number_of_decoded_bytes = string->length + 2; /* we have a two byte length field */
   if(number_of_decoded_bytes & 0x01) {
     /* we have an odd byte count */
-    ++(*cip_message);
+    ++(*buffer_address);
     number_of_decoded_bytes++;
   }
-  message_router_response->general_status = kCipErrorSuccess;
+
+  message_router_response->general_status = kCipErrorSuccess; 
   return number_of_decoded_bytes;
 }
 
-int DecodeCipShortString(CipShortString *const data,
-                         const CipMessageRouterRequest *const message_router_request,
-                         CipMessageRouterResponse *const message_router_response)
-{
-
-  const EipUint8 **const cip_message = message_router_request->data;
+int DecodeCipShortString(CipShortString *data,
+                    const CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterResponse *const message_router_response) {
 
   int number_of_decoded_bytes = -1;
   CipShortString *short_string = data;
 
-  short_string->length = **cip_message;
-  ++(*cip_message);
+  const CipUsint length = GetUsintFromMessage(&message_router_request->data);
 
-  memcpy(short_string->string, &cip_message, short_string->length);
-  *cip_message += short_string->length;
+  short_string = SetCipShortStringByData(short_string, length, message_router_request->data);
 
-  number_of_decoded_bytes = short_string->length + 1;
+  const CipOctet **const buffer_address = &message_router_request->data;
+  *buffer_address += short_string->length;
+
+  number_of_decoded_bytes = short_string->length + 1; /* we have a one byte length field */
+
   message_router_response->general_status = kCipErrorSuccess;
   return number_of_decoded_bytes;
 }
