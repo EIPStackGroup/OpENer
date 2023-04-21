@@ -578,34 +578,36 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
     int remaining_bytes = 0;
     ENIPMessage outgoing_message;
     InitializeENIPMessage(&outgoing_message);
-    do {
-      EipStatus need_to_send = HandleReceivedExplictUdpData(
-        g_network_status.udp_unicast_listener,
-        /* sending from unicast port, due to strange behavior of the broadcast port */
-        &from_address,
-        receive_buffer,
-        received_size,
-        &remaining_bytes,
-        false,
-        &outgoing_message);
+    EipStatus need_to_send = HandleReceivedExplictUdpData(
+      g_network_status.udp_unicast_listener,
+      /* sending from unicast port, due to strange behavior of the broadcast port */
+      &from_address,
+      receive_buffer,
+      received_size,
+      &remaining_bytes,
+      false,
+      &outgoing_message);
 
-      receive_buffer += received_size - remaining_bytes;
-      received_size = remaining_bytes;
+    receive_buffer += received_size - remaining_bytes;
+    received_size = remaining_bytes;
 
-      if(need_to_send > 0) {
-        OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
+    if(need_to_send > 0) {
+      OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
-        /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if(sendto( g_network_status.udp_unicast_listener, /* sending from unicast port, due to strange behavior of the broadcast port */
-                   (char *) outgoing_message.message_buffer,
-                   outgoing_message.used_message_length, 0,
-                   (struct sockaddr *) &from_address, sizeof(from_address) )
-           != outgoing_message.used_message_length) {
-          OPENER_TRACE_INFO(
-            "networkhandler: UDP response was not fully sent\n");
-        }
+      /* if the active socket matches a registered UDP callback, handle a UDP packet */
+      if(sendto( g_network_status.udp_unicast_listener,  /* sending from unicast port, due to strange behavior of the broadcast port */
+                 (char *) outgoing_message.message_buffer,
+                 outgoing_message.used_message_length, 0,
+                 (struct sockaddr *) &from_address, sizeof(from_address) )
+         != outgoing_message.used_message_length) {
+        OPENER_TRACE_INFO(
+          "networkhandler: UDP response was not fully sent\n");
       }
-    } while(remaining_bytes > 0);
+    }
+    if(remaining_bytes > 0) {
+      OPENER_TRACE_ERR("Request on broadcast UDP port had too many data (%d)",
+                       remaining_bytes);
+    }
   }
 }
 
@@ -645,34 +647,37 @@ void CheckAndHandleUdpUnicastSocket(void) {
     int remaining_bytes = 0;
     ENIPMessage outgoing_message;
     InitializeENIPMessage(&outgoing_message);
-    do {
-      EipStatus need_to_send = HandleReceivedExplictUdpData(
-        g_network_status.udp_unicast_listener,
-        &from_address,
-        receive_buffer,
-        received_size,
-        &remaining_bytes,
-        true,
-        &outgoing_message);
+    EipStatus need_to_send = HandleReceivedExplictUdpData(
+      g_network_status.udp_unicast_listener,
+      &from_address,
+      receive_buffer,
+      received_size,
+      &remaining_bytes,
+      true,
+      &outgoing_message);
 
-      receive_buffer += received_size - remaining_bytes;
-      received_size = remaining_bytes;
+    receive_buffer += received_size - remaining_bytes;
+    received_size = remaining_bytes;
 
-      if(need_to_send > 0) {
-        OPENER_TRACE_INFO("UDP unicast reply sent:\n");
+    if(need_to_send > 0) {
+      OPENER_TRACE_INFO("UDP unicast reply sent:\n");
 
-        /* if the active socket matches a registered UDP callback, handle a UDP packet */
-        if(sendto( g_network_status.udp_unicast_listener,
-                   (char *) outgoing_message.message_buffer,
-                   outgoing_message.used_message_length, 0,
-                   (struct sockaddr *) &from_address,
-                   sizeof(from_address) ) !=
-           outgoing_message.used_message_length) {
-          OPENER_TRACE_INFO(
-            "networkhandler: UDP unicast response was not fully sent\n");
-        }
+      /* if the active socket matches a registered UDP callback, handle a UDP packet */
+      if(sendto( g_network_status.udp_unicast_listener,
+                 (char *) outgoing_message.message_buffer,
+                 outgoing_message.used_message_length, 0,
+                 (struct sockaddr *) &from_address,
+                 sizeof(from_address) ) !=
+         outgoing_message.used_message_length) {
+        OPENER_TRACE_INFO(
+          "networkhandler: UDP unicast response was not fully sent\n");
       }
-    } while(remaining_bytes > 0);
+    }
+    if (remaining_bytes > 0) {
+      OPENER_TRACE_ERR(
+        "Request on broadcast UDP port had too many data (%d)",
+        remaining_bytes);
+    }
   }
 }
 
