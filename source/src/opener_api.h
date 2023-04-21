@@ -535,12 +535,12 @@ int DecodeCipLreal(CipLreal *const data,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipString(CipString *const data,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                    CipMessageRouterRequest *const message_router_request,
+                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipShortString(CipShortString *const data,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response);
+                         CipMessageRouterRequest *const message_router_request,
+                         CipMessageRouterResponse *const message_router_response);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
