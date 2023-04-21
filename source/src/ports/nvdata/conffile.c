@@ -131,7 +131,7 @@ FILE *ConfFileOpen(const bool write,
  */
 EipStatus ConfFileClose(FILE **p_filep) {
   EipStatus eip_status = kEipStatusOk;
-  if(0 != fclose(*p_filep) ) {
+  if( 0 != fclose(*p_filep) ) {
     eip_status = kEipStatusError;
   }
   *p_filep = NULL;
