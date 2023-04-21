@@ -1146,11 +1146,11 @@ EipStatus GetAttributeList(CipInstance *instance,
 
       const int_fast64_t needed_message_space = NULL != attribute
           ? (int_fast64_t) GetCipDataTypeLength(attribute->type,
-                                                attribute->data) : (int_fast64_t) ( 
-                                                                                                   2
-                                                                                                   *
-                                                                                                   sizeof(
-                                                                                                     CipSint) );
+                                                attribute->data) : (int_fast64_t) (
+        2
+        *
+        sizeof(
+          CipSint) );
 
       const int_fast64_t remaining_message_space =
         (int_fast64_t) PC_OPENER_ETHERNET_BUFFER_SIZE -
@@ -1252,11 +1252,11 @@ EipStatus SetAttributeList(CipInstance *instance,
 
       const int_fast64_t needed_message_space = NULL != attribute
           ? (int_fast64_t) GetCipDataTypeLength(attribute->type,
-                                                attribute->data) : (int_fast64_t) ( 
-                                                                                                   2
-                                                                                                   *
-                                                                                                   sizeof(
-                                                                                                     CipSint) );
+                                                attribute->data) : (int_fast64_t) (
+        2
+        *
+        sizeof(
+          CipSint) );
 
       const int_fast64_t remaining_message_space =
         (int_fast64_t) PC_OPENER_ETHERNET_BUFFER_SIZE -
