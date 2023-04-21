@@ -95,26 +95,27 @@ TEST (CipCommon, DecodeCipString) {
   size_t number_of_strings = 4;
   size_t length_of_string[] = {8,4,0,2};
   size_t pos_in_data = 0;
-  const CipOctet data[] = "\x08\x00\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x00\x4F\x44\x56\x41\x00\x00\x02\x00\x43\x41"; // hex data
+  const CipOctet data[] =
+    "\x08\x00\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x00\x4F\x44\x56\x41\x00\x00\x02\x00\x43\x41";                       // hex data
   request.data = data;
-  request.request_data_size = sizeof(data)-1;
+  request.request_data_size = sizeof(data) - 1;
 
   CipMessageRouterResponse response;
-  
+
   CipString string = {};
 
-  for(size_t i = 0; i < number_of_strings; i++){
-    if(0 != length_of_string[i]){
+  for(size_t i = 0; i < number_of_strings; i++) {
+    if(0 != length_of_string[i]) {
       mock().expectOneCall("CipCalloc");
       mock().expectOneCall("CipFree");
     }
     DecodeCipString(&string, &request, &response);
-    
-    // check string + length
-    CHECK_EQUAL(*(data+pos_in_data),  string.length); // first element at current pos contains the length of the following string
-    MEMCMP_EQUAL(data+pos_in_data+2, string.string, string.length ); // pos_in_data + 2 bytes for length
 
-    pos_in_data += length_of_string[i]+2;
+    // check string + length
+    CHECK_EQUAL(*(data + pos_in_data),  string.length); // first element at current pos contains the length of the following string
+    MEMCMP_EQUAL(data + pos_in_data + 2, string.string, string.length ); // pos_in_data + 2 bytes for length
+
+    pos_in_data += length_of_string[i] + 2;
   }
 
   ClearCipString(&string);
@@ -125,26 +126,29 @@ TEST (CipCommon, DecodeCipShortString) {
   size_t number_of_strings = 4;
   size_t length_of_string[] = {8,4,0,2};
   size_t pos_in_data = 0;
-  const CipOctet data[] = "\x08\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x4F\x44\x56\x41\x00\x02\x43\x41"; // hex data
+  const CipOctet data[] =
+    "\x08\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x4F\x44\x56\x41\x00\x02\x43\x41";                       // hex data
   request.data = data;
-  request.request_data_size = sizeof(data)-1;
+  request.request_data_size = sizeof(data) - 1;
 
   CipMessageRouterResponse response;
-  
+
   CipShortString short_string = {};
 
-  for(size_t i = 0; i < number_of_strings; i++){
-    if(0 != length_of_string[i]){
+  for(size_t i = 0; i < number_of_strings; i++) {
+    if(0 != length_of_string[i]) {
       mock().expectOneCall("CipCalloc");
       mock().expectOneCall("CipFree");
     }
     DecodeCipShortString(&short_string, &request, &response);
-    
-    // check string + length
-    CHECK_EQUAL(*(data+pos_in_data),  short_string.length); // first element at current pos contains the length of the following string
-    MEMCMP_EQUAL(data+pos_in_data+1, short_string.string, short_string.length ); // pos_in_data + 1 byte for length
 
-    pos_in_data += length_of_string[i]+1;
+    // check string + length
+    CHECK_EQUAL(*(data + pos_in_data),  short_string.length); // first element at current pos contains the length of the following string
+    MEMCMP_EQUAL(data + pos_in_data + 1,
+                 short_string.string,
+                 short_string.length );                                          // pos_in_data + 1 byte for length
+
+    pos_in_data += length_of_string[i] + 1;
   }
 
   ClearCipShortString(&short_string);

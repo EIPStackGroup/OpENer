@@ -1031,20 +1031,23 @@ int DecodeCipString(CipString *const data,
     number_of_decoded_bytes++;
   }
 
-  message_router_response->general_status = kCipErrorSuccess; 
+  message_router_response->general_status = kCipErrorSuccess;
   return number_of_decoded_bytes;
 }
 
 int DecodeCipShortString(CipShortString *data,
-                    CipMessageRouterRequest *const message_router_request,
-                    CipMessageRouterResponse *const message_router_response) {
+                         CipMessageRouterRequest *const message_router_request,
+                         CipMessageRouterResponse *const message_router_response)
+{
 
   int number_of_decoded_bytes = -1;
   CipShortString *short_string = data;
 
   const CipUsint length = GetUsintFromMessage(&message_router_request->data);
 
-  short_string = SetCipShortStringByData(short_string, length, message_router_request->data);
+  short_string = SetCipShortStringByData(short_string,
+                                         length,
+                                         message_router_request->data);
 
   const CipOctet **const buffer_address = &message_router_request->data;
   *buffer_address += short_string->length;
