@@ -483,7 +483,7 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   if(NULL != connection_management_entry) {
     if (NULL != connection_management_entry->open_connection_function) {
       temp = connection_management_entry->open_connection_function(
-          &g_dummy_connection_object, &connection_status);
+        &g_dummy_connection_object, &connection_status);
     } else {
       connection_status = kConnectionManagerExtendedStatusCodeMiscellaneous;
     }

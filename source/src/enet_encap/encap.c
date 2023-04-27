@@ -745,7 +745,9 @@ EipStatus HandleReceivedInvalidCommand(
  *                      kInvalidSession .. no free session available
  */
 int GetFreeSessionIndex(void) {
-  for(int session_index = 0; session_index < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; session_index++) {
+  for(int session_index =
+        0; session_index < OPENER_NUMBER_OF_SUPPORTED_SESSIONS;
+      session_index++) {
     if(kEipInvalidSocket == g_registered_sessions[session_index]) {
       return session_index;
     }
@@ -766,7 +768,7 @@ int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
                                           size_t receive_buffer_length,
                                           EncapsulationData *const encapsulation_data)
 {
-  encapsulation_data->communication_buffer_start = (EipUint8*) receive_buffer;
+  encapsulation_data->communication_buffer_start = (EipUint8 *) receive_buffer;
   encapsulation_data->command_code = GetUintFromMessage(&receive_buffer);
   encapsulation_data->data_length = GetUintFromMessage(&receive_buffer);
   encapsulation_data->session_handle = GetUdintFromMessage(&receive_buffer);
@@ -776,7 +778,8 @@ int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
          kSenderContextSize);
   receive_buffer += kSenderContextSize;
   encapsulation_data->options = GetUdintFromMessage(&receive_buffer);
-  encapsulation_data->current_communication_buffer_position = (EipUint8*) receive_buffer;
+  encapsulation_data->current_communication_buffer_position =
+    (EipUint8 *) receive_buffer;
 
   /* Ensure buffer length fits in an int32 before casting in the return expression. */
   OPENER_ASSERT(INT32_MAX >= receive_buffer_length);
