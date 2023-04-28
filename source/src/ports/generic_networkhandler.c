@@ -29,11 +29,9 @@
 #define MAX_NO_OF_TCP_SOCKETS 10
 
 /** @brief Ethernet/IP standard port */
-extern const uint16_t kOpenerEipIoUdpPort = 0x08AE;
-const uint16_t kOpenerEthernetPort = 0xAF12;
 
 /* ----- Windows size_t PRI macros ------------- */
-#if defined(__MINGW32__) /* This is a Mingw compiler */
+#if defined(__MINGW32__) || defined(STM32) /* This is a Mingw compiler or STM32 target (GCC) */
 #define PRIuSZT PRIuPTR
 #define PRIxSZT PRIxPTR
 #else

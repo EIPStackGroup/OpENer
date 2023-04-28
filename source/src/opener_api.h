@@ -13,6 +13,12 @@
 #include "ciptypes.h"
 #include "ciperror.h"
 
+#if defined(STM32)	/** STM32 target -> uses a struct for the network interface */
+#define TcpIpInterface struct netif
+#else		/** other targets -> string for the network interface */
+#define TcpIpInterface const char
+#endif		/** other targets */
+
 /**  @defgroup CIP_API OpENer User interface
  * @brief This is the public interface of the OpENer. It provides all function
  * needed to implement an EtherNet/IP enabled slave-device.
@@ -21,56 +27,71 @@
 /** @ingroup CIP_API
  * @brief Read network configuration data from specified hardware interface
  *
- *  @param  iface     address of string specifying the hardware interface
- *  @param  iface_cfg address of interface configuration structure
- *  @return           kEipStatusOk on success,
- *                    kEipStatusError on error with @p errno set
+ * @param  iface     address specifying the network interface
+ * @param  iface_cfg address of interface configuration structure
+ * @return           kEipStatusOk on success,
+ *                   kEipStatusError on error with @p errno set
  *
  * This function reads all information needed to fill the iface_cfg structure
  *  of type @ref CipTcpIpInterfaceConfiguration from the hardware interface
  *  specified by the iface string.
  *
  */
-EipStatus IfaceGetConfiguration(const char *iface,
+EipStatus IfaceGetConfiguration(TcpIpInterface *iface,
                                 CipTcpIpInterfaceConfiguration *iface_cfg);
 
 /** @ingroup CIP_API
  * @brief Read and return the MAC address of the Ethernet interface
  *
- *  @param  iface             string of interface name or interface index
- *  @param  physical_address  hardware MAC address of the network interface
- *  @return                   kEipStatusOk: all fine
- *                            kEipStatusError: failure, errno set
+ * @param  iface             address specifying the network interface
+ * @param  physical_address  hardware MAC address of the network interface
+ * @return                   kEipStatusOk: all fine
+ *                           kEipStatusError: failure, errno set
  */
-EipStatus IfaceGetMacAddress(const char *iface,
+EipStatus IfaceGetMacAddress(TcpIpInterface *iface,
                              uint8_t *const physical_address);
 
 /** @ingroup CIP_API
  * @brief Wait for the network interface having an IP address
  *
- * @param timeout in seconds; max: INT_MAX/10, -1: wait for ever
- * @param do_run  stop waiting if this parameter becomes zero
- * @return        kEipStatusOk on success,
- *                kEipStatusError on error with @p errno set
+ * @param  iface      address specifying the network interface
+ * @param  timeout    in seconds; max: INT_MAX/10, -1: wait for ever
+ * @param  abort_wait stop waiting if this parameter becomes zero
+ * @return            kEipStatusOk on success,
+ *                    kEipStatusError on error with @p errno set
  *
  * This function waits for the network interface getting an IP address but
  *  only @p timeout seconds (set to -1 to wait for ever).
  * The polling wait process can be aborted by setting @p abort_wait to
  *  a non zero value from another thread.
  */
-EipStatus IfaceWaitForIp(const char *const iface,
+EipStatus IfaceWaitForIp(TcpIpInterface *const iface,
                          int timeout,
                          volatile int *const abort_wait);
 
+#if defined(STM32)  /** STM32 target, the hostname is linked to the network interface */
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
- * @param hostname  address of CipString destination structure
+ * @param  iface      address specifying the network interface
+ * @param  hostname   address of CipString destination structure
+ *
+ * This function reads the host name from the platform and returns it
+ *  via the hostname parameter.
+ */
+void GetHostName(TcpIpInterface *iface,
+                 CipString *hostname);
+#else   /** other targets */
+/** @ingroup CIP_API
+ * @brief Get host name from platform
+ *
+ * @param  hostname  address of CipString destination structure
  *
  * This function reads the host name from the platform and returns it
  *  via the hostname parameter.
  */
 void GetHostName(CipString *hostname);
+#endif    /** other targets */
 
 /** @ingroup CIP_API
  * @brief Set the CIP revision of the device's identity object.

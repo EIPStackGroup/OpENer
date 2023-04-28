@@ -6,6 +6,8 @@
 
 #ifdef WIN32
 #include <winsock2.h>
+#elif defined STM32		 
+#include "lwip/inet.h"
 #else
 #include <netinet/in.h>
 #include <sys/socket.h>

@@ -17,7 +17,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#if !defined(STM32)	/** Not STM32 target */
 #include <errno.h>
+#else	/** STM32 target (GCC), lwip has its own error code list */
+#include "lwip/errno.h"
+#endif	/* STM32 target */
 
 #include "opener_api.h"
 #include "typedefs.h"
@@ -32,6 +36,10 @@ extern const uint16_t kOpenerEipIoUdpPort;
 extern const uint16_t kOpenerEthernetPort;
 
 extern SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
+/** @brief Ethernet/IP standard ports */
+#define kOpenerEthernetPort   44818     /** Port to be used per default for messages on TCP */
+#define kOpenerEipIoUdpPort   2222      /** Port to be used per default for I/O messages on UDP.*/
+
 
 //EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE]; /**< communication buffer */
 
