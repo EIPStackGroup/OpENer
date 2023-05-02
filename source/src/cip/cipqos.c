@@ -69,8 +69,9 @@ static CipQosDscpValues s_active_dscp = {
  *          -1 .. error
  */
 int DecodeCipQoSAttribute(CipUsint *const data,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+                          CipMessageRouterRequest *const message_router_request,
+                          CipMessageRouterResponse *const message_router_response)
+{
 
   const EipUint8 **const cip_message = message_router_request->data;
 

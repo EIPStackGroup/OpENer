@@ -570,9 +570,9 @@ static bool IsIfaceControlAllowed(CipUdint instance_id,
 }
 
 int DecodeCipEthernetLinkInterfaceControl(
-		CipEthernetLinkInterfaceControl *const data,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+  CipEthernetLinkInterfaceControl *const data,
+  CipMessageRouterRequest *const message_router_request,
+  CipMessageRouterResponse *const message_router_response) {
 
   CipInstance *const instance = GetCipInstance(
     GetCipClass(message_router_request->request_path.class_id),
