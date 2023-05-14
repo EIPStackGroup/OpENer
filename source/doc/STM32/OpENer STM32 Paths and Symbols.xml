@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+  <section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+    <language id="org.eclipse.cdt.core.assembly" name="s,S"/>
+    <language id="org.eclipse.cdt.core.gcc" name="C Source File">
+      <includepath>../../Inc</includepath>
+      <includepath>../../Src</includepath>
+      <includepath>../../Drivers/CMSIS/Device/ST/STM32F7xx/Include</includepath>
+      <includepath>../../Drivers/STM32F7xx_HAL_Driver/Inc</includepath>
+      <includepath>../../Drivers/BSP/STM32746G-Discovery</includepath>
+      <includepath>../../Drivers/BSP/Components/Common</includepath>
+      <includepath>../../Drivers/BSP/Components</includepath>
+      <includepath>../../Middlewares/Third_Party/LwIP/src/include</includepath>
+      <includepath>../../Middlewares/Third_Party/LwIP/system</includepath>
+      <includepath>../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1</includepath>
+      <includepath>../../Middlewares/Third_Party/FreeRTOS/Source</includepath>
+      <includepath>../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS</includepath>
+      <includepath>../../Middlewares/Third_Party/FreeRTOS/Source/include</includepath>
+      <includepath>../../Utilities</includepath>
+      <includepath>../../Utilities/Log</includepath>
+      <includepath>../../Drivers/CMSIS/Include</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/cip</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/enet_encap</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/ports</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/ports/STM32</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/ports/STM32/sample_application</includepath>
+      <includepath>../../Middlewares/Third_Party/OpENer/utils</includepath>
+    </language>
+    <language name="Object File"/>
+  </section>
+  <section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+    <language id="org.eclipse.cdt.core.assembly" name="s,S"/>
+    <language id="org.eclipse.cdt.core.gcc" name="C Source File">
+      <macro>
+        <name>USE_HAL_DRIVER</name>
+        <value/>
+      </macro>
+      <macro>
+        <name>STM32F746xx</name>
+        <value/>
+      </macro>
+      <macro>
+        <name>USE_STM32746G_DISCOVERY</name>
+        <value/>
+      </macro>
+      <macro>
+        <name>RESTRICT</name>
+        <value>__restrict</value>
+      </macro>
+      <macro>
+        <name>STM32</name>
+        <value/>
+      </macro>
+      <macro>
+        <name>_POSIX_C_SOURCE</name>
+        <value>200112L</value>
+      </macro>
+      <macro>
+        <name>_GNU_SOURCE</name>
+        <value/>
+      </macro>
+      <macro>
+        <name>OPENER_TRACE_LEVEL</name>
+        <value>15</value>
+      </macro>
+      <macro>
+        <name>OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER</name>
+        <value>1</value>
+      </macro>
+      <macro>
+        <name>OPENER_WITH_TRACES</name>
+        <value>1</value>
+      </macro>
+      <macro>
+        <name>PC_OPENER_ETHERNET_BUFFER_SIZE</name>
+        <value>512</value>
+      </macro>
+      <macro>
+        <name>REDIRECT_PRINTF_TO_SWV_ITM</name>
+        <value>1</value>
+      </macro>
+    </language>
+    <language name="Object File"/>
+  </section>
+</cdtprojectproperties>

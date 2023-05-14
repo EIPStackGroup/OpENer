@@ -1,5 +1,4 @@
 bin/
-doc/
 contrib/
 source/src/cip_objects/
 !source/src/cip_objects/CMakeLists.txt
@@ -9,7 +8,6 @@ source/src/cip_objects/
 *.*~
 *~
 CMakeCache.txt
-*.patch
 .idea/
 *.a
 *.cmake
