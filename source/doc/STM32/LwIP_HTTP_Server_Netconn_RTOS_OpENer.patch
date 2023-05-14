@@ -1,0 +1,172 @@
+diff --git a/Inc/lwipopts.h b/Inc/lwipopts.h
+index ef9dbfa..6a8c593 100644
+--- a/Inc/lwipopts.h
++++ b/Inc/lwipopts.h
+@@ -56,7 +56,9 @@ a lot of data that needs to be copied, this should be set high. */
+ /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
+    timeouts. */
+ #define MEMP_NUM_SYS_TIMEOUT    10
+-
++/* MEMP_NUM_NETCONN: the number of struct netconns.
++   (only needed if you use the sequential API, like api_lib.c) */
++#define MEMP_NUM_NETCONN        12
+ 
+ /* ---------- Pbuf options ---------- */
+ /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
+@@ -94,6 +96,8 @@ a lot of data that needs to be copied, this should be set high. */
+ /* ---------- ICMP options ---------- */
+ #define LWIP_ICMP                       1
+ 
++/* ---------- IGMP options ---------- */
++#define LWIP_IGMP               1
+ 
+ /* ---------- DHCP options ---------- */
+ #define LWIP_DHCP               1
+@@ -113,6 +117,9 @@ a lot of data that needs to be copied, this should be set high. */
+  */
+ #define LWIP_NETIF_LINK_CALLBACK        1
+ 
++/* ---------- Netif options ---------- */
++#define LWIP_NETIF_HOSTNAME             1
++
+ /*
+    --------------------------------------
+    ---------- Checksum options ----------
+@@ -178,7 +185,11 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
+ /**
+  * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
+  */
+-#define LWIP_SOCKET                     0
++#define LWIP_SOCKET                     1
++/**
++ * SO_REUSE==1: Enable SO_REUSEADDR option.
++ */
++#define SO_REUSE                        1
+ 
+ /*
+    ------------------------------------
+diff --git a/Inc/main.h b/Inc/main.h
+index 36ca85f..fb7961c 100644
+--- a/Inc/main.h
++++ b/Inc/main.h
+@@ -31,7 +31,7 @@
+ 
+ /* Exported types ------------------------------------------------------------*/
+ /* Exported constants --------------------------------------------------------*/ 
+-#define USE_DHCP       /* enable DHCP, if disabled static address is used*/
++//#define USE_DHCP      // not used, replaced by LWIP_DHCP
+ #define USE_LCD
+ 
+ /*Static IP ADDRESS*/
+diff --git a/SW4STM32/syscalls.c b/SW4STM32/syscalls.c
+index fa8687f..6a84edb 100644
+--- a/SW4STM32/syscalls.c
++++ b/SW4STM32/syscalls.c
+@@ -15,7 +15,7 @@
+ #include <reent.h>
+ #include <unistd.h>
+ #include <sys/wait.h>
+-
++#include <stm32f7xx_hal.h>
+ 
+ 
+ #define FreeRTOS
+@@ -99,6 +99,15 @@ void _exit (int status)
+ 	while (1) {}
+ }
+ 
++#if REDIRECT_PRINTF_TO_SWV_ITM
++__attribute__((weak)) int _write(int file, char *ptr, int len) {
++  int DataIdx;
++  for (DataIdx = 0; DataIdx < len; DataIdx++) {
++    ITM_SendChar(*ptr++);
++  }
++  return len;
++}
++#else	// standard output
+ int _write(int file, char *ptr, int len)
+ {
+ 	int DataIdx;
+@@ -109,6 +118,7 @@ int _write(int file, char *ptr, int len)
+ 		}
+ 	return len;
+ }
++#endif	// standard output
+ 
+ int _close(int file)
+ {
+diff --git a/Src/app_ethernet.c b/Src/app_ethernet.c
+index e3278ac..aab6265 100644
+--- a/Src/app_ethernet.c
++++ b/Src/app_ethernet.c
+@@ -28,6 +28,9 @@
+ #include "lcd_log.h"
+ #endif
+ 
++// for OpENer
++#include "opener.h"
++
+ /* Private typedef -----------------------------------------------------------*/
+ /* Private define ------------------------------------------------------------*/
+ /* Private macro -------------------------------------------------------------*/
+@@ -55,6 +58,8 @@ void ethernet_link_status_updated(struct netif *netif)
+     uint8_t iptxt[20];
+     sprintf((char *)iptxt, "%s", ip4addr_ntoa(netif_ip4_addr(netif)));
+     LCD_UsrLog ("Static IP address: %s\n", iptxt);
++    /* Start Ethernet/IP Stack (OpENer) */
++    opener_init(netif);
+ #else
+     BSP_LED_On(LED1);
+     BSP_LED_Off(LED2);
+@@ -124,6 +129,8 @@ void DHCP_Thread(void const * argument)
+           BSP_LED_On(LED1);
+           BSP_LED_Off(LED2);
+ #endif
++          /* Start Ethernet/IP Stack (OpENer) */
++          opener_init(netif);
+         }
+         else
+         {
+@@ -148,6 +155,8 @@ void DHCP_Thread(void const * argument)
+             BSP_LED_On(LED1);
+             BSP_LED_Off(LED2);
+ #endif
++            /* Start Ethernet/IP Stack (OpENer) */
++            opener_init(netif);
+           }
+         }
+       }
+diff --git a/Src/main.c b/Src/main.c
+index c25dbd0..e3dda6c 100644
+--- a/Src/main.c
++++ b/Src/main.c
+@@ -71,6 +71,11 @@ int main(void)
+   /* Configure the system clock to 200 MHz */
+   SystemClock_Config(); 
+   
++  /* For single step debug, e.g. timers with interrupts need to be stopped in Halt */
++  HAL_DBGMCU_EnableDBGStandbyMode();
++  HAL_DBGMCU_EnableDBGStopMode();
++  __HAL_DBGMCU_FREEZE_TIM6();
++  
+   /* Initialize LCD and LEDs */
+   BSP_Config();
+ 
+@@ -139,6 +144,8 @@ static void Netif_Config(void)
+ 
+   /*  Registers the default network interface. */
+   netif_set_default(&gnetif);
++  /*  Define the hostname, is also used by OpENer */
++  netif_set_hostname(&gnetif,"STM32");
+ 
+   ethernet_link_status_updated(&gnetif);
+ 
+@@ -180,7 +187,7 @@ static void BSP_Config(void)
+   LCD_LOG_Init();
+   
+   /* Show Header and Footer texts */
+-  LCD_LOG_SetHeader((uint8_t *)"Webserver Application Netconn API");
++  LCD_LOG_SetHeader((uint8_t *)"Webserver Application Netconn API & OpENer");
+   LCD_LOG_SetFooter((uint8_t *)"STM32746G-DISCO board");
+   
+   LCD_UsrLog ((char *)"  State: Ethernet Initialization ...\n");
