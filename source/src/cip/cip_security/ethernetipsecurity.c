@@ -61,8 +61,16 @@
 /* ********************************************************************
  * defines
  */
-/** The implemented class revision is 5 */
-#define ETHERNET_IP_SECURITY_OBJECT_REVISION 5
+/** The implemented class revision is 7 */
+#define ETHERNET_IP_SECURITY_OBJECT_REVISION 7
+
+/**
+ * declaration of (static) Ethernet/IP Security object class data
+ */
+EIPSecurityObjectClassAttributes eip_security_class_attr = {
+  .number_of_psks_supported = 0,
+  .psk_usages_supported = 4  // Bit 2 set
+};
 
 /* ********************************************************************
  * global public variables
@@ -140,7 +148,7 @@ EIPSecurityObject g_eip_security = {
   .available_cipher_suites = NULL,                  /** Attribute #3 */
   //.allowed_cipher_suites = allowed_cipher_suites,                         /** Attribute #4 */
   .active_device_certificates = active_device_certificates,   /** Attribute #6 */
-  .pre_shared_keys.number_of_pre_shared_keys = 0,   /** Attribute #5 */
+  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
   .check_expiration = 0,                            /** Attribute #11 */
   .pull_model_enabled = true,    // default: true   /** Attribute #13 */
   .pull_model_status = 0x0000,                      /** Attribute #14 */
@@ -658,6 +666,20 @@ void EIPSecurityObjectInitializeClassSettings(CipClass *class) {
                    NULL,
                    (void *) &class->highest_attribute_number,
                    kGetableSingleAndAll ); /* max instance attribute number*/
+  InsertAttribute( (CipInstance *) class,
+                   8,
+                   kCipUint,
+                   EncodeCipUint,
+                   NULL,
+                   (void *) &eip_security_class_attr.number_of_psks_supported,
+                   kGetableSingle ); /* number of PSKs supported*/
+  InsertAttribute( (CipInstance *) class,
+                   9,
+                   kCipByte,
+                   EncodeCipByte,
+                   NULL,
+                   (void *) &eip_security_class_attr.psk_usages_supported,
+                   kGetableSingle ); /* PSK Usages supported by the device*/
 
   /* Add class services to the meta class */
   InsertService(meta_class,
@@ -680,8 +702,9 @@ EipStatus EIPSecurityInit(void) {
   CipInstance *eip_security_object_instance;
 
   eip_security_object_class = CreateCipClass(
-    kEIPSecurityObjectClassCode, 0,   /* # class attributes */
-    7,                                /* # highest class attribute number */
+    kEIPSecurityObjectClassCode, 
+    9,                                /* # class attributes */
+    9,                                /* # highest class attribute number */
     2,                                /* # class services */
     16,                               /* # instance attributes */
     16,                               /* # highest instance attribute number */

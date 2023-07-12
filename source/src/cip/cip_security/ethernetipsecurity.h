@@ -138,6 +138,13 @@ typedef struct {
   CipUsint udp_only_policy;                              /** Attribute #16 */
 } EIPSecurityObject;
 
+/** @brief Ethernet/IP Security Object specific class attributes
+ *  @see Volume 8, Chapter 5-4.3 */
+typedef struct eip_security_class_attributes {
+  CipUint number_of_psks_supported;           /** Class Attribute #8 */
+  CipBool psk_usages_supported;               /** Class Attribute #9 */
+} EIPSecurityObjectClassAttributes;
+
 /* ********************************************************************
  * global public variables
  */
