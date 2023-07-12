@@ -461,7 +461,7 @@ EipStatus CipSecurityInit(void) {
                   EncodeCipWord,
                   NULL,
                   &g_security.security_profiles_configured,
-                  kGetableSingleAndAll
+                  kGetableSingle
                   );
 
   /* Add services to the instance */
