@@ -17,6 +17,7 @@
 #include "doublylinkedlist.h"
 #include "cipconnectionobject.h"
 #include "nvdata.h"
+#include "devicedata.h"
 
 #define BringupNetwork(if_name, method, if_cfg, hostname)  (0)
 #define ShutdownNetwork(if_name)  (0)
@@ -72,7 +73,7 @@ int main(int argc,
   }
 
   /* for a real device the serial number should be unique per device */
-  SetDeviceSerialNumber(123456789);
+  SetDeviceSerialNumber(OPENER_SERIAL_NUMBER);
 
   /* unique_connection_id should be sufficiently random or incremented and stored
    *  in non-volatile memory each time the device boots. This is used as the upper

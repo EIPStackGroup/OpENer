@@ -50,7 +50,7 @@ CipIdentityObject g_identity = { .vendor_id = OPENER_DEVICE_VENDOR_ID, /* Attrib
                                    OPENER_DEVICE_MINOR_REVISION
                                  }, .status = 0, /* Attribute 5: Status */
                                  .ext_status = kSelftestingUnknown, /* Attribute 5: Extended Device Status field */
-                                 .serial_number = 0, /* Attribute 6: Serial Number */
+                                 .serial_number = OPENER_SERIAL_NUMBER, /* Attribute 6: Serial Number */
                                  /* Attribute 7: Product Name, set by CipIdentityInit() */
 };
 
@@ -167,10 +167,10 @@ void CipIdentitySetExtendedDeviceStatus(
  * @returns Currently always kEipOkSend is returned
  */
 EipStatus IdentityObjectPreResetCallback(
-  CipInstance *RESTRICT const instance,
-  const CipMessageRouterRequest *const message_router_request,
-  CipMessageRouterResponse *const message_router_response
-  ) {
+    CipInstance *RESTRICT const instance,
+    const CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response
+) {
   (void) instance;
 
   EipStatus eip_status = kEipStatusOkSend;

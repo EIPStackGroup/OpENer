@@ -30,6 +30,9 @@ endif()
 if(NOT DEFINED OpENer_Device_Minor_Version)
   set(OpENer_Device_Minor_Version ${PROJECT_VERSION_MINOR} CACHE STRING "Minor Version")
 endif()
+if(NOT DEFINED OpENer_Serial_Number)
+  set(OpENer_Serial_Number 123456789 "Device Serial Number")
+endif()
 
 configure_file(  
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"

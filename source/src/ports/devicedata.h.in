@@ -13,5 +13,6 @@
 #define OPENER_DEVICE_MAJOR_REVISION (@OpENer_Device_Major_Version@)
 #define OPENER_DEVICE_MINOR_REVISION (@OpENer_Device_Minor_Version@)
 #define OPENER_DEVICE_NAME           ("@OpENer_Device_Config_Device_Name@")
+#define OPENER_SERIAL_NUMBER         (@OpENer_Serial_Number@)
 
 #endif /* DEVICE_DATA_H_ */
