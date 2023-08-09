@@ -92,61 +92,71 @@ const EIPSecurityObjectPathList active_device_certificates = {
 };
 
 #define number_of_required_cipher_suites 8
-EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_NULL_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_RSA_WITH_NULL_SHA256 = {
   0x00,
-  0x3B,
+  0x3B
 };
-EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_AES_128_CBC_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_RSA_WITH_AES_128_CBC_SHA256 = {
   0x00,
-  0x3C,
+  0x3C
 };
-EIPSecurityObjectCipherSuiteId TLS_RSA_WITH_AES_256_CBC_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_RSA_WITH_AES_256_CBC_SHA256 = {
   0x00,
-  0x3D,
+  0x3D
 };
-EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_NULL_SHA = {
+EIPSecurityObjectCipherSuiteId const TLS_ECDHE_ECDSA_WITH_NULL_SHA = {
   0xC0,
-  0x06,
+  0x06
 };
-EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 = {
   0xC0,
-  0x23,
+  0x23
 };
-EIPSecurityObjectCipherSuiteId TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384 = {
+EIPSecurityObjectCipherSuiteId const TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384 = {
   0xC0,
-  0x24,
+  0x24
 };
-EIPSecurityObjectCipherSuiteId TLS_ECDHE_PSK_WITH_NULL_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_ECDHE_PSK_WITH_NULL_SHA256 = {
   0xC0,
   0x3A,
 };
-EIPSecurityObjectCipherSuiteId TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256 = {
+EIPSecurityObjectCipherSuiteId const TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256 = {
   0xC0,
-  0x37,
+  0x37
 };
 
-//const EIPSecurityObjectCipherSuiteId * cipher_suite_ids[] = {
-//    &TLS_RSA_WITH_NULL_SHA256,
-//    &TLS_RSA_WITH_AES_128_CBC_SHA256,
-//    &TLS_RSA_WITH_AES_256_CBC_SHA256,
-//    &TLS_ECDHE_ECDSA_WITH_NULL_SHA,
-//    &TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-//    &TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
-//    &TLS_ECDHE_PSK_WITH_NULL_SHA256,
-//    &TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
-//};
-//
-//const EIPSecurityObjectCipherSuites allowed_cipher_suites = {
-//    8,
-//    cipher_suite_ids,
-//};
+EIPSecurityObjectCipherSuiteId const cipher_suite_ids[] = {
+   TLS_RSA_WITH_NULL_SHA256,
+   TLS_RSA_WITH_AES_128_CBC_SHA256,
+   TLS_RSA_WITH_AES_256_CBC_SHA256,
+   TLS_ECDHE_ECDSA_WITH_NULL_SHA,
+   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+   TLS_ECDHE_PSK_WITH_NULL_SHA256,
+   TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
+};
+
+const EIPSecurityObjectCipherSuites available_cipher_suites = {
+   .number_of_cipher_suites = number_of_required_cipher_suites,
+   .cipher_suite_ids = cipher_suite_ids
+};
+
+EIPSecurityObjectCipherSuiteId const allowed_cipher_suite_ids[] = {
+   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+};
+
+const EIPSecurityObjectCipherSuites allowed_cipher_suites = {
+   .number_of_cipher_suites = 2,
+   .cipher_suite_ids = allowed_cipher_suite_ids
+};
 
 EIPSecurityObject g_eip_security = {
   // TODO: add object configuration
   .state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration,   /** Attribute #1 */
   .capability_flags = 0,                            /** Attribute #2 */
-  .available_cipher_suites = NULL,                  /** Attribute #3 */
-  //.allowed_cipher_suites = allowed_cipher_suites,                         /** Attribute #4 */
+  .available_cipher_suites = available_cipher_suites,                  /** Attribute #3 */
+  .allowed_cipher_suites = allowed_cipher_suites,                         /** Attribute #4 */
   .active_device_certificates = active_device_certificates,   /** Attribute #6 */
   .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
   .check_expiration = 0,                            /** Attribute #11 */
@@ -424,14 +434,13 @@ int DecodeEIPSecurityObjectCipherSuites(
   CipUsint number_of_cipher_suites =
     GetUsintFromMessage( &(message_router_request->data) );
   number_of_decoded_bytes = sizeof(number_of_cipher_suites);
-  CipFree(data->cipher_suite_ids);
 
   if (number_of_cipher_suites > 0) {
     EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
       number_of_cipher_suites,
       sizeof(EIPSecurityObjectCipherSuiteId) );
 
-    memcpy( cipher_suite_ids, &(message_router_request->data),
+    memcpy( cipher_suite_ids, message_router_request->data,
             number_of_cipher_suites
             * sizeof(EIPSecurityObjectCipherSuiteId) );
 
