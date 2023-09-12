@@ -64,6 +64,8 @@
 /** The implemented class revision is 7 */
 #define ETHERNET_IP_SECURITY_OBJECT_REVISION 7
 
+#define ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT 10000U // 10 sec
+
 /**
  * declaration of (static) Ethernet/IP Security object class data
  */
@@ -199,6 +201,9 @@ EIPSecurityObject g_eip_security = {
   //  .certificate_revocation_list,                   /** Attribute #8 */
   //  .trusted_identities,                            /** Attribute #12 */
 };
+
+MilliSeconds eipSecurityConfigSessionTimeout =
+  ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
 
 /* ********************************************************************
  * public functions
@@ -340,7 +345,9 @@ EipStatus EIPSecurityObjectKickTimer(
   CipUsint state = *(CipUsint *)attribute->data;
 
   if (kEIPSecurityObjectStateValueConfigurationInProgress == state) {
-    // TODO: reset configuration session timer
+    // reset configuration session timer
+     eipSecurityConfigSessionTimeout =
+      ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
     message_router_response->general_status = kCipErrorSuccess;
   }
 
@@ -428,6 +435,27 @@ EipStatus EIPSecurityObjectAbortConfig(
   }
 
   return kEipStatusOk;
+}
+
+/** @brief Checks if config session timed out
+ *
+ */
+void EIPSecuritySessionTimeoutChecker(const MilliSeconds elapsed_time) {
+  /* check if EIPSecurity configuration session timed out. */
+  if(kEIPSecurityObjectStateValueConfigurationInProgress == g_eip_security.state) {
+    if(elapsed_time > eipSecurityConfigSessionTimeout) {
+      g_eip_security.state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration;
+      OPENER_TRACE_INFO(
+        "EIPSecuritySessionTimeoutChecker: EIP Security configuration session timed out\n");
+      eipSecurityConfigSessionTimeout =
+        ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT; 
+    }
+    else {
+      eipSecurityConfigSessionTimeout -= elapsed_time;
+    }
+    OPENER_TRACE_INFO("EIPSecurityConfigSession: Time left %" PRIu64 "\n",
+                      eipSecurityConfigSessionTimeout);
+  }
 }
 
 void EncodeEIPSecurityObjectCipherSuiteId(const void *const data,
@@ -912,6 +940,9 @@ EipStatus EIPSecurityInit(void) {
                 &EIPSecurityObjectAbortConfig,
                 "EIPSecurityObjectAbortConfig"
                 );
+
+  /* Register timeout checker function in opener */
+  RegisterTimeoutChecker(EIPSecuritySessionTimeoutChecker);
 
   return kEipStatusOk;
 }
