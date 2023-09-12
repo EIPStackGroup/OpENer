@@ -7,6 +7,8 @@
 #ifndef OPENER_ETHERNETIPSECURITY_H
 #define OPENER_ETHERNETIPSECURITY_H
 
+#define CIPHER_SUITES_ARRAY_SIZE 8
+
 #include "ciptypes.h"
 #include "typedefs.h"
 
@@ -85,7 +87,7 @@ typedef struct {
  */
 typedef struct {
   CipUsint number_of_cipher_suites;
-  EIPSecurityObjectCipherSuiteId *cipher_suite_ids;
+  EIPSecurityObjectCipherSuiteId cipher_suite_ids[CIPHER_SUITES_ARRAY_SIZE];
 } EIPSecurityObjectCipherSuites;
 
 /** @brief Type declaration for a pre-shared key

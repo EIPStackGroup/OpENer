@@ -92,6 +92,7 @@ const EIPSecurityObjectPathList active_device_certificates = {
 };
 
 #define number_of_required_cipher_suites 8
+
 EIPSecurityObjectCipherSuiteId const TLS_RSA_WITH_NULL_SHA256 = {
   0x00,
   0x3B
@@ -124,8 +125,14 @@ EIPSecurityObjectCipherSuiteId const TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256 = {
   0xC0,
   0x37
 };
+EIPSecurityObjectCipherSuiteId const ALLOWED_CIPHER_FREE_ENTRY = {
+  0x00,
+  0x00
+};
 
-EIPSecurityObjectCipherSuiteId const cipher_suite_ids[] = {
+const EIPSecurityObjectCipherSuites available_cipher_suites = {
+   .number_of_cipher_suites = number_of_required_cipher_suites,
+   .cipher_suite_ids = {
    TLS_RSA_WITH_NULL_SHA256,
    TLS_RSA_WITH_AES_128_CBC_SHA256,
    TLS_RSA_WITH_AES_256_CBC_SHA256,
@@ -134,44 +141,64 @@ EIPSecurityObjectCipherSuiteId const cipher_suite_ids[] = {
    TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
    TLS_ECDHE_PSK_WITH_NULL_SHA256,
    TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
+  }
 };
 
-const EIPSecurityObjectCipherSuites available_cipher_suites = {
-   .number_of_cipher_suites = number_of_required_cipher_suites,
-   .cipher_suite_ids = cipher_suite_ids
-};
-
-EIPSecurityObjectCipherSuiteId const allowed_cipher_suite_ids[] = {
-   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
-};
-
-const EIPSecurityObjectCipherSuites allowed_cipher_suites = {
+const EIPSecurityObjectCipherSuites default_allowed_cipher_suites = {
    .number_of_cipher_suites = 2,
-   .cipher_suite_ids = allowed_cipher_suite_ids
+   .cipher_suite_ids = {
+   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+   ALLOWED_CIPHER_FREE_ENTRY,
+   ALLOWED_CIPHER_FREE_ENTRY,
+   ALLOWED_CIPHER_FREE_ENTRY,
+   ALLOWED_CIPHER_FREE_ENTRY,
+   ALLOWED_CIPHER_FREE_ENTRY,
+   ALLOWED_CIPHER_FREE_ENTRY
+  } 
 };
 
-EIPSecurityObject g_eip_security = {
-  // TODO: add object configuration
+//default EIPSecurityObject values
+EIPSecurityObject g_eip_security_default = {
   .state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration,   /** Attribute #1 */
   .capability_flags = 0,                            /** Attribute #2 */
   .available_cipher_suites = available_cipher_suites,                  /** Attribute #3 */
-  .allowed_cipher_suites = allowed_cipher_suites,                         /** Attribute #4 */
-  .active_device_certificates = active_device_certificates,   /** Attribute #6 */
+  .allowed_cipher_suites = default_allowed_cipher_suites,                         /** Attribute #4 */
   .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
+  .active_device_certificates = active_device_certificates,   /** Attribute #6 */
+  .verify_client_certificate = false,                     /** Attribute #9 */
+  .send_certificate_chain = false,                        /** Attribute #10 */
   .check_expiration = 0,                            /** Attribute #11 */
   .pull_model_enabled = true,    // default: true   /** Attribute #13 */
   .pull_model_status = 0x0000,                      /** Attribute #14 */
-  .dtls_timeout = 0x0C,    // default: 12 seconds   /** Attribute #15 */
+  .dtls_timeout = 12,    // default: 12 seconds   /** Attribute #15 */
   .udp_only_policy = 0,                             /** Attribute #16 */
+  //TODO: add missing default values
+  //  .trusted_authorities,                           /** Attribute #7 */
+  //  .certificate_revocation_list,                   /** Attribute #8 */
+  //  .trusted_identities,                            /** Attribute #12 */
 };
 
-//
-//  .trusted_authorities,                           /** Attribute #7 */
-//  .certificate_revocation_list,                   /** Attribute #8 */
-//  .verify_client_certificate,                     /** Attribute #9 */
-//  .send_certificate_chain,                        /** Attribute #10 */
-//  .trusted_identities,                            /** Attribute #12 */
+// Instance 1 object
+EIPSecurityObject g_eip_security = {
+  .state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration,   /** Attribute #1 */
+  .capability_flags = 0,                            /** Attribute #2 */
+  .available_cipher_suites = available_cipher_suites,                  /** Attribute #3 */
+  .allowed_cipher_suites = default_allowed_cipher_suites,                         /** Attribute #4 */
+  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
+  .active_device_certificates = active_device_certificates,   /** Attribute #6 */
+  .verify_client_certificate = false,                     /** Attribute #9 */
+  .send_certificate_chain = false,                        /** Attribute #10 */
+  .check_expiration = 0,                            /** Attribute #11 */
+  .pull_model_enabled = true,    // default: true   /** Attribute #13 */
+  .pull_model_status = 0x0000,                      /** Attribute #14 */
+  .dtls_timeout = 12,    // default: 12 seconds   /** Attribute #15 */
+  .udp_only_policy = 0,                             /** Attribute #16 */
+  //TODO: add missing default values
+  //  .trusted_authorities,                           /** Attribute #7 */
+  //  .certificate_revocation_list,                   /** Attribute #8 */
+  //  .trusted_identities,                            /** Attribute #12 */
+};
 
 /* ********************************************************************
  * public functions
@@ -183,40 +210,30 @@ EIPSecurityObject g_eip_security = {
  *  Factory Default Configuration value
  */
 void EIPSecurityObjectResetSettableAttributes(CipInstance *instance) {
-  CipAttributeStruct *attribute = NULL;
+  if(1 == instance->instance_number){
 
-  attribute = GetCipAttribute(instance, 4);
-  attribute->data = (void *)&g_eip_security.allowed_cipher_suites;
+    g_eip_security.allowed_cipher_suites = g_eip_security_default.allowed_cipher_suites;
 
-  attribute = GetCipAttribute(instance, 5);
-  attribute->data = (void *)&g_eip_security.pre_shared_keys;
+    g_eip_security.pre_shared_keys = g_eip_security_default.pre_shared_keys;
 
-  attribute = GetCipAttribute(instance, 6);
-  attribute->data = (void *)&g_eip_security.active_device_certificates;
+    g_eip_security.active_device_certificates = g_eip_security_default.active_device_certificates;
 
-  attribute = GetCipAttribute(instance, 7);
-  attribute->data = (void *)&g_eip_security.trusted_authorities;
+    g_eip_security.trusted_authorities = g_eip_security_default.trusted_authorities;
 
-  attribute = GetCipAttribute(instance, 8);
-  attribute->data = (void *)&g_eip_security.certificate_revocation_list;
+    g_eip_security.certificate_revocation_list = g_eip_security_default.certificate_revocation_list;
 
-  attribute = GetCipAttribute(instance, 9);
-  attribute->data = (void *)&g_eip_security.verify_client_certificate;
+    g_eip_security.verify_client_certificate = g_eip_security_default.verify_client_certificate;
 
-  attribute = GetCipAttribute(instance, 10);
-  attribute->data = (void *)&g_eip_security.send_certificate_chain;
+    g_eip_security.send_certificate_chain = g_eip_security_default.send_certificate_chain;
 
-  attribute = GetCipAttribute(instance, 11);
-  attribute->data = (void *)&g_eip_security.check_expiration;
+    g_eip_security.check_expiration = g_eip_security_default.check_expiration;
 
-  attribute = GetCipAttribute(instance, 12);
-  attribute->data = (void *)&g_eip_security.trusted_identities;
+    g_eip_security.trusted_identities = g_eip_security_default.trusted_identities;
 
-  attribute = GetCipAttribute(instance, 15);
-  attribute->data = (void *)&g_eip_security.dtls_timeout;
+    g_eip_security.dtls_timeout = g_eip_security_default.dtls_timeout;
 
-  attribute = GetCipAttribute(instance, 16);
-  attribute->data = (void *)&g_eip_security.udp_only_policy;
+    g_eip_security.udp_only_policy = g_eip_security_default.udp_only_policy;
+  }
 }
 
 /** EtherNet/IP Security Object PreResetCallback
@@ -297,8 +314,6 @@ EipStatus EIPSecurityObjectBeginConfig(
     // TODO: save current instance config before starting new config
     *(CipUsint *)attribute->data =
       kEIPSecurityObjectStateValueConfigurationInProgress;                               // set state
-
-    // TODO: start configuration session timer
   }
 
   return kEipStatusOk;
@@ -321,7 +336,7 @@ EipStatus EIPSecurityObjectKickTimer(
   message_router_response->reply_service =
     (0x80 | message_router_request->service);
 
-  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);  // attribute #1 state
+  CipAttributeStruct *attribute = GetCipAttribute(instance, 1);  // attribute #1 - state
   CipUsint state = *(CipUsint *)attribute->data;
 
   if (kEIPSecurityObjectStateValueConfigurationInProgress == state) {
@@ -436,22 +451,16 @@ int DecodeEIPSecurityObjectCipherSuites(
   number_of_decoded_bytes = sizeof(number_of_cipher_suites);
 
   if (number_of_cipher_suites > 0) {
-    EIPSecurityObjectCipherSuiteId *cipher_suite_ids = CipCalloc(
-      number_of_cipher_suites,
-      sizeof(EIPSecurityObjectCipherSuiteId) );
 
-    memcpy( cipher_suite_ids, message_router_request->data,
+    memcpy( data->cipher_suite_ids, message_router_request->data,
             number_of_cipher_suites
             * sizeof(EIPSecurityObjectCipherSuiteId) );
 
     number_of_decoded_bytes +=
       number_of_cipher_suites * sizeof(EIPSecurityObjectCipherSuiteId);
-
-    data->number_of_cipher_suites = number_of_cipher_suites;
-    data->cipher_suite_ids = cipher_suite_ids;
-  } else {
-    data->cipher_suite_ids = NULL;
   }
+
+  data->number_of_cipher_suites = number_of_cipher_suites;
 
   message_router_response->general_status = kCipErrorSuccess;
   return number_of_decoded_bytes;
@@ -834,7 +843,7 @@ EipStatus EIPSecurityInit(void) {
                   kCipBool,
                   EncodeCipBool,
                   NULL,
-                  &g_eip_security.pull_model_enabled,
+                  &g_eip_security.pull_model_enabled, 
                   kGetableSingleAndAll
                   );
   InsertAttribute(eip_security_object_instance,
