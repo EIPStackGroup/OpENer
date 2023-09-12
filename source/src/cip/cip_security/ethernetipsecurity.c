@@ -133,31 +133,31 @@ EIPSecurityObjectCipherSuiteId const ALLOWED_CIPHER_FREE_ENTRY = {
 };
 
 const EIPSecurityObjectCipherSuites available_cipher_suites = {
-   .number_of_cipher_suites = number_of_required_cipher_suites,
-   .cipher_suite_ids = {
-   TLS_RSA_WITH_NULL_SHA256,
-   TLS_RSA_WITH_AES_128_CBC_SHA256,
-   TLS_RSA_WITH_AES_256_CBC_SHA256,
-   TLS_ECDHE_ECDSA_WITH_NULL_SHA,
-   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
-   TLS_ECDHE_PSK_WITH_NULL_SHA256,
-   TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
+  .number_of_cipher_suites = number_of_required_cipher_suites,
+  .cipher_suite_ids = {
+    TLS_RSA_WITH_NULL_SHA256,
+    TLS_RSA_WITH_AES_128_CBC_SHA256,
+    TLS_RSA_WITH_AES_256_CBC_SHA256,
+    TLS_ECDHE_ECDSA_WITH_NULL_SHA,
+    TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+    TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+    TLS_ECDHE_PSK_WITH_NULL_SHA256,
+    TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
   }
 };
 
 const EIPSecurityObjectCipherSuites default_allowed_cipher_suites = {
-   .number_of_cipher_suites = 2,
-   .cipher_suite_ids = {
-   TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-   TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
-   ALLOWED_CIPHER_FREE_ENTRY,
-   ALLOWED_CIPHER_FREE_ENTRY,
-   ALLOWED_CIPHER_FREE_ENTRY,
-   ALLOWED_CIPHER_FREE_ENTRY,
-   ALLOWED_CIPHER_FREE_ENTRY,
-   ALLOWED_CIPHER_FREE_ENTRY
-  } 
+  .number_of_cipher_suites = 2,
+  .cipher_suite_ids = {
+    TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+    TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+    ALLOWED_CIPHER_FREE_ENTRY,
+    ALLOWED_CIPHER_FREE_ENTRY,
+    ALLOWED_CIPHER_FREE_ENTRY,
+    ALLOWED_CIPHER_FREE_ENTRY,
+    ALLOWED_CIPHER_FREE_ENTRY,
+    ALLOWED_CIPHER_FREE_ENTRY
+  }
 };
 
 //default EIPSecurityObject values
@@ -166,7 +166,7 @@ EIPSecurityObject g_eip_security_default = {
   .capability_flags = 0,                            /** Attribute #2 */
   .available_cipher_suites = available_cipher_suites,                  /** Attribute #3 */
   .allowed_cipher_suites = default_allowed_cipher_suites,                         /** Attribute #4 */
-  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
+  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */
   .active_device_certificates = active_device_certificates,   /** Attribute #6 */
   .verify_client_certificate = false,                     /** Attribute #9 */
   .send_certificate_chain = false,                        /** Attribute #10 */
@@ -187,7 +187,7 @@ EIPSecurityObject g_eip_security = {
   .capability_flags = 0,                            /** Attribute #2 */
   .available_cipher_suites = available_cipher_suites,                  /** Attribute #3 */
   .allowed_cipher_suites = default_allowed_cipher_suites,                         /** Attribute #4 */
-  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */ 
+  .pre_shared_keys.number_of_pre_shared_keys = 0,  //default = 0  /** Attribute #5 */
   .active_device_certificates = active_device_certificates,   /** Attribute #6 */
   .verify_client_certificate = false,                     /** Attribute #9 */
   .send_certificate_chain = false,                        /** Attribute #10 */
@@ -215,25 +215,32 @@ MilliSeconds eipSecurityConfigSessionTimeout =
  *  Factory Default Configuration value
  */
 void EIPSecurityObjectResetSettableAttributes(CipInstance *instance) {
-  if(1 == instance->instance_number){
+  if(1 == instance->instance_number) {
 
-    g_eip_security.allowed_cipher_suites = g_eip_security_default.allowed_cipher_suites;
+    g_eip_security.allowed_cipher_suites =
+      g_eip_security_default.allowed_cipher_suites;
 
     g_eip_security.pre_shared_keys = g_eip_security_default.pre_shared_keys;
 
-    g_eip_security.active_device_certificates = g_eip_security_default.active_device_certificates;
+    g_eip_security.active_device_certificates =
+      g_eip_security_default.active_device_certificates;
 
-    g_eip_security.trusted_authorities = g_eip_security_default.trusted_authorities;
+    g_eip_security.trusted_authorities =
+      g_eip_security_default.trusted_authorities;
 
-    g_eip_security.certificate_revocation_list = g_eip_security_default.certificate_revocation_list;
+    g_eip_security.certificate_revocation_list =
+      g_eip_security_default.certificate_revocation_list;
 
-    g_eip_security.verify_client_certificate = g_eip_security_default.verify_client_certificate;
+    g_eip_security.verify_client_certificate =
+      g_eip_security_default.verify_client_certificate;
 
-    g_eip_security.send_certificate_chain = g_eip_security_default.send_certificate_chain;
+    g_eip_security.send_certificate_chain =
+      g_eip_security_default.send_certificate_chain;
 
     g_eip_security.check_expiration = g_eip_security_default.check_expiration;
 
-    g_eip_security.trusted_identities = g_eip_security_default.trusted_identities;
+    g_eip_security.trusted_identities =
+      g_eip_security_default.trusted_identities;
 
     g_eip_security.dtls_timeout = g_eip_security_default.dtls_timeout;
 
@@ -346,7 +353,7 @@ EipStatus EIPSecurityObjectKickTimer(
 
   if (kEIPSecurityObjectStateValueConfigurationInProgress == state) {
     // reset configuration session timer
-     eipSecurityConfigSessionTimeout =
+    eipSecurityConfigSessionTimeout =
       ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
     message_router_response->general_status = kCipErrorSuccess;
   }
@@ -442,13 +449,15 @@ EipStatus EIPSecurityObjectAbortConfig(
  */
 void EIPSecuritySessionTimeoutChecker(const MilliSeconds elapsed_time) {
   /* check if EIPSecurity configuration session timed out. */
-  if(kEIPSecurityObjectStateValueConfigurationInProgress == g_eip_security.state) {
+  if(kEIPSecurityObjectStateValueConfigurationInProgress ==
+     g_eip_security.state) {
     if(elapsed_time > eipSecurityConfigSessionTimeout) {
-      g_eip_security.state = kEIPSecurityObjectStateValueFactoryDefaultConfiguration;
+      g_eip_security.state =
+        kEIPSecurityObjectStateValueFactoryDefaultConfiguration;
       OPENER_TRACE_INFO(
         "EIPSecuritySessionTimeoutChecker: EIP Security configuration session timed out\n");
       eipSecurityConfigSessionTimeout =
-        ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT; 
+        ETHERNET_IP_SECURITY_CONFIG_SESSION_DEFAULT_TIMEOUT;
     }
     else {
       eipSecurityConfigSessionTimeout -= elapsed_time;
@@ -748,7 +757,7 @@ EipStatus EIPSecurityInit(void) {
   CipInstance *eip_security_object_instance;
 
   eip_security_object_class = CreateCipClass(
-    kEIPSecurityObjectClassCode, 
+    kEIPSecurityObjectClassCode,
     9,                                /* # class attributes */
     9,                                /* # highest class attribute number */
     2,                                /* # class services */
@@ -871,7 +880,7 @@ EipStatus EIPSecurityInit(void) {
                   kCipBool,
                   EncodeCipBool,
                   NULL,
-                  &g_eip_security.pull_model_enabled, 
+                  &g_eip_security.pull_model_enabled,
                   kGetableSingleAndAll
                   );
   InsertAttribute(eip_security_object_instance,
