@@ -56,7 +56,9 @@ static void *executeEventLoop(void *pthread_arg);
 /** @brief Fuzz TCP packets handling flow with AFL.
  *
  */
+#ifdef FUZZING_AFL
 static void fuzzHandlePacketFlow(void);
+#endif /* FUZZING_AFL */
 
 /*****************************************************************************/
 /** @brief Flag indicating if the stack should end its execution
@@ -93,8 +95,8 @@ int main(int argc,
    *  16 bits of the connection id. Here we use random number approach, first seed
    *  the PRNG to ensure we don't get the same value on every startup.
    */
-  srand( time(NULL) );
-  EipUint16 unique_connection_id = rand();
+  srand(time(NULL));
+  EipUint16 unique_connection_id = (EipUint16)rand();
 
   /* Setup the CIP Layer. All objects are initialized with the default
    * values for the attribute contents. */
@@ -266,8 +268,8 @@ static void *executeEventLoop(void *pthread_arg) {
   return &pthread_dummy_ret;
 }
 
-static void fuzzHandlePacketFlow(void) {
 #ifdef FUZZING_AFL
+static void fuzzHandlePacketFlow(void) {
   int socket_fd = 0;   // Fake socket fd
   uint8_t buff[512];   // Input buffer
   struct sockaddr_in from_address = { 0 }; // Fake socket address
@@ -294,5 +296,5 @@ static void fuzzHandlePacketFlow(void) {
                                                           &from_address,
                                                           &outgoing_message);
   }
-#endif
 }
+#endif /* FUZZING_AFL */

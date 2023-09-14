@@ -80,8 +80,8 @@ int main(int argc,
    *  16 bits of the connection id. Here we use random number approach, first seed
    *  the PRNG to ensure we don't get the same value on every startup.
    */
-  srand( time(NULL) );
-  EipUint16 unique_connection_id = rand();
+  srand(time(NULL));
+  EipUint16 unique_connection_id = (EipUint16)rand();
 
   /* Setup the CIP Layer. All objects are initialized with the default
    * values for the attribute contents. */
