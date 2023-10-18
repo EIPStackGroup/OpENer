@@ -1590,7 +1590,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
                  sizeof(connection_object->produced_path) );
           OPENER_TRACE_INFO(
             "connection point %" PRIu32 "\n",
-            attribute_id);
+            instance_id);
           if( NULL == GetCipInstance(class, instance_id) ) {
             *extended_error =
               kConnectionManagerExtendedStatusCodeInconsistentApplicationPathCombo;
