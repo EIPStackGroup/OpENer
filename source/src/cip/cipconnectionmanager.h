@@ -199,7 +199,7 @@ CipConnectionObject *GetConnectedOutputAssembly(
 void CloseConnection(CipConnectionObject *RESTRICT connection_object);
 
 /* TODO: Missing documentation */
-EipBool8 IsConnectedOutputAssembly(const EipUint32 instance_number);
+EipBool8 IsConnectedOutputAssembly(const CipInstanceNum instance_number);
 
 /** @brief Insert the given connection object to the list of currently active
  *  and managed connections.

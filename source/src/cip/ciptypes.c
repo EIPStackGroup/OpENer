@@ -7,6 +7,10 @@
 #include <endianconv.h>
 #include <trace.h>
 
+
+const CipInstanceNum kCipInstanceNumMax = UINT16_MAX;
+
+
 /* functions*/
 size_t GetCipDataTypeLength(EipUint8 type,
                             const EipUint8 *data) {

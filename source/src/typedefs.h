@@ -68,6 +68,17 @@ static const int kEipInvalidSocket = -1;
 typedef unsigned long MilliSeconds;
 typedef unsigned long long MicroSeconds;
 
+
+/** @brief CIP object instance number type.
+ *
+ * This type is intended for storing values related to identifying or
+ * quantifying object instances, e.g., the maximum number of instances or
+ * a specific instance number. The data type is based on @cite CipVol1,
+ * Table 4-4.2, Attribute IDs 2 and 3.
+ */
+typedef CipUint CipInstanceNum;
+
+
 /**
 
    The following are generally true regarding return status:

@@ -105,7 +105,7 @@ EipStatus NotifyClass(const CipClass *RESTRICT const cip_class,
                       const int encapsulation_session) {
 
   /* find the instance: if instNr==0, the class is addressed, else find the instance */
-  EipUint16 instance_number =
+  CipInstanceNum instance_number =
     message_router_request->request_path.instance_number;                           /* get the instance number */
   CipInstance *instance = GetCipInstance(cip_class, instance_number); /* look up the instance (note that if inst==0 this will be the class itself) */
   if(instance) /* if instance is found */
@@ -165,10 +165,10 @@ CipUint GetMaxInstanceNumber(CipClass *RESTRICT const cip_class) {
 }
 
 CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
-                             const int number_of_instances) {
+                             const CipInstanceNum number_of_instances) {
   CipInstance **next_instance = NULL;
   CipInstance *first_instance = NULL; /* Initialize to error result */
-  EipUint32 instance_number = 1; /* the first instance is number 1 */
+  CipInstanceNum instance_number = 1; /* the first instance is number 1 */
   int new_instances = 0;
 
   OPENER_TRACE_INFO("adding %d instances to class %s\n",
@@ -250,7 +250,7 @@ CipInstance *AddCipInstances(CipClass *RESTRICT const cip_class,
 }
 
 CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class,
-                            const EipUint32 instance_id) {
+                            const CipInstanceNum instance_id) {
   CipInstance *instance = GetCipInstance(cip_class, instance_id);
 
   if(NULL == instance) { /*we have no instance with given id*/
@@ -270,7 +270,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const int number_of_instance_attributes,
                          const EipUint32 highest_instance_attribute_number,
                          const int number_of_instance_services,
-                         const int number_of_instances,
+                         const CipInstanceNum number_of_instances,
                          const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer) {
@@ -333,7 +333,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
   cip_class->class_instance.cip_class = meta_class; /* the class's class is the metaclass (like SmallTalk)*/
   cip_class->class_instance.next = 0; /* the next link will always be zero, since there is only one instance of any particular class object */
 
-  meta_class->class_instance.instance_number = 0xffffffff; /*the metaclass object does not really have a valid instance number*/
+  meta_class->class_instance.instance_number = 0xffff; /*the metaclass object does not really have a valid instance number*/
   meta_class->class_instance.attributes = NULL;/* the metaclass has no attributes*/
   meta_class->class_instance.cip_class = NULL; /* the metaclass has no class*/
   meta_class->class_instance.next = NULL; /* the next link will always be zero, since there is only one instance of any particular metaclass object*/
@@ -579,82 +579,82 @@ EipStatus GetAttributeSingle(CipInstance *RESTRICT const instance,
   return kEipStatusOkSend;
 }
 
-void EncodeCipBool(const CipBool *const data,
+void EncodeCipBool(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipByte(const CipByte *const data,
+void EncodeCipByte(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipWord(const CipWord *const data,
+void EncodeCipWord(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDword(const CipDword *const data,
+void EncodeCipDword(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLword(const CipLword *const data,
+void EncodeCipLword(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipUsint(const CipUsint *const data,
+void EncodeCipUsint(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipUint(const CipUint *const data,
+void EncodeCipUint(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipUdint(const CipUdint *const data,
+void EncodeCipUdint(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipUlint(const CipUlint *const data,
+void EncodeCipUlint(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipSint(const CipSint *const data,
+void EncodeCipSint(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddSintToMessage(*(EipUint8 *) (data), outgoing_message);
 }
 
-void EncodeCipInt(const CipInt *const data,
+void EncodeCipInt(const void *const data,
                   ENIPMessage *const outgoing_message) {
   AddIntToMessage(*(EipUint16 *) (data), outgoing_message);
 }
 
-void EncodeCipDint(const CipDint *const data,
+void EncodeCipDint(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLint(const CipLint *const data,
+void EncodeCipLint(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipReal(const CipReal *const data,
+void EncodeCipReal(const void *const data,
                    ENIPMessage *const outgoing_message) {
   AddDintToMessage(*(EipUint32 *) (data), outgoing_message);
 }
 
-void EncodeCipLreal(const CipLreal *const data,
+void EncodeCipLreal(const void *const data,
                     ENIPMessage *const outgoing_message) {
   AddLintToMessage(*(EipUint64 *) (data), outgoing_message);
 }
 
-void EncodeCipShortString(const CipShortString *const data,
+void EncodeCipShortString(const void *const data,
                           ENIPMessage *const outgoing_message) {
   CipShortString *const short_string = (CipShortString *) data;
 
@@ -667,7 +667,7 @@ void EncodeCipShortString(const CipShortString *const data,
   outgoing_message->used_message_length += short_string->length;
 }
 
-void EncodeCipString(const CipString *const data,
+void EncodeCipString(const void *const data,
                      ENIPMessage *const outgoing_message) {
   CipString *const string = (CipString *) data;
 
@@ -686,7 +686,7 @@ void EncodeCipString(const CipString *const data,
   }
 }
 
-void EncodeCipString2(const CipString2 *const data,
+void EncodeCipString2(const void *const data,
                       ENIPMessage *const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
@@ -695,7 +695,7 @@ void EncodeCipString2(const CipString2 *const data,
   OPENER_ASSERT(false); /* Not implemented yet */
 }
 
-void EncodeCipStringN(const CipStringN *const data,
+void EncodeCipStringN(const void *const data,
                       ENIPMessage *const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
@@ -713,7 +713,7 @@ static void CipStringIHeaderEncoding(const CipStringIStruct *const string,
   EncodeCipUint(&(string->character_set), outgoing_message);
 }
 
-void EncodeCipStringI(const CipStringI *const data,
+void EncodeCipStringI(const void *const data,
                       ENIPMessage *const outgoing_message) {
   const CipStringI *const string_i = data;
   EncodeCipUsint(&(string_i->number_of_strings), outgoing_message);
@@ -744,7 +744,7 @@ void EncodeCipStringI(const CipStringI *const data,
   }
 }
 
-void EncodeCipByteArray(const CipByteArray *const data,
+void EncodeCipByteArray(const void *const data,
                         ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO(" -> get attribute byte array\r\n");
   CipByteArray *cip_byte_array = (CipByteArray *) data;
@@ -755,9 +755,9 @@ void EncodeCipByteArray(const CipByteArray *const data,
   outgoing_message->used_message_length += cip_byte_array->length;
 }
 
-void EncodeCipEPath(const CipEpath *const data,
+void EncodeCipEPath(const void *const data,
                     ENIPMessage *const outgoing_message) {
-  AddIntToMessage(data->path_size, outgoing_message);
+  AddIntToMessage( ( (CipEpath *)data )->path_size, outgoing_message );
   EncodeEPath( (CipEpath *) data, outgoing_message );
 }
 
@@ -846,7 +846,7 @@ EipStatus SetAttributeSingle(CipInstance *RESTRICT const instance,
 }
 
 int DecodeCipBool(CipBool *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetBoolFromMessage(&message_router_request->data);
@@ -855,7 +855,7 @@ int DecodeCipBool(CipBool *const data,
 }
 
 int DecodeCipByte(CipByte *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetByteFromMessage(&message_router_request->data);
@@ -895,7 +895,7 @@ int DecodeCipByteArray(CipByteArray *const data,
 }
 
 int DecodeCipWord(CipWord *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetWordFromMessage(&message_router_request->data);
@@ -904,7 +904,7 @@ int DecodeCipWord(CipWord *const data,
 }
 
 int DecodeCipDword(CipDword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -913,7 +913,7 @@ int DecodeCipDword(CipDword *const data,
 }
 
 int DecodeCipLword(CipLword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -922,7 +922,7 @@ int DecodeCipLword(CipLword *const data,
 }
 
 int DecodeCipUsint(CipUsint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUsintFromMessage(&message_router_request->data);
@@ -931,7 +931,7 @@ int DecodeCipUsint(CipUsint *const data,
 }
 
 int DecodeCipUint(CipUint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUintFromMessage(&message_router_request->data);
@@ -940,7 +940,7 @@ int DecodeCipUint(CipUint *const data,
 }
 
 int DecodeCipUdint(CipUdint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetUdintFromMessage(&message_router_request->data);
@@ -949,7 +949,7 @@ int DecodeCipUdint(CipUdint *const data,
 }
 
 int DecodeCipUlint(CipUlint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -958,7 +958,7 @@ int DecodeCipUlint(CipUlint *const data,
 }
 
 int DecodeCipSint(CipSint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetSintFromMessage(&message_router_request->data);
@@ -967,7 +967,7 @@ int DecodeCipSint(CipSint *const data,
 }
 
 int DecodeCipInt(CipInt *const data,
-                 const CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterRequest *const message_router_request,
                  CipMessageRouterResponse *const message_router_response) {
 
   *data = GetIntFromMessage(&message_router_request->data);
@@ -976,7 +976,7 @@ int DecodeCipInt(CipInt *const data,
 }
 
 int DecodeCipDint(CipDint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -985,7 +985,7 @@ int DecodeCipDint(CipDint *const data,
 }
 
 int DecodeCipLint(CipLint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -994,7 +994,7 @@ int DecodeCipLint(CipLint *const data,
 }
 
 int DecodeCipReal(CipReal *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response) {
 
   *data = GetDintFromMessage(&message_router_request->data);
@@ -1003,7 +1003,7 @@ int DecodeCipReal(CipReal *const data,
 }
 
 int DecodeCipLreal(CipLreal *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response) {
 
   *data = GetLintFromMessage(&message_router_request->data);
@@ -1338,8 +1338,9 @@ EipStatus SetAttributeList(CipInstance *instance,
   return kEipStatusOkSend;
 }
 
-void EncodeEPath(const CipEpath *const epath,
+void EncodeEPath(const void *const data,
                  ENIPMessage *const message) {
+  const CipEpath *const epath = (CipEpath *)data;
   unsigned int length = epath->path_size;
   size_t start_length = message->used_message_length;
 
@@ -1357,7 +1358,7 @@ void EncodeEPath(const CipEpath *const epath,
   if(0 < length) {
     if(epath->instance_number < 256) {
       AddSintToMessage(0x24, message); /*8Bit Instance Id */
-      AddSintToMessage(epath->instance_number, message);
+      AddSintToMessage( (EipUint8)epath->instance_number, message );
       length -= 1;
     } else {
       AddSintToMessage(0x25, message); /*16Bit Instance Id */
@@ -1380,8 +1381,10 @@ void EncodeEPath(const CipEpath *const epath,
     }
   }
 
+  /* path size is in 16 bit chunks according to the specification */
   OPENER_ASSERT(
-    epath->path_size * 2 == message->used_message_length - start_length);             /* path size is in 16 bit chunks according to the specification */
+    epath->path_size * sizeof(CipWord) ==
+    message->used_message_length - start_length);
 }
 
 int DecodePaddedEPath(CipEpath *epath,

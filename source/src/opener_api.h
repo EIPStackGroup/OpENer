@@ -213,7 +213,7 @@ CipClass *GetCipClass(const CipUdint class_code);
  *          0 if instance is not in the object
  */
 CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_object,
-                            const EipUint32 instance_number);
+                            const CipInstanceNum instance_number);
 
 /** @ingroup CIP_API
  * @brief Get a pointer to an instance's attribute
@@ -258,7 +258,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
                          const int number_of_instance_attributes,
                          const EipUint32 highest_instance_attribute_number,
                          const int number_of_instance_services,
-                         const int number_of_instances,
+                         const CipInstanceNum number_of_instances,
                          const char *const name,
                          const EipUint16 revision,
                          InitializeCipClass initializer);
@@ -283,7 +283,7 @@ CipClass *CreateCipClass(const CipUdint class_code,
  */
 CipInstance *AddCipInstances(
   CipClass *RESTRICT const cip_object_to_add_instances,
-  const int number_of_instances);
+  const CipInstanceNum number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -296,7 +296,7 @@ CipInstance *AddCipInstances(
  *
  */
 CipInstance *AddCipInstance(CipClass *RESTRICT const cip_class_to_add_instance,
-                            const EipUint32 instance_id);
+                            const CipInstanceNum instance_id);
 
 /** @ingroup CIP_API
  * @brief Insert an attribute in an instance of a CIP class
@@ -385,73 +385,73 @@ void InsertGetSetCallback(CipClass *const cip_class,
  *  @param message_router_response The message router response construct
  */
 
-void EncodeCipBool(const CipBool *const data,
+void EncodeCipBool(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipByte(const CipByte *const data,
+void EncodeCipByte(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipWord(const CipWord *const data,
+void EncodeCipWord(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipDword(const CipDword *const data,
+void EncodeCipDword(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipLword(const CipLword *const data,
+void EncodeCipLword(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUsint(const CipUsint *const data,
+void EncodeCipUsint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUint(const CipUint *const data,
+void EncodeCipUint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipUdint(const CipUdint *const data,
+void EncodeCipUdint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUlint(const CipUlint *const data,
+void EncodeCipUlint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipSint(const CipSint *const data,
+void EncodeCipSint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipInt(const CipInt *const data,
+void EncodeCipInt(const void *const data,
                   ENIPMessage *const outgoing_message);
 
-void EncodeCipDint(const CipDint *const data,
+void EncodeCipDint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipLint(const CipLint *const data,
+void EncodeCipLint(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipReal(const CipReal *const data,
+void EncodeCipReal(const void *const data,
                    ENIPMessage *const outgoing_message);
 
-void EncodeCipLreal(const CipLreal *const data,
+void EncodeCipLreal(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipShortString(const CipShortString *const data,
+void EncodeCipShortString(const void *const data,
                           ENIPMessage *const outgoing_message);
 
-void EncodeCipString(const CipString *const data,
+void EncodeCipString(const void *const data,
                      ENIPMessage *const outgoing_message);
 
-void EncodeCipString2(const CipString2 *const data,
+void EncodeCipString2(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipStringN(const CipStringN *const data,
+void EncodeCipStringN(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipStringI(const CipStringI *const data,
+void EncodeCipStringI(const void *const data,
                       ENIPMessage *const outgoing_message);
 
-void EncodeCipByteArray(const CipByteArray *const data,
+void EncodeCipByteArray(const void *const data,
                         ENIPMessage *const outgoing_message);
 
-void EncodeCipEPath(const CipEpath *const data,
+void EncodeCipEPath(const void *const data,
                     ENIPMessage *const outgoing_message); //path_size UINT
 
-void EncodeEPath(const CipEpath *const data,
+void EncodeEPath(const void *const data,
                  ENIPMessage *const outgoing_message); //path_size not encoded
 
 void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
@@ -471,11 +471,11 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
  *          -1 .. error
  */
 int DecodeCipBool(CipBool *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByte(CipByte *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipByteArray(CipByteArray *const data,
@@ -483,55 +483,55 @@ int DecodeCipByteArray(CipByteArray *const data,
                        CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipWord(CipWord *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDword(CipDword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLword(CipLword *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUsint(CipUsint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUint(CipUint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUdint(CipUdint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipUlint(CipUlint *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipSint(CipSint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipInt(CipInt *const data,
-                 const CipMessageRouterRequest *const message_router_request,
+                 CipMessageRouterRequest *const message_router_request,
                  CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipDint(CipDint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLint(CipLint *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipReal(CipReal *const data,
-                  const CipMessageRouterRequest *const message_router_request,
+                  CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipLreal(CipLreal *const data,
-                   const CipMessageRouterRequest *const message_router_request,
+                   CipMessageRouterRequest *const message_router_request,
                    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipString(CipString *const data,
@@ -559,7 +559,7 @@ int DecodeCipShortString(CipShortString *const data,
  * The notification on received configuration data is handled with the
  * AfterAssemblyDataReceived.
  */
-CipInstance *CreateAssemblyObject(const EipUint32 instance_number,
+CipInstance *CreateAssemblyObject(const CipInstanceNum instance_number,
                                   EipByte *const data,
                                   const EipUint16 data_length);
 
