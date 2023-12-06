@@ -221,5 +221,27 @@ git config filter.uncrustify.clean "/path/to/uncrustify/uncrustify -c uncrustify
 
 git config filter.uncrustify.smudge "cat"
 ```
+License:
+-------
+See the [license.txt](https://github.com/EIPStackGroup/OpENer/blob/master/license.txt) file for the full text of the license.
+
+### Third-party code included in OpENer:
+This project contains adapted code from other projects. The original license text is included within project subdirectories and in source files. The projects are listed below:
+
+* `source/src/cip/cip_security`: Some files adapted from sample programs in the [Mbed TLS](https://github.com/Mbed-TLS/mbedtls) project (directory: [programs](https://github.com/Mbed-TLS/mbedtls/tree/development/programs)) distributed under the Apache 2.0 license.
+
+Activating CIP Security features in OpENer:
+-------
+[OpENer File Object](https://github.com/EIPStackGroup/OpENerFileObject) is required for Cip Security. If this is not yet integrated into your project add it using the instructions [here](https://github.com/EIPStackGroup/OpENerFileObject#readme).
+
+### How to add MbedTLS to OpENer:
+OpENer uses [Mbed TLS](https://github.com/Mbed-TLS/mbedtls) for implementation of Security features. Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols.
+
+Clone the [Mbed TLS](https://github.com/Mbed-TLS/mbedtls) project and follow the [README for MbedTLS](https://github.com/Mbed-TLS/mbedtls#readme-for-mbed-tls) for configuration and compiling.
+
+### Activate CIP Security:
+
+After installing MbedTLS activate  `OPENER_CIP_SECURITY`  in your OpENer CMake config. While configuring you should see a error message regarding a missing  MbedTLS package. Set the variable `MbedTLS_DIR` in your CMake config to the MbedTLS install directory `${YOUR_MBEDTLS_INSTALL_DIR}/cmake` .
+
 
 
