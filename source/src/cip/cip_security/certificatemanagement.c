@@ -52,19 +52,27 @@
 #include "certificatemanagement.h"
 #include "cipsecurity.h"
 
-#include "OpENerFileObject/cipfile.h" //TODO: check
+#include "OpENerFileObject/cipfile.h"
 #include "cipepath.h"
 #include "cipstring.h"
+
+// MbedTLS files
+#include "cert_req.h"
+#include "gen_key.h"
+#include "cert_write.h"
+
+/** @brief The device's configuration data */
+#include "devicedata.h"
 
 /* ********************************************************************
  * defines
  */
 /** The implemented class revision is 1 */
-#define CERTIFICATE_MANAGEMENT_OBJECT_REVISION 1
+#define CERTIFICATE_MANAGEMENT_OBJECT_REVISION 2
 #define DEFAULT_DEVICE_CERTIFICATE_INSTANCE_NUMBER 1
 
 /**
- * declaration of (static) Certificate Management object instance 1 data
+ * declaration of (static) Certificate Management object class data
  */
 CertificateManagementObjectClassAttributes cmo_class_attr = {
   .capability_flags = kCertificateManagementObjectCapabilityFlagPushModel,
@@ -81,6 +89,17 @@ const CipShortString default_name = {
   .length = instance_1_length,
   .string = (EipByte *)(&instance_1_name),
 };
+
+char *default_device_certificate_subject_name[] = {
+                                          "OpENer", // 1: Common Name
+                                          "EIP Stack Group", // 2: Organization
+                                          "EIP Stack Group", // 3: Organizational Unit
+                                          "Vienna", // 4: City / Locality
+                                          "Vienna", // 5: State / County / Region
+                                          "AT", // 6: Country
+                                          "mail@example.com"}; // 7: Email address //TODO: add email
+
+CipUlint default_device_certificate_serial_number = OPENER_SERIAL_NUMBER; 
 
 Certificate default_device_certificate;
 
@@ -361,7 +380,7 @@ EipStatus CertificateManagementObjectCreateCSR(
     message_router_response->general_status = kCipErrorObjectStateConflict;
   }
   else{
-    const size_t number_of_strings = 8; //number of Create_CSR Request Parameters
+    const size_t number_of_strings = 9; //number of Create_CSR Request Parameters
     CipShortString short_strings[number_of_strings];
     memset( short_strings, 0, sizeof(short_strings) );
     // 1: Common Name
@@ -372,6 +391,7 @@ EipStatus CertificateManagementObjectCreateCSR(
     // 6: Country
     // 7: Email address
     // 8: Serial number
+    // 9: Subject alternative name
 
     for(size_t i = 0; i < number_of_strings; i++) {
       DecodeCipShortString(&short_strings[i],
@@ -385,19 +405,33 @@ EipStatus CertificateManagementObjectCreateCSR(
       // The CMO state does not change after this service call with invalid parameters
       return kEipStatusOk;
     }
-
-    // use values from Default Device certificate if items are null
-    for(size_t i = 0; i < number_of_strings; i++) {
+ 
+    // use values from Default Device Certificate if items are null
+    for(size_t i = 0; i < number_of_strings-2; i++) {
       if(0 == short_strings[i].length) {
-        //TODO: use value from Default Device certificate
+        SetCipShortStringByCstr(&short_strings[i], default_device_certificate_subject_name[i]);
       }
     }
+    if(0 == short_strings[7].length){ //serial number
+      char serial_number[20];
+      sprintf(serial_number, "%lu", default_device_certificate_serial_number);
+      SetCipShortStringByCstr(&short_strings[7], serial_number);
+    }
+    if(0 == short_strings[8].length){ //Subject alternative name
+      //TODO: 
+      /* use the IP Address and/or DNS Name as defined in the TCP IP Interface 
+      Object in Volume 2 Section 5-4 TCP/IP Interface Object */
+    }
 
-    /* create file object for device certificate */
-    CipInstance CSR_file_object = CipFileCreateInstance(""); //no name TODO: check
+    /* create file object for certificate signing request */
+    CipInstance CSR_file_object = CipFileCreateInstance("Certificate Signing Request");
 
-    /* add data to file object */ //TODO: provide CSR file - mbedTLS, use values in short_strings
+    /* add data to file object */
     CipFileCreateCSRFileInstance(&CSR_file_object);
+
+    /* create CSR file (MbedTLS) with received data */
+    OPENER_TRACE_INFO("\nCreating CSR file:\n");
+    MbedtlsWriteCSR(short_strings);
 
     CipEpath CSR_file_object_path = CipEpathCreate(2,
                                                    kCipFileObjectClassCode,
@@ -543,7 +577,7 @@ EipStatus CertificateManagementObjectInit(void) {
 
   certificate_management_object_class = CreateCipClass(
     kCertificateManagementObjectClassCode,
-    3,    /* # class attributes */
+    10,   /* # class attributes */
     10,   /* # highest class attribute number */
     3,    /* # class services */
     5,    /* # instance attributes */
@@ -637,8 +671,49 @@ EipStatus CertificateManagementObjectInit(void) {
   g_certificate_management.device_certificate = default_device_certificate;          /*Attribute 3*/
   g_certificate_management.ca_certificate = default_ca_certificate;                  /*Attribute 4*/
   g_certificate_management.certificate_encoding =
-    kCertificateManagementObjectCertificateEncodingPEM;                                                 /*Attribute 5*/
-
+    kCertificateManagementObjectCertificateEncodingPEM;                              /*Attribute 5*/
+  
+  /* Create RSA key file (MbedTLS) */
+  OPENER_TRACE_INFO("\nCreating RSA key file: \n"); 
+  // check if key file exist already
+  FILE *key_file;
+  if ((key_file = fopen(RSA_KEY_FILE_LOCATION, "r")) != NULL) {
+    // check if file is empty
+    fseek (key_file, 0, SEEK_END);
+    long size = ftell(key_file);
+    if (0 != size) {
+        OPENER_TRACE_INFO(" Key EXISTS already!\n");
+        fclose(key_file);
+    }
+    else{ // empty file - create
+      MbedtlsGenerateKey();
+    }
+  }
+  else{ // file not found - create
+    MbedtlsGenerateKey();
+  } 
+    
+  /* Create Default device certificate (MbedTLS) */
+  char serial_number[20];
+  sprintf(serial_number, "%lu", default_device_certificate_serial_number);
+  OPENER_TRACE_INFO("\nGenerating default device certificate: \n");
+  // check if certificate file exist already
+  FILE *cert_file;
+  if ((cert_file = fopen(FILE_OBJECT_CERTIFICATE_FILE_LOCATION, "r")) != NULL) {
+    // check if file is empty
+    fseek (cert_file, 0, SEEK_END);
+    long size = ftell(cert_file);
+    if (0 != size) {
+        OPENER_TRACE_INFO(" Certificate EXISTS already!\n\n");
+        fclose(cert_file);
+    }
+    else{ // empty file - create
+      MbedtlsGenerateCertificate(default_device_certificate_subject_name, serial_number);
+    }
+  }
+  else{ // file not found - create
+    MbedtlsGenerateCertificate(default_device_certificate_subject_name, serial_number);
+  }
+  
   return kEipStatusOk;
-
 }

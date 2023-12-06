@@ -23,3 +23,6 @@ source/cip_objects/
 
 
 build/
+*.crt
+*.req
+*.key
