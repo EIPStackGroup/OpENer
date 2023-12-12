@@ -439,8 +439,16 @@ void EncodeListIdentitySecurityItem(ENIPMessage *const outgoing_message) {
   AddSintToMessage(g_security.state, outgoing_message);
   AddSintToMessage(g_eip_security.state, outgoing_message);
 
-  /* IANA port state, see Vol. 8, 3-5.3.1 */
-  CipByte iana_port_state = 0b00011111;   //TODO: all ports open - check
+  /* IANA port state, see Vol. 8, 3-5.3.1
+   * 1 (TRUE) port is open / 0 (FALSE) port is closed
+   * Bit 0 – 44818/tcp
+   * Bit 1 – 44818/udp
+   * Bit 2 – 2222/udp
+   * Bit 3 – 2221/tcp
+   * Bit 4 – 2221/udp
+   * Bit 5-7 - Reserved - shall be 0
+   */
+  CipByte iana_port_state = 0b00000011;
   AddSintToMessage(iana_port_state, outgoing_message);
 
   AddIntToMessage(g_security.security_profiles_configured, outgoing_message);
