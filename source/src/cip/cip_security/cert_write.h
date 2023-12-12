@@ -20,6 +20,7 @@
  *  @param serial_number_input  serial number in subject name
  *  @return status
  */
-int MbedtlsGenerateCertificate(char *subject_name_input[], char *serial_number_input);
+int MbedtlsGenerateCertificate(char *subject_name_input[],
+                               char *serial_number_input);
 
 #endif  // OPENER_CERT_WRITE_H

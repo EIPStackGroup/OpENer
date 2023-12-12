@@ -15,7 +15,7 @@
  * public functions
  */
 /** @brief  Certificate signing request generation
- * 
+ *
  *  @param short_strings structure containing CSR Parameters
  *  @return status
  */

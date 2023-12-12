@@ -15,7 +15,7 @@
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  ******************************************************************************
  *  Modifications copyright (C) 2023, Rockwell Automation, Inc.
  *  All rights reserved.
@@ -74,7 +74,7 @@ struct options {
 } options;
 
 /** @brief  Write certificate request
- * 
+ *
  *  @param req structure containing CSR Parameters
  *  @param output_file  where to store the constructed key file
  *  @param f_rng random number generator function
@@ -90,15 +90,16 @@ int write_certificate_request(mbedtls_x509write_csr *req,
   unsigned char output_buf[4096];
 
   memset(output_buf, 0, 4096);
-  if ((ret = mbedtls_x509write_csr_pem(req, output_buf, 4096, f_rng, p_rng)) <
-      0) {
+  if ( ( ret =
+           mbedtls_x509write_csr_pem(req, output_buf, 4096, f_rng, p_rng) ) <
+       0 ) {
     return ret;
   }
 
-  size_t len = strlen((char *)output_buf);
+  size_t len = strlen( (char *)output_buf );
   FILE *file;
 
-  if ((file = fopen(output_file, "w")) == NULL) {
+  if ( ( file = fopen(output_file, "w") ) == NULL ) {
     return -1;
   }
 
@@ -113,7 +114,7 @@ int write_certificate_request(mbedtls_x509write_csr *req,
 }
 
 /* function called in OpENer certificatemanagement */
-int MbedtlsWriteCSR(CipShortString *short_strings) { 
+int MbedtlsWriteCSR(CipShortString *short_strings) {
   int ret = 1;
   int exit_code = MBEDTLS_EXIT_FAILURE;
   mbedtls_pk_context key;
@@ -130,7 +131,7 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
   mbedtls_x509write_csr_init(&req);
   mbedtls_pk_init(&key);
   mbedtls_ctr_drbg_init(&ctr_drbg);
-  memset(buf, 0, sizeof(buf));
+  memset( buf, 0, sizeof(buf) );
   mbedtls_entropy_init(&entropy);
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
@@ -145,13 +146,16 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
 
   /* create subjectName string from input params */
   char subjectName[500];
-  snprintf(subjectName, sizeof(subjectName), SUBJECT_NAME_TEMPLATE, short_strings[0].string,
-                                                                    short_strings[1].string,
-                                                                    short_strings[2].string,
-                                                                    short_strings[3].string,
-                                                                    short_strings[4].string,
-                                                                    short_strings[5].string,
-                                                                    short_strings[6].string);
+  snprintf(subjectName,
+           sizeof(subjectName),
+           SUBJECT_NAME_TEMPLATE,
+           short_strings[0].string,
+           short_strings[1].string,
+           short_strings[2].string,
+           short_strings[3].string,
+           short_strings[4].string,
+           short_strings[5].string,
+           short_strings[6].string);
 
   options.filename = DFL_FILENAME;
   options.password = DFL_PASSWORD;
@@ -174,7 +178,7 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
 
     if (ret != 0) {
       OPENER_TRACE_INFO(
-          " failed\n  !  mbedtls_x509write_csr_set_key_usage returned %d", ret);
+        " failed\n  !  mbedtls_x509write_csr_set_key_usage returned %d", ret);
       goto exit;
     }
   }
@@ -185,7 +189,8 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
 
     if (ret != 0) {
       OPENER_TRACE_INFO(
-          " failed\n  !  mbedtls_x509write_csr_set_ns_cert_type returned %d", ret);
+        " failed\n  !  mbedtls_x509write_csr_set_ns_cert_type returned %d",
+        ret);
       goto exit;
     }
   }
@@ -196,9 +201,9 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
   OPENER_TRACE_INFO("  . Seeding the random number generator...");
   fflush(stdout);
 
-  if ((ret = mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy,
-                                   NULL,
-                                   0)) != 0) {
+  if ( ( ret = mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy,
+                                     NULL,
+                                     0) ) != 0 ) {
     OPENER_TRACE_INFO(" failed\n  !  mbedtls_ctr_drbg_seed returned %d", ret);
     goto exit;
   }
@@ -211,11 +216,13 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
   OPENER_TRACE_INFO("  . Checking subject name...");
   fflush(stdout);
 
-  if ((ret = mbedtls_x509write_csr_set_subject_name(&req, options.subject_name)) !=
-      0) {
+  if ( ( ret =
+           mbedtls_x509write_csr_set_subject_name(&req,
+                                                  options.subject_name) ) !=
+       0 ) {
     OPENER_TRACE_INFO(
-        " failed\n  !  mbedtls_x509write_csr_set_subject_name returned %d",
-        ret);
+      " failed\n  !  mbedtls_x509write_csr_set_subject_name returned %d",
+      ret);
     goto exit;
   }
 
@@ -231,7 +238,8 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
                                  mbedtls_ctr_drbg_random, &ctr_drbg);
 
   if (ret != 0) {
-    OPENER_TRACE_INFO(" failed\n  !  mbedtls_pk_parse_keyfile returned %d", ret);
+    OPENER_TRACE_INFO(" failed\n  !  mbedtls_pk_parse_keyfile returned %d",
+                      ret);
     goto exit;
   }
 
@@ -245,8 +253,9 @@ int MbedtlsWriteCSR(CipShortString *short_strings) {
   OPENER_TRACE_INFO("  . Writing the certificate request ...");
   fflush(stdout);
 
-  if ((ret = write_certificate_request(
-           &req, options.output_file, mbedtls_ctr_drbg_random, &ctr_drbg)) != 0) {
+  if ( ( ret = write_certificate_request(
+           &req, options.output_file, mbedtls_ctr_drbg_random,
+           &ctr_drbg) ) != 0 ) {
     OPENER_TRACE_INFO(" failed\n  !  write_certificate_request %d", ret);
     goto exit;
   }
@@ -259,7 +268,7 @@ exit:
 
   if (exit_code != MBEDTLS_EXIT_SUCCESS) {
 #ifdef MBEDTLS_ERROR_C
-    mbedtls_strerror(ret, buf, sizeof(buf));
+    mbedtls_strerror( ret, buf, sizeof(buf) );
     OPENER_TRACE_INFO(" - %s\n", buf);
 #else
     OPENER_TRACE_INFO("\n");
