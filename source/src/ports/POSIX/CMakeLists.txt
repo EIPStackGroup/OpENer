@@ -64,3 +64,5 @@ if( NOT OpENer_TESTS)
     message(STATUS "No additional activated objects")
   endif()
 endif()
+
+install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/OpENer DESTINATION ${CMAKE_INSTALL_BINDIR})
