@@ -246,4 +246,64 @@ typedef enum {
 In order to have consistent code formating the Google C++ coding style rules shall apply. When using Eclipse as development environment the coding format xml file is available at \url{https://github.com/google/styleguide}. By pressing \verb|<ctrl><shift>f| the formatter will format the code according to these rules.
 
 
+\section{Assertions}
+The \lstinline!OPENER_ASSERT(e)! macro is available for traditional
+assertion checks, halting the program if the expression provided as the
+argument \lstinline!e! evaluates false. This macro shall \emph{only} be used
+to test conditions where the only possible cause of failure is an
+unquestionable bug with this program, typically leading to undefined behavior
+or a crash if execution were permitted to continue.
+In other words, an assertion shall \emph{never} fail
+as a result of any external input, valid or invalid,
+or other similar foreseeable condition, such as a memory allocation failure.
+These latter type of failures must be handled by normal code execution paths
+that yield responses with appropriate error codes or possibly
+terminating the program with a non-zero exit code, not an assertion failure.
+
+The following listing of a function to set an attribute's value based
+on received data is an example to help illustrate proper use of assertions.
+The \lstinline!raw! and \lstinline!len! parameters
+refer to the received data and length, and the \lstinline!foo! parameter
+points to the target attribute; the function returns true only if the attribute
+was set successfully.
+
+\begin{quote}
+\begin{lstlisting}
+  bool SetAttributeFoo(const void *raw, size_t len, CipDint *foo) {
+
+    /*
+     * This function should never be called with NULL pointers, regardless of
+     * what was received over the network, so assertions should be used to
+     * validate the pointer arguments.
+     */
+    OPENER_ASSERT(NULL != raw);
+    OPENER_ASSERT(NULL != foo);
+
+    /*
+     * Ensuring enough data was received to satisfy the target data type
+     * must not be done with an assertion as a malformed message containing
+     * insufficient data shall not halt the program.
+     */
+    if (sizeof(CipDint) > len) {
+      return false;
+    }
+
+    CipDint new_value = &(int *)raw;
+
+    /*
+     * Here the received value is tested for conformance to acceptable values;
+     * assume for the sake of this example that allowable values are nonzero.
+     * Validating values received from external sources must not be done
+     * with assertions.
+     */
+    if (0 == new_value) {
+      return false;
+    }
+
+    *foo = new_value;
+    return true;
+  }
+\end{lstlisting}
+\end{quote}
+
 \end{document}
