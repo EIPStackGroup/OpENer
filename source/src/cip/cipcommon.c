@@ -1385,8 +1385,10 @@ void EncodeEPath(const void *const data,
     message->used_message_length - start_length);
 }
 
-int DecodePaddedEPath(CipEpath *epath,
-                      const EipUint8 **message) {
+EipStatus DecodePaddedEPath(CipEpath *epath,
+                            const EipUint8 **message,
+                            size_t *const bytes_consumed) {
+  OPENER_ASSERT(bytes_consumed != NULL);
   unsigned int number_of_decoded_elements = 0;
   const EipUint8 *message_runner = *message;
 
@@ -1461,7 +1463,8 @@ int DecodePaddedEPath(CipEpath *epath,
   }
 
   *message = message_runner;
-  return number_of_decoded_elements * 2 + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+  *bytes_consumed = number_of_decoded_elements * sizeof(CipWord) + 1; /* number_of_decoded_elements times 2 as every encoding uses 2 bytes */
+  return kEipStatusOk;
 }
 
 EipStatus CipCreateService(CipInstance *RESTRICT const instance,
