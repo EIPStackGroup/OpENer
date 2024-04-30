@@ -249,19 +249,21 @@ CipError CreateMessageRouterRequestStructure(const EipUint8 *data,
   data++;
   data_length--;
 
-  int number_of_decoded_bytes =
-    DecodePaddedEPath(&(message_router_request->request_path), &data);
-  if(number_of_decoded_bytes < 0) {
+  size_t number_of_decoded_bytes;
+  const EipStatus path_result =
+    DecodePaddedEPath(&(message_router_request->request_path),
+                      &data,
+                      &number_of_decoded_bytes);
+  if(path_result != kEipStatusOk) {
     return kCipErrorPathSegmentError;
   }
 
-  message_router_request->data = data;
-  message_router_request->request_data_size = data_length -
-                                              number_of_decoded_bytes;
-
-  if(message_router_request->request_data_size < 0) {
+  if(number_of_decoded_bytes > data_length) {
     return kCipErrorPathSizeInvalid;
   } else {
+    message_router_request->data = data;
+    message_router_request->request_data_size = data_length -
+                                                number_of_decoded_bytes;
     return kCipErrorSuccess;
   }
 }
