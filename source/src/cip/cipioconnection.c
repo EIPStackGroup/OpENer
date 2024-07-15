@@ -920,8 +920,7 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject *connection_object,
       ConnectionObjectGetTransportClassTriggerTransportClass(connection_object) )
   {
     EipUint16 sequence_buffer = GetUintFromMessage( &(data) );
-    if( SEQ_LEQ16(sequence_buffer,
-                  connection_object->sequence_count_consuming) ) {
+    if( sequence_buffer == (connection_object->sequence_count_consuming) ) {
       no_new_data = true;
     }
     connection_object->sequence_count_consuming = sequence_buffer;
