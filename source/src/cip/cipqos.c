@@ -72,13 +72,13 @@ int DecodeCipQoSAttribute(void *const data,
 		CipMessageRouterRequest *const message_router_request,
 		CipMessageRouterResponse *const message_router_response) {
 
-	const EipUint8 **const cip_message = message_router_request->data;
+	const EipUint8 **const cip_message = &(message_router_request->data);
 
 	int number_of_decoded_bytes = -1;
 
 	if (NULL != cip_message) {
 
-		CipUsint attribute_value_received = GetUsintFromMessage(&cip_message);
+		CipUsint attribute_value_received = GetUsintFromMessage(cip_message);
 		if (attribute_value_received < 64U) {
 
 			*(CipUsint *)data = attribute_value_received; //write value to attribute
