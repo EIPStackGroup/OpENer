@@ -379,10 +379,10 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
   const unsigned char *const cip_path);
 
 /* Special purpose encoding and decoding functions */
-
-size_t CipEpathEncodeConnectionEpath(
-  const CipConnectionPathEpath *const connection_epath,
-  CipOctet **encoded_path);
+//TODO currently not fully implemented
+//size_t CipEpathEncodeConnectionEpath(
+//  const CipConnectionPathEpath *const connection_epath,
+//  CipOctet **encoded_path);
 
 bool CipEpathEqual(const CipOctet *const path1,
                    const CipUint path1_length,
