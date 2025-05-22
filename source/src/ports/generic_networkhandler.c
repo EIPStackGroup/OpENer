@@ -1090,10 +1090,10 @@ void CheckAndHandleConsumingUdpSocket(void) {
       }
 
       if(0 > received_size) {
+        int error_code = GetSocketErrorNumber();
         if(OPENER_SOCKET_WOULD_BLOCK == error_code) {
           return; // No fatal error, resume execution
         } 
-        int error_code = GetSocketErrorNumber();
         char *error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                            error_code,
