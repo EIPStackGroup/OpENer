@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Set up Python 3.8 for gcovr
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with: 
           python-version: 3.8
 
