@@ -1,64 +1,73 @@
 ---
-# Based on the Google C++ Style Guide, with user-specific overrides.
+# Based on the Google C++ Style Guide, with user-specific overrides
+# derived from Uncrustify rules (e.g., alignment, block enforcement).
 BasedOnStyle: Google
 
-# --- User Overrides from Uncrustify Config ---
+# --- 1. Indentation & Width ---
 
-# 1. Indentation
-# Google Style default is 2, but we keep the explicit setting just in case.
 # Uncrustify: indent_columns=2
 IndentWidth: 2
 
-# 2. Tabs
-# Google Style default is Never, but explicitly set here.
 # Uncrustify: indent_with_tabs=0
 UseTab: Never
 
-# 3. Column Width
 # Uncrustify: code_width=80
 ColumnLimit: 80
 
-# 4. Brace Wrapping
-# The Google Style default is already to attach braces to the line end
-# (e.g., `if (x) { ... }`).
-# Uncrustify: nl_class_brace=remove, nl_fdef_brace=remove
-# We keep the default: BreakBeforeBraces: Attach
-
-# 5. Assignment Alignment
-# This is a key deviation from the Google default, which is usually 'None'.
-# Uncrustify: indent_align_assign=true
-AlignConsecutiveAssignments: true
-
-# 6. Function Parameter Packing (Google default is to pack)
-# Uncrustify: nl_func_def_args=add (Suggests placing each arg on a new line)
-BinPackArguments: false
-BinPackParameters: false # Applies to declarations
-
-# 7. Pointer Alignment
-# Google Style prefers the star next to the type ('int* foo').
-# Uncrustify: sp_before_ptr_star=add (e.g. 'int * a;')
-# We stick to the Google default: PointerAlignment: Left (or None, which often results in Left).
-PointerAlignment: Left
-
-# 8. Namespace Indentation
-# Google Style default is false, matching:
-# Uncrustify: indent_namespace=false
-IndentNamespace: false
-
-# 9. Case Label Indentation
-# Google Style default is to indent `case` labels.
-# Uncrustify: indent_switch_case=2 (Suggests indenting case labels)
+# Uncrustify: indent_switch_case=2 (Enforce indentation for case labels)
 IndentCaseLabels: true
 
-# 10. Operator Alignment
-# Uncrustify: align_left_shift=true
+# --- 2. Spacing & Pointers ---
+
+# Uncrustify: sp_func_def_paren=remove
+SpaceBeforeParens: Never
+
+# Uncrustify: sp_arith=add, sp_assign=add, sp_enum_assign=add
+SpaceBeforeAssignment: true
+SpaceBeforeBinaryOperators: All
+
+# Pointer Alignment: Google default is 'Left', matching the typical style
+# (int* foo). We keep this unless explicitly overridden by Uncrustify.
+PointerAlignment: Left
+
+# --- 3. Alignment (Key Overrides) ---
+
+# Uncrustify: indent_align_assign=true (Aligning consecutive assignment operators)
+AlignConsecutiveAssignments: true
+
+# Uncrustify: align_left_shift=true (Aligning binary operators like <<)
 AlignOperands: Align
 
-# 11. Newlines/Block Handling
-# Uncrustify: mod_full_brace_if=add, mod_full_brace_for=add, etc.
-# These are generally handled by Google's requirement for braces, even for single statements.
-AllowShortBlocksOnASingleLine: Never
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: Never
+# --- 4. Newlines & Block Enforcement (Fix applied here) ---
+
+# Uncrustify: nl_func_def_args=add (One argument per line)
+BinPackArguments: false
+BinPackParameters: false
+
+# Uncrustify: mod_full_brace_if=add, mod_full_brace_for=add, mod_full_brace_while=add
+# Goal: Do NOT allow short statements on a single line.
+
+# Fix: Must use 'false' instead of 'Never' for these boolean options.
+AllowShortBlocksOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# Uncrustify: ls_func_split_full=true (Functions)
+# 'Empty' means short functions can only be one line if their body is empty.
 AllowShortFunctionsOnASingleLine: Empty
+
+# Braces: Google default is 'Attach' (e.g., 'if (x) {'), matching
+# Uncrustify's nl_class_brace=remove and nl_fdef_brace=remove intent.
+BreakBeforeBraces: Attach
+
+# --- 5. Miscellaneous ---
+
+# Uncrustify: mod_remove_extra_semicolon=true
+RemoveSemicolon: true
+
+# Uncrustify: indent_class=true
+IndentAccessModifiers: true
+
+# Uncrustify: utf8_bom=remove
+DisableFormat: false
 ...

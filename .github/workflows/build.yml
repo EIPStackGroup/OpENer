@@ -1,10 +1,11 @@
+---
 name: Build, Lint & Coverage
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   BUILD_TYPE: Release
