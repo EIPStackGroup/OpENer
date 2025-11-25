@@ -1,0 +1,149 @@
+name: Build, Lint & Coverage
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # Linting job with MegaLinter
+  megalinter:
+    name: MegaLinter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+
+      - name: MegaLinter
+        uses: oxsecurity/megalinter@62c799d895af9bcbca5eacfebca29d527f125a57
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use C/C++ flavor for faster execution
+          MEGALINTER_FLAVOR: c_cpp
+          # Enable specific linters you want
+          ENABLE_LINTERS: C_CPPLINT,C_CPPCHECK,C_CLANG_FORMAT
+          # Optional: disable linters you don't need
+          DISABLE_LINTERS: SPELL_CSPELL
+          # Fail on errors (set to false if you want warnings only)
+          DISABLE_ERRORS: false
+
+      - name: Archive MegaLinter reports
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: megalinter-reports
+          path: |
+            megalinter-reports
+            mega-linter.log
+
+  # Build, test and coverage job
+  build-and-test:
+    name: Build, Test & Coverage
+    runs-on: ubuntu-latest
+    needs: megalinter
+    if: success() || failure()
+
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcap-dev \
+            lcov \
+            cpputest
+
+      - name: Set up Python for gcovr
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with: 
+          python-version: '3.11'
+
+      - name: Install gcovr
+        run: pip install gcovr==5.0
+
+      - name: Configure CMake
+        run: |
+          cmake -S ${{github.workspace}}/source \
+            -B ${{github.workspace}}/build \
+            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+            -DOpENer_PLATFORM:STRING="POSIX" \
+            -DBUILD_SHARED_LIBS:BOOL=OFF \
+            -DOpENer_TRACES:BOOL=OFF \
+            -DOpENer_TESTS:BOOL=ON \
+            -DCPPUTEST_HOME:PATH=/usr
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+
+      - name: Generate coverage reports
+        run: |
+          # Generate HTML report for human viewing
+          gcovr --html-details --output coverage-report.html
+          
+          # Generate Cobertura XML for tools/badges
+          gcovr --cobertura --output coverage.xml
+          
+          # Generate text summary for console
+          gcovr --print-summary > coverage-summary.txt
+          
+          # Print summary to console
+          echo "Coverage Summary:"
+          cat coverage-summary.txt
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: coverage-report
+          path: |
+            coverage-report.html
+            coverage-report.*.html
+            coverage.xml
+            coverage-summary.txt
+
+      - name: Create coverage summary comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('coverage-summary.txt', 'utf8');
+            const comment = `## 📊 Coverage Report\n\n\`\`\`\n${summary}\n\`\`\`\n\nDownload the [detailed HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) from the artifacts.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Generate coverage badge
+        if: github.ref == 'refs/heads/master'
+        run: |
+          # Extract coverage percentage
+          COVERAGE=$(gcovr --print-summary | grep 'lines:' | awk '{print $2}')
+          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> $GITHUB_ENV
+          echo "Coverage: $COVERAGE"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: build-artifacts
+          path: ${{github.workspace}}/build
