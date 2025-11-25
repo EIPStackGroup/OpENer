@@ -18,14 +18,14 @@ jobs:
       contents: read
       issues: write
       pull-requests: write
-    
+
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           fetch-depth: 0
 
       - name: MegaLinter
-        uses: oxsecurity/megalinter@62c799d895af9bcbca5eacfebca29d527f125a57
+        uses: oxsecurity/megalinter/flavors/c_cpp@v9.1.0
         env:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Set up Python for gcovr
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
-        with: 
+        with:
           python-version: '3.11'
 
       - name: Install gcovr
@@ -97,13 +97,13 @@ jobs:
         run: |
           # Generate HTML report for human viewing
           gcovr --html-details --output coverage-report.html
-          
+
           # Generate Cobertura XML for tools/badges
           gcovr --cobertura --output coverage.xml
-          
+
           # Generate text summary for console
           gcovr --print-summary > coverage-summary.txt
-          
+
           # Print summary to console
           echo "Coverage Summary:"
           cat coverage-summary.txt
@@ -126,7 +126,7 @@ jobs:
             const fs = require('fs');
             const summary = fs.readFileSync('coverage-summary.txt', 'utf8');
             const comment = `## 📊 Coverage Report\n\n\`\`\`\n${summary}\n\`\`\`\n\nDownload the [detailed HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) from the artifacts.`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
