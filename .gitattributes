@@ -1,9 +1,3 @@
-# Code formatter settings
-*.c filter=uncrustify
-*.cpp filter=uncrustify
-*.h filter=uncrustify
-*.hpp filter=uncrustify
-
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
 

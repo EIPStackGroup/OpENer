@@ -1,57 +1,64 @@
 ---
-Language:        Cpp
-# BasedOnStyle:  Google
-AccessModifierOffset: -1
-ConstructorInitializerIndentWidth: 4
-AlignEscapedNewlinesLeft: true
-AlignTrailingComments: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
-AllowShortIfStatementsOnASingleLine: true
-AllowShortLoopsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: All
-AlwaysBreakTemplateDeclarations: true
-AlwaysBreakBeforeMultilineStrings: true
-BreakBeforeBinaryOperators: false
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
-BinPackParameters: true
-ColumnLimit:     80
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-DerivePointerAlignment: true
-ExperimentalAutoDetectBinPacking: false
-IndentCaseLabels: true
-IndentWrappedFunctionNames: false
-IndentFunctionDeclarationAfterType: false
-MaxEmptyLinesToKeep: 1
-KeepEmptyLinesAtTheStartOfBlocks: false
-NamespaceIndentation: None
-ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: false
-PenaltyBreakBeforeFirstCallParameter: 1
-PenaltyBreakComment: 300
-PenaltyBreakString: 1000
-PenaltyBreakFirstLessLess: 120
-PenaltyExcessCharacter: 1000000
-PenaltyReturnTypeOnItsOwnLine: 200
-PointerAlignment: Left
-SpacesBeforeTrailingComments: 2
-Cpp11BracedListStyle: true
-Standard:        Auto
-IndentWidth:     2
-TabWidth:        8
-UseTab:          Never
-BreakBeforeBraces: Attach
-SpacesInParentheses: false
-SpacesInAngles:  false
-SpaceInEmptyParentheses: false
-SpacesInCStyleCastParentheses: false
-SpacesInContainerLiterals: true
-SpaceBeforeAssignmentOperators: true
-ContinuationIndentWidth: 4
-CommentPragmas:  '^ IWYU pragma:'
-ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
-SpaceBeforeParens: ControlStatements
-DisableFormat:   false
-...
+# Based on the Google C++ Style Guide, with user-specific overrides.
+BasedOnStyle: Google
 
+# --- User Overrides from Uncrustify Config ---
+
+# 1. Indentation
+# Google Style default is 2, but we keep the explicit setting just in case.
+# Uncrustify: indent_columns=2
+IndentWidth: 2
+
+# 2. Tabs
+# Google Style default is Never, but explicitly set here.
+# Uncrustify: indent_with_tabs=0
+UseTab: Never
+
+# 3. Column Width
+# Uncrustify: code_width=80
+ColumnLimit: 80
+
+# 4. Brace Wrapping
+# The Google Style default is already to attach braces to the line end
+# (e.g., `if (x) { ... }`).
+# Uncrustify: nl_class_brace=remove, nl_fdef_brace=remove
+# We keep the default: BreakBeforeBraces: Attach
+
+# 5. Assignment Alignment
+# This is a key deviation from the Google default, which is usually 'None'.
+# Uncrustify: indent_align_assign=true
+AlignConsecutiveAssignments: true
+
+# 6. Function Parameter Packing (Google default is to pack)
+# Uncrustify: nl_func_def_args=add (Suggests placing each arg on a new line)
+BinPackArguments: false
+BinPackParameters: false # Applies to declarations
+
+# 7. Pointer Alignment
+# Google Style prefers the star next to the type ('int* foo').
+# Uncrustify: sp_before_ptr_star=add (e.g. 'int * a;')
+# We stick to the Google default: PointerAlignment: Left (or None, which often results in Left).
+PointerAlignment: Left
+
+# 8. Namespace Indentation
+# Google Style default is false, matching:
+# Uncrustify: indent_namespace=false
+IndentNamespace: false
+
+# 9. Case Label Indentation
+# Google Style default is to indent `case` labels.
+# Uncrustify: indent_switch_case=2 (Suggests indenting case labels)
+IndentCaseLabels: true
+
+# 10. Operator Alignment
+# Uncrustify: align_left_shift=true
+AlignOperands: Align
+
+# 11. Newlines/Block Handling
+# Uncrustify: mod_full_brace_if=add, mod_full_brace_for=add, etc.
+# These are generally handled by Google's requirement for braces, even for single statements.
+AllowShortBlocksOnASingleLine: Never
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Empty
+...
