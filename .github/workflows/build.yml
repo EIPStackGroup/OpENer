@@ -73,7 +73,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install gcovr
-        run: pip install gcovr==5.0
+        run: pip install gcovr
 
       - name: Configure CMake
         run: |
