@@ -238,8 +238,8 @@ jobs:
         run: |
           # Extract coverage percentage
           COVERAGE=$(gcovr --print-summary | grep 'lines:' | awk '{print $2}')
-          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> $GITHUB_ENV
-          echo "Coverage: $COVERAGE"
+          echo "COVERAGE_PERCENTAGE=\"$COVERAGE\"" >> $GITHUB_ENV
+          echo "Coverage: \"$COVERAGE\""
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
