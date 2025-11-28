@@ -88,9 +88,12 @@ extern "C" void test_assert_fail(const char *const file,
         len_no_null = snprintf(msg, len_with_null, format, file, line);
 
         if (len_no_null > 0) {
-          throw std::runtime_error(msg);
+          std::runtime_error ex(msg);
+          free(msg);
+          throw ex;
         }
       }
+      free(msg);
     }
 
     /* Throw a generic exception if string generation fails. */
