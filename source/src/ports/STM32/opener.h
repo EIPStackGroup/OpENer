@@ -4,13 +4,9 @@
  *
  ******************************************************************************/
 
-
-
 /**
-  * @brief  Start OpENer Ethernet/IP stack 
-  * @param  none
-  * @retval None
-  */
+ * @brief  Start OpENer Ethernet/IP stack
+ * @param  none
+ * @retval None
+ */
 void opener_init(struct netif *netif);
-
-

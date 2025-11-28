@@ -13,10 +13,9 @@
  *
  */
 typedef struct socket_timer {
-  int socket;       /**< key */
-  MilliSeconds last_update;       /**< time stop of last update */
+  int socket;               /**< key */
+  MilliSeconds last_update; /**< time stop of last update */
 } SocketTimer;
-
 
 /** @brief
  * Sets socket of a Socket Timer
@@ -24,8 +23,7 @@ typedef struct socket_timer {
  * @param socket_timer Socket Timer to be set
  * @param socket Socket handle
  */
-void SocketTimerSetSocket(SocketTimer *const socket_timer,
-                          const int socket);
+void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket);
 
 /** @brief
  * Sets time stamp entry of the Socket Timer
@@ -54,7 +52,8 @@ void SocketTimerClear(SocketTimer *const socket_timer);
 /** @brief
  * Initializes an array of Socket Timer entries
  *
- * @param array_of_socket_timers The array of Socket Timer entries to be initialized
+ * @param array_of_socket_timers The array of Socket Timer entries to be
+ * initialized
  * @param array_length the length of the array
  */
 void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
@@ -70,9 +69,9 @@ void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
  * @return The Socket Timer of found, otherwise NULL
  */
 SocketTimer *SocketTimerArrayGetSocketTimer(
-  SocketTimer *const array_of_socket_timers,
-  const size_t array_length,
-  const int socket);
+    SocketTimer *const array_of_socket_timers,
+    const size_t array_length,
+    const int socket);
 
 /** @brief
  * Get an empty Socket Timer entry
@@ -83,7 +82,6 @@ SocketTimer *SocketTimerArrayGetSocketTimer(
  * @return An empty Socket Timer entry, or NULL if non is available
  */
 SocketTimer *SocketTimerArrayGetEmptySocketTimer(
-  SocketTimer *const array_of_socket_timers,
-  const size_t array_length);
+    SocketTimer *const array_of_socket_timers, const size_t array_length);
 
 #endif /* SRC_PORTS_SOCKET_TIMER_H_ */

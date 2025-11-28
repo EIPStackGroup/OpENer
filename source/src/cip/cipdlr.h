@@ -14,8 +14,8 @@
 #ifndef OPENER_CIPDLR_H_
 #define OPENER_CIPDLR_H_
 
-#include "typedefs.h"
 #include "ciptypes.h"
+#include "typedefs.h"
 
 /** @brief DLR object class code */
 static const CipUint kCipDlrClassCode = 0x47U;
@@ -41,15 +41,14 @@ typedef enum {
   kDlrCapFlushTableFrame = 0x80,
 } CipDlrCapabilityFlags;
 
-
 /** @brief Node address information for a DLR node
  *
  * This is the node address information that uniquely identifies a
  *  participant of the DLR protocol.
  */
 typedef struct {
-  CipUdint  device_ip;  /**< IP address of a participating DLR node */
-  CipUsint  device_mac[6]; /**< MAC address of a participating DLR node */
+  CipUdint device_ip;     /**< IP address of a participating DLR node */
+  CipUsint device_mac[6]; /**< MAC address of a participating DLR node */
 } CipNodeAddress;
 
 /** @brief Type declaration for the DLR object
@@ -59,18 +58,16 @@ typedef struct {
  *  ring participant.
  */
 typedef struct {
-  CipUsint  network_topology; /**< Attribute #1: */
-  CipUsint  network_status; /**< Attribute #2: */
+  CipUsint network_topology;                /**< Attribute #1: */
+  CipUsint network_status;                  /**< Attribute #2: */
   CipNodeAddress active_supervisor_address; /**< Attribute #10: */
-  CipDword  capability_flags; /**< Attribute #12: */
+  CipDword capability_flags;                /**< Attribute #12: */
 } CipDlrObject;
-
 
 /* ********************************************************************
  * global public variables
  */
-extern CipDlrObject g_dlr;  /**< declaration of DLR object instance 1 data */
-
+extern CipDlrObject g_dlr; /**< declaration of DLR object instance 1 data */
 
 /* ********************************************************************
  * public functions

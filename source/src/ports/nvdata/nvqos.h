@@ -11,12 +11,11 @@
 #ifndef _NVQOS_H_
 #define _NVQOS_H_
 
-#include "typedefs.h"
-
 #include "cipqos.h"
+#include "typedefs.h"
 
 int NvQosLoad(CipQosObject *p_qos);
 
 int NvQosStore(const CipQosObject *p_qos);
 
-#endif  /* _NVQOS_H_ */
+#endif /* _NVQOS_H_ */

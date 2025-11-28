@@ -22,12 +22,13 @@
 
 /** @brief Load NV data for all object classes
  *
- *  @return kEipStatusOk on success, kEipStatusError if failure for any object occurred
+ *  @return kEipStatusOk on success, kEipStatusError if failure for any object
+ * occurred
  *
- * This function loads the NV data for each object class that supports NV data from
- *  external storage. If any of the load routines fails then for that object class
- *  the current object instance values are written as new NV data. That should be
- *  the default data.
+ * This function loads the NV data for each object class that supports NV data
+ * from external storage. If any of the load routines fails then for that object
+ * class the current object instance values are written as new NV data. That
+ * should be the default data.
  *
  * The load routines should be of the form
  *    int Nv<ObjClassName>Load(<ObjectInstanceDataType> *p_obj_instance);
@@ -38,7 +39,7 @@ EipStatus NvdataLoad(void) {
   EipStatus eip_status = NvQosLoad(&g_qos);
   if (kEipStatusError != eip_status) {
     eip_status =
-      ( kEipStatusError == NvQosStore(&g_qos) ) ? kEipStatusError : eip_status;
+        (kEipStatusError == NvQosStore(&g_qos)) ? kEipStatusError : eip_status;
   }
 
   return eip_status;
@@ -72,7 +73,7 @@ EipStatus NvQosSetCallback(CipInstance *const instance,
 
   EipStatus status = kEipStatusOk;
 
-  if ( 0 != (kNvDataFunc & attribute->attribute_flags) ) {
+  if (0 != (kNvDataFunc & attribute->attribute_flags)) {
     OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                       instance->cip_class->class_name,
                       instance->instance_number,
@@ -105,9 +106,9 @@ EipStatus NvTcpipSetCallback(CipInstance *const instance,
 
   EipStatus status = kEipStatusOk;
 
-  if ( 0 != (kNvDataFunc & attribute->attribute_flags) ) {
+  if (0 != (kNvDataFunc & attribute->attribute_flags)) {
     /* Workaround: Update only if service is not flagged. */
-    if ( 0 == (0x80 & service) ) {
+    if (0 == (0x80 & service)) {
       OPENER_TRACE_INFO("NV data update: %s, i %" PRIu32 ", a %" PRIu16 "\n",
                         instance->cip_class->class_name,
                         instance->instance_number,

@@ -15,19 +15,18 @@
 #ifndef OPENER_TEST_ASSERT_H
 #define OPENER_TEST_ASSERT_H
 
-
 /*
  * Define the OPENER_ASSERT macro to call the unit test assertion verification
  * function. The surrounding do/while loop serves to insulate the if statement
  * from any surrounding if statements.
  */
-#define OPENER_ASSERT(assertion) \
-  do {if ( !(assertion) ) test_assert_fail(__FILE__, __LINE__);} while (0)
-
+#define OPENER_ASSERT(assertion)            \
+  do {                                      \
+    if (!(assertion))                       \
+      test_assert_fail(__FILE__, __LINE__); \
+  } while (0)
 
 /* Function Prototypes */
-extern void test_assert_fail(const char *const file,
-                             const unsigned int line);
-
+extern void test_assert_fail(const char *const file, const unsigned int line);
 
 #endif /* OPENER_TEST_ASSERT_H */

@@ -9,15 +9,16 @@
 #include <assert.h>
 #include <stdbool.h>
 
-#include "typedefs.h"
-#include "ciptypes.h"
 #include "ciperror.h"
+#include "ciptypes.h"
+#include "typedefs.h"
 
-#if defined(STM32)	/** STM32 target -> uses a struct for the network interface */
+#if defined(STM32) /** STM32 target -> uses a struct for the network interface \
+                    */
 #define TcpIpInterface struct netif
-#else		/** other targets -> string for the network interface */
+#else /** other targets -> string for the network interface */
 #define TcpIpInterface const char
-#endif		/** other targets */
+#endif /** other targets */
 
 /**  @defgroup CIP_API OpENer User interface
  * @brief This is the public interface of the OpENer. It provides all function
@@ -69,7 +70,8 @@ EipStatus IfaceWaitForIp(TcpIpInterface *const iface,
                          int timeout,
                          volatile int *const abort_wait);
 
-#if defined(STM32)  /** STM32 target, the hostname is linked to the network interface */
+#if defined(STM32) /** STM32 target, the hostname is linked to the network \
+                      interface */
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
@@ -79,9 +81,8 @@ EipStatus IfaceWaitForIp(TcpIpInterface *const iface,
  * This function reads the host name from the platform and returns it
  *  via the hostname parameter.
  */
-void GetHostName(TcpIpInterface *iface,
-                 CipString *hostname);
-#else   /** other targets */
+void GetHostName(TcpIpInterface *iface, CipString *hostname);
+#else  /** other targets */
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
@@ -91,7 +92,7 @@ void GetHostName(TcpIpInterface *iface,
  *  via the hostname parameter.
  */
 void GetHostName(CipString *hostname);
-#endif    /** other targets */
+#endif /** other targets */
 
 /** @ingroup CIP_API
  * @brief Set the CIP revision of the device's identity object.
@@ -99,8 +100,7 @@ void GetHostName(CipString *hostname);
  * @param major unsigned 8 bit major revision
  * @param minor unsigned 8 bit minor revision
  */
-void SetDeviceRevision(EipUint8 major,
-                       EipUint8 minor);
+void SetDeviceRevision(EipUint8 major, EipUint8 minor);
 
 /** @ingroup CIP_API
  * @brief Set the serial number of the device's identity object.
@@ -194,7 +194,8 @@ void ShutdownCipStack(void);
 
 /** @ingroup CIP_API
  * @brief Enable the Run/Idle header for consumed (O->T) cyclic data
- * @param onoff if set (default), OpENer expects 4 byte Run/Idle header from scanner
+ * @param onoff if set (default), OpENer expects 4 byte Run/Idle header from
+ * scanner
  */
 void CipRunIdleHeaderSetO2T(bool onoff);
 
@@ -206,7 +207,8 @@ bool CipRunIdleHeaderGetO2T(void);
 
 /** @ingroup CIP_API
  * @brief Enable the Run/Idle header for produced (T->O) cyclic data
- * @param onoff if set (not default), OpENer includes a 4 byte Run/Idle header in responses to scanner
+ * @param onoff if set (not default), OpENer includes a 4 byte Run/Idle header
+ * in responses to scanner
  */
 void CipRunIdleHeaderSetT2O(bool onoff);
 
@@ -249,7 +251,8 @@ CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_object,
 CipAttributeStruct *GetCipAttribute(const CipInstance *const cip_instance,
                                     const EipUint16 attribute_number);
 
-typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CIP class initialization */
+typedef void (*InitializeCipClass)(
+    CipClass *); /**< Initializer function for CIP class initialization */
 
 /** @ingroup CIP_API
  * @brief Allocate memory for new CIP Class and attributes
@@ -259,10 +262,13 @@ typedef void (*InitializeCipClass)(CipClass *); /**< Initializer function for CI
  *
  *  @param class_code class code of the new class
  *  @param number_of_class_attributes number of class attributes
- *  @param highest_class_attribute_number Highest attribute number from the set of implemented class attributes
+ *  @param highest_class_attribute_number Highest attribute number from the set
+ * of implemented class attributes
  *  @param number_of_class_services number of class services
- *  @param number_of_instance_attributes Number of implemented instance attributes
- *  @param highest_instance_attribute_number Highest attribute number from the set of implemented instance attributes
+ *  @param number_of_instance_attributes Number of implemented instance
+ * attributes
+ *  @param highest_instance_attribute_number Highest attribute number from the
+ * set of implemented instance attributes
  *  @param number_of_instance_services number of instance services
  *  @param number_of_instances number of initial instances to create
  *  @param name class name (for debugging class structure)
@@ -303,8 +309,8 @@ CipClass *CreateCipClass(const CipUdint class_code,
  *              0 on error
  */
 CipInstance *AddCipInstances(
-  CipClass *RESTRICT const cip_object_to_add_instances,
-  const CipInstanceNum number_of_instances);
+    CipClass *RESTRICT const cip_object_to_add_instances,
+    const CipInstanceNum number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -395,7 +401,7 @@ void InsertGetSetCallback(CipClass *const cip_class,
                           CipGetSetCallback callback_function,
                           CIPAttributeFlag callbacks_to_install);
 
-//TODO: Update documentation
+// TODO: Update documentation
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *
@@ -406,14 +412,11 @@ void InsertGetSetCallback(CipClass *const cip_class,
  *  @param message_router_response The message router response construct
  */
 
-void EncodeCipBool(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipBool(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipByte(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipByte(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipWord(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipWord(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipDword(const void *const data,
                     ENIPMessage *const outgoing_message);
@@ -424,8 +427,7 @@ void EncodeCipLword(const void *const data,
 void EncodeCipUsint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipUint(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipUint(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipUdint(const void *const data,
                     ENIPMessage *const outgoing_message);
@@ -433,20 +435,15 @@ void EncodeCipUdint(const void *const data,
 void EncodeCipUlint(const void *const data,
                     ENIPMessage *const outgoing_message);
 
-void EncodeCipSint(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipSint(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipInt(const void *const data,
-                  ENIPMessage *const outgoing_message);
+void EncodeCipInt(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipDint(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipDint(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipLint(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipLint(const void *const data, ENIPMessage *const outgoing_message);
 
-void EncodeCipReal(const void *const data,
-                   ENIPMessage *const outgoing_message);
+void EncodeCipReal(const void *const data, ENIPMessage *const outgoing_message);
 
 void EncodeCipLreal(const void *const data,
                     ENIPMessage *const outgoing_message);
@@ -470,14 +467,13 @@ void EncodeCipByteArray(const void *const data,
                         ENIPMessage *const outgoing_message);
 
 void EncodeCipEPath(const void *const data,
-                    ENIPMessage *const outgoing_message); //path_size UINT
+                    ENIPMessage *const outgoing_message);  // path_size UINT
 
 void EncodeEPath(const void *const data,
-                 ENIPMessage *const outgoing_message); //path_size not encoded
+                 ENIPMessage *const outgoing_message);  // path_size not encoded
 
 void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
                                            ENIPMessage *const outgoing_message);
-
 
 /** @ingroup CIP_API
  * @brief Retrieve the given data according to CIP encoding from the message
@@ -486,8 +482,10 @@ void EncodeCipEthernetLinkPhyisicalAddress(const void *const data,
  * This function may be used in own services for handling data from the
  * requester (e.g., setAttributeSingle).
  *  @param data pointer to value to be written.
- *  @param message_router_request pointer to the request where the data should be taken from
- *  @param message_router_response pointer to the response where status should be set
+ *  @param message_router_request pointer to the request where the data should
+ * be taken from
+ *  @param message_router_response pointer to the response where status should
+ * be set
  *  @return length of taken bytes
  *          -1 .. error
  */
@@ -499,9 +497,10 @@ int DecodeCipByte(CipByte *const data,
                   CipMessageRouterRequest *const message_router_request,
                   CipMessageRouterResponse *const message_router_response);
 
-int DecodeCipByteArray(CipByteArray *const data,
-                       const CipMessageRouterRequest *const message_router_request,
-                       CipMessageRouterResponse *const message_router_response);
+int DecodeCipByteArray(
+    CipByteArray *const data,
+    const CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response);
 
 int DecodeCipWord(CipWord *const data,
                   CipMessageRouterRequest *const message_router_request,
@@ -559,9 +558,10 @@ int DecodeCipString(CipString *const data,
                     CipMessageRouterRequest *const message_router_request,
                     CipMessageRouterResponse *const message_router_response);
 
-int DecodeCipShortString(CipShortString *const data,
-                         CipMessageRouterRequest *const message_router_request,
-                         CipMessageRouterResponse *const message_router_response);
+int DecodeCipShortString(
+    CipShortString *const data,
+    CipMessageRouterRequest *const message_router_request,
+    CipMessageRouterResponse *const message_router_response);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -596,8 +596,8 @@ typedef struct cip_connection_object CipConnectionObject;
  * @return CIP error code
  */
 typedef CipError (*OpenConnectionFunction)(
-  CipConnectionObject *RESTRICT const connection_object,
-  EipUint16 *const extended_error_code);
+    CipConnectionObject *RESTRICT const connection_object,
+    EipUint16 *const extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections
@@ -605,8 +605,8 @@ typedef CipError (*OpenConnectionFunction)(
  * @param connection_object The connection object which is closing the
  * connection
  */
-typedef void (*ConnectionCloseFunction)(CipConnectionObject *RESTRICT
-                                        connection_object);
+typedef void (*ConnectionCloseFunction)(
+    CipConnectionObject *RESTRICT connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -614,7 +614,7 @@ typedef void (*ConnectionCloseFunction)(CipConnectionObject *RESTRICT
  * @param connection_object The connection object which connection timed out
  */
 typedef void (*ConnectionTimeoutFunction)(
-  CipConnectionObject *connection_object);
+    CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -623,8 +623,8 @@ typedef void (*ConnectionTimeoutFunction)(
  *
  * @return EIP stack status
  */
-typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
-                                                connection_object);
+typedef EipStatus (*ConnectionSendDataFunction)(
+    CipConnectionObject *connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -635,10 +635,10 @@ typedef EipStatus (*ConnectionSendDataFunction)(CipConnectionObject *
  *
  * @return Stack status
  */
-typedef EipStatus (*ConnectionReceiveDataFunction)(CipConnectionObject *
-                                                   connection_object,
-                                                   const EipUint8 *data,
-                                                   const EipUint16 data_length);
+typedef EipStatus (*ConnectionReceiveDataFunction)(
+    CipConnectionObject *connection_object,
+    const EipUint8 *data,
+    const EipUint16 data_length);
 
 /** @ingroup CIP_API
  * @brief Function pointer for timeout checker functions
@@ -657,9 +657,8 @@ typedef void (*TimeoutCheckerFunction)(const MilliSeconds elapsed_time);
  * process
  * @return EIP_OK on success
  */
-EipStatus
-AddConnectableObject(const CipUdint class_code,
-                     OpenConnectionFunction open_connection_function);
+EipStatus AddConnectableObject(const CipUdint class_code,
+                               OpenConnectionFunction open_connection_function);
 
 /** @ingroup CIP_API
  * @brief Configures the connection point for an exclusive owner connection.
@@ -675,10 +674,10 @@ AddConnectableObject(const CipUdint class_code,
  * this connection
  */
 void ConfigureExclusiveOwnerConnectionPoint(
-  const unsigned int connection_number,
-  const unsigned int output_assembly_id,
-  const unsigned int input_assembly_id,
-  const unsigned int configuration_assembly_id);
+    const unsigned int connection_number,
+    const unsigned int output_assembly_id,
+    const unsigned int input_assembly_id,
+    const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Configures the connection point for an input only connection.
@@ -693,10 +692,11 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
-                                       const unsigned int output_assembly_id,
-                                       const unsigned int input_assembly_id,
-                                       const unsigned int configuration_assembly_id);
+void ConfigureInputOnlyConnectionPoint(
+    const unsigned int connection_number,
+    const unsigned int output_assembly_id,
+    const unsigned int input_assembly_id,
+    const unsigned int configuration_assembly_id);
 
 /** \ingroup CIP_API
  * \brief Configures the connection point for a listen only connection.
@@ -711,10 +711,11 @@ void ConfigureInputOnlyConnectionPoint(const unsigned int connection_number,
  * @param configuration_assembly_id ID of the configuration point to be used for
  * this connection
  */
-void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
-                                        const unsigned int output_assembly_id,
-                                        const unsigned int input_assembly_id,
-                                        const unsigned int configuration_assembly_id);
+void ConfigureListenOnlyConnectionPoint(
+    const unsigned int connection_number,
+    const unsigned int output_assembly_id,
+    const unsigned int input_assembly_id,
+    const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been
@@ -728,7 +729,8 @@ void ConfigureListenOnlyConnectionPoint(const unsigned int connection_number,
  * over after we're done here
  * @param originator_address Address struct of the message originator
  * @param outgoing_message The outgoing ENIP message
- * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack
+ * status
  */
 EipStatus HandleReceivedExplictTcpData(int socket_handle,
                                        EipUint8 *buffer,
@@ -750,7 +752,8 @@ EipStatus HandleReceivedExplictTcpData(int socket_handle,
  * over after we're done here
  * @param unicast Was the data received as unicast message?
  * @param outgoing_message Outgoing ENIP message
- * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack status
+ * @return kEipStatusOkSend: a response needs to be sent, others: EIP stack
+ * status
  */
 EipStatus HandleReceivedExplictUdpData(const int socket_handle,
                                        const struct sockaddr_in *from_address,
@@ -781,11 +784,13 @@ EipStatus HandleReceivedConnectedData(const EipUint8 *const received_data,
  * WatchdogTimeout) have timed out.
  *
  * If the a timeout occurs the function performs the necessary action. This
- * function should be called periodically once every @ref kOpenerTimerTickInMilliSeconds
- * milliseconds. In order to simplify the algorithm if more time was lapsed, the elapsed
- * time since the last call of the function is given as a parameter.
+ * function should be called periodically once every @ref
+ * kOpenerTimerTickInMilliSeconds milliseconds. In order to simplify the
+ * algorithm if more time was lapsed, the elapsed time since the last call of
+ * the function is given as a parameter.
  *
- * @param elapsed_time Elapsed time in milliseconds since the last call of ManageConnections
+ * @param elapsed_time Elapsed time in milliseconds since the last call of
+ * ManageConnections
  *
  * @return EIP_OK on success
  */
@@ -928,8 +933,7 @@ EipStatus ResetDeviceToInitialConfiguration(void);
  * @param size_of_element size in bytes of one element
  * @return pointer to the allocated memory, 0 on error
  */
-void *CipCalloc(size_t number_of_elements,
-                size_t size_of_element);
+void *CipCalloc(size_t number_of_elements, size_t size_of_element);
 
 /** @ingroup CIP_CALLBACK_API
  * @brief Free memory allocated by the OpENer
@@ -974,7 +978,8 @@ void CloseSocket(const int socket_handle);
 /** @ingroup CIP_CALLBACK_API
  * @brief Register function pointer in timeout_checker_array
  *
- * @param timeout_checker_function pointer to object specific timeout checker function
+ * @param timeout_checker_function pointer to object specific timeout checker
+ * function
  */
 void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
 
@@ -1034,8 +1039,10 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  * @section gen_config_section General Stack Configuration
  * The general stack properties have to be defined prior to building your
  * production. This is done by providing a file called opener_user_conf.h. An
- * example file can be found in the src/ports/POSIX or src/ports/WIN32 directory.
- * The documentation of the example file for the necessary configuration options:
+ * example file can be found in the src/ports/POSIX or src/ports/WIN32
+ directory.
+ * The documentation of the example file for the necessary configuration
+ options:
  * opener_user_conf.h
  *
  * @copydoc ./ports/POSIX/sample_application/opener_user_conf.h
@@ -1089,7 +1096,8 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  *   - Receive explicit message data on connected TCP sockets and the UPD socket
  *     for port AF12hex. The received data has to be hand over to Ethernet
  *     encapsulation layer with the functions: \n
- *      int HandleReceivedExplictTCPData(int socket_handle, EIP_UINT8* buffer, int
+ *      int HandleReceivedExplictTCPData(int socket_handle, EIP_UINT8* buffer,
+ int
  * buffer_length, int *number_of_remaining_bytes),\n
  *      int HandleReceivedExplictUDPData(int socket_handle, struct sockaddr_in
  * *from_address, EIP_UINT8* buffer, unsigned int buffer_length, int
@@ -1118,7 +1126,8 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  *      .
  *   - Cyclically update the connection status:\n
  *     In order that OpENer can determine when to produce new data on
- *     connections or that a connection timed out every @ref kOpenerTimerTickInMilliSeconds
+ *     connections or that a connection timed out every @ref
+ kOpenerTimerTickInMilliSeconds
  * milliseconds the
  *     function EIP_STATUS ManageConnections(void) has to be called.
  *

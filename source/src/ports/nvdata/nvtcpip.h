@@ -11,12 +11,11 @@
 #ifndef _NVTCPIP_H_
 #define _NVTCPIP_H_
 
-#include "typedefs.h"
-
 #include "ciptcpipinterface.h"
+#include "typedefs.h"
 
 int NvTcpipLoad(CipTcpIpObject *p_tcp_ip);
 
 int NvTcpipStore(const CipTcpIpObject *p_tcp_ip);
 
-#endif  /* _NVTCPIP_H_ */
+#endif /* _NVTCPIP_H_ */

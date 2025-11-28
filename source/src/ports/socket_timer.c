@@ -8,8 +8,7 @@
 
 #include "trace.h"
 
-void SocketTimerSetSocket(SocketTimer *const socket_timer,
-                          const int socket) {
+void SocketTimerSetSocket(SocketTimer *const socket_timer, const int socket) {
   socket_timer->socket = socket;
   OPENER_TRACE_INFO("Adds socket %d to socket timers\n", socket);
 }
@@ -27,7 +26,7 @@ MilliSeconds SocketTimerGetLastUpdate(SocketTimer *const socket_timer) {
 }
 
 void SocketTimerClear(SocketTimer *const socket_timer) {
-  socket_timer->socket = kEipInvalidSocket;
+  socket_timer->socket      = kEipInvalidSocket;
   socket_timer->last_update = 0;
 }
 
@@ -39,9 +38,9 @@ void SocketTimerArrayInitialize(SocketTimer *const array_of_socket_timers,
 }
 
 SocketTimer *SocketTimerArrayGetSocketTimer(
-  SocketTimer *const array_of_socket_timers,
-  const size_t array_length,
-  const int socket) {
+    SocketTimer *const array_of_socket_timers,
+    const size_t array_length,
+    const int socket) {
   for (size_t i = 0; i < array_length; ++i) {
     if (socket == array_of_socket_timers[i].socket) {
       return &array_of_socket_timers[i];
@@ -51,8 +50,7 @@ SocketTimer *SocketTimerArrayGetSocketTimer(
 }
 
 SocketTimer *SocketTimerArrayGetEmptySocketTimer(
-  SocketTimer *const array_of_socket_timers,
-  const size_t array_length) {
-  return SocketTimerArrayGetSocketTimer(array_of_socket_timers, array_length,
-                                        kEipInvalidSocket);
+    SocketTimer *const array_of_socket_timers, const size_t array_length) {
+  return SocketTimerArrayGetSocketTimer(
+      array_of_socket_timers, array_length, kEipInvalidSocket);
 }

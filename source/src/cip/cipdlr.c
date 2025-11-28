@@ -47,16 +47,16 @@
 #include <string.h>
 
 #include "cipcommon.h"
+#include "endianconv.h"
 #include "opener_api.h"
 #include "trace.h"
-#include "endianconv.h"
 
 /* ********************************************************************
  * defines
  */
 /** The implemented class revision is still 3 because the attributes
  *  mandatory for revision 4 are NOT implemented. */
-#define DLR_CLASS_REVISION  3
+#define DLR_CLASS_REVISION 3
 
 /* ********************************************************************
  * Type declarations
@@ -67,25 +67,27 @@
  */
 /* Define variables with default values to be used for the
  *  GetAttributeAll response for not implemented attributes. */
-static const CipUsint s_0xFF_default = 0xFFU;
+static const CipUsint s_0xFF_default  = 0xFFU;
 static const CipUint s_0xFFFF_default = 0xFFFFU;
 
-static const CipUsint s_0x00_default = 0x00U;
-static const CipUint s_0x0000_default = 0x0000U;
+static const CipUsint s_0x00_default       = 0x00U;
+static const CipUint s_0x0000_default      = 0x0000U;
 static const CipUdint s_0x00000000_default = 0x00000000U;
 
-static const CipNodeAddress s_zero_node = {
-  .device_ip = 0,
-  .device_mac = {
-    0, 0, 0, 0, 0, 0,
-  }
-};
+static const CipNodeAddress s_zero_node = {.device_ip  = 0,
+                                           .device_mac = {
+                                               0,
+                                               0,
+                                               0,
+                                               0,
+                                               0,
+                                               0,
+                                           }};
 
 /* ********************************************************************
  * global public variables
  */
-CipDlrObject g_dlr;  /**< definition of DLR object instance 1 data */
-
+CipDlrObject g_dlr; /**< definition of DLR object instance 1 data */
 
 /* ********************************************************************
  * local functions
@@ -96,9 +98,8 @@ static void EncodeCipRingSupervisorConfig(const void *const data,
   (void)data;
 
   const size_t kRingSupStructSize = 12u;
-  FillNextNMessageOctetsWithValueAndMoveToNextPosition(0,
-                                                       kRingSupStructSize,
-                                                       outgoing_message);
+  FillNextNMessageOctetsWithValueAndMoveToNextPosition(
+      0, kRingSupStructSize, outgoing_message);
 }
 
 static void EncodeCipNodeAddress(const void *const data,
@@ -109,7 +110,6 @@ static void EncodeCipNodeAddress(const void *const data,
                                         outgoing_message);
 }
 
-
 /* ********************************************************************
  * public functions
  */
@@ -117,27 +117,27 @@ EipStatus CipDlrInit(void) {
   CipClass *dlr_class = NULL;
 
   dlr_class = CreateCipClass(kCipDlrClassCode,
-                             0, /* # class attributes */
-                             7, /* # highest class attribute number */
-                             2, /* # class services */
-                             11,/* # instance attributes */
-                             12,/* # of highest instance attribute */
-                             2, /* # instance services */
-                             1, /* # instances */
+                             0,     /* # class attributes */
+                             7,     /* # highest class attribute number */
+                             2,     /* # class services */
+                             11,    /* # instance attributes */
+                             12,    /* # of highest instance attribute */
+                             2,     /* # instance services */
+                             1,     /* # instances */
                              "DLR", /* object class name */
-                             DLR_CLASS_REVISION,  /* # class revision */
+                             DLR_CLASS_REVISION, /* # class revision */
                              NULL /* function pointer for initialization */
-                             );
+  );
 
   if (NULL == dlr_class) {
     return kEipStatusError;
   }
 
   /* Add services to the class */
-  InsertService(dlr_class, kGetAttributeSingle,
-                GetAttributeSingle, "GetAttributeSingle");
-  InsertService(dlr_class, kGetAttributeAll,
-                GetAttributeAll, "GetAttributeAll");
+  InsertService(
+      dlr_class, kGetAttributeSingle, GetAttributeSingle, "GetAttributeSingle");
+  InsertService(
+      dlr_class, kGetAttributeAll, GetAttributeAll, "GetAttributeAll");
 
   /* Bind attributes to the instance */
   CipInstance *dlr_instance = GetCipInstance(dlr_class, 1u);

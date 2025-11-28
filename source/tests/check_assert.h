@@ -6,11 +6,9 @@
  */
 #include <setjmp.h>
 
-
 /* See OpENerTests.cpp for descriptions. */
 extern jmp_buf assert_jump;
 extern jmp_buf *assert_jump_enabled;
-
 
 /*
  * This macro is intended to be used in the unit test code, not the
@@ -33,7 +31,6 @@ extern jmp_buf *assert_jump_enabled;
                                                                         \
     /* Store the assertion jump location. */                            \
     if (setjmp(assert_jump) == 0) {                                     \
-                                                                        \
       /* Code under test, which should longjmp() instead of return. */  \
       exp;                                                              \
                                                                         \

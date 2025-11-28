@@ -3,18 +3,19 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#include "networkconfig.h"
+
 #include <limits.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "cipstring.h"
-#include "networkconfig.h"
 #include "cipcommon.h"
 #include "ciperror.h"
-#include "trace.h"
-#include "opener_api.h"
+#include "cipstring.h"
 #include "lwip/netif.h"
+#include "opener_api.h"
+#include "trace.h"
 
 EipStatus IfaceGetMacAddress(TcpIpInterface *iface,
                              uint8_t *const physical_address) {
@@ -25,14 +26,14 @@ EipStatus IfaceGetMacAddress(TcpIpInterface *iface,
 
 static EipStatus GetIpAndNetmaskFromInterface(
     TcpIpInterface *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
-  iface_cfg->ip_address = iface->ip_addr.addr;
+  iface_cfg->ip_address   = iface->ip_addr.addr;
   iface_cfg->network_mask = iface->netmask.addr;
 
   return kEipStatusOk;
 }
 
-static EipStatus GetGatewayFromRoute(TcpIpInterface *iface,
-                                     CipTcpIpInterfaceConfiguration *iface_cfg) {
+static EipStatus GetGatewayFromRoute(
+    TcpIpInterface *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
   iface_cfg->gateway = iface->gw.addr;
 
   return kEipStatusOk;
@@ -58,7 +59,6 @@ EipStatus IfaceGetConfiguration(TcpIpInterface *iface,
   return status;
 }
 
-void GetHostName(TcpIpInterface *iface,
-                 CipString *hostname) {
+void GetHostName(TcpIpInterface *iface, CipString *hostname) {
   SetCipStringByCstr(hostname, netif_get_hostname(iface));
 }

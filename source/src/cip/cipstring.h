@@ -13,15 +13,16 @@
 #ifndef OPENER_CIPSTRING_H_
 #define OPENER_CIPSTRING_H_
 
-#include "typedefs.h"
 #include "ciptypes.h"
+#include "typedefs.h"
 
 CipStringN *SetCipStringNByData(CipStringN *const cip_string,
                                 CipUint str_len,
                                 CipUint size,
                                 const CipOctet *const data);
 
-/** @brief Copies the content of C-string to a CipStringN under the expectation, that each C-String element is a StringN octet
+/** @brief Copies the content of C-string to a CipStringN under the expectation,
+ * that each C-String element is a StringN octet
  *
  * @param cip_string Target CipStringN
  * @param string Source C-string
@@ -50,7 +51,8 @@ CipStringN *ClearCipStringN(CipStringN *const cip_string);
  */
 void FreeCipStringN(CipStringN *const cip_string);
 
-/** @brief Sets length and data for a CipString2 based on an octet stream and symbol length
+/** @brief Sets length and data for a CipString2 based on an octet stream and
+ * symbol length
  *
  * @param cip_string The CipString2 to be set
  * @param str_len Amount of CipString2 symbols
@@ -62,7 +64,8 @@ CipString2 *SetCipString2ByData(CipString2 *const cip_string,
                                 CipUint str_len,
                                 const CipOctet *const data);
 
-/** @brief Copies the content of C-string to a CipString2 under the expectation, that each C-String element is a CipString2 octet
+/** @brief Copies the content of C-string to a CipString2 under the expectation,
+ * that each C-String element is a CipString2 octet
  *
  * @param cip_string Target CipString2
  * @param string Source C-string
@@ -107,7 +110,8 @@ CipString *ClearCipString(CipString *const cip_string);
  */
 void FreeCipString(CipString *const cip_string);
 
-/** @brief Sets length and data for a CipString based on an octet stream and symbol length
+/** @brief Sets length and data for a CipString based on an octet stream and
+ * symbol length
  *
  * @param cip_string The string to be set
  * @param str_len Amount of CipString symbols
@@ -119,7 +123,8 @@ CipString *SetCipStringByData(CipString *const cip_string,
                               CipUint str_len,
                               const CipOctet *const data);
 
-/** @brief Copies the content of C-string to a CipString under the expectation, that each C-String element is a CipString octet
+/** @brief Copies the content of C-string to a CipString under the expectation,
+ * that each C-String element is a CipString octet
  *
  * @param cip_string Target CipString
  * @param string Source C-string
@@ -146,7 +151,8 @@ CipShortString *ClearCipShortString(CipShortString *const cip_string);
  */
 void FreeCipShortString(CipShortString *const cip_string);
 
-/** @brief Sets length and data for a CipShortString based on an octet stream and symbol length
+/** @brief Sets length and data for a CipShortString based on an octet stream
+ * and symbol length
  *
  * @param cip_string The string to be set
  * @param str_len Amount of CipString symbols
@@ -158,7 +164,8 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
                                         const CipUsint str_len,
                                         const CipOctet *const data);
 
-/** @brief Copies the content of C-string to a CipShortString under the expectation, that each C-String element is a CipShortString octet
+/** @brief Copies the content of C-string to a CipShortString under the
+ * expectation, that each C-String element is a CipShortString octet
  *
  * @param cip_string Target CipShortString
  * @param string Source C-string
@@ -175,9 +182,11 @@ CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
  * @param buf Pointer to a buffer to store the contents in
  * @param len Length of buffer
  *
- * @return POSIX OK(0) if the complete string fit in @param buf, otherwise non-zero.
+ * @return POSIX OK(0) if the complete string fit in @param buf, otherwise
+ * non-zero.
  */
-int GetCstrFromCipShortString(CipShortString *const string, char *buf,
-			      size_t len);
+int GetCstrFromCipShortString(CipShortString *const string,
+                              char *buf,
+                              size_t len);
 
 #endif /* of OPENER_CIPSTRING_H_ */

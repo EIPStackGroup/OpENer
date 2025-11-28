@@ -12,7 +12,7 @@
  *  like fsync() to flush the data really to disk.
  */
 /* COMPILATION SWITCHES */
-#define ENABLE_VERBOSE  0   /* Enable this to observe internal operation */
+#define ENABLE_VERBOSE 0 /* Enable this to observe internal operation */
 
 /*   INCLUDES          */
 #include "conffile.h"
@@ -21,25 +21,26 @@
 #include <string.h>
 
 #if defined _WIN32
-  #include <direct.h>
+#include <direct.h>
 #else
-  #include <sys/stat.h>
-  #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #endif /* if defined _WIN32 */
 
-#include "trace.h"
 #include "opener_error.h"
+#include "trace.h"
 
 /** Base path for configuration file store */
-#define CFG_BASE  "nvdata/"
+#define CFG_BASE "nvdata/"
 
 #if ENABLE_VERBOSE != 0
-#define VERBOSE(pFile, pFmt, ...)   do { fprintf(pFile, pFmt, ## __VA_ARGS__); \
-} while (0)
+#define VERBOSE(pFile, pFmt, ...)        \
+  do {                                   \
+    fprintf(pFile, pFmt, ##__VA_ARGS__); \
+  } while (0)
 #else
 #define VERBOSE(pFile, pFmt, ...)
 #endif
-
 
 /** @brief Portable wrapper for mkdir(). Internally used by RecMkdir()
  *
@@ -55,29 +56,28 @@ static inline int Mkdir(const char *path) {
 #endif
 }
 
-
 static void RecMkdir(char *const p_path) {
-  char *sep = strrchr(p_path, '/' );
-  if(sep && p_path != sep) {  /* "p_path != sep" avoids mkdir("/")! */
+  char *sep = strrchr(p_path, '/');
+  if (sep && p_path != sep) { /* "p_path != sep" avoids mkdir("/")! */
     *sep = '\0';
     RecMkdir(p_path);
     *sep = '/';
   }
   VERBOSE(stdout, " ->mkdir('%s')", p_path);
-  if(Mkdir(p_path) && EEXIST != errno) {
+  if (Mkdir(p_path) && EEXIST != errno) {
     char *error_message = GetErrorMessage(errno);
     OPENER_TRACE_ERR("error while trying to create '%s', %d - %s\n",
-                     p_path, errno, error_message);
+                     p_path,
+                     errno,
+                     error_message);
     FreeErrorMessage(error_message);
   }
 }
 
-
-static FILE *FopenMkdir(char *p_path,
-                        char *mode) {
-  char *sep = strrchr(p_path, '/' );
+static FILE *FopenMkdir(char *p_path, char *mode) {
+  char *sep = strrchr(p_path, '/');
   /* In write mode create missing directories. */
-  if(sep && 'w' == *mode) {
+  if (sep && 'w' == *mode) {
     *sep = '\0';
     RecMkdir(p_path);
     *sep = '/';
@@ -97,7 +97,6 @@ static FILE *FopenMkdir(char *p_path,
 #endif /* _MSC_VER */
 }
 
-
 /** @brief Open the named configuration file possibly for write operation
  *
  *  @param  write   Open for write?
@@ -109,8 +108,7 @@ static FILE *FopenMkdir(char *p_path,
  *  in the NV data storage directory.
  */
 
-FILE *ConfFileOpen(const bool write,
-                   const char *const p_name) {
+FILE *ConfFileOpen(const bool write, const char *const p_name) {
   char path_buf[64];
   int rc;
 
@@ -131,7 +129,7 @@ FILE *ConfFileOpen(const bool write,
  */
 EipStatus ConfFileClose(FILE **p_filep) {
   EipStatus eip_status = kEipStatusOk;
-  if( 0 != fclose(*p_filep) ) {
+  if (0 != fclose(*p_filep)) {
     eip_status = kEipStatusError;
   }
   *p_filep = NULL;

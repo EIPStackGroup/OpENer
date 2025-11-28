@@ -6,10 +6,10 @@
 
 #include "networkhandler.h"
 
-#include "opener_error.h"
-#include "trace.h"
 #include "encap.h"
+#include "opener_error.h"
 #include "opener_user_conf.h"
+#include "trace.h"
 
 MilliSeconds GetMilliSeconds(void) {
   return osKernelSysTick();
@@ -22,7 +22,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 
 void ShutdownSocketPlatform(int socket_handle) {
   if (0 != shutdown(socket_handle, SHUT_RDWR)) {
-    int error_code = GetSocketErrorNumber();
+    int error_code      = GetSocketErrorNumber();
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("Failed shutdown() socket %d - Error Code: %d - %s\n",
                      socket_handle,
@@ -37,13 +37,11 @@ void CloseSocketPlatform(int socket_handle) {
 }
 
 int SetSocketToNonBlocking(int socket_handle) {
-  return fcntl(socket_handle, F_SETFL, fcntl(socket_handle,
-                                             F_GETFL,
-                                             0) | O_NONBLOCK);
+  return fcntl(
+      socket_handle, F_SETFL, fcntl(socket_handle, F_GETFL, 0) | O_NONBLOCK);
 }
 
-int SetQosOnSocket(const int socket,
-                   CipUsint qos_value) {
+int SetQosOnSocket(const int socket, CipUsint qos_value) {
   /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
    *  Note that the DSCP value, if placed directly in the ToS field
    *  in the IP header, must be shifted left 2 bits. */

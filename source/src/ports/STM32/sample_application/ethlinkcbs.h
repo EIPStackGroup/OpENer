@@ -13,30 +13,22 @@
  *  of every Ethernet Link object of our device.
  */
 
-
 /*---------------------------------------------------------------------------*/
 /*                               INCLUDES                                    */
 /*---------------------------------------------------------------------------*/
-#include "typedefs.h"
 #include "ciptypes.h"
+#include "typedefs.h"
 
 /*---------------------------------------------------------------------------*/
 /*                             PROTOTYPES                                    */
 /*---------------------------------------------------------------------------*/
 
-EipStatus EthLnkPreGetCallback
-(
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
-);
+EipStatus EthLnkPreGetCallback(CipInstance *const instance,
+                               CipAttributeStruct *const attribute,
+                               CipByte service);
 
-EipStatus EthLnkPostGetCallback
-(
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
-);
+EipStatus EthLnkPostGetCallback(CipInstance *const instance,
+                                CipAttributeStruct *const attribute,
+                                CipByte service);
 
-
-#endif  /* #ifndef OPENER_ETHLINKCBS_H_ */
+#endif /* #ifndef OPENER_ETHLINKCBS_H_ */

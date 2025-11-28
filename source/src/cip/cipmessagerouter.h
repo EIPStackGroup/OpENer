@@ -6,8 +6,8 @@
 #ifndef OPENER_CIPMESSAGEROUTER_H_
 #define OPENER_CIPMESSAGEROUTER_H_
 
-#include "typedefs.h"
 #include "ciptypes.h"
+#include "typedefs.h"
 
 /** @brief Message Router class code */
 static const CipUint kCipMessageRouterClassCode = 0x02U;
@@ -23,14 +23,16 @@ EipStatus CipMessageRouterInit(void);
  */
 void DeleteAllClasses(void);
 
-/** @brief Notify the MessageRouter that an explicit message (connected or unconnected)
- *  has been received. This function will be called from the encapsulation layer.
- *  The CPF structure is already parsed an can be accessed via the global variable:
- *  g_stCPFDataItem.
- *  @param data pointer to the data buffer of the message directly at the beginning of the CIP part.
+/** @brief Notify the MessageRouter that an explicit message (connected or
+ * unconnected) has been received. This function will be called from the
+ * encapsulation layer. The CPF structure is already parsed an can be accessed
+ * via the global variable: g_stCPFDataItem.
+ *  @param data pointer to the data buffer of the message directly at the
+ * beginning of the CIP part.
  *  @param data_length number of bytes in the data buffer
  *  @param originator_address The address of the originator as received
- *  @param encapsulation_session The associated encapsulation session of the explicit message
+ *  @param encapsulation_session The associated encapsulation session of the
+ * explicit message
  *  @return  kEipStatusError on fault
  *           kEipStatusOk on success
  */
