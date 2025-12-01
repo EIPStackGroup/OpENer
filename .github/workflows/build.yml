@@ -153,6 +153,11 @@ jobs:
     needs: megalinter
     if: success() || failure()
 
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
