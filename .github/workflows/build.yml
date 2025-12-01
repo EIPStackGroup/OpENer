@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
 
       - name: MegaLinter
-        uses: oxsecurity/megalinter/flavors/c_cpp@v9.1.0
+        uses: oxsecurity/megalinter/flavors/c_cpp@55a59b24a441e0e1943080d4a512d827710d4a9d
         id: ml
         env:
           VALIDATE_ALL_CODEBASE: true
@@ -224,7 +224,7 @@ jobs:
 
       - name: Create coverage summary comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const fs = require('fs');
