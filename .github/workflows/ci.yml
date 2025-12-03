@@ -37,8 +37,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_LINTERS: SPELL_CSPELL
           DISABLE_ERRORS: false
-          # Fast standard checks
-          CPPCHECK_ARGUMENTS: --suppress=normalCheckLevelMaxBranches --inline-suppr
+          # Fast standard checks - disable information messages
+          C_CPPCHECK_ARGUMENTS: --inline-suppr --disable=information
           # Enable auto-fixes
           APPLY_FIXES: all
           APPLY_FIXES_EVENT: pull_request
@@ -115,11 +115,11 @@ jobs:
             -DCPPUTEST_HOME:PATH=/usr
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} -j"$(nproc)"
+        run: cmake --build "${{ github.workspace }}/build" --config "${{ env.BUILD_TYPE }}" -j $(nproc)
 
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --parallel "$(nproc)"
+        run: ctest -C "${{ env.BUILD_TYPE }}" --output-on-failure --parallel "$(nproc)"
 
       - name: Generate Coverage Reports
         run: |
