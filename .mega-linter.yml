@@ -13,17 +13,6 @@ APPLY_FIXES: all
 DISABLE_LINTERS:
   - SPELL_CSPELL  # Disabled as per original config
 
-# C/C++ specific settings
-CLANG_FORMAT_ARGUMENTS: "--style=file"
-
-# Cppcheck configuration
-CPPCHECK_FILE_EXTENSIONS:
-  - .c
-  - .h
-
-CPPCHECK_FILTER_REGEX_INCLUDE: "(source/)"
-CPPCHECK_FILTER_REGEX_EXCLUDE: "(tests/|build/)"
-
 # Report configuration
 SARIF_REPORTER: true
 TEXT_REPORTER: true
