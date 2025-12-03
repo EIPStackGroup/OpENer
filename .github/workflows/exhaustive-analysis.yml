@@ -123,7 +123,7 @@ jobs:
             -DCMAKE_C_FLAGS="-O2 -Wall -Wextra -Werror"
 
       - name: Build
-        run: cmake --build "${{ github.workspace }}/build" --config Release -j $(nproc)
+        run: cmake --build "${{ github.workspace }}/build" --config Release -j "$(nproc)"
 
       - name: Test
         working-directory: ${{ github.workspace }}/build

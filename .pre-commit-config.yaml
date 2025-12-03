@@ -13,14 +13,7 @@ repos:
     hooks:
       - id: clang-format
         types_or: [c, c++, header]
-        args: ["-i"]
-
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
-    hooks:
-      - id: clang-tidy
-        args: ["-p=build"]
-        types_or: [c, c++, header]
+        args: ["-i", "--style=file"]
 
   - repo: https://github.com/cpplint/cpplint
     rev: 2.0.2

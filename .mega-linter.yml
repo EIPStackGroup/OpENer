@@ -13,6 +13,9 @@ APPLY_FIXES: all
 DISABLE_LINTERS:
   - SPELL_CSPELL  # Disabled as per original config
 
+# Formatter specific configuration
+C_CLANG_FORMAT_ARGUMENTS: "--style=file"
+
 # Report configuration
 SARIF_REPORTER: true
 TEXT_REPORTER: true

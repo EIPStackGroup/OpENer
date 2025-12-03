@@ -37,7 +37,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
   return kEipStatusOk;
 }
 
-void ShutdownSocketPlatform(int socket_handle){
+void ShutdownSocketPlatform(int socket_handle) {
 #warning \
     "Untested. Is a shutdown() needed under Windows like for the POSIX port?"
 }
@@ -57,5 +57,5 @@ int SetQosOnSocket(int socket, CipUsint qos_value) {
    *  in the IP header, must be shifted left 2 bits. */
   DWORD set_tos = qos_value << 2;
   return setsockopt(
-      socket, IPPROTO_IP, IP_TOS, (char *)&set_tos, sizeof(set_tos));
+      socket, IPPROTO_IP, IP_TOS, (char*)&set_tos, sizeof(set_tos));
 }
