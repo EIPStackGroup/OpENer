@@ -1,0 +1,54 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v21.1.6
+    hooks:
+      - id: clang-format
+        types_or: [c, c++, header]
+        args: ["-i"]
+
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: clang-tidy
+        args: ["-p=build"]
+        types_or: [c, c++, header]
+
+  - repo: https://github.com/cpplint/cpplint
+    rev: 2.0.2
+    hooks:
+      - id: cpplint
+        types_or: [c, c++, header]
+        args:
+          - "--filter=-whitespace/line_length"
+          - "--recursive"
+
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: cppcheck
+        name: cppcheck
+        args:
+          - "--enable=all"
+          - "--inconclusive"
+          - "--force"
+          - "--suppress=missingIncludeSystem"
+        types_or: [c, c++, header]
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.9
+    hooks:
+      - id: actionlint

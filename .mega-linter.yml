@@ -8,8 +8,6 @@ FILEIO_REPORTER: false
 
 # Apply fixes
 APPLY_FIXES: all
-APPLY_FIXES_EVENT: pull_request
-APPLY_FIXES_MODE: commit
 
 # Linters configuration
 DISABLE_LINTERS:
@@ -19,8 +17,6 @@ DISABLE_LINTERS:
 CLANG_FORMAT_ARGUMENTS: "--style=file"
 
 # Cppcheck configuration
-# Note: CPPCHECK_ARGUMENTS will be overridden by workflow env vars
-# for conditional standard vs exhaustive analysis
 CPPCHECK_FILE_EXTENSIONS:
   - .c
   - .h

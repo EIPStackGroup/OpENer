@@ -115,11 +115,11 @@ jobs:
             -DCPPUTEST_HOME:PATH=/usr
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} -j$(nproc)
+        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} -j"$(nproc)"
 
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --parallel $(nproc)
+        run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --parallel "$(nproc)"
 
       - name: Generate Coverage Reports
         run: |
