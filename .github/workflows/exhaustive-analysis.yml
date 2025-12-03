@@ -47,7 +47,7 @@ jobs:
           DISABLE_LINTERS: SPELL_CSPELL
           DISABLE_ERRORS: false
           # Exhaustive cppcheck analysis
-          CPPCHECK_ARGUMENTS: >-
+          C_CPPCHECK_ARGUMENTS: >-
             --check-level=exhaustive
             --inline-suppr
             --enable=warning,style,performance,portability
