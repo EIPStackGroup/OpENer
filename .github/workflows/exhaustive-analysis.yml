@@ -69,13 +69,14 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🔍 Exhaustive Static Analysis Failed',
               body: `The nightly exhaustive static analysis has detected issues.
 
-              **Run:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              **Run:** ${runUrl}
               **Date:** ${new Date().toISOString()}
 
               Please review the analysis reports in the workflow artifacts.`,

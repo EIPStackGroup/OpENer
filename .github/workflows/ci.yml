@@ -149,6 +149,7 @@ jobs:
             const match = summary.match(/lines:\s+(\d+\.\d+)%/);
             const percentage = match ? match[1] : 'N/A';
 
+            const artifactUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
             const comment = `## 📊 Coverage Report
 
             **Line Coverage: ${percentage}%**
@@ -157,7 +158,7 @@ jobs:
             ${summary}
             \`\`\`
 
-            📥 Download the [detailed HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) from artifacts.
+            📥 Download the [detailed HTML report](${artifactUrl}) from artifacts.
 
             ℹ️ This PR was tested with **standard** static analysis. Exhaustive analysis will run on release branches.`;
 
