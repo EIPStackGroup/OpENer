@@ -1,0 +1,37 @@
+# .mega-linter.yml
+# MegaLinter configuration for OpENer project
+
+# General settings
+FLAVOR_SUGGESTIONS: false
+SHOW_ELAPSED_TIME: true
+FILEIO_REPORTER: false
+
+# Apply fixes
+APPLY_FIXES: all
+APPLY_FIXES_EVENT: pull_request
+APPLY_FIXES_MODE: commit
+
+# Linters configuration
+DISABLE_LINTERS:
+  - SPELL_CSPELL  # Disabled as per original config
+
+# C/C++ specific settings
+CLANG_FORMAT_ARGUMENTS: "--style=file"
+
+# Cppcheck configuration
+# Note: CPPCHECK_ARGUMENTS will be overridden by workflow env vars
+# for conditional standard vs exhaustive analysis
+CPPCHECK_FILE_EXTENSIONS:
+  - .c
+  - .h
+
+CPPCHECK_FILTER_REGEX_INCLUDE: "(source/)"
+CPPCHECK_FILTER_REGEX_EXCLUDE: "(tests/|build/)"
+
+# Report configuration
+SARIF_REPORTER: true
+TEXT_REPORTER: true
+UPDATED_SOURCES_REPORTER: true
+
+# Parallel processing
+PARALLEL: true

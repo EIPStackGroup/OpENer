@@ -1,0 +1,177 @@
+# .github/workflows/ci.yml
+# Main CI workflow - fast feedback for PRs and commits
+---
+name: CI
+
+on:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # Quick linting with standard checks
+  lint:
+    name: Lint (Standard)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+
+      - name: MegaLinter
+        uses: oxsecurity/megalinter/flavors/c_cpp@55a59b24a441e0e1943080d4a512d827710d4a9d
+        id: ml
+        env:
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISABLE_LINTERS: SPELL_CSPELL
+          DISABLE_ERRORS: false
+          # Fast standard checks
+          CPPCHECK_ARGUMENTS: --suppress=normalCheckLevelMaxBranches --inline-suppr
+          # Enable auto-fixes
+          APPLY_FIXES: all
+          APPLY_FIXES_EVENT: pull_request
+          APPLY_FIXES_MODE: commit
+
+      - name: Archive MegaLinter Reports
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: megalinter-reports
+          path: |
+            megalinter-reports
+            mega-linter.log
+
+      - name: Prepare Commit
+        if: >-
+          steps.ml.outputs.has_updated_sources == 1 &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          !contains(github.event.head_commit.message, 'skip fix')
+        run: sudo chown -Rc $UID .git/
+
+      - name: Commit and Push Linter Fixes
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3
+        if: >-
+          steps.ml.outputs.has_updated_sources == 1 &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          !contains(github.event.head_commit.message, 'skip fix')
+        with:
+          branch: ${{ github.event.pull_request.head.ref }}
+          commit_message: "[MegaLinter] Apply linter fixes"
+          commit_user_name: megalinter-bot
+          commit_user_email: 129584137+megalinter-bot@users.noreply.github.com
+
+  # Build and test
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: lint
+    if: success() || failure()
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcap-dev \
+            lcov \
+            cpputest
+
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: "3.11"
+
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: Configure CMake
+        run: |
+          cmake -S ${{ github.workspace }}/source \
+            -B ${{ github.workspace }}/build \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DOpENer_PLATFORM:STRING="POSIX" \
+            -DBUILD_SHARED_LIBS:BOOL=OFF \
+            -DOpENer_TRACES:BOOL=OFF \
+            -DOpENer_TESTS:BOOL=ON \
+            -DCPPUTEST_HOME:PATH=/usr
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} -j$(nproc)
+
+      - name: Test
+        working-directory: ${{ github.workspace }}/build
+        run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --parallel $(nproc)
+
+      - name: Generate Coverage Reports
+        run: |
+          gcovr --html-details --output coverage-report.html
+          gcovr --cobertura --output coverage.xml
+          gcovr --print-summary | tee coverage-summary.txt
+
+      - name: Upload Coverage Reports
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: coverage-report
+          path: |
+            coverage-report*.html
+            coverage.xml
+            coverage-summary.txt
+
+      - name: Comment Coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('coverage-summary.txt', 'utf8');
+
+            // Extract coverage percentage for badge
+            const match = summary.match(/lines:\s+(\d+\.\d+)%/);
+            const percentage = match ? match[1] : 'N/A';
+
+            const comment = `## 📊 Coverage Report
+
+            **Line Coverage: ${percentage}%**
+
+            \`\`\`
+            ${summary}
+            \`\`\`
+
+            📥 Download the [detailed HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) from artifacts.
+
+            ℹ️ This PR was tested with **standard** static analysis. Exhaustive analysis will run on release branches.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload Build Artifacts
+        if: success()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: build-artifacts
+          path: ${{ github.workspace }}/build
+          retention-days: 7
