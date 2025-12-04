@@ -30,7 +30,6 @@ installed. You will need to have the following installed:
 * gcc
 * make
 * binutils
-* the development library of libcap (libcap-dev or equivalient)
 
 for normal building. These should be installed on most Linux installations and
 are part of the development packages of Cygwin.
@@ -55,7 +54,9 @@ Compile for Linux/POSIX
      e.g. ``./src/ports/POSIX/OpENer eth1``
 
 OpENer also now has a real-time capable POSIX startup via the OpENer_RT option, which requires that the used kernel has the full preemptive RT patches applied and activated.
-If you want to use OpENer_RT, prior to step 2, execute ``sudo setcap cap_ipc_lock,cap_sys_nice+ep ./src/ports/POSIX/OpENer
+To build OpENer with RT support, you will need to install libcap-dev: ``sudo apt-get install libcap-dev``.
+Then configure CMake with the `-DOpENer_RT=ON` option.
+After building, prior to step 2, execute ``sudo setcap cap_ipc_lock,cap_sys_nice+ep ./src/ports/POSIX/OpENer
 `` to grant OpENer ``CAP_SYS_NICE``, and the ``CAP_IPC_LOCK`` capabilities, which are needed for the RT mode
 
 OpENer can also be built and installed as a library by setting the CMake flag `-DOPENER_INSTALL_AS_LIB`.  To build a shared library,
@@ -81,7 +82,7 @@ In order to get the correct interface index enter the command ``route print`` in
 Compile for Windows XP/7/8/10 via Cygwin
 --------------------------------------
 
-The POSIX setup file can be reused for Cygwin. Please note, that you cannot use RT mode and you will have to remove the code responsible for checking and getting the needed capabilities, as libcap is not available in Cygwin. The easier and more supported way to build OpENer for Windows is to either use MinGW or Visual Studio.
+The POSIX setup file can be reused for Cygwin. Please note, that you cannot use OpENer_RT (real-time mode) on Cygwin as libcap is not available. The easier and more supported way to build OpENer for Windows is to either use MinGW or Visual Studio.
 
 Compile for MinGW on Windows XP/7/8/10
 -------------------------------
@@ -209,9 +210,11 @@ Running an OpENer "swarm"
    # Filename: Dockerfile
    FROM ubuntu:20.04
    ADD ./bin/posix/src/ports/POSIX/OpENer /
-   RUN apt-get update && apt-get install -y --no-install-recommends libcap-dev nmap
+   RUN apt-get update && apt-get install -y --no-install-recommends nmap
    ENTRYPOINT ["./OpENer", "eth0"]
    ```
+
+   Note: nmap is included for testing and debugging network connectivity between containers.
 
 3. Create a docker-compose.yml that will let you connect the macvlan network to the containers and easily build them and tear them down:
 
@@ -242,4 +245,4 @@ The easiest way is to fork the repository, then create a feature/bugfix branch.
 After finishing your feature/bugfix create a pull request and explain your changes.
 Also, please update and/or add doxygen comments to the provided code sections.
 Please stick to the coding conventions, as defined in `source/doc/coding_rules`.
-A clang-format file is provided to conveniatly follow the coding guideles to related to code formatting.
+A clang-format file is provided to conveniently follow the coding guidelines to related to code formatting.
