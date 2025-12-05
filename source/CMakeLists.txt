@@ -9,6 +9,30 @@ cmake_minimum_required( VERSION 3.18 )
 project( OpENer LANGUAGES C VERSION 2.3 )
 
 #######################################
+# C Settings                          #
+#                                     #
+# Here you can set various C-related  #
+# options for the project.            #
+#######################################
+# Set C17 as minimum standard
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+# Add modern compiler warnings
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(
+        -Wall
+        -Wextra
+        -pedantic
+        -Wconversion
+        -Wshadow
+    )
+elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+    add_compile_options(/W4)
+endif()
+
+#######################################
 # Project version                     #
 #######################################
 
@@ -31,7 +55,7 @@ if(NOT DEFINED OpENer_Device_Minor_Version)
   set(OpENer_Device_Minor_Version ${PROJECT_VERSION_MINOR} CACHE STRING "Minor Version")
 endif()
 
-configure_file(  
+configure_file(
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
 	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
 	)
