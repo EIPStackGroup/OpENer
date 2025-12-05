@@ -134,7 +134,7 @@ static bool isalnum_c(const EipByte byte) {
  *  The minimum length of 1 is checked but not the maximum length
  *  that has already been enforced on data reception.
  */
-static bool IsValidNameLabel(const EipByte *label) {
+static bool IsValidNameLabel(const EipByte* label) {
   if (!isalnum_c(*label)) {
     return false;
   }
@@ -158,14 +158,14 @@ static bool IsValidNameLabel(const EipByte *label) {
  *    be converted to punycode (see https://www.punycoder.com/) by
  *    the user in advance.
  */
-static bool IsValidDomain(EipByte *domain) {
+static bool IsValidDomain(EipByte* domain) {
   bool status = true;
 
   OPENER_TRACE_INFO("Enter '%s'->", domain);
   if ('.' == *domain) { /* Forbid leading dot */
     return false;
   }
-  EipByte *dot = (EipByte *)strchr((char *)domain, '.');
+  EipByte* dot = (EipByte*)strchr((char*)domain, '.');
   if (dot) {
     bool rc;
 
@@ -265,7 +265,7 @@ static bool IsNetworkOrBroadcastIp(in_addr_t ip_addr, in_addr_t net_mask) {
  *   - |   -  |  +  |   -  |  - | name_server / name_server_2
  * A configured gateway must be reachable according to the network mask.
  */
-static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg) {
+static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration* if_cfg) {
   if (INADDR_ANY == ntohl(if_cfg->ip_address)) { /* N0 */
     return false;
   }
@@ -300,10 +300,10 @@ static bool IsValidNetworkConfig(const CipTcpIpInterfaceConfiguration *if_cfg) {
 }
 
 static bool IsIOConnectionActive(void) {
-  DoublyLinkedListNode *node = connection_list.first;
+  DoublyLinkedListNode* node = connection_list.first;
 
   while (NULL != node) {
-    CipConnectionObject *connection = node->data;
+    CipConnectionObject* connection = node->data;
     if (ConnectionObjectIsTypeIOConnection(connection) &&
         kConnectionObjectStateTimedOut !=
             ConnectionObjectGetState(connection)) {
@@ -325,10 +325,10 @@ static CipUsint dummy_data_field =
 
 /************** Functions ****************************************/
 
-void EncodeCipTcpIpInterfaceConfiguration(const void *const data,
-                                          ENIPMessage *const outgoing_message) {
-  CipTcpIpInterfaceConfiguration *tcp_ip_network_interface_configuration =
-      (CipTcpIpInterfaceConfiguration *)data;
+void EncodeCipTcpIpInterfaceConfiguration(const void* const data,
+                                          ENIPMessage* const outgoing_message) {
+  CipTcpIpInterfaceConfiguration* tcp_ip_network_interface_configuration =
+      (CipTcpIpInterfaceConfiguration*)data;
   AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->ip_address),
                    outgoing_message);
   AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->network_mask),
@@ -343,8 +343,8 @@ void EncodeCipTcpIpInterfaceConfiguration(const void *const data,
                   outgoing_message);
 }
 
-void EncodeCipTcpIpMulticastConfiguration(const void *const data,
-                                          ENIPMessage *const outgoing_message) {
+void EncodeCipTcpIpMulticastConfiguration(const void* const data,
+                                          ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -360,16 +360,16 @@ void EncodeCipTcpIpMulticastConfiguration(const void *const data,
   EncodeCipUdint(&multicast_address, outgoing_message);
 }
 
-void EncodeSafetyNetworkNumber(const void *const data,
-                               ENIPMessage *const outgoing_message) {
+void EncodeSafetyNetworkNumber(const void* const data,
+                               ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(0, 6, outgoing_message);
 }
 
-void EncodeCipLastConflictDetected(const void *const data,
-                                   ENIPMessage *const outgoing_message) {
+void EncodeCipLastConflictDetected(const void* const data,
+                                   ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -381,10 +381,10 @@ void EncodeCipLastConflictDetected(const void *const data,
 }
 
 int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
-                                             void *const data,
-                                             CipMessageRouterRequest
-                                                 *const message_router_request,
-                                             CipMessageRouterResponse *const
+                                             void* const data,
+                                             CipMessageRouterRequest* const
+                                                 message_router_request,
+                                             CipMessageRouterResponse* const
                                                  message_router_response) {
   int number_of_decoded_bytes = -1;
 
@@ -399,7 +399,7 @@ int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
     configuration_control_received &=
         (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
 
-    *(CipDword *)data                       = configuration_control_received;
+    *(CipDword*)data                        = configuration_control_received;
     number_of_decoded_bytes                 = 4;
     message_router_response->general_status = kCipErrorSuccess;
   }
@@ -411,12 +411,12 @@ int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
     0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceConfiguration(/* Attribute 5 */
-                                         CipTcpIpInterfaceConfiguration *const
+                                         CipTcpIpInterfaceConfiguration* const
                                              data,  // kCipUdintUdintUdintUdintUdintString
-                                         CipMessageRouterRequest
-                                             *const message_router_request,
-                                         CipMessageRouterResponse
-                                             *const message_router_response) {
+                                         CipMessageRouterRequest* const
+                                             message_router_request,
+                                         CipMessageRouterResponse* const
+                                             message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipTcpIpInterfaceConfiguration if_cfg;
@@ -474,11 +474,11 @@ int DecodeCipTcpIpInterfaceConfiguration(/* Attribute 5 */
 }
 
 int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
-                                    CipString *const data,
-                                    CipMessageRouterRequest
-                                        *const message_router_request,
-                                    CipMessageRouterResponse
-                                        *const message_router_response) {
+                                    CipString* const data,
+                                    CipMessageRouterRequest* const
+                                        message_router_request,
+                                    CipMessageRouterResponse* const
+                                        message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipString tmp_host_name = {.length = 0u, .string = NULL};
@@ -513,13 +513,11 @@ int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
           OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
-                                                          void *const data,
-                                                          CipMessageRouterRequest
-                                                              *const
-                                                                  message_router_request,
-                                                          CipMessageRouterResponse
-                                                              *const
-                                                                  message_router_response) {
+                                                          void* const data,
+                                                          CipMessageRouterRequest* const
+                                                              message_router_request,
+                                                          CipMessageRouterResponse* const
+                                                              message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipUint inactivity_timeout_received =
@@ -528,7 +526,7 @@ int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
   if (inactivity_timeout_received > 3600) {
     message_router_response->general_status = kCipErrorInvalidAttributeValue;
   } else {
-    *(CipUint *)data                        = inactivity_timeout_received;
+    *(CipUint*)data                         = inactivity_timeout_received;
     message_router_response->general_status = kCipErrorSuccess;
     number_of_decoded_bytes                 = 2;
   }
@@ -537,7 +535,7 @@ int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
 }
 
 EipStatus CipTcpIpInterfaceInit() {
-  CipClass *tcp_ip_class = NULL;
+  CipClass* tcp_ip_class = NULL;
 
   if ((tcp_ip_class =
            CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */
@@ -555,7 +553,7 @@ EipStatus CipTcpIpInterfaceInit() {
     return kEipStatusError;
   }
 
-  CipInstance *instance = GetCipInstance(
+  CipInstance* instance = GetCipInstance(
       tcp_ip_class,
       1); /* bind attributes to the instance #1 that was created above */
 
@@ -709,7 +707,7 @@ void ShutdownTcpIpInterface(void) {
  *  according to CIP spec Volume 2,
  *  section 3-5.3 "Multicast Address Allocation for EtherNet/IP"
  */
-void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip) {
+void CipTcpIpCalculateMulticastIp(CipTcpIpObject* const tcpip) {
   /* Multicast base address according to spec: 239.192.1.0 */
   static const CipUdint cip_mcast_base_addr = 0xEFC00100;
 
@@ -724,10 +722,10 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip) {
       htonl(cip_mcast_base_addr + (host_id << 5));
 }
 
-EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
-  CipAttributeStruct *attribute = GetCipAttribute(instance, 13);
+EipUint16 GetEncapsulationInactivityTimeout(CipInstance* instance) {
+  CipAttributeStruct* attribute = GetCipAttribute(instance, 13);
   OPENER_ASSERT(NULL != attribute);
-  CipUint *data                              = (CipUint *)attribute->data;
+  CipUint* data                              = (CipUint*)attribute->data;
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;
 }

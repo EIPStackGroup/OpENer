@@ -24,8 +24,8 @@
 #include "opener_api.h"
 #include "trace.h"
 
-EipStatus IfaceGetMacAddress(const char *iface,
-                             uint8_t *const physical_address) {
+EipStatus IfaceGetMacAddress(const char* iface,
+                             uint8_t* const physical_address) {
   struct ifreq ifr;
   size_t if_name_len = strlen(iface);
   EipStatus status   = kEipStatusError;
@@ -50,7 +50,7 @@ EipStatus IfaceGetMacAddress(const char *iface,
 }
 
 static EipStatus GetIpAndNetmaskFromInterface(
-    const char *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
+    const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   struct ifreq ifr;
   size_t if_name_len = strlen(iface);
   if (if_name_len < sizeof(ifr.ifr_name)) {
@@ -67,14 +67,14 @@ static EipStatus GetIpAndNetmaskFromInterface(
     int ipaddr  = 0;
     int netaddr = 0;
     if (ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
-      ipaddr = ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr.s_addr;
+      ipaddr = ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr;
     } else {
       close(fd);
       return kEipStatusError;
     }
 
     if (ioctl(fd, SIOCGIFNETMASK, &ifr) == 0) {
-      netaddr = ((struct sockaddr_in *)&ifr.ifr_netmask)->sin_addr.s_addr;
+      netaddr = ((struct sockaddr_in*)&ifr.ifr_netmask)->sin_addr.s_addr;
     } else {
       close(fd);
       return kEipStatusError;
@@ -89,17 +89,17 @@ static EipStatus GetIpAndNetmaskFromInterface(
 }
 
 static EipStatus GetGatewayFromRoute(
-    const char *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
+    const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   static const char route_location[] = "/proc/net/route";
 
-  FILE *file_handle = fopen(route_location, "r");
+  FILE* file_handle = fopen(route_location, "r");
   char file_buffer[132];
-  char *gateway_string = NULL;
+  char* gateway_string = NULL;
 
   if (!file_handle) {
     return kEipStatusError;
   } else {
-    char *needle_start;
+    char* needle_start;
     file_buffer[0] = '\0'; /* To enter the while loop */
     while (NULL == (needle_start = strstr(file_buffer, iface)) &&
            fgets(file_buffer, sizeof(file_buffer), file_handle)) {
@@ -108,7 +108,7 @@ static EipStatus GetGatewayFromRoute(
     fclose(file_handle);
 
     if (NULL != needle_start) {
-      char *strtok_save = NULL;
+      char* strtok_save = NULL;
       strtok_r(needle_start, " \t", &strtok_save); /* Iface token */
       strtok_r(NULL, " \t", &strtok_save);         /* Destination token */
       gateway_string = strtok_r(NULL, " \t", &strtok_save);
@@ -119,7 +119,7 @@ static EipStatus GetGatewayFromRoute(
   }
 
   unsigned long tmp_gw;
-  char *end;
+  char* end;
   /* The gateway string is a hex number in network byte order. */
   errno  = 0; /* To distinguish success / failure later */
   tmp_gw = strtoul(gateway_string, &end, 16);
@@ -150,10 +150,10 @@ static EipStatus GetGatewayFromRoute(
 }
 
 static EipStatus GetDnsInfoFromResolvConf(
-    CipTcpIpInterfaceConfiguration *iface_cfg) {
+    CipTcpIpInterfaceConfiguration* iface_cfg) {
   static const char resolv_conf_file[] = "/etc/resolv.conf";
-  FILE *file_handle                    = fopen(resolv_conf_file, "r");
-  char *file_buffer                    = NULL;
+  FILE* file_handle                    = fopen(resolv_conf_file, "r");
+  char* file_buffer                    = NULL;
   size_t file_length;
 
   if (file_handle) {
@@ -181,13 +181,13 @@ static EipStatus GetDnsInfoFromResolvConf(
     return kEipStatusError;
   }
 
-  char *value_string;
-  char *strtok_save;
-  char *strtok_key;
+  char* value_string;
+  char* strtok_save;
+  char* strtok_key;
   CipUdint dmy_dns;
-  CipUdint *dns = &iface_cfg->name_server;
+  CipUdint* dns = &iface_cfg->name_server;
   /* Split the file_buffer into lines. */
-  char *line = strtok_r(file_buffer, "\n", &strtok_save);
+  char* line = strtok_r(file_buffer, "\n", &strtok_save);
   while (NULL != line) {
     /* Inspect each line for keywords: search, domain, nameserver */
     switch (line[0]) {
@@ -247,8 +247,8 @@ static int nanosleep_simple32(uint32_t sleep_ns) {
   return rc;
 }
 
-EipStatus IfaceGetConfiguration(const char *iface,
-                                CipTcpIpInterfaceConfiguration *iface_cfg) {
+EipStatus IfaceGetConfiguration(const char* iface,
+                                CipTcpIpInterfaceConfiguration* iface_cfg) {
   CipTcpIpInterfaceConfiguration local_cfg;
   EipStatus status;
 
@@ -274,9 +274,9 @@ EipStatus IfaceGetConfiguration(const char *iface,
 
 /* For an API documentation look at opener_api.h. */
 #define WAIT_CYCLE_NS 100000000U
-EipStatus IfaceWaitForIp(const char *const iface,
+EipStatus IfaceWaitForIp(const char* const iface,
                          int timeout,
-                         volatile int *const p_abort_wait) {
+                         volatile int* const p_abort_wait) {
   struct ifreq ifr;
   int rc;
 
@@ -299,7 +299,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
       ipaddr = 0U;
 
       if (0 == (rc = ioctl(fd, SIOCGIFADDR, &ifr))) {
-        ipaddr = ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr.s_addr;
+        ipaddr = ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr;
       } else {
         if (EADDRNOTAVAIL != errno) {
           return rc;
@@ -318,7 +318,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
   return rc;
 }
 
-void GetHostName(CipString *hostname) {
+void GetHostName(CipString* hostname) {
   char name_buf[HOST_NAME_MAX];
 
   int rc                      = gethostname(name_buf, sizeof name_buf);

@@ -23,7 +23,7 @@ EipStatus NetworkHandlerInitializePlatform(void) {
 void ShutdownSocketPlatform(int socket_handle) {
   if (0 != shutdown(socket_handle, SHUT_RDWR)) {
     int error_code      = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
+    char* error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("Failed shutdown() socket %d - Error Code: %d - %s\n",
                      socket_handle,
                      error_code,

@@ -14,8 +14,8 @@
 #include "cipqos.h"
 #include "typedefs.h"
 
-int NvQosLoad(CipQosObject *p_qos);
+int NvQosLoad(CipQosObject* p_qos);
 
-int NvQosStore(const CipQosObject *p_qos);
+int NvQosStore(const CipQosObject* p_qos);
 
 #endif /* _NVQOS_H_ */

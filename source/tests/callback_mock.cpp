@@ -24,12 +24,12 @@ void CheckIoConnectionEvent(unsigned int output_assembly_id,
   mock().actualCall(__func__);
 }
 
-EipStatus AfterAssemblyDataReceived(CipInstance *instance) {
+EipStatus AfterAssemblyDataReceived(CipInstance* instance) {
   return (EipStatus)mock().actualCall(__func__).returnIntValueOrDefault(
       kEipStatusOk);
 }
 
-EipBool8 BeforeAssemblyDataSend(CipInstance *instance) {
+EipBool8 BeforeAssemblyDataSend(CipInstance* instance) {
   return mock().actualCall(__func__).returnIntValueOrDefault(false);
 }
 
@@ -43,8 +43,8 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
       kEipStatusError);
 }
 
-void *CipCalloc(size_t number_of_elements, size_t size_of_element) {
-  MockActualCall &call = mock().actualCall(__func__);
+void* CipCalloc(size_t number_of_elements, size_t size_of_element) {
+  MockActualCall& call = mock().actualCall(__func__);
 
   /*
    * The return value is dependent upon if a predetermined result has been
@@ -56,7 +56,7 @@ void *CipCalloc(size_t number_of_elements, size_t size_of_element) {
                                : calloc(number_of_elements, size_of_element);
 }
 
-void CipFree(void *data) {
+void CipFree(void* data) {
   mock().actualCall(__func__);
   free(data);
 }

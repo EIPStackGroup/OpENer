@@ -245,7 +245,7 @@ typedef struct connection_path_epath {
  * @param cip_path The start of the EPath message
  * @return The basic segment type
  */
-SegmentType GetPathSegmentType(const CipOctet *const cip_path);
+SegmentType GetPathSegmentType(const CipOctet* const cip_path);
 
 /** @brief Sets the basic segment type of an CIP EPath to be sent
  *
@@ -253,7 +253,7 @@ SegmentType GetPathSegmentType(const CipOctet *const cip_path);
  * @param cip_path A message buffer - Will be written on!
  */
 void SetPathSegmentType(SegmentType segment_type,
-                        unsigned char *const cip_path);
+                        unsigned char* const cip_path);
 
 /*********************************************************
  * Port Segment functions
@@ -266,7 +266,7 @@ void SetPathSegmentType(SegmentType segment_type,
  * @return True if extended link addres size bit set, false otherwise
  */
 bool GetPathPortSegmentExtendedLinkAddressSizeBit(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Only to be used on Port Segments. Returns the Port Identifier
  *
@@ -274,7 +274,7 @@ bool GetPathPortSegmentExtendedLinkAddressSizeBit(
  * @return The Port Identifier
  */
 unsigned int GetPathPortSegmentPortIdentifier(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Sets the Port Identifier form an Port Segment EPath to be sent.
  *
@@ -282,7 +282,7 @@ unsigned int GetPathPortSegmentPortIdentifier(
  * @param cip_path A message buffer - Will be written on!
  */
 void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
-                                      unsigned char *const cip_path);
+                                      unsigned char* const cip_path);
 
 /** @brief Only to be used on Port Segments. Gets the Link Address Size
  *
@@ -290,7 +290,7 @@ void SetPathPortSegmentPortIdentifier(const unsigned int port_identifier,
  * @return The Link Address Size
  */
 unsigned int GetPathPortSegmentLinkAddressSize(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Only to be used on Port Segments with Extended Port Number. Gets the
  * Extended Port Number
@@ -299,7 +299,7 @@ unsigned int GetPathPortSegmentLinkAddressSize(
  * @return The Link Address Size
  */
 unsigned int GetPathPortSegmentExtendedPortNumber(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Sets the Extended Port Identifier in a EPath Port Segment message
  *
@@ -308,7 +308,7 @@ unsigned int GetPathPortSegmentExtendedPortNumber(
  * @param cip_path The start for the EPatch message
  */
 void SetPathPortSegmentExtendedPortIdentifier(
-    const unsigned int extended_port_identifier, CipOctet *const cip_path);
+    const unsigned int extended_port_identifier, CipOctet* const cip_path);
 
 /** @brief Gets the Logical Type of an EPath Logical Segment message
  *
@@ -316,10 +316,10 @@ void SetPathPortSegmentExtendedPortIdentifier(
  * @return The logical type of the logical segment
  */
 LogicalSegmentLogicalType GetPathLogicalSegmentLogicalType(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type,
-                                      CipOctet *const cip_path);
+                                      CipOctet* const cip_path);
 
 /** @brief Gets the Logical Format of a Logical Segment EPath message
  *
@@ -327,16 +327,16 @@ void SetPathLogicalSegmentLogicalType(LogicalSegmentLogicalType logical_type,
  * @return The logical format of the logical format
  */
 LogicalSegmentLogicalFormat GetPathLogicalSegmentLogicalFormat(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 void SetPathLogicalSegmentLogicalFormat(LogicalSegmentLogicalFormat format,
-                                        CipOctet *const cip_path);
+                                        CipOctet* const cip_path);
 
-CipDword CipEpathGetLogicalValue(const EipUint8 **message);
+CipDword CipEpathGetLogicalValue(const EipUint8** message);
 
 void CipEpathSetLogicalValue(const CipDword logical_value,
                              const LogicalSegmentLogicalFormat logical_format,
-                             CipMessageRouterResponse *const message);
+                             CipMessageRouterResponse* const message);
 
 /** @brief  Gets the Extended Logical Type of a Logical Segment EPath message
  *
@@ -344,7 +344,7 @@ void CipEpathSetLogicalValue(const CipDword logical_value,
  * @return The extended logical type of the logical segment
  */
 LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Special Type Logical Type of a Logical Segment EPath message
  *
@@ -354,7 +354,7 @@ LogicalSegmentExtendedLogicalType GetPathLogicalSegmentExtendedLogicalType(
  */
 LogicalSegmentSpecialTypeLogicalFormat
 GetPathLogicalSegmentSpecialTypeLogicalType(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Electronic Key format of a Logical Segment Special Type
  * EPath message
@@ -363,7 +363,7 @@ GetPathLogicalSegmentSpecialTypeLogicalType(
  * @return The Electronic Key Format used in the EPath
  */
 ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the data for an Electronic Key of format 4 from the EPath
  * message
@@ -371,8 +371,8 @@ ElectronicKeySegmentFormat GetPathLogicalSegmentElectronicKeyFormat(
  * @param cip_path The start of the EPath message
  * @param key Writes the data on the user provided data electronic key struct
  */
-void GetElectronicKeyFormat4FromMessage(const CipOctet **const cip_path,
-                                        ElectronicKeyFormat4 *key);
+void GetElectronicKeyFormat4FromMessage(const CipOctet** const cip_path,
+                                        ElectronicKeyFormat4* key);
 
 /** @brief Gets the Network Segment Subtype of a EPatch Network Segement EPath
  * message
@@ -381,7 +381,7 @@ void GetElectronicKeyFormat4FromMessage(const CipOctet **const cip_path,
  * @return Network Segment subtype
  */
 NetworkSegmentSubtype GetPathNetworkSegmentSubtype(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Production Inhibit Time in Milliseconds
  *
@@ -389,7 +389,7 @@ NetworkSegmentSubtype GetPathNetworkSegmentSubtype(
  * @return The production Inhibit Time in Milliseconds
  */
 CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Production Inhibit Time in Microseconds
  *
@@ -397,7 +397,7 @@ CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(
  * @return The production Inhibit Time in Microseconds
  */
 CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Data Segment subtype of a Data Segment EPath message
  *
@@ -405,7 +405,7 @@ CipUdint GetPathNetworkSegmentProductionInhibitTimeInMicroseconds(
  * @return The Data Segment subtype
  */
 DataSegmentSubtype GetPathDataSegmentSubtype(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the data word length of a Simple Data segment
  *
@@ -413,7 +413,7 @@ DataSegmentSubtype GetPathDataSegmentSubtype(
  * @return The length in words of the Simple Data segment
  */
 CipUsint GetPathDataSegmentSimpleDataWordLength(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Symbolic Segment Format of the Symbolic Segment EPath
  * message
@@ -422,7 +422,7 @@ CipUsint GetPathDataSegmentSimpleDataWordLength(
  * @return The Symbolic Segment Format
  */
 SymbolicSegmentFormat GetPathSymbolicSegmentFormat(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Numeric subtype of a Symbolic Segment Extended Format EPath
  * message
@@ -431,7 +431,7 @@ SymbolicSegmentFormat GetPathSymbolicSegmentFormat(
  * @return The Numeric Extended Format subtype
  */
 SymbolicSegmentExtendedFormat GetPathSymbolicSegmentNumericType(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /** @brief Gets the Extended Format subtype of a Symbolic Segment EPath message
  *
@@ -439,7 +439,7 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentNumericType(
  * @return Symbolic Segment Extended Format
  */
 SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
-    const unsigned char *const cip_path);
+    const unsigned char* const cip_path);
 
 /* Special purpose encoding and decoding functions */
 // TODO currently not fully implemented
@@ -447,9 +447,9 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
 //   const CipConnectionPathEpath *const connection_epath,
 //   CipOctet **encoded_path);
 
-bool CipEpathEqual(const CipOctet *const path1,
+bool CipEpathEqual(const CipOctet* const path1,
                    const CipUint path1_length,
-                   const CipOctet *const path2,
+                   const CipOctet* const path2,
                    const CipUint path2_length);
 
 #endif /* SRC_CIP_CIPEPATH_H_ */

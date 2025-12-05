@@ -27,12 +27,12 @@ int GetSocketErrorNumber(void) {
   return errno;
 }
 
-char *GetErrorMessage(int error_number) {
-  char *error_message = malloc(kErrorMessageBufferSize);
+char* GetErrorMessage(int error_number) {
+  char* error_message = malloc(kErrorMessageBufferSize);
   strerror_r(error_number, error_message, kErrorMessageBufferSize);
   return error_message;
 }
 
-void FreeErrorMessage(char *error_message) {
+void FreeErrorMessage(char* error_message) {
   free(error_message);
 }

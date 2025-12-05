@@ -1,0 +1,29 @@
+# cppcheck configuration for OpENer
+#
+# This file documents the cppcheck settings used in the project.
+# cppcheck does not have a native config file format, but these settings
+# are applied via command-line arguments in:
+#   - .pre-commit-config.yaml (for pre-commit hook)
+#   - .mega-linter.yml (for CI/CD)
+#
+# Settings:
+# --------
+# Standard Analysis:
+#   --enable=all              Enable all checks
+#   --inconclusive            Include inconclusive warnings
+#   --force                   Force checking of all configurations
+#   --inline-suppr            Enable inline suppressions (// cppcheck-suppress)
+#   --suppress=missingIncludeSystem   Suppress system header warnings
+#   --suppress=normalCheckLevelMaxBranches  Suppress informational messages
+#
+# Exhaustive Analysis (CI only):
+#   --check-level=exhaustive  Enable all checks
+#   --enable=warning,style,performance,portability
+#   --std=c99                 Use C99 standard
+#   --platform=unix64         Target 64-bit POSIX platform
+#
+# References:
+#   - Pre-commit hook: .pre-commit-config.yaml (lines 28-36)
+#   - CI standard checks: .github/workflows/ci.yml (line 41)
+#   - CI exhaustive checks: .github/workflows/exhaustive-analysis.yml (lines 50-54)
+#   - MegaLinter config: .mega-linter.yml (line 13)

@@ -49,7 +49,7 @@ static void LeaveStack(int signal);
  *  The call signature is chosen to be able to pass this function directly as
  *  parameter for pthread_create().
  */
-static void *executeEventLoop(void *pthread_arg);
+static void* executeEventLoop(void* pthread_arg);
 
 /******************************************************************************/
 /** @brief Fuzz TCP packets handling flow with AFL.
@@ -65,7 +65,7 @@ static void fuzzHandlePacketFlow(void);
 volatile int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc, char *arg[]) {
+int main(int argc, char* arg[]) {
   if (argc != 2) {
     fprintf(stderr, "Wrong number of command line parameters!\n");
     fprintf(stderr, "Usage: %s [interface name]\n", arg[0]);
@@ -252,7 +252,7 @@ static void LeaveStack(int signal) {
   OPENER_TRACE_STATE("got signal %d\n", signal);
 }
 
-static void *executeEventLoop(void *pthread_arg) {
+static void* executeEventLoop(void* pthread_arg) {
   static int pthread_dummy_ret;
   (void)pthread_arg;
 
@@ -280,7 +280,7 @@ static void fuzzHandlePacketFlow(void) {
     /* Read input from STDIN and enter the handle receive flow */
     memset(buff, 0, 512);
     ssize_t received_size    = read(STDIN_FILENO, buff, 512);
-    EipUint8 *receive_buffer = &buff[0];
+    EipUint8* receive_buffer = &buff[0];
 
     InitializeENIPMessage(&outgoing_message);
 

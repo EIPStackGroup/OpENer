@@ -103,12 +103,12 @@ void ShutdownTcpIpInterface(void);
  *
  *  @param  tcpip pointer to TCP/IP object
  */
-void CipTcpIpCalculateMulticastIp(CipTcpIpObject *const tcpip);
+void CipTcpIpCalculateMulticastIp(CipTcpIpObject* const tcpip);
 
 /** @brief Public Method to get Encapsulation Inactivity Timeout Value
  *
  *
  */
-EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance);
+EipUint16 GetEncapsulationInactivityTimeout(CipInstance* instance);
 
 #endif /* OPENER_CIPTCPIPINTERFACE_H_ */

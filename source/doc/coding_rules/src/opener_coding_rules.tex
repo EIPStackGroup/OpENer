@@ -2,7 +2,7 @@
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 
-\usepackage{a4wide} 
+\usepackage{a4wide}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%   important definitions at the beginning
@@ -60,7 +60,7 @@ This document describes the coding rules, which has to be used in the OpENer pro
 As the OpENer code style aims to be as close as possible to the established Google C++ code style, please file an issue if anything in this guide contradicts the Google C++ code style.
 
 \section{Comments}
-A sufficient amount of comments has to be written. There are never too many comments, whereas invalid comments are worse than none --- thus invalid comments have to be removed from the source code. Comments have to be written in English. 
+A sufficient amount of comments has to be written. There are never too many comments, whereas invalid comments are worse than none --- thus invalid comments have to be removed from the source code. Comments have to be written in English.
 
 
 Comments for function, structure, \ldots~ definitions have to follow the conventions of \emph{Doxygen} to allow the automated generation of documentation for the source code. Hereby Java-style Doxygen comments shall be used. Doxygen comments shall therefore start with slash and two starts, and use the @ symbol to indicate Doxygen keywords. For enums, variables, and strucutres inline documentation with \emph{/**<} shall be used. Autobrief behavior shall not be assumed for Doxygen comments. See the example below.
@@ -87,13 +87,13 @@ Every source-file must contain a fileheader as follows:
 \begin{lstlisting}[frame=trbl]{}
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Contributors:
  *     <date>: <author>, <author email> - changes
  ******************************************************************************/
 \end{lstlisting}
-Each author needs to explain his changes in the code. 
+Each author needs to explain his changes in the code.
 \subsection{Revision History}
 %To track changes in the source files every new file version must contain it's version information in the following form:
 %\begin{center}
@@ -112,9 +112,9 @@ The following Keywords should be used in the source code to mark special comment
 \section{Datatypes}
 \Fref{tab:datatypes} contains the definitions of important standard datatypes. This is done to ensure a machine independant defintion of the bit-width of the standard data types. For \emph{OpENer}-development these definitions are in the file: \verb|src/typedefs.h|
 
-\begin{table}[h] 
+\begin{table}[h]
 \caption{Data types used in OpENer} \label{tab:datatypes}
-	\centering 
+	\centering
 		\begin{tabular}{lll}
 			defined data type	& bit-width / description & used C-datatype \\
 			\hline
@@ -130,7 +130,7 @@ The following Keywords should be used in the source code to mark special comment
 			EipFloat	&	single precission IEEE float (32 bit) &	float	 \\
 			EipDfloat	&	double precission IEEE float (64 bit) &	double	\\
 			EipBool8	&	byte variable as boolean value	&	unit8\_t	 \\
-			
+
 			CipOctet & unspecified type & uint8\_t \\
 			CipBool & byte variable as boolean value & uint8\_t \\
 			CipByte & 8 bit unsigned & uint8\_t \\
@@ -149,7 +149,7 @@ The following Keywords should be used in the source code to mark special comment
 			CipUlint & 64 bit unsigned & uint64\_t \\
 			CipLword & 64 bit unsigned & uint64\_t
 		\end{tabular}
-\end{table} 
+\end{table}
 
 These data types shall only be used when the bit size is important for the correct operation of the code, whereby Eip-prefixed data types shall be used for communication functions, and Cip-prefixed data types shall be used for CIP related functions and objects. If not we advice to use the type \verb|int| or \verb|unsigned int| for most variables, as this is the most efficient data type and can lead on some platforms (e.g., ARM) even to smaller code size.
 

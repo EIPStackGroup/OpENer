@@ -36,7 +36,7 @@ find_library ( CPPUTESTEXT_LIBRARY CppUTestExt ${CPPUTEST_HOME}/cpputest_build/l
 target_link_libraries( OpENer_Tests rt )
 
 target_link_libraries( OpENer_Tests gcov ${CPPUTEST_LIBRARY} ${CPPUTESTEXT_LIBRARY} )
-target_link_libraries( OpENer_Tests UtilsTest Utils ) 
+target_link_libraries( OpENer_Tests UtilsTest Utils )
 target_link_libraries( OpENer_Tests EthernetEncapsulationTest ENET_ENCAP )
 target_link_libraries( OpENer_Tests CipTest CIP )
 target_link_libraries( OpENer_Tests PortsTest PLATFORM_GENERIC )

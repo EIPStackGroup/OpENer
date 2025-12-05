@@ -23,12 +23,12 @@
 /*                             PROTOTYPES                                    */
 /*---------------------------------------------------------------------------*/
 
-EipStatus EthLnkPreGetCallback(CipInstance *const instance,
-                               CipAttributeStruct *const attribute,
+EipStatus EthLnkPreGetCallback(CipInstance* const instance,
+                               CipAttributeStruct* const attribute,
                                CipByte service);
 
-EipStatus EthLnkPostGetCallback(CipInstance *const instance,
-                                CipAttributeStruct *const attribute,
+EipStatus EthLnkPostGetCallback(CipInstance* const instance,
+                                CipAttributeStruct* const attribute,
                                 CipByte service);
 
 #endif /* #ifndef OPENER_ETHLINKCBS_H_ */

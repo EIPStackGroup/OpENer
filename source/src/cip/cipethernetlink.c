@@ -94,24 +94,24 @@ typedef struct speed_duplex_array_entry {
 
 /* forward declaration of functions to encode certain attribute objects */
 static void EncodeCipEthernetLinkInterfaceCounters(
-    const void *const data, ENIPMessage *const outgoing_message);
+    const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkMediaCounters(
-    const void *const data, ENIPMessage *const outgoing_message);
+    const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkInterfaceControl(
-    const void *const data, ENIPMessage *const outgoing_message);
+    const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkInterfaceCaps(
-    const void *const data, ENIPMessage *const outgoing_message);
+    const void* const data, ENIPMessage* const outgoing_message);
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 /* forward declaration for the GetAndClear service handler function */
 EipStatus GetAndClearEthernetLink(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
+    CipInstance* RESTRICT const instance,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response,
+    const struct sockaddr* originator_address,
     const CipSessionHandle encapsulation_session);
 #endif /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 
@@ -127,9 +127,9 @@ EipStatus GetAndClearEthernetLink(
  *          -1 .. error
  */
 int DecodeCipEthernetLinkInterfaceControl(
-    CipEthernetLinkInterfaceControl *const data,
-    const CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response);
+    CipEthernetLinkInterfaceControl* const data,
+    const CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response);
 #endif
 
 /** @brief This is the internal table of possible speed / duplex combinations
@@ -164,12 +164,12 @@ static const CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_table[] = {
 
 #if defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
 static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] = {
-    {.length = sizeof IFACE_LABEL - 1, .string = (EipByte *)IFACE_LABEL},
+    {.length = sizeof IFACE_LABEL - 1, .string = (EipByte*)IFACE_LABEL},
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
-    {.length = sizeof IFACE_LABEL_1 - 1, .string = (EipByte *)IFACE_LABEL_1},
+    {.length = sizeof IFACE_LABEL_1 - 1, .string = (EipByte*)IFACE_LABEL_1},
 #endif
 #if OPENER_ETHLINK_INSTANCE_CNT > 2
-    {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte *)IFACE_LABEL_2},
+    {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2},
 #endif
 };
 #endif /* defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != \
@@ -196,7 +196,7 @@ static CipEthernetLinkInterfaceControl s_interface_control = {
 CipEthernetLinkObject g_ethernet_link[OPENER_ETHLINK_INSTANCE_CNT];
 
 EipStatus CipEthernetLinkInit(void) {
-  CipClass *ethernet_link_class = CreateCipClass(
+  CipClass* ethernet_link_class = CreateCipClass(
       kCipEthernetLinkClassCode,
       0,
       /* # class attributes*/
@@ -270,7 +270,7 @@ EipStatus CipEthernetLinkInit(void) {
 
     /* bind attributes to the instance */
     for (CipInstanceNum idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
-      CipInstance *ethernet_link_instance =
+      CipInstance* ethernet_link_instance =
           GetCipInstance(ethernet_link_class, (CipInstanceNum)(idx + 1));
 
       InsertAttribute(ethernet_link_instance,
@@ -397,7 +397,7 @@ EipStatus CipEthernetLinkInit(void) {
   return kEipStatusOk;
 }
 
-void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
+void CipEthernetLinkSetMac(EipUint8* p_physical_address) {
   for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
     memcpy(g_ethernet_link[idx].physical_address,
            p_physical_address,
@@ -407,7 +407,7 @@ void CipEthernetLinkSetMac(EipUint8 *p_physical_address) {
 }
 
 static void EncodeCipEthernetLinkInterfaceCounters(
-    const void *const data, ENIPMessage *const outgoing_message) {
+    const void* const data, ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -427,7 +427,7 @@ static void EncodeCipEthernetLinkInterfaceCounters(
 }
 
 static void EncodeCipEthernetLinkMediaCounters(
-    const void *const data, ENIPMessage *const outgoing_message) {
+    const void* const data, ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -447,15 +447,15 @@ static void EncodeCipEthernetLinkMediaCounters(
 }
 
 static void EncodeCipEthernetLinkInterfaceControl(
-    const void *const data, ENIPMessage *const outgoing_message) {
+    const void* const data, ENIPMessage* const outgoing_message) {
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
     0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
-  const CipEthernetLinkInterfaceControl *const interface_control = data;
+  const CipEthernetLinkInterfaceControl* const interface_control = data;
 #else
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
-  CipEthernetLinkInterfaceControl *interface_control = &s_interface_control;
+  CipEthernetLinkInterfaceControl* interface_control = &s_interface_control;
 #endif
   EncodeCipWord(&interface_control->control_bits, outgoing_message);
   EncodeCipUint(&interface_control->forced_interface_speed, outgoing_message);
@@ -463,8 +463,8 @@ static void EncodeCipEthernetLinkInterfaceControl(
 
 #define NELEMENTS(x) ((sizeof(x) / sizeof(x[0])))
 static void EncodeCipEthernetLinkInterfaceCaps(
-    const void *const data, ENIPMessage *const outgoing_message) {
-  const CipEthernetLinkMetaInterfaceCapability *const interface_caps = data;
+    const void* const data, ENIPMessage* const outgoing_message) {
+  const CipEthernetLinkMetaInterfaceCapability* const interface_caps = data;
   EncodeCipDword(&interface_caps->capability_bits, outgoing_message);
   uint16_t selected = interface_caps->speed_duplex_selector;
   CipUsint count    = 0;
@@ -485,12 +485,12 @@ static void EncodeCipEthernetLinkInterfaceCaps(
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 EipStatus GetAndClearEthernetLink(
-    CipInstance *RESTRICT const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
+    CipInstance* RESTRICT const instance,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response,
+    const struct sockaddr* originator_address,
     const CipSessionHandle encapsulation_session) {
-  CipAttributeStruct *attribute = GetCipAttribute(
+  CipAttributeStruct* attribute = GetCipAttribute(
       instance, message_router_request->request_path.attribute_number);
 
   message_router_response->data_length = 0;
@@ -538,7 +538,7 @@ EipStatus GetAndClearEthernetLink(
     0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
 static bool IsIfaceControlAllowed(
     CipInstanceNum instance_id,
-    CipEthernetLinkInterfaceControl const *iface_cntrl) {
+    CipEthernetLinkInterfaceControl const* iface_cntrl) {
   const CipUsint duplex_mode =
       (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
@@ -555,10 +555,10 @@ static bool IsIfaceControlAllowed(
 }
 
 int DecodeCipEthernetLinkInterfaceControl(
-    CipEthernetLinkInterfaceControl *const data,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response) {
-  CipInstance *const instance =
+    CipEthernetLinkInterfaceControl* const data,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response) {
+  CipInstance* const instance =
       GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
                      message_router_request->request_path.instance_number);
 

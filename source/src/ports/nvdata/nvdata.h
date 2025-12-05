@@ -18,12 +18,12 @@
 
 EipStatus NvdataLoad(void);
 
-EipStatus NvQosSetCallback(CipInstance *const instance,
-                           CipAttributeStruct *const attribute,
+EipStatus NvQosSetCallback(CipInstance* const instance,
+                           CipAttributeStruct* const attribute,
                            CipByte service);
 
-EipStatus NvTcpipSetCallback(CipInstance *const instance,
-                             CipAttributeStruct *const attribute,
+EipStatus NvTcpipSetCallback(CipInstance* const instance,
+                             CipAttributeStruct* const attribute,
                              CipByte service);
 
 #endif /* ifndef NVDATA_H_ */

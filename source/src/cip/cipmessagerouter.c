@@ -23,19 +23,19 @@ CipMessageRouterRequest g_message_router_request;
  * parameter in the platform config file.
  */
 typedef struct cip_message_router_object {
-  struct cip_message_router_object *next; /**< link */
-  CipClass *cip_class;                    /**< object */
+  struct cip_message_router_object* next; /**< link */
+  CipClass* cip_class;                    /**< object */
 } CipMessageRouterObject;
 
 /** @brief Pointer to first registered object in MessageRouter*/
-CipMessageRouterObject *g_first_object = NULL;
+CipMessageRouterObject* g_first_object = NULL;
 
 /** @brief Register a CIP Class to the message router
  *  @param cip_class Pointer to a class object to be registered.
  *  @return kEipStatusOk on success
  *          kEipStatusError on no memory available to register more objects
  */
-EipStatus RegisterCipClass(CipClass *cip_class);
+EipStatus RegisterCipClass(CipClass* cip_class);
 
 /** @brief Create Message Router Request structure out of the received data.
  *
@@ -47,61 +47,61 @@ EipStatus RegisterCipClass(CipClass *cip_class);
  * @return kEipStatusOk on success. otherwise kEipStatusError
  */
 CipError CreateMessageRouterRequestStructure(
-    const EipUint8 *data,
+    const EipUint8* data,
     EipInt16 data_length,
-    CipMessageRouterRequest *message_router_request);
+    CipMessageRouterRequest* message_router_request);
 
-void InitializeCipMessageRouterClass(CipClass *cip_class) {
-  CipClass *meta_class = cip_class->class_instance.cip_class;
+void InitializeCipMessageRouterClass(CipClass* cip_class) {
+  CipClass* meta_class = cip_class->class_instance.cip_class;
 
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   1,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&cip_class->revision,
+                  (void*)&cip_class->revision,
                   kGetableSingleAndAll); /* revision */
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   2,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&cip_class->number_of_instances,
+                  (void*)&cip_class->number_of_instances,
                   kGetableSingle); /*  largest instance number */
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   3,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&cip_class->number_of_instances,
+                  (void*)&cip_class->number_of_instances,
                   kGetableSingle); /* number of instances currently existing*/
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   4,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&kCipUintZero,
+                  (void*)&kCipUintZero,
                   kGetableAll); /* optional attribute list - default = 0 */
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   5,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&kCipUintZero,
+                  (void*)&kCipUintZero,
                   kGetableAll); /* optional service list - default = 0 */
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   6,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&meta_class->highest_attribute_number,
+                  (void*)&meta_class->highest_attribute_number,
                   kGetableSingleAndAll); /* max class attribute number*/
-  InsertAttribute((CipInstance *)cip_class,
+  InsertAttribute((CipInstance*)cip_class,
                   7,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&cip_class->highest_attribute_number,
+                  (void*)&cip_class->highest_attribute_number,
                   kGetableSingleAndAll); /* max instance attribute number*/
 
   InsertService(meta_class,
@@ -115,7 +115,7 @@ void InitializeCipMessageRouterClass(CipClass *cip_class) {
 }
 
 EipStatus CipMessageRouterInit() {
-  CipClass *message_router =
+  CipClass* message_router =
       CreateCipClass(kCipMessageRouterClassCode, /* class code */
                      7,                          /* # of class attributes */
                      7,                /* # highest class attribute number */
@@ -147,8 +147,8 @@ EipStatus CipMessageRouterInit() {
  *  @return Pointer to registered message router object
  *      NULL .. Class not registered
  */
-CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
-  CipMessageRouterObject *object =
+CipMessageRouterObject* GetRegisteredObject(EipUint32 class_id) {
+  CipMessageRouterObject* object =
       g_first_object; /* get pointer to head of class registration list */
 
   while (NULL != object) /* for each entry in list*/
@@ -162,8 +162,8 @@ CipMessageRouterObject *GetRegisteredObject(EipUint32 class_id) {
   return NULL;
 }
 
-CipClass *GetCipClass(const CipUdint class_code) {
-  CipMessageRouterObject *message_router_object =
+CipClass* GetCipClass(const CipUdint class_code) {
+  CipMessageRouterObject* message_router_object =
       GetRegisteredObject(class_code);
 
   if (message_router_object) {
@@ -173,14 +173,14 @@ CipClass *GetCipClass(const CipUdint class_code) {
   }
 }
 
-CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_class,
+CipInstance* GetCipInstance(const CipClass* RESTRICT const cip_class,
                             const CipInstanceNum instance_number) {
   if (instance_number == 0) {
-    return (CipInstance *)cip_class; /* if the instance number is zero, return
-                                        the class object itself*/
+    return (CipInstance*)cip_class; /* if the instance number is zero, return
+                                       the class object itself*/
   }
   /* pointer to linked list of instances from the class object*/
-  for (CipInstance *instance = cip_class->instances; instance;
+  for (CipInstance* instance = cip_class->instances; instance;
        instance              = instance->next) /* follow the list*/
   {
     if (instance->instance_number == instance_number) {
@@ -191,15 +191,15 @@ CipInstance *GetCipInstance(const CipClass *RESTRICT const cip_class,
   return NULL;
 }
 
-EipStatus RegisterCipClass(CipClass *cip_class) {
-  CipMessageRouterObject **message_router_object = &g_first_object;
+EipStatus RegisterCipClass(CipClass* cip_class) {
+  CipMessageRouterObject** message_router_object = &g_first_object;
 
   while (*message_router_object) {
     message_router_object =
         &(*message_router_object)->next; /* follow the list until p points to an
                                             empty link (list end)*/
   }
-  *message_router_object = (CipMessageRouterObject *)CipCalloc(
+  *message_router_object = (CipMessageRouterObject*)CipCalloc(
       1, sizeof(CipMessageRouterObject)); /* create a new node at the end of the
                                              list*/
   if (*message_router_object == 0) {
@@ -211,10 +211,10 @@ EipStatus RegisterCipClass(CipClass *cip_class) {
   return kEipStatusOk;
 }
 
-EipStatus NotifyMessageRouter(EipUint8 *data,
+EipStatus NotifyMessageRouter(EipUint8* data,
                               int data_length,
-                              CipMessageRouterResponse *message_router_response,
-                              const struct sockaddr *const originator_address,
+                              CipMessageRouterResponse* message_router_response,
+                              const struct sockaddr* const originator_address,
                               const CipSessionHandle encapsulation_session) {
   EipStatus eip_status = kEipStatusOkSend;
   CipError status      = kCipErrorSuccess;
@@ -234,7 +234,7 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
         (0x80 | g_message_router_request.service);
   } else {
     /* forward request to appropriate Object if it is registered*/
-    CipMessageRouterObject *registered_object =
+    CipMessageRouterObject* registered_object =
         GetRegisteredObject(g_message_router_request.request_path.class_id);
     if (registered_object == 0) {
       OPENER_TRACE_ERR(
@@ -286,9 +286,9 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
 }
 
 CipError CreateMessageRouterRequestStructure(
-    const EipUint8 *data,
+    const EipUint8* data,
     EipInt16 data_length,
-    CipMessageRouterRequest *message_router_request) {
+    CipMessageRouterRequest* message_router_request) {
   message_router_request->service = *data;
   data++;
   data_length--;
@@ -311,11 +311,11 @@ CipError CreateMessageRouterRequestStructure(
 }
 
 void DeleteAllClasses(void) {
-  CipMessageRouterObject *message_router_object =
+  CipMessageRouterObject* message_router_object =
       g_first_object; /* get pointer to head of class registration list */
-  CipMessageRouterObject *message_router_object_to_delete = NULL;
-  CipInstance *instance                                   = NULL;
-  CipInstance *instance_to_delete                         = NULL;
+  CipMessageRouterObject* message_router_object_to_delete = NULL;
+  CipInstance* instance                                   = NULL;
+  CipInstance* instance_to_delete                         = NULL;
 
   while (NULL != message_router_object) {
     message_router_object_to_delete = message_router_object;
@@ -334,7 +334,7 @@ void DeleteAllClasses(void) {
     }
 
     /* free meta class data*/
-    CipClass *meta_class =
+    CipClass* meta_class =
         message_router_object_to_delete->cip_class->class_instance.cip_class;
     CipFree(meta_class->class_name);
     CipFree(meta_class->services);
@@ -344,7 +344,7 @@ void DeleteAllClasses(void) {
     CipFree(meta_class);
 
     /* free class data*/
-    CipClass *cip_class = message_router_object_to_delete->cip_class;
+    CipClass* cip_class = message_router_object_to_delete->cip_class;
     CipFree(cip_class->class_name);
     CipFree(cip_class->get_single_bit_mask);
     CipFree(cip_class->set_bit_mask);

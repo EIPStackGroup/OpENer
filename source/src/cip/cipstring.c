@@ -17,7 +17,7 @@
 #include "opener_api.h"
 #include "trace.h"
 
-CipStringN *ClearCipStringN(CipStringN *const cip_string) {
+CipStringN* ClearCipStringN(CipStringN* const cip_string) {
   if (NULL != cip_string) {
     if (NULL != cip_string->string) {
       CipFree(cip_string->string);
@@ -31,7 +31,7 @@ CipStringN *ClearCipStringN(CipStringN *const cip_string) {
   return cip_string;
 }
 
-void FreeCipStringN(CipStringN *const cip_string) {
+void FreeCipStringN(CipStringN* const cip_string) {
   if (NULL != cip_string) {
     ClearCipStringN(cip_string);
     CipFree(cip_string);
@@ -50,11 +50,11 @@ void FreeCipStringN(CipStringN *const cip_string) {
  *
  * @return The CipStringN address
  */
-CipStringN *SetCipStringNByData(CipStringN *const cip_string,
+CipStringN* SetCipStringNByData(CipStringN* const cip_string,
                                 CipUint str_len,
                                 CipUint size,
-                                const CipOctet *const data) {
-  CipStringN *result = cip_string;
+                                const CipOctet* const data) {
+  CipStringN* result = cip_string;
 
   (void)ClearCipStringN(cip_string);
 
@@ -77,8 +77,8 @@ CipStringN *SetCipStringNByData(CipStringN *const cip_string,
   return result;
 }
 
-CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
-                                const char *const string,
+CipStringN* SetCipStringNByCstr(CipStringN* const cip_string,
+                                const char* const string,
                                 const CipUint symbol_size) {
   if (0 != strlen(string) % symbol_size) {
     OPENER_TRACE_ERR("Not enough octets for %d width StringN\n", symbol_size);
@@ -89,10 +89,10 @@ CipStringN *SetCipStringNByCstr(CipStringN *const cip_string,
   return SetCipStringNByData(cip_string,
                              (CipUint)strlen(string) / symbol_size,
                              symbol_size,
-                             (const CipOctet *)string);
+                             (const CipOctet*)string);
 }
 
-void FreeCipString2(CipString2 *const cip_string) {
+void FreeCipString2(CipString2* const cip_string) {
   if (NULL != cip_string) {
     ClearCipString2(cip_string);
     CipFree(cip_string);
@@ -108,7 +108,7 @@ void FreeCipString2(CipString2 *const cip_string) {
  * @return Freed CipString2 structure
  *
  */
-CipString2 *ClearCipString2(CipString2 *const cip_string) {
+CipString2* ClearCipString2(CipString2* const cip_string) {
   if (NULL != cip_string) {
     if (NULL != cip_string->string) {
       CipFree(cip_string->string);
@@ -121,10 +121,10 @@ CipString2 *ClearCipString2(CipString2 *const cip_string) {
   return cip_string;
 }
 
-CipString2 *SetCipString2ByData(CipString2 *const cip_string,
+CipString2* SetCipString2ByData(CipString2* const cip_string,
                                 CipUint str_len,
-                                const CipOctet *const data) {
-  CipString2 *result = cip_string;
+                                const CipOctet* const data) {
+  CipString2* result = cip_string;
 
   (void)ClearCipString2(cip_string);
 
@@ -141,13 +141,13 @@ CipString2 *SetCipString2ByData(CipString2 *const cip_string,
   return result;
 }
 
-CipString2 *SetCipString2ByCstr(CipString2 *const cip_string,
-                                const char *const string) {
+CipString2* SetCipString2ByCstr(CipString2* const cip_string,
+                                const char* const string) {
   return SetCipString2ByData(
-      cip_string, (CipUint)strlen(string) / 2, (const CipOctet *)string);
+      cip_string, (CipUint)strlen(string) / 2, (const CipOctet*)string);
 }
 
-CipString *ClearCipString(CipString *const cip_string) {
+CipString* ClearCipString(CipString* const cip_string) {
   if (NULL != cip_string) {
     if (NULL != cip_string->string) {
       CipFree(cip_string->string);
@@ -160,7 +160,7 @@ CipString *ClearCipString(CipString *const cip_string) {
   return cip_string;
 }
 
-void FreeCipString(CipString *const cip_string) {
+void FreeCipString(CipString* const cip_string) {
   if (NULL != cip_string) {
     ClearCipString(cip_string);
     CipFree(cip_string);
@@ -169,10 +169,10 @@ void FreeCipString(CipString *const cip_string) {
   }
 }
 
-CipString *SetCipStringByData(CipString *const cip_string,
+CipString* SetCipStringByData(CipString* const cip_string,
                               CipUint str_len,
-                              const CipOctet *const data) {
-  CipString *result = cip_string;
+                              const CipOctet* const data) {
+  CipString* result = cip_string;
 
   (void)ClearCipString(cip_string);
 
@@ -189,13 +189,13 @@ CipString *SetCipStringByData(CipString *const cip_string,
   return result;
 }
 
-CipString *SetCipStringByCstr(CipString *const cip_string,
-                              const char *const string) {
+CipString* SetCipStringByCstr(CipString* const cip_string,
+                              const char* const string) {
   return SetCipStringByData(
-      cip_string, (CipUint)strlen(string), (const CipOctet *)string);
+      cip_string, (CipUint)strlen(string), (const CipOctet*)string);
 }
 
-CipShortString *ClearCipShortString(CipShortString *const cip_string) {
+CipShortString* ClearCipShortString(CipShortString* const cip_string) {
   if (NULL != cip_string) {
     if (NULL != cip_string->string) {
       CipFree(cip_string->string);
@@ -215,7 +215,7 @@ CipShortString *ClearCipShortString(CipShortString *const cip_string) {
  * @return Freed CipShortString structure
  *
  */
-void FreeCipShortString(CipShortString *const cip_string) {
+void FreeCipShortString(CipShortString* const cip_string) {
   if (NULL != cip_string) {
     ClearCipShortString(cip_string);
     CipFree(cip_string);
@@ -233,10 +233,10 @@ void FreeCipShortString(CipShortString *const cip_string) {
  *
  * @return The CipShortString address
  */
-CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
+CipShortString* SetCipShortStringByData(CipShortString* const cip_string,
                                         const CipUsint str_len,
-                                        const CipOctet *const data) {
-  CipShortString *result = cip_string;
+                                        const CipOctet* const data) {
+  CipShortString* result = cip_string;
 
   (void)ClearCipShortString(cip_string);
 
@@ -262,15 +262,15 @@ CipShortString *SetCipShortStringByData(CipShortString *const cip_string,
  * @return Target CipShortString
  *
  */
-CipShortString *SetCipShortStringByCstr(CipShortString *const cip_string,
-                                        const char *const string) {
+CipShortString* SetCipShortStringByCstr(CipShortString* const cip_string,
+                                        const char* const string) {
   return SetCipShortStringByData(
-      cip_string, (CipUsint)strlen(string), (const CipOctet *)string);
+      cip_string, (CipUsint)strlen(string), (const CipOctet*)string);
 }
 
 /* Ensures buf is NUL terminated, provided initial validation is successful */
-int GetCstrFromCipShortString(CipShortString *const string,
-                              char *buf,
+int GetCstrFromCipShortString(CipShortString* const string,
+                              char* buf,
                               size_t len) {
   size_t num;
   int rc = 0;

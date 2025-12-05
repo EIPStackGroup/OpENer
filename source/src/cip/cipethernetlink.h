@@ -191,7 +191,7 @@ EipStatus CipEthernetLinkInit(void);
  *
  * This function sets the MAC address of all involved Ethernet Link objects.
  */
-void CipEthernetLinkSetMac(EipUint8 *p_physical_address);
+void CipEthernetLinkSetMac(EipUint8* p_physical_address);
 
 /* global object instance(s) */
 

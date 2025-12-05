@@ -338,22 +338,22 @@ TEST(CipEpath, SetLogicalSegmentLogicalFormatThirtyTwoBits) {
 }
 
 TEST(CipEpath, GetLogicalValue8Bit) {
-  CipOctet *message          = (CipOctet *)calloc(6, sizeof(CipOctet));
-  CipOctet *original_address = message;
+  CipOctet* message          = (CipOctet*)calloc(6, sizeof(CipOctet));
+  CipOctet* original_address = message;
   message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
   message[1] = 20;
   message[2] = 21;
   message[3] = 22;
   message[4] = 23;
   message[5] = 24;
-  CipDword result = CipEpathGetLogicalValue((const CipOctet **)&message);
+  CipDword result = CipEpathGetLogicalValue((const CipOctet**)&message);
   CHECK_EQUAL(20, result);
   free(original_address);
 }
 
 TEST(CipEpath, GetLogicalValue16Bit) {
-  CipOctet *message          = (CipOctet *)calloc(6, sizeof(CipOctet));
-  CipOctet *original_address = message;
+  CipOctet* message          = (CipOctet*)calloc(6, sizeof(CipOctet));
+  CipOctet* original_address = message;
   message[0] =
       SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT;
   message[1]      = 0;
@@ -361,14 +361,14 @@ TEST(CipEpath, GetLogicalValue16Bit) {
   message[3]      = 22;
   message[4]      = 23;
   message[5]      = 24;
-  CipDword result = CipEpathGetLogicalValue((const CipOctet **)&message);
+  CipDword result = CipEpathGetLogicalValue((const CipOctet**)&message);
   CHECK_EQUAL(5653, result);
   free(original_address);
 }
 
 TEST(CipEpath, GetLogicalValue32Bit) {
-  CipOctet *message          = (CipOctet *)calloc(6, sizeof(CipOctet));
-  CipOctet *original_address = message;
+  CipOctet* message          = (CipOctet*)calloc(6, sizeof(CipOctet));
+  CipOctet* original_address = message;
   message[0] =
       SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT;
   message[1]      = 0;
@@ -376,7 +376,7 @@ TEST(CipEpath, GetLogicalValue32Bit) {
   message[3]      = 22;
   message[4]      = 23;
   message[5]      = 24;
-  CipDword result = CipEpathGetLogicalValue((const CipOctet **)&message);
+  CipDword result = CipEpathGetLogicalValue((const CipOctet**)&message);
   CHECK_EQUAL(404166165, result);
   free(original_address);
 }
@@ -503,9 +503,9 @@ TEST(CipEpath, GetLogicalSegmentElectronicKeyFormat4) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
   const CipOctet message[] = {
       0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x04, 0x05};
-  const CipOctet *message_pp           = (const CipOctet *)message;
-  const CipOctet *message_buffer       = message;
-  ElectronicKeyFormat4 *electronic_key = ElectronicKeyFormat4New();
+  const CipOctet* message_pp           = (const CipOctet*)message;
+  const CipOctet* message_buffer       = message;
+  ElectronicKeyFormat4* electronic_key = ElectronicKeyFormat4New();
   GetElectronicKeyFormat4FromMessage(&message_pp, electronic_key);
 
   MEMCMP_EQUAL(message_buffer + 2, electronic_key, 8);

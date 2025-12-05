@@ -54,8 +54,8 @@ void ShutdownAssemblies(void);
  *     - kEipStatusOk the received data was okay
  *     - kEipStatusError the received data was wrong
  */
-EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
-                                              const EipUint8 *const data,
+EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
+                                              const EipUint8* const data,
                                               const size_t data_length);
 
 #endif  // SOURCE_SRC_CIP_CIPASSEMBLY_H_

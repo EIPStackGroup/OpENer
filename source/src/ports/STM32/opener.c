@@ -15,7 +15,7 @@
 #define OPENER_THREAD_PRIO osPriorityAboveNormal
 #define OPENER_STACK_SIZE 2000
 
-static void opener_thread(void const *argument);
+static void opener_thread(void const* argument);
 osThreadId opener_ThreadId;
 volatile int g_end_stack = 0;
 
@@ -25,7 +25,7 @@ volatile int g_end_stack = 0;
  * @param   netif      address specifying the network interface
  * @retval  None
  */
-void opener_init(struct netif *netif) {
+void opener_init(struct netif* netif) {
   EipStatus eip_status = 0;
 
   if (IfaceLinkIsUp(netif)) {
@@ -78,8 +78,8 @@ void opener_init(struct netif *netif) {
   }
 }
 
-static void opener_thread(void const *argument) {
-  struct netif *netif = (struct netif *)argument;
+static void opener_thread(void const* argument) {
+  struct netif* netif = (struct netif*)argument;
   /* The event loop. Put other processing you need done continually in here */
   while (!g_end_stack) {
     if (kEipStatusOk != NetworkHandlerProcessCyclic()) {

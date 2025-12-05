@@ -47,7 +47,7 @@
  * @param[in] path the full path of the directory to create
  * @return zero on success, otherwise -1 and errno set
  */
-static inline int Mkdir(const char *path) {
+static inline int Mkdir(const char* path) {
 #ifdef _WIN32
   return _mkdir(path);
 #else
@@ -56,8 +56,8 @@ static inline int Mkdir(const char *path) {
 #endif
 }
 
-static void RecMkdir(char *const p_path) {
-  char *sep = strrchr(p_path, '/');
+static void RecMkdir(char* const p_path) {
+  char* sep = strrchr(p_path, '/');
   if (sep && p_path != sep) { /* "p_path != sep" avoids mkdir("/")! */
     *sep = '\0';
     RecMkdir(p_path);
@@ -65,7 +65,7 @@ static void RecMkdir(char *const p_path) {
   }
   VERBOSE(stdout, " ->mkdir('%s')", p_path);
   if (Mkdir(p_path) && EEXIST != errno) {
-    char *error_message = GetErrorMessage(errno);
+    char* error_message = GetErrorMessage(errno);
     OPENER_TRACE_ERR("error while trying to create '%s', %d - %s\n",
                      p_path,
                      errno,
@@ -74,8 +74,8 @@ static void RecMkdir(char *const p_path) {
   }
 }
 
-static FILE *FopenMkdir(char *p_path, char *mode) {
-  char *sep = strrchr(p_path, '/');
+static FILE* FopenMkdir(char* p_path, char* mode) {
+  char* sep = strrchr(p_path, '/');
   /* In write mode create missing directories. */
   if (sep && 'w' == *mode) {
     *sep = '\0';
@@ -108,7 +108,7 @@ static FILE *FopenMkdir(char *p_path, char *mode) {
  *  in the NV data storage directory.
  */
 
-FILE *ConfFileOpen(const bool write, const char *const p_name) {
+FILE* ConfFileOpen(const bool write, const char* const p_name) {
   char path_buf[64];
   int rc;
 
@@ -127,7 +127,7 @@ FILE *ConfFileOpen(const bool write, const char *const p_name) {
  *  Closes the configuration file associated to p_filep. No data
  *  synchronization to disk yet.
  */
-EipStatus ConfFileClose(FILE **p_filep) {
+EipStatus ConfFileClose(FILE** p_filep) {
   EipStatus eip_status = kEipStatusOk;
   if (0 != fclose(*p_filep)) {
     eip_status = kEipStatusError;

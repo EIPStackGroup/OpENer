@@ -55,7 +55,7 @@ typedef struct {
 typedef struct {
   EipUint16 type_id;
   EipUint16 length;
-  EipUint8 *data;
+  EipUint8* data;
 } DataItem;
 
 /** @brief CPF Sockaddr Item
@@ -97,9 +97,9 @@ typedef struct {
  * status
  */
 EipStatus NotifyCommonPacketFormat(
-    const EncapsulationData *const received_data,
-    const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message);
+    const EncapsulationData* const received_data,
+    const struct sockaddr* const originator_address,
+    ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -114,9 +114,9 @@ EipStatus NotifyCommonPacketFormat(
  * status
  */
 EipStatus NotifyConnectedCommonPacketFormat(
-    const EncapsulationData *const received_data,
-    const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message);
+    const EncapsulationData* const received_data,
+    const struct sockaddr* const originator_address,
+    ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *  Create CPF structure out of the received data.
@@ -128,9 +128,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
  *             EIP_ERROR .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    const EipUint8 *data,
+    const EipUint8* data,
     size_t data_length,
-    CipCommonPacketFormatData *common_packet_format_data);
+    CipCommonPacketFormatData* common_packet_format_data);
 
 /** @ingroup ENCAP
  * Copy data from CPFDataItem into linear memory in message for transmission
@@ -142,8 +142,8 @@ EipStatus CreateCommonPacketFormatStructure(
  *     kEipStatusError .. error
  */
 void AssembleIOMessage(
-    const CipCommonPacketFormatData *const common_packet_format_data_item,
-    ENIPMessage *const message);
+    const CipCommonPacketFormatData* const common_packet_format_data_item,
+    ENIPMessage* const message);
 
 /** @ingroup ENCAP
  * @brief Copy data from message_router_response struct and
@@ -159,9 +159,9 @@ void AssembleIOMessage(
  *         kEipStatusError .. error
  */
 EipStatus AssembleLinearMessage(
-    const CipMessageRouterResponse *const message_router_response,
-    const CipCommonPacketFormatData *const common_packet_format_data_item,
-    ENIPMessage *const outgoing_message);
+    const CipMessageRouterResponse* const message_router_response,
+    const CipCommonPacketFormatData* const common_packet_format_data_item,
+    ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  * @brief Data storage for the any CPF data

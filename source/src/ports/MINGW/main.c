@@ -49,7 +49,7 @@ static DWORD executeEventLoop(LPVOID thread_arg);
 volatile int g_end_stack = 0;
 
 /******************************************************************************/
-int main(int argc, char *arg[]) {
+int main(int argc, char* arg[]) {
   if (argc != 2) {
     fprintf(stderr, "Wrong number of command line parameters!\n");
     fprintf(stderr, "Usage: %s [interface index | interface name]\n", arg[0]);

@@ -67,7 +67,7 @@ typedef enum cip_data_types {
  * @param data use data pointer if data length is variable, else set NULL
  * @return size of CIP data type in bytes
  * */
-size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data);
+size_t GetCipDataTypeLength(EipUint8 type, const EipUint8* data);
 
 /** @brief Definition of CIP service codes
  *
@@ -147,7 +147,7 @@ typedef enum {
  */
 typedef struct {
   EipUint16 length; /**< Length of the Byte Array */
-  EipByte *data;    /**< Pointer to the data */
+  EipByte* data;    /**< Pointer to the data */
 } CipByteArray;
 
 /** @brief CIP Short String
@@ -155,7 +155,7 @@ typedef struct {
  */
 typedef struct {
   EipUint8 length; /**< Length of the String (8 bit value) */
-  EipByte *string; /**< Pointer to the string data */
+  EipByte* string; /**< Pointer to the string data */
 } CipShortString;
 
 /** @brief CIP String
@@ -163,7 +163,7 @@ typedef struct {
  */
 typedef struct {
   EipUint16 length; /**< Length of the String (16 bit value) */
-  CipByte *string;  /**< Pointer to the string data */
+  CipByte* string;  /**< Pointer to the string data */
 } CipString;
 
 /** @brief CIP String2
@@ -171,7 +171,7 @@ typedef struct {
  */
 typedef struct {
   EipUint16 length; /**< Length of the String (16 bit value) */
-  CipWord *string;  /**< Pointer to the string data */
+  CipWord* string;  /**< Pointer to the string data */
 } CipString2;
 
 /** @brief CIP String with variable symbol size
@@ -180,7 +180,7 @@ typedef struct {
 typedef struct {
   EipUint16 size;   /**< Amount of bytes per symbol */
   EipUint16 length; /**< Length of the String (16 bit value) */
-  EipByte *string;  /**< Pointer to the string data */
+  EipByte* string;  /**< Pointer to the string data */
 } CipStringN;
 
 /** @brief STRINGI definition
@@ -190,7 +190,7 @@ typedef struct cip_type_string_i_struct CipStringIStruct;
 
 typedef struct cip_string_i {
   CipUsint number_of_strings;
-  CipStringIStruct *array_of_string_i_structs;
+  CipStringIStruct* array_of_string_i_structs;
 } CipStringI;
 
 typedef enum cip_type_string_i_character_set {
@@ -213,7 +213,7 @@ typedef struct cip_type_string_i_struct {
   CipUsint language_char_3;
   CipUint char_string_struct; /**< EPath Either 0xD0, 0xD5, 0xD9, or 0xDA */
   CipUint character_set;      /**< Character set of the string */
-  CipOctet *string;           /**< Pointer to the string data */
+  CipOctet* string;           /**< Pointer to the string data */
 } CipStringIStruct;
 
 /** @brief Highest CIP instance number.
@@ -255,7 +255,7 @@ typedef struct {
   EipUint32 class_id; /**< Class ID of the linked object */
   EipUint32 connection_point[kConnectionPointTypeMaxValue];
   EipUint8 data_segment;
-  EipUint8 *segment_data;
+  EipUint8* segment_data;
 } CipConnectionPath;
 
 /** @brief Struct storing the CIP revision */
@@ -271,7 +271,7 @@ typedef struct {
   CipUsint service;
   CipEpath request_path;
   size_t request_data_size;
-  const CipOctet *data;
+  const CipOctet* data;
 } CipMessageRouterRequest;
 
 #define MAX_SIZE_OF_ADD_STATUS                                                \
@@ -300,13 +300,13 @@ typedef struct {
 
 /** @brief self-describing data encoding for CIP types */
 typedef void (*CipAttributeEncodeInMessage)(
-    const void *const data, ENIPMessage *const outgoing_message);
+    const void* const data, ENIPMessage* const outgoing_message);
 
 /** @brief self-describing data decoding for CIP types */
 typedef int (*CipAttributeDecodeFromMessage)(
-    void *const data,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response);
+    void* const data,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response);
 
 /** @brief Structure to describe a single CIP attribute of an object
  */
@@ -318,7 +318,7 @@ typedef struct {
       decode;                       /**< Self-describing its data decoding */
   CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration
                                        for valid values. */
-  void *data;
+  void* data;
 } CipAttributeStruct;
 
 /** @brief Type definition of one instance of an Ethernet/IP object
@@ -329,12 +329,12 @@ typedef struct {
 typedef struct cip_instance {
   CipInstanceNum
       instance_number; /**< this instance's number (unique within the class) */
-  CipAttributeStruct *attributes; /**< pointer to an array of attributes which
+  CipAttributeStruct* attributes; /**< pointer to an array of attributes which
                                      is unique to this instance */
-  struct cip_class *cip_class;    /**< class the instance belongs to */
-  struct cip_instance *next; /**< next instance, all instances of a class live
+  struct cip_class* cip_class;    /**< class the instance belongs to */
+  struct cip_instance* next; /**< next instance, all instances of a class live
                                 in a linked list */
-  void *data;                /**< pointer to instance data struct */
+  void* data;                /**< pointer to instance data struct */
 } CipInstance;
 
 /** @ingroup CIP_API
@@ -350,8 +350,8 @@ typedef struct cip_instance {
  *  @param  service   service code of currently executed service
  *  @return           status of kEipStatusOk or kEipStatusError on failure
  */
-typedef EipStatus (*CipGetSetCallback)(CipInstance *const instance,
-                                       CipAttributeStruct *const attribute,
+typedef EipStatus (*CipGetSetCallback)(CipInstance* const instance,
+                                       CipAttributeStruct* const attribute,
                                        CipByte service);
 
 /** @ingroup CIP_API
@@ -368,9 +368,9 @@ typedef EipStatus (*CipGetSetCallback)(CipInstance *const instance,
  *  @return           status of kEipStatusOk or kEipStatusError on failure
  */
 typedef EipStatus (*CipCallback)(
-    CipInstance *const instance,
-    const CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response);
+    CipInstance* const instance,
+    const CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response);
 
 /** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {
@@ -386,14 +386,14 @@ typedef struct cip_class {
   EipUint16 highest_attribute_number; /**< highest defined attribute number
                                          (attribute numbers are not necessarily
                                          consecutive) */
-  uint8_t *get_single_bit_mask;       /**< bit mask for GetAttributeSingle */
-  uint8_t *set_bit_mask;              /**< bit mask for SetAttributeSingle */
-  uint8_t *get_all_bit_mask;          /**< bit mask for GetAttributeAll */
+  uint8_t* get_single_bit_mask;       /**< bit mask for GetAttributeSingle */
+  uint8_t* set_bit_mask;              /**< bit mask for SetAttributeSingle */
+  uint8_t* get_all_bit_mask;          /**< bit mask for GetAttributeAll */
 
   EipUint16 number_of_services;        /**< number of services supported */
-  CipInstance *instances;              /**< pointer to the list of instances */
-  struct cip_service_struct *services; /**< pointer to the array of services */
-  char *class_name;                    /**< class name */
+  CipInstance* instances;              /**< pointer to the list of instances */
+  struct cip_service_struct* services; /**< pointer to the array of services */
+  char* class_name;                    /**< class name */
   /** Is called in GetAttributeSingle* before the response is assembled from
    * the object's attributes */
   CipGetSetCallback PreGetCallback;
@@ -443,17 +443,17 @@ typedef struct cip_class {
  *   should be sent
  */
 typedef EipStatus (*CipServiceFunction)(
-    CipInstance *const instance,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response,
-    const struct sockaddr *originator_address,
+    CipInstance* const instance,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response,
+    const struct sockaddr* originator_address,
     const CipSessionHandle encapsulation_session);
 
 /** @brief Service descriptor. These are stored in an array */
 typedef struct cip_service_struct {
   EipUint8 service_number;             /**< service number*/
   CipServiceFunction service_function; /**< pointer to a function call*/
-  char *name;                          /**< name of the service */
+  char* name;                          /**< name of the service */
 } CipServiceStruct;
 
 /**
@@ -481,15 +481,15 @@ typedef struct {
   EipUint8 timeout_ticks;
   EipUint16 message_request_size;
   CipMessageRouterRequest message_request;
-  CipMessageRouterResponse *message_response;
+  CipMessageRouterResponse* message_response;
   EipUint8 reserved;
   CipRoutePath route_path;
-  void *data;
+  void* data;
 } CipUnconnectedSendParameter;
 
 typedef struct {
   CipUint num_conn_entries;
-  CipBool *conn_open_bits;
+  CipBool* conn_open_bits;
 } CipConnectionManagerConnectionEntryList;
 
 /* these are used for creating the getAttributeAll masks

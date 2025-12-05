@@ -82,13 +82,13 @@ EipStatus ApplicationInitialization(void) {
    *  the hardware counters after the current data have been transmitted.
    */
   {
-    CipClass *p_eth_link_class = GetCipClass(kCipEthernetLinkClassCode);
+    CipClass* p_eth_link_class = GetCipClass(kCipEthernetLinkClassCode);
     InsertGetSetCallback(p_eth_link_class, EthLnkPreGetCallback, kPreGetFunc);
     InsertGetSetCallback(p_eth_link_class, EthLnkPostGetCallback, kPostGetFunc);
     /* Specify the attributes for which the callback should be executed. */
     for (int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
-      CipAttributeStruct *p_eth_link_attr;
-      CipInstance *p_eth_link_inst = GetCipInstance(p_eth_link_class, idx + 1);
+      CipAttributeStruct* p_eth_link_attr;
+      CipInstance* p_eth_link_inst = GetCipInstance(p_eth_link_class, idx + 1);
       OPENER_ASSERT(p_eth_link_inst);
 
       /* Interface counters attribute */
@@ -118,7 +118,7 @@ void CheckIoConnectionEvent(unsigned int output_assembly_id,
   (void)io_connection_event; /* suppress compiler warning */
 }
 
-EipStatus AfterAssemblyDataReceived(CipInstance *instance) {
+EipStatus AfterAssemblyDataReceived(CipInstance* instance) {
   EipStatus status = kEipStatusOk;
 
   /*handle the data received e.g., update outputs of the device */
@@ -150,7 +150,7 @@ EipStatus AfterAssemblyDataReceived(CipInstance *instance) {
   return status;
 }
 
-EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
+EipBool8 BeforeAssemblyDataSend(CipInstance* pa_pstInstance) {
   /*update data to be sent e.g., read inputs of the device */
   /*In this sample app we mirror the data from out to inputs on data receive
    * therefore we need nothing to do here. Just return true to inform that
@@ -180,11 +180,11 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
   return kEipStatusOk;
 }
 
-void *CipCalloc(size_t number_of_elements, size_t size_of_element) {
+void* CipCalloc(size_t number_of_elements, size_t size_of_element) {
   return calloc(number_of_elements, size_of_element);
 }
 
-void CipFree(void *data) {
+void CipFree(void* data) {
   free(data);
 }
 

@@ -23,9 +23,9 @@ void InitializeIoConnectionData(void);
  * the connection data given in connection_object.
  *        - on error: NULL
  */
-CipConnectionObject *GetIoConnectionForConnectionData(
-    CipConnectionObject *const RESTRICT connection_object,
-    EipUint16 *const extended_error);
+CipConnectionObject* GetIoConnectionForConnectionData(
+    CipConnectionObject* const RESTRICT connection_object,
+    EipUint16* const extended_error);
 
 /** @brief Check if there exists already an exclusive owner or listen only
  * connection which produces the input assembly.
@@ -34,7 +34,7 @@ CipConnectionObject *GetIoConnectionForConnectionData(
  *  @param  input_point     the Input point to be produced
  *  @return   a pointer to the found connection; NULL if nothing found
  */
-CipConnectionObject *GetExistingProducerIoConnection(
+CipConnectionObject* GetExistingProducerIoConnection(
     const bool multicast_only, const EipUint32 input_point);
 
 /** @brief check if there exists an producing multicast exclusive owner or
@@ -45,7 +45,7 @@ CipConnectionObject *GetExistingProducerIoConnection(
  * @return if a connection could be found the pointer to this connection
  *      otherwise NULL.
  */
-CipConnectionObject *GetNextNonControlMasterConnection(
+CipConnectionObject* GetNextNonControlMasterConnection(
     const EipUint32 input_point);
 
 /** @brief Close all connection producing the same input and have the same type

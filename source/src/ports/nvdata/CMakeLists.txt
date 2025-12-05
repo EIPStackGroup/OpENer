@@ -27,4 +27,3 @@ if( OPENER_INSTALL_AS_LIB )
     FILES_MATCHING PATTERN "*.h"
    )
 endif()
-

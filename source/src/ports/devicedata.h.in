@@ -3,10 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
- 
+
 #ifndef DEVICE_DATA_H_
 #define DEVICE_DATA_H_
- 
+
 #define OPENER_DEVICE_VENDOR_ID      (@OpENer_Device_Config_Vendor_Id@)
 #define OPENER_DEVICE_TYPE           (@OpENer_Device_Config_Device_Type@)
 #define OPENER_DEVICE_PRODUCT_CODE   (@OpENer_Device_Config_Product_Code@)

@@ -55,8 +55,8 @@ static CipUdint media_calls[OPENER_ETHLINK_INSTANCE_CNT];
 #define MAKE_CNTR(inst, attr, idx, cnt) \
   ((10000000U * inst) + (100000U * attr) + (1000U * idx) + cnt)
 
-EipStatus EthLnkPreGetCallback(CipInstance *const instance,
-                               CipAttributeStruct *const attribute,
+EipStatus EthLnkPreGetCallback(CipInstance* const instance,
+                               CipAttributeStruct* const attribute,
                                CipByte service) {
   bool hadAction   = true;
   EipStatus status = kEipStatusOk;
@@ -67,7 +67,7 @@ EipStatus EthLnkPreGetCallback(CipInstance *const instance,
   unsigned idx           = inst_no - 1;
   switch (attr_no) {
     case 4: {
-      CipEthernetLinkInterfaceCounters *p_iface_cntrs =
+      CipEthernetLinkInterfaceCounters* p_iface_cntrs =
           &g_ethernet_link[idx].interface_cntrs;
 
       ++iface_calls[idx]; /* Count successful calls */
@@ -96,7 +96,7 @@ EipStatus EthLnkPreGetCallback(CipInstance *const instance,
       break;
     }
     case 5: {
-      CipEthernetLinkMediaCounters *p_media_cntrs =
+      CipEthernetLinkMediaCounters* p_media_cntrs =
           &g_ethernet_link[idx].media_cntrs;
 
       ++media_calls[idx]; /* Count successful calls */
@@ -148,8 +148,8 @@ EipStatus EthLnkPreGetCallback(CipInstance *const instance,
   return status;
 }
 
-EipStatus EthLnkPostGetCallback(CipInstance *const instance,
-                                CipAttributeStruct *const attribute,
+EipStatus EthLnkPostGetCallback(CipInstance* const instance,
+                                CipAttributeStruct* const attribute,
                                 CipByte service) {
   CipInstanceNum inst_no = instance->instance_number;
   EipStatus status       = kEipStatusOk;

@@ -33,4 +33,3 @@ if( OPENER_INSTALL_AS_LIB )
       PATTERN "sample_application" EXCLUDE
    )
 endif()
-

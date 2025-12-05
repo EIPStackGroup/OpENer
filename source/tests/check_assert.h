@@ -8,7 +8,7 @@
 
 /* See OpENerTests.cpp for descriptions. */
 extern jmp_buf assert_jump;
-extern jmp_buf *assert_jump_enabled;
+extern jmp_buf* assert_jump_enabled;
 
 /*
  * This macro is intended to be used in the unit test code, not the

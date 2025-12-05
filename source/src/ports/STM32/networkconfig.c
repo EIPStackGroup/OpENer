@@ -17,15 +17,15 @@
 #include "opener_api.h"
 #include "trace.h"
 
-EipStatus IfaceGetMacAddress(TcpIpInterface *iface,
-                             uint8_t *const physical_address) {
+EipStatus IfaceGetMacAddress(TcpIpInterface* iface,
+                             uint8_t* const physical_address) {
   memcpy(physical_address, iface->hwaddr, NETIF_MAX_HWADDR_LEN);
 
   return kEipStatusOk;
 }
 
 static EipStatus GetIpAndNetmaskFromInterface(
-    TcpIpInterface *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
+    TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   iface_cfg->ip_address   = iface->ip_addr.addr;
   iface_cfg->network_mask = iface->netmask.addr;
 
@@ -33,14 +33,14 @@ static EipStatus GetIpAndNetmaskFromInterface(
 }
 
 static EipStatus GetGatewayFromRoute(
-    TcpIpInterface *iface, CipTcpIpInterfaceConfiguration *iface_cfg) {
+    TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   iface_cfg->gateway = iface->gw.addr;
 
   return kEipStatusOk;
 }
 
-EipStatus IfaceGetConfiguration(TcpIpInterface *iface,
-                                CipTcpIpInterfaceConfiguration *iface_cfg) {
+EipStatus IfaceGetConfiguration(TcpIpInterface* iface,
+                                CipTcpIpInterfaceConfiguration* iface_cfg) {
   CipTcpIpInterfaceConfiguration local_cfg;
   EipStatus status;
 
@@ -59,6 +59,6 @@ EipStatus IfaceGetConfiguration(TcpIpInterface *iface,
   return status;
 }
 
-void GetHostName(TcpIpInterface *iface, CipString *hostname) {
+void GetHostName(TcpIpInterface* iface, CipString* hostname) {
   SetCipStringByCstr(hostname, netif_get_hostname(iface));
 }

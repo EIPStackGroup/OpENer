@@ -28,7 +28,7 @@
  *  @param  p_qos pointer to the QoS object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-int NvQosLoad(CipQosObject *p_qos) {
+int NvQosLoad(CipQosObject* p_qos) {
   int rd_cnt           = 0;
   EipStatus eip_status = kEipStatusError;
 
@@ -46,7 +46,7 @@ int NvQosLoad(CipQosObject *p_qos) {
   unsigned int dscp_low       = 0;
   unsigned int dscp_explicit  = 0;
 
-  FILE *p_file = ConfFileOpen(false, QOS_CFG_NAME);
+  FILE* p_file = ConfFileOpen(false, QOS_CFG_NAME);
   if (NULL != p_file) {
 /* Disable VS fscanf depreciation warning. */
 #ifdef _MSC_VER
@@ -101,8 +101,8 @@ int NvQosLoad(CipQosObject *p_qos) {
  *  @param  p_qos pointer to the QoS object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-EipStatus NvQosStore(const CipQosObject *p_qos) {
-  FILE *p_file         = ConfFileOpen(true, QOS_CFG_NAME);
+EipStatus NvQosStore(const CipQosObject* p_qos) {
+  FILE* p_file         = ConfFileOpen(true, QOS_CFG_NAME);
   EipStatus eip_status = kEipStatusOk;
   if (NULL != p_file) {
     /* Print output data */

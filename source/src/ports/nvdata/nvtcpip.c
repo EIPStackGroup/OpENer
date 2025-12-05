@@ -24,13 +24,13 @@
  *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
+int NvTcpipLoad(CipTcpIpObject* p_tcp_ip) {
   /* Suppress unused parameter compiler warning. */
   (void)p_tcp_ip;
 
   EipStatus eip_status = kEipStatusOk;
 
-  FILE *p_file = ConfFileOpen(false, TCPIP_CFG_NAME);
+  FILE* p_file = ConfFileOpen(false, TCPIP_CFG_NAME);
   if (NULL != p_file) {
     /* Read input data */
     OPENER_TRACE_ERR(
@@ -54,11 +54,11 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
  *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
+EipStatus NvTcpipStore(const CipTcpIpObject* p_tcp_ip) {
   /* Suppress unused parameter compiler warning. */
   (void)p_tcp_ip;
 
-  FILE *p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
+  FILE* p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
   if (NULL != p_file) {
     /* Print output data */
     OPENER_TRACE_ERR(

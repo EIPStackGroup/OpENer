@@ -27,6 +27,6 @@
   } while (0)
 
 /* Function Prototypes */
-extern void test_assert_fail(const char *const file, const unsigned int line);
+extern void test_assert_fail(const char* const file, const unsigned int line);
 
 #endif /* OPENER_TEST_ASSERT_H */

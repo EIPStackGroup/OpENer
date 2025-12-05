@@ -19,8 +19,8 @@ int GetSocketErrorNumber(void) {
   return WSAGetLastError();
 }
 
-char *GetErrorMessage(int error_number) {
-  char *error_message = NULL;
+char* GetErrorMessage(int error_number) {
+  char* error_message = NULL;
   FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                      FORMAT_MESSAGE_IGNORE_INSERTS,
                  NULL,
@@ -32,6 +32,6 @@ char *GetErrorMessage(int error_number) {
   return error_message;
 }
 
-void FreeErrorMessage(char *error_message) {
+void FreeErrorMessage(char* error_message) {
   LocalFree(error_message);
 }

@@ -24,13 +24,13 @@ typedef enum {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-CipSint GetSintFromMessage(const EipUint8 **const buffer);
+CipSint GetSintFromMessage(const EipUint8** const buffer);
 
-CipByte GetByteFromMessage(const CipOctet **const buffer_address);
+CipByte GetByteFromMessage(const CipOctet** const buffer_address);
 
-CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
+CipUsint GetUsintFromMessage(const CipOctet** const buffer_address);
 
-CipBool GetBoolFromMessage(const EipBool8 **const buffer_address);
+CipBool GetBoolFromMessage(const EipBool8** const buffer_address);
 
 /** @ingroup ENCAP
  *
@@ -40,11 +40,11 @@ CipBool GetBoolFromMessage(const EipBool8 **const buffer_address);
  * incremented by 2!
  * @return Extracted 16 bit integer value
  */
-CipInt GetIntFromMessage(const EipUint8 **const buffer);
+CipInt GetIntFromMessage(const EipUint8** const buffer);
 
-CipUint GetUintFromMessage(const CipOctet **const buffer_address);
+CipUint GetUintFromMessage(const CipOctet** const buffer_address);
 
-CipWord GetWordFromMessage(const CipOctet **const buffer_address);
+CipWord GetWordFromMessage(const CipOctet** const buffer_address);
 
 /** @ingroup ENCAP
  *
@@ -53,11 +53,11 @@ CipWord GetWordFromMessage(const CipOctet **const buffer_address);
  * incremented by 4!
  * @return Extracted 32 bit integer value
  */
-CipDint GetDintFromMessage(const EipUint8 **const buffer);
+CipDint GetDintFromMessage(const EipUint8** const buffer);
 
-CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
+CipUdint GetUdintFromMessage(const CipOctet** const buffer_address);
 
-CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
+CipUdint GetDwordFromMessage(const CipOctet** const buffer_address);
 
 /** @ingroup ENCAP
  *
@@ -65,7 +65,7 @@ CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddSintToMessage(const EipUint8 data, ENIPMessage *const outgoing_message);
+void AddSintToMessage(const EipUint8 data, ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -76,7 +76,7 @@ void AddSintToMessage(const EipUint8 data, ENIPMessage *const outgoing_message);
  *
  * @return Length in bytes of the encoded message
  */
-void AddIntToMessage(const EipUint16 data, ENIPMessage *const outgoing_message);
+void AddIntToMessage(const EipUint16 data, ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *
@@ -88,9 +88,9 @@ void AddIntToMessage(const EipUint16 data, ENIPMessage *const outgoing_message);
  * @return Length in bytes of the encoded message
  */
 void AddDintToMessage(const EipUint32 data,
-                      ENIPMessage *const outgoing_message);
+                      ENIPMessage* const outgoing_message);
 
-EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
+EipUint64 GetLintFromMessage(const EipUint8** const buffer);
 
 /** @ingroup ENCAP
  *
@@ -101,7 +101,7 @@ EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
  *
  */
 void AddLintToMessage(const EipUint64 pa_unData,
-                      ENIPMessage *const outgoing_message);
+                      ENIPMessage* const outgoing_message);
 
 /** @brief Encapsulate the sockaddr information as necessary for the Common
  * Packet Format data items
@@ -115,7 +115,7 @@ void AddLintToMessage(const EipUint64 pa_unData,
  */
 void EncapsulateIpAddress(EipUint16 port,
                           EipUint32 address,
-                          ENIPMessage *const outgoing_message);
+                          ENIPMessage* const outgoing_message);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -131,15 +131,15 @@ void DetermineEndianess(void);
 int GetEndianess(void);
 
 void MoveMessageNOctets(const int amount_of_bytes_moved,
-                        ENIPMessage *const outgoing_message);
+                        ENIPMessage* const outgoing_message);
 
 void FillNextNMessageOctetsWith(CipOctet value,
                                 unsigned int amount_of_bytes_written,
-                                ENIPMessage *const outgoing_message);
+                                ENIPMessage* const outgoing_message);
 
 void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
     CipOctet value,
     unsigned int amount_of_filled_bytes,
-    ENIPMessage *const outgoing_message);
+    ENIPMessage* const outgoing_message);
 
 #endif /* OPENER_ENDIANCONV_H_ */

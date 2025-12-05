@@ -92,8 +92,8 @@ CipDlrObject g_dlr; /**< definition of DLR object instance 1 data */
 /* ********************************************************************
  * local functions
  */
-static void EncodeCipRingSupervisorConfig(const void *const data,
-                                          ENIPMessage *const outgoing_message) {
+static void EncodeCipRingSupervisorConfig(const void* const data,
+                                          ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -102,9 +102,9 @@ static void EncodeCipRingSupervisorConfig(const void *const data,
       0, kRingSupStructSize, outgoing_message);
 }
 
-static void EncodeCipNodeAddress(const void *const data,
-                                 ENIPMessage *const outgoing_message) {
-  CipNodeAddress *node_address = (CipNodeAddress *)data;
+static void EncodeCipNodeAddress(const void* const data,
+                                 ENIPMessage* const outgoing_message) {
+  CipNodeAddress* node_address = (CipNodeAddress*)data;
   EncodeCipUdint(&node_address->device_ip, outgoing_message);
   EncodeCipEthernetLinkPhyisicalAddress(&node_address->device_mac,
                                         outgoing_message);
@@ -114,7 +114,7 @@ static void EncodeCipNodeAddress(const void *const data,
  * public functions
  */
 EipStatus CipDlrInit(void) {
-  CipClass *dlr_class = NULL;
+  CipClass* dlr_class = NULL;
 
   dlr_class = CreateCipClass(kCipDlrClassCode,
                              0,     /* # class attributes */
@@ -140,7 +140,7 @@ EipStatus CipDlrInit(void) {
       dlr_class, kGetAttributeAll, GetAttributeAll, "GetAttributeAll");
 
   /* Bind attributes to the instance */
-  CipInstance *dlr_instance = GetCipInstance(dlr_class, 1u);
+  CipInstance* dlr_instance = GetCipInstance(dlr_class, 1u);
 
   InsertAttribute(dlr_instance,
                   1,
@@ -161,42 +161,42 @@ EipStatus CipDlrInit(void) {
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *)&s_0xFF_default,
+                  (void*)&s_0xFF_default,
                   kGetableAll);
   InsertAttribute(dlr_instance,
                   4,
                   kCipAny,
                   EncodeCipRingSupervisorConfig,
                   NULL,
-                  (void *)&s_0x00000000_default,
+                  (void*)&s_0x00000000_default,
                   kGetableAllDummy);
   InsertAttribute(dlr_instance,
                   5,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&s_0x0000_default,
+                  (void*)&s_0x0000_default,
                   kGetableAll);
   InsertAttribute(dlr_instance,
                   6,
                   kCipAny,
                   EncodeCipNodeAddress,
                   NULL,
-                  (void *)&s_zero_node,
+                  (void*)&s_zero_node,
                   kGetableAll);
   InsertAttribute(dlr_instance,
                   7,
                   kCipAny,
                   EncodeCipNodeAddress,
                   NULL,
-                  (void *)&s_zero_node,
+                  (void*)&s_zero_node,
                   kGetableAll);
   InsertAttribute(dlr_instance,
                   8,
                   kCipUint,
                   EncodeCipUint,
                   NULL,
-                  (void *)&s_0xFFFF_default,
+                  (void*)&s_0xFFFF_default,
                   kGetableAll);
   /* Attribute #9 is not implemented and also NOT part of the GetAttributesAll
    *  response. Therefore it is not added here! */
@@ -212,7 +212,7 @@ EipStatus CipDlrInit(void) {
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *)&s_0x00_default,
+                  (void*)&s_0x00_default,
                   kGetableAll);
   InsertAttribute(dlr_instance,
                   12,

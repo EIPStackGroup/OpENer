@@ -67,17 +67,17 @@ static CipQosDscpValues s_active_dscp = {.event        = DEFAULT_DSCP_EVENT,
  *          -1 .. error
  */
 int DecodeCipQoSAttribute(
-    void *const data,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response) {
-  const EipUint8 **const cip_message = &(message_router_request->data);
+    void* const data,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response) {
+  const EipUint8** const cip_message = &(message_router_request->data);
 
   int number_of_decoded_bytes = -1;
 
   if (NULL != cip_message) {
     CipUsint attribute_value_received = GetUsintFromMessage(cip_message);
     if (attribute_value_received < 64U) {
-      *(CipUsint *)data = attribute_value_received;  // write value to attribute
+      *(CipUsint*)data = attribute_value_received;  // write value to attribute
 
       message_router_response->general_status = kCipErrorSuccess;
       number_of_decoded_bytes                 = 1;
@@ -117,7 +117,7 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 }
 
 EipStatus CipQoSInit() {
-  CipClass *qos_class = NULL;
+  CipClass* qos_class = NULL;
 
   if ((qos_class =
            CreateCipClass(kCipQoSClassCode,
@@ -135,7 +135,7 @@ EipStatus CipQoSInit() {
     return kEipStatusError;
   }
 
-  CipInstance *instance = GetCipInstance(
+  CipInstance* instance = GetCipInstance(
       qos_class,
       1); /* bind attributes to the instance #1 that was created above */
 
@@ -144,56 +144,56 @@ EipStatus CipQoSInit() {
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *)&g_qos.q_frames_enable,
+                  (void*)&g_qos.q_frames_enable,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   2,
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *)&g_qos.dscp.event,
+                  (void*)&g_qos.dscp.event,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   3,
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *)&g_qos.dscp.general,
+                  (void*)&g_qos.dscp.general,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   4,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *)&g_qos.dscp.urgent,
+                  (void*)&g_qos.dscp.urgent,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *)&g_qos.dscp.scheduled,
+                  (void*)&g_qos.dscp.scheduled,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *)&g_qos.dscp.high,
+                  (void*)&g_qos.dscp.high,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *)&g_qos.dscp.low,
+                  (void*)&g_qos.dscp.low,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *)&g_qos.dscp.explicit_msg,
+                  (void*)&g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
   InsertService(qos_class,

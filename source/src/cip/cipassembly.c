@@ -29,16 +29,16 @@
  *          -1 .. error
  */
 int DecodeCipAssemblyAttribute3(
-    void *const data,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response);
+    void* const data,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response);
 
-static EipStatus AssemblyPreGetCallback(CipInstance *const instance,
-                                        CipAttributeStruct *const attribute,
+static EipStatus AssemblyPreGetCallback(CipInstance* const instance,
+                                        CipAttributeStruct* const attribute,
                                         CipByte service);
 
-static EipStatus AssemblyPostSetCallback(CipInstance *const instance,
-                                         CipAttributeStruct *const attribute,
+static EipStatus AssemblyPostSetCallback(CipInstance* const instance,
+                                         CipAttributeStruct* const attribute,
                                          CipByte service);
 
 /** @brief Constructor for the assembly object class
@@ -46,9 +46,9 @@ static EipStatus AssemblyPostSetCallback(CipInstance *const instance,
  *  Creates an initializes Assembly class or object instances
  *  @return Pointer to the created Assembly object
  */
-CipClass *CreateAssemblyClass(void) {
+CipClass* CreateAssemblyClass(void) {
   /* create the CIP Assembly object with zero instances */
-  CipClass *assembly_class = CreateCipClass(
+  CipClass* assembly_class = CreateCipClass(
       kCipAssemblyClassCode,
       0,          /* # class attributes*/
       7,          /* # highest class attribute number*/
@@ -86,12 +86,12 @@ EipStatus CipAssemblyInitialize(void) {
 }
 
 void ShutdownAssemblies(void) {
-  const CipClass *const assembly_class = GetCipClass(kCipAssemblyClassCode);
+  const CipClass* const assembly_class = GetCipClass(kCipAssemblyClassCode);
 
   if (NULL != assembly_class) {
-    const CipInstance *instance = assembly_class->instances;
+    const CipInstance* instance = assembly_class->instances;
     while (NULL != instance) {
-      const CipAttributeStruct *const attribute = GetCipAttribute(instance, 3);
+      const CipAttributeStruct* const attribute = GetCipAttribute(instance, 3);
       if (NULL != attribute) {
         CipFree(attribute->data);
       }
@@ -100,10 +100,10 @@ void ShutdownAssemblies(void) {
   }
 }
 
-CipInstance *CreateAssemblyObject(const CipInstanceNum instance_id,
-                                  EipByte *const data,
+CipInstance* CreateAssemblyObject(const CipInstanceNum instance_id,
+                                  EipByte* const data,
                                   const EipUint16 data_length) {
-  CipClass *assembly_class = GetCipClass(kCipAssemblyClassCode);
+  CipClass* assembly_class = GetCipClass(kCipAssemblyClassCode);
   if (NULL == assembly_class) {
     assembly_class = CreateAssemblyClass();
   }
@@ -112,12 +112,12 @@ CipInstance *CreateAssemblyObject(const CipInstanceNum instance_id,
     return NULL;
   }
 
-  CipInstance *const instance = AddCipInstance(
+  CipInstance* const instance = AddCipInstance(
       assembly_class,
       instance_id); /* add instances (always succeeds (or asserts))*/
 
-  CipByteArray *const assembly_byte_array =
-      (CipByteArray *)CipCalloc(1, sizeof(CipByteArray));
+  CipByteArray* const assembly_byte_array =
+      (CipByteArray*)CipCalloc(1, sizeof(CipByteArray));
   if (assembly_byte_array == NULL) {
     return NULL; /*TODO remove assembly instance in case of error*/
   }
@@ -145,14 +145,14 @@ CipInstance *CreateAssemblyObject(const CipInstanceNum instance_id,
   return instance;
 }
 
-EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
-                                              const EipUint8 *const data,
+EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
+                                              const EipUint8* const data,
                                               const size_t data_length) {
   /* empty path (path size = 0) need to be checked and taken care of in future
    */
   /* copy received data to Attribute 3 */
-  const CipByteArray *const assembly_byte_array =
-      (CipByteArray *)instance->attributes->data;
+  const CipByteArray* const assembly_byte_array =
+      (CipByteArray*)instance->attributes->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
     return kEipStatusError; /*TODO question should we notify the application
@@ -166,16 +166,16 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
 }
 
 int DecodeCipAssemblyAttribute3(
-    void *const data,
-    CipMessageRouterRequest *const message_router_request,
-    CipMessageRouterResponse *const message_router_response) {
-  CipInstance *const instance =
+    void* const data,
+    CipMessageRouterRequest* const message_router_request,
+    CipMessageRouterResponse* const message_router_response) {
+  CipInstance* const instance =
       GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
                      message_router_request->request_path.instance_number);
 
   int number_of_decoded_bytes = -1;
   OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
-  CipByteArray *cip_byte_array = (CipByteArray *)data;
+  CipByteArray* cip_byte_array = (CipByteArray*)data;
 
   if (message_router_request->request_data_size < cip_byte_array->length) {
     OPENER_TRACE_INFO("DecodeCipByteArray: not enough data received.\n");
@@ -212,8 +212,8 @@ int DecodeCipAssemblyAttribute3(
   return number_of_decoded_bytes;
 }
 
-static EipStatus AssemblyPreGetCallback(CipInstance *const instance,
-                                        CipAttributeStruct *const attribute,
+static EipStatus AssemblyPreGetCallback(CipInstance* const instance,
+                                        CipAttributeStruct* const attribute,
                                         CipByte service) {
   int rc;
   (void)attribute;
@@ -224,8 +224,8 @@ static EipStatus AssemblyPreGetCallback(CipInstance *const instance,
   return rc;
 }
 
-static EipStatus AssemblyPostSetCallback(CipInstance *const instance,
-                                         CipAttributeStruct *const attribute,
+static EipStatus AssemblyPostSetCallback(CipInstance* const instance,
+                                         CipAttributeStruct* const attribute,
                                          CipByte service) {
   int rc;
   (void)attribute;

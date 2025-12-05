@@ -60,8 +60,8 @@ EipStatus NvdataLoad(void) {
  * This application specific implementation chose to save all attributes
  * at once using a single NvQosStore() call.
  */
-EipStatus NvQosSetCallback(CipInstance *const instance,
-                           CipAttributeStruct *const attribute,
+EipStatus NvQosSetCallback(CipInstance* const instance,
+                           CipAttributeStruct* const attribute,
                            CipByte service) {
   /* Suppress unused parameter compiler warning. */
   (void)service;
@@ -96,8 +96,8 @@ EipStatus NvQosSetCallback(CipInstance *const instance,
  * This application specific implementation chose to save all attributes
  * at once using a single NvTcpipStore() call.
  */
-EipStatus NvTcpipSetCallback(CipInstance *const instance,
-                             CipAttributeStruct *const attribute,
+EipStatus NvTcpipSetCallback(CipInstance* const instance,
+                             CipAttributeStruct* const attribute,
                              CipByte service) {
   /* Suppress parameters used only for trace macros. */
 #ifndef OPENER_WITH_TRACES

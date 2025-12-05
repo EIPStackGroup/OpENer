@@ -14,8 +14,8 @@
 #include "ciptcpipinterface.h"
 #include "typedefs.h"
 
-int NvTcpipLoad(CipTcpIpObject *p_tcp_ip);
+int NvTcpipLoad(CipTcpIpObject* p_tcp_ip);
 
-int NvTcpipStore(const CipTcpIpObject *p_tcp_ip);
+int NvTcpipStore(const CipTcpIpObject* p_tcp_ip);
 
 #endif /* _NVTCPIP_H_ */

@@ -45,9 +45,9 @@
  *  string if possible. On conversion success @p errno is set to zero.
  *  On failure @p errno is set to ERANGE or EINVAL.
  */
-static ULONG StrToIfaceIdx(const char *iface) {
+static ULONG StrToIfaceIdx(const char* iface) {
   ULONG iface_idx;
-  char *end;
+  char* end;
   /* The input string is a decimal interface index number or an
    *  interface name. */
   errno     = 0; /* To distinguish success / failure later */
@@ -76,9 +76,9 @@ static ULONG StrToIfaceIdx(const char *iface) {
  * The LUID can then be used to retrieve the interface index needed for the
  *  other functions by calling ConvertInterfaceLuidToIndex().
  */
-static DWORD ConvertToIndexFromFakeAlias(const char *iface,
+static DWORD ConvertToIndexFromFakeAlias(const char* iface,
                                          PNET_IFINDEX iface_idx) {
-  WCHAR *p_if_alias;
+  WCHAR* p_if_alias;
   NET_LUID if_luid;
 
   size_t mbtowc_rc = mbstowcs(NULL, iface, 0);
@@ -117,7 +117,7 @@ static DWORD ConvertToIndexFromFakeAlias(const char *iface,
  *  alias name. This function then in turn calls ConvertToIndexFromFakeAlias()
  *  to find an interface matching that alias.
  */
-static EipStatus DetermineIfaceIndexByString(const char *iface,
+static EipStatus DetermineIfaceIndexByString(const char* iface,
                                              PNET_IFINDEX iface_idx) {
   *iface_idx = StrToIfaceIdx(iface);
 
@@ -125,7 +125,7 @@ static EipStatus DetermineIfaceIndexByString(const char *iface,
   if (!arg_is_numerical) {
     DWORD cnv_status = ConvertToIndexFromFakeAlias(iface, iface_idx);
     if (NO_ERROR != cnv_status) {
-      char *error_message = GetErrorMessage(cnv_status);
+      char* error_message = GetErrorMessage(cnv_status);
       OPENER_TRACE_ERR("ConvertToIndexFromFakeAlias() failed: %" PRIDW
                        " - %s\n",
                        cnv_status,
@@ -152,7 +152,7 @@ static EipStatus DetermineIfaceIndexByString(const char *iface,
  *  result.
  */
 EipStatus RetrieveAdapterAddressesTable(ULONG flags,
-                                        PIP_ADAPTER_ADDRESSES *pp_addr_table) {
+                                        PIP_ADAPTER_ADDRESSES* pp_addr_table) {
   PIP_ADAPTER_ADDRESSES p_addr_table;
   ULONG ret_val;
   /* Start allocating with a guessed minimum size. */
@@ -178,7 +178,7 @@ EipStatus RetrieveAdapterAddressesTable(ULONG flags,
       FREE(p_addr_table);
       p_addr_table = NULL;
     }
-    char *error_message = GetErrorMessage(ret_val);
+    char* error_message = GetErrorMessage(ret_val);
     OPENER_TRACE_ERR("GetAdaptersAddresses() failed: %" PRIUL " - %s\n",
                      ret_val,
                      error_message);
@@ -199,8 +199,8 @@ EipStatus RetrieveAdapterAddressesTable(ULONG flags,
  *         kEipStatusError if a memory allocation error occurred or
  *         the source string was too large.
  */
-static DWORD WideToCipString(const WCHAR *const src, CipString *const dest) {
-  void *buf = NULL;
+static DWORD WideToCipString(const WCHAR* const src, CipString* const dest) {
+  void* buf = NULL;
 
   OPENER_ASSERT(src != NULL);
   OPENER_ASSERT(dest != NULL);
@@ -249,15 +249,15 @@ static DWORD WideToCipString(const WCHAR *const src, CipString *const dest) {
  *  @param  socket_address  pointer to a Windows SOCKET_ADDRESS structure
  *  @return                 IPv4 address taken from @p socket_address
  */
-static CipUdint GetIpFromSocketAddress(const SOCKET_ADDRESS *socket_address) {
-  SOCKADDR_IN *sin = ((SOCKADDR_IN *)socket_address->lpSockaddr);
+static CipUdint GetIpFromSocketAddress(const SOCKET_ADDRESS* socket_address) {
+  SOCKADDR_IN* sin = ((SOCKADDR_IN*)socket_address->lpSockaddr);
   return sin->sin_addr.S_un.S_addr;
 }
 
 /* ---------- Public functions implementation ---------- */
 
 /* For Doxygen descriptions see opener_api.h. */
-EipStatus IfaceGetMacAddress(const char *iface, uint8_t *physical_address) {
+EipStatus IfaceGetMacAddress(const char* iface, uint8_t* physical_address) {
   ULONG iface_idx;
 
   if (kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx)) {
@@ -301,8 +301,8 @@ EipStatus IfaceGetMacAddress(const char *iface, uint8_t *physical_address) {
 }
 
 /* For Doxygen descriptions see opener_api.h. */
-EipStatus IfaceGetConfiguration(const char *iface,
-                                CipTcpIpInterfaceConfiguration *iface_cfg) {
+EipStatus IfaceGetConfiguration(const char* iface,
+                                CipTcpIpInterfaceConfiguration* iface_cfg) {
   ULONG iface_idx;
 
   if (kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx)) {
@@ -354,7 +354,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
         }
       }
       {
-        IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer =
+        IP_ADAPTER_DNS_SERVER_ADDRESS* pDnServer =
             p_addr_entry->FirstDnsServerAddress;
         if (NULL != pDnServer) {
           local_cfg.name_server = GetIpFromSocketAddress(&pDnServer->Address);
@@ -368,7 +368,7 @@ EipStatus IfaceGetConfiguration(const char *iface,
       DWORD ret_val =
           WideToCipString(p_addr_entry->DnsSuffix, &local_cfg.domain_name);
       if (NO_ERROR != ret_val) {
-        char *error_message = GetErrorMessage(ret_val);
+        char* error_message = GetErrorMessage(ret_val);
         OPENER_TRACE_ERR("WideToCipString(DnsSuffix) failed with error: %" PRIDW
                          " - %s\n",
                          ret_val,
@@ -395,9 +395,9 @@ EipStatus IfaceGetConfiguration(const char *iface,
 }
 
 /* For Doxygen descriptions see opener_api.h. */
-EipStatus IfaceWaitForIp(const char *const iface,
+EipStatus IfaceWaitForIp(const char* const iface,
                          int timeout,
-                         volatile int *const abort_wait) {
+                         volatile int* const abort_wait) {
   ULONG iface_idx;
 
   if (kEipStatusOk != DetermineIfaceIndexByString(iface, &iface_idx)) {
@@ -432,7 +432,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
         }
       } while (ERROR_INSUFFICIENT_BUFFER == dw_ret);
       if (NO_ERROR != dw_ret) {
-        char *error_message = GetErrorMessage(dw_ret);
+        char* error_message = GetErrorMessage(dw_ret);
         OPENER_TRACE_ERR("%s() failed with error: %" PRIDW " - %s\n",
                          __func__,
                          dw_ret,
@@ -468,7 +468,7 @@ EipStatus IfaceWaitForIp(const char *const iface,
 }
 
 #define HOST_NAME_MAX 256 /* Should be long enough according rfc1132. */
-void GetHostName(CipString *hostname) {
+void GetHostName(CipString* hostname) {
   CipWord wVersionRequested;
   WSADATA wsaData;
   int err;
@@ -479,7 +479,7 @@ void GetHostName(CipString *hostname) {
   err = WSAStartup(wVersionRequested, &wsaData);
   if (err != 0) {
     /* Tell the user that we could not find a usable Winsock DLL.  */
-    char *error_message = GetErrorMessage(err);
+    char* error_message = GetErrorMessage(err);
     printf("WSAStartup failed with error: %d - %s\n", err, error_message);
     FreeErrorMessage(error_message);
     return;
@@ -489,7 +489,7 @@ void GetHostName(CipString *hostname) {
   err                          = gethostname(name_buf, sizeof(name_buf));
   if (0 != err) {
     int error_code      = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
+    char* error_message = GetErrorMessage(error_code);
     printf("gethostname() failed, %d - %s\n", error_code, error_message);
     FreeErrorMessage(error_message);
     return;

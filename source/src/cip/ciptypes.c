@@ -10,7 +10,7 @@
 const CipInstanceNum kCipInstanceNumMax = UINT16_MAX;
 
 /* functions*/
-size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data) {
+size_t GetCipDataTypeLength(EipUint8 type, const EipUint8* data) {
   size_t length = 0;
 
   switch (type) {
@@ -79,7 +79,7 @@ size_t GetCipDataTypeLength(EipUint8 type, const EipUint8 *data) {
 
     case kCipByteArray:
       if (NULL != data) {
-        CipByteArray *byte_array = (CipByteArray *)data;
+        CipByteArray* byte_array = (CipByteArray*)data;
         length                   = byte_array->length;
       }
       break;

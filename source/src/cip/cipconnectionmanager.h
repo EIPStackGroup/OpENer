@@ -257,7 +257,7 @@ EipStatus ConnectionManagerInit(EipUint16 unique_connection_id);
  *   @return pointer to connected Object
  *           NULL .. connection not present in device
  */
-CipConnectionObject *GetConnectedObject(const EipUint32 connection_id);
+CipConnectionObject* GetConnectedObject(const EipUint32 connection_id);
 
 /**  Get a connection object for a given output assembly.
  *
@@ -266,7 +266,7 @@ CipConnectionObject *GetConnectedObject(const EipUint32 connection_id);
  *   @return pointer to connected Object
  *           0 .. connection not present in device
  */
-CipConnectionObject *GetConnectedOutputAssembly(
+CipConnectionObject* GetConnectedOutputAssembly(
     const EipUint32 output_assembly_id);
 
 /** @brief Close the given connection
@@ -276,7 +276,7 @@ CipConnectionObject *GetConnectedOutputAssembly(
  * @param connection_object pointer to the connection object structure to be
  * closed
  */
-void CloseConnection(CipConnectionObject *RESTRICT connection_object);
+void CloseConnection(CipConnectionObject* RESTRICT connection_object);
 
 /* TODO: Missing documentation */
 EipBool8 IsConnectedOutputAssembly(const CipInstanceNum instance_number);
@@ -290,22 +290,22 @@ EipBool8 IsConnectedOutputAssembly(const CipInstanceNum instance_number);
  *
  * @param connection_object pointer to the connection object to be added.
  */
-void AddNewActiveConnection(CipConnectionObject *const connection_object);
+void AddNewActiveConnection(CipConnectionObject* const connection_object);
 
 /** @brief Removes connection from the list of active connections
  *
  * @param connection_object Connection object to be removed from the active
  * connection list
  */
-void RemoveFromActiveConnections(CipConnectionObject *const connection_object);
+void RemoveFromActiveConnections(CipConnectionObject* const connection_object);
 
 CipUdint GetConnectionId(void);
 
 typedef void (*CloseSessionFunction)(
-    const CipConnectionObject *const connection_object);
+    const CipConnectionObject* const connection_object);
 
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
-    const CipConnectionObject *const connection_object,
+    const CipConnectionObject* const connection_object,
     CloseSessionFunction CloseSessions);
 
 #endif /* OPENER_CIPCONNECTIONMANAGER_H_ */

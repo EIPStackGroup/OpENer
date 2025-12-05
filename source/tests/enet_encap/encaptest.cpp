@@ -107,9 +107,8 @@ TEST(EncapsulationProtocol, SendRRData) {
   CreateEncapsulationStructure(
       incoming_message, sizeof(incoming_message), &received_data);
 
-  struct sockaddr_in fake_originator = {0};
-  struct sockaddr *fake_originator_pointer =
-      (struct sockaddr *)&fake_originator;
+  struct sockaddr_in fake_originator       = {0};
+  struct sockaddr* fake_originator_pointer = (struct sockaddr*)&fake_originator;
 
   HandleReceivedSendRequestResponseDataCommand(
       &received_data, fake_originator_pointer, &outgoing_message);

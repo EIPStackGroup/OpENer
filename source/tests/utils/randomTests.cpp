@@ -17,7 +17,7 @@ TEST_GROUP(RandomClass){
 };
 
 TEST(RandomClass, CreateXOrShiftObject) {
-  Random *pRandom  = NULL;
+  Random* pRandom  = NULL;
   uint32_t nResult = 0;
   pRandom          = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
   POINTERS_EQUAL(SetXorShiftSeed, pRandom->set_seed);

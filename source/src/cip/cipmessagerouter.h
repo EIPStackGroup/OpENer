@@ -36,10 +36,10 @@ void DeleteAllClasses(void);
  *  @return  kEipStatusError on fault
  *           kEipStatusOk on success
  */
-EipStatus NotifyMessageRouter(EipUint8 *data,
+EipStatus NotifyMessageRouter(EipUint8* data,
                               int data_length,
-                              CipMessageRouterResponse *message_router_response,
-                              const struct sockaddr *const originator_address,
+                              CipMessageRouterResponse* message_router_response,
+                              const struct sockaddr* const originator_address,
                               const CipSessionHandle encapsulation_session);
 
 /*! Register a class at the message router.
@@ -50,6 +50,6 @@ EipStatus NotifyMessageRouter(EipUint8 *data,
  *  @param cip_class CIP class to be registered
  *  @return kEipStatusOk on success
  */
-EipStatus RegisterCipClass(CipClass *cip_class);
+EipStatus RegisterCipClass(CipClass* cip_class);
 
 #endif /* OPENER_CIPMESSAGEROUTER_H_ */
