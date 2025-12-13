@@ -186,7 +186,6 @@ void CipStringIDecodeFromMessage(
         SetCipShortStringByData(
             short_string, length, message_router_request->data);
         message_router_request->data += length;
-
       } break;
       case kCipString: {
         target_stringI->array_of_string_i_structs[i].string =
@@ -243,9 +242,7 @@ bool CipStringICompare(const CipStringI* const stringI_1,
       case kCipString: {
         len_1         = ((CipString*)string_1)->length;
         string_1_data = ((CipString*)string_1)->string;
-      }
-
-      break;
+      } break;
       case kCipString2: {
         len_1         = ((CipString2*)string_1)->length * 2;
         string_1_data = ((CipString2*)string_1)->string;
@@ -255,7 +252,6 @@ bool CipStringICompare(const CipStringI* const stringI_1,
         CipUint size   = ((CipStringN*)string_1)->size;  // bytes per symbol
         len_1          = length * size;
         string_1_data  = ((CipStringN*)string_1)->string;
-
       } break;
       default:
         OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
@@ -288,12 +284,10 @@ bool CipStringICompare(const CipStringI* const stringI_1,
           CipUint size   = ((CipStringN*)string_2)->size;  // bytes per symbol
           len_2          = length * size;
           string_2_data  = ((CipStringN*)string_2)->string;
-
         } break;
         default:
           OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
       }
-
       /*compare strings*/  // TODO: compare works only for same data types
       if (len_1 == len_2 && string_1_data != NULL && string_2_data != NULL) {
         if (0 == memcmp(string_1_data, string_2_data, len_1)) {

@@ -148,15 +148,16 @@ CipInstance* CreateAssemblyObject(const CipInstanceNum instance_id,
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
                                               const EipUint8* const data,
                                               const size_t data_length) {
-  /* empty path (path size = 0) need to be checked and taken care of in future
-   */
-  /* copy received data to Attribute 3 */
+  // empty path (path size = 0) need to be checked and taken care of in future
+
+  // copy received data to Attribute 3
   const CipByteArray* const assembly_byte_array =
       (CipByteArray*)instance->attributes->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
-    return kEipStatusError; /*TODO question should we notify the application
-                               that wrong data has been received???*/
+    // TODO(MartinMelikMerkumians): question should we notify the application
+    // that wrong data has been received?
+    return kEipStatusError;
   } else {
     memcpy(assembly_byte_array->data, data, data_length);
     /* call the application that new data arrived */
