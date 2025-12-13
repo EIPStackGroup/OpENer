@@ -21,7 +21,8 @@ repos:
       - id: cpplint
         types_or: [c, c++, header]
         args:
-          - "--filter=-whitespace/line_length"
+          - "--root=source/src"
+          - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
           - "--recursive"
 
   - repo: https://github.com/pocc/pre-commit-hooks

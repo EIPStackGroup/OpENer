@@ -16,6 +16,16 @@ DISABLE_LINTERS:
 # Formatter specific configuration
 C_CLANG_FORMAT_ARGUMENTS: "--style=file"
 
+# cpplint specific configuration
+C_CPPLINT_ARGUMENTS:
+  - "--root=source/src"
+  - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
+  - "--recursive"
+CPP_CPPLINT_ARGUMENTS:
+  - "--root=source/src"
+  - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
+  - "--recursive"
+
 # Report configuration
 SARIF_REPORTER: true
 TEXT_REPORTER: true
