@@ -14,7 +14,7 @@
 #define NVDATA_H_
 
 #include "ciptypes.h"
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 EipStatus NvdataLoad(void);
 

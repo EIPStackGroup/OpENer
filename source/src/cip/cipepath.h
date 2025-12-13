@@ -4,13 +4,13 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_CIP_CIPEPATH_H_
-#define SRC_CIP_CIPEPATH_H_
+#ifndef CIP_CIPEPATH_H_
+#define CIP_CIPEPATH_H_
 
 #include <stdbool.h>
 
-#include "cipelectronickey.h"
-#include "ciptypes.h"
+#include "cip/cipelectronickey.h"
+#include "cip/ciptypes.h"
 
 #define SEGMENT_TYPE_PORT_SEGMENT             \
   0x00 /**< Message value of the Port segment \
@@ -452,4 +452,4 @@ bool CipEpathEqual(const CipOctet* const path1,
                    const CipOctet* const path2,
                    const CipUint path2_length);
 
-#endif /* SRC_CIP_CIPEPATH_H_ */
+#endif /* CIP_CIPEPATH_H_ */

@@ -7,8 +7,8 @@
 #define OPENER_CPF_H_
 
 #include "ciptypes.h"
+#include "core/typedefs.h"
 #include "encap.h"
-#include "typedefs.h"
 
 /** @ingroup ENCAP
  * @brief CPF is Common Packet Format

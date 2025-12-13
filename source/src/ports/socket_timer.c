@@ -4,9 +4,9 @@
  *
  ******************************************************************************/
 
-#include "socket_timer.h"
+#include "ports/socket_timer.h"
 
-#include "trace.h"
+#include "core/trace.h"
 
 void SocketTimerSetSocket(SocketTimer* const socket_timer, const int socket) {
   socket_timer->socket = socket;

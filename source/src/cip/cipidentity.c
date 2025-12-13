@@ -25,18 +25,18 @@
  * --------------------
  */
 
-#include "cipidentity.h"
+#include "cip/cipidentity.h"
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "cipmessagerouter.h"
-#include "cipstring.h"
-#include "endianconv.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/cipstring.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
 #include "opener_user_conf.h"
-#include "trace.h"
 
 /** @brief The device's configuration data for the Identity Object */
 #include "devicedata.h"

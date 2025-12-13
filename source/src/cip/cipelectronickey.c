@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "cipelectronickey.h"
+#include "cip/cipelectronickey.h"
 
 #include <stdlib.h>
 

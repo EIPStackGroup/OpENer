@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPERROR_H_
-#define OPENER_CIPERROR_H_
+#ifndef CIP_CIPERROR_H_
+#define CIP_CIPERROR_H_
 
 typedef enum {
   kCipErrorSuccess =
@@ -148,4 +148,4 @@ typedef enum {
   /* 2F - CF Reserved by CIP for future extensions D0 - FF Reserved for Object
      Class and service errors*/
 } CipError;
-#endif /* OPENER_CIPERROR_H_ */
+#endif /* CIP_CIPERROR_H_ */

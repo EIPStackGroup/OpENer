@@ -27,7 +27,7 @@
 #include <sys/select.h>
 #include <sys/socket.h>
 
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 /** @brief Set this define if you have a CIP File capable device
  *

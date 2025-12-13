@@ -3,10 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef SOURCE_SRC_CIP_APPCONTYPE_H_
-#define SOURCE_SRC_CIP_APPCONTYPE_H_
+#ifndef CIP_APPCONTYPE_H_
+#define CIP_APPCONTYPE_H_
 
-#include "cipconnectionmanager.h"
+#include "cip/cipconnectionmanager.h"
 
 void InitializeIoConnectionData(void);
 
@@ -73,4 +73,4 @@ void CloseAllConnections(void);
  */
 bool ConnectionWithSameConfigPointExists(const EipUint32 config_point);
 
-#endif  // SOURCE_SRC_CIP_APPCONTYPE_H_
+#endif  // CIP_APPCONTYPE_H_

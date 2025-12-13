@@ -3,33 +3,34 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipcommon.h"
+#include "cip/cipcommon.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "cipassembly.h"
-#include "cipconnectionmanager.h"
-#include "ciperror.h"
-#include "cipethernetlink.h"
-#include "cipidentity.h"
-#include "cipmessagerouter.h"
-#include "ciptcpipinterface.h"
-#include "encap.h"
-#include "endianconv.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipassembly.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/ciperror.h"
+#include "cip/cipethernetlink.h"
+#include "cip/cipidentity.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/ciptcpipinterface.h"
+#include "enet_encap/encap.h"
+#include "enet_encap/endianconv.h"
 #include "opener_user_conf.h"
 #if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
-#include "cipdlr.h"
+#include "cip/cipdlr.h"
 #endif
-#include "appcontype.h"
-#include "cipepath.h"
-#include "cipqos.h"
-#include "cipstring.h"
-#include "ciptypes.h"
-#include "cpf.h"
-#include "stdlib.h"
-#include "trace.h"
+#include <stdlib.h>
+
+#include "cip/appcontype.h"
+#include "cip/cipepath.h"
+#include "cip/cipqos.h"
+#include "cip/cipstring.h"
+#include "cip/ciptypes.h"
+#include "core/trace.h"
+#include "enet_encap/cpf.h"
 
 #if defined(CIP_FILE_OBJECT) && 0 != CIP_FILE_OBJECT
 #include "OpENerFileObject/cipfile.h"

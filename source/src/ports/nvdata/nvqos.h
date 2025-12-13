@@ -12,7 +12,7 @@
 #define _NVQOS_H_
 
 #include "cipqos.h"
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 int NvQosLoad(CipQosObject* p_qos);
 

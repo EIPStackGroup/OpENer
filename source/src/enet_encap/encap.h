@@ -7,8 +7,8 @@
 #define OPENER_ENCAP_H_
 
 #include "cipconnectionobject.h"
+#include "core/typedefs.h"
 #include "generic_networkhandler.h"
-#include "typedefs.h"
 
 /** @file encap.h
  * @brief This file contains the public interface of the encapsulation layer

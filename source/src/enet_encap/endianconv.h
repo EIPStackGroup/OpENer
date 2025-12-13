@@ -7,7 +7,7 @@
 #define OPENER_ENDIANCONV_H_
 
 #include "ciptypes.h"
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 /** @file endianconv.h
  * @brief Responsible for Endianess conversion

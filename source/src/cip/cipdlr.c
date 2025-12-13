@@ -42,14 +42,14 @@
 /* ********************************************************************
  * include files
  */
-#include "cipdlr.h"
+#include "cip/cipdlr.h"
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "endianconv.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
 
 /* ********************************************************************
  * defines

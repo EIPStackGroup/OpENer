@@ -6,7 +6,7 @@
 #ifndef OPENER_NETWORKHANDLER_H_
 #define OPENER_NETWORKHANDLER_H_
 
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 #define OPENER_SOCKET_WOULD_BLOCK EWOULDBLOCK
 

@@ -4,11 +4,11 @@
  *
  ******************************************************************************/
 
-#include "cipclass3connection.h"
+#include "cip/cipclass3connection.h"
 
 #include <string.h>
 
-#include "encap.h"
+#include "enet_encap/encap.h"
 
 /**** Global variables ****/
 extern CipConnectionObject

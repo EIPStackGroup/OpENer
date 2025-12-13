@@ -4,12 +4,12 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_CIP_CIPELECTRONICKEY_H_
-#define SRC_CIP_CIPELECTRONICKEY_H_
+#ifndef CIP_CIPELECTRONICKEY_H_
+#define CIP_CIPELECTRONICKEY_H_
 
 #include <stdbool.h>
 
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 /** @brief CIP Electronic Key Segment struct
  *
@@ -149,4 +149,4 @@ void ElectronicKeyFormat4SetMinorRevision(
 CipUsint ElectronicKeyFormat4GetMinorRevision(
     const ElectronicKeyFormat4* const electronic_key);
 
-#endif /* SRC_CIP_CIPELECTRONICKEY_H_ */
+#endif /* CIP_CIPELECTRONICKEY_H_ */

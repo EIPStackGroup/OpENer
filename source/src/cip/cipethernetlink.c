@@ -48,15 +48,15 @@
  *
  */
 
-#include "cipethernetlink.h"
+#include "cip/cipethernetlink.h"
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "endianconv.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
 #include "opener_user_conf.h"
-#include "trace.h"
 
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
 /* If we have more than 1 Ethernet Link instance then the interface label

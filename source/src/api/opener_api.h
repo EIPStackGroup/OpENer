@@ -11,7 +11,7 @@
 
 #include "ciperror.h"
 #include "ciptypes.h"
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 #if defined(STM32) /** STM32 target -> uses a struct for the network interface \
                     */

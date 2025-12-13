@@ -26,13 +26,13 @@
 #include "lwip/errno.h"
 #endif /* STM32 target */
 
+#include "api/opener_api.h"
 #include "appcontype.h"
 #include "cipconnectionmanager.h"
+#include "core/typedefs.h"
 #include "endianconv.h"
 #include "networkhandler.h"
-#include "opener_api.h"
 #include "socket_timer.h"
-#include "typedefs.h"
 
 /*The port to be used per default for I/O messages on UDP.*/
 extern const uint16_t kOpenerEipIoUdpPort;

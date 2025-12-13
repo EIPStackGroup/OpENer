@@ -3,11 +3,11 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPMESSAGEROUTER_H_
-#define OPENER_CIPMESSAGEROUTER_H_
+#ifndef CIP_CIPMESSAGEROUTER_H_
+#define CIP_CIPMESSAGEROUTER_H_
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief Message Router class code */
 static const CipUint kCipMessageRouterClassCode = 0x02U;
@@ -52,4 +52,4 @@ EipStatus NotifyMessageRouter(EipUint8* data,
  */
 EipStatus RegisterCipClass(CipClass* cip_class);
 
-#endif /* OPENER_CIPMESSAGEROUTER_H_ */
+#endif /* CIP_CIPMESSAGEROUTER_H_ */

@@ -3,16 +3,16 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPTCPIPINTERFACE_H_
-#define OPENER_CIPTCPIPINTERFACE_H_
+#ifndef CIP_CIPTCPIPINTERFACE_H_
+#define CIP_CIPTCPIPINTERFACE_H_
 
 /** @file ciptcpipinterface.h
  * @brief Public interface of the TCP/IP Interface Object
  *
  */
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief TCP/IP Interface class code */
 static const CipUint kCipTcpIpInterfaceClassCode = 0xF5U;
@@ -111,4 +111,4 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject* const tcpip);
  */
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance* instance);
 
-#endif /* OPENER_CIPTCPIPINTERFACE_H_ */
+#endif /* CIP_CIPTCPIPINTERFACE_H_ */

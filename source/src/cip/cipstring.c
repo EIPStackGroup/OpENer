@@ -9,13 +9,13 @@
  *
  * Some functions to create CIP string types from C strings or data buffers.
  */
-#include "cipstring.h"
+#include "cip/cipstring.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "core/trace.h"
 
 CipStringN* ClearCipStringN(CipStringN* const cip_string) {
   if (NULL != cip_string) {

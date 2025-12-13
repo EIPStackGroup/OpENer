@@ -10,8 +10,8 @@
 #include <string.h>
 
 #include "cip/cipconnectionmanager.h"
+#include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "src/trace.h"
 
 #define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U

@@ -4,17 +4,17 @@
  *
  ******************************************************************************/
 
-#ifndef OPENER_CIPQOS_H_
-#define OPENER_CIPQOS_H_
+#ifndef CIP_CIPQOS_H_
+#define CIP_CIPQOS_H_
 
 /** @file cipqos.h
  *  @brief Public interface of the QoS Object
  *
  */
 
-#include "cipconnectionmanager.h"
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief QoS Object class code */
 static const CipUint kCipQoSClassCode = 0x48U;
@@ -67,4 +67,4 @@ void CipQosUpdateUsedSetQosValues(void);
  */
 void CipQosResetAttributesToDefaultValues(void);
 
-#endif /* OPENER_CIPQOS_H_*/
+#endif /* CIP_CIPQOS_H_*/

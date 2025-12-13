@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPCONNECTIONMANAGER_H_
-#define OPENER_CIPCONNECTIONMANAGER_H_
+#ifndef CIP_CIPCONNECTIONMANAGER_H_
+#define CIP_CIPCONNECTIONMANAGER_H_
 
-#include "cipconnectionobject.h"
-#include "ciptypes.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 #include "opener_user_conf.h"
-#include "typedefs.h"
 
 /**
  * @brief Connection Type constants of the Forward Open service request
@@ -308,4 +308,4 @@ void CheckForTimedOutConnectionsAndCloseTCPConnections(
     const CipConnectionObject* const connection_object,
     CloseSessionFunction CloseSessions);
 
-#endif /* OPENER_CIPCONNECTIONMANAGER_H_ */
+#endif /* CIP_CIPCONNECTIONMANAGER_H_ */

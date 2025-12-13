@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipmessagerouter.h"
+#include "cip/cipmessagerouter.h"
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "endianconv.h"
-#include "enipmessage.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
+#include "enet_encap/enipmessage.h"
 
 CipMessageRouterRequest g_message_router_request;
 

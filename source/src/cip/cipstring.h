@@ -10,11 +10,11 @@
  * Some functions to create CIP string types from C strings or data buffers.
  */
 
-#ifndef OPENER_CIPSTRING_H_
-#define OPENER_CIPSTRING_H_
+#ifndef CIP_CIPSTRING_H_
+#define CIP_CIPSTRING_H_
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 CipStringN* SetCipStringNByData(CipStringN* const cip_string,
                                 CipUint str_len,
@@ -189,4 +189,4 @@ int GetCstrFromCipShortString(CipShortString* const string,
                               char* buf,
                               size_t len);
 
-#endif /* of OPENER_CIPSTRING_H_ */
+#endif /* of CIP_CIPSTRING_H_ */

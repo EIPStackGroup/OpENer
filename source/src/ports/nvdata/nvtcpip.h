@@ -12,7 +12,7 @@
 #define _NVTCPIP_H_
 
 #include "ciptcpipinterface.h"
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 int NvTcpipLoad(CipTcpIpObject* p_tcp_ip);
 

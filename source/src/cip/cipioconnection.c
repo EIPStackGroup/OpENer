@@ -4,22 +4,22 @@
  *
  ******************************************************************************/
 
-#include "cipioconnection.h"
+#include "cip/cipioconnection.h"
 
 #include <stdbool.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipassembly.h"
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "cipidentity.h"
-#include "ciptcpipinterface.h"
-#include "cpf.h"
-#include "endianconv.h"
-#include "generic_networkhandler.h"
-#include "opener_error.h"
-#include "trace.h"
+#include "cip/appcontype.h"
+#include "cip/cipassembly.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipidentity.h"
+#include "cip/ciptcpipinterface.h"
+#include "core/trace.h"
+#include "enet_encap/cpf.h"
+#include "enet_encap/endianconv.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/opener_error.h"
 
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.

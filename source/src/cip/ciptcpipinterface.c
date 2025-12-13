@@ -3,21 +3,21 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "ciptcpipinterface.h"
+#include "cip/ciptcpipinterface.h"
 
 #include <string.h>
 
-#include "cipassembly.h"
-#include "cipcommon.h"
-#include "cipconnectionobject.h"
-#include "ciperror.h"
-#include "cipethernetlink.h"
-#include "cipmessagerouter.h"
-#include "cipstring.h"
-#include "endianconv.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipassembly.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/ciperror.h"
+#include "cip/cipethernetlink.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/cipstring.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
 #include "opener_user_conf.h"
-#include "trace.h"
 
 /* Define constants to initialize the config_capability attribute (#2). These
  *   are needed as defines because we use them for static initialization. */

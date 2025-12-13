@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef OPENER_CIPCLASS3CONNECTION_H_
-#define OPENER_CIPCLASS3CONNECTION_H_
+#ifndef CIP_CIPCLASS3CONNECTION_H_
+#define CIP_CIPCLASS3CONNECTION_H_
 
 /** @file cipclass3connection.h
  *  @brief CIP Class 3 connection
@@ -28,9 +28,9 @@
  * @enddot
  */
 
-#include "cipconnectionmanager.h"
-#include "cipconnectionobject.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipconnectionobject.h"
 
 typedef EipStatus (*CipConnectionStateHandler)(
     CipConnectionObject* RESTRICT const connection_object,
@@ -62,4 +62,4 @@ CipError EstablishClass3Connection(
  */
 void InitializeClass3ConnectionData(void);
 
-#endif /* OPENER_CIPCLASS3CONNECTION_H_ */
+#endif /* CIP_CIPCLASS3CONNECTION_H_ */

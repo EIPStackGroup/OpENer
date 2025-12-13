@@ -4,14 +4,14 @@
  *
  ******************************************************************************/
 
-#include "cipstringi.h"
+#include "cip/cipstringi.h"
 
 #include <string.h>
 
-#include "cipstring.h"
-#include "endianconv.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipstring.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
 
 void CipStringIDelete(CipStringI* const string) {
   for (size_t i = 0; i < string->number_of_strings; ++i) {

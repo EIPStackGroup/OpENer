@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 FILE* ConfFileOpen(const bool write, const char* const p_name);
 

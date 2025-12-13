@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "ciptypes.h"
+#include "cip/ciptypes.h"
 
 void CipStringIDelete(CipStringI* const string);
 

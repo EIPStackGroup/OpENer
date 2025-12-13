@@ -7,7 +7,7 @@
 #ifndef SRC_PORTS_SOCKET_TIMER_H_
 #define SRC_PORTS_SOCKET_TIMER_H_
 
-#include "typedefs.h"
+#include "core/" core / typedefs.h ""
 
 /** @brief Data structure to store last usage times for sockets
  *

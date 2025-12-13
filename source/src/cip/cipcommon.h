@@ -3,15 +3,15 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPCOMMON_H_
-#define OPENER_CIPCOMMON_H_
+#ifndef CIP_CIPCOMMON_H_
+#define CIP_CIPCOMMON_H_
 
 /** @file cipcommon.h
  * Common CIP object interface
  */
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 static const EipUint16 kCipUintZero =
     0; /**< Zero value for returning the UINT standard value */
@@ -224,4 +224,4 @@ EipStatus CipResetService(
     const struct sockaddr* originator_address,
     const CipSessionHandle encapsulation_session);
 
-#endif /* OPENER_CIPCOMMON_H_ */
+#endif /* CIP_CIPCOMMON_H_ */

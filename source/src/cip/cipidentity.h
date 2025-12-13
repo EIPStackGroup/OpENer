@@ -3,11 +3,11 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPIDENTITY_H_
-#define OPENER_CIPIDENTITY_H_
+#ifndef CIP_CIPIDENTITY_H_
+#define CIP_CIPIDENTITY_H_
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief Identity class code */
 static const CipUint kCipIdentityClassCode = 0x01U;
@@ -94,4 +94,4 @@ void CipIdentityClearStatusFlags(const CipWord status_flags);
 void CipIdentitySetExtendedDeviceStatus(
     CipIdentityExtendedStatus extended_status);
 
-#endif /* OPENER_CIPIDENTITY_H_ */
+#endif /* CIP_CIPIDENTITY_H_ */

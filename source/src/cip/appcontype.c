@@ -4,16 +4,16 @@
  *
  ******************************************************************************/
 
-#include "appcontype.h"
+#include "cip/appcontype.h"
 
+#include <assert.h>
 #include <string.h>
 
-#include "assert.h"
-#include "cipconnectionmanager.h"
-#include "cipconnectionobject.h"
-#include "cipepath.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/cipepath.h"
+#include "core/trace.h"
 
 /** @brief Exclusive Owner connection data */
 typedef struct {

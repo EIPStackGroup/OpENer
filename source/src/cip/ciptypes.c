@@ -3,9 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <ciptypes.h>
-#include <endianconv.h>
-#include <trace.h>
+#include <cip/ciptypes.h>
+#include <enet_encap/endianconv.h>
+
+#include "core/trace.h"
 
 const CipInstanceNum kCipInstanceNumMax = UINT16_MAX;
 

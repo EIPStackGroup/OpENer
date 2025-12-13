@@ -26,13 +26,13 @@
 #undef O_NONBLOCK /* in _default_fcntl.h defined as 0x4000, but lwip defines 1 \
                      in sockets.h */
 #include "FreeRTOS.h"
+#include "core/typedefs.h"
 #include "lwip/api.h"
 #include "lwip/apps/fs.h"
 #include "lwip/arch.h"
 #include "lwip/opt.h"
 #include "lwip/sockets.h"
 #include "task.h"
-#include "typedefs.h"
 
 /** @brief Set this define if you have a CIP File capable device
  *

@@ -22,7 +22,7 @@
  *    - inet_addr
  */
 
-#include "typedefs.h"
+#include "core/typedefs.h"
 
 #ifdef OPENER_UNIT_TEST
 #include "test_assert.h"

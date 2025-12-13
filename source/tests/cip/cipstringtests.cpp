@@ -11,8 +11,8 @@
 
 extern "C" {
 
+#include "api/opener_api.h"
 #include "cipstring.h"
-#include "opener_api.h"
 }
 
 TEST_GROUP(CipString){void setup(){mock().disable();

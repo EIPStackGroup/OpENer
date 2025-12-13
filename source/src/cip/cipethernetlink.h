@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPETHERNETLINK_H_
-#define OPENER_CIPETHERNETLINK_H_
+#ifndef CIP_CIPETHERNETLINK_H_
+#define CIP_CIPETHERNETLINK_H_
 /** @file
  *  @brief Declare public interface of the CIP Ethernet Link Object
  */
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief This Ethernet Link class code as #define is still needed for a static
  *  initialization. */
@@ -197,4 +197,4 @@ void CipEthernetLinkSetMac(EipUint8* p_physical_address);
 
 extern CipEthernetLinkObject g_ethernet_link[];
 
-#endif /* OPENER_CIPETHERNETLINK_H_*/
+#endif /* CIP_CIPETHERNETLINK_H_*/

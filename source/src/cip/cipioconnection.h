@@ -37,12 +37,12 @@
  *
  */
 
-#ifndef OPENER_CIPIOCONNECTION_H_
-#define OPENER_CIPIOCONNECTION_H_
+#ifndef CIP_CIPIOCONNECTION_H_
+#define CIP_CIPIOCONNECTION_H_
 
-#include "cipconnectionmanager.h"
-#include "cipconnectionobject.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipconnectionobject.h"
 
 /** @brief Setup all data in order to establish an IO connection
  *
@@ -81,4 +81,4 @@ void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
 extern EipUint8* g_config_data_buffer;
 extern unsigned int g_config_data_length;
 
-#endif /* OPENER_CIPIOCONNECTION_H_ */
+#endif /* CIP_CIPIOCONNECTION_H_ */
