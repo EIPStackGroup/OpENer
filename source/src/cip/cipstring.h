@@ -189,4 +189,4 @@ int GetCstrFromCipShortString(CipShortString* const string,
                               char* buf,
                               size_t len);
 
-#endif /* of CIP_CIPSTRING_H_ */
+#endif  // CIP_CIPSTRING_H_

@@ -126,8 +126,7 @@ EipStatus CipDlrInit(void) {
                              1,     /* # instances */
                              "DLR", /* object class name */
                              DLR_CLASS_REVISION, /* # class revision */
-                             NULL /* function pointer for initialization */
-  );
+                             NULL); /* function pointer for initialization */
 
   if (NULL == dlr_class) {
     return kEipStatusError;

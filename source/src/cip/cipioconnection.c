@@ -63,13 +63,13 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject* connection_object,
                                          EipUint16 data_length);
 
 /**** Global variables ****/
-EipUint8* g_config_data_buffer = NULL; /**< buffers for the config data coming
-                                          with a forward open request. */
-unsigned int g_config_data_length =
-    0; /**< length of g_config_data_buffer. Initialized with 0 */
+/// buffers for the config data coming with a forward open request.
+EipUint8* g_config_data_buffer = NULL;
+/// length of g_config_data_buffer. Initialized with 0
+unsigned int g_config_data_length = 0;
 
-EipUint32 g_run_idle_state =
-    0; /**< buffer for holding the run idle information. */
+/// buffer for holding the run idle information.
+EipUint32 g_run_idle_state = 0;
 
 /**** Local variables, set by API, with build-time defaults ****/
 #ifdef OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
@@ -344,8 +344,8 @@ CipError EstablishIoConnection(
     }
   }
 
-  if (NULL != g_config_data_buffer) { /* config data has been sent with this
-                                         forward open request */
+  if (NULL != g_config_data_buffer) {
+    // config data has been sent with this forward open request
     *extended_error = HandleConfigData(io_connection_object);
     if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
@@ -493,19 +493,18 @@ EipStatus OpenProducingMulticastConnection(
 
   sock_addr_info->type_id = kCipItemIdSocketAddressInfoTargetToOriginator;
 
-  if (NULL ==
-      existing_connection_object) { /* we are the first connection producing for
-                                       the given Input Assembly */
+  if (NULL == existing_connection_object) {
+    // we are the first connection producing for the given Input Assembly
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
                                    connection_object,
                                    common_packet_format_data);
   } else {
-    /* we need to inform our originator on the correct connection id */
+    // we need to inform our originator on the correct connection id
     connection_object->cip_produced_connection_id =
         existing_connection_object->cip_produced_connection_id;
   }
 
-  /* we have a connection reuse the data and the socket */
+  // we have a connection reuse the data and the socket
 
   if (kConnectionObjectInstanceTypeIOExclusiveOwner ==
       connection_object->instance_type) {
@@ -819,25 +818,25 @@ void HandleIoConnectionTimeOut(CipConnectionObject* connection_object) {
 }
 
 EipStatus SendConnectedData(CipConnectionObject* connection_object) {
-  /* TODO think of adding an own send buffer to each connection object in order
-   * to preset up the whole message on connection opening and just change the
-   * variable data items e.g., sequence number */
+  /* TODO(MartinMelikMerkumians) think of adding an own send buffer to each
+   * connection object in order to preset up the whole message on connection
+   * opening and just change the variable data items e.g., sequence number */
 
   CipCommonPacketFormatData* common_packet_format_data =
       &g_common_packet_format_data_item;
-  /* TODO think on adding a CPF data item to the S_CIP_ConnectionObject in order
-   * to remove the code here or even better allocate memory in the connection
-   * object for storing the message to send and just change the application
-   * data*/
+  /* TODO(MartinMelikMerkumians) think on adding a CPF data item to the
+   * S_CIP_ConnectionObject in order to remove the code here or even better
+   * allocate memory in the connection object for storing the message to send
+   * and just change the application data*/
 
   connection_object->eip_level_sequence_count_producing++;
 
   /* assembleCPFData */
   common_packet_format_data->item_count = 2;
   if (kConnectionObjectTransportClassTriggerTransportClass0 !=
-      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object))
-  /* use Sequenced Address Items if not Connection Class 0 */
-  {
+      ConnectionObjectGetTransportClassTriggerTransportClass(
+          connection_object)) {
+    // use Sequenced Address Items if not Connection Class 0
     common_packet_format_data->address_item.type_id =
         kCipItemIdSequencedAddressItem;
     common_packet_format_data->address_item.length = 8;
@@ -857,9 +856,9 @@ EipStatus SendConnectedData(CipConnectionObject* connection_object) {
       (CipByteArray*)connection_object->producing_instance->attributes->data;
   common_packet_format_data->data_item.length = 0;
 
-  /* notify the application that data will be sent immediately after the call */
+  // notify the application that data will be sent immediately after the call
   if (BeforeAssemblyDataSend(connection_object->producing_instance)) {
-    /* the data has changed increase sequence counter */
+    // the data has changed increase sequence counter
     connection_object->sequence_count_producing++;
   }
 
@@ -977,9 +976,8 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
   /* open a connection "point to point" or "multicast" based on the
    * ConnectionParameter */
   if (originator_to_target_connection_type ==
-      kConnectionObjectConnectionTypeMulticast)
-  /* Multicast consuming */
-  {
+      kConnectionObjectConnectionTypeMulticast) {
+    // Multicast consuming
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object,
                                 common_packet_format_data) != kEipStatusError) {
@@ -987,9 +985,8 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
       return kCipErrorConnectionFailure;
     }
   } else if (originator_to_target_connection_type ==
-             kConnectionObjectConnectionTypePointToPoint)
-  /* Point to Point consuming */
-  {
+             kConnectionObjectConnectionTypePointToPoint) {
+    // Point to Point consuming
     if (OpenConsumingPointToPointConnection(
             connection_object, common_packet_format_data) == kEipStatusError) {
       OPENER_TRACE_ERR("error in PointToPoint consuming connection\n");
@@ -998,18 +995,16 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
   }
 
   if (target_to_originator_connection_type ==
-      kConnectionObjectConnectionTypeMulticast)
-  /* Multicast producing */
-  {
+      kConnectionObjectConnectionTypeMulticast) {
+    // Multicast producing
     if (OpenProducingMulticastConnection(
             connection_object, common_packet_format_data) == kEipStatusError) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
   } else if (target_to_originator_connection_type ==
-             kConnectionObjectConnectionTypePointToPoint)
-  /* Point to Point producing */
-  {
+             kConnectionObjectConnectionTypePointToPoint) {
+    // Point to Point producing
     if (OpenProducingPointToPointConnection(
             connection_object, common_packet_format_data) != kCipErrorSuccess) {
       OPENER_TRACE_ERR("error in PointToPoint producing connection\n");

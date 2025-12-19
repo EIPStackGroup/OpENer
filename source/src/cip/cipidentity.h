@@ -14,26 +14,25 @@ static const CipUint kCipIdentityClassCode = 0x01U;
 
 /** @brief Status of the CIP Identity object */
 typedef enum {
-  kOwned = 0x0001, /**< Indicates that the device has an owner */
-  kConfigured =
-      0x0004, /**< Indicates that the device is configured to do
-                 something different, than the out-of-the-box default. */
-  kMinorRecoverableFault =
-      0x0100, /**< Indicates that the device detected a
-                 fault with itself, which was thought to be recoverable. The
-                 device did not switch to a faulted state. */
-  kMinorUncoverableFault =
-      0x0200, /**< Indicates that the device detected a
-                 fault with itself, which was thought to be recoverable. The
-                 device did not switch to a faulted state. */
-  kMajorRecoverableFault =
-      0x0400, /**< Indicates that the device detected a
-                 fault with itself,which was thought to be recoverable. The
-                 device changed to the "Major Recoverable Fault" state */
-  kMajorUnrecoverableFault =
-      0x0800 /**< Indicates that the device detected a
-                fault with itself,which was thought to be recoverable. The
-                device changed to the "Major Unrecoverable Fault" state */
+  /// Indicates that the device has an owner
+  kOwned = 0x0001,
+  /// Indicates that the device is configured to do something different, than
+  /// the out-of-the-box default.
+  kConfigured = 0x0004,
+  /// Indicates that the device detected a fault with itself, which was thought
+  /// to be recoverable. The device did not switch to a faulted state.
+  kMinorRecoverableFault = 0x0100,
+  /// Indicates that the device detected a fault with itself, which was thought
+  /// to be recoverable. The device did not switch to a faulted state.
+  kMinorUncoverableFault = 0x0200,
+  /// Indicates that the device detected a fault with itself,which was thought
+  /// to be recoverable. The device changed to the "Major Recoverable Fault"
+  /// state
+  kMajorRecoverableFault = 0x0400,
+  /// Indicates that the device detected a fault with itself,which was thought
+  /// to be recoverable. The device changed to the "Major Unrecoverable Fault"
+  /// state
+  kMajorUnrecoverableFault = 0x0800
 } CipIdentityStatus;
 
 /** @brief Constants for the extended status field in the Status word */
@@ -63,19 +62,19 @@ typedef enum {
 /** @brief Declaration of the Identity object's structure type
  */
 typedef struct {
-  CipUint vendor_id;    /**< Attribute 1: Vendor ID */
-  CipUint device_type;  /**< Attribute 2: Device Type */
-  CipUint product_code; /**< Attribute 3: Product Code */
+  CipUint vendor_id;     ///< Attribute 1: Vendor ID
+  CipUint device_type;   ///< Attribute 2: Device Type
+  CipUint product_code;  ///< Attribute 3: Product Code
   CipRevision
-      revision;   /**< Attribute 4: Revision / CipUsint Major, CipUsint Minor */
-  CipWord status; /**< Attribute 5: Status */
-  CipWord ext_status;     /**< Attribute 5: last set extended status, needed for
-                             Status handling */
-  CipUdint serial_number; /**< Attribute 6: Serial Number, has to be set prior
-                             to OpENer's network initialization */
-  CipShortString product_name; /**< Attribute 7: Product Name */
-  CipUsint state; /** Attribute 8: state, this member could control the Module
-                     Status LED blink pattern */
+      revision;    ///< Attribute 4: Revision / CipUsint Major, CipUsint Minor
+  CipWord status;  ///< Attribute 5: Status
+  CipWord ext_status;  ///< Attribute 5: last set extended status, needed for
+                       ///< Status handling
+  CipUdint serial_number;  ///< Attribute 6: Serial Number, has to be set prior
+                           ///< to OpENer's network initialization
+  CipShortString product_name;  ///< Attribute 7: Product Name
+  CipUsint state;  ///< Attribute 8: state, this member could control the Module
+                   ///< Status LED blink pattern
 } CipIdentityObject;
 
 /* global public variables */
@@ -94,4 +93,4 @@ void CipIdentityClearStatusFlags(const CipWord status_flags);
 void CipIdentitySetExtendedDeviceStatus(
     CipIdentityExtendedStatus extended_status);
 
-#endif /* CIP_CIPIDENTITY_H_ */
+#endif  // CIP_CIPIDENTITY_H_

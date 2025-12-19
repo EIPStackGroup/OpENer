@@ -121,23 +121,22 @@ EipStatus CipQoSInit() {
 
   if ((qos_class =
            CreateCipClass(kCipQoSClassCode,
-                          7, /* # class attributes */
-                          7, /* # highest class attribute number */
-                          2, /* # class services */
-                          8, /* # instance attributes */
-                          8, /* # highest instance attribute number */
-                          2, /* # instance services */
-                          1, /* # instances */
+                          7,  // # class attributes
+                          7,  // # highest class attribute number
+                          2,  // # class services
+                          8,  // # instance attributes
+                          8,  // # highest instance attribute number
+                          2,  // # instance services
+                          1,  // # instances
                           "Quality of Service",
-                          1,   /* # class revision */
-                          NULL /* # function pointer for initialization */
-                          )) == 0) {
+                          1,      // # class revision
+                          NULL))  // # function pointer for initialization
+      == 0) {
     return kEipStatusError;
   }
 
-  CipInstance* instance = GetCipInstance(
-      qos_class,
-      1); /* bind attributes to the instance #1 that was created above */
+  // bind attributes to the instance #1 that was created above
+  CipInstance* instance = GetCipInstance(qos_class, 1);
 
   InsertAttribute(instance,
                   1,

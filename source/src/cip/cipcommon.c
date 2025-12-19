@@ -344,52 +344,48 @@ CipClass* CreateCipClass(const CipUdint class_code,
    */
   memcpy(cip_class->class_name, name, name_len + 1);
 
-  /* initialize the class-specific fields of the metaClass struct */
-  meta_class->class_code =
-      0xffffffff; /* set metaclass ID (this should never be referenced) */
-  meta_class->number_of_instances =
-      1; /* the class object is the only instance of the metaclass */
-  meta_class->instances = (CipInstance*)cip_class;
-  meta_class->number_of_attributes =
-      number_of_class_attributes +
-      7; /* the metaclass remembers how many class attributes exist*/
-  meta_class->highest_attribute_number =
-      highest_class_attribute_number; /* indicate which attributes are included
-                                         in class getAttributeAll*/
-  meta_class->number_of_services =
-      number_of_class_services; /* the metaclass manages the behavior of the
-                                   class itself */
-  meta_class->class_name = (char*)CipCalloc(
-      1, strlen(name) + 6); /* fabricate the name "meta<classname>"*/
+  // initialize the class-specific fields of the metaClass struct
+  // set metaclass ID (this should never be referenced)
+  meta_class->class_code = 0xffffffff;
+  // the class object is the only instance of the metaclass */
+  meta_class->number_of_instances = 1;
+  meta_class->instances           = (CipInstance*)cip_class;
+  // the metaclass remembers how many class attributes exist
+  meta_class->number_of_attributes = number_of_class_attributes + 7;
+  // indicate which attributes are included in class getAttributeAll
+  meta_class->highest_attribute_number = highest_class_attribute_number;
+  /* the metaclass manages the behavior of the class itself */
+  meta_class->number_of_services = number_of_class_services;
+  // fabricate the name "meta<classname>"
+  meta_class->class_name = (char*)CipCalloc(1, strlen(name) + 6);
   snprintf(meta_class->class_name, strlen(name) + 6, "meta-%s", name);
 
-  /* initialize the instance-specific fields of the Class struct*/
-  cip_class->class_instance.instance_number =
-      0; /* the class object is instance zero of the class it describes (weird,
-            but that's the spec)*/
-  cip_class->class_instance.attributes =
-      0; /* this will later point to the class attibutes*/
-  cip_class->class_instance.cip_class =
-      meta_class; /* the class's class is the metaclass (like SmallTalk)*/
-  cip_class->class_instance.next =
-      0; /* the next link will always be zero, since there is only one instance
-            of any particular class object */
+  // initialize the instance-specific fields of the Class struct
+  // the class object is instance zero of the class it describes (weird, but
+  // that's the spec)
+  cip_class->class_instance.instance_number = 0;
+  // this will later point to the class attibutes
+  cip_class->class_instance.attributes = 0;
+  // the class's class is the metaclass (like SmallTalk)
+  cip_class->class_instance.cip_class = meta_class;
+  // the next link will always be zero, since there is only one instance of any
+  // particular class object
+  cip_class->class_instance.next = 0;
 
-  meta_class->class_instance.instance_number =
-      0xffff; /*the metaclass object does not really have a valid instance
-                 number*/
-  meta_class->class_instance.attributes =
-      NULL; /* the metaclass has no attributes*/
-  meta_class->class_instance.cip_class = NULL; /* the metaclass has no class*/
-  meta_class->class_instance.next =
-      NULL; /* the next link will always be zero, since there is only one
-               instance of any particular metaclass object*/
+  // the metaclass object does not really have a valid instance number
+  meta_class->class_instance.instance_number = 0xffff;
+  // the metaclass has no attributes
+  meta_class->class_instance.attributes = NULL;
+  // the metaclass has no class
+  meta_class->class_instance.cip_class = NULL;
+  // the next link will always be zero, since there is only one instance of any
+  // particular metaclass object
+  meta_class->class_instance.next = NULL;
 
-  /* further initialization of the class object*/
-
+  // further initialization of the class object
   cip_class->class_instance.attributes = (CipAttributeStruct*)CipCalloc(
       meta_class->number_of_attributes, sizeof(CipAttributeStruct));
-  /* TODO -- check that we didn't run out of memory?*/
+  /* TODO(MartinMelikMerkumians) -- check that we didn't run out of memory?*/
 
   meta_class->services = (CipServiceStruct*)CipCalloc(
       meta_class->number_of_services, sizeof(CipServiceStruct));
@@ -550,9 +546,8 @@ void InsertService(const CipClass* const cip_class,
   /* adding a service to a class that was not declared to have services is not
    * allowed*/
   OPENER_ASSERT(service != NULL);
-  for (unsigned int i = 0; i < cip_class->number_of_services;
-       i++) /* Iterate over all service slots attached to the class */
-  {
+  // Iterate over all service slots attached to the class
+  for (unsigned int i = 0; i < cip_class->number_of_services; i++) {
     if (service->service_number == service_number ||
         service->service_function == NULL) {  // found undefined service slot
       service->service_number   = service_number;    // fill in service number
@@ -1634,12 +1629,12 @@ EipStatus CipDeleteService(
     // update pointers in instance list
     // pointer to first instance
     instances = class->instances;
-    if (instances->instance_number ==
-        instance->instance_number) {  // if instance to delete is head
+    // if instance to delete is head of list
+    if (instances->instance_number == instance->instance_number) {
       class->instances = instances->next;
     } else {
-      while (NULL != instances->next)  // as long as pointer in not NULL
-      {
+      // as long as pointer in not NULL
+      while (NULL != instances->next) {
         CipInstance* next_instance = instances->next;
         if (next_instance->instance_number == instance->instance_number) {
           instances->next = next_instance->next;

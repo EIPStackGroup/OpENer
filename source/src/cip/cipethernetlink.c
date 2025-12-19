@@ -86,10 +86,10 @@
 /** @brief Type definition of one entry in the speed / duplex array
  */
 typedef struct speed_duplex_array_entry {
-  CipUint interface_speed; /**< the interface speed in Mbit/s */
-  CipUsint
-      interface_duplex_mode; /**< the interface's duplex mode: 0 = half duplex,
-                                1 = full duplex, 2-255 = reserved */
+  CipUint interface_speed;         /**< the interface speed in Mbit/s */
+  CipUsint interface_duplex_mode;  ///< the interface's duplex mode:
+                                   ///< 0 = half duplex,
+                                   ///< 1 = full duplex, 2-255 = reserved
 } CipEthernetLinkSpeedDuplexArrayEntry;
 
 /* forward declaration of functions to encode certain attribute objects */
@@ -172,10 +172,10 @@ static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] = {
     {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2},
 #endif
 };
-#endif /* defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != \
-          OPENER_ETHLINK_LABEL_ENABLE */
+#endif  // defined(OPENER_ETHLINK_LABEL_ENABLE) &&
+        // 0 != OPENER_ETHLINK_LABEL_ENABLE
 
-/* Two dummy variables to provide fill data for the GetAttributeAll service. */
+// Two dummy variables to provide fill data for the GetAttributeAll service.
 static CipUsint dummy_attribute_usint = 0;
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 #else

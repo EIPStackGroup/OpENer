@@ -78,4 +78,4 @@ extern CipDlrObject g_dlr; /**< declaration of DLR object instance 1 data */
  */
 EipStatus CipDlrInit(void);
 
-#endif /* of CIP_CIPDLR_H_ */
+#endif  // CIP_CIPDLR_H_

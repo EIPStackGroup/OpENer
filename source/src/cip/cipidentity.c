@@ -43,11 +43,11 @@
 
 /** @brief Definition of the global Identity Object */
 CipIdentityObject g_identity = {
-    .vendor_id    = OPENER_DEVICE_VENDOR_ID,    /* Attribute 1: Vendor ID */
-    .device_type  = OPENER_DEVICE_TYPE,         /* Attribute 2: Device Type */
-    .product_code = OPENER_DEVICE_PRODUCT_CODE, /* Attribute 3: Product Code */
+    .vendor_id    = OPENER_DEVICE_VENDOR_ID,     // Attribute 1: Vendor ID
+    .device_type  = OPENER_DEVICE_TYPE,          // Attribute 2: Device Type
+    .product_code = OPENER_DEVICE_PRODUCT_CODE,  // Attribute 3: Product Code
     .revision =
-        {/* Attribute 4: Revision / CipUsint Major, CipUsint Minor */
+        {// Attribute 4: Revision / CipUsint Major, CipUsint Minor
          OPENER_DEVICE_MAJOR_REVISION,
          OPENER_DEVICE_MINOR_REVISION},
     .status = 0, /* Attribute 5: Status */
@@ -284,17 +284,17 @@ void EncodeRevision(const void* const data,
 EipStatus CipIdentityInit() {
   CipClass* class = CreateCipClass(
       kCipIdentityClassCode,
-      0,          /* # of non-default class attributes */
-      7,          /* # highest class attribute number*/
-      2,          /* # of class services*/
-      7,          /* # of instance attributes*/
-      7,          /* # highest instance attribute number*/
-      5,          /* # of instance services*/
-      1,          /* # of instances*/
-      "identity", /* # class name (for debug)*/
-      1,
-      /* # class revision*/    // TODO: change revision to 2 - check
-      &InitializeCipIdentity); /* # function pointer for initialization*/
+      0,           // # of non-default class attributes
+      7,           // # highest class attribute number
+      2,           // # of class services
+      7,           // # of instance attributes
+      7,           // # highest instance attribute number
+      5,           // # of instance services
+      1,           // # of instances
+      "identity",  // class name (for debug)
+      1,           // class revision
+      // TODO(MartinMelikMerkumians): change revision to 2 - check
+      &InitializeCipIdentity); /* function pointer for initialization*/
 
   if (class == 0) {
     return kEipStatusError;

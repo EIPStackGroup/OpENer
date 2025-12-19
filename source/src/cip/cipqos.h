@@ -23,33 +23,33 @@ static const CipUint kCipQoSClassCode = 0x48U;
 
 /** This type represents the group of DSCP values of the QoS object. */
 typedef struct cip_qos_dscp_values {
-  CipUsint event;   /**< Attr. #2: DSCP value for event messages */
-  CipUsint general; /**< Attr. #3: DSCP value for general messages */
-  CipUsint urgent;  /**< Attr. #4: DSCP value for CIP transport class 0/1 Urgent
-                       priority messages */
-  CipUsint scheduled; /**< Attr. #5: DSCP value for CIP transport class 0/1
-                         Scheduled priority messages */
-  CipUsint high;      /**< Attr. #6: DSCP value for CIP transport class 0/1 High
-                         priority messages */
-  CipUsint low;       /**< Attr. #7: DSCP value for CIP transport class 0/1 low
-                         priority messages */
-  CipUsint explicit_msg; /**< Attr. #8: DSCP value for CIP explicit messages
-                            (transport class 2/3 and UCMM) and all other
-                            EtherNet/IP encapsulation messages */
+  CipUsint event;    ///< Attr. #2: DSCP value for event messages
+  CipUsint general;  ///< Attr. #3: DSCP value for general messages
+  CipUsint urgent;  ///< Attr. #4: DSCP value for CIP transport class 0/1 Urgent
+                    ///< priority messages
+  CipUsint scheduled;  ///< Attr. #5: DSCP value for CIP transport class 0/1
+                       ///< Scheduled priority messages
+  CipUsint high;  ///< Attr. #6: DSCP value for CIP transport class 0/1 High
+                  ///< priority messages
+  CipUsint low;   ///< Attr. #7: DSCP value for CIP transport class 0/1 low
+                  ///< priority messages
+  CipUsint explicit_msg;  ///< Attr. #8: DSCP value for CIP explicit messages
+                          ///< (transport class 2/3 and UCMM) and all other
+                          ///< EtherNet/IP encapsulation messages
 } CipQosDscpValues;
 
 /** This type represents the QoS object */
 typedef struct {
-  CipUsint q_frames_enable; /**< Attr. #1: Enables or disable sending 802.1Q
-                               frames on CIP and IEEE 1588 messages */
-  CipQosDscpValues dscp; /**< Attributes #2 ... #8 of DSCP values - beware! must
-                            not be the used set */
+  CipUsint q_frames_enable;  ///< Attr. #1: Enables or disable sending 802.1Q
+                             ///< frames on CIP and IEEE 1588 messages
+  CipQosDscpValues dscp;     ///< Attributes #2 ... #8 of DSCP values - beware!
+                             ///< must not be the used set
 } CipQosObject;
 
-/* public data */
+// public data
 extern CipQosObject g_qos;
 
-/* public functions */
+// public functions
 /** @brief Provide the matching DSCP value for a given connection object
  * priority level
  */
@@ -67,4 +67,4 @@ void CipQosUpdateUsedSetQosValues(void);
  */
 void CipQosResetAttributesToDefaultValues(void);
 
-#endif /* CIP_CIPQOS_H_*/
+#endif  // CIP_CIPQOS_H_

@@ -14,9 +14,9 @@
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
 
-const unsigned int kPortSegmentExtendedPort =
-    15; /**< Reserved port segment port value, indicating the use of the
-           extended port field */
+/// Reserved port segment port value, indicating the use of the extended port
+/// field
+const unsigned int kPortSegmentExtendedPort = 15;
 
 /*** Path Segment ***/
 SegmentType GetPathSegmentType(const CipOctet* const cip_path) {
@@ -643,8 +643,8 @@ LogicalSegmentLogicalFormat CipEpathGetNeededLogicalFormatForValue(
   return logical_format;
 }
 
-////TODO: Does not match the actual interface anymore, check how to fix
-// size_t CipEpathEncodeConnectionEpath(
+// TODO(MartinMelikMerkumians): Does not match the actual interface anymore,
+// check how to fix size_t CipEpathEncodeConnectionEpath(
 //   const CipConnectionPathEpath *const connection_epath,
 //   CipOctet **encoded_path) {
 //

@@ -155,26 +155,26 @@ typedef struct {
 
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
-  EipUint32 interface_speed;    /**< Attribute #1: 10/100/1000 Mbit/sec */
-  EipUint32 interface_flags;    /**< Attribute #2: Interface flags as defined in
-                                   the CIP specification */
-  EipUint8 physical_address[6]; /**< Attribute #3: MAC address of the Ethernet
-                                   link */
+  EipUint32 interface_speed;  ///< Attribute #1: 10/100/1000 Mbit/sec
+  EipUint32 interface_flags;  ///< Attribute #2: Interface flags as defined in
+                              ///< the CIP specification
+  EipUint8 physical_address[6];  ///< Attribute #3: MAC address of the Ethernet
+                                 ///< link
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   CipEthernetLinkInterfaceCounters
-      interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
+      interface_cntrs;  ///< Attribute #4: Interface counters 32-bit wide
   CipEthernetLinkMediaCounters
-      media_cntrs; /**< Attribute #5: Media counters 32-bit wide */
+      media_cntrs;  ///< Attribute #5: Media counters 32-bit wide
 #endif
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
     0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
   CipEthernetLinkInterfaceControl
-      interface_control; /** Attribute #6: control link properties */
+      interface_control;  ///< Attribute #6: control link properties
 #endif
-  CipUsint interface_type;        /**< Attribute #7: Type of interface */
-  CipShortString interface_label; /**< Attribute #10: Interface label */
+  CipUsint interface_type;         ///< Attribute #7: Type of interface
+  CipShortString interface_label;  ///< Attribute #10: Interface label
   CipEthernetLinkMetaInterfaceCapability
-      interface_caps; /**< Attribute #11: Interface capabilities */
+      interface_caps;  ///< Attribute #11: Interface capabilities
 } CipEthernetLinkObject;
 
 /* public functions */
@@ -197,4 +197,4 @@ void CipEthernetLinkSetMac(EipUint8* p_physical_address);
 
 extern CipEthernetLinkObject g_ethernet_link[];
 
-#endif /* CIP_CIPETHERNETLINK_H_*/
+#endif  // CIP_CIPETHERNETLINK_H_
