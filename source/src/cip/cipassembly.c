@@ -29,9 +29,9 @@
  *          -1 .. error
  */
 int DecodeCipAssemblyAttribute3(
-    void* const data,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response);
+  void* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response);
 
 static EipStatus AssemblyPreGetCallback(CipInstance* const instance,
                                         CipAttributeStruct* const attribute,
@@ -49,17 +49,17 @@ static EipStatus AssemblyPostSetCallback(CipInstance* const instance,
 CipClass* CreateAssemblyClass(void) {
   /* create the CIP Assembly object with zero instances */
   CipClass* assembly_class = CreateCipClass(
-      kCipAssemblyClassCode,
-      0,          /* # class attributes*/
-      7,          /* # highest class attribute number*/
-      1,          /* # class services*/
-      2,          /* # instance attributes*/
-      4,          /* # highest instance attribute number*/
-      2,          /* # instance services*/
-      0,          /* # instances*/
-      "assembly", /* name */
-      2, /* Revision, according to the CIP spec currently this has to be 2 */
-      NULL); /* # function pointer for initialization*/
+    kCipAssemblyClassCode,
+    0,          /* # class attributes*/
+    7,          /* # highest class attribute number*/
+    1,          /* # class services*/
+    2,          /* # instance attributes*/
+    4,          /* # highest instance attribute number*/
+    2,          /* # instance services*/
+    0,          /* # instances*/
+    "assembly", /* name */
+    2,     /* Revision, according to the CIP spec currently this has to be 2 */
+    NULL); /* # function pointer for initialization*/
   if (NULL != assembly_class) {
     InsertService(assembly_class,
                   kGetAttributeSingle,
@@ -113,11 +113,11 @@ CipInstance* CreateAssemblyObject(const CipInstanceNum instance_id,
   }
 
   CipInstance* const instance = AddCipInstance(
-      assembly_class,
-      instance_id); /* add instances (always succeeds (or asserts))*/
+    assembly_class,
+    instance_id); /* add instances (always succeeds (or asserts))*/
 
   CipByteArray* const assembly_byte_array =
-      (CipByteArray*)CipCalloc(1, sizeof(CipByteArray));
+    (CipByteArray*)CipCalloc(1, sizeof(CipByteArray));
   if (assembly_byte_array == NULL) {
     return NULL; /*TODO remove assembly instance in case of error*/
   }
@@ -152,7 +152,7 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
 
   // copy received data to Attribute 3
   const CipByteArray* const assembly_byte_array =
-      (CipByteArray*)instance->attributes->data;
+    (CipByteArray*)instance->attributes->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
     // TODO(MartinMelikMerkumians): question should we notify the application
@@ -167,12 +167,12 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
 }
 
 int DecodeCipAssemblyAttribute3(
-    void* const data,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response) {
+  void* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
   CipInstance* const instance =
-      GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
-                     message_router_request->request_path.instance_number);
+    GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
+                   message_router_request->request_path.instance_number);
 
   int number_of_decoded_bytes = -1;
   OPENER_TRACE_INFO(" -> set Assembly attribute byte array\r\n");
@@ -190,9 +190,8 @@ int DecodeCipAssemblyAttribute3(
   }
 
   // data-length is correct
-  memcpy(cip_byte_array->data,
-         message_router_request->data,
-         cip_byte_array->length);
+  memcpy(
+    cip_byte_array->data, message_router_request->data, cip_byte_array->length);
 
   if (AfterAssemblyDataReceived(instance) != kEipStatusOk) {
     /* punt early without updating the status... though I don't know

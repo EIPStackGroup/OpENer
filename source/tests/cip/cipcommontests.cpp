@@ -20,7 +20,7 @@ ENIPMessage message; /**< Test variable holds ENIP message*/
 
 TEST_GROUP(CipCommon){
 
-    void setup(){InitializeENIPMessage(&message);
+  void setup(){ InitializeENIPMessage(&message);
 }
 }
 ;
@@ -91,11 +91,11 @@ TEST(CipCommon, EncodeCipUlint) {
 TEST(CipCommon, DecodeCipString) {
   CipMessageRouterRequest request;
   size_t number_of_strings  = 4;
-  size_t length_of_string[] = {8, 4, 0, 2};
+  size_t length_of_string[] = { 8, 4, 0, 2 };
   size_t pos_in_data        = 0;
   const CipOctet data[] =
-      "\x08\x00\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x00\x4F\x44\x56\x41\x00\x00"
-      "\x02\x00\x43\x41";  // hex data
+    "\x08\x00\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x00\x4F\x44\x56\x41\x00\x00"
+    "\x02\x00\x43\x41";  // hex data
   request.data              = data;
   request.request_data_size = sizeof(data) - 1;
 
@@ -127,11 +127,11 @@ TEST(CipCommon, DecodeCipString) {
 TEST(CipCommon, DecodeCipShortString) {
   CipMessageRouterRequest request;
   size_t number_of_strings  = 4;
-  size_t length_of_string[] = {8, 4, 0, 2};
+  size_t length_of_string[] = { 8, 4, 0, 2 };
   size_t pos_in_data        = 0;
   const CipOctet data[] =
-      "\x08\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x4F\x44\x56\x41\x00\x02\x43"
-      "\x41";  // hex data
+    "\x08\x4F\x44\x56\x41\x5F\x44\x55\x54\x04\x4F\x44\x56\x41\x00\x02\x43"
+    "\x41";  // hex data
   request.data              = data;
   request.request_data_size = sizeof(data) - 1;
 

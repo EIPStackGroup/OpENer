@@ -74,15 +74,15 @@ static const CipUsint s_0x00_default       = 0x00U;
 static const CipUint s_0x0000_default      = 0x0000U;
 static const CipUdint s_0x00000000_default = 0x00000000U;
 
-static const CipNodeAddress s_zero_node = {.device_ip  = 0,
-                                           .device_mac = {
-                                               0,
-                                               0,
-                                               0,
-                                               0,
-                                               0,
-                                               0,
-                                           }};
+static const CipNodeAddress s_zero_node = { .device_ip  = 0,
+                                            .device_mac = {
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                            } };
 
 /* ********************************************************************
  * global public variables
@@ -99,7 +99,7 @@ static void EncodeCipRingSupervisorConfig(const void* const data,
 
   const size_t kRingSupStructSize = 12u;
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-      0, kRingSupStructSize, outgoing_message);
+    0, kRingSupStructSize, outgoing_message);
 }
 
 static void EncodeCipNodeAddress(const void* const data,
@@ -134,9 +134,9 @@ EipStatus CipDlrInit(void) {
 
   /* Add services to the class */
   InsertService(
-      dlr_class, kGetAttributeSingle, GetAttributeSingle, "GetAttributeSingle");
+    dlr_class, kGetAttributeSingle, GetAttributeSingle, "GetAttributeSingle");
   InsertService(
-      dlr_class, kGetAttributeAll, GetAttributeAll, "GetAttributeAll");
+    dlr_class, kGetAttributeAll, GetAttributeAll, "GetAttributeAll");
 
   /* Bind attributes to the instance */
   CipInstance* dlr_instance = GetCipInstance(dlr_class, 1u);

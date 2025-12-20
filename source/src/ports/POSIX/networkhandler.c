@@ -20,12 +20,12 @@
 #include "trace.h"
 
 MicroSeconds GetMicroSeconds(void) {
-  struct timespec now = {.tv_nsec = 0, .tv_sec = 0};
+  struct timespec now = { .tv_nsec = 0, .tv_sec = 0 };
 
   int error = clock_gettime(CLOCK_MONOTONIC, &now);
   OPENER_ASSERT(-1 != error);
   MicroSeconds micro_seconds =
-      (MicroSeconds)now.tv_nsec / 1000ULL + now.tv_sec * 1000000ULL;
+    (MicroSeconds)now.tv_nsec / 1000ULL + now.tv_sec * 1000000ULL;
   return micro_seconds;
 }
 
@@ -56,7 +56,7 @@ void CloseSocketPlatform(int socket_handle) {
 
 int SetSocketToNonBlocking(int socket_handle) {
   return fcntl(
-      socket_handle, F_SETFL, fcntl(socket_handle, F_GETFL, 0) | O_NONBLOCK);
+    socket_handle, F_SETFL, fcntl(socket_handle, F_GETFL, 0) | O_NONBLOCK);
 }
 
 int SetQosOnSocket(const int socket, CipUsint qos_value) {

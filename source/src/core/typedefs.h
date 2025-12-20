@@ -41,7 +41,7 @@ typedef uint8_t EipBool8;   /**< bool data types */
 /** @brief Data types as defined in the CIP Specification Vol 1 Appendix C
  */
 typedef uint8_t
-    CipOctet;            /**< 8 bit value that indicates particular data type */
+  CipOctet;              /**< 8 bit value that indicates particular data type */
 typedef uint8_t CipBool; /**< Boolean data type */
 typedef uint8_t CipByte; /**< 8-bit bit string */
 typedef uint16_t CipWord;  /**< 16-bit bit string */

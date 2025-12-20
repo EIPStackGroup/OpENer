@@ -38,9 +38,9 @@ void SocketTimerArrayInitialize(SocketTimer* const array_of_socket_timers,
 }
 
 SocketTimer* SocketTimerArrayGetSocketTimer(
-    SocketTimer* const array_of_socket_timers,
-    const size_t array_length,
-    const int socket) {
+  SocketTimer* const array_of_socket_timers,
+  const size_t array_length,
+  const int socket) {
   for (size_t i = 0; i < array_length; ++i) {
     if (socket == array_of_socket_timers[i].socket) {
       return &array_of_socket_timers[i];
@@ -50,7 +50,7 @@ SocketTimer* SocketTimerArrayGetSocketTimer(
 }
 
 SocketTimer* SocketTimerArrayGetEmptySocketTimer(
-    SocketTimer* const array_of_socket_timers, const size_t array_length) {
+  SocketTimer* const array_of_socket_timers, const size_t array_length) {
   return SocketTimerArrayGetSocketTimer(
-      array_of_socket_timers, array_length, kEipInvalidSocket);
+    array_of_socket_timers, array_length, kEipInvalidSocket);
 }

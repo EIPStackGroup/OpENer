@@ -138,8 +138,8 @@ void FillNextNMessageOctetsWith(CipOctet value,
                                 ENIPMessage* const outgoing_message);
 
 void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-    CipOctet value,
-    unsigned int amount_of_filled_bytes,
-    ENIPMessage* const outgoing_message);
+  CipOctet value,
+  unsigned int amount_of_filled_bytes,
+  ENIPMessage* const outgoing_message);
 
 #endif /* OPENER_ENDIANCONV_H_ */

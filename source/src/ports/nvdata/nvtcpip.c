@@ -34,7 +34,7 @@ int NvTcpipLoad(CipTcpIpObject* p_tcp_ip) {
   if (NULL != p_file) {
     /* Read input data */
     OPENER_TRACE_ERR(
-        "ERROR: Loading of TCP/IP object's NV data not implemented yet\n");
+      "ERROR: Loading of TCP/IP object's NV data not implemented yet\n");
     /* TODO: Implement load */
     eip_status = kEipStatusError;
     /* If all NV attributes were read copy them attribute by attribute
@@ -62,7 +62,7 @@ EipStatus NvTcpipStore(const CipTcpIpObject* p_tcp_ip) {
   if (NULL != p_file) {
     /* Print output data */
     OPENER_TRACE_ERR(
-        "ERROR: Storing of TCP/IP object's NV data not implemented yet\n");
+      "ERROR: Storing of TCP/IP object's NV data not implemented yet\n");
     /* TODO: Implement store */
     EipStatus eip_status = kEipStatusError;
 

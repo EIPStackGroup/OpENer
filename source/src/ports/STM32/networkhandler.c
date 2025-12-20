@@ -38,7 +38,7 @@ void CloseSocketPlatform(int socket_handle) {
 
 int SetSocketToNonBlocking(int socket_handle) {
   return fcntl(
-      socket_handle, F_SETFL, fcntl(socket_handle, F_GETFL, 0) | O_NONBLOCK);
+    socket_handle, F_SETFL, fcntl(socket_handle, F_GETFL, 0) | O_NONBLOCK);
 }
 
 int SetQosOnSocket(const int socket, CipUsint qos_value) {

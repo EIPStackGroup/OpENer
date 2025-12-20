@@ -53,6 +53,8 @@ jobs:
             --enable=warning,style,performance,portability
             --std=c99
             --platform=unix64
+            --suppress=missingIncludeSystem
+            --suppress=missingInclude
 
       - name: Archive Exhaustive Reports
         if: always()

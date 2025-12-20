@@ -120,7 +120,7 @@ int main(int argc, char* arg[]) {
    */
   if (kEipStatusError == NvdataLoad()) {
     OPENER_TRACE_WARN(
-        "Loading of some NV data failed. Maybe the first start?\n");
+      "Loading of some NV data failed. Maybe the first start?\n");
   }
 
   /* Bring up network interface or start DHCP client ... */
@@ -139,7 +139,7 @@ int main(int argc, char* arg[]) {
 
   /* Next actions depend on the set network configuration method. */
   CipDword network_config_method =
-      g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
+    g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
   if (kTcpipCfgCtrlStaticIp == network_config_method) {
     OPENER_TRACE_INFO("Static network configuration done\n");
   }
@@ -149,14 +149,14 @@ int main(int argc, char* arg[]) {
      * here for IP present (DHCP done) or abort through g_end_stack. */
     eip_status = IfaceWaitForIp(arg[1], -1, &g_end_stack);
     OPENER_TRACE_INFO(
-        "DHCP wait for interface: eip_status %d, g_end_stack=%d\n",
-        eip_status,
-        g_end_stack);
+      "DHCP wait for interface: eip_status %d, g_end_stack=%d\n",
+      eip_status,
+      g_end_stack);
     if (kEipStatusOk == eip_status && 0 == g_end_stack) {
       /* Read IP configuration received via DHCP from interface and store in
        *  the TCP/IP object.*/
       eip_status =
-          IfaceGetConfiguration(arg[1], &g_tcpip.interface_configuration);
+        IfaceGetConfiguration(arg[1], &g_tcpip.interface_configuration);
       if (eip_status < 0) {
         OPENER_TRACE_WARN("Problems getting interface configuration\n");
       }
@@ -269,10 +269,10 @@ static void* executeEventLoop(void* pthread_arg) {
 
 #ifdef FUZZING_AFL
 static void fuzzHandlePacketFlow(void) {
-  int socket_fd = 0;                      // Fake socket fd
-  uint8_t buff[512];                      // Input buffer
-  struct sockaddr_in from_address = {0};  // Fake socket address
-  int remaining_bytes             = 0;    // Fake reamining bytes
+  int socket_fd = 0;                        // Fake socket fd
+  uint8_t buff[512];                        // Input buffer
+  struct sockaddr_in from_address = { 0 };  // Fake socket address
+  int remaining_bytes             = 0;      // Fake reamining bytes
   ENIPMessage outgoing_message;
 
   /* AFL persistent mode */

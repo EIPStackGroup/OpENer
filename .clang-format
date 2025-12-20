@@ -8,6 +8,9 @@ BasedOnStyle: Google
 # Uncrustify: indent_columns=2
 IndentWidth: 2
 
+# Set continuation indent to match base indent
+ContinuationIndentWidth: 2
+
 # Uncrustify: indent_with_tabs=0
 UseTab: Never
 
@@ -62,6 +65,9 @@ AllowShortFunctionsOnASingleLine: Empty
 BreakBeforeBraces: Attach
 
 # --- 5. Miscellaneous ---
+
+# Keep opening brace on same line for initializer lists
+Cpp11BracedListStyle: false
 
 # Uncrustify: mod_remove_extra_semicolon=true
 # Note: RemoveSemicolon is not a standard option, clang-format handles this differently

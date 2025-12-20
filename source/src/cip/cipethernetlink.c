@@ -78,7 +78,7 @@
 #endif
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
 #define IFACE_CTRL_ACCESS_MODE (kSetAndGetAble | kNvDataFunc)
 #else
 #define IFACE_CTRL_ACCESS_MODE kGetableAll
@@ -94,29 +94,29 @@ typedef struct speed_duplex_array_entry {
 
 /* forward declaration of functions to encode certain attribute objects */
 static void EncodeCipEthernetLinkInterfaceCounters(
-    const void* const data, ENIPMessage* const outgoing_message);
+  const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkMediaCounters(
-    const void* const data, ENIPMessage* const outgoing_message);
+  const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkInterfaceControl(
-    const void* const data, ENIPMessage* const outgoing_message);
+  const void* const data, ENIPMessage* const outgoing_message);
 
 static void EncodeCipEthernetLinkInterfaceCaps(
-    const void* const data, ENIPMessage* const outgoing_message);
+  const void* const data, ENIPMessage* const outgoing_message);
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 /* forward declaration for the GetAndClear service handler function */
 EipStatus GetAndClearEthernetLink(
-    CipInstance* RESTRICT const instance,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response,
-    const struct sockaddr* originator_address,
-    const CipSessionHandle encapsulation_session);
+  CipInstance* RESTRICT const instance,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response,
+  const struct sockaddr* originator_address,
+  const CipSessionHandle encapsulation_session);
 #endif /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
 
 /** @brief Modify the attribute values for Attribute6: Interface Control
  *
@@ -127,9 +127,9 @@ EipStatus GetAndClearEthernetLink(
  *          -1 .. error
  */
 int DecodeCipEthernetLinkInterfaceControl(
-    CipEthernetLinkInterfaceControl* const data,
-    const CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response);
+  CipEthernetLinkInterfaceControl* const data,
+  const CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response);
 #endif
 
 /** @brief This is the internal table of possible speed / duplex combinations
@@ -142,34 +142,34 @@ int DecodeCipEthernetLinkInterfaceControl(
  *  CipEthLinkSpeedDpxSelect.
  */
 static const CipEthernetLinkSpeedDuplexArrayEntry speed_duplex_table[] = {
-    {/* Index 0: 10Mbit/s half duplex*/
-     .interface_speed       = 10,
-     .interface_duplex_mode = 0},
-    {/* Index 1: 10Mbit/s full duplex*/
-     .interface_speed       = 10,
-     .interface_duplex_mode = 1},
-    {/* Index 2: 100Mbit/s half duplex*/
-     .interface_speed       = 100,
-     .interface_duplex_mode = 0},
-    {/* Index 3: 100Mbit/s full duplex*/
-     .interface_speed       = 100,
-     .interface_duplex_mode = 1},
-    {/* Index 4: 1000Mbit/s half duplex*/
-     .interface_speed       = 1000,
-     .interface_duplex_mode = 0},
-    {/* Index 5: 1000Mbit/s full duplex*/
-     .interface_speed       = 1000,
-     .interface_duplex_mode = 1},
+  { /* Index 0: 10Mbit/s half duplex*/
+    .interface_speed       = 10,
+    .interface_duplex_mode = 0 },
+  { /* Index 1: 10Mbit/s full duplex*/
+    .interface_speed       = 10,
+    .interface_duplex_mode = 1 },
+  { /* Index 2: 100Mbit/s half duplex*/
+    .interface_speed       = 100,
+    .interface_duplex_mode = 0 },
+  { /* Index 3: 100Mbit/s full duplex*/
+    .interface_speed       = 100,
+    .interface_duplex_mode = 1 },
+  { /* Index 4: 1000Mbit/s half duplex*/
+    .interface_speed       = 1000,
+    .interface_duplex_mode = 0 },
+  { /* Index 5: 1000Mbit/s full duplex*/
+    .interface_speed       = 1000,
+    .interface_duplex_mode = 1 },
 };
 
 #if defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
 static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] = {
-    {.length = sizeof IFACE_LABEL - 1, .string = (EipByte*)IFACE_LABEL},
+  { .length = sizeof IFACE_LABEL - 1, .string = (EipByte*)IFACE_LABEL },
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
-    {.length = sizeof IFACE_LABEL_1 - 1, .string = (EipByte*)IFACE_LABEL_1},
+  { .length = sizeof IFACE_LABEL_1 - 1, .string = (EipByte*)IFACE_LABEL_1 },
 #endif
 #if OPENER_ETHLINK_INSTANCE_CNT > 2
-    {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2},
+  { .length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2 },
 #endif
 };
 #endif  // defined(OPENER_ETHLINK_LABEL_ENABLE) &&
@@ -183,12 +183,12 @@ static CipUdint dummy_attribute_udint = 0;
 #endif
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
 #else
 /* Constant dummy data for attribute #6 */
 static CipEthernetLinkInterfaceControl s_interface_control = {
-    .control_bits           = 0,
-    .forced_interface_speed = 0,
+  .control_bits           = 0,
+  .forced_interface_speed = 0,
 };
 #endif
 
@@ -197,26 +197,26 @@ CipEthernetLinkObject g_ethernet_link[OPENER_ETHLINK_INSTANCE_CNT];
 
 EipStatus CipEthernetLinkInit(void) {
   CipClass* ethernet_link_class = CreateCipClass(
-      kCipEthernetLinkClassCode,
-      0,
-      /* # class attributes*/
-      7,
-      /* # highest class attribute number*/
-      2,
-      /* # class services*/
-      11,
-      /* # instance attributes*/
-      11,
-      /* # highest instance attribute number*/
-      /* # instance services follow */
-      2 + OPENER_ETHLINK_CNTRS_ENABLE + OPENER_ETHLINK_IFACE_CTRL_ENABLE,
-      OPENER_ETHLINK_INSTANCE_CNT,
-      /* # instances*/
-      "Ethernet Link",
-      /* # class name */
-      4,
-      /* # class revision*/
-      NULL); /* # function pointer for initialization*/
+    kCipEthernetLinkClassCode,
+    0,
+    /* # class attributes*/
+    7,
+    /* # highest class attribute number*/
+    2,
+    /* # class services*/
+    11,
+    /* # instance attributes*/
+    11,
+    /* # highest instance attribute number*/
+    /* # instance services follow */
+    2 + OPENER_ETHLINK_CNTRS_ENABLE + OPENER_ETHLINK_IFACE_CTRL_ENABLE,
+    OPENER_ETHLINK_INSTANCE_CNT,
+    /* # instances*/
+    "Ethernet Link",
+    /* # class name */
+    4,
+    /* # class revision*/
+    NULL); /* # function pointer for initialization*/
 
   /* set attributes to initial values */
   for (size_t idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
@@ -234,11 +234,11 @@ EipStatus CipEthernetLinkInit(void) {
 #endif
     g_ethernet_link[idx].interface_caps.capability_bits = kEthLinkCapAutoNeg;
     g_ethernet_link[idx].interface_caps.speed_duplex_selector =
-        kEthLinkSpeedDpx_100_FD;
+      kEthLinkSpeedDpx_100_FD;
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
     g_ethernet_link[idx].interface_control.control_bits =
-        kEthLinkIfCntrlAutonegotiate;
+      kEthLinkIfCntrlAutonegotiate;
     g_ethernet_link[idx].interface_control.forced_interface_speed = 0U;
 #endif
   }
@@ -261,7 +261,7 @@ EipStatus CipEthernetLinkInit(void) {
                   "GetAndClear");
 #endif
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
     InsertService(ethernet_link_class,
                   kSetAttributeSingle,
                   &SetAttributeSingle,
@@ -271,7 +271,7 @@ EipStatus CipEthernetLinkInit(void) {
     /* bind attributes to the instance */
     for (CipInstanceNum idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
       CipInstance* ethernet_link_instance =
-          GetCipInstance(ethernet_link_class, (CipInstanceNum)(idx + 1));
+        GetCipInstance(ethernet_link_class, (CipInstanceNum)(idx + 1));
 
       InsertAttribute(ethernet_link_instance,
                       1,
@@ -326,7 +326,7 @@ EipStatus CipEthernetLinkInit(void) {
                       kGetableAllDummy);
 #endif /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
       if (2 == idx) {
         /* Interface control of internal switch port is never settable. */
         InsertAttribute(ethernet_link_instance,
@@ -407,7 +407,7 @@ void CipEthernetLinkSetMac(EipUint8* p_physical_address) {
 }
 
 static void EncodeCipEthernetLinkInterfaceCounters(
-    const void* const data, ENIPMessage* const outgoing_message) {
+  const void* const data, ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -422,12 +422,12 @@ static void EncodeCipEthernetLinkInterfaceCounters(
 #else
   /* Encode the default counter value of 0 */
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-      0, 11 * sizeof(CipUdint), outgoing_message);
+    0, 11 * sizeof(CipUdint), outgoing_message);
 #endif
 }
 
 static void EncodeCipEthernetLinkMediaCounters(
-    const void* const data, ENIPMessage* const outgoing_message) {
+  const void* const data, ENIPMessage* const outgoing_message) {
   /* Suppress unused parameter compiler warning. */
   (void)data;
 
@@ -442,14 +442,14 @@ static void EncodeCipEthernetLinkMediaCounters(
 #else
   /* Encode the default counter value of 0 */
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-      0, 12 * sizeof(CipUdint), outgoing_message);
+    0, 12 * sizeof(CipUdint), outgoing_message);
 #endif
 }
 
 static void EncodeCipEthernetLinkInterfaceControl(
-    const void* const data, ENIPMessage* const outgoing_message) {
+  const void* const data, ENIPMessage* const outgoing_message) {
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
   const CipEthernetLinkInterfaceControl* const interface_control = data;
 #else
   /* Suppress unused parameter compiler warning. */
@@ -463,7 +463,7 @@ static void EncodeCipEthernetLinkInterfaceControl(
 
 #define NELEMENTS(x) ((sizeof(x) / sizeof(x[0])))
 static void EncodeCipEthernetLinkInterfaceCaps(
-    const void* const data, ENIPMessage* const outgoing_message) {
+  const void* const data, ENIPMessage* const outgoing_message) {
   const CipEthernetLinkMetaInterfaceCapability* const interface_caps = data;
   EncodeCipDword(&interface_caps->capability_bits, outgoing_message);
   uint16_t selected = interface_caps->speed_duplex_selector;
@@ -485,22 +485,22 @@ static void EncodeCipEthernetLinkInterfaceCaps(
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 EipStatus GetAndClearEthernetLink(
-    CipInstance* RESTRICT const instance,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response,
-    const struct sockaddr* originator_address,
-    const CipSessionHandle encapsulation_session) {
+  CipInstance* RESTRICT const instance,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response,
+  const struct sockaddr* originator_address,
+  const CipSessionHandle encapsulation_session) {
   CipAttributeStruct* attribute = GetCipAttribute(
-      instance, message_router_request->request_path.attribute_number);
+    instance, message_router_request->request_path.attribute_number);
 
   message_router_response->data_length = 0;
   message_router_response->reply_service =
-      (0x80 | message_router_request->service);
+    (0x80 | message_router_request->service);
   message_router_response->general_status = kCipErrorAttributeNotSupported;
   message_router_response->size_of_additional_status = 0;
 
   EipUint16 attribute_number =
-      message_router_request->request_path.attribute_number;
+    message_router_request->request_path.attribute_number;
 
   if ((NULL != attribute) && (NULL != attribute->data)) {
     OPENER_TRACE_INFO("GetAndClear attribute %" PRIu16 "\n", attribute_number);
@@ -518,7 +518,7 @@ EipStatus GetAndClearEthernetLink(
         break;
       default:
         message_router_response->general_status =
-            kCipErrorServiceNotSupportedForSpecifiedPath;
+          kCipErrorServiceNotSupportedForSpecifiedPath;
         break;
     }
 
@@ -535,18 +535,18 @@ EipStatus GetAndClearEthernetLink(
 #endif /* ... && 0 != OPENER_ETHLINK_CNTRS_ENABLE */
 
 #if defined(OPENER_ETHLINK_IFACE_CTRL_ENABLE) && \
-    0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
+  0 != OPENER_ETHLINK_IFACE_CTRL_ENABLE
 static bool IsIfaceControlAllowed(
-    CipInstanceNum instance_id,
-    CipEthernetLinkInterfaceControl const* iface_cntrl) {
+  CipInstanceNum instance_id,
+  CipEthernetLinkInterfaceControl const* iface_cntrl) {
   const CipUsint duplex_mode =
-      (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
+    (iface_cntrl->control_bits & kEthLinkIfCntrlForceDuplexFD) ? 1 : 0;
   for (size_t i = 0; i < NELEMENTS(speed_duplex_table); i++) {
     if (g_ethernet_link[instance_id - 1].interface_caps.speed_duplex_selector &
         (1U << i)) {
       if (duplex_mode == speed_duplex_table[i].interface_duplex_mode &&
           iface_cntrl->forced_interface_speed ==
-              speed_duplex_table[i].interface_speed) {
+            speed_duplex_table[i].interface_speed) {
         return true;
       }
     }
@@ -555,19 +555,19 @@ static bool IsIfaceControlAllowed(
 }
 
 int DecodeCipEthernetLinkInterfaceControl(
-    CipEthernetLinkInterfaceControl* const data,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response) {
+  CipEthernetLinkInterfaceControl* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
   CipInstance* const instance =
-      GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
-                     message_router_request->request_path.instance_number);
+    GetCipInstance(GetCipClass(message_router_request->request_path.class_id),
+                   message_router_request->request_path.instance_number);
 
   int number_of_decoded_bytes = -1;
 
   CipEthernetLinkInterfaceControl if_cntrl;
 
   DecodeCipWord(
-      &if_cntrl.control_bits, message_router_request, message_router_response);
+    &if_cntrl.control_bits, message_router_request, message_router_response);
   DecodeCipUint(&if_cntrl.forced_interface_speed,
                 message_router_request,
                 message_router_response);
@@ -587,7 +587,7 @@ int DecodeCipEthernetLinkInterfaceControl(
         /* Need to check if a supported mode is forced. */
         if (!IsIfaceControlAllowed(instance->instance_number, &if_cntrl)) {
           message_router_response->general_status =
-              kCipErrorInvalidAttributeValue;
+            kCipErrorInvalidAttributeValue;
           return number_of_decoded_bytes;
         }
       }

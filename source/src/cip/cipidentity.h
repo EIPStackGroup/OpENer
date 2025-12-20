@@ -66,7 +66,7 @@ typedef struct {
   CipUint device_type;   ///< Attribute 2: Device Type
   CipUint product_code;  ///< Attribute 3: Product Code
   CipRevision
-      revision;    ///< Attribute 4: Revision / CipUsint Major, CipUsint Minor
+    revision;      ///< Attribute 4: Revision / CipUsint Major, CipUsint Minor
   CipWord status;  ///< Attribute 5: Status
   CipWord ext_status;  ///< Attribute 5: last set extended status, needed for
                        ///< Status handling
@@ -91,6 +91,6 @@ EipStatus CipIdentityInit(void);
 void CipIdentitySetStatusFlags(const CipWord status_flags);
 void CipIdentityClearStatusFlags(const CipWord status_flags);
 void CipIdentitySetExtendedDeviceStatus(
-    CipIdentityExtendedStatus extended_status);
+  CipIdentityExtendedStatus extended_status);
 
 #endif  // CIP_CIPIDENTITY_H_

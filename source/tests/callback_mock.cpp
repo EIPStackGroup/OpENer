@@ -11,7 +11,7 @@ extern "C" {
 
 EipStatus ApplicationInitialization(void) {
   return (EipStatus)mock().actualCall(__func__).returnIntValueOrDefault(
-      kEipStatusOk);
+    kEipStatusOk);
 }
 
 void HandleApplication(void) {
@@ -26,7 +26,7 @@ void CheckIoConnectionEvent(unsigned int output_assembly_id,
 
 EipStatus AfterAssemblyDataReceived(CipInstance* instance) {
   return (EipStatus)mock().actualCall(__func__).returnIntValueOrDefault(
-      kEipStatusOk);
+    kEipStatusOk);
 }
 
 EipBool8 BeforeAssemblyDataSend(CipInstance* instance) {
@@ -35,12 +35,12 @@ EipBool8 BeforeAssemblyDataSend(CipInstance* instance) {
 
 EipStatus ResetDevice(void) {
   return (EipStatus)mock().actualCall(__func__).returnIntValueOrDefault(
-      kEipStatusError);
+    kEipStatusError);
 }
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
   return (EipStatus)mock().actualCall(__func__).returnIntValueOrDefault(
-      kEipStatusError);
+    kEipStatusError);
 }
 
 void* CipCalloc(size_t number_of_elements, size_t size_of_element) {

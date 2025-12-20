@@ -43,58 +43,56 @@
 
 /** @brief Definition of the global Identity Object */
 CipIdentityObject g_identity = {
-    .vendor_id    = OPENER_DEVICE_VENDOR_ID,     // Attribute 1: Vendor ID
-    .device_type  = OPENER_DEVICE_TYPE,          // Attribute 2: Device Type
-    .product_code = OPENER_DEVICE_PRODUCT_CODE,  // Attribute 3: Product Code
-    .revision =
-        {// Attribute 4: Revision / CipUsint Major, CipUsint Minor
-         OPENER_DEVICE_MAJOR_REVISION,
-         OPENER_DEVICE_MINOR_REVISION},
-    .status = 0, /* Attribute 5: Status */
-    .ext_status =
-        kSelftestingUnknown, /* Attribute 5: Extended Device Status field */
-    .serial_number = 0,      /* Attribute 6: Serial Number */
-    /* Attribute 7: Product Name, set by CipIdentityInit() */
+  .vendor_id    = OPENER_DEVICE_VENDOR_ID,     // Attribute 1: Vendor ID
+  .device_type  = OPENER_DEVICE_TYPE,          // Attribute 2: Device Type
+  .product_code = OPENER_DEVICE_PRODUCT_CODE,  // Attribute 3: Product Code
+  // Attribute 4: Revision / CipUsint Major, CipUsint Minor
+  .revision = { OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION },
+  .status   = 0,  // Attribute 5: Status
+  .ext_status =
+    kSelftestingUnknown,  // Attribute 5: Extended Device Status field
+  .serial_number = 0,     // Attribute 6: Serial Number
+  // Attribute 7: Product Name, set by CipIdentityInit()
 };
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceRevision(EipUint8 major, EipUint8 minor) {
   g_identity.revision.major_revision = major;
   g_identity.revision.minor_revision = minor;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceSerialNumber(const EipUint32 serial_number) {
   g_identity.serial_number = serial_number;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceType(const EipUint16 type) {
   g_identity.device_type = type;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceProductCode(const EipUint16 code) {
   g_identity.product_code = code;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceStatus(const CipWord status) {
   g_identity.status     = status;
   g_identity.ext_status = status & kExtStatusMask;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceVendorId(CipUint vendor_id) {
   g_identity.vendor_id = vendor_id;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 CipUint GetDeviceVendorId(void) {
   return g_identity.vendor_id;
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 void SetDeviceProductName(const char* product_name) {
   if (!product_name)
     return;
@@ -102,7 +100,7 @@ void SetDeviceProductName(const char* product_name) {
   SetCipShortStringByCstr(&g_identity.product_name, product_name);
 }
 
-/* The Doxygen comment is with the function's prototype in opener_api.h. */
+// The Doxygen comment is with the function's prototype in opener_api.h.
 CipShortString* GetDeviceProductName(void) {
   return &g_identity.product_name;
 }
@@ -111,8 +109,8 @@ static inline void MergeStatusAndExtStatus(void) {
   CipWord status_flags = g_identity.status & (~kExtStatusMask);
   CipWord ext_status   = g_identity.ext_status & kExtStatusMask;
 
-  /* Any major fault will override the current extended status with kMajorFault.
-     See comment on Major Fault at Vol. 1, Table 5A-2.4. */
+  // Any major fault will override the current extended status with kMajorFault.
+  // See comment on Major Fault at Vol. 1, Table 5A-2.4.
   if (0 !=
       (status_flags & (kMajorRecoverableFault | kMajorUnrecoverableFault))) {
     ext_status = kMajorFault;
@@ -155,7 +153,7 @@ void CipIdentityClearStatusFlags(const CipWord status_flags) {
  *  Status value.
  */
 void CipIdentitySetExtendedDeviceStatus(
-    CipIdentityExtendedStatus extended_status) {
+  CipIdentityExtendedStatus extended_status) {
   OPENER_TRACE_INFO("Setting extended status: %x\n", extended_status);
   g_identity.ext_status = extended_status & kExtStatusMask;
   MergeStatusAndExtStatus();
@@ -168,9 +166,9 @@ void CipIdentitySetExtendedDeviceStatus(
  * @returns Currently always kEipOkSend is returned
  */
 EipStatus IdentityObjectPreResetCallback(
-    CipInstance* RESTRICT const instance,
-    const CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response) {
+  CipInstance* RESTRICT const instance,
+  const CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
   (void)instance;
 
   EipStatus eip_status = kEipStatusOkSend;
@@ -179,7 +177,7 @@ EipStatus IdentityObjectPreResetCallback(
     message_router_response->general_status = kCipErrorTooMuchData;
   } else {
     CipOctet reset_type =
-        0; /* The default type if type parameter was omitted. */
+      0; /* The default type if type parameter was omitted. */
     if (message_router_request->request_data_size == 1) {
       reset_type = message_router_request->data[0];
     }
@@ -265,10 +263,8 @@ void InitializeCipIdentity(CipClass* class) {
                 kGetAttributeAll,
                 &GetAttributeAll,
                 "GetAttributeAll"); /* bind instance services to the metaclass*/
-  InsertService(meta_class,
-                kGetAttributeSingle,
-                &GetAttributeSingle,
-                "GetAttributeSingle");
+  InsertService(
+    meta_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
 
   // add Callback function pointers
   class->PreResetCallback = &IdentityObjectPreResetCallback;
@@ -283,18 +279,18 @@ void EncodeRevision(const void* const data,
 
 EipStatus CipIdentityInit() {
   CipClass* class = CreateCipClass(
-      kCipIdentityClassCode,
-      0,           // # of non-default class attributes
-      7,           // # highest class attribute number
-      2,           // # of class services
-      7,           // # of instance attributes
-      7,           // # highest instance attribute number
-      5,           // # of instance services
-      1,           // # of instances
-      "identity",  // class name (for debug)
-      1,           // class revision
-      // TODO(MartinMelikMerkumians): change revision to 2 - check
-      &InitializeCipIdentity); /* function pointer for initialization*/
+    kCipIdentityClassCode,
+    0,           // # of non-default class attributes
+    7,           // # highest class attribute number
+    2,           // # of class services
+    7,           // # of instance attributes
+    7,           // # highest instance attribute number
+    5,           // # of instance services
+    1,           // # of instances
+    "identity",  // class name (for debug)
+    1,           // class revision
+    // TODO(MartinMelikMerkumians): change revision to 2 - check
+    &InitializeCipIdentity); /* function pointer for initialization*/
 
   if (class == 0) {
     return kEipStatusError;
@@ -355,13 +351,13 @@ EipStatus CipIdentityInit() {
                   kGetableSingleAndAll);
 
   InsertService(
-      class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
+    class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
   InsertService(class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
   InsertService(class, kReset, &CipResetService, "Reset");
   InsertService(
-      class, kGetAttributeList, &GetAttributeList, "GetAttributeList");
+    class, kGetAttributeList, &GetAttributeList, "GetAttributeList");
   InsertService(
-      class, kSetAttributeList, &SetAttributeList, "SetAttributeList");
+    class, kSetAttributeList, &SetAttributeList, "SetAttributeList");
 
   return kEipStatusOk;
 }

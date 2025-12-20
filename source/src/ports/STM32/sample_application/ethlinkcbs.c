@@ -68,36 +68,36 @@ EipStatus EthLnkPreGetCallback(CipInstance* const instance,
   switch (attr_no) {
     case 4: {
       CipEthernetLinkInterfaceCounters* p_iface_cntrs =
-          &g_ethernet_link[idx].interface_cntrs;
+        &g_ethernet_link[idx].interface_cntrs;
 
       ++iface_calls[idx]; /* Count successful calls */
       p_iface_cntrs->ul.in_octets =
-          MAKE_CNTR(inst_no, attr_no, 0, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 0, iface_calls[idx]);
       p_iface_cntrs->ul.in_ucast =
-          MAKE_CNTR(inst_no, attr_no, 1, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 1, iface_calls[idx]);
       p_iface_cntrs->ul.in_nucast =
-          MAKE_CNTR(inst_no, attr_no, 2, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 2, iface_calls[idx]);
       p_iface_cntrs->ul.in_discards =
-          MAKE_CNTR(inst_no, attr_no, 3, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 3, iface_calls[idx]);
       p_iface_cntrs->ul.in_errors =
-          MAKE_CNTR(inst_no, attr_no, 4, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 4, iface_calls[idx]);
       p_iface_cntrs->ul.in_unknown_protos =
-          MAKE_CNTR(inst_no, attr_no, 5, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 5, iface_calls[idx]);
       p_iface_cntrs->ul.out_octets =
-          MAKE_CNTR(inst_no, attr_no, 6, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 6, iface_calls[idx]);
       p_iface_cntrs->ul.out_ucast =
-          MAKE_CNTR(inst_no, attr_no, 7, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 7, iface_calls[idx]);
       p_iface_cntrs->ul.out_nucast =
-          MAKE_CNTR(inst_no, attr_no, 8, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 8, iface_calls[idx]);
       p_iface_cntrs->ul.out_discards =
-          MAKE_CNTR(inst_no, attr_no, 9, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 9, iface_calls[idx]);
       p_iface_cntrs->ul.out_errors =
-          MAKE_CNTR(inst_no, attr_no, 10, iface_calls[idx]);
+        MAKE_CNTR(inst_no, attr_no, 10, iface_calls[idx]);
       break;
     }
     case 5: {
       CipEthernetLinkMediaCounters* p_media_cntrs =
-          &g_ethernet_link[idx].media_cntrs;
+        &g_ethernet_link[idx].media_cntrs;
 
       ++media_calls[idx]; /* Count successful calls */
       /* The 1 != mediaCalls[idx] is a concession to the conformance test tool
@@ -106,29 +106,29 @@ EipStatus EthLnkPreGetCallback(CipInstance* const instance,
        */
       if (1 != media_calls[idx]) {
         p_media_cntrs->ul.align_errs =
-            MAKE_CNTR(inst_no, attr_no, 0, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 0, media_calls[idx]);
         p_media_cntrs->ul.fcs_errs =
-            MAKE_CNTR(inst_no, attr_no, 1, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 1, media_calls[idx]);
         p_media_cntrs->ul.single_coll =
-            MAKE_CNTR(inst_no, attr_no, 2, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 2, media_calls[idx]);
         p_media_cntrs->ul.multi_coll =
-            MAKE_CNTR(inst_no, attr_no, 3, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 3, media_calls[idx]);
         p_media_cntrs->ul.sqe_test_errs =
-            MAKE_CNTR(inst_no, attr_no, 4, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 4, media_calls[idx]);
         p_media_cntrs->ul.def_trans =
-            MAKE_CNTR(inst_no, attr_no, 5, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 5, media_calls[idx]);
         p_media_cntrs->ul.late_coll =
-            MAKE_CNTR(inst_no, attr_no, 6, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 6, media_calls[idx]);
         p_media_cntrs->ul.exc_coll =
-            MAKE_CNTR(inst_no, attr_no, 7, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 7, media_calls[idx]);
         p_media_cntrs->ul.mac_tx_errs =
-            MAKE_CNTR(inst_no, attr_no, 8, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 8, media_calls[idx]);
         p_media_cntrs->ul.crs_errs =
-            MAKE_CNTR(inst_no, attr_no, 9, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 9, media_calls[idx]);
         p_media_cntrs->ul.frame_too_long =
-            MAKE_CNTR(inst_no, attr_no, 10, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 10, media_calls[idx]);
         p_media_cntrs->ul.mac_rx_errs =
-            MAKE_CNTR(inst_no, attr_no, 11, media_calls[idx]);
+          MAKE_CNTR(inst_no, attr_no, 11, media_calls[idx]);
       }
       break;
     }

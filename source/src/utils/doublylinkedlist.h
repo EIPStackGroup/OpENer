@@ -41,7 +41,7 @@ void DoublyLinkedListInitialize(DoublyLinkedList* list,
 void DoublyLinkedListDestroy(DoublyLinkedList* list);
 
 DoublyLinkedListNode* DoublyLinkedListNodeCreate(
-    const void* const data, NodeMemoryAllocator const allocator);
+  const void* const data, NodeMemoryAllocator const allocator);
 
 void DoublyLinkedListNodeDestroy(const DoublyLinkedList* const list,
                                  DoublyLinkedListNode** node);

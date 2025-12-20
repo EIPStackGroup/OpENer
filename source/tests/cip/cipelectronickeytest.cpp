@@ -25,19 +25,19 @@ TEST(CipElectronicKey, SetKeyFormat) {
 }
 
 TEST(CipElectronicKey, GetKeyFormat) {
-  CipElectronicKey key = {.key_format = 4, .key_data = NULL};
+  CipElectronicKey key = { .key_format = 4, .key_data = NULL };
   CHECK_EQUAL(4, ElectronicKeyGetKeyFormat(&key));
 }
 
 TEST(CipElectronicKey, SetKeyData) {
-  char dummyFormatData[] = {0, 1, 2, 3, 4, 5};
+  char dummyFormatData[] = { 0, 1, 2, 3, 4, 5 };
   CipElectronicKey key;
   ElectronicKeySetKeyData(&key, dummyFormatData);
   POINTERS_EQUAL(dummyFormatData, key.key_data);
 }
 
 TEST(CipElectronicKey, GetKeyData) {
-  char dummyFormatData[] = {0, 1, 2, 3, 4, 5};
-  CipElectronicKey key   = {.key_format = 0, .key_data = dummyFormatData};
+  char dummyFormatData[] = { 0, 1, 2, 3, 4, 5 };
+  CipElectronicKey key   = { .key_format = 0, .key_data = dummyFormatData };
   POINTERS_EQUAL(dummyFormatData, ElectronicKeyGetKeyData(&key));
 }

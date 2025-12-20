@@ -33,7 +33,7 @@
 #ifndef OPENER_TRACE_LEVEL
 #ifdef WIN32
 #pragma message( \
-    "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
+  "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
 #else
 #warning OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR
 #endif

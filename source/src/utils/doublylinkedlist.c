@@ -35,7 +35,7 @@ void DoublyLinkedListDestroy(DoublyLinkedList* list) {
 }
 
 DoublyLinkedListNode* DoublyLinkedListNodeCreate(
-    const void* const data, NodeMemoryAllocator const allocator) {
+  const void* const data, NodeMemoryAllocator const allocator) {
   DoublyLinkedListNode* new_node = (DoublyLinkedListNode*)allocator();
   new_node->data                 = (void*)data;
   return new_node;
@@ -51,7 +51,7 @@ void DoublyLinkedListInsertAtHead(DoublyLinkedList* const list,
                                   const void* const data) {
   OPENER_ASSERT(list->allocator != NULL);
   DoublyLinkedListNode* new_node =
-      DoublyLinkedListNodeCreate(data, list->allocator);
+    DoublyLinkedListNodeCreate(data, list->allocator);
   if (NULL == list->first) {
     list->first = new_node;
     list->last  = new_node;
@@ -66,7 +66,7 @@ void DoublyLinkedListInsertAtTail(DoublyLinkedList* const list,
                                   const void* const data) {
   OPENER_ASSERT(list->allocator != NULL);
   DoublyLinkedListNode* new_node =
-      DoublyLinkedListNodeCreate(data, list->allocator);
+    DoublyLinkedListNodeCreate(data, list->allocator);
   if (NULL == list->last) {
     list->first = new_node;
     list->last  = new_node;
@@ -85,7 +85,7 @@ void DoublyLinkedListInsertBeforeNode(DoublyLinkedList* const list,
     DoublyLinkedListInsertAtHead(list, data);
   } else {
     DoublyLinkedListNode* new_node =
-        DoublyLinkedListNodeCreate(data, list->allocator);
+      DoublyLinkedListNodeCreate(data, list->allocator);
     new_node->previous       = node->previous;
     new_node->next           = node;
     node->previous           = new_node;
@@ -101,7 +101,7 @@ void DoublyLinkedListInsertAfterNode(DoublyLinkedList* const list,
     DoublyLinkedListInsertAtTail(list, data);
   } else {
     DoublyLinkedListNode* new_node =
-        DoublyLinkedListNodeCreate(data, list->allocator);
+      DoublyLinkedListNodeCreate(data, list->allocator);
     new_node->previous   = node;
     new_node->next       = node->next;
     node->next->previous = new_node;
@@ -110,8 +110,8 @@ void DoublyLinkedListInsertAfterNode(DoublyLinkedList* const list,
 }
 
 void DoublyLinkedListRemoveNode(
-    DoublyLinkedList* const list,
-    DoublyLinkedListNode** pointer_to_node_pointer) {
+  DoublyLinkedList* const list,
+  DoublyLinkedListNode** pointer_to_node_pointer) {
   DoublyLinkedListNode* node     = *pointer_to_node_pointer;
   DoublyLinkedListNode* previous = node->previous;
   DoublyLinkedListNode* next     = node->next;

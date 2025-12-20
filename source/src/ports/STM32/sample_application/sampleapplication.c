@@ -69,10 +69,10 @@ EipStatus ApplicationInitialization(void) {
                                     DEMO_APP_INPUT_ASSEMBLY_NUM,
                                     DEMO_APP_CONFIG_ASSEMBLY_NUM);
   ConfigureListenOnlyConnectionPoint(
-      0,
-      DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
-      DEMO_APP_INPUT_ASSEMBLY_NUM,
-      DEMO_APP_CONFIG_ASSEMBLY_NUM);
+    0,
+    DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
+    DEMO_APP_INPUT_ASSEMBLY_NUM,
+    DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   /* For the Ethernet Interface & Media Counters connect a PreGetCallback and
@@ -144,7 +144,7 @@ EipStatus AfterAssemblyDataReceived(CipInstance* instance) {
       break;
     default:
       OPENER_TRACE_INFO(
-          "Unknown assembly instance ind AfterAssemblyDataReceived");
+        "Unknown assembly instance ind AfterAssemblyDataReceived");
       break;
   }
   return status;
@@ -194,7 +194,7 @@ void RunIdleChanged(EipUint32 run_idle_value) {
     CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
   } else {
     CipIdentitySetExtendedDeviceStatus(
-        kAtLeastOneIoConnectionEstablishedAllInIdleMode);
+      kAtLeastOneIoConnectionEstablishedAllInIdleMode);
   }
   (void)run_idle_value;
 }

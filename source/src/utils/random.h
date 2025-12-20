@@ -16,7 +16,7 @@ typedef struct {
   uint32_t current_seed_value; /**< Holds the current seed/random value */
   SetSeed set_seed;            /**< Function pointer to SetSeed function */
   GetNextUInt32
-      get_next_uint32; /**< Function pointer to GetNextUInt32 function */
+    get_next_uint32; /**< Function pointer to GetNextUInt32 function */
 } Random;
 
 Random* RandomNew(SetSeed, GetNextUInt32);

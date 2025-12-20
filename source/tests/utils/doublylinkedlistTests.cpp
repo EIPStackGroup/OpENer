@@ -18,7 +18,7 @@ TEST_GROUP(DoublyLinkedList){
 
 const size_t kNodesAmount = 5;
 
-static DoublyLinkedListNode nodes[kNodesAmount] = {0};
+static DoublyLinkedListNode nodes[kNodesAmount] = { 0 };
 
 DoublyLinkedListNode* CallocAllocator() {
   return (DoublyLinkedListNode*)calloc(1, sizeof(DoublyLinkedListNode));
@@ -49,7 +49,7 @@ void ArrayFree(DoublyLinkedListNode** node) {
 TEST(DoublyLinkedList, CallocAllocatorCreateTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
-      DoublyLinkedListNodeCreate(&test_data, CallocAllocator);
+    DoublyLinkedListNodeCreate(&test_data, CallocAllocator);
   CHECK_EQUAL(test_data, *((int*)node->data));
   CallocDeallocator(&node);
 }
@@ -57,7 +57,7 @@ TEST(DoublyLinkedList, CallocAllocatorCreateTest) {
 TEST(DoublyLinkedList, CallocFreeTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
-      DoublyLinkedListNodeCreate(&test_data, CallocAllocator);
+    DoublyLinkedListNodeCreate(&test_data, CallocAllocator);
   CallocDeallocator(&node);
   POINTERS_EQUAL(NULL, node);
 }
@@ -65,7 +65,7 @@ TEST(DoublyLinkedList, CallocFreeTest) {
 TEST(DoublyLinkedList, ArrayAllocatorCreateTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
-      DoublyLinkedListNodeCreate(&test_data, ArrayAllocator);
+    DoublyLinkedListNodeCreate(&test_data, ArrayAllocator);
   CHECK_EQUAL(test_data, *((int*)node->data));
   ArrayFree(&node);
 }
@@ -73,7 +73,7 @@ TEST(DoublyLinkedList, ArrayAllocatorCreateTest) {
 TEST(DoublyLinkedList, ArrayAllocatorDeleteTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
-      DoublyLinkedListNodeCreate(&test_data, ArrayAllocator);
+    DoublyLinkedListNodeCreate(&test_data, ArrayAllocator);
   DoublyLinkedListNode* assigned_array_slot = node;
   ArrayFree(&node);
   CHECK_EQUAL(8, test_data);

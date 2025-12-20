@@ -78,7 +78,7 @@ typedef struct {
 } NetworkStatus;
 
 extern NetworkStatus
-    g_network_status; /**< Global variable holding the current network status */
+  g_network_status; /**< Global variable holding the current network status */
 
 /** @brief The platform independent part of network handler initialization
  * routine

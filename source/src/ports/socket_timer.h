@@ -69,9 +69,9 @@ void SocketTimerArrayInitialize(SocketTimer* const array_of_socket_timers,
  * @return The Socket Timer of found, otherwise NULL
  */
 SocketTimer* SocketTimerArrayGetSocketTimer(
-    SocketTimer* const array_of_socket_timers,
-    const size_t array_length,
-    const int socket);
+  SocketTimer* const array_of_socket_timers,
+  const size_t array_length,
+  const int socket);
 
 /** @brief
  * Get an empty Socket Timer entry
@@ -82,6 +82,6 @@ SocketTimer* SocketTimerArrayGetSocketTimer(
  * @return An empty Socket Timer entry, or NULL if non is available
  */
 SocketTimer* SocketTimerArrayGetEmptySocketTimer(
-    SocketTimer* const array_of_socket_timers, const size_t array_length);
+  SocketTimer* const array_of_socket_timers, const size_t array_length);
 
 #endif /* SRC_PORTS_SOCKET_TIMER_H_ */

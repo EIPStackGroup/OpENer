@@ -63,7 +63,7 @@ CipStringN* SetCipStringNByData(CipStringN* const cip_string,
     cip_string->length = str_len;
     cip_string->size   = size;
     cip_string->string =
-        CipCalloc(cip_string->length, cip_string->size * sizeof(CipOctet));
+      CipCalloc(cip_string->length, cip_string->size * sizeof(CipOctet));
     if (NULL == cip_string->string) {
       result             = NULL;
       cip_string->length = 0;
@@ -144,7 +144,7 @@ CipString2* SetCipString2ByData(CipString2* const cip_string,
 CipString2* SetCipString2ByCstr(CipString2* const cip_string,
                                 const char* const string) {
   return SetCipString2ByData(
-      cip_string, (CipUint)strlen(string) / 2, (const CipOctet*)string);
+    cip_string, (CipUint)strlen(string) / 2, (const CipOctet*)string);
 }
 
 CipString* ClearCipString(CipString* const cip_string) {
@@ -192,7 +192,7 @@ CipString* SetCipStringByData(CipString* const cip_string,
 CipString* SetCipStringByCstr(CipString* const cip_string,
                               const char* const string) {
   return SetCipStringByData(
-      cip_string, (CipUint)strlen(string), (const CipOctet*)string);
+    cip_string, (CipUint)strlen(string), (const CipOctet*)string);
 }
 
 CipShortString* ClearCipShortString(CipShortString* const cip_string) {
@@ -265,7 +265,7 @@ CipShortString* SetCipShortStringByData(CipShortString* const cip_string,
 CipShortString* SetCipShortStringByCstr(CipShortString* const cip_string,
                                         const char* const string) {
   return SetCipShortStringByData(
-      cip_string, (CipUsint)strlen(string), (const CipOctet*)string);
+    cip_string, (CipUsint)strlen(string), (const CipOctet*)string);
 }
 
 /* Ensures buf is NUL terminated, provided initial validation is successful */

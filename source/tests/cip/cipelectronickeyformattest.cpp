@@ -150,8 +150,8 @@ TEST(CipElectronicKeyFormat, GetMinorRevision) {
 
 TEST(CipElectronicKeyFormat, ParseElectronicKeyTest) {
   /* Size of an electronic key is 1 + 1 + 8 (Segment, Key format, Key) */
-  const CipOctet message[] = {
-      0x34, 0x04, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x84, 0x05};
+  const CipOctet message[]       = { 0x34, 0x04, 0x00, 0x01, 0x00,
+                                     0x02, 0x00, 0x03, 0x84, 0x05 };
   const CipOctet* message_buffer = message;
   GetElectronicKeyFormat4FromMessage(&message_buffer, key);
 

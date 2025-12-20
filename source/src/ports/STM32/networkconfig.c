@@ -25,7 +25,7 @@ EipStatus IfaceGetMacAddress(TcpIpInterface* iface,
 }
 
 static EipStatus GetIpAndNetmaskFromInterface(
-    TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
+  TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   iface_cfg->ip_address   = iface->ip_addr.addr;
   iface_cfg->network_mask = iface->netmask.addr;
 
@@ -33,7 +33,7 @@ static EipStatus GetIpAndNetmaskFromInterface(
 }
 
 static EipStatus GetGatewayFromRoute(
-    TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
+  TcpIpInterface* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   iface_cfg->gateway = iface->gw.addr;
 
   return kEipStatusOk;

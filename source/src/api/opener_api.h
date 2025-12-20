@@ -252,7 +252,7 @@ CipAttributeStruct* GetCipAttribute(const CipInstance* const cip_instance,
                                     const EipUint16 attribute_number);
 
 typedef void (*InitializeCipClass)(
-    CipClass*); /**< Initializer function for CIP class initialization */
+  CipClass*); /**< Initializer function for CIP class initialization */
 
 /** @ingroup CIP_API
  * @brief Allocate memory for new CIP Class and attributes
@@ -309,8 +309,8 @@ CipClass* CreateCipClass(const CipUdint class_code,
  *              0 on error
  */
 CipInstance* AddCipInstances(
-    CipClass* RESTRICT const cip_object_to_add_instances,
-    const CipInstanceNum number_of_instances);
+  CipClass* RESTRICT const cip_object_to_add_instances,
+  const CipInstanceNum number_of_instances);
 
 /** @ingroup CIP_API
  * @brief Create one instance of a given class with a certain instance number
@@ -498,9 +498,9 @@ int DecodeCipByte(CipByte* const data,
                   CipMessageRouterResponse* const message_router_response);
 
 int DecodeCipByteArray(
-    CipByteArray* const data,
-    const CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response);
+  CipByteArray* const data,
+  const CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response);
 
 int DecodeCipWord(CipWord* const data,
                   CipMessageRouterRequest* const message_router_request,
@@ -559,9 +559,9 @@ int DecodeCipString(CipString* const data,
                     CipMessageRouterResponse* const message_router_response);
 
 int DecodeCipShortString(
-    CipShortString* const data,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response);
+  CipShortString* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response);
 
 /** @ingroup CIP_API
  * @brief Create an instance of an assembly object
@@ -596,8 +596,8 @@ typedef struct cip_connection_object CipConnectionObject;
  * @return CIP error code
  */
 typedef CipError (*OpenConnectionFunction)(
-    CipConnectionObject* RESTRICT const connection_object,
-    EipUint16* const extended_error_code);
+  CipConnectionObject* RESTRICT const connection_object,
+  EipUint16* const extended_error_code);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the closing of connections
@@ -606,7 +606,7 @@ typedef CipError (*OpenConnectionFunction)(
  * connection
  */
 typedef void (*ConnectionCloseFunction)(
-    CipConnectionObject* RESTRICT connection_object);
+  CipConnectionObject* RESTRICT connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for handling the timeout of connections
@@ -614,7 +614,7 @@ typedef void (*ConnectionCloseFunction)(
  * @param connection_object The connection object which connection timed out
  */
 typedef void (*ConnectionTimeoutFunction)(
-    CipConnectionObject* connection_object);
+  CipConnectionObject* connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for sending data via a connection
@@ -624,7 +624,7 @@ typedef void (*ConnectionTimeoutFunction)(
  * @return EIP stack status
  */
 typedef EipStatus (*ConnectionSendDataFunction)(
-    CipConnectionObject* connection_object);
+  CipConnectionObject* connection_object);
 
 /** @ingroup CIP_API
  * @brief Function prototype for receiving data via a connection
@@ -636,9 +636,9 @@ typedef EipStatus (*ConnectionSendDataFunction)(
  * @return Stack status
  */
 typedef EipStatus (*ConnectionReceiveDataFunction)(
-    CipConnectionObject* connection_object,
-    const EipUint8* data,
-    const EipUint16 data_length);
+  CipConnectionObject* connection_object,
+  const EipUint8* data,
+  const EipUint16 data_length);
 
 /** @ingroup CIP_API
  * @brief Function pointer for timeout checker functions
@@ -674,10 +674,10 @@ EipStatus AddConnectableObject(const CipUdint class_code,
  * this connection
  */
 void ConfigureExclusiveOwnerConnectionPoint(
-    const unsigned int connection_number,
-    const unsigned int output_assembly_id,
-    const unsigned int input_assembly_id,
-    const unsigned int configuration_assembly_id);
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Configures the connection point for an input only connection.
@@ -693,10 +693,10 @@ void ConfigureExclusiveOwnerConnectionPoint(
  * this connection
  */
 void ConfigureInputOnlyConnectionPoint(
-    const unsigned int connection_number,
-    const unsigned int output_assembly_id,
-    const unsigned int input_assembly_id,
-    const unsigned int configuration_assembly_id);
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** \ingroup CIP_API
  * \brief Configures the connection point for a listen only connection.
@@ -712,10 +712,10 @@ void ConfigureInputOnlyConnectionPoint(
  * this connection
  */
 void ConfigureListenOnlyConnectionPoint(
-    const unsigned int connection_number,
-    const unsigned int output_assembly_id,
-    const unsigned int input_assembly_id,
-    const unsigned int configuration_assembly_id);
+  const unsigned int connection_number,
+  const unsigned int output_assembly_id,
+  const unsigned int input_assembly_id,
+  const unsigned int configuration_assembly_id);
 
 /** @ingroup CIP_API
  * @brief Notify the encapsulation layer that an explicit message has been

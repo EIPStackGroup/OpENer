@@ -98,7 +98,7 @@ int main(int argc, char* arg[]) {
    */
   if (kEipStatusError == NvdataLoad()) {
     OPENER_TRACE_WARN(
-        "Loading of some NV data failed. Maybe the first start?\n");
+      "Loading of some NV data failed. Maybe the first start?\n");
   }
 
   /* Bring up network interface or start DHCP client ... */
@@ -118,7 +118,7 @@ int main(int argc, char* arg[]) {
 
   /* Next actions depend on the set network configuration method. */
   CipDword network_config_method =
-      g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
+    g_tcpip.config_control & kTcpipCfgCtrlMethodMask;
   if (kTcpipCfgCtrlStaticIp == network_config_method) {
     OPENER_TRACE_INFO("Static network configuration done\n");
   }

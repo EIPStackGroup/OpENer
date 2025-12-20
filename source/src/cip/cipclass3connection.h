@@ -33,12 +33,12 @@
 #include "cip/cipconnectionobject.h"
 
 typedef EipStatus (*CipConnectionStateHandler)(
-    CipConnectionObject* RESTRICT const connection_object,
-    ConnectionObjectState new_state);
+  CipConnectionObject* RESTRICT const connection_object,
+  ConnectionObjectState new_state);
 
 EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
-    CipConnectionObject* RESTRICT const connection_object,
-    ConnectionObjectState new_state);
+  CipConnectionObject* RESTRICT const connection_object,
+  ConnectionObjectState new_state);
 
 /** @brief Check if Class3 connection is available and if yes setup all data.
  *
@@ -52,8 +52,8 @@ EipStatus CipClass3ConnectionObjectStateEstablishedHandler(
  *    - On an error the general status code to be put into the response
  */
 CipError EstablishClass3Connection(
-    CipConnectionObject* RESTRICT const connection_object,
-    EipUint16* const extended_error);
+  CipConnectionObject* RESTRICT const connection_object,
+  EipUint16* const extended_error);
 
 /** @brief Initializes the explicit connections mechanism
  *

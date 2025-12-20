@@ -9,7 +9,7 @@ repos:
       - id: check-toml
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.6
+    rev: v21.1.8
     hooks:
       - id: clang-format
         types_or: [c, c++, header]
@@ -35,6 +35,7 @@ repos:
           - "--inconclusive"
           - "--force"
           - "--suppress=missingIncludeSystem"
+          - "--suppress=missingInclude"
         types_or: [c, c++, header]
 
   - repo: https://github.com/shellcheck-py/shellcheck-py

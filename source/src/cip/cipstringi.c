@@ -22,19 +22,19 @@ void CipStringIDelete(CipStringI* const string) {
     switch (string->array_of_string_i_structs[i].char_string_struct) {
       case kCipShortString:
         ClearCipShortString(
-            (CipShortString*)&string->array_of_string_i_structs[i].string);
+          (CipShortString*)&string->array_of_string_i_structs[i].string);
         break;
       case kCipString:
         ClearCipString(
-            (CipString*)&string->array_of_string_i_structs[i].string);
+          (CipString*)&string->array_of_string_i_structs[i].string);
         break;
       case kCipString2:
         ClearCipString2(
-            (CipString2*)&string->array_of_string_i_structs[i].string);
+          (CipString2*)&string->array_of_string_i_structs[i].string);
         break;
       case kCipStringN:
         ClearCipStringN(
-            (CipStringN*)&string->array_of_string_i_structs[i].string);
+          (CipStringN*)&string->array_of_string_i_structs[i].string);
         break;
       default:
         OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
@@ -125,7 +125,7 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
       toString->length       = fromString->length;
       toString->size         = fromString->size;
       toString->string =
-          CipCalloc(toString->length, toString->size * sizeof(CipOctet));
+        CipCalloc(toString->length, toString->size * sizeof(CipOctet));
       memcpy(toString->string,
              fromString->string,
              toString->size * sizeof(CipOctet) * toString->length);
@@ -138,7 +138,7 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
 void CipStringICopy(CipStringI* const to, const CipStringI* const from) {
   to->number_of_strings = from->number_of_strings;
   to->array_of_string_i_structs =
-      CipCalloc(to->number_of_strings, sizeof(CipStringIStruct));
+    CipCalloc(to->number_of_strings, sizeof(CipStringIStruct));
   for (size_t i = 0; i < to->number_of_strings; ++i) {
     CipStringIStruct* const toStruct   = to->array_of_string_i_structs + i;
     CipStringIStruct* const fromStruct = from->array_of_string_i_structs + i;
@@ -153,56 +153,54 @@ void CipStringICopy(CipStringI* const to, const CipStringI* const from) {
 }
 
 void CipStringIDecodeFromMessage(
-    CipStringI* data_to,
-    CipMessageRouterRequest* const message_router_request) {
+  CipStringI* data_to, CipMessageRouterRequest* const message_router_request) {
   CipStringI* target_stringI = data_to;
 
   target_stringI->number_of_strings =
-      GetUsintFromMessage(&message_router_request->data);
+    GetUsintFromMessage(&message_router_request->data);
 
   target_stringI->array_of_string_i_structs =
-      CipCalloc(target_stringI->number_of_strings, sizeof(CipStringIStruct));
+    CipCalloc(target_stringI->number_of_strings, sizeof(CipStringIStruct));
 
   for (size_t i = 0; i < target_stringI->number_of_strings; ++i) {
     target_stringI->array_of_string_i_structs[i].language_char_1 =
-        GetUsintFromMessage(&message_router_request->data);
+      GetUsintFromMessage(&message_router_request->data);
     target_stringI->array_of_string_i_structs[i].language_char_2 =
-        GetUsintFromMessage(&message_router_request->data);
+      GetUsintFromMessage(&message_router_request->data);
     target_stringI->array_of_string_i_structs[i].language_char_3 =
-        GetUsintFromMessage(&message_router_request->data);
+      GetUsintFromMessage(&message_router_request->data);
     target_stringI->array_of_string_i_structs[i].char_string_struct =
-        GetUsintFromMessage(&message_router_request->data);
+      GetUsintFromMessage(&message_router_request->data);
     target_stringI->array_of_string_i_structs[i].character_set =
-        GetUintFromMessage(&message_router_request->data);
+      GetUintFromMessage(&message_router_request->data);
 
     switch (target_stringI->array_of_string_i_structs[i].char_string_struct) {
       case kCipShortString: {
         target_stringI->array_of_string_i_structs[i].string =
-            CipCalloc(1, sizeof(CipShortString));
+          CipCalloc(1, sizeof(CipShortString));
         CipShortString* short_string =
-            (CipShortString*)(target_stringI->array_of_string_i_structs[i]
-                                  .string);
+          (CipShortString*)(target_stringI->array_of_string_i_structs[i]
+                              .string);
         CipUsint length = GetUsintFromMessage(&message_router_request->data);
         SetCipShortStringByData(
-            short_string, length, message_router_request->data);
+          short_string, length, message_router_request->data);
         message_router_request->data += length;
       } break;
       case kCipString: {
         target_stringI->array_of_string_i_structs[i].string =
-            CipCalloc(1, sizeof(CipString));
+          CipCalloc(1, sizeof(CipString));
         CipString* const string =
-            (CipString* const)target_stringI->array_of_string_i_structs[i]
-                .string;
+          (CipString* const)target_stringI->array_of_string_i_structs[i].string;
         CipUint length = GetUintFromMessage(&message_router_request->data);
         SetCipStringByData(string, length, message_router_request->data);
         message_router_request->data += length;
       } break;
       case kCipString2: {
         target_stringI->array_of_string_i_structs[i].string =
-            CipCalloc(1, sizeof(CipString2));
+          CipCalloc(1, sizeof(CipString2));
         CipString2* const string =
-            (CipString2* const)target_stringI->array_of_string_i_structs[i]
-                .string;
+          (CipString2* const)target_stringI->array_of_string_i_structs[i]
+            .string;
         CipUint length = GetUintFromMessage(&message_router_request->data);
         SetCipString2ByData(string, length, message_router_request->data);
         message_router_request->data += length * 2 * sizeof(CipOctet);
@@ -212,10 +210,10 @@ void CipStringIDecodeFromMessage(
         CipUint length = GetUintFromMessage(&message_router_request->data);
 
         target_stringI->array_of_string_i_structs[i].string =
-            CipCalloc(1, sizeof(CipStringN));
+          CipCalloc(1, sizeof(CipStringN));
         CipStringN* const string =
-            (CipStringN* const)target_stringI->array_of_string_i_structs[i]
-                .string;
+          (CipStringN* const)target_stringI->array_of_string_i_structs[i]
+            .string;
         SetCipStringNByData(string, length, size, message_router_request->data);
         message_router_request->data += length * size;
       } break;

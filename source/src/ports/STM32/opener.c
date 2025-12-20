@@ -69,7 +69,7 @@ void opener_init(struct netif* netif) {
   }
   if ((g_end_stack == 0) && (eip_status == kEipStatusOk)) {
     osThreadDef(
-        OpENer, opener_thread, OPENER_THREAD_PRIO, 0, OPENER_STACK_SIZE);
+      OpENer, opener_thread, OPENER_THREAD_PRIO, 0, OPENER_STACK_SIZE);
     osThreadCreate(osThread(OpENer), netif);
     OPENER_TRACE_INFO("OpENer: opener_thread started, free heap size: %d\n",
                       xPortGetFreeHeapSize());

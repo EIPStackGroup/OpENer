@@ -30,19 +30,19 @@ TEST(SocketTimer, NoEmptySocketTimerAvailable) {
 }
 
 TEST(SocketTimer, SetSocket) {
-  SocketTimer timer = {socket : -1, last_update : 0};
+  SocketTimer timer = { socket : -1, last_update : 0 };
   SocketTimerSetSocket(&timer, 1);
   CHECK_EQUAL(1, timer.socket);
 }
 
 TEST(SocketTimer, UpdateSocketTimer) {
-  SocketTimer timer = {socket : -1, last_update : 0};
+  SocketTimer timer = { socket : -1, last_update : 0 };
   SocketTimerSetLastUpdate(&timer, 10);
   CHECK_EQUAL(10, SocketTimerGetLastUpdate(&timer));
 }
 
 TEST(SocketTimer, ClearSocketTimer) {
-  SocketTimer timer = {socket : 5, last_update : 100};
+  SocketTimer timer = { socket : 5, last_update : 100 };
   SocketTimerClear(&timer);
   CHECK_EQUAL(-1, timer.socket);
   CHECK_EQUAL(0, timer.last_update);

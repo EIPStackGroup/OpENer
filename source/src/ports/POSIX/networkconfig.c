@@ -50,7 +50,7 @@ EipStatus IfaceGetMacAddress(const char* iface,
 }
 
 static EipStatus GetIpAndNetmaskFromInterface(
-    const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
+  const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   struct ifreq ifr;
   size_t if_name_len = strlen(iface);
   if (if_name_len < sizeof(ifr.ifr_name)) {
@@ -89,7 +89,7 @@ static EipStatus GetIpAndNetmaskFromInterface(
 }
 
 static EipStatus GetGatewayFromRoute(
-    const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
+  const char* iface, CipTcpIpInterfaceConfiguration* iface_cfg) {
   static const char route_location[] = "/proc/net/route";
 
   FILE* file_handle = fopen(route_location, "r");
@@ -150,7 +150,7 @@ static EipStatus GetGatewayFromRoute(
 }
 
 static EipStatus GetDnsInfoFromResolvConf(
-    CipTcpIpInterfaceConfiguration* iface_cfg) {
+  CipTcpIpInterfaceConfiguration* iface_cfg) {
   static const char resolv_conf_file[] = "/etc/resolv.conf";
   FILE* file_handle                    = fopen(resolv_conf_file, "r");
   char* file_buffer                    = NULL;
@@ -234,7 +234,7 @@ static EipStatus GetDnsInfoFromResolvConf(
 }
 
 static int nanosleep_simple32(uint32_t sleep_ns) {
-  struct timespec tsv = {0, (long)sleep_ns};
+  struct timespec tsv = { 0, (long)sleep_ns };
   struct timespec trem;
   int rc;
 
@@ -257,7 +257,7 @@ EipStatus IfaceGetConfiguration(const char* iface,
   status = GetIpAndNetmaskFromInterface(iface, &local_cfg);
   if (kEipStatusOk == status) {
     (void)nanosleep_simple32(
-        300000000u); /* sleep 300ms to let route "settle" */
+      300000000u); /* sleep 300ms to let route "settle" */
     status = GetGatewayFromRoute(iface, &local_cfg);
     if (kEipStatusOk == status) {
       status = GetDnsInfoFromResolvConf(&local_cfg);

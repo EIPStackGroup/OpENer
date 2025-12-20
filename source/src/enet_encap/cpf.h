@@ -27,17 +27,17 @@ typedef enum {
                                      encapsulation routing is not needed. */
   kCipItemIdListIdentityResponse = 0x000C,
   kCipItemIdConnectionAddress =
-      0x00A1, /**< Type: Address; Connection-based, used for connected messages,
-                 see Vol.2, p.42 */
+    0x00A1, /**< Type: Address; Connection-based, used for connected messages,
+               see Vol.2, p.42 */
   kCipItemIdConnectedDataItem =
-      0x00B1, /**< Type: Data; Connected data item, see Vol.2, p.43 */
+    0x00B1, /**< Type: Data; Connected data item, see Vol.2, p.43 */
   kCipItemIdUnconnectedDataItem =
-      0x00B2, /**< Type: Data; Unconnected message */
+    0x00B2, /**< Type: Data; Unconnected message */
   kCipItemIdListServiceResponse = 0x0100,
   kCipItemIdSocketAddressInfoOriginatorToTarget =
-      0x8000, /**< Type: Data; Sockaddr info item originator to target */
+    0x8000, /**< Type: Data; Sockaddr info item originator to target */
   kCipItemIdSocketAddressInfoTargetToOriginator =
-      0x8001, /**< Type: Data; Sockaddr info item target to originator */
+    0x8001, /**< Type: Data; Sockaddr info item target to originator */
   kCipItemIdSequencedAddressItem = 0x8002 /**< Sequenced Address item */
 } CipItemId;
 
@@ -97,9 +97,9 @@ typedef struct {
  * status
  */
 EipStatus NotifyCommonPacketFormat(
-    const EncapsulationData* const received_data,
-    const struct sockaddr* const originator_address,
-    ENIPMessage* const outgoing_message);
+  const EncapsulationData* const received_data,
+  const struct sockaddr* const originator_address,
+  ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
@@ -114,9 +114,9 @@ EipStatus NotifyCommonPacketFormat(
  * status
  */
 EipStatus NotifyConnectedCommonPacketFormat(
-    const EncapsulationData* const received_data,
-    const struct sockaddr* const originator_address,
-    ENIPMessage* const outgoing_message);
+  const EncapsulationData* const received_data,
+  const struct sockaddr* const originator_address,
+  ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *  Create CPF structure out of the received data.
@@ -128,9 +128,9 @@ EipStatus NotifyConnectedCommonPacketFormat(
  *             EIP_ERROR .. error
  */
 EipStatus CreateCommonPacketFormatStructure(
-    const EipUint8* data,
-    size_t data_length,
-    CipCommonPacketFormatData* common_packet_format_data);
+  const EipUint8* data,
+  size_t data_length,
+  CipCommonPacketFormatData* common_packet_format_data);
 
 /** @ingroup ENCAP
  * Copy data from CPFDataItem into linear memory in message for transmission
@@ -142,8 +142,8 @@ EipStatus CreateCommonPacketFormatStructure(
  *     kEipStatusError .. error
  */
 void AssembleIOMessage(
-    const CipCommonPacketFormatData* const common_packet_format_data_item,
-    ENIPMessage* const message);
+  const CipCommonPacketFormatData* const common_packet_format_data_item,
+  ENIPMessage* const message);
 
 /** @ingroup ENCAP
  * @brief Copy data from message_router_response struct and
@@ -159,9 +159,9 @@ void AssembleIOMessage(
  *         kEipStatusError .. error
  */
 EipStatus AssembleLinearMessage(
-    const CipMessageRouterResponse* const message_router_response,
-    const CipCommonPacketFormatData* const common_packet_format_data_item,
-    ENIPMessage* const outgoing_message);
+  const CipMessageRouterResponse* const message_router_response,
+  const CipCommonPacketFormatData* const common_packet_format_data_item,
+  ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  * @brief Data storage for the any CPF data

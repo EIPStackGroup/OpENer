@@ -36,7 +36,7 @@
  *   - CFG_CAPS is the matching initial value for .config_capability
  */
 #if defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-    0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 #define IFACE_CFG_SET_MODE kSetable
 #define CFG_CAPS \
   (CFG_CAPS_DHCP_CLIENT | CFG_CAPS_CFG_SETTABLE | CFG_CAPS_CFG_CHG_NEEDS_RESET)
@@ -45,73 +45,67 @@
 #define CFG_CAPS (CFG_CAPS_DHCP_CLIENT)
 #endif
 
-/** definition of TCP/IP object instance 1 data */
+// definition of TCP/IP object instance 1 data
 CipTcpIpObject g_tcpip = {
-    .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a
-                       valid configuration from DHCP, BOOTP or NV data */
-    .config_capability = CFG_CAPS, /* attribute #2 config_capability */
+    .status = 0x01,  // attribute #1 TCP status with 1 we indicate that we got
+                     // a valid configuration from DHCP, BOOTP or NV data
+    .config_capability = CFG_CAPS,  // attribute #2 config_capability
     .config_control =
-        0x02, /* attribute #3 config_control: 0x02 means that the device shall
-                 obtain its interface configuration values via DHCP. */
+        0x02,  // attribute #3 config_control: 0x02 means that the device shall
+               // obtain its interface configuration values via DHCP.
 #if 2 != OPENER_ETHLINK_INSTANCE_CNT
-    /* For the details where the physical_link_object path should point to,
-     * depending on the # of Ethernet Link objects refer to Vol. 2, Section
-     * 5-4.3.2.4 "Physical Link Object". */
-    .physical_link_object =
-        {
-            /* attribute #4 physical link object */
-            2,                           /* PathSize in 16 Bit chunks */
-            CIP_ETHERNETLINK_CLASS_CODE, /* Class Code */
-            OPENER_ETHLINK_INSTANCE_CNT, /* Instance # */
-            0 /* Attribute # (not used as this is the EPATH to the EthernetLink
-                 object)*/
-        },
+    // For the details where the physical_link_object path should point to,
+    // depending on the # of Ethernet Link objects refer to Vol. 2, Section
+    // 5-4.3.2.4 "Physical Link Object".
+
+    // attribute #4 physical link object
+    .physical_link_object = {2,  // PathSize in 16 Bit chunks
+                             CIP_ETHERNETLINK_CLASS_CODE,  // Class Code
+                             OPENER_ETHLINK_INSTANCE_CNT,  // Instance #
+                             // Attribute # (not used as this is the EPATH to
+                             // the EthernetLink object)
+                             0},
 #else
-    .physical_link_object =
-        {
-            /* attribute #4 physical link object */
-            0, /* PathSize in 16 Bit chunks */
-            0, /* Class Code */
-            0, /* Instance # */
-            0  /* Attribute # */
-        },
+    // attribute #4 physical link object
+    .physical_link_object = {
+      0,  // PathSize in 16 Bit chunks
+      0,  // Class Code
+      0,  // Instance #
+      0   // Attribute #
+    },
 #endif /* #if OPENER_ETHLINK_INSTANCE_CNT != 2 */
-    .interface_configuration =
-        {   /* attribute #5 interface_configuration */
-         0, /* IP address */
-         0, /* NetworkMask */
-         0, /* Gateway */
-         0, /* NameServer */
-         0, /* NameServer2 */
-         {
-             /* DomainName */
-             0,
-             NULL,
-         }},
-    .hostname =
-        {/* attribute #6 hostname */
-         0,
-         NULL},
-    .mcast_ttl_value = 1, /* attribute #8 mcast TTL value */
-    .mcast_config =
-        {
-            /* attribute #9 multicast configuration */
-            0, /* use the default allocation algorithm */
-            0, /* reserved */
-            1, /* we currently use only one multicast address */
-            0  /* the multicast address will be allocated on IP address
-                  configuration */
-        },
+    // attribute #5 interface_configuration
+    .interface_configuration = {
+      0,  // IP address
+      0,  // NetworkMask
+      0,  // Gateway
+      0,  // NameServer
+      0,  // NameServer2
+      // DomainName
+      { 0,
+        NULL,
+      }
+    },
+    // attribute #6 hostname
+    .hostname        = {0, NULL},
+    .mcast_ttl_value = 1,  // attribute #8 mcast TTL value
+    // attribute #9 multicast configuration
+    .mcast_config = {
+      0,  // use the default allocation algorithm
+      0,  // reserved
+      1,  // we currently use only one multicast address
+      0   // the multicast address will be allocated on IP address
+          // configuration
+    },
     .select_acd = false,
-    .encapsulation_inactivity_timeout =
-        120 /* attribute #13 encapsulation_inactivity_timeout, use a default
-               value of 120 */
-};
+    // attribute #13 encapsulation_inactivity_timeout, use a default
+    // value of 120 seconds
+    .encapsulation_inactivity_timeout = 120};
 
 /************** Static Functions *********************************/
 
 #if defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-    0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 /** Check for pb being an alphanumerical character
  *
  * Is slow but avoids issues with the locale if we're NOT in the 'C' locale.
@@ -306,7 +300,7 @@ static bool IsIOConnectionActive(void) {
     CipConnectionObject* connection = node->data;
     if (ConnectionObjectIsTypeIOConnection(connection) &&
         kConnectionObjectStateTimedOut !=
-            ConnectionObjectGetState(connection)) {
+          ConnectionObjectGetState(connection)) {
       /* An IO connection is present but is only considered active
        *  if it is NOT in timeout state. */
       return true;
@@ -316,19 +310,19 @@ static bool IsIOConnectionActive(void) {
 
   return false;
 }
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) &&
+        // 0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 
-static CipUsint dummy_data_field =
-    0; /**< dummy data fiel to provide non-null data pointers for attributes
-          without data fields */
+/// dummy data field to provide non-null data pointers for attributes without
+/// data fields
+static CipUsint dummy_data_field = 0;
 
 /************** Functions ****************************************/
 
 void EncodeCipTcpIpInterfaceConfiguration(const void* const data,
                                           ENIPMessage* const outgoing_message) {
   CipTcpIpInterfaceConfiguration* tcp_ip_network_interface_configuration =
-      (CipTcpIpInterfaceConfiguration*)data;
+    (CipTcpIpInterfaceConfiguration*)data;
   AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->ip_address),
                    outgoing_message);
   AddDintToMessage(ntohl(tcp_ip_network_interface_configuration->network_mask),
@@ -355,7 +349,7 @@ void EncodeCipTcpIpMulticastConfiguration(const void* const data,
                 outgoing_message);
 
   CipUdint multicast_address =
-      ntohl(g_tcpip.mcast_config.starting_multicast_address);
+    ntohl(g_tcpip.mcast_config.starting_multicast_address);
 
   EncodeCipUdint(&multicast_address, outgoing_message);
 }
@@ -374,22 +368,22 @@ void EncodeCipLastConflictDetected(const void* const data,
   (void)data;
 
   const size_t kAttribute11Size =
-      sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 * sizeof(CipUsint);
+    sizeof(CipUsint) + 6 * sizeof(CipUsint) + 28 * sizeof(CipUsint);
   OPENER_ASSERT(kAttribute11Size == 35);
   FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-      0, kAttribute11Size, outgoing_message);
+    0, kAttribute11Size, outgoing_message);
 }
 
 int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
                                              void* const data,
                                              CipMessageRouterRequest* const
-                                                 message_router_request,
+                                               message_router_request,
                                              CipMessageRouterResponse* const
-                                                 message_router_response) {
+                                               message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipDword configuration_control_received =
-      GetDintFromMessage(&(message_router_request->data));
+    GetDintFromMessage(&(message_router_request->data));
   if ((configuration_control_received & kTcpipCfgCtrlMethodMask) >= 0x03 ||
       (configuration_control_received & ~kTcpipCfgCtrlMethodMask)) {
     message_router_response->general_status = kCipErrorInvalidAttributeValue;
@@ -397,7 +391,7 @@ int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
   } else {
     /* Set reserved bits to zero on reception. */
     configuration_control_received &=
-        (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
+      (kTcpipCfgCtrlMethodMask | kTcpipCfgCtrlDnsEnable);
 
     *(CipDword*)data                        = configuration_control_received;
     number_of_decoded_bytes                 = 4;
@@ -408,15 +402,15 @@ int DecodeTcpIpInterfaceConfigurationControl(/* Attribute 3 */
 }
 
 #if defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-    0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceConfiguration(/* Attribute 5 */
                                          CipTcpIpInterfaceConfiguration* const
-                                             data,  // kCipUdintUdintUdintUdintUdintString
+                                           data,  // kCipUdintUdintUdintUdintUdintString
                                          CipMessageRouterRequest* const
-                                             message_router_request,
+                                           message_router_request,
                                          CipMessageRouterResponse* const
-                                             message_router_response) {
+                                           message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipTcpIpInterfaceConfiguration if_cfg;
@@ -444,18 +438,18 @@ int DecodeCipTcpIpInterfaceConfiguration(/* Attribute 5 */
   if_cfg.name_server_2 = htonl(tmp_ip);
 
   CipUint domain_name_length =
-      GetUintFromMessage(&(message_router_request->data));
+    GetUintFromMessage(&(message_router_request->data));
   if (domain_name_length >
       48) { /* see Vol. 2, Table 5-4.3 Instance Attributes */
     message_router_response->general_status = kCipErrorTooMuchData;
     return number_of_decoded_bytes;
   }
   SetCipStringByData(
-      &if_cfg.domain_name, domain_name_length, message_router_request->data);
+    &if_cfg.domain_name, domain_name_length, message_router_request->data);
   domain_name_length =
-      (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
+    (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
   OPENER_TRACE_INFO(
-      "Domain: ds %hu '%s'\n", domain_name_length, if_cfg.domain_name.string);
+    "Domain: ds %hu '%s'\n", domain_name_length, if_cfg.domain_name.string);
 
   if (!IsValidNetworkConfig(&if_cfg) ||
       (domain_name_length > 0 && !IsValidDomain(if_cfg.domain_name.string))) {
@@ -476,24 +470,24 @@ int DecodeCipTcpIpInterfaceConfiguration(/* Attribute 5 */
 int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
                                     CipString* const data,
                                     CipMessageRouterRequest* const
-                                        message_router_request,
+                                      message_router_request,
                                     CipMessageRouterResponse* const
-                                        message_router_response) {
+                                      message_router_response) {
   int number_of_decoded_bytes = -1;
 
-  CipString tmp_host_name = {.length = 0u, .string = NULL};
+  CipString tmp_host_name = { .length = 0u, .string = NULL };
   CipUint host_name_length =
-      GetUintFromMessage(&(message_router_request->data));
+    GetUintFromMessage(&(message_router_request->data));
   if (host_name_length > 64) { /* see RFC 1123 on more details */
     message_router_response->general_status = kCipErrorTooMuchData;
     return number_of_decoded_bytes;
   }
   SetCipStringByData(
-      &tmp_host_name, host_name_length, message_router_request->data);
+    &tmp_host_name, host_name_length, message_router_request->data);
   host_name_length =
-      (host_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
+    (host_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
   OPENER_TRACE_INFO(
-      "Host Name: ds %hu '%s'\n", host_name_length, tmp_host_name.string);
+    "Host Name: ds %hu '%s'\n", host_name_length, tmp_host_name.string);
 
   if (!IsValidNameLabel(tmp_host_name.string)) {
     message_router_response->general_status = kCipErrorInvalidAttributeValue;
@@ -509,21 +503,28 @@ int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
   return number_of_decoded_bytes;
 }
 
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 !=
+        // OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
-int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
-                                                          void* const data,
-                                                          CipMessageRouterRequest* const
-                                                              message_router_request,
-                                                          CipMessageRouterResponse* const
-                                                              message_router_response) {
+/** @brief Decodes Attribute 13 from a request and sets the inactivity timeout
+ *      value if valid.
+ * @param data Pointer to the attribute data where to store the decoded value.
+ * @param message_router_request Pointer to the message router request
+ *      containing the data to decode.
+ * @param message_router_response Pointer to the message router response
+ *      to set the general status in.
+ * @return Number of decoded bytes or -1 on error.
+ */
+int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(
+  void* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
   int number_of_decoded_bytes = -1;
 
   CipUint inactivity_timeout_received =
-      GetUintFromMessage(&(message_router_request->data));
+    GetUintFromMessage(&(message_router_request->data));
 
-  if (inactivity_timeout_received > 3600) {
+  if (inactivity_timeout_received > 3600U) {
     message_router_response->general_status = kCipErrorInvalidAttributeValue;
   } else {
     *(CipUint*)data                         = inactivity_timeout_received;
@@ -538,24 +539,23 @@ EipStatus CipTcpIpInterfaceInit() {
   CipClass* tcp_ip_class = NULL;
 
   if ((tcp_ip_class =
-           CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */
-                          0,                           /* # class attributes */
-                          7,  /* # highest class attribute number */
-                          2,  /* # class services */
-                          13, /* # instance attributes */
-                          13, /* # highest instance attribute number */
-                          3,  /* # instance services */
-                          1,  /* # instances */
-                          "TCP/IP interface",
-                          4,   /* # class revision */
-                          NULL /* # function pointer for initialization */
-                          )) == 0) {
+         CreateCipClass(kCipTcpIpInterfaceClassCode,  // class code
+                        0,                            // # class attributes
+                        7,   // # highest class attribute number
+                        2,   // # class services
+                        13,  // # instance attributes
+                        13,  // # highest instance attribute number
+                        3,   // # instance services
+                        1,   // # instances
+                        "TCP/IP interface",
+                        4,      // # class revision
+                        NULL))  // # function pointer for initialization
+      == 0) {
     return kEipStatusError;
   }
 
-  CipInstance* instance = GetCipInstance(
-      tcp_ip_class,
-      1); /* bind attributes to the instance #1 that was created above */
+  // bind attributes to the instance #1 that was created above
+  CipInstance* instance = GetCipInstance(tcp_ip_class, 1);
 
   InsertAttribute(instance,
                   1,
@@ -587,7 +587,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   kGetableSingleAndAll);
 
 #if defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && \
-    0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
+  0 != OPENER_TCPIP_IFACE_CFG_SETTABLE
   InsertAttribute(instance,
                   5,
                   kCipUdintUdintUdintUdintUdintString,
@@ -619,8 +619,8 @@ EipStatus CipTcpIpInterfaceInit() {
                   &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 !=
+        // OPENER_TCPIP_IFACE_CFG_SETTABLE*/
 
   InsertAttribute(instance,
                   7,
@@ -678,7 +678,7 @@ EipStatus CipTcpIpInterfaceInit() {
                 "GetAttributeSingle");
 
   InsertService(
-      tcp_ip_class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
+    tcp_ip_class, kGetAttributeAll, &GetAttributeAll, "GetAttributeAll");
 
   InsertService(tcp_ip_class,
                 kSetAttributeSingle,
@@ -689,7 +689,7 @@ EipStatus CipTcpIpInterfaceInit() {
 }
 
 void ShutdownTcpIpInterface(void) {
-  /*Only free the resources if they are initialized */
+  // Only free the resources if they are initialized
   if (NULL != g_tcpip.hostname.string) {
     CipFree(g_tcpip.hostname.string);
     g_tcpip.hostname.string = NULL;
@@ -708,18 +708,18 @@ void ShutdownTcpIpInterface(void) {
  *  section 3-5.3 "Multicast Address Allocation for EtherNet/IP"
  */
 void CipTcpIpCalculateMulticastIp(CipTcpIpObject* const tcpip) {
-  /* Multicast base address according to spec: 239.192.1.0 */
-  static const CipUdint cip_mcast_base_addr = 0xEFC00100;
+  // Multicast base address according to spec: 239.192.1.0
+  static const CipUdint cip_mcast_base_addr = 0xEFC00100UL;
 
-  /* Calculate the CIP multicast address. The multicast address is calculated,
-   * not input */
+  // Calculate the CIP multicast address. The multicast address is calculated,
+  // not input
   CipUdint host_id = ntohl(tcpip->interface_configuration.ip_address) &
                      ~ntohl(tcpip->interface_configuration.network_mask);
   host_id -= 1;
   host_id &= 0x3ff;
 
   tcpip->mcast_config.starting_multicast_address =
-      htonl(cip_mcast_base_addr + (host_id << 5));
+    htonl(cip_mcast_base_addr + (host_id << 5));
 }
 
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance* instance) {

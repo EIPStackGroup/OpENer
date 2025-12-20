@@ -27,14 +27,14 @@
  *
  *  The global instance of the QoS object
  */
-CipQosObject g_qos = {.q_frames_enable   = false,
-                      .dscp.event        = DEFAULT_DSCP_EVENT,
-                      .dscp.general      = DEFAULT_DSCP_GENERAL,
-                      .dscp.urgent       = DEFAULT_DSCP_URGENT,
-                      .dscp.scheduled    = DEFAULT_DSCP_SCHEDULED,
-                      .dscp.high         = DEFAULT_DSCP_HIGH,
-                      .dscp.low          = DEFAULT_DSCP_LOW,
-                      .dscp.explicit_msg = DEFAULT_DSCP_EXPLICIT};
+CipQosObject g_qos = { .q_frames_enable   = false,
+                       .dscp.event        = DEFAULT_DSCP_EVENT,
+                       .dscp.general      = DEFAULT_DSCP_GENERAL,
+                       .dscp.urgent       = DEFAULT_DSCP_URGENT,
+                       .dscp.scheduled    = DEFAULT_DSCP_SCHEDULED,
+                       .dscp.high         = DEFAULT_DSCP_HIGH,
+                       .dscp.low          = DEFAULT_DSCP_LOW,
+                       .dscp.explicit_msg = DEFAULT_DSCP_EXPLICIT };
 
 /** @brief Active set of DSCP data inherits its data from the QoS object on
  * boot-up
@@ -43,13 +43,14 @@ CipQosObject g_qos = {.q_frames_enable   = false,
  * should come into effect only after a restart. Values are initialized with the
  * default values. Changes are activated via the Identity Reset function
  */
-static CipQosDscpValues s_active_dscp = {.event        = DEFAULT_DSCP_EVENT,
-                                         .general      = DEFAULT_DSCP_GENERAL,
-                                         .urgent       = DEFAULT_DSCP_URGENT,
-                                         .scheduled    = DEFAULT_DSCP_SCHEDULED,
-                                         .high         = DEFAULT_DSCP_HIGH,
-                                         .low          = DEFAULT_DSCP_LOW,
-                                         .explicit_msg = DEFAULT_DSCP_EXPLICIT};
+static CipQosDscpValues s_active_dscp = { .event     = DEFAULT_DSCP_EVENT,
+                                          .general   = DEFAULT_DSCP_GENERAL,
+                                          .urgent    = DEFAULT_DSCP_URGENT,
+                                          .scheduled = DEFAULT_DSCP_SCHEDULED,
+                                          .high      = DEFAULT_DSCP_HIGH,
+                                          .low       = DEFAULT_DSCP_LOW,
+                                          .explicit_msg =
+                                            DEFAULT_DSCP_EXPLICIT };
 
 /************** Functions ****************************************/
 
@@ -67,9 +68,9 @@ static CipQosDscpValues s_active_dscp = {.event        = DEFAULT_DSCP_EVENT,
  *          -1 .. error
  */
 int DecodeCipQoSAttribute(
-    void* const data,
-    CipMessageRouterRequest* const message_router_request,
-    CipMessageRouterResponse* const message_router_response) {
+  void* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
   const EipUint8** const cip_message = &(message_router_request->data);
 
   int number_of_decoded_bytes = -1;
@@ -120,17 +121,17 @@ EipStatus CipQoSInit() {
   CipClass* qos_class = NULL;
 
   if ((qos_class =
-           CreateCipClass(kCipQoSClassCode,
-                          7,  // # class attributes
-                          7,  // # highest class attribute number
-                          2,  // # class services
-                          8,  // # instance attributes
-                          8,  // # highest instance attribute number
-                          2,  // # instance services
-                          1,  // # instances
-                          "Quality of Service",
-                          1,      // # class revision
-                          NULL))  // # function pointer for initialization
+         CreateCipClass(kCipQoSClassCode,
+                        7,  // # class attributes
+                        7,  // # highest class attribute number
+                        2,  // # class services
+                        8,  // # instance attributes
+                        8,  // # highest instance attribute number
+                        2,  // # instance services
+                        1,  // # instances
+                        "Quality of Service",
+                        1,      // # class revision
+                        NULL))  // # function pointer for initialization
       == 0) {
     return kEipStatusError;
   }
@@ -195,14 +196,10 @@ EipStatus CipQoSInit() {
                   (void*)&g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
-  InsertService(qos_class,
-                kGetAttributeSingle,
-                &GetAttributeSingle,
-                "GetAttributeSingle");
-  InsertService(qos_class,
-                kSetAttributeSingle,
-                &SetAttributeSingle,
-                "SetAttributeSingle");
+  InsertService(
+    qos_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
+  InsertService(
+    qos_class, kSetAttributeSingle, &SetAttributeSingle, "SetAttributeSingle");
 
   return kEipStatusOk;
 }
@@ -213,13 +210,14 @@ void CipQosUpdateUsedSetQosValues(void) {
 
 void CipQosResetAttributesToDefaultValues(void) {
   static const CipQosDscpValues kDefaultValues = {
-      .event        = DEFAULT_DSCP_EVENT,
-      .general      = DEFAULT_DSCP_GENERAL,
-      .urgent       = DEFAULT_DSCP_URGENT,
-      .scheduled    = DEFAULT_DSCP_SCHEDULED,
-      .high         = DEFAULT_DSCP_HIGH,
-      .low          = DEFAULT_DSCP_LOW,
-      .explicit_msg = DEFAULT_DSCP_EXPLICIT};
+    .event        = DEFAULT_DSCP_EVENT,
+    .general      = DEFAULT_DSCP_GENERAL,
+    .urgent       = DEFAULT_DSCP_URGENT,
+    .scheduled    = DEFAULT_DSCP_SCHEDULED,
+    .high         = DEFAULT_DSCP_HIGH,
+    .low          = DEFAULT_DSCP_LOW,
+    .explicit_msg = DEFAULT_DSCP_EXPLICIT
+  };
   g_qos.q_frames_enable = false;
   g_qos.dscp            = kDefaultValues;
 }

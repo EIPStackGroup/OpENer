@@ -99,7 +99,7 @@ CipDint GetDintFromMessage(const EipUint8** const buffer) {
 CipUdint GetUdintFromMessage(const CipOctet** const buffer_address) {
   const CipOctet* buffer = *buffer_address;
   CipUdint data =
-      buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
+    buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
   *buffer_address += 4;
   return data;
 }
@@ -107,7 +107,7 @@ CipUdint GetUdintFromMessage(const CipOctet** const buffer_address) {
 CipUdint GetDwordFromMessage(const CipOctet** const buffer_address) {
   const CipOctet* buffer = *buffer_address;
   CipDword data =
-      buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
+    buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
   *buffer_address += 4;
   return data;
 }
@@ -163,14 +163,14 @@ void AddDintToMessage(const EipUint32 data,
 EipUint64 GetLintFromMessage(const EipUint8** const buffer) {
   const EipUint8* buffer_address = *buffer;
   EipUint64 data =
-      ((((EipUint64)buffer_address[0]) << 56) & 0xFF00000000000000LL) +
-      ((((EipUint64)buffer_address[1]) << 48) & 0x00FF000000000000LL) +
-      ((((EipUint64)buffer_address[2]) << 40) & 0x0000FF0000000000LL) +
-      ((((EipUint64)buffer_address[3]) << 32) & 0x000000FF00000000LL) +
-      ((((EipUint64)buffer_address[4]) << 24) & 0x00000000FF000000) +
-      ((((EipUint64)buffer_address[5]) << 16) & 0x0000000000FF0000) +
-      ((((EipUint64)buffer_address[6]) << 8) & 0x000000000000FF00) +
-      (((EipUint64)buffer_address[7]) & 0x00000000000000FF);
+    ((((EipUint64)buffer_address[0]) << 56) & 0xFF00000000000000LL) +
+    ((((EipUint64)buffer_address[1]) << 48) & 0x00FF000000000000LL) +
+    ((((EipUint64)buffer_address[2]) << 40) & 0x0000FF0000000000LL) +
+    ((((EipUint64)buffer_address[3]) << 32) & 0x000000FF00000000LL) +
+    ((((EipUint64)buffer_address[4]) << 24) & 0x00000000FF000000) +
+    ((((EipUint64)buffer_address[5]) << 16) & 0x0000000000FF0000) +
+    ((((EipUint64)buffer_address[6]) << 8) & 0x000000000000FF00) +
+    (((EipUint64)buffer_address[7]) & 0x00000000000000FF);
   *buffer += 8;
   return data;
 }
@@ -261,15 +261,14 @@ void MoveMessageNOctets(const int amount_of_bytes_moved,
 void FillNextNMessageOctetsWith(CipOctet value,
                                 unsigned int amount_of_bytes_written,
                                 ENIPMessage* const outgoing_message) {
-  memset(outgoing_message->current_message_position,
-         value,
-         amount_of_bytes_written);
+  memset(
+    outgoing_message->current_message_position, value, amount_of_bytes_written);
 }
 
 void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
-    CipOctet value,
-    unsigned int amount_of_filled_bytes,
-    ENIPMessage* const outgoing_message) {
+  CipOctet value,
+  unsigned int amount_of_filled_bytes,
+  ENIPMessage* const outgoing_message) {
   FillNextNMessageOctetsWith(value, amount_of_filled_bytes, outgoing_message);
   MoveMessageNOctets(amount_of_filled_bytes, outgoing_message);
 }

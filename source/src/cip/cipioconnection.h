@@ -56,8 +56,8 @@
  *    - On an error the general status code to be put into the response
  */
 CipError EstablishIoConnection(
-    CipConnectionObject* RESTRICT const connection_object,
-    EipUint16* const extended_error);
+  CipConnectionObject* RESTRICT const connection_object,
+  EipUint16* const extended_error);
 
 /** @brief Take the data given in the connection object structure and open the
  * necessary communication channels
@@ -76,7 +76,7 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object);
  * @param connection_object pointer to the connection object data
  */
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
-    CipConnectionObject* connection_object);
+  CipConnectionObject* connection_object);
 
 extern EipUint8* g_config_data_buffer;
 extern unsigned int g_config_data_length;

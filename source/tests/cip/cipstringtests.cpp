@@ -15,7 +15,7 @@ extern "C" {
 #include "cipstring.h"
 }
 
-TEST_GROUP(CipString){void setup(){mock().disable();
+TEST_GROUP(CipString){ void setup(){ mock().disable();
 }
 }
 ;
@@ -54,7 +54,7 @@ TEST(CipString, FreeCipStringNWithContent) {
 };
 
 TEST(CipString, CreateStringNFromData) {
-  const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  const CipOctet data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
   CipStringN* string;
   string = (CipStringN*)CipCalloc(1, sizeof(CipStringN));
   SetCipStringNByData(string, 4, 3, data);
@@ -65,7 +65,7 @@ TEST(CipString, CreateStringNFromData) {
 }
 
 TEST(CipString, CreateStringNFromCString) {
-  const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
+  const char data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0 };
   CipStringN* string;
   string = (CipStringN*)CipCalloc(1, sizeof(CipStringN));
   SetCipStringNByCstr(string, data, 3);
@@ -107,7 +107,7 @@ TEST(CipString, FreeCipString2WithContent) {
 };
 
 TEST(CipString, CreateString2FromData) {
-  const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  const CipOctet data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
   CipString2* string;
   string = (CipString2*)CipCalloc(1, sizeof(CipString2));
   SetCipString2ByData(string, 6, data);
@@ -117,7 +117,7 @@ TEST(CipString, CreateString2FromData) {
 }
 
 TEST(CipString, CreateString2FromCString) {
-  const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
+  const char data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0 };
   CipString2* string;
   string = (CipString2*)CipCalloc(1, sizeof(CipString2));
   SetCipString2ByCstr(string, data);
@@ -158,7 +158,7 @@ TEST(CipString, FreeCipStringWithContent) {
 };
 
 TEST(CipString, CreateStringFromData) {
-  const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  const CipOctet data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
   CipString* string;
   string = (CipString*)CipCalloc(1, sizeof(CipString));
   SetCipStringByData(string, sizeof(data), data);
@@ -168,7 +168,7 @@ TEST(CipString, CreateStringFromData) {
 }
 
 TEST(CipString, CreateStringFromCString) {
-  const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
+  const char data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0 };
   CipString* string;
   string = (CipString*)CipCalloc(1, sizeof(CipString));
   SetCipStringByCstr(string, data);
@@ -209,7 +209,7 @@ TEST(CipString, FreeCipShortStringWithContent) {
 };
 
 TEST(CipString, CreateShortStringFromData) {
-  const CipOctet data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  const CipOctet data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
   CipShortString* string;
   string = (CipShortString*)CipCalloc(1, sizeof(CipShortString));
   SetCipShortStringByData(string, sizeof(data), data);
@@ -219,7 +219,7 @@ TEST(CipString, CreateShortStringFromData) {
 }
 
 TEST(CipString, CreateShortStringFromCString) {
-  const char data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0};
+  const char data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0 };
   CipShortString* string;
   string = (CipShortString*)CipCalloc(1, sizeof(CipShortString));
   SetCipShortStringByCstr(string, data);

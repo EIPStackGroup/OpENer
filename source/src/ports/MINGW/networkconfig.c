@@ -161,11 +161,11 @@ EipStatus RetrieveAdapterAddressesTable(ULONG flags,
     p_addr_table = (PIP_ADAPTER_ADDRESSES)MALLOC(outBufLen);
     if (NULL == p_addr_table) {
       OPENER_TRACE_ERR(
-          "Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+        "Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
       return kEipStatusError;
     }
     ret_val =
-        GetAdaptersAddresses(AF_INET, flags, NULL, p_addr_table, &outBufLen);
+      GetAdaptersAddresses(AF_INET, flags, NULL, p_addr_table, &outBufLen);
 
     if (ERROR_BUFFER_OVERFLOW == ret_val) {
       FREE(p_addr_table);
@@ -334,7 +334,7 @@ EipStatus IfaceGetConfiguration(const char* iface,
        */
       {
         PIP_ADAPTER_UNICAST_ADDRESS pUnicast =
-            p_addr_entry->FirstUnicastAddress;
+          p_addr_entry->FirstUnicastAddress;
         if (NULL != pUnicast) {
           local_cfg.ip_address = GetIpFromSocketAddress(&pUnicast->Address);
         }
@@ -343,30 +343,30 @@ EipStatus IfaceGetConfiguration(const char* iface,
         PIP_ADAPTER_PREFIX pPrefix = p_addr_entry->FirstPrefix;
         if (NULL != pPrefix) {
           local_cfg.network_mask =
-              htonl(0xffffffff << (32U - pPrefix->PrefixLength));
+            htonl(0xffffffff << (32U - pPrefix->PrefixLength));
         }
       }
       {
         PIP_ADAPTER_GATEWAY_ADDRESS pGateway =
-            p_addr_entry->FirstGatewayAddress;
+          p_addr_entry->FirstGatewayAddress;
         if (NULL != pGateway) {
           local_cfg.gateway = GetIpFromSocketAddress(&pGateway->Address);
         }
       }
       {
         IP_ADAPTER_DNS_SERVER_ADDRESS* pDnServer =
-            p_addr_entry->FirstDnsServerAddress;
+          p_addr_entry->FirstDnsServerAddress;
         if (NULL != pDnServer) {
           local_cfg.name_server = GetIpFromSocketAddress(&pDnServer->Address);
           pDnServer             = pDnServer->Next;
           if (NULL != pDnServer) {
             local_cfg.name_server_2 =
-                GetIpFromSocketAddress(&pDnServer->Address);
+              GetIpFromSocketAddress(&pDnServer->Address);
           }
         }
       }
       DWORD ret_val =
-          WideToCipString(p_addr_entry->DnsSuffix, &local_cfg.domain_name);
+        WideToCipString(p_addr_entry->DnsSuffix, &local_cfg.domain_name);
       if (NO_ERROR != ret_val) {
         char* error_message = GetErrorMessage(ret_val);
         OPENER_TRACE_ERR("WideToCipString(DnsSuffix) failed with error: %" PRIDW
@@ -425,8 +425,8 @@ EipStatus IfaceWaitForIp(const char* const iface,
           pmib_ipaddr_table = MALLOC(addr_table_sz);
           if (NULL == pmib_ipaddr_table) {
             OPENER_TRACE_ERR(
-                "Memory allocation failed for "
-                "MIB_IPADDRTABLE struct\n");
+              "Memory allocation failed for "
+              "MIB_IPADDRTABLE struct\n");
             return kEipStatusError;
           }
         }
@@ -459,7 +459,7 @@ EipStatus IfaceWaitForIp(const char* const iface,
              (0 == SleepEx(WAIT_CYCLE_MS, FALSE)));
 
     OPENER_TRACE_INFO(
-        "IP=%08" PRIx32 ", timeout=%d\n", (uint32_t)ntohl(ipaddr), timeout);
+      "IP=%08" PRIx32 ", timeout=%d\n", (uint32_t)ntohl(ipaddr), timeout);
     if (pmib_ipaddr_table) {
       FREE(pmib_ipaddr_table);
     }

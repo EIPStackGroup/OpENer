@@ -22,7 +22,7 @@ int GetSocketErrorNumber(void) {
 char* GetErrorMessage(int error_number) {
   char* error_message = NULL;
   FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-                     FORMAT_MESSAGE_IGNORE_INSERTS,
+                   FORMAT_MESSAGE_IGNORE_INSERTS,
                  NULL,
                  error_number,
                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
