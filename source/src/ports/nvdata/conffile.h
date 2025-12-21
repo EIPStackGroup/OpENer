@@ -8,8 +8,8 @@
  *  @brief The interface to handle a configuration file in an abstracted way.
  *
  */
-#ifndef _CONFFILE_H_
-#define _CONFFILE_H_
+#ifndef PORTS_NVDATA_CONFFILE_H_
+#define PORTS_NVDATA_CONFFILE_H_
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -20,4 +20,4 @@ FILE* ConfFileOpen(const bool write, const char* const p_name);
 
 EipStatus ConfFileClose(FILE** p_filep);
 
-#endif /* _CONFFILE_H_ */
+#endif  // PORTS_NVDATA_CONFFILE_H_

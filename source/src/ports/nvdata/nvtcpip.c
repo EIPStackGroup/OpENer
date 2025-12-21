@@ -10,12 +10,12 @@
  *  This is only a code skeleton. The real load and store operation is NOT
  *  implemented.
  */
-#include "nvtcpip.h"
+#include "ports/nvdata/nvtcpip.h"
 
 #include <string.h>
 
-#include "conffile.h"
-#include "trace.h"
+#include "core/trace.h"
+#include "ports/nvdata/conffile.h"
 
 #define TCPIP_CFG_NAME "tcpip.cfg" /**< Name of the configuration file */
 

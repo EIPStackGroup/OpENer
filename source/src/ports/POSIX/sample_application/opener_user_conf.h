@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_USER_CONF_H_
-#define OPENER_USER_CONF_H_
+#ifndef PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file POSIX/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
@@ -264,4 +264,4 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifndef OPENER_UNIT_TEST */
 
-#endif /*OPENER_USER_CONF_H_*/
+#endif  // PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

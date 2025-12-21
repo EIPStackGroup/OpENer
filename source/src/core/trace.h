@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_TRACE_H_
-#define OPENER_TRACE_H_
+#ifndef CORE_TRACE_H_
+#define CORE_TRACE_H_
 
 /** @file "core/trace.h"
  * @brief Tracing infrastructure for OpENer
@@ -98,4 +98,4 @@
 #endif
 /* TRACING *******************************************************************/
 
-#endif /*OPENER_TRACE_H_*/
+#endif  // CORE_TRACE_H_

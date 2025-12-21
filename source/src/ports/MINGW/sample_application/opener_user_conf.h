@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_USER_CONF_H_
-#define OPENER_USER_CONF_H_
+#ifndef PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file
  * @brief OpENer configuration setup
@@ -28,7 +28,8 @@
 #include "test_assert.h"
 #endif /* OPENER_UNIT_TEST */
 
-typedef unsigned short in_port_t;
+// MinGW does not define POSIX in_port_t; must match WinSock's unsigned short
+typedef unsigned short in_port_t;  // NOLINT(runtime/int)
 
 /** @brief Set this define if you have a DLR capable device
  *
@@ -237,4 +238,4 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifndef OPENER_UNIT_TEST */
 
-#endif /*OPENER_USER_CONF_H_*/
+#endif  // PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

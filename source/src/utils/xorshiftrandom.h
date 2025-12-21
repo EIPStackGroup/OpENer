@@ -11,8 +11,8 @@
  */
 #include <stdint.h>
 
-#ifndef OPENER_XORSHIFTRANDOM_H_
-#define OPENER_XORSHIFTRANDOM_H_
+#ifndef UTILS_XORSHIFTRANDOM_H_
+#define UTILS_XORSHIFTRANDOM_H_
 
 /**
  * @brief Sets the initial seed for the XOR shift pseudo-random algorithm
@@ -26,4 +26,4 @@ void SetXorShiftSeed(uint32_t seed);
  */
 uint32_t NextXorShiftUint32(void);
 
-#endif /* OPENER__XORSHIFTRANDOM_H_ */
+#endif  // UTILS_XORSHIFTRANDOM_H_

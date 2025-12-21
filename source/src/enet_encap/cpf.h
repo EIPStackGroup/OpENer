@@ -23,22 +23,22 @@
 /** @brief Definition of Item ID numbers used for address and data items in CPF
  * structures */
 typedef enum {
-  kCipItemIdNullAddress = 0x0000, /**< Type: Address; Indicates that
+  kCipItemIdNullAddress = 0x0000U, /**< Type: Address; Indicates that
                                      encapsulation routing is not needed. */
-  kCipItemIdListIdentityResponse = 0x000C,
+  kCipItemIdListIdentityResponse = 0x000CU,
   kCipItemIdConnectionAddress =
-    0x00A1, /**< Type: Address; Connection-based, used for connected messages,
+    0x00A1U, /**< Type: Address; Connection-based, used for connected messages,
                see Vol.2, p.42 */
   kCipItemIdConnectedDataItem =
-    0x00B1, /**< Type: Data; Connected data item, see Vol.2, p.43 */
+    0x00B1U, /**< Type: Data; Connected data item, see Vol.2, p.43 */
   kCipItemIdUnconnectedDataItem =
-    0x00B2, /**< Type: Data; Unconnected message */
-  kCipItemIdListServiceResponse = 0x0100,
+    0x00B2U, /**< Type: Data; Unconnected message */
+  kCipItemIdListServiceResponse = 0x0100U,
   kCipItemIdSocketAddressInfoOriginatorToTarget =
-    0x8000, /**< Type: Data; Sockaddr info item originator to target */
+    0x8000U, /**< Type: Data; Sockaddr info item originator to target */
   kCipItemIdSocketAddressInfoTargetToOriginator =
-    0x8001, /**< Type: Data; Sockaddr info item target to originator */
-  kCipItemIdSequencedAddressItem = 0x8002 /**< Sequenced Address item */
+    0x8001U, /**< Type: Data; Sockaddr info item target to originator */
+  kCipItemIdSequencedAddressItem = 0x8002U /**< Sequenced Address item */
 } CipItemId;
 
 typedef struct {

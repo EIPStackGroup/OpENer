@@ -12,13 +12,13 @@
  * Also this module provides callback functions to store NV data of known
  *  objects when called by the EIP stack.
  */
-#include "nvdata.h"
+#include "ports/nvdata/nvdata.h"
 
-#include "trace.h"
+#include "core/trace.h"
 
 /* Include headers of objects that need support for NV data here. */
-#include "nvqos.h"
-#include "nvtcpip.h"
+#include "ports/nvdata/nvqos.h"
+#include "ports/nvdata/nvtcpip.h"
 
 /** @brief Load NV data for all object classes
  *

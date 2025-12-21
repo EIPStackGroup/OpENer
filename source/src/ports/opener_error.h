@@ -11,6 +11,9 @@
  *
  */
 
+#ifndef PORTS_OPENER_ERROR_H_
+#define PORTS_OPENER_ERROR_H_
+
 /**
  * @brief Gets the error number or equivalent
  *
@@ -40,3 +43,5 @@ char* GetErrorMessage(int error_number);
  * allocated by GetErrorMessage(int)
  */
 void FreeErrorMessage(char* error_message);
+
+#endif  // PORTS_OPENER_ERROR_H_

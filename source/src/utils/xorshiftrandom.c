@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "xorshiftrandom.h"
+#include "utils/xorshiftrandom.h"
 
 #include <time.h>
 

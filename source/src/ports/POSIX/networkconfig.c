@@ -118,10 +118,11 @@ static EipStatus GetGatewayFromRoute(
     }
   }
 
-  unsigned long tmp_gw;
+  // Match strtoul() return type for proper ULONG_MAX overflow checking
+  unsigned long tmp_gw;  // NOLINT(runtime/int)
   char* end;
-  /* The gateway string is a hex number in network byte order. */
-  errno  = 0; /* To distinguish success / failure later */
+  // The gateway string is a hex number in network byte order.
+  errno  = 0; // To distinguish success / failure later
   tmp_gw = strtoul(gateway_string, &end, 16);
 
   if ((errno == ERANGE && tmp_gw == ULONG_MAX) || /* overflow */
@@ -234,7 +235,7 @@ static EipStatus GetDnsInfoFromResolvConf(
 }
 
 static int nanosleep_simple32(uint32_t sleep_ns) {
-  struct timespec tsv = { 0, (long)sleep_ns };
+  struct timespec tsv = { .tv_sec = 0, .tv_nsec = sleep_ns };
   struct timespec trem;
   int rc;
 

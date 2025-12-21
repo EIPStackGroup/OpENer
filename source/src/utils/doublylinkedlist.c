@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "doublylinkedlist.h"
+#include "utils/doublylinkedlist.h"
 
 #include <assert.h>
 #include <stdio.h>  // Needed to define NULL

@@ -484,15 +484,15 @@ EipStatus NetworkHandlerProcessCyclic(void) {
     (g_network_status.elapsed_time < kOpenerTimerTickInMilliSeconds
        ? kOpenerTimerTickInMilliSeconds - g_network_status.elapsed_time
        : 0) *
-    1000; /* 10 ms */
+    1000;  // 10 ms - TODO(MartinMelikMerkumians) check why 1000 if 10 ms?
 
   int ready_socket =
     select(highest_socket_handle + 1, &read_socket, 0, 0, &g_time_value);
 
   if (ready_socket == kEipInvalidSocket) {
-    if (EINTR == errno) /* we have somehow been interrupted. The default
-                           behavior is to go back into the select loop. */
-    {
+    if (EINTR == errno) {
+      // we have somehow been interrupted. The default behavior is to go back
+      // into the select loop.
       return kEipStatusOk;
     } else {
       int error_code      = GetSocketErrorNumber();
@@ -513,9 +513,10 @@ EipStatus NetworkHandlerProcessCyclic(void) {
 
     for (int socket = 0; socket <= highest_socket_handle; socket++) {
       if (true == CheckSocketSet(socket)) {
-        /* if it is still checked it is a TCP receive */
-        if (kEipStatusError == HandleDataOnTcpSocket(socket)) /* if error */
-        {
+        // if it is still checked it is a TCP receive on an established
+        // connection
+        if (kEipStatusError == HandleDataOnTcpSocket(socket)) {
+          // if error
           CloseTcpSocket(socket);
           RemoveSession(socket); /* clean up session and close the socket */
         }
@@ -617,17 +618,19 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
     if (need_to_send > 0) {
       OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
 
-      /* if the active socket matches a registered UDP callback, handle a UDP
-       * packet */
-      if (sendto(
-            g_network_status.udp_unicast_listener, /* sending from unicast port,
-                                                      due to strange behavior of
-                                                      the broadcast port */
-            (char*)outgoing_message.message_buffer,
-            outgoing_message.used_message_length,
-            0,
-            (struct sockaddr*)&from_address,
-            sizeof(from_address)) != outgoing_message.used_message_length) {
+      // if the active socket matches a registered UDP callback, handle a UDP
+      // packet
+      if (sendto(g_network_status
+                   .udp_unicast_listener,  // sending from unicast port,
+                                           // due to strange behavior of
+                                           // the broadcast port
+                                           // TODO(MartinMelikMerkumians) check
+                 (char*)outgoing_message.message_buffer,
+                 outgoing_message.used_message_length,
+                 0,
+                 (struct sockaddr*)&from_address,
+                 sizeof(from_address)) !=
+          outgoing_message.used_message_length) {
         OPENER_TRACE_INFO("networkhandler: UDP response was not fully sent\n");
       }
     }
@@ -750,7 +753,7 @@ EipStatus SendUdpData(const struct sockaddr_in* const address,
 EipStatus HandleDataOnTcpSocket(int socket) {
   OPENER_TRACE_INFO("Entering HandleDataOnTcpSocket for socket: %d\n", socket);
   int remaining_bytes = 0;
-  long data_sent      = PC_OPENER_ETHERNET_BUFFER_SIZE;
+  int32_t data_sent   = PC_OPENER_ETHERNET_BUFFER_SIZE;
 
   /* We will handle just one EIP packet here the rest is done by the select
    * method which will inform us if more data is available in the socket
@@ -762,7 +765,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
    */
   CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = { 0 };
 
-  long number_of_read_bytes =
+  int32_t number_of_read_bytes =
     recv(socket,
          NWBUF_CAST incoming_message,
          4,
@@ -789,17 +792,18 @@ EipStatus HandleDataOnTcpSocket(int socket) {
     return kEipStatusError;
   }
 
-  const EipUint8* read_buffer =
-    &incoming_message[2]; /* at this place EIP stores the data length */
-  size_t data_size = GetUintFromMessage(&read_buffer) +
+  // at this place EIP stores the data length
+  const EipUint8* read_buffer = &incoming_message[2];
+  size_t data_size            = GetUintFromMessage(&read_buffer) +
                      ENCAPSULATION_HEADER_LENGTH -
-                     4; /* -4 is for the 4 bytes we have already read*/
-  /* (NOTE this advances the buffer pointer) */
-  if ((PC_OPENER_ETHERNET_BUFFER_SIZE - 4) <
-      data_size) { /*TODO can this be handled in a better way?*/
+                     4;  // -4 is for the 4 bytes we have already read
+  // (NOTE this advances the buffer pointer)
+  if ((PC_OPENER_ETHERNET_BUFFER_SIZE - 4) < data_size) {
+    // we cannot handle such large packets
+    // TODO(MartinMelikMerkumians) can this be handled in a better way?
     OPENER_TRACE_ERR(
       "too large packet received will be ignored, will drop the data\n");
-    /* Currently we will drop the whole packet */
+    // Currently we will drop the whole packet
 
     do {
       OPENER_TRACE_INFO(
@@ -808,9 +812,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       number_of_read_bytes =
         recv(socket, NWBUF_CAST & incoming_message[0], data_sent, 0);
 
-      if (number_of_read_bytes ==
-          0) /* got error or connection closed by client */
-      {
+      // got error or connection closed by client
+      if (number_of_read_bytes == 0) {
         int error_code      = GetSocketErrorNumber();
         char* error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(
@@ -847,8 +850,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   number_of_read_bytes =
     recv(socket, NWBUF_CAST & incoming_message[4], data_size, 0);
 
-  if (0 == number_of_read_bytes) /* got error or connection closed by client */
-  {
+  if (0 == number_of_read_bytes) {
+    // got error or connection closed by client
     int error_code      = GetSocketErrorNumber();
     char* error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(
@@ -1101,12 +1104,12 @@ void CheckAndHandleConsumingUdpSocket(void) {
 
   CipConnectionObject* current_connection_object = NULL;
 
-  /* see a message of the registered UDP socket has been received     */
+  // see a message of the registered UDP socket has been received
   while (NULL != iterator) {
     current_connection_object = (CipConnectionObject*)iterator->data;
-    iterator = iterator->next; /* do this at the beginning as the close function
-                                  may can make the entry invalid */
-
+    // do this at the beginning as the close function may can make the entry
+    // invalid
+    iterator = iterator->next;
     if ((kEipInvalidSocket != current_connection_object
                                 ->socket[kUdpCommuncationDirectionConsuming]) &&
         (true ==

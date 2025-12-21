@@ -3,12 +3,12 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_ENCAP_H_
-#define OPENER_ENCAP_H_
+#ifndef ENET_ENCAP_ENCAP_H_
+#define ENET_ENCAP_ENCAP_H_
 
-#include "cipconnectionobject.h"
+#include "cip/cipconnectionobject.h"
 #include "core/typedefs.h"
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 /** @file encap.h
  * @brief This file contains the public interface of the encapsulation layer
@@ -21,19 +21,20 @@
 
 /*** defines ***/
 
-#define ENCAPSULATION_HEADER_LENGTH 24
+/// Length of the encapsulation header in bytes
+#define ENCAPSULATION_HEADER_LENGTH 24U
 
 /** @brief definition of status codes in encapsulation protocol
  * All other codes are either legacy codes, or reserved for future use
  *  */
 typedef enum {
-  kEncapsulationProtocolSuccess              = 0x0000,
-  kEncapsulationProtocolInvalidCommand       = 0x0001,
-  kEncapsulationProtocolInsufficientMemory   = 0x0002,
-  kEncapsulationProtocolIncorrectData        = 0x0003,
-  kEncapsulationProtocolInvalidSessionHandle = 0x0064,
-  kEncapsulationProtocolInvalidLength        = 0x0065,
-  kEncapsulationProtocolUnsupportedProtocol  = 0x0069
+  kEncapsulationProtocolSuccess              = 0x0000U,
+  kEncapsulationProtocolInvalidCommand       = 0x0001U,
+  kEncapsulationProtocolInsufficientMemory   = 0x0002U,
+  kEncapsulationProtocolIncorrectData        = 0x0003U,
+  kEncapsulationProtocolInvalidSessionHandle = 0x0064U,
+  kEncapsulationProtocolInvalidLength        = 0x0065U,
+  kEncapsulationProtocolUnsupportedProtocol  = 0x0069U
 } EncapsulationProtocolErrorCode;
 
 /*** structs ***/
@@ -42,15 +43,14 @@ typedef struct encapsulation_data {
   CipUint data_length;
   CipSessionHandle session_handle;
   CipUdint status;
-  CipOctet
-    sender_context[8]; /**< length of 8, according to the specification */
+  CipOctet sender_context[8];  ///< length of 8, according to the specification
   CipUdint options;
-  const EipUint8* communication_buffer_start; /**< Pointer to the communication
-                                                 buffer used for this message */
+  const EipUint8* communication_buffer_start;  ///< Pointer to the communication
+                                               ///< buffer used for this message
   const EipUint8*
-    current_communication_buffer_position; /**< The current position in the
-                                              communication buffer during the
-                                              decoding process */
+    current_communication_buffer_position;  ///< The current position in the
+                                            ///< communication buffer during the
+                                            ///< decoding process
 } EncapsulationData;
 
 typedef struct encapsulation_service_information {
@@ -138,4 +138,4 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
   const struct sockaddr* const originator_address,
   ENIPMessage* const outgoing_message);
 
-#endif /* OPENER_ENCAP_H_ */
+#endif  // ENET_ENCAP_ENCAP_H_

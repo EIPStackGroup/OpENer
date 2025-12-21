@@ -14,8 +14,8 @@
  * access to the network layer
  */
 
-#ifndef GENERIC_NETWORKHANDLER_H_
-#define GENERIC_NETWORKHANDLER_H_
+#ifndef PORTS_GENERIC_NETWORKHANDLER_H_
+#define PORTS_GENERIC_NETWORKHANDLER_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,31 +27,35 @@
 #endif /* STM32 target */
 
 #include "api/opener_api.h"
-#include "appcontype.h"
-#include "cipconnectionmanager.h"
+#include "cip/appcontype.h"
+#include "cip/cipconnectionmanager.h"
 #include "core/typedefs.h"
-#include "endianconv.h"
-#include "networkhandler.h"
-#include "socket_timer.h"
+#include "enet_encap/endianconv.h"
+#include "ports/networkhandler.h"
+#include "ports/socket_timer.h"
 
 /*The port to be used per default for I/O messages on UDP.*/
 extern const uint16_t kOpenerEipIoUdpPort;
 extern const uint16_t kOpenerEthernetPort;
 
 extern SocketTimer g_timestamps[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
-/** @brief Ethernet/IP standard ports */
-#define kOpenerEthernetPort \
-  44818 /** Port to be used per default for messages on TCP */
-#define kOpenerEipIoUdpPort \
-  2222 /** Port to be used per default for I/O messages on UDP.*/
+/// @brief Ethernet/IP standard ports
+
+/// Port to be used per default for messages on TCP
+#define kOpenerEthernetPort 44818
+/// Port to be used per default for I/O messages on UDP.
+#define kOpenerEipIoUdpPort 2222
 
 // EipUint8 g_ethernet_communication_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE];
 // /**< communication buffer */
 
+/// @brief Master socket set for select function
 extern fd_set master_socket;
+/// @brief Read socket set for select function
 extern fd_set read_socket;
 
-extern int highest_socket_handle; /**< temporary file descriptor for select() */
+/// temporary file descriptor for select()
+extern int highest_socket_handle;
 
 /** @brief This variable holds the TCP socket the received to last explicit
  * message. It is needed for opening point to point connection to determine the
@@ -59,22 +63,24 @@ extern int highest_socket_handle; /**< temporary file descriptor for select() */
  */
 extern int g_current_active_tcp_socket;
 
+/// @brief Time value for select function
 extern struct timeval g_time_value;
+/// @brief Current time in milliseconds
 extern MilliSeconds g_actual_time;
+/// @brief Last time in milliseconds
 extern MilliSeconds g_last_time;
-/** @brief Struct representing the current network status
- *
- */
+
+/// @brief Struct representing the current network status
 typedef struct {
-  int tcp_listener;                  /**< TCP listener socket */
-  int udp_unicast_listener;          /**< UDP unicast listener socket */
-  int udp_global_broadcast_listener; /**< UDP global network broadcast listener
-                                      */
-  int udp_io_messaging;              /**< UDP IO messaging socket */
-  CipUdint ip_address; /**< IP being valid during NetworkHandlerInitialize() */
-  CipUdint network_mask; /**< network mask being valid during
-                            NetworkHandlerInitialize() */
-  MilliSeconds elapsed_time;
+  int tcp_listener;                   ///< TCP listener socket
+  int udp_unicast_listener;           ///< UDP unicast listener socket
+  int udp_global_broadcast_listener;  ///< UDP global network broadcast listener
+  int udp_io_messaging;               ///< UDP IO messaging socket
+  CipUdint ip_address;    ///< IP being valid during NetworkHandlerInitialize()
+  CipUdint network_mask;  ///< network mask being valid during
+                          ///< NetworkHandlerInitialize()
+  MilliSeconds elapsed_time;  ///< elapsed time since last call of
+                              ///< NetworkHandlerProcessCyclic()
 } NetworkStatus;
 
 extern NetworkStatus
@@ -126,4 +132,4 @@ int SetSocketOptionsMulticastProduce(void);
  * @return peer address if successful, else any address (0) */
 EipUint32 GetPeerAddress(void);
 
-#endif /* GENERIC_NETWORKHANDLER_H_ */
+#endif  // PORTS_GENERIC_NETWORKHANDLER_H_

@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_TYPEDEFS_H_
-#define OPENER_TYPEDEFS_H_
+#ifndef CORE_TYPEDEFS_H_
+#define CORE_TYPEDEFS_H_
 
 #include <inttypes.h>
 #include <stdbool.h>
@@ -66,8 +66,8 @@ typedef uint64_t CipLword; /**< 64-bit bit string */
  */
 static const int kEipInvalidSocket = -1;
 
-typedef unsigned long MilliSeconds;
-typedef unsigned long long MicroSeconds;
+typedef uint32_t MilliSeconds;
+typedef uint64_t MicroSeconds;
 
 /** @brief CIP object instance number type.
  *
@@ -132,4 +132,4 @@ typedef enum {
 // } BoolKeywords;
 #endif /* __cplusplus */
 
-#endif /* OPENER_TYPEDEFS_H_ */
+#endif  // CORE_TYPEDEFS_H_

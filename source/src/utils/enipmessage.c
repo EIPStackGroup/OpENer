@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "enipmessage.h"
+#include "utils/enipmessage.h"
 
 #include "string.h"
 

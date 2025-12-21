@@ -3,14 +3,17 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipconnectionobject.h"
-#include "cipethernetlink.h"
-#include "ciptcpipinterface.h"
-#include "doublylinkedlist.h"
-#include "generic_networkhandler.h"
-#include "networkconfig.h"
-#include "opener_api.h"
-#include "trace.h"
+
+#include "ports/STM32/opener.h"
+
+#include "cip/cipconnectionobject.h"
+#include "cip/cipethernetlink.h"
+#include "cip/ciptcpipinterface.h"
+#include "utils/doublylinkedlist.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/STM32/networkconfig.h"
+#include "api/opener_api.h"
+#include "core/trace.h"
 
 #define OPENER_THREAD_PRIO osPriorityAboveNormal
 #define OPENER_STACK_SIZE 2000

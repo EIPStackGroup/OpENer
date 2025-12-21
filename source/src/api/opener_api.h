@@ -3,22 +3,22 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_OPENER_API_H_
-#define OPENER_OPENER_API_H_
+#ifndef AP_OPENER_API_H_
+#define AP_OPENER_API_H_
 
 #include <assert.h>
 #include <stdbool.h>
 
-#include "ciperror.h"
-#include "ciptypes.h"
+#include "cip/ciperror.h"
+#include "cip/ciptypes.h"
 #include "core/typedefs.h"
 
-#if defined(STM32) /** STM32 target -> uses a struct for the network interface \
-                    */
+/// STM32 target -> uses a struct for the network interface
+#if defined(STM32)
 #define TcpIpInterface struct netif
-#else /** other targets -> string for the network interface */
+#else  /// other targets -> string for the network interface
 #define TcpIpInterface const char
-#endif /** other targets */
+#endif  /// other targets
 
 /**  @defgroup CIP_API OpENer User interface
  * @brief This is the public interface of the OpENer. It provides all function
@@ -69,9 +69,8 @@ EipStatus IfaceGetMacAddress(TcpIpInterface* iface,
 EipStatus IfaceWaitForIp(TcpIpInterface* const iface,
                          int timeout,
                          volatile int* const abort_wait);
-
-#if defined(STM32) /** STM32 target, the hostname is linked to the network \
-                      interface */
+/// STM32 target, the hostname is linked to the network interface
+#if defined(STM32)
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
@@ -82,7 +81,7 @@ EipStatus IfaceWaitForIp(TcpIpInterface* const iface,
  *  via the hostname parameter.
  */
 void GetHostName(TcpIpInterface* iface, CipString* hostname);
-#else  /** other targets */
+#else   ///< other targets
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
@@ -92,7 +91,7 @@ void GetHostName(TcpIpInterface* iface, CipString* hostname);
  *  via the hostname parameter.
  */
 void GetHostName(CipString* hostname);
-#endif /** other targets */
+#endif  /// other targets
 
 /** @ingroup CIP_API
  * @brief Set the CIP revision of the device's identity object.
@@ -401,7 +400,7 @@ void InsertGetSetCallback(CipClass* const cip_class,
                           CipGetSetCallback callback_function,
                           CIPAttributeFlag callbacks_to_install);
 
-// TODO: Update documentation
+// TODO(MartinMelikMerkumians): Update documentation
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *
@@ -1179,4 +1178,4 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  *
  */
 
-#endif /*OPENER_OPENER_API_H_*/
+#endif  // API_OPENER_API_H_

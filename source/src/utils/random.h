@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef OPENER_RANDOM_H_
-#define OPENER_RANDOM_H_
+#ifndef UTILS_RANDOM_H_
+#define UTILS_RANDOM_H_
 
 #include <stdint.h>
 
@@ -23,4 +23,4 @@ Random* RandomNew(SetSeed, GetNextUInt32);
 
 void RandomDelete(Random** random);
 
-#endif /* OPENER_RANDOM_H_ */
+#endif /* UTILS_RANDOM_H_ */

@@ -7,20 +7,20 @@
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "ciperror.h"
-#include "cipmessagerouter.h"
-#include "encap.h"
-#include "endianconv.h"
-#include "enipmessage.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/ciperror.h"
+#include "cip/cipmessagerouter.h"
+#include "core/trace.h"
+#include "enet_encap/encap.h"
+#include "enet_encap/endianconv.h"
+#include "utils/enipmessage.h"
 
-const size_t kItemCountFieldSize =
-  2; /**< The size of the item count field in the message */
-const size_t KItemDataTypeIdFieldLength =
-  2; /**< The size of the item count field in the message */
+/// The size of the item count field in the message
+const size_t kItemCountFieldSize = 2;
+/// The size of the item data type ID field in the message
+const size_t KItemDataTypeIdFieldLength = 2;
 
 /** @brief Size, in bytes, of the encoded sequenced address item data field.
  *
@@ -28,8 +28,8 @@ const size_t KItemDataTypeIdFieldLength =
  */
 const EipUint16 kSequencedAddressItemLength = 8;
 
-CipCommonPacketFormatData
-  g_common_packet_format_data_item; /**< CPF global data items */
+/// CPF global data items
+CipCommonPacketFormatData g_common_packet_format_data_item;
 
 static void InitializeMessageRouterResponse(
   CipMessageRouterResponse* const message_router_response) {
@@ -52,15 +52,16 @@ EipStatus NotifyCommonPacketFormat(
          &g_common_packet_format_data_item))) {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
-    return_value = kEipStatusOkSend; /* In cases of errors we normally need to
-                                        send an error response */
+    // In cases of errors we normally need to send an error response
+    return_value = kEipStatusOkSend;
+    // check if NullAddressItem received, otherwise it is no unconnected message
+    // and should not be here
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise
-                                  it is no unconnected message and should not be
-                                  here*/
-    {                          /* found null address item*/
+        kCipItemIdNullAddress) {
+      // found null address item
       if (g_common_packet_format_data_item.data_item.type_id ==
-          kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
+          kCipItemIdUnconnectedDataItem) {
+        // unconnected data item received
         return_value =
           NotifyMessageRouter(g_common_packet_format_data_item.data_item.data,
                               g_common_packet_format_data_item.data_item.length,
@@ -69,16 +70,16 @@ EipStatus NotifyCommonPacketFormat(
                               received_data->session_handle);
         if (return_value != kEipStatusError) {
           SkipEncapsulationHeader(outgoing_message);
-          /* TODO: Here we get the status. What to do? kEipStatusError from
-           * AssembleLinearMessage(). Its not clear how to transport this error
-           * information to the requester. */
+          // TODO(MartinMelikMerkumians): Here we get the status. What to do?
+          // kEipStatusError from AssembleLinearMessage(). Its not clear how to
+          // transport this error information to the requester.
           EipStatus status =
             AssembleLinearMessage(&message_router_response,
                                   &g_common_packet_format_data_item,
                                   outgoing_message);
-          (void)status; /* Suppress unused variable warning. */
+          (void)status;  // Suppress unused variable warning.
 
-          /* Save pointer and move to start for Encapusulation Header */
+          // Save pointer and move to start for Encapusulation Header
           CipOctet* buffer = outgoing_message->current_message_position;
           outgoing_message->current_message_position =
             outgoing_message->message_buffer;
@@ -87,12 +88,12 @@ EipStatus NotifyCommonPacketFormat(
                                       received_data->session_handle,
                                       kEncapsulationProtocolSuccess,
                                       outgoing_message);
-          /* Move pointer back to last octet */
+          // Move pointer back to last octet
           outgoing_message->current_message_position = buffer;
           return_value                               = kEipStatusOkSend;
         }
       } else {
-        /* wrong data item detected*/
+        // wrong data item detected
         OPENER_TRACE_ERR(
           "notifyCPF: got something besides the expected "
           "CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
@@ -129,21 +130,20 @@ EipStatus NotifyConnectedCommonPacketFormat(
   if (kEipStatusError == return_value) {
     OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
   } else {
-    return_value = kEipStatusError; /* For connected explicit messages status
-                                       always has to be 0*/
+    // For connected explicit messages status always has to be 0
+    return_value = kEipStatusError;
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdConnectionAddress) /* check if ConnectedAddressItem received,
-                                        otherwise it is no connected message and
-                                        should not be here*/
-    {                                /* ConnectedAddressItem item */
+        kCipItemIdConnectionAddress) {
+      // check if ConnectedAddressItem received, otherwise it is no connected
+      // message and should not be here ConnectedAddressItem item
       CipConnectionObject* connection_object =
         GetConnectedObject(g_common_packet_format_data_item.address_item.data
                              .connection_identifier);
       if (NULL != connection_object) {
-        /* reset the watchdog timer */
+        // reset the watchdog timer
         ConnectionObjectResetInactivityWatchdogTimerValue(connection_object);
 
-        /*TODO check connection id  and sequence count */
+        // TODO(MartinMelikMerkumians): check connection id  and sequence count
         if (g_common_packet_format_data_item.data_item.type_id ==
             kCipItemIdConnectedDataItem) { /* connected data item received*/
           EipUint8* buffer = g_common_packet_format_data_item.data_item.data;
@@ -161,7 +161,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
                    sizeof(ENIPMessage));
             outgoing_message->current_message_position =
               outgoing_message->message_buffer;
-            /* Regenerate encapsulation header for new message */
+            // Regenerate encapsulation header for new message
             outgoing_message->used_message_length -=
               ENCAPSULATION_HEADER_LENGTH;
             GenerateEncapsulationHeader(received_data,
@@ -170,7 +170,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
                                         kEncapsulationProtocolSuccess,
                                         outgoing_message);
             outgoing_message->current_message_position = buffer;
-            /* End regenerate encapsulation header for new message */
+            // End regenerate encapsulation header for new message
             return kEipStatusOkSend;
           }
           connection_object->sequence_count_consuming =
@@ -192,14 +192,14 @@ EipStatus NotifyConnectedCommonPacketFormat(
               .connection_identifier =
               connection_object->cip_produced_connection_id;
             SkipEncapsulationHeader(outgoing_message);
-            /* TODO: Here we get the status. What to do? kEipStatusError from
-             * AssembleLinearMessage(). Its not clear how to transport this
-             * error information to the requester. */
+            // TODO(MartinMelikMerkumians): Here we get the status. What to do?
+            // kEipStatusError from AssembleLinearMessage(). Its not clear how
+            // to transport this error information to the requester.
             EipStatus status =
               AssembleLinearMessage(&message_router_response,
                                     &g_common_packet_format_data_item,
                                     outgoing_message);
-            (void)status; /* Suppress unused variable warning. */
+            (void)status;  // Suppress unused variable warning.
 
             CipOctet* pos = outgoing_message->current_message_position;
             outgoing_message->current_message_position =
@@ -216,7 +216,7 @@ EipStatus NotifyConnectedCommonPacketFormat(
             return_value = kEipStatusOkSend;
           }
         } else {
-          /* wrong data item detected*/
+          // wrong data item detected
           OPENER_TRACE_ERR(
             "notifyConnectedCPF: got something besides the expected "
             "CIP_ITEM_ID_UNCONNECTEDMESSAGE\n");
@@ -257,8 +257,8 @@ EipStatus CreateCommonPacketFormatStructure(
 
   size_t length_count = 0;
   CipUint item_count  = GetUintFromMessage(&data);
-  // OPENER_ASSERT(4U >= item_count);/* Sanitizing data - probably needs to be
-  // changed for productive code */
+  // OPENER_ASSERT(4U >= item_count); This needs to be replaced by a
+  // non-crashing check and error code
   common_packet_format_data->item_count = item_count;
   length_count += 2;
   if (common_packet_format_data->item_count >= 1U) {
@@ -281,20 +281,20 @@ EipStatus CreateCommonPacketFormatStructure(
     common_packet_format_data->data_item.length  = GetUintFromMessage(&data);
     common_packet_format_data->data_item.data    = (EipUint8*)data;
     if (data_length >=
-        length_count + 4 + common_packet_format_data->data_item.length) {
+        length_count + 4U + common_packet_format_data->data_item.length) {
       data += common_packet_format_data->data_item.length;
-      length_count += (4 + common_packet_format_data->data_item.length);
+      length_count += (4U + common_packet_format_data->data_item.length);
     } else {
       return kEipStatusError;
     }
 
-    /* Data type per CIP Volume 2, Edition 1.4, Table 2-6.1. */
+    // Data type per CIP Volume 2, Edition 1.4, Table 2-6.1.
     CipUint address_item_count =
       (CipUint)(common_packet_format_data->item_count - 2U);
 
+    // TODO(MartinMelikMerkumians) there needs to be a limit check here???
     for (size_t j = 0; j < (address_item_count > 2 ? 2 : address_item_count);
-         j++) /* TODO there needs to be a limit check here???*/
-    {
+         j++) {
       common_packet_format_data->address_info_item[j].type_id =
         GetIntFromMessage(&data);
       OPENER_TRACE_INFO(
@@ -318,32 +318,31 @@ EipStatus CreateCommonPacketFormatStructure(
           data++;
         }
         length_count += 18;
-      } else { /* no sockaddr item found */
+      } else {  // no sockaddr item found
         common_packet_format_data->address_info_item[j].type_id =
-          0; /* mark as not set */
+          0;  // mark as not set
         data -= 2;
       }
     }
   }
-  /* set the addressInfoItems to not set if they were not received */
+  // set the addressInfoItems to not set if they were not received
   if (common_packet_format_data->item_count < 4) {
     common_packet_format_data->address_info_item[1].type_id = 0;
     if (common_packet_format_data->item_count < 3) {
       common_packet_format_data->address_info_item[0].type_id = 0;
     }
   }
-  if (length_count == data_length) { /* length of data is equal to length of
-                                        Addr and length of Data */
+  // length of data is equal to length of Addr and length of Data
+  if (length_count == data_length) {
     return kEipStatusOk;
   } else {
     OPENER_TRACE_WARN(
       "something is wrong with the length in Message Router @ "
       "CreateCommonPacketFormatStructure\n");
+    // there is an optional packet in data stream which is not a sockaddr item
     if (common_packet_format_data->item_count > 2) {
-      /* there is an optional packet in data stream which is not sockaddr item
-       */
       return kEipStatusOk;
-    } else { /* something with the length was wrong */
+    } else {  // something with the length was wrong
       return kEipStatusError;
     }
   }
@@ -360,7 +359,7 @@ void EncodeNullAddressItem(ENIPMessage* const outgoing_message) {
 }
 
 /**
- * Encodes a Connected Address Item into the message frame
+ * @brief Encodes a Connected Address Item into the message frame
  * @param common_packet_format_data_item The Common Packet Format data structure
  * from which the message is constructed
  * @param outgoing_message The outgoing message object
@@ -368,8 +367,8 @@ void EncodeNullAddressItem(ENIPMessage* const outgoing_message) {
 void EncodeConnectedAddressItem(
   const CipCommonPacketFormatData* const common_packet_format_data_item,
   ENIPMessage* const outgoing_message) {
-  /* connected data item -> address length set to 4 and copy
-   * ConnectionIdentifier */
+  // connected data item -> address length set to 4 and copy
+  // ConnectionIdentifier
   AddIntToMessage(kCipItemIdConnectionAddress, outgoing_message);
   AddIntToMessage(4, outgoing_message);
   AddDintToMessage(
@@ -414,7 +413,7 @@ void EncodeItemCount(
 }
 
 /**
- * Adds the data item type to the message frame
+ * @brief Adds the data item type to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure
  * from which the message is constructed
@@ -428,7 +427,7 @@ void EncodeDataItemType(
 }
 
 /**
- * Adds the data item section length to the message frame
+ * @brief Adds the data item section length to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure
  * from which the message is constructed
@@ -442,7 +441,7 @@ void EncodeDataItemLength(
 }
 
 /**
- * Adds the data items to the message frame
+ * @briefAdds the data items to the message frame
  *
  * @param common_packet_format_data_item The Common Packet Format data structure
  * from which the message is constructed
@@ -473,7 +472,7 @@ void EncodeConnectedDataItemLength(
   ENIPMessage* const outgoing_message) {
   AddIntToMessage(
     (EipUint16)(message_router_response->message.used_message_length + 4 +
-                2 /* TODO: Magic numbers */
+                2  // TODO(MartinMelikMerkumians): Magic numbers
                 + (2 * message_router_response->size_of_additional_status)),
     outgoing_message);
 }
@@ -590,7 +589,7 @@ void EncodeUnconnectedDataItemLength(
   ENIPMessage* const outgoing_message) {
   AddIntToMessage(
     (EipUint16)(message_router_response->message.used_message_length +
-                4 /* TODO: Magic number */
+                4  // TODO(MartinMelikMerkumians): Magic number
                 + (2 * message_router_response->size_of_additional_status)),
     outgoing_message);
 }
@@ -654,15 +653,15 @@ EipStatus AssembleLinearMessage(
   const CipCommonPacketFormatData* const common_packet_format_data_item,
   ENIPMessage* const outgoing_message) {
   if (message_router_response) {
-    /* add Interface Handle and Timeout = 0 -> only for SendRRData and
-     * SendUnitData necessary */
+    // add Interface Handle and Timeout = 0 -> only for SendRRData and
+    // SendUnitData necessary
     AddDintToMessage(0, outgoing_message);
     AddIntToMessage(0, outgoing_message);
   }
 
   EncodeItemCount(common_packet_format_data_item, outgoing_message);
 
-  /* process Address Item */
+  // process Address Item
   switch (common_packet_format_data_item->address_item.type_id) {
     case kCipItemIdNullAddress: {
       EncodeNullAddressItem(outgoing_message);
@@ -683,7 +682,7 @@ EipStatus AssembleLinearMessage(
       return kEipStatusError;
   }
 
-  /* process Data Item */
+  // process Data Item
   if ((common_packet_format_data_item->data_item.type_id ==
        kCipItemIdUnconnectedDataItem) ||
       (common_packet_format_data_item->data_item.type_id ==
@@ -691,19 +690,20 @@ EipStatus AssembleLinearMessage(
     if (message_router_response) {
       EncodeDataItemType(common_packet_format_data_item, outgoing_message);
 
+      // Connected Item
       if (common_packet_format_data_item->data_item.type_id ==
-          kCipItemIdConnectedDataItem) { /* Connected Item */
+          kCipItemIdConnectedDataItem) {
         EncodeConnectedDataItemLength(message_router_response,
                                       outgoing_message);
         EncodeSequenceNumber(&g_common_packet_format_data_item,
                              outgoing_message);
 
-      } else { /* Unconnected Item */
+      } else {  // Unconnected Item
         EncodeUnconnectedDataItemLength(message_router_response,
                                         outgoing_message);
       }
 
-      /* write message router response into linear memory */
+      // write message router response into linear memory
       EncodeReplyService(message_router_response, outgoing_message);
       EncodeReservedFieldOfLengthByte(message_router_response,
                                       outgoing_message);
@@ -711,7 +711,7 @@ EipStatus AssembleLinearMessage(
       EncodeExtendedStatus(message_router_response, outgoing_message);
       EncodeMessageRouterResponseData(message_router_response,
                                       outgoing_message);
-    } else { /* connected IO Message to send */
+    } else {  // connected IO Message to send
       EncodeDataItemType(common_packet_format_data_item, outgoing_message);
 
       EncodeDataItemLength(common_packet_format_data_item, outgoing_message);
@@ -725,10 +725,10 @@ EipStatus AssembleLinearMessage(
    * EtherNet/IP specification doesn't demand it, but there are EIP
    * devices which depend on CPF items to appear in the order of their
    * ID number */
-  for (int type = kCipItemIdSocketAddressInfoOriginatorToTarget;
+  for (uint_fast16_t type = kCipItemIdSocketAddressInfoOriginatorToTarget;
        type <= kCipItemIdSocketAddressInfoTargetToOriginator;
        type++) {
-    for (int j = 0; j < 2; j++) {
+    for (size_t j = 0U; j < 2U; j++) {
       if (common_packet_format_data_item->address_info_item[j].type_id ==
           type) {
         EncodeSockaddrInfoItemTypeId(

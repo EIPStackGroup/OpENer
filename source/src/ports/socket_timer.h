@@ -4,10 +4,10 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_PORTS_SOCKET_TIMER_H_
-#define SRC_PORTS_SOCKET_TIMER_H_
+#ifndef PORTS_SOCKET_TIMER_H_
+#define PORTS_SOCKET_TIMER_H_
 
-#include "core/" core / typedefs.h ""
+#include "core/typedefs.h"
 
 /** @brief Data structure to store last usage times for sockets
  *
@@ -84,4 +84,4 @@ SocketTimer* SocketTimerArrayGetSocketTimer(
 SocketTimer* SocketTimerArrayGetEmptySocketTimer(
   SocketTimer* const array_of_socket_timers, const size_t array_length);
 
-#endif /* SRC_PORTS_SOCKET_TIMER_H_ */
+#endif  // PORTS_SOCKET_TIMER_H_

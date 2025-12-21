@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_USER_CONF_H_
-#define OPENER_USER_CONF_H_
+#ifndef PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file WIN32/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
@@ -24,7 +24,8 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-typedef unsigned short in_port_t;
+// MSVC compatibility: in_port_t must match network stack's unsigned short
+typedef unsigned short in_port_t;  // NOLINT(runtime/int)
 
 #include "core/typedefs.h"
 
@@ -239,4 +240,4 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifndef OPENER_UNIT_TEST */
 
-#endif /*OPENER_USER_CONF_H_*/
+#endif  // PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
