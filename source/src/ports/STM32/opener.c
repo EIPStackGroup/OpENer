@@ -6,14 +6,14 @@
 
 #include "ports/STM32/opener.h"
 
+#include "api/opener_api.h"
 #include "cip/cipconnectionobject.h"
 #include "cip/cipethernetlink.h"
 #include "cip/ciptcpipinterface.h"
-#include "utils/doublylinkedlist.h"
-#include "ports/generic_networkhandler.h"
-#include "ports/STM32/networkconfig.h"
-#include "api/opener_api.h"
 #include "core/trace.h"
+#include "ports/STM32/networkconfig.h"
+#include "ports/generic_networkhandler.h"
+#include "utils/doublylinkedlist.h"
 
 #define OPENER_THREAD_PRIO osPriorityAboveNormal
 #define OPENER_STACK_SIZE 2000

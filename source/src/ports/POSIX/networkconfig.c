@@ -122,7 +122,7 @@ static EipStatus GetGatewayFromRoute(
   unsigned long tmp_gw;  // NOLINT(runtime/int)
   char* end;
   // The gateway string is a hex number in network byte order.
-  errno  = 0; // To distinguish success / failure later
+  errno  = 0;  // To distinguish success / failure later
   tmp_gw = strtoul(gateway_string, &end, 16);
 
   if ((errno == ERANGE && tmp_gw == ULONG_MAX) || /* overflow */

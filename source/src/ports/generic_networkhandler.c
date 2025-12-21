@@ -13,20 +13,20 @@
  * platform network handler
  */
 
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 #include <assert.h>
 #include <inttypes.h>
 #include <signal.h>
 #include <stdbool.h>
 
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "encap.h"
-#include "opener_error.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "enet_encap/encap.h"
+#include "ports/opener_error.h"
 #include "opener_user_conf.h"
-#include "trace.h"
-#include "typedefs.h"
+#include "core/trace.h"
+#include "core/typedefs.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 

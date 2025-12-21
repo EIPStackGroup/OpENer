@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "nvdata.h"
+#include "cip/appcontype.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "ports/nvdata/nvdata.h"
 #include "opener_api.h"
-#include "trace.h"
+#include "core/trace.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
-#include "cipethernetlink.h"
+#include "cip/cipethernetlink.h"
 #include "ethlinkcbs.h"
 #endif
 

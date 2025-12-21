@@ -4,7 +4,7 @@
  *
  *****************************************************************************/
 
- #ifndef PORTS_POSIX_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#ifndef PORTS_POSIX_SAMPLE_APPLICATION_ETHLINKCBS_H_
 #define PORTS_POSIX_SAMPLE_APPLICATION_ETHLINKCBS_H_
 
 /** @file

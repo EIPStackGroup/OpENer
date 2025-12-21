@@ -12,4 +12,4 @@
  * This file contains the network configuration for the Win32 platform.
  */
 
- #endif  // PORTS_WIN32_NETWORKCONFIG_H_
+#endif  // PORTS_WIN32_NETWORKCONFIG_H_

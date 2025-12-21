@@ -8,15 +8,15 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "cipconnectionobject.h"
-#include "cipethernetlink.h"
-#include "ciptcpipinterface.h"
-#include "doublylinkedlist.h"
-#include "generic_networkhandler.h"
-#include "networkconfig.h"
-#include "nvdata.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/cipethernetlink.h"
+#include "cip/ciptcpipinterface.h"
+#include "utils/doublylinkedlist.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/WIN32/networkconfig.h"
+#include "ports/nvdata/nvdata.h"
+#include "api/opener_api.h"
+#include "core/trace.h"
 
 #define BringupNetwork(if_name, method, if_cfg, hostname) (0)
 #define ShutdownNetwork(if_name) (0)

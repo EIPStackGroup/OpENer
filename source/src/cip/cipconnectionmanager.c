@@ -24,7 +24,7 @@
 #include "enet_encap/cpf.h"
 #include "enet_encap/encap.h"
 #include "enet_encap/endianconv.h"
-#include "opener_api.h"
+#include "api/opener_api.h"
 #include "opener_user_conf.h"
 #include "ports/generic_networkhandler.h"
 #include "utils/xorshiftrandom.h"

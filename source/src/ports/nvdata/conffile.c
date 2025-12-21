@@ -14,8 +14,8 @@
 /* COMPILATION SWITCHES */
 #define ENABLE_VERBOSE 0 /* Enable this to observe internal operation */
 
-/*   INCLUDES          */
-#include "conffile.h"
+// INCLUDES
+#include "ports/nvdata/conffile.h"
 
 #include <errno.h>
 #include <string.h>
@@ -27,8 +27,8 @@
 #include <sys/types.h>
 #endif /* if defined _WIN32 */
 
-#include "opener_error.h"
-#include "trace.h"
+#include "ports/opener_error.h"
+#include "core/trace.h"
 
 /** Base path for configuration file store */
 #define CFG_BASE "nvdata/"

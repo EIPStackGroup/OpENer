@@ -23,8 +23,8 @@
 /*---------------------------------------------------------------------------*/
 #include "ethlinkcbs.h"
 
-#include "cipethernetlink.h"
-#include "trace.h"
+#include "cip/cipethernetlink.h"
+#include "core/trace.h"
 
 /*---------------------------------------------------------------------------*/
 /*                                LOCALS                                     */

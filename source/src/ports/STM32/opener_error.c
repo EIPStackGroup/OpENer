@@ -11,7 +11,7 @@
  *
  */
 
- // Force the use of the XSI compliant strerror_r() function.
+// Force the use of the XSI compliant strerror_r() function.
 #undef _GNU_SOURCE
 
 #include "opener_error.h"
