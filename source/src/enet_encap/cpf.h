@@ -23,17 +23,21 @@
 /** @brief Definition of Item ID numbers used for address and data items in CPF
  * structures */
 typedef enum {
-  kCipItemIdNullAddress =
-    0x0000U,  ///< Type: Address; Indicates that encapsulation routing is not needed.
+  kCipItemIdNullAddress = 0x0000U,  ///< Type: Address; Indicates that
+                                    ///< encapsulation routing is not needed.
   kCipItemIdListIdentityResponse = 0x000CU,
   kCipItemIdConnectionAddress =
-    0x00A1U, ///< Type: Address; Connection-based, used for connected messages, see Vol.2, p.42
-  kCipItemIdConnectedDataItem = 0x00B1U, ///< Type: Data; Connected data item, see Vol.2, p.43
-  kCipItemIdUnconnectedDataItem = 0x00B2U, ///< Type: Data; Unconnected message
+    0x00A1U,  ///< Type: Address; Connection-based, used for connected messages,
+              ///< see Vol.2, p.42
+  kCipItemIdConnectedDataItem =
+    0x00B1U,  ///< Type: Data; Connected data item, see Vol.2, p.43
+  kCipItemIdUnconnectedDataItem = 0x00B2U,  ///< Type: Data; Unconnected message
   kCipItemIdListServiceResponse = 0x0100U,
-  kCipItemIdSocketAddressInfoOriginatorToTarget = 0x8000U, ///< Type: Data; Sockaddr info item originator to target
-  kCipItemIdSocketAddressInfoTargetToOriginator = 0x8001U, ///< Type: Data; Sockaddr info item target to originator
-  kCipItemIdSequencedAddressItem = 0x8002U ///< Sequenced Address item
+  kCipItemIdSocketAddressInfoOriginatorToTarget =
+    0x8000U,  ///< Type: Data; Sockaddr info item originator to target
+  kCipItemIdSocketAddressInfoTargetToOriginator =
+    0x8001U,  ///< Type: Data; Sockaddr info item target to originator
+  kCipItemIdSequencedAddressItem = 0x8002U  ///< Sequenced Address item
 } CipItemId;
 
 typedef struct {
@@ -60,13 +64,14 @@ typedef struct {
   CipUint type_id;    ///< Either 0x8000 for O->T or 0x8001 for T->O
   CipUint length;     ///< Length shall be 16 bytes
   CipInt sin_family;  ///< Shall be AF_INET = 2 in big endian order
-  CipUint sin_port;   ///< For point-to-point connection this shall be set to the
-                      ///< used UDP port (recommended port = 0x08AE). For multicast
-                      ///< this shall be set to 0x08AE and treated by the receiver
-                      ///< as don't care. Big endian order
-  CipUdint sin_addr;  ///< For multicast connections shall be set to the
-                      ///< multicast address. For point-to-point shall be treated
-                      ///< as don't care, recommended value 0. Big endian order.
+  CipUint sin_port;  ///< For point-to-point connection this shall be set to the
+                     ///< used UDP port (recommended port = 0x08AE). For
+                     ///< multicast this shall be set to 0x08AE and treated by
+                     ///< the receiver as don't care. Big endian order
+  CipUdint
+    sin_addr;  ///< For multicast connections shall be set to the
+               ///< multicast address. For point-to-point shall be treated
+               ///< as don't care, recommended value 0. Big endian order.
   CipUsint nasin_zero[8];  ///< Length of 8, Recommended value zero
 } SocketAddressInfoItem;
 
@@ -74,7 +79,7 @@ typedef struct {
 /** @brief A variant of a CPF packet, including item count, one address item,
  * one data item, and two Sockaddr Info items */
 typedef struct {
-  EipUint16 item_count; ///< Up to four for this structure allowed
+  EipUint16 item_count;  ///< Up to four for this structure allowed
   AddressItem address_item;
   DataItem data_item;
   SocketAddressInfoItem address_info_item[2];

@@ -27,8 +27,8 @@
 #include <sys/types.h>
 #endif /* if defined _WIN32 */
 
-#include "ports/opener_error.h"
 #include "core/trace.h"
+#include "ports/opener_error.h"
 
 /** Base path for configuration file store */
 #define CFG_BASE "nvdata/"

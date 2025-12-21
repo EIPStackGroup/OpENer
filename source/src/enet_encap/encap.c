@@ -9,19 +9,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "api/opener_api.h"
 #include "cip/cipcommon.h"
 #include "cip/cipconnectionmanager.h"
 #include "cip/cipidentity.h"
 #include "cip/cipmessagerouter.h"
 #include "cip/ciptcpipinterface.h"
+#include "core/trace.h"
 #include "enet_encap/cpf.h"
 #include "enet_encap/endianconv.h"
-#include "ports/generic_networkhandler.h"
-#include "api/opener_api.h"
-#include "ports/opener_error.h"
 #include "opener_user_conf.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/opener_error.h"
 #include "ports/socket_timer.h"
-#include "core/trace.h"
 
 /* IP address data taken from TCPIPInterfaceObject*/
 const EipUint16 kSupportedProtocolVersion =
@@ -651,17 +651,20 @@ EipStatus HandleReceivedSendUnitDataCommand(
   const struct sockaddr* const originator_address,
   ENIPMessage* const outgoing_message) {
   // EipStatus return_value = kEipStatusOkSend;
-  // TODO(MartinMelikMerkumians): Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6?
+  // TODO(MartinMelikMerkumians): Shouldn't this be kEipStatusOk cause we must
+  // not send any response if data_length < 6?
   EipStatus return_value = kEipStatusOk;
 
   if (receive_data->data_length >= 6) {
-    // Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets
-    // don't use the data yet
+    // Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
+    // packets don't use the data yet
 
     // skip over null interface handle
-    GetDintFromMessage((const EipUint8** const)&receive_data->current_communication_buffer_position);
+    GetDintFromMessage((const EipUint8** const)&receive_data
+                         ->current_communication_buffer_position);
     // skip over unused timeout value
-    GetIntFromMessage((const EipUint8** const)&receive_data->current_communication_buffer_position);
+    GetIntFromMessage((const EipUint8** const)&receive_data
+                        ->current_communication_buffer_position);
     // the rest is in CPF format
     ((EncapsulationData* const)receive_data)->data_length -= 6;
 
@@ -677,7 +680,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
                                   receive_data->session_handle,
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
-      // TODO(MartinMelikMerkumians): Needs to be here if line with first TODO of this function is adjusted.
+      // TODO(MartinMelikMerkumians): Needs to be here if line with first TODO
+      // of this function is adjusted.
       return_value = kEipStatusOkSend;
     }
   }
@@ -697,17 +701,20 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
   const struct sockaddr* const originator_address,
   ENIPMessage* const outgoing_message) {
   // EipStatus return_value = kEipStatusOkSend;
-  // TODO(MartinMelikMerkumians): Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6?
+  // TODO(MartinMelikMerkumians): Shouldn't this be kEipStatusOk cause we must
+  // not send any response if data_length < 6?
   EipStatus = kEipStatusOk;
 
   if (receive_data->data_length >= 6) {
-    // Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets
-    // don't use the data yet
+    // Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
+    // packets don't use the data yet
 
     // skip over null interface handle
-    GetDintFromMessage((const EipUint8** const)&receive_data->current_communication_buffer_position);
+    GetDintFromMessage((const EipUint8** const)&receive_data
+                         ->current_communication_buffer_position);
     // skip over unused timeout value
-    GetIntFromMessage((const EipUint8** const)&receive_data->current_communication_buffer_position);
+    GetIntFromMessage((const EipUint8** const)&receive_data
+                        ->current_communication_buffer_position);
     // the rest is in CPF format
     ((EncapsulationData* const)receive_data)->data_length -= 6;
 
@@ -722,7 +729,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
                                   receive_data->session_handle,
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
-      // TODO(MartinMelikMerkumians): Needs to be here if line with first TODO of this function is adjusted.
+      // TODO(MartinMelikMerkumians): Needs to be here if line with first TODO
+      // of this function is adjusted.
       return_value = kEipStatusOkSend;
     }
   }

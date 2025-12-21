@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "api/opener_api.h"
 #include "cip/appcontype.h"
 #include "cip/cipassembly.h"
 #include "cip/cipclass3connection.h"
@@ -24,7 +25,6 @@
 #include "enet_encap/cpf.h"
 #include "enet_encap/encap.h"
 #include "enet_encap/endianconv.h"
-#include "api/opener_api.h"
 #include "opener_user_conf.h"
 #include "ports/generic_networkhandler.h"
 #include "utils/xorshiftrandom.h"
