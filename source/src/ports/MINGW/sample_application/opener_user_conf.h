@@ -25,7 +25,7 @@
 #include "core/typedefs.h"
 
 #ifdef OPENER_UNIT_TEST
-#include "tests/utils/test_assert.h"
+#include "tests/test_assert.h"
 #endif /* OPENER_UNIT_TEST */
 
 // MinGW does not define POSIX in_port_t; must match WinSock's unsigned short
