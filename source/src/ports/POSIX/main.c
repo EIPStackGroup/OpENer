@@ -16,15 +16,15 @@
 #include <sys/mman.h>
 #endif
 
+#include "api/opener_api.h"
 #include "cip/cipconnectionobject.h"
 #include "cip/cipethernetlink.h"
 #include "cip/ciptcpipinterface.h"
-#include "utils/doublylinkedlist.h"
-#include "ports/generic_networkhandler.h"
-#include "ports/POSIX/networkconfig.h"
-#include "ports/nvdata/nvdata.h"
-#include "api/opener_api.h"
 #include "core/trace.h"
+#include "ports/POSIX/networkconfig.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/nvdata/nvdata.h"
+#include "utils/doublylinkedlist.h"
 
 #define BringupNetwork(if_name, method, if_cfg, hostname) (0)
 #define ShutdownNetwork(if_name) (0)

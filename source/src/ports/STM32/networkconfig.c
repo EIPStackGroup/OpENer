@@ -13,9 +13,9 @@
 #include "cip/cipcommon.h"
 #include "cip/ciperror.h"
 #include "cip/cipstring.h"
+#include "core/trace.h"
 #include "lwip/netif.h"
 #include "opener_api.h"
-#include "core/trace.h"
 
 EipStatus IfaceGetMacAddress(TcpIpInterface* iface,
                              uint8_t* const physical_address) {

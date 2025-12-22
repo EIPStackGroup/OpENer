@@ -18,11 +18,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#include "api/opener_api.h"
 #include "cip/cipcommon.h"
 #include "cip/cipstring.h"
-#include "api/opener_api.h"
-#include "ports/opener_error.h"
 #include "core/trace.h"
+#include "ports/opener_error.h"
 
 /* ---------- Macro definitions ------------------------ */
 #define MALLOC(x) malloc(x)

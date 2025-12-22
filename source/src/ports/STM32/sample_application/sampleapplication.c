@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "api/opener_api.h"
 #include "cip/appcontype.h"
 #include "cip/cipidentity.h"
 #include "cip/cipqos.h"
 #include "cip/ciptcpipinterface.h"
-#include "api/opener_api.h"
 #include "core/trace.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM 100U                  // 0x064

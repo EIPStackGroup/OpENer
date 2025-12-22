@@ -12,9 +12,9 @@
 #include "cip/cipidentity.h"
 #include "cip/cipqos.h"
 #include "cip/ciptcpipinterface.h"
-#include "ports/nvdata/nvdata.h"
-#include "opener_api.h"
 #include "core/trace.h"
+#include "opener_api.h"
+#include "ports/nvdata/nvdata.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 #include "cip/cipethernetlink.h"
 #include "ports/POSIX/sample_application/ethlinkcbs.h"
@@ -209,5 +209,4 @@ void RunIdleChanged(EipUint32 run_idle_value) {
     CipIdentitySetExtendedDeviceStatus(
       kAtLeastOneIoConnectionEstablishedAllInIdleMode);
   }
-  (void)run_idle_value;
 }

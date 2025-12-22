@@ -14,10 +14,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "enet_encap/encap.h"
-#include "ports/opener_error.h"
-#include "opener_user_conf.h"
 #include "core/trace.h"
+#include "enet_encap/encap.h"
+#include "opener_user_conf.h"
+#include "ports/opener_error.h"
 
 MicroSeconds GetMicroSeconds(void) {
   struct timespec now = { .tv_nsec = 0, .tv_sec = 0 };

@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "api/opener_api.h"
 #include "cip/appcontype.h"
 #include "cip/cipqos.h"
 #include "cip/ciptcpipinterface.h"
-#include "ports/nvdata/nvdata.h"
-#include "api/opener_api.h"
 #include "core/trace.h"
+#include "ports/nvdata/nvdata.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 #include "cip/cipethernetlink.h"
 #include "ports/MINGW/sample_application/ethlinkcbs.h"

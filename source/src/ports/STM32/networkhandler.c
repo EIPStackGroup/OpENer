@@ -6,10 +6,10 @@
 
 #include "ports/networkhandler.h"
 
-#include "enet_encap/encap.h"
-#include "ports/opener_error.h"
-#include "opener_user_conf.h"
 #include "core/trace.h"
+#include "enet_encap/encap.h"
+#include "opener_user_conf.h"
+#include "ports/opener_error.h"
 
 MilliSeconds GetMilliSeconds(void) {
   return osKernelSysTick();

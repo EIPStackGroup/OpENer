@@ -18,10 +18,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "api/opener_api.h"
 #include "cip/cipcommon.h"
 #include "cip/ciperror.h"
 #include "cip/cipstring.h"
-#include "api/opener_api.h"
 #include "core/trace.h"
 
 EipStatus IfaceGetMacAddress(const char* iface,

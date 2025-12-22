@@ -27,7 +27,8 @@
 /// Supported Encapsulation protocol version
 const EipUint16 kSupportedProtocolVersion = 1;
 
-/// Mask of which options are supported as of the current CIP specs no other option value as 0 should be supported.
+/// Mask of which options are supported as of the current CIP specs no other
+/// option value as 0 should be supported.
 const CipUdint kEncapsulationHeaderOptionsFlag = 0x00;
 
 /// the position of the session handle within the encapsulation header
@@ -45,18 +46,19 @@ typedef enum {
 } SessionStatus;
 
 const int kSenderContextSize =
-  8; ///< size of sender context in encapsulation header
+  8;  ///< size of sender context in encapsulation header
 
 /// @brief definition of known encapsulation commands
 typedef enum {
-  kEncapsulationCommandNoOperation = 0x0000,  ///< only allowed for TCP
+  kEncapsulationCommandNoOperation  = 0x0000,  ///< only allowed for TCP
   kEncapsulationCommandListServices = 0x0004,  ///< allowed for both UDP and TCP
   kEncapsulationCommandListIdentity = 0x0063,  ///< allowed for both UDP and TCP
-  kEncapsulationCommandListInterfaces = 0x0064,  ///< optional, allowed for both UDP and TCP
-  kEncapsulationCommandRegisterSession   = 0x0065,  ///< only allowed for TCP
-  kEncapsulationCommandUnregisterSession = 0x0066,  ///< only allowed for TCP
+  kEncapsulationCommandListInterfaces =
+    0x0064,  ///< optional, allowed for both UDP and TCP
+  kEncapsulationCommandRegisterSession      = 0x0065,  ///< only allowed for TCP
+  kEncapsulationCommandUnregisterSession    = 0x0066,  ///< only allowed for TCP
   kEncapsulationCommandSendRequestReplyData = 0x006F,  ///< only allowed for TCP
-  kEncapsulationCommandSendUnitData = 0x0070  ///< only allowed for TCP
+  kEncapsulationCommandSendUnitData         = 0x0070   ///< only allowed for TCP
 } EncapsulationCommand;
 
 /// @brief definition of capability flags
@@ -65,7 +67,8 @@ typedef enum {
   kCapabilityFlagsCipUdpClass0or1 = 0x0100U
 } CapabilityFlags;
 
-/// According to EIP spec at least 2 delayed message requests should be supported
+/// According to EIP spec at least 2 delayed message requests should be
+/// supported
 #define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES 2U
 
 /* Encapsulation layer data  */
@@ -174,7 +177,8 @@ EipStatus HandleReceivedExplictTcpData(int socket,
   if (kEncapsulationHeaderOptionsFlag == encapsulation_data.options) {
     // TODO(MartinMelikMerkumians) generate appropriate error response
     if (*number_of_remaining_bytes >= 0) {
-      /// check if the message is corrupt: header size + claimed payload size > than what we actually received
+      /// check if the message is corrupt: header size + claimed payload size >
+      /// than what we actually received
       // full package or more received
       encapsulation_data.status = kEncapsulationProtocolSuccess;
       return_value              = kEipStatusOkSend;
@@ -266,8 +270,8 @@ EipStatus HandleReceivedExplictUdpData(const int socket,
   if (kEncapsulationHeaderOptionsFlag == encapsulation_data.options) {
     // TODO(MartinMelikMerkumians) generate appropriate error response
     if (*number_of_remaining_bytes >= 0) {
-      // check if the message is corrupt: header size + claimed payload size > than what we actually received
-      // full package or more received
+      // check if the message is corrupt: header size + claimed payload size >
+      // than what we actually received full package or more received
       encapsulation_data.status = kEncapsulationProtocolSuccess;
       return_value              = kEipStatusOkSend;
       // most of these functions need a reply to be send
@@ -498,8 +502,7 @@ void DetermineDelayTime(
 
   if (0 == maximum_delay_time) {
     maximum_delay_time = kListIdentityDefaultDelayTime;
-  } else if (kListIdentityMinimumDelayTime >
-             maximum_delay_time) {
+  } else if (kListIdentityMinimumDelayTime > maximum_delay_time) {
     // if maximum_delay_time is between 1ms and 500ms set it to 500ms (minimum)
     maximum_delay_time = kListIdentityMinimumDelayTime;
   }
@@ -522,8 +525,8 @@ void EncapsulateRegisterSessionCommandResponseMessage(
                               encapsulation_protocol_status,
                               outgoing_message);
 
-  AddIntToMessage(1, outgoing_message); // protocol version
-  AddIntToMessage(0, outgoing_message); // Options flag, shall be set to zero
+  AddIntToMessage(1, outgoing_message);  // protocol version
+  AddIntToMessage(0, outgoing_message);  // Options flag, shall be set to zero
 }
 
 /* @brief Check supported protocol, generate session handle, send replay back to
@@ -552,16 +555,16 @@ void HandleReceivedRegisterSessionCommand(
    * option flag is zero*/
   // Option field should be zero
   if ((0 < protocol_version) &&
-      (protocol_version <= kSupportedProtocolVersion) &&
-      (0 == option_flag)) {
+      (protocol_version <= kSupportedProtocolVersion) && (0 == option_flag)) {
     // check if the socket has already a session open
     for (unsigned int i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i) {
       if (g_registered_sessions[i] == socket) {
         // the socket has already registered a session this is not allowed
         OPENER_TRACE_INFO(
           "Error: A session is already registered at socket %d\n", socket);
-        // return the already assigned session back, the cip spec is not clear about this needs to be tested
-        session_handle = i + 1;
+        // return the already assigned session back, the cip spec is not clear
+        // about this needs to be tested
+        session_handle                = i + 1;
         encapsulation_protocol_status = kEncapsulationProtocolInvalidCommand;
         session_index                 = kSessionStatusInvalid;
         break;
