@@ -106,7 +106,7 @@ CipShortString* GetDeviceProductName(void) {
 }
 
 static inline void MergeStatusAndExtStatus(void) {
-  CipWord status_flags = g_identity.status & (~kExtStatusMask);
+  CipWord status_flags = g_identity.status & (CipWord) ~(CipWord)kExtStatusMask;
   CipWord ext_status   = g_identity.ext_status & kExtStatusMask;
 
   // Any major fault will override the current extended status with kMajorFault.
@@ -127,7 +127,7 @@ static inline void MergeStatusAndExtStatus(void) {
  *  value.
  */
 void CipIdentitySetStatusFlags(const CipWord status_flags) {
-  g_identity.status |= status_flags & (~kExtStatusMask);
+  g_identity.status |= status_flags & (CipWord) ~(CipWord)kExtStatusMask;
   MergeStatusAndExtStatus();
 }
 
@@ -140,7 +140,7 @@ void CipIdentitySetStatusFlags(const CipWord status_flags) {
  *  value.
  */
 void CipIdentityClearStatusFlags(const CipWord status_flags) {
-  g_identity.status &= ~(status_flags & (~kExtStatusMask));
+  g_identity.status &= status_flags & (CipWord) ~(CipWord)kExtStatusMask;
   MergeStatusAndExtStatus();
 }
 

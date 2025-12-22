@@ -129,13 +129,13 @@ if (DOXYGEN_FOUND)
 
     # exclude subdirectories of non active platforms depending on OpENer_PLATFORM
     set(OpENer_EXCLUDE_PATTERNS "")
-    if (NOT (${OpENer_PLATFORM} STREQUAL "POSIX"))
+    if (NOT OpENer_PLATFORM STREQUAL "POSIX")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/POSIX/*")
     endif ()
-    if (NOT (${OpENer_PLATFORM} STREQUAL "WIN32"))
+    if (NOT OpENer_PLATFORM STREQUAL "WIN32")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/WIN32/*")
     endif ()
-    if (NOT (${OpENer_PLATFORM} STREQUAL "MINGW"))
+    if (NOT OpENer_PLATFORM STREQUAL "MINGW")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/MINGW/*")
     endif ()
 
