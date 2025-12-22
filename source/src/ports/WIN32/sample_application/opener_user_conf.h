@@ -174,6 +174,13 @@ typedef unsigned short in_port_t;  // NOLINT(runtime/int)
  */
 static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
+#ifdef OPENER_WITH_TRACES
+/* If we have tracing enabled provide LOG_TRACE macro */
+#include <stdio.h>
+
+#define LOG_TRACE(...) fprintf(stderr, __VA_ARGS__)
+#endif /* ifdef OPENER_WITH_TRACES */
+
 /*
  * Omit assertion definitions when building unit tests. These will
  * be defined with versions suitable for the unit test environment.
@@ -181,10 +188,6 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 #ifndef OPENER_UNIT_TEST
 
 #ifdef OPENER_WITH_TRACES
-/* If we have tracing enabled provide LOG_TRACE macro */
-#include <stdio.h>
-
-#define LOG_TRACE(...) fprintf(stderr, __VA_ARGS__)
 
 #ifdef IDLING_ASSERT
 /** @brief A specialized assertion command enabled by IDLING_ASSERT that
