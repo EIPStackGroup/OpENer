@@ -3,19 +3,19 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkconfig.h"
+#include "ports/STM32/networkconfig.h"
 
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "cipstring.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "cip/cipstring.h"
 #include "lwip/netif.h"
 #include "opener_api.h"
-#include "trace.h"
+#include "core/trace.h"
 
 EipStatus IfaceGetMacAddress(TcpIpInterface* iface,
                              uint8_t* const physical_address) {

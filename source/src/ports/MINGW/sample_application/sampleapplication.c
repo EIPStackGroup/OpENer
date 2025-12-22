@@ -7,23 +7,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "nvdata.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/appcontype.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "ports/nvdata/nvdata.h"
+#include "api/opener_api.h"
+#include "core/trace.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
-#include "cipethernetlink.h"
-#include "ethlinkcbs.h"
+#include "cip/cipethernetlink.h"
+#include "ports/MINGW/sample_application/ethlinkcbs.h"
 #endif
 
-#define DEMO_APP_INPUT_ASSEMBLY_NUM 100                  // 0x064
-#define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150                 // 0x096
-#define DEMO_APP_CONFIG_ASSEMBLY_NUM 151                 // 0x097
-#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM 152   // 0x098
-#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153  // 0x099
-#define DEMO_APP_EXPLICT_ASSEMBLY_NUM 154                // 0x09A
+#define DEMO_APP_INPUT_ASSEMBLY_NUM 100U                  // 0x064
+#define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150U                 // 0x096
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM 151U                 // 0x097
+#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM 152U   // 0x098
+#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153U  // 0x099
+#define DEMO_APP_EXPLICT_ASSEMBLY_NUM 154U                // 0x09A
 
 /* local functions */
 

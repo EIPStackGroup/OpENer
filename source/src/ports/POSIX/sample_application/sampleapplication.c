@@ -8,24 +8,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipidentity.h"
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "nvdata.h"
+#include "cip/appcontype.h"
+#include "cip/cipidentity.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "ports/nvdata/nvdata.h"
 #include "opener_api.h"
-#include "trace.h"
+#include "core/trace.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
-#include "cipethernetlink.h"
-#include "ethlinkcbs.h"
+#include "cip/cipethernetlink.h"
+#include "ports/POSIX/sample_application/ethlinkcbs.h"
 #endif
 
-#define DEMO_APP_INPUT_ASSEMBLY_NUM 100                  // 0x064
-#define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150                 // 0x096
-#define DEMO_APP_CONFIG_ASSEMBLY_NUM 151                 // 0x097
-#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM 152   // 0x098
-#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153  // 0x099
-#define DEMO_APP_EXPLICT_ASSEMBLY_NUM 154                // 0x09A
+#define DEMO_APP_INPUT_ASSEMBLY_NUM 100U                  // 0x064
+#define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150U                 // 0x096
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM 151U                 // 0x097
+#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM 152U   // 0x098
+#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153U  // 0x099
+#define DEMO_APP_EXPLICT_ASSEMBLY_NUM 154U                // 0x09A
 
 /* global variables for demo application (4 assembly data fields)  ************/
 
@@ -164,8 +164,8 @@ EipStatus AfterAssemblyDataReceived(CipInstance* instance) {
 }
 
 EipBool8 BeforeAssemblyDataSend(CipInstance* pa_pstInstance) {
-  /*update data to be sent e.g., read inputs of the device */
-  /*In this sample app we mirror the data from out to inputs on data receive
+  /* update data to be sent e.g., read inputs of the device */
+  /* In this sample app we mirror the data from out to inputs on data receive
    * therefore we need nothing to do here. Just return true to inform that
    * the data is new.
    */
@@ -178,17 +178,17 @@ EipBool8 BeforeAssemblyDataSend(CipInstance* pa_pstInstance) {
 }
 
 EipStatus ResetDevice(void) {
-  /* add reset code here*/
+  /* add reset code here */
   CloseAllConnections();
   CipQosUpdateUsedSetQosValues();
   return kEipStatusOk;
 }
 
 EipStatus ResetDeviceToInitialConfiguration(void) {
-  /*rest the parameters */
+  /* reset the parameters */
   g_tcpip.encapsulation_inactivity_timeout = 120;
   CipQosResetAttributesToDefaultValues();
-  /*than perform device reset*/
+  /* then perform device reset */
   ResetDevice();
   return kEipStatusOk;
 }
@@ -203,7 +203,7 @@ void CipFree(void* data) {
 
 void RunIdleChanged(EipUint32 run_idle_value) {
   OPENER_TRACE_INFO("Run/Idle handler triggered\n");
-  if ((0x0001 & run_idle_value) == 1) {
+  if ((0x0001U & run_idle_value) == 1) {
     CipIdentitySetExtendedDeviceStatus(kAtLeastOneIoConnectionInRunMode);
   } else {
     CipIdentitySetExtendedDeviceStatus(

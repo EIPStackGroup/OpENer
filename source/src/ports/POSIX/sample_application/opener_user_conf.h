@@ -54,7 +54,7 @@
 #endif
 
 #ifdef OPENER_UNIT_TEST
-#include "test_assert.h"
+#include "tests/utils/test_assert.h"
 #endif /* OPENER_UNIT_TEST */
 
 /** @brief Set this define if you have a DLR capable device

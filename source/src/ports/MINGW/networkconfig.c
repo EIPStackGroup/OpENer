@@ -6,7 +6,7 @@
 
 /* ---------- Include files ---------------------------- */
 #define WIN32_LEAN_AND_MEAN
-#include "networkconfig.h"
+#include "ports/networkconfig.h"
 
 #include <errno.h>
 #include <inttypes.h>
@@ -18,11 +18,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "cipcommon.h"
-#include "cipstring.h"
-#include "opener_api.h"
-#include "opener_error.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/cipstring.h"
+#include "api/opener_api.h"
+#include "ports/opener_error.h"
+#include "core/trace.h"
 
 /* ---------- Macro definitions ------------------------ */
 #define MALLOC(x) malloc(x)

@@ -21,10 +21,10 @@
 /*---------------------------------------------------------------------------*/
 /*                               INCLUDES                                    */
 /*---------------------------------------------------------------------------*/
-#include "ethlinkcbs.h"
+#include "ports/POSIX/sample_application/ethlinkcbs.h"
 
-#include "cipethernetlink.h"
-#include "trace.h"
+#include "cip/cipethernetlink.h"
+#include "core/trace.h"
 
 /*---------------------------------------------------------------------------*/
 /*                                LOCALS                                     */

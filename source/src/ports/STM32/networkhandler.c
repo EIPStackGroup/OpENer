@@ -4,12 +4,12 @@
  *
  ******************************************************************************/
 
-#include "networkhandler.h"
+#include "ports/networkhandler.h"
 
-#include "encap.h"
-#include "opener_error.h"
+#include "enet_encap/encap.h"
+#include "ports/opener_error.h"
 #include "opener_user_conf.h"
-#include "trace.h"
+#include "core/trace.h"
 
 MilliSeconds GetMilliSeconds(void) {
   return osKernelSysTick();
@@ -42,9 +42,9 @@ int SetSocketToNonBlocking(int socket_handle) {
 }
 
 int SetQosOnSocket(const int socket, CipUsint qos_value) {
-  /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
-   *  Note that the DSCP value, if placed directly in the ToS field
-   *  in the IP header, must be shifted left 2 bits. */
+  // Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
+  //  Note that the DSCP value, if placed directly in the ToS field
+  //  in the IP header, must be shifted left 2 bits.
   int set_tos = qos_value << 2;
   return setsockopt(socket, IPPROTO_IP, IP_TOS, &set_tos, sizeof(set_tos));
 }

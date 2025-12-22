@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cpf.h"
+#include "enet_encap/cpf.h"
 
 #include <string.h>
 

@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef AP_OPENER_API_H_
-#define AP_OPENER_API_H_
+#ifndef API_OPENER_API_H_
+#define API_OPENER_API_H_
 
 #include <assert.h>
 #include <stdbool.h>

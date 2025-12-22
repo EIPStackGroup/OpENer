@@ -21,7 +21,7 @@
 /*---------------------------------------------------------------------------*/
 /*                               INCLUDES                                    */
 /*---------------------------------------------------------------------------*/
-#include "ethlinkcbs.h"
+#include "ports/WIN32/sample_application/ethlinkcbs.h"
 
 #include "cip/cipethernetlink.h"
 #include "core/trace.h"

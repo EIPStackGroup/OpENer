@@ -15,7 +15,7 @@
 #include "ports/nvdata/nvdata.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
 #include "cip/cipethernetlink.h"
-#include "ethlinkcbs.h"
+#include "ports/WIN32/sample_application/ethlinkcbs.h"
 #endif
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM 100                  // 0x064
