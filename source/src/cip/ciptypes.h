@@ -6,10 +6,10 @@
 #ifndef CIP_CIPTYPES_H_
 #define CIP_CIPTYPES_H_
 
-#include "api/opener_user_conf.h"
 #include "core/typedefs.h"
-#include "enet_encap/enipmessage.h"
+#include "opener_user_conf.h"
 #include "ports/networkhandler.h"
+#include "utils/enipmessage.h"
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */

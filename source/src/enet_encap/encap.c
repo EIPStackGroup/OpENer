@@ -695,7 +695,7 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
   // EipStatus return_value = kEipStatusOkSend;
   // TODO(MartinMelikMerkumians): Shouldn't this be kEipStatusOk cause we must
   // not send any response if data_length < 6?
-  EipStatus = kEipStatusOk;
+  EipStatus return_value = kEipStatusOk;
 
   if (receive_data->data_length >= 6) {
     // Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF

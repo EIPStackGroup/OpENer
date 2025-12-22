@@ -23,13 +23,15 @@ endmacro(opener_platform_support ARGS)
 #######################################
 macro(opener_common_includes)
   set( SRC_DIR "${OpENer_SOURCE_DIR}/src" )
+  set( API_SRC_DIR "${SRC_DIR}/api" )
+  set( CORE_SRC_DIR "${SRC_DIR}/core" )
   set( CIP_SRC_DIR "${SRC_DIR}/cip" )
   set( ENET_ENCAP_SRC_DIR "${SRC_DIR}/enet_encap" )
   set( PORTS_SRC_DIR "${SRC_DIR}/ports")
   set( NVDATA_SRC_DIR "${SRC_DIR}/ports/nvdata")
   set( UTILS_SRC_DIR "${SRC_DIR}/utils")
 
-  include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${CIP_SRC_DIR} ${CIP_CONNETION_MANAGER_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} ${UTILS_SRC_DIR} ${OpENer_CIP_OBJECTS_DIR} ${NVDATA_SRC_DIR} )
+  include_directories( ${PROJECT_SOURCE_DIR} ${SRC_DIR} ${API_SRC_DIR} ${CORE_SRC_DIR} ${CIP_SRC_DIR} ${CIP_CONNETION_MANAGER_SRC_DIR} ${ENET_ENCAP_SRC_DIR} ${PORTS_SRC_DIR} ${UTILS_SRC_DIR} ${OpENer_CIP_OBJECTS_DIR} ${NVDATA_SRC_DIR} )
   include_directories( "${PROJECT_BINARY_DIR}/src/ports" )
 endmacro(opener_common_includes)
 

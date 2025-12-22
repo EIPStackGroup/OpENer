@@ -240,17 +240,17 @@ typedef enum {
  *  b
  *  @def SEQ_GT32(a, b) Checks if sequence number a is greater than b
  */
-#define SEQ_LEQ32(a, b) ((int32_fast_t)((a) - (b)) <= 0)
-#define SEQ_GEQ32(a, b) ((int32_fast_t)((a) - (b)) >= 0)
-#define SEQ_GT32(a, b) ((int32_fast_t)((a) - (b)) > 0)
+#define SEQ_LEQ32(a, b) ((int_fast32_t)((a) - (b)) <= 0)
+#define SEQ_GEQ32(a, b) ((int_fast32_t)((a) - (b)) >= 0)
+#define SEQ_GT32(a, b) ((int_fast32_t)((a) - (b)) > 0)
 
 /** @brief similar macros for comparing 16 bit sequence numbers
  * @def SEQ_LEQ16(a, b) Checks if sequence number a is less or equal than b
  * @def SEQ_GEQ16(a, b) Checks if sequence number a is greater or equal than
  *  b
  */
-#define SEQ_LEQ16(a, b) ((int16_fast_t)((a) - (b)) <= 0)
-#define SEQ_GEQ16(a, b) ((int16_fast_t)((a) - (b)) >= 0)
+#define SEQ_LEQ16(a, b) ((int_fast16_t)((a) - (b)) <= 0)
+#define SEQ_GEQ16(a, b) ((int_fast16_t)((a) - (b)) >= 0)
 
 /** @brief Connection Manager class code */
 static const CipUint kCipConnectionManagerClassCode = 0x06U;

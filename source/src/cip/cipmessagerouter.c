@@ -10,7 +10,7 @@
 #include "cip/ciperror.h"
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "enet_encap/enipmessage.h"
+#include "utils/enipmessage.h"
 
 CipMessageRouterRequest g_message_router_request;
 
