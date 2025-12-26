@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkconfig.h"
+#include "networkconfig.h"  // NOLINT(build/include_subdir)
 
 #include <arpa/inet.h>
 #include <errno.h>

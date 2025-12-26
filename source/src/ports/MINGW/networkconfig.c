@@ -6,7 +6,7 @@
 
 /* ---------- Include files ---------------------------- */
 #define WIN32_LEAN_AND_MEAN
-#include "ports/networkconfig.h"
+#include "networkconfig.h"  // NOLINT(build/include_subdir)
 
 #include <errno.h>
 #include <inttypes.h>

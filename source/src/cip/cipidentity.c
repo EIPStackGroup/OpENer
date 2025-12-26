@@ -36,10 +36,10 @@
 #include "cip/cipstring.h"
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 /** @brief The device's configuration data for the Identity Object */
-#include "devicedata.h"
+#include "devicedata.h"  // NOLINT(build/include_subdir)
 
 /** @brief Definition of the global Identity Object */
 CipIdentityObject g_identity = {

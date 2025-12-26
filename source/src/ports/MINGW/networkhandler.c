@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 #define WIN32_LEAN_AND_MEAN
-#include "networkhandler.h"
+#include "networkhandler.h"  // NOLINT(build/include_subdir)
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 MicroSeconds getMicroSeconds() {
   LARGE_INTEGER performance_counter;

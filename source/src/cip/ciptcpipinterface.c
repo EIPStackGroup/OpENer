@@ -17,7 +17,7 @@
 #include "cip/cipstring.h"
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 /* Define constants to initialize the config_capability attribute (#2). These
  *   are needed as defines because we use them for static initialization. */

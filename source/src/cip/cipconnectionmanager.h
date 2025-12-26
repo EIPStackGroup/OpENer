@@ -10,7 +10,7 @@
 #include "cip/cipconnectionobject.h"
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 /**
  * @brief Connection Type constants of the Forward Open service request

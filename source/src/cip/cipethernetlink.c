@@ -56,7 +56,7 @@
 #include "cip/cipcommon.h"
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
 /* If we have more than 1 Ethernet Link instance then the interface label

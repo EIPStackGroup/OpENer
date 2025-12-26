@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkhandler.h"
+#include "networkhandler.h"  // NOLINT(build/include_subdir)
 
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -16,7 +16,7 @@
 
 #include "core/trace.h"
 #include "enet_encap/encap.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #include "ports/opener_error.h"
 
 MicroSeconds GetMicroSeconds(void) {

@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>  // Needed to define NULL
 
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 void DoublyLinkedListInitialize(DoublyLinkedList* list,
                                 NodeMemoryAllocator allocator,

@@ -8,7 +8,7 @@
 
 #include "core/trace.h"
 #include "enet_encap/encap.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #include "ports/opener_error.h"
 
 MilliSeconds GetMilliSeconds(void) {

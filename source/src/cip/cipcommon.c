@@ -18,7 +18,7 @@
 #include "cip/ciptcpipinterface.h"
 #include "enet_encap/encap.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #if defined(OPENER_IS_DLR_DEVICE) && 0 != OPENER_IS_DLR_DEVICE
 #include "cip/cipdlr.h"
 #endif

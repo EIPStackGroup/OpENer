@@ -13,7 +13,7 @@
 #ifdef OPENER_WITH_TRACES
 
 #ifndef OPENER_INSTALL_AS_LIB
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #endif
 
 /** @def OPENER_TRACE_LEVEL_ERROR Enable tracing of error messages. This is the

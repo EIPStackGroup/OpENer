@@ -25,7 +25,7 @@
 #include "enet_encap/cpf.h"
 #include "enet_encap/encap.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #include "ports/generic_networkhandler.h"
 #include "utils/xorshiftrandom.h"
 

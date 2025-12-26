@@ -6,7 +6,7 @@
 #ifndef UTILS_ENIPMESSAGE_H_
 #define UTILS_ENIPMESSAGE_H_
 
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 typedef struct enip_message {
   CipOctet message_buffer[PC_OPENER_ETHERNET_BUFFER_SIZE];

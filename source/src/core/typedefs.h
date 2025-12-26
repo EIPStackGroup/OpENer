@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "platform_network_includes.h"
+#include "platform_network_includes.h"  // NOLINT(build/include_subdir)
 
 /** @file "core/typedefs.h"
    Do not use interface types for internal variables, such as "int i;", which is

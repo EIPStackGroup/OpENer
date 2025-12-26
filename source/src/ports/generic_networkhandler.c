@@ -25,7 +25,7 @@
 #include "core/trace.h"
 #include "core/typedefs.h"
 #include "enet_encap/encap.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #include "ports/opener_error.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10

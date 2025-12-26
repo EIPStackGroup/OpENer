@@ -13,7 +13,7 @@
 #include "cip/cipmessagerouter.h"
 #include "core/trace.h"
 #include "enet_encap/endianconv.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 #define DEFAULT_DSCP_EVENT 59U
 #define DEFAULT_DSCP_GENERAL 47U

@@ -7,7 +7,7 @@
 #define CIP_CIPTYPES_H_
 
 #include "core/typedefs.h"
-#include "opener_user_conf.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #include "ports/networkhandler.h"
 #include "utils/enipmessage.h"
 
