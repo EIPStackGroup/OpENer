@@ -34,7 +34,7 @@ and to use the EtherNet/IP mark, one must obtain the necessary license from
 ODVA through its Terms of Usage Agreement for the EtherNet/IP technology,
 available through the ODVA web site at www.odva.org. This license requirement
 applies equally (a) to devices that completely implement ODVA's Final
-Specification for EtherNet/IP (“Network Devices”), (b) to components of such
+Specification for EtherNet/IP (Â“Network DevicesÂ”), (b) to components of such
 Network Devices to the extent they implement portions of the Final
 Specification for EtherNet/IP, and (c) to enabling technology products, such as
 any other EtherNet/IP or other network protocol stack designed for use in
