@@ -132,4 +132,9 @@ int SetSocketOptionsMulticastProduce(void);
  * @return peer address if successful, else any address (0) */
 EipUint32 GetPeerAddress(void);
 
+/** @brief Check encapsulation inactivity timeout and close inactive connections
+ * @param socket_handle The socket handle to check for inactivity
+ */
+void CheckEncapsulationInactivity(int socket_handle);
+
 #endif  // PORTS_GENERIC_NETWORKHANDLER_H_

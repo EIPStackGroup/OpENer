@@ -118,8 +118,6 @@ void CheckAndHandleConsumingUdpSocket(void);
  */
 EipStatus HandleDataOnTcpSocket(int socket);
 
-void CheckEncapsulationInactivity(int socket_handle);
-
 void RemoveSocketTimerFromList(const int socket_handle);
 
 /*************************************************
@@ -1173,31 +1171,20 @@ void CloseSocket(const int socket_handle) {
 }
 
 int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
-  if ((socket1 > socket2) && (socket1 > socket3) && (socket1 > socket4)) {
-    return socket1;
-  }
+  int max = -1;
 
-  if ((socket2 > socket1) && (socket2 > socket3) && (socket2 > socket4)) {
-    return socket2;
-  }
-
-  if ((socket3 > socket1) && (socket3 > socket2) && (socket3 > socket4)) {
-    return socket3;
-  }
-
-  return socket4;
+  max = (socket1 > max) ? socket1 : max;
+  max = (socket2 > max) ? socket2 : max;
+  max = (socket3 > max) ? socket3 : max;
+  max = (socket4 > max) ? socket4 : max;
+  return max;
 }
 
 void CheckEncapsulationInactivity(int socket_handle) {
-  if (0 <
-      g_tcpip.encapsulation_inactivity_timeout) {  //*< Encapsulation inactivity
-                                                   // timeout is enabled
+  if (0 < g_tcpip.encapsulation_inactivity_timeout) {
+    // Encapsulation inactivity timeout is enabled
     SocketTimer* socket_timer = SocketTimerArrayGetSocketTimer(
       g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket_handle);
-
-    //    OPENER_TRACE_INFO("Check socket %d - socket timer: %p\n",
-    //                      socket_handle,
-    //                      socket_timer);
     if (NULL != socket_timer) {
       MilliSeconds diff_milliseconds =
         g_actual_time - SocketTimerGetLastUpdate(socket_timer);
