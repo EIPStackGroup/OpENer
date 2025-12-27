@@ -1181,26 +1181,31 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
 }
 
 void CheckEncapsulationInactivity(int socket_handle) {
-  if (0 < g_tcpip.encapsulation_inactivity_timeout) {
-    // Encapsulation inactivity timeout is enabled
-    SocketTimer* socket_timer = SocketTimerArrayGetSocketTimer(
-      g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket_handle);
-    if (NULL != socket_timer) {
-      MilliSeconds diff_milliseconds =
-        g_actual_time - SocketTimerGetLastUpdate(socket_timer);
-
-      if (diff_milliseconds >=
-          (MilliSeconds)(1000UL * g_tcpip.encapsulation_inactivity_timeout)) {
-        CipSessionHandle encapsulation_session_handle =
-          GetSessionFromSocket(socket_handle);
-
-        CloseClass3ConnectionBasedOnSession(encapsulation_session_handle);
-
-        CloseTcpSocket(socket_handle);
-        RemoveSession(socket_handle);
-      }
-    }
+  if (g_tcpip.encapsulation_inactivity_timeout <= 0) {
+    return;  // Encapsulation inactivity timeout is disabled
   }
+
+  SocketTimer* socket_timer = SocketTimerArrayGetSocketTimer(
+    g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket_handle);
+  if (socket_timer == NULL) {
+    return;
+  }
+
+  MilliSeconds diff_milliseconds =
+    g_actual_time - SocketTimerGetLastUpdate(socket_timer);
+
+  if (diff_milliseconds <
+      (1000U * (MilliSeconds)g_tcpip.encapsulation_inactivity_timeout)) {
+    return;
+  }
+
+  // Timeout exceeded - clean up
+  CipSessionHandle encapsulation_session_handle =
+    GetSessionFromSocket(socket_handle);
+
+  CloseClass3ConnectionBasedOnSession(encapsulation_session_handle);
+  CloseTcpSocket(socket_handle);
+  RemoveSession(socket_handle);
 }
 
 void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function) {
