@@ -65,12 +65,12 @@ static void RecMkdir(char* const p_path) {
   }
   VERBOSE(stdout, " ->mkdir('%s')", p_path);
   if (Mkdir(p_path) && EEXIST != errno) {
-    char* error_message = GetErrorMessage(errno);
+    char error_message[256];
+    GetErrorMessage(errno, error_message, sizeof(error_message));
     OPENER_TRACE_ERR("error while trying to create '%s', %d - %s\n",
                      p_path,
                      errno,
                      error_message);
-    FreeErrorMessage(error_message);
   }
 }
 

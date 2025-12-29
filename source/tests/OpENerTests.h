@@ -23,6 +23,7 @@ IMPORT_TEST_GROUP(CipConnectionManager);
 IMPORT_TEST_GROUP(CipConnectionObject);
 IMPORT_TEST_GROUP(SocketTimer);
 IMPORT_TEST_GROUP(CheckEncapsulationInactivity);
+IMPORT_TEST_GROUP(NetworkHandlerSecurity);
 IMPORT_TEST_GROUP(DoublyLinkedList);
 IMPORT_TEST_GROUP(EncapsulationProtocol);
 IMPORT_TEST_GROUP(CipString);

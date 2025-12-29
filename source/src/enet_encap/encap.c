@@ -893,13 +893,13 @@ void CloseEncapsulationSessionBySockAddr(
       if (getpeername(g_registered_sessions[i],
                       (struct sockaddr*)&encapsulation_session_addr,
                       &addrlength) < 0) { /* got error */
-        int error_code      = GetSocketErrorNumber();
-        char* error_message = GetErrorMessage(error_code);
+        int error_code = GetSocketErrorNumber();
+        char error_message[256];
+        GetErrorMessage(error_code, error_message, sizeof(error_message));
         OPENER_TRACE_ERR(
           "encap.c: error on getting peer name on closing session: %d - %s\n",
           error_code,
           error_message);
-        FreeErrorMessage(error_message);
       }
       if (encapsulation_session_addr.sin_addr.s_addr ==
           connection_object->originator_address.sin_addr.s_addr) {

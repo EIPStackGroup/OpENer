@@ -27,9 +27,49 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         -pedantic
         -Wconversion
         -Wshadow
+        -Wformat
+        -Wformat-security
     )
 elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W4)
+endif()
+
+#######################################
+# AddressSanitizer Configuration      #
+#######################################
+option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer for memory error detection" OFF)
+option(ENABLE_UNDEFINED_SANITIZER "Enable UndefinedBehaviorSanitizer" OFF)
+
+if(ENABLE_ADDRESS_SANITIZER OR ENABLE_UNDEFINED_SANITIZER)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling sanitizers for security testing")
+
+        set(SANITIZER_FLAGS "")
+
+        if(ENABLE_ADDRESS_SANITIZER)
+            list(APPEND SANITIZER_FLAGS "-fsanitize=address")
+            message(STATUS "  - AddressSanitizer (ASAN) enabled")
+        endif()
+
+        if(ENABLE_UNDEFINED_SANITIZER)
+            list(APPEND SANITIZER_FLAGS "-fsanitize=undefined")
+            message(STATUS "  - UndefinedBehaviorSanitizer (UBSAN) enabled")
+        endif()
+
+        # Common sanitizer flags
+        add_compile_options(
+            ${SANITIZER_FLAGS}
+            -fno-omit-frame-pointer
+            -g
+        )
+        add_link_options(${SANITIZER_FLAGS})
+
+        # For memory leak detection in ASAN
+        set(ENV{ASAN_OPTIONS} "detect_leaks=1:halt_on_error=1")
+        set(ENV{UBSAN_OPTIONS} "print_stacktrace=1:halt_on_error=1")
+    else()
+        message(WARNING "Sanitizers requested but compiler is not GNU or Clang")
+    endif()
 endif()
 
 #######################################
