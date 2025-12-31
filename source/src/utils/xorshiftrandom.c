@@ -1,7 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2017, Rockwell Automation, Inc.
+ * Copyright (c) 2017 - 2025, Rockwell Automation, Inc., Martin Melik Merkumians
  * All rights reserved.
  *
+ * Martin Melik Merkumians < Initial implementation >
+ * Martin Melik Merkumians < Updates for reentrant design >
  ******************************************************************************/
 
 #include "utils/xorshiftrandom.h"
