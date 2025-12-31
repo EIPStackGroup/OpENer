@@ -8,27 +8,25 @@
 
 #include <time.h>
 
-static uint32_t
-  xor_shift_seed; /** < File-global variable holding the current seed*/
-
-void SetXorShiftSeed(uint32_t seed) {
-  xor_shift_seed = seed;
+void SetXorShiftSeed(Random* const random, uint32_t seed) {
+  random->current_seed_value = seed;
 }
 
 /** @brief Pseudo-random number algorithm
  * The algorithm used to create the pseudo-random numbers.
  * Works directly on the file global variable
  */
-void CalculateNextSeed(void) {
-  if (xor_shift_seed == 0)
-    SetXorShiftSeed(time(NULL));
+void CalculateNextSeed(Random* const random) {
+  if (random->current_seed_value == 0) {
+    SetXorShiftSeed(random, time(NULL));
+  }
 
-  xor_shift_seed ^= xor_shift_seed << 13;
-  xor_shift_seed ^= xor_shift_seed >> 17;
-  xor_shift_seed ^= xor_shift_seed << 5;
+  random->current_seed_value ^= random->current_seed_value << 13;
+  random->current_seed_value ^= random->current_seed_value >> 17;
+  random->current_seed_value ^= random->current_seed_value << 5;
 }
 
-uint32_t NextXorShiftUint32(void) {
-  CalculateNextSeed();
-  return xor_shift_seed;
+uint32_t NextXorShiftUint32(Random* const random) {
+  CalculateNextSeed(random);
+  return random->current_seed_value;
 }

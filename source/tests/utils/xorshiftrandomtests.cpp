@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 extern "C" {
-#include <xorshiftrandom.h>
+
+#include "utils/random.h"
+#include "utils/xorshiftrandom.h"
 }
 
 TEST_GROUP(XorShiftRandom){
@@ -18,13 +20,15 @@ TEST_GROUP(XorShiftRandom){
 /*Characterization test*/
 TEST(XorShiftRandom, SeedOneCharacterization) {
   uint32_t nResult;
-  SetXorShiftSeed(1);
-  nResult = NextXorShiftUint32();
+  Random* random = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
+  random->set_seed(random, 1);
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(270369, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(67634689, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(2647435461, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(307599695, nResult);
+  RandomDelete(&random);
 }

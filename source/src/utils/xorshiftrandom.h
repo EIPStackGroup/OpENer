@@ -11,6 +11,8 @@
  */
 #include <stdint.h>
 
+#include "utils/random.h"
+
 #ifndef UTILS_XORSHIFTRANDOM_H_
 #define UTILS_XORSHIFTRANDOM_H_
 
@@ -18,12 +20,12 @@
  * @brief Sets the initial seed for the XOR shift pseudo-random algorithm
  * @param seed The initial seed value
  */
-void SetXorShiftSeed(uint32_t seed);
+void SetXorShiftSeed(Random* const random, uint32_t seed);
 
 /**
  * @brief Returns the next generated pseudo-random number
  * @return The next pseudo-random number
  */
-uint32_t NextXorShiftUint32(void);
+uint32_t NextXorShiftUint32(Random* const random);
 
 #endif  // UTILS_XORSHIFTRANDOM_H_

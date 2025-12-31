@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2017, Rockwell Automation, Inc.
+ * Copyright (c) 2017 - 2025 Rockwell Automation, Inc., Martin Melik Merkumians
  * All rights reserved.
+ *
+ * Martin Melik Merkumians < Initially created >
+ * Martin Melik Merkumians < Updates to use Random struct with function pointers
+ * >
  *
  ******************************************************************************/
 
@@ -9,17 +13,20 @@
 
 #include <stdint.h>
 
-typedef void (*SetSeed)(uint32_t seed);
-typedef uint32_t (*GetNextUInt32)(void);
+typedef struct Random Random;
 
-typedef struct {
-  uint32_t current_seed_value; /**< Holds the current seed/random value */
-  SetSeed set_seed;            /**< Function pointer to SetSeed function */
+typedef void (*SetSeed)(Random* const random, uint32_t seed);
+typedef uint32_t (*GetNextUInt32)(Random* const random);
+
+typedef struct Random {
+  uint32_t current_seed_value;  ///< Holds the current seed/random value
+  SetSeed set_seed;             ///< Function pointer to SetSeed function
   GetNextUInt32
-    get_next_uint32; /**< Function pointer to GetNextUInt32 function */
+    get_next_uint32;  ///< Function pointer to GetNextUInt32 function
 } Random;
 
-Random* RandomNew(SetSeed, GetNextUInt32);
+Random* RandomNew(SetSeed set_seed_function,
+                  GetNextUInt32 get_next_uint32_function);
 
 void RandomDelete(Random** random);
 
