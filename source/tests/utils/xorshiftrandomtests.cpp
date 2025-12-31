@@ -1,7 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2015, Rockwell Automation, Inc.
+ * Copyright (c) 2015 - 2025, Rockwell Automation, Inc., Martin Melik Merkumians
  * All rights reserved.
  *
+ * Martin Melik Merkumians < Initial implementation >
+ * Martin Melik Merkumians < Updates for reentrant design >
  ******************************************************************************/
 
 #include <CppUTest/TestHarness.h>
