@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CIP_CIPCONNECTIONOBJECT_H_
-#define CIP_CIPCONNECTIONOBJECT_H_
+#ifndef SRC_CIP_CIPCONNECTIONOBJECT_H_
+#define SRC_CIP_CIPCONNECTIONOBJECT_H_
 
 #include "api/opener_api.h"
 #include "cip/cipelectronickey.h"
@@ -508,4 +508,4 @@ bool CipConnectionObjectOriginatorHasSameIP(
   const CipConnectionObject* const connection_object,
   const struct sockaddr* const originator_address);
 
-#endif  // CIP_CIPCONNECTIONOBJECT_H_
+#endif  // SRC_CIP_CIPCONNECTIONOBJECT_H_

@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPCOMMON_H_
-#define CIP_CIPCOMMON_H_
+#ifndef SRC_CIP_CIPCOMMON_H_
+#define SRC_CIP_CIPCOMMON_H_
 
 /** @file cipcommon.h
  * Common CIP object interface

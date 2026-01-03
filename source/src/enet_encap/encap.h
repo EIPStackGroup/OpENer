@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef ENET_ENCAP_ENCAP_H_
-#define ENET_ENCAP_ENCAP_H_
+#ifndef SRC_ENET_ENCAP_ENCAP_H_
+#define SRC_ENET_ENCAP_ENCAP_H_
 
 #include "cip/cipconnectionobject.h"
 #include "core/typedefs.h"
@@ -138,4 +138,4 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
   const struct sockaddr* const originator_address,
   ENIPMessage* const outgoing_message);
 
-#endif  // ENET_ENCAP_ENCAP_H_
+#endif  // SRC_ENET_ENCAP_ENCAP_H_

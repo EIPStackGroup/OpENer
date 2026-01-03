@@ -18,8 +18,10 @@ TEST_GROUP(RandomClass){
 
 TEST(RandomClass, CreateXOrShiftObject) {
   Random* random = NULL;
-  random         = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
-  POINTERS_EQUAL(SetXorShiftSeed, random->set_seed);
-  POINTERS_EQUAL(NextXorShiftUint32, random->get_next_uint32);
+  random =
+    RandomNew(XorShiftSetSeed, XorShiftGetNextUInt16, XorShiftGetNextUInt32);
+  POINTERS_EQUAL(XorShiftSetSeed, random->set_seed);
+  POINTERS_EQUAL(XorShiftGetNextUInt16, random->get_next_uint16);
+  POINTERS_EQUAL(XorShiftGetNextUInt32, random->get_next_uint32);
   RandomDelete(&random);
 }

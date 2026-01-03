@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CIP_CIPCLASS3CONNECTION_H_
-#define CIP_CIPCLASS3CONNECTION_H_
+#ifndef SRC_CIP_CIPCLASS3CONNECTION_H_
+#define SRC_CIP_CIPCLASS3CONNECTION_H_
 
 /** @file cipclass3connection.h
  *  @brief CIP Class 3 connection
@@ -62,4 +62,4 @@ CipError EstablishClass3Connection(
  */
 void InitializeClass3ConnectionData(void);
 
-#endif /* CIP_CIPCLASS3CONNECTION_H_ */
+#endif /* SRC_CIP_CIPCLASS3CONNECTION_H_ */

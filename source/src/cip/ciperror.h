@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPERROR_H_
-#define CIP_CIPERROR_H_
+#ifndef SRC_CIP_CIPERROR_H_
+#define SRC_CIP_CIPERROR_H_
 
 typedef enum {
   /// Service was successfully performed by the object specified.
@@ -144,4 +144,4 @@ typedef enum {
   /* 2F - CF Reserved by CIP for future extensions D0 - FF Reserved for Object
      Class and service errors*/
 } CipError;
-#endif  // CIP_CIPERROR_H_
+#endif  // SRC_CIP_CIPERROR_H_

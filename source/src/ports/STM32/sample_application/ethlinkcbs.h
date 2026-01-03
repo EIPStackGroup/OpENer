@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  *****************************************************************************/
-#ifndef PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_
-#define PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#ifndef SRC_PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#define SRC_PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_
 /** @file
  * @brief Declaration of Ethernet Link object callbacks
  *
@@ -31,4 +31,4 @@ EipStatus EthLnkPostGetCallback(CipInstance* const instance,
                                 CipAttributeStruct* const attribute,
                                 CipByte service);
 
-#endif  // PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#endif  // SRC_PORTS_STM32_SAMPLE_APPLICATION_ETHLINKCBS_H_

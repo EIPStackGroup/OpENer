@@ -4,8 +4,8 @@
  *
  *****************************************************************************/
 
-#ifndef PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_
-#define PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#ifndef SRC_PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#define SRC_PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_
 
 /** @file
  * @brief Declaration of Ethernet Link object callbacks
@@ -33,4 +33,4 @@ EipStatus EthLnkPostGetCallback(CipInstance* const instance,
                                 CipAttributeStruct* const attribute,
                                 CipByte service);
 
-#endif  // PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#endif  // SRC_PORTS_MINGW_SAMPLE_APPLICATION_ETHLINKCBS_H_

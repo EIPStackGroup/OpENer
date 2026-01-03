@@ -22,7 +22,7 @@ TEST_GROUP(XorShiftRandom){
 /*Characterization test*/
 TEST(XorShiftRandom, SeedOneCharacterization) {
   uint32_t nResult;
-  Random* random = RandomNew(SetXorShiftSeed, NextXorShiftUint32);
+  Random* random = XorShiftRandomNew();
   random->set_seed(random, 1);
   nResult = random->get_next_uint32(random);
   LONGS_EQUAL(270369, nResult);

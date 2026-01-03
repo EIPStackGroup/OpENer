@@ -10,7 +10,17 @@
 
 #include <time.h>
 
-void SetXorShiftSeed(Random* const random, uint32_t seed) {
+Random* XorShiftRandomNew(void) {
+  return RandomNew(
+    XorShiftSetSeed, XorShiftGetNextUInt16, XorShiftGetNextUInt32);
+}
+
+void XorShiftRandomInit(Random* const random) {
+  RandomInit(
+    random, XorShiftSetSeed, XorShiftGetNextUInt16, XorShiftGetNextUInt32);
+}
+
+void XorShiftSetSeed(Random* const random, uint32_t seed) {
   random->current_seed_value = seed;
 }
 
@@ -18,9 +28,9 @@ void SetXorShiftSeed(Random* const random, uint32_t seed) {
  * The algorithm used to create the pseudo-random numbers.
  * Works directly on the file global variable
  */
-void CalculateNextSeed(Random* const random) {
+void XorShiftCalculateNextSeed(Random* const random) {
   if (random->current_seed_value == 0) {
-    SetXorShiftSeed(random, time(NULL));
+    XorShiftSetSeed(random, (uint32_t)time(NULL));
   }
 
   random->current_seed_value ^= random->current_seed_value << 13;
@@ -28,7 +38,13 @@ void CalculateNextSeed(Random* const random) {
   random->current_seed_value ^= random->current_seed_value << 5;
 }
 
-uint32_t NextXorShiftUint32(Random* const random) {
-  CalculateNextSeed(random);
+uint16_t XorShiftGetNextUInt16(Random* const random) {
+  XorShiftCalculateNextSeed(random);
+  // Return the higher 16 bits, as they have better randomness properties
+  return (uint16_t)(random->current_seed_value >> 16);
+}
+
+uint32_t XorShiftGetNextUInt32(Random* const random) {
+  XorShiftCalculateNextSeed(random);
   return random->current_seed_value;
 }

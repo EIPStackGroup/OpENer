@@ -22,6 +22,8 @@
 #include "ports/generic_networkhandler.h"
 #include "ports/opener_error.h"
 #include "ports/socket_timer.h"
+#include "utils/random.h"
+#include "utils/xorshiftrandom.h"
 
 /* IP address data taken from TCPIPInterfaceObject*/
 /// Supported Encapsulation protocol version
@@ -88,6 +90,9 @@ int g_registered_sessions[OPENER_NUMBER_OF_SUPPORTED_SESSIONS];
 DelayedEncapsulationMessage g_delayed_encapsulation_messages
   [ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES];
 
+/// Random number generator for delayed responses
+Random g_random_generator;
+
 /*** private functions ***/
 void HandleReceivedListIdentityCommandTcp(
   const EncapsulationData* const receive_data,
@@ -120,13 +125,15 @@ void DetermineDelayTime(
   const EipByte* buffer_start,
   DelayedEncapsulationMessage* const delayed_message_buffer);
 
-/*   @brief Initializes session list and interface information. */
+// @brief Initializes session list and interface information.
 void EncapsulationInit(void) {
   DetermineEndianess();
 
   /*initialize random numbers for random delayed response message generation
    * we use the ip address as seed as suggested in the spec */
-  srand(g_tcpip.interface_configuration.ip_address);
+  XorShiftRandomInit(&g_random_generator);
+  g_random_generator.set_seed(&g_random_generator,
+                              g_tcpip.interface_configuration.ip_address);
 
   /* initialize Sessions to invalid == free session */
   for (size_t i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++) {
@@ -507,7 +514,9 @@ void DetermineDelayTime(
     maximum_delay_time = kListIdentityMinimumDelayTime;
   }
 
-  delayed_message_buffer->time_out = rand() % maximum_delay_time;
+  delayed_message_buffer->time_out =
+    g_random_generator.get_next_uint32(&g_random_generator) %
+    maximum_delay_time;
 }
 
 void EncapsulateRegisterSessionCommandResponseMessage(

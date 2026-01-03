@@ -14,8 +14,8 @@
  * access to the network layer
  */
 
-#ifndef PORTS_GENERIC_NETWORKHANDLER_H_
-#define PORTS_GENERIC_NETWORKHANDLER_H_
+#ifndef SRC_PORTS_GENERIC_NETWORKHANDLER_H_
+#define SRC_PORTS_GENERIC_NETWORKHANDLER_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -137,4 +137,4 @@ EipUint32 GetPeerAddress(void);
  */
 void CheckEncapsulationInactivity(int socket_handle);
 
-#endif  // PORTS_GENERIC_NETWORKHANDLER_H_
+#endif  // SRC_PORTS_GENERIC_NETWORKHANDLER_H_

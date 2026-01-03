@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef PORTS_OPENER_ERROR_H_
-#define PORTS_OPENER_ERROR_H_
+#ifndef SRC_PORTS_OPENER_ERROR_H_
+#define SRC_PORTS_OPENER_ERROR_H_
 
 #include <stddef.h>
 
@@ -39,4 +39,4 @@ int GetSocketErrorNumber(void);
  */
 char* GetErrorMessage(int error_number, char* buffer, size_t buffer_size);
 
-#endif  // PORTS_OPENER_ERROR_H_
+#endif  // SRC_PORTS_OPENER_ERROR_H_

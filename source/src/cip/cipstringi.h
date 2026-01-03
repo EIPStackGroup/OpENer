@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CIP_CIPSTRINGI_H_
-#define CIP_CIPSTRINGI_H_
+#ifndef SRC_CIP_CIPSTRINGI_H_
+#define SRC_CIP_CIPSTRINGI_H_
 
 #include "cip/ciptypes.h"
 
@@ -21,4 +21,4 @@ void CipStringIDecodeFromMessage(
 bool CipStringICompare(const CipStringI* const stringI_1,
                        const CipStringI* const stringI_2);
 
-#endif  // CIP_CIPSTRINGI_H_
+#endif  // SRC_CIP_CIPSTRINGI_H_

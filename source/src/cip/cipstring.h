@@ -10,8 +10,8 @@
  * Some functions to create CIP string types from C strings or data buffers.
  */
 
-#ifndef CIP_CIPSTRING_H_
-#define CIP_CIPSTRING_H_
+#ifndef SRC_CIP_CIPSTRING_H_
+#define SRC_CIP_CIPSTRING_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -189,4 +189,4 @@ int GetCstrFromCipShortString(CipShortString* const string,
                               char* buf,
                               size_t len);
 
-#endif  // CIP_CIPSTRING_H_
+#endif  // SRC_CIP_CIPSTRING_H_

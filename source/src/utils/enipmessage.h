@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef UTILS_ENIPMESSAGE_H_
-#define UTILS_ENIPMESSAGE_H_
+#ifndef SRC_UTILS_ENIPMESSAGE_H_
+#define SRC_UTILS_ENIPMESSAGE_H_
 
 #include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
@@ -16,4 +16,4 @@ typedef struct enip_message {
 
 void InitializeENIPMessage(ENIPMessage* const message);
 
-#endif  // UTILS_ENIPMESSAGE_H_ */
+#endif  // SRC_UTILS_ENIPMESSAGE_H_ */

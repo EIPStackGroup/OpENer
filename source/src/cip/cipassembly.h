@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPASSEMBLY_H_
-#define CIP_CIPASSEMBLY_H_
+#ifndef SRC_CIP_CIPASSEMBLY_H_
+#define SRC_CIP_CIPASSEMBLY_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -58,4 +58,4 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
                                               const EipUint8* const data,
                                               const size_t data_length);
 
-#endif  // CIP_CIPASSEMBLY_H_
+#endif  // SRC_CIP_CIPASSEMBLY_H_

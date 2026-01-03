@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
-#define PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#ifndef SRC_PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define SRC_PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file
  * @brief OpENer MinGW platform configuration setup
@@ -35,4 +35,4 @@ typedef unsigned short in_port_t;  // NOLINT(runtime/int)
 /* Include common configuration shared across all platforms */
 #include "ports/opener_user_conf_common.h"
 
-#endif  // PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#endif  // SRC_PORTS_MINGW_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

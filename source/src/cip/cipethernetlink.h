@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPETHERNETLINK_H_
-#define CIP_CIPETHERNETLINK_H_
+#ifndef SRC_CIP_CIPETHERNETLINK_H_
+#define SRC_CIP_CIPETHERNETLINK_H_
 /** @file
  *  @brief Declare public interface of the CIP Ethernet Link Object
  */
@@ -197,4 +197,4 @@ void CipEthernetLinkSetMac(EipUint8* p_physical_address);
 
 extern CipEthernetLinkObject g_ethernet_link[];
 
-#endif  // CIP_CIPETHERNETLINK_H_
+#endif  // SRC_CIP_CIPETHERNETLINK_H_

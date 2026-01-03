@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CIP_CIPQOS_H_
-#define CIP_CIPQOS_H_
+#ifndef SRC_CIP_CIPQOS_H_
+#define SRC_CIP_CIPQOS_H_
 
 /** @file cipqos.h
  *  @brief Public interface of the QoS Object
@@ -67,4 +67,4 @@ void CipQosUpdateUsedSetQosValues(void);
  */
 void CipQosResetAttributesToDefaultValues(void);
 
-#endif  // CIP_CIPQOS_H_
+#endif  // SRC_CIP_CIPQOS_H_

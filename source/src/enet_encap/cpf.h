@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef ENET_ENCAP_CPF_H_
-#define ENET_ENCAP_CPF_H_
+#ifndef SRC_ENET_ENCAP_CPF_H_
+#define SRC_ENET_ENCAP_CPF_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -171,4 +171,4 @@ EipStatus AssembleLinearMessage(
  */
 extern CipCommonPacketFormatData g_common_packet_format_data_item;
 
-#endif  // ENET_ENCAP_CPF_H_
+#endif  // SRC_ENET_ENCAP_CPF_H_

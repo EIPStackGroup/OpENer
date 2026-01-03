@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef CIP_CIPIOCONNECTION_H_
-#define CIP_CIPIOCONNECTION_H_
+#ifndef SRC_CIP_CIPIOCONNECTION_H_
+#define SRC_CIP_CIPIOCONNECTION_H_
 
 #include "api/opener_api.h"
 #include "cip/cipconnectionmanager.h"

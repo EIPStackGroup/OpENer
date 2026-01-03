@@ -43,10 +43,20 @@ void opener_init(struct netif* netif) {
     /* for a real device the serial number should be unique per device */
     SetDeviceSerialNumber(123456789);
 
+    Random random_generator;
+    RandomInit(&random_generator, XorShiftSetSeed, XorShiftGetNextUInt32);
+    /* Seed the random number generator with the MAC address bytes */
+    uint32_t seed = 0;
+    for (size_t i = 0; i < sizeof(iface_mac); ++i) {
+      seed ^= ((uint32_t)iface_mac[i]) << ((i % 4) * 8);
+    }
+    random_generator.set_seed(&random_generator, seed);
+
     /* unique_connection_id should be sufficiently random or incremented and
      * stored in non-volatile memory each time the device boots.
      */
-    EipUint16 unique_connection_id = rand();
+    EipUint16 unique_connection_id =
+      random_generator.get_next_uint16(&random_generator);
 
     /* Setup the CIP Layer. All objects are initialized with the default
      * values for the attribute contents. */

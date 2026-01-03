@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPMESSAGEROUTER_H_
-#define CIP_CIPMESSAGEROUTER_H_
+#ifndef SRC_CIP_CIPMESSAGEROUTER_H_
+#define SRC_CIP_CIPMESSAGEROUTER_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"

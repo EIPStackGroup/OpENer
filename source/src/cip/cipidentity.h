@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPIDENTITY_H_
-#define CIP_CIPIDENTITY_H_
+#ifndef SRC_CIP_CIPIDENTITY_H_
+#define SRC_CIP_CIPIDENTITY_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -93,4 +93,4 @@ void CipIdentityClearStatusFlags(const CipWord status_flags);
 void CipIdentitySetExtendedDeviceStatus(
   CipIdentityExtendedStatus extended_status);
 
-#endif  // CIP_CIPIDENTITY_H_
+#endif  // SRC_CIP_CIPIDENTITY_H_

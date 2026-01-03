@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef ENET_ENCAP_ENDIANCONV_H_
-#define ENET_ENCAP_ENDIANCONV_H_
+#ifndef SRC_ENET_ENCAP_ENDIANCONV_H_
+#define SRC_ENET_ENCAP_ENDIANCONV_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -142,4 +142,4 @@ void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
   unsigned int amount_of_filled_bytes,
   ENIPMessage* const outgoing_message);
 
-#endif  // ENET_ENCAP_ENDIANCONV_H_
+#endif  // SRC_ENET_ENCAP_ENDIANCONV_H_

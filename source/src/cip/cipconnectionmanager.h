@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPCONNECTIONMANAGER_H_
-#define CIP_CIPCONNECTIONMANAGER_H_
+#ifndef SRC_CIP_CIPCONNECTIONMANAGER_H_
+#define SRC_CIP_CIPCONNECTIONMANAGER_H_
 
 #include "api/opener_api.h"
 #include "cip/cipconnectionobject.h"
@@ -321,4 +321,4 @@ void CheckForTimedOutConnectionsAndCloseTCPConnections(
   const CipConnectionObject* const connection_object,
   CloseSessionFunction CloseSessions);
 
-#endif  // CIP_CIPCONNECTIONMANAGER_H_
+#endif  // SRC_CIP_CIPCONNECTIONMANAGER_H_

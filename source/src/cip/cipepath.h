@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CIP_CIPEPATH_H_
-#define CIP_CIPEPATH_H_
+#ifndef SRC_CIP_CIPEPATH_H_
+#define SRC_CIP_CIPEPATH_H_
 
 #include <stdbool.h>
 
@@ -450,4 +450,4 @@ bool CipEpathEqual(const CipOctet* const path1,
                    const CipOctet* const path2,
                    const CipUint path2_length);
 
-#endif  // CIP_CIPEPATH_H_
+#endif  // SRC_CIP_CIPEPATH_H_

@@ -17,12 +17,14 @@ DISABLE_LINTERS:
 C_CLANG_FORMAT_ARGUMENTS: "--style=file"
 
 # cpplint specific configuration
+# Use `source` as root so header-guard checks for headers under `source/tests`
+# don't require an extra `SOURCE_` prefix when file paths are evaluated.
 C_CPPLINT_ARGUMENTS:
-  - "--root=source/src"
+  - "--root=source"
   - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
   - "--recursive"
 CPP_CPPLINT_ARGUMENTS:
-  - "--root=source/src"
+  - "--root=source"
   - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
   - "--recursive"
 

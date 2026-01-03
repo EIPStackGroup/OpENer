@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
-#define PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#ifndef SRC_PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define SRC_PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file WIN32/sample_application/opener_user_conf.h
  * @brief OpENer WIN32 platform configuration setup
@@ -38,4 +38,4 @@ typedef unsigned short in_port_t;  // NOLINT(runtime/int)
 /* Include common configuration shared across all platforms */
 #include "ports/opener_user_conf_common.h"
 
-#endif  // PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#endif  // SRC_PORTS_WIN32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

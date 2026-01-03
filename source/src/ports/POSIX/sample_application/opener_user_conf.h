@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
-#define PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#ifndef SRC_PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define SRC_PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file POSIX/sample_application/opener_user_conf.h
  * @brief OpENer POSIX platform configuration setup
@@ -37,4 +37,4 @@
 /* Include common configuration shared across all platforms */
 #include "ports/opener_user_conf_common.h"
 
-#endif  // PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#endif  // SRC_PORTS_POSIX_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

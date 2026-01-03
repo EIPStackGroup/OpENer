@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPTCPIPINTERFACE_H_
-#define CIP_CIPTCPIPINTERFACE_H_
+#ifndef SRC_CIP_CIPTCPIPINTERFACE_H_
+#define SRC_CIP_CIPTCPIPINTERFACE_H_
 
 /** @file ciptcpipinterface.h
  * @brief Public interface of the TCP/IP Interface Object
@@ -111,4 +111,4 @@ void CipTcpIpCalculateMulticastIp(CipTcpIpObject* const tcpip);
  */
 EipUint16 GetEncapsulationInactivityTimeout(CipInstance* instance);
 
-#endif  // CIP_CIPTCPIPINTERFACE_H_
+#endif  // SRC_CIP_CIPTCPIPINTERFACE_H_

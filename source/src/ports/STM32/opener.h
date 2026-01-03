@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef PORTS_STM32_OPENER_H_
-#define PORTS_STM32_OPENER_H_
+#ifndef SRC_PORTS_STM32_OPENER_H_
+#define SRC_PORTS_STM32_OPENER_H_
 
 /**
  * @brief  Start OpENer Ethernet/IP stack
@@ -14,4 +14,4 @@
  */
 void opener_init(struct netif* netif);
 
-#endif  // PORTS_STM32_OPENER_H_
+#endif  // SRC_PORTS_STM32_OPENER_H_

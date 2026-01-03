@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_OPENER_USER_CONF_COMMON_H_
-#define PORTS_OPENER_USER_CONF_COMMON_H_
+#ifndef SRC_PORTS_OPENER_USER_CONF_COMMON_H_
+#define SRC_PORTS_OPENER_USER_CONF_COMMON_H_
 
 /** @file ports/opener_user_conf_common.h
  * @brief OpENer common configuration setup shared across all platforms
@@ -248,4 +248,4 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifndef OPENER_UNIT_TEST */
 
-#endif  // PORTS_OPENER_USER_CONF_COMMON_H_
+#endif  // SRC_PORTS_OPENER_USER_CONF_COMMON_H_

@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_NETWORKHANDLER_H_
-#define PORTS_NETWORKHANDLER_H_
+#ifndef SRC_PORTS_NETWORKHANDLER_H_
+#define SRC_PORTS_NETWORKHANDLER_H_
 
 #include "core/typedefs.h"
 
@@ -78,4 +78,4 @@ MilliSeconds GetMilliSeconds(void);
  */
 int SetQosOnSocket(const int socket, CipUsint qos_value);
 
-#endif  // PORTS_NETWORKHANDLER_H_
+#endif  // SRC_PORTS_NETWORKHANDLER_H_

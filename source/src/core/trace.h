@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CORE_TRACE_H_
-#define CORE_TRACE_H_
+#ifndef SRC_CORE_TRACE_H_
+#define SRC_CORE_TRACE_H_
 
 /** @file "core/trace.h"
  * @brief Tracing infrastructure for OpENer
@@ -12,7 +12,7 @@
 
 #ifdef OPENER_WITH_TRACES
 
-#ifndef OPENER_INSTALL_AS_LIB
+#ifndef SRC_OPENER_INSTALL_AS_LIB
 #include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 #endif
 
@@ -30,7 +30,7 @@
 /** @def OPENER_TRACE_LEVEL_INFO Enable tracing of info messages*/
 #define OPENER_TRACE_LEVEL_INFO 0x08
 
-#ifndef OPENER_TRACE_LEVEL
+#ifndef SRC_OPENER_TRACE_LEVEL
 #ifdef WIN32
 #pragma message( \
   "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
@@ -98,4 +98,4 @@
 #endif
 /* TRACING *******************************************************************/
 
-#endif  // CORE_TRACE_H_
+#endif  // SRC_CORE_TRACE_H_

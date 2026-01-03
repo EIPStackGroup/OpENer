@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef PORTS_SOCKET_TIMER_H_
-#define PORTS_SOCKET_TIMER_H_
+#ifndef SRC_PORTS_SOCKET_TIMER_H_
+#define SRC_PORTS_SOCKET_TIMER_H_
 
 #include "core/typedefs.h"
 
@@ -84,4 +84,4 @@ SocketTimer* SocketTimerArrayGetSocketTimer(
 SocketTimer* SocketTimerArrayGetEmptySocketTimer(
   SocketTimer* const array_of_socket_timers, const size_t array_length);
 
-#endif  // PORTS_SOCKET_TIMER_H_
+#endif  // SRC_PORTS_SOCKET_TIMER_H_

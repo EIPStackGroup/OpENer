@@ -9,6 +9,7 @@
  */
 
 #ifndef TESTS_OPENERTESTS_H_
+#define TESTS_OPENERTESTS_H_
 
 #include "CppUTest/CommandLineTestRunner.h"
 
@@ -28,4 +29,4 @@ IMPORT_TEST_GROUP(DoublyLinkedList);
 IMPORT_TEST_GROUP(EncapsulationProtocol);
 IMPORT_TEST_GROUP(CipString);
 
-#endif  // !TESTS_OPENERTESTS_H_
+#endif  // TESTS_OPENERTESTS_H_

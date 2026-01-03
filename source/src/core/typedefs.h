@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CORE_TYPEDEFS_H_
-#define CORE_TYPEDEFS_H_
+#ifndef SRC_CORE_TYPEDEFS_H_
+#define SRC_CORE_TYPEDEFS_H_
 
 #include <inttypes.h>
 #include <stdbool.h>
@@ -123,7 +123,7 @@ typedef enum {
   kUdpCommuncationDirectionProducing = 1  /**< Producing direction; sender */
 } UdpCommuncationDirection;
 
-#ifndef __cplusplus
+#ifndef SRC___cplusplus
 /** @brief If we don't have C++ define a C++ -like "bool" keyword defines
  */
 // typedef enum {
@@ -132,4 +132,4 @@ typedef enum {
 // } BoolKeywords;
 #endif /* __cplusplus */
 
-#endif  // CORE_TYPEDEFS_H_
+#endif  // SRC_CORE_TYPEDEFS_H_

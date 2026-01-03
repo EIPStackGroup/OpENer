@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2022, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
+
+#ifndef TESTS_CHECK_ASSERT_H_
+#define TESTS_CHECK_ASSERT_H_
+
 /*
  * This header contains definitions implementing a method for writing test
  * cases to confirm an OPENER_ASSERTION failure using the CHECK_ASSERT macro.
@@ -38,3 +47,5 @@ extern jmp_buf* assert_jump_enabled;
       FAIL("Did not assert as expected.");                              \
     }                                                                   \
   } while (0)
+
+#endif  // TESTS_CHECK_ASSERT_H_

@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef CIP_CIPDLR_H_
-#define CIP_CIPDLR_H_
+#ifndef SRC_CIP_CIPDLR_H_
+#define SRC_CIP_CIPDLR_H_
 
 #include "cip/ciptypes.h"
 #include "core/typedefs.h"
@@ -78,4 +78,4 @@ extern CipDlrObject g_dlr; /**< declaration of DLR object instance 1 data */
  */
 EipStatus CipDlrInit(void);
 
-#endif  // CIP_CIPDLR_H_
+#endif  // SRC_CIP_CIPDLR_H_

@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) 2022, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
+
 /*
  * This header defines an implementation of the OPENER_ASSERT macro that
  * can be used with Cpputest unit tests to confirm an assertion fails
@@ -12,8 +18,8 @@
  * where an OPENER_ASSERTION failure results in a longjmp() back to the
  * unit test code, which then verifies that an assertion failure occurred.
  */
-#ifndef OPENER_TEST_ASSERT_H
-#define OPENER_TEST_ASSERT_H
+#ifndef TESTS_TEST_ASSERT_H_
+#define TESTS _TEST_ASSERT_H_
 
 /*
  * Define the OPENER_ASSERT macro to call the unit test assertion verification
@@ -29,4 +35,4 @@
 /* Function Prototypes */
 extern void test_assert_fail(const char* const file, const unsigned int line);
 
-#endif /* OPENER_TEST_ASSERT_H */
+#endif  // TESTS_TEST_ASSERT_H_

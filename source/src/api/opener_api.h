@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef API_OPENER_API_H_
-#define API_OPENER_API_H_
+#ifndef SRC_API_OPENER_API_H_
+#define SRC_API_OPENER_API_H_
 
 #include <assert.h>
 #include <stdbool.h>
@@ -1178,4 +1178,4 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  *
  */
 
-#endif  // API_OPENER_API_H_
+#endif  // SRC_API_OPENER_API_H_

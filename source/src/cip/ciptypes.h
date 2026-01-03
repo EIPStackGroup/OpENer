@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef CIP_CIPTYPES_H_
-#define CIP_CIPTYPES_H_
+#ifndef SRC_CIP_CIPTYPES_H_
+#define SRC_CIP_CIPTYPES_H_
 
 #include "core/typedefs.h"
 #include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
@@ -488,4 +488,4 @@ typedef struct {
   CipBool* conn_open_bits;
 } CipConnectionManagerConnectionEntryList;
 
-#endif  // CIP_CIPTYPES_H_
+#endif  // SRC_CIP_CIPTYPES_H_

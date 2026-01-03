@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
-#define PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#ifndef SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 
 /** @file STM32/sample_application/opener_user_conf.h
  * @brief OpENer STM32 platform configuration setup
@@ -44,4 +44,4 @@
 /* Include common configuration shared across all platforms */
 #include "ports/opener_user_conf_common.h"
 
-#endif  // PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#endif  // SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
