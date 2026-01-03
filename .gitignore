@@ -19,3 +19,4 @@ source/src/ports/POSIX/OpENer
 source/cip_objects/
 .vscode/
 build/
+actionlint
