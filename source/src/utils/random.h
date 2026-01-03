@@ -25,8 +25,20 @@ typedef struct Random {
     get_next_uint32;  ///< Function pointer to GetNextUInt32 function
 } Random;
 
+/// @brief Creates a new Random object
+/// @param set_seed_function
+/// @param get_next_uint32_function
+/// @return Pointer to newly created Random object
 Random* RandomNew(SetSeed set_seed_function,
                   GetNextUInt32 get_next_uint32_function);
+
+/// @brief Initializes a Random object
+/// @param random Pointer to Random object to initialize
+/// @param set_seed_function Used set seed function
+/// @param get_next_uint32_function used get next uint32 function
+void RandomInit(Random* const random,
+                SetSeed set_seed_function,
+                GetNextUInt32 get_next_uint32_function);
 
 void RandomDelete(Random** random);
 
