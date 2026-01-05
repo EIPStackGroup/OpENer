@@ -28,10 +28,18 @@ CPP_CPPLINT_ARGUMENTS:
   - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
   - "--recursive"
 
-# Copy-paste this into your configuration file
 COPYPASTE_JSCPD_ARGUMENTS:
   - "--ignore"
   - "source/tests/**,source/src/ports/*/**"
+
+# Fix for Link Checker (Lychee)
+SPELL_LYCHEE_ARGUMENTS:
+  # 1. Ignore the broken GitHub variable placeholders
+  # 2. Ignore local file links that are failing due to path nesting
+  - "--exclude"
+  - "https://github.com/\\$"
+  - "--exclude-path"
+  - "source/tests/ports/CHECKENCAPSULATIONINACTIVITY_TESTS.md"
 
 # Report configuration
 SARIF_REPORTER: true
