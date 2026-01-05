@@ -6,8 +6,8 @@
 
 #include "OpENerTests.h"
 
-#include <setjmp.h>
-#include <stdio.h>
+#include <csetjmp>
+#include <cstdio>
 
 #include <stdexcept>
 
@@ -15,7 +15,7 @@
 #include "CppUTestExt/MockSupportPlugin.h"
 
 extern "C" {
-#include "endianconv.h"
+#include "enet_encap/endianconv.h"
 }
 
 /*
@@ -79,7 +79,7 @@ extern "C" void test_assert_fail(const char* const file,
     char dummy;
 
     /* Determine how long the exception message would be. */
-    int len_no_null = snprintf(&dummy, 1, format, file, line);
+    int len_no_null = snprintf(&dummy, sizeof(dummy), format, file, line);
 
     if (len_no_null > 0) {
       /*
@@ -104,13 +104,11 @@ extern "C" void test_assert_fail(const char* const file,
 
     /* Throw a generic exception if string generation fails. */
     throw std::runtime_error("Assertion failure.");
-  }
-
-  /*
-   * Execute the jump back to the unit test function if an assertion was
-   * expected.
-   */
-  else {
+  } else {
+    /*
+     * Execute the jump back to the unit test function if an assertion was
+     * expected.
+     */
     longjmp(assert_jump, 0);
   }
 }
