@@ -28,6 +28,11 @@ CPP_CPPLINT_ARGUMENTS:
   - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
   - "--recursive"
 
+# Copy-paste this into your configuration file
+COPYPASTE_JSCPD_ARGUMENTS:
+  - "--ignore"
+  - "source/tests/**,source/src/ports/*/**"
+
 # Report configuration
 SARIF_REPORTER: true
 TEXT_REPORTER: true
