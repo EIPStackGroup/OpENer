@@ -62,4 +62,4 @@ CipError EstablishClass3Connection(
  */
 void InitializeClass3ConnectionData(void);
 
-#endif /* SRC_CIP_CIPCLASS3CONNECTION_H_ */
+#endif  // SRC_CIP_CIPCLASS3CONNECTION_H_

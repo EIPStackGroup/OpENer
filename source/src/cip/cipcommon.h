@@ -224,4 +224,4 @@ EipStatus CipResetService(
   const struct sockaddr* originator_address,
   const CipSessionHandle encapsulation_session);
 
-#endif /* CIP_CIPCOMMON_H_ */
+#endif  // SRC_CIP_CIPCOMMON_H_

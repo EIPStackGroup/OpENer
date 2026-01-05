@@ -52,4 +52,4 @@ EipStatus NotifyMessageRouter(EipUint8* data,
  */
 EipStatus RegisterCipClass(CipClass* cip_class);
 
-#endif /* CIP_CIPMESSAGEROUTER_H_ */
+#endif  // SRC_CIP_CIPMESSAGEROUTER_H_

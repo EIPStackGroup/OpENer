@@ -19,7 +19,7 @@
  * unit test code, which then verifies that an assertion failure occurred.
  */
 #ifndef TESTS_TEST_ASSERT_H_
-#define TESTS _TEST_ASSERT_H_
+#define TESTS_TEST_ASSERT_H_
 
 /*
  * Define the OPENER_ASSERT macro to call the unit test assertion verification
