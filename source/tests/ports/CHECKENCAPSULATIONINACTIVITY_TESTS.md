@@ -209,7 +209,7 @@ The tests use CppUTest mocking framework to verify the function's interaction wi
 
 ## Test Results
 
-```
+```sh
 OK (246 tests, 12 ran, 24 checks, 0 ignored, 234 filtered out, 1 ms)
 ```
 
