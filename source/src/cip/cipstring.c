@@ -169,6 +169,8 @@ void FreeCipString(CipString* const cip_string) {
   }
 }
 
+// Gets detected as duplicate from SetCipShortStringByData
+// jscpd:ignore-start
 CipString* SetCipStringByData(CipString* const cip_string,
                               CipUint str_len,
                               const CipOctet* const data) {
@@ -188,6 +190,7 @@ CipString* SetCipStringByData(CipString* const cip_string,
   }
   return result;
 }
+// jscpd:ignore-end
 
 CipString* SetCipStringByCstr(CipString* const cip_string,
                               const char* const string) {
@@ -233,6 +236,8 @@ void FreeCipShortString(CipShortString* const cip_string) {
  *
  * @return The CipShortString address
  */
+// Gets detected as duplicate from SetCipStringByData
+// jscpd:ignore-start
 CipShortString* SetCipShortStringByData(CipShortString* const cip_string,
                                         const CipUsint str_len,
                                         const CipOctet* const data) {
@@ -252,6 +257,7 @@ CipShortString* SetCipShortStringByData(CipShortString* const cip_string,
   }
   return result;
 }
+// jscpd:ignore-end
 
 /** @brief Copies the content of C-string to a CipShortString under the
  * expectation, that each C-String element is a CipShortString octet

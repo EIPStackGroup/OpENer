@@ -89,12 +89,15 @@ void* CipStringICreateStringStructure(CipStringIStruct* const to) {
   return NULL;
 }
 
+// Altouhgh code seems to replicate in ths function, it is necessary
+// to handle the different string types appropriately
+// jscpd:ignore-start
 void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
                                       const CipStringIStruct* const from) {
   switch (to->char_string_struct) {
     case kCipShortString: {
-      CipShortString* toString   = (CipShortString*)to->string;
-      CipShortString* fromString = (CipShortString*)from->string;
+      CipShortString* const toString   = (CipShortString*)to->string;
+      CipShortString* const fromString = (CipShortString*)from->string;
       toString->length           = fromString->length;
       toString->string = CipCalloc(toString->length, sizeof(CipOctet));
       memcpy(toString->string,
@@ -102,8 +105,8 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
              sizeof(CipOctet) * toString->length);
     } break;
     case kCipString: {
-      CipString* toString   = (CipString*)to->string;
-      CipString* fromString = (CipString*)from->string;
+      CipString* const toString   = (CipString*)to->string;
+      CipString* const fromString = (CipString*)from->string;
       toString->length      = fromString->length;
       toString->string      = CipCalloc(toString->length, sizeof(CipOctet));
       memcpy(toString->string,
@@ -111,8 +114,8 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
              sizeof(CipOctet) * toString->length);
     } break;
     case kCipString2: {
-      CipString2* toString   = (CipString2*)to->string;
-      CipString2* fromString = (CipString2*)from->string;
+      CipString2* const toString   = (CipString2*)to->string;
+      CipString2* const fromString = (CipString2*)from->string;
       toString->length       = fromString->length;
       toString->string = CipCalloc(toString->length, 2 * sizeof(CipOctet));
       memcpy(toString->string,
@@ -120,8 +123,8 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
              2 * sizeof(CipOctet) * toString->length);
     } break;
     case kCipStringN: {
-      CipStringN* toString   = (CipStringN*)to->string;
-      CipStringN* fromString = (CipStringN*)from->string;
+      CipStringN* const toString   = (CipStringN*)to->string;
+      CipStringN* const fromString = (CipStringN*)from->string;
       toString->length       = fromString->length;
       toString->size         = fromString->size;
       toString->string =
@@ -134,6 +137,7 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
       OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
   }
 }
+// jscpd:ignore-end
 
 void CipStringICopy(CipStringI* const to, const CipStringI* const from) {
   to->number_of_strings = from->number_of_strings;
@@ -225,7 +229,7 @@ void CipStringIDecodeFromMessage(
 
 bool CipStringICompare(const CipStringI* const stringI_1,
                        const CipStringI* const stringI_2) {
-  /*loop through struct 1 strings*/
+  // loop through struct 1 strings
   for (size_t i = 0; i < stringI_1->number_of_strings; ++i) {
     // String 1
     void* string_1      = stringI_1->array_of_string_i_structs[i].string;
@@ -246,8 +250,8 @@ bool CipStringICompare(const CipStringI* const stringI_1,
         string_1_data = ((CipString2*)string_1)->string;
       } break;
       case kCipStringN: {
-        CipUint length = ((CipStringN*)string_1)->length;
-        CipUint size   = ((CipStringN*)string_1)->size;  // bytes per symbol
+        const CipUint length = ((CipStringN*)string_1)->length;
+        const CipUint size   = ((CipStringN*)string_1)->size;  // bytes per symbol
         len_1          = length * size;
         string_1_data  = ((CipStringN*)string_1)->string;
       } break;
@@ -255,7 +259,7 @@ bool CipStringICompare(const CipStringI* const stringI_1,
         OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
     }
 
-    /*loop through struct 2 strings*/
+    // loop through struct 2 strings
     for (size_t j = 0; j < stringI_2->number_of_strings; ++j) {
       // String 2
       void* string_2      = stringI_2->array_of_string_i_structs[j].string;
@@ -278,8 +282,8 @@ bool CipStringICompare(const CipStringI* const stringI_1,
           string_2_data = ((CipString2*)string_2)->string;
         } break;
         case kCipStringN: {
-          CipUint length = ((CipStringN*)string_2)->length;
-          CipUint size   = ((CipStringN*)string_2)->size;  // bytes per symbol
+          const CipUint length = ((CipStringN*)string_2)->length;
+          const CipUint size   = ((CipStringN*)string_2)->size;  // bytes per symbol
           len_2          = length * size;
           string_2_data  = ((CipStringN*)string_2)->string;
         } break;
