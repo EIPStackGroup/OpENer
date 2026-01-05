@@ -67,7 +67,7 @@ else
 fi
 
 echo ""
-"$TEST_EXECUTABLE" $TEST_ARGS
+"$TEST_EXECUTABLE" "$TEST_ARGS"
 TEST_RESULT=$?
 
 echo ""
