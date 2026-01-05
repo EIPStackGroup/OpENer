@@ -59,7 +59,7 @@ fi
 
 echo ""
 echo "Configuring CMake..."
-cmake $CMAKE_ARGS "$PROJECT_ROOT/source"
+cmake "$CMAKE_ARGS" "$PROJECT_ROOT/source"
 
 echo ""
 echo "Building..."
