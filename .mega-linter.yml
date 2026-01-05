@@ -37,7 +37,7 @@ SPELL_LYCHEE_ARGUMENTS:
   # 1. Ignore the broken GitHub variable placeholders
   # 2. Ignore local file links that are failing due to path nesting
   - "--exclude"
-  - "https://github.com/\\$"
+  - 'https://github\.com/.*\$'
   - "--exclude-path"
   - "source/tests/ports/CHECKENCAPSULATIONINACTIVITY_TESTS.md"
 
