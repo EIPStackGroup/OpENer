@@ -81,4 +81,4 @@ void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
 extern EipUint8* g_config_data_buffer;
 extern unsigned int g_config_data_length;
 
-#endif /* CIP_CIPIOCONNECTION_H_ */
+#endif  // SRC_CIP_CIPIOCONNECTION_H_
