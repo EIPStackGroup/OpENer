@@ -84,7 +84,7 @@ export UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1"
 
 When ASAN detects an error, it produces output like:
 
-```
+```sh
 =================================================================
 ==12345==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x61000001fbfc
   WRITE of size 4 at 0x61000001fbfc thread T0
@@ -240,13 +240,13 @@ If a sanitizer detects a false positive, you can suppress it:
 ### ASAN Suppression
 
 Create `asan.supp`:
-```
+```sh
 leak:function_name_here
 addr:file_name:line_number
 ```
 
 Use it:
-```bash
+```sh
 export ASAN_OPTIONS="suppressions=$(pwd)/asan.supp"
 ```
 
