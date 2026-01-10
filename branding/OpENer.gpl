@@ -1,0 +1,42 @@
+GIMP Palette
+Name: OpENer
+Columns: 5
+# Primary and supporting colors for OpENer branding
+
+# Steel Blue Shades
+22 58 86   Steel Blue Dark
+31 78 121   Steel Blue Base
+74 108 147  Steel Blue Light
+123 145 176 Steel Blue Lighter
+176 192 209 Steel Blue Pale
+
+# Teal Shades
+43 127 128  Teal Dark
+59 175 169  Teal Base
+91 190 192  Teal Light
+132 209 211 Teal Lighter
+179 227 226 Teal Pale
+
+# Neutral Gray Shades
+76 89 102   Neutral Gray Dark
+107 124 140 Neutral Gray Base
+136 147 160 Neutral Gray Light
+163 172 184 Neutral Gray Lighter
+192 200 208 Neutral Gray Pale
+
+# Light Gray Shades
+224 227 232 Light Gray Dark
+245 247 250 Light Gray Base
+250 251 252 Light Gray Light
+252 253 254 Light Gray Lighter
+254 254 255 Light Gray Pale
+
+255 255 255 White
+
+# Amber Shades
+198 143 37  Amber Dark
+242 182 50  Amber Base
+247 199 87  Amber Light
+250 216 143 Amber Lighter
+253 235 194 Amber Pale
+
