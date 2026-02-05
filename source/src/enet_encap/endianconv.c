@@ -28,10 +28,10 @@ OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-CipSint GetSintFromMessage(const EipUint8** const buffer) {
-  const unsigned char* const buffer_address = (unsigned char*)*buffer;
-  EipUint8 data                             = buffer_address[0];
-  *buffer += 1;
+CipSint GetSintFromMessage(const CipOctet** const buffer_address) {
+  const CipOctet* buffer = *buffer_address;
+  CipSint data           = buffer[0];
+  *buffer_address += 1;
   return data;
 }
 
@@ -49,9 +49,9 @@ CipUsint GetUsintFromMessage(const CipOctet** const buffer_address) {
   return data;
 }
 
-CipBool GetBoolFromMessage(const EipBool8** const buffer_address) {
-  const EipBool8* buffer = *buffer_address;
-  EipBool8 data          = buffer[0];
+CipBool GetBoolFromMessage(const CipOctet** const buffer_address) {
+  const CipOctet* buffer = *buffer_address;
+  CipBool data           = buffer[0];
   *buffer_address += 1;
   return data;
 }
@@ -63,23 +63,23 @@ CipBool GetBoolFromMessage(const EipBool8** const buffer_address) {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT16 data value
  */
-CipInt GetIntFromMessage(const EipUint8** const buffer) {
-  const unsigned char* const buffer_address = (unsigned char*)*buffer;
-  EipUint16 data = buffer_address[0] | buffer_address[1] << 8;
-  *buffer += 2;
+CipInt GetIntFromMessage(const CipOctet** const buffer_address) {
+  const CipOctet* buffer = *buffer_address;
+  CipInt data = buffer[0] | buffer[1] << 8;
+  *buffer_address += 2;
   return data;
 }
 
 CipUint GetUintFromMessage(const CipOctet** const buffer_address) {
   const CipOctet* buffer = *buffer_address;
-  EipUint16 data         = buffer[0] | buffer[1] << 8;
+  CipUint data         = buffer[0] | buffer[1] << 8;
   *buffer_address += 2;
   return data;
 }
 
 CipWord GetWordFromMessage(const CipOctet** const buffer_address) {
   const CipOctet* buffer = *buffer_address;
-  EipUint16 data         = buffer[0] | buffer[1] << 8;
+  CipWord data         = buffer[0] | buffer[1] << 8;
   *buffer_address += 2;
   return data;
 }
@@ -87,12 +87,12 @@ CipWord GetWordFromMessage(const CipOctet** const buffer_address) {
 /**
  *   @brief Reads EIP_UINT32 from *buffer and converts little endian to host.
  *   @param buffer pointer where data should be reed.
- *   @return EIP_UNÍT32 value
+ *   @return EIP_UINT32 value
  */
-CipDint GetDintFromMessage(const EipUint8** const buffer) {
-  const unsigned char* p = (unsigned char*)*buffer;
-  EipUint32 data         = p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
-  *buffer += 4;
+CipDint GetDintFromMessage(const CipOctet** const buffer_address) {
+  const CipOctet* buffer = *buffer_address;
+  CipDint data = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
+  *buffer_address += 4;
   return data;
 }
 
@@ -117,9 +117,9 @@ CipUdint GetDwordFromMessage(const CipOctet** const buffer_address) {
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddSintToMessage(const EipUint8 data,
+void AddSintToMessage(const CipSint data,
                       ENIPMessage* const outgoing_message) {
-  outgoing_message->current_message_position[0] = (unsigned char)data;
+  outgoing_message->current_message_position[0] = (CipOctet)data;
   outgoing_message->current_message_position += 1;
   outgoing_message->used_message_length += 1;
 }
@@ -130,10 +130,10 @@ void AddSintToMessage(const EipUint8 data,
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddIntToMessage(const EipUint16 data,
+void AddIntToMessage(const CipInt data,
                      ENIPMessage* const outgoing_message) {
-  outgoing_message->current_message_position[0] = (unsigned char)data;
-  outgoing_message->current_message_position[1] = (unsigned char)(data >> 8);
+  outgoing_message->current_message_position[0] = (CipOctet)data;
+  outgoing_message->current_message_position[1] = (CipOctet)(data >> 8);
   outgoing_message->current_message_position += 2;
   outgoing_message->used_message_length += 2;
 }
@@ -144,44 +144,37 @@ void AddIntToMessage(const EipUint16 data,
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddDintToMessage(const EipUint32 data,
+void AddDintToMessage(const CipDint data,
                       ENIPMessage* const outgoing_message) {
-  outgoing_message->current_message_position[0] = (unsigned char)data;
-  outgoing_message->current_message_position[1] = (unsigned char)(data >> 8);
-  outgoing_message->current_message_position[2] = (unsigned char)(data >> 16);
-  outgoing_message->current_message_position[3] = (unsigned char)(data >> 24);
+  outgoing_message->current_message_position[0] = (CipOctet)data;
+  outgoing_message->current_message_position[1] = (CipOctet)(data >> 8);
+  outgoing_message->current_message_position[2] = (CipOctet)(data >> 16);
+  outgoing_message->current_message_position[3] = (CipOctet)(data >> 24);
 
   outgoing_message->current_message_position += 4;
   outgoing_message->used_message_length += 4;
 }
 
 /**
- *   @brief Reads EipUint64 from *pa_buf and converts little endian to host.
+ *   @brief Reads CipLint from **buffer_address and converts little endian to
+ * host.
  *   @param pa_buf pointer where data should be reed.
- *   @return EipUint64 value
+ *   @return CipLint value
  */
-EipUint64 GetLintFromMessage(const EipUint8** const buffer) {
-  const EipUint8* buffer_address = *buffer;
-  EipUint64 data =
-    ((((EipUint64)buffer_address[0]) << 56) & 0xFF00000000000000LL) +
-    ((((EipUint64)buffer_address[1]) << 48) & 0x00FF000000000000LL) +
-    ((((EipUint64)buffer_address[2]) << 40) & 0x0000FF0000000000LL) +
-    ((((EipUint64)buffer_address[3]) << 32) & 0x000000FF00000000LL) +
-    ((((EipUint64)buffer_address[4]) << 24) & 0x00000000FF000000) +
-    ((((EipUint64)buffer_address[5]) << 16) & 0x0000000000FF0000) +
-    ((((EipUint64)buffer_address[6]) << 8) & 0x000000000000FF00) +
-    (((EipUint64)buffer_address[7]) & 0x00000000000000FF);
-  *buffer += 8;
+CipLint GetLintFromMessage(const CipOctet** const buffer_address) {
+  const CipOctet* buffer = *buffer_address;
+  CipLint data = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24 | buffer[4] << 32 | buffer[5] << 40 | buffer[6] << 48 | buffer[7] << 56;
+  *buffer_address += 8;
   return data;
 }
 
 /**
- * @brief Converts EipUint64 data from host to little endian and writes it to
+ * @brief Converts CipLint data from host to little endian and writes it to
  * buffer.
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddLintToMessage(const EipUint64 data,
+void AddLintToMessage(const CipLint data,
                       ENIPMessage* const outgoing_message) {
   outgoing_message->current_message_position[0] = (EipUint8)(data);
   outgoing_message->current_message_position[1] = (EipUint8)(data >> 8);
