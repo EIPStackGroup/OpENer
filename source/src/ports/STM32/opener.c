@@ -3,19 +3,22 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "generic_networkhandler.h"
-#include "opener_api.h"
-#include "cipethernetlink.h"
-#include "ciptcpipinterface.h"
-#include "trace.h"
-#include "networkconfig.h"
-#include "doublylinkedlist.h"
-#include "cipconnectionobject.h"
 
-#define OPENER_THREAD_PRIO			osPriorityAboveNormal
-#define OPENER_STACK_SIZE			  2000
+#include "ports/STM32/opener.h"
 
-static void opener_thread(void const *argument);
+#include "api/opener_api.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/cipethernetlink.h"
+#include "cip/ciptcpipinterface.h"
+#include "core/trace.h"
+#include "ports/STM32/networkconfig.h"
+#include "ports/generic_networkhandler.h"
+#include "utils/doublylinkedlist.h"
+
+#define OPENER_THREAD_PRIO osPriorityAboveNormal
+#define OPENER_STACK_SIZE 2000
+
+static void opener_thread(void const* argument);
 osThreadId opener_ThreadId;
 volatile int g_end_stack = 0;
 
@@ -25,8 +28,7 @@ volatile int g_end_stack = 0;
  * @param   netif      address specifying the network interface
  * @retval  None
  */
-void opener_init(struct netif *netif) {
-
+void opener_init(struct netif* netif) {
   EipStatus eip_status = 0;
 
   if (IfaceLinkIsUp(netif)) {
@@ -41,10 +43,20 @@ void opener_init(struct netif *netif) {
     /* for a real device the serial number should be unique per device */
     SetDeviceSerialNumber(123456789);
 
-    /* unique_connection_id should be sufficiently random or incremented and stored
-     *  in non-volatile memory each time the device boots.
+    Random random_generator;
+    RandomInit(&random_generator, XorShiftSetSeed, XorShiftGetNextUInt32);
+    /* Seed the random number generator with the MAC address bytes */
+    uint32_t seed = 0;
+    for (size_t i = 0; i < sizeof(iface_mac); ++i) {
+      seed ^= ((uint32_t)iface_mac[i]) << ((i % 4) * 8);
+    }
+    random_generator.set_seed(&random_generator, seed);
+
+    /* unique_connection_id should be sufficiently random or incremented and
+     * stored in non-volatile memory each time the device boots.
      */
-    EipUint16 unique_connection_id = rand();
+    EipUint16 unique_connection_id =
+      random_generator.get_next_uint16(&random_generator);
 
     /* Setup the CIP Layer. All objects are initialized with the default
      * values for the attribute contents. */
@@ -58,42 +70,40 @@ void opener_init(struct netif *netif) {
     /* register for closing signals so that we can trigger the stack to end */
     g_end_stack = 0;
 
-
     eip_status = IfaceGetConfiguration(netif, &g_tcpip.interface_configuration);
     if (eip_status < 0) {
       OPENER_TRACE_WARN("Problems getting interface configuration\n");
     }
 
     eip_status = NetworkHandlerInitialize();
-  }
-  else {
+  } else {
     OPENER_TRACE_WARN("Network link is down, OpENer not started\n");
     g_end_stack = 1;  // end in case of network link is down
   }
   if ((g_end_stack == 0) && (eip_status == kEipStatusOk)) {
-    osThreadDef(OpENer, opener_thread, OPENER_THREAD_PRIO, 0,
-                OPENER_STACK_SIZE);
+    osThreadDef(
+      OpENer, opener_thread, OPENER_THREAD_PRIO, 0, OPENER_STACK_SIZE);
     osThreadCreate(osThread(OpENer), netif);
     OPENER_TRACE_INFO("OpENer: opener_thread started, free heap size: %d\n",
-           xPortGetFreeHeapSize());
+                      xPortGetFreeHeapSize());
   } else {
     OPENER_TRACE_ERR("NetworkHandlerInitialize error %d\n", eip_status);
   }
 }
 
-static void opener_thread(void const *argument) {
-  struct netif *netif = (struct netif*) argument;
+static void opener_thread(void const* argument) {
+  struct netif* netif = (struct netif*)argument;
   /* The event loop. Put other processing you need done continually in here */
   while (!g_end_stack) {
     if (kEipStatusOk != NetworkHandlerProcessCyclic()) {
       OPENER_TRACE_ERR("Error in NetworkHandler loop! Exiting OpENer!\n");
-      g_end_stack = 1;	// end loop in case of error
+      g_end_stack = 1;  // end loop in case of error
     }
     if (!IfaceLinkIsUp(netif)) {
       OPENER_TRACE_INFO("Network link is down, exiting OpENer\n");
-      g_end_stack = 1;	// end loop in case of network link is down
+      g_end_stack = 1;  // end loop in case of network link is down
     }
-  }		// loop ended
+  }  // loop ended
   /* clean up network state */
   NetworkHandlerFinish();
   /* close remaining sessions and connections, clean up used data */

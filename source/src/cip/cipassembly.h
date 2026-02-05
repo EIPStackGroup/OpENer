@@ -3,15 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPASSEMBLY_H_
-#define OPENER_CIPASSEMBLY_H_
+#ifndef SRC_CIP_CIPASSEMBLY_H_
+#define SRC_CIP_CIPASSEMBLY_H_
 
-#include "typedefs.h"
-#include "ciptypes.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @brief Assembly class code */
 static const CipUint kCipAssemblyClassCode = 0x04U;
-
 
 /** @brief Assembly object instance attribute IDs.
  *
@@ -22,14 +21,14 @@ typedef enum {
   kAssemblyObjectInstanceAttributeIdData = 3
 } AssemblyObjectInstanceAttributeId;
 
-
 /* public functions */
 
 /** @brief Setup the Assembly object
  *
  * Creates the Assembly Class with zero instances and sets up all services.
  *
- * @return Returns kEipStatusOk if assembly object was successfully created, otherwise kEipStatusError
+ * @return Returns kEipStatusOk if assembly object was successfully created,
+ * otherwise kEipStatusError
  */
 EipStatus CipAssemblyInitialize(void);
 
@@ -45,7 +44,8 @@ void ShutdownAssemblies(void);
 /** @brief notify an Assembly object that data has been received for it.
  *
  *  The data will be copied into the assembly objects attribute 3 and
- *  the application will be informed with the AfterAssemblyDataReceived function.
+ *  the application will be informed with the AfterAssemblyDataReceived
+ * function.
  *
  *  @param instance the assembly object instance for which the data was received
  *  @param data pointer to the data received
@@ -54,8 +54,8 @@ void ShutdownAssemblies(void);
  *     - kEipStatusOk the received data was okay
  *     - kEipStatusError the received data was wrong
  */
-EipStatus NotifyAssemblyConnectedDataReceived(CipInstance *const instance,
-                                              const EipUint8 *const data,
+EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
+                                              const EipUint8* const data,
                                               const size_t data_length);
 
-#endif /* OPENER_CIPASSEMBLY_H_ */
+#endif  // SRC_CIP_CIPASSEMBLY_H_

@@ -8,15 +8,14 @@
  *  @brief This file provides the interface to handle QoS object's NV data.
  *
  */
-#ifndef _NVQOS_H_
-#define _NVQOS_H_
+#ifndef SRC_PORTS_NVDATA_NVQOS_H_
+#define SRC_PORTS_NVDATA_NVQOS_H_
 
-#include "typedefs.h"
+#include "cip/cipqos.h"
+#include "core/typedefs.h"
 
-#include "cipqos.h"
+int NvQosLoad(CipQosObject* p_qos);
 
-int NvQosLoad(CipQosObject *p_qos);
+int NvQosStore(const CipQosObject* p_qos);
 
-int NvQosStore(const CipQosObject *p_qos);
-
-#endif  /* _NVQOS_H_ */
+#endif  // SRC_PORTS_NVDATA_NVQOS_H_

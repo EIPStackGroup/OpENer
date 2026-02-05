@@ -4,5 +4,10 @@
  *
  ******************************************************************************/
 
+#ifndef SRC_PORTS_WIN32_PLATFORM_NETWORK_INCLUDES_H_
+#define SRC_PORTS_WIN32_PLATFORM_NETWORK_INCLUDES_H_
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+#endif  // SRC_PORTS_WIN32_PLATFORM_NETWORK_INCLUDES_H_

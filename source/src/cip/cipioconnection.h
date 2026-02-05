@@ -37,27 +37,30 @@
  *
  */
 
-#ifndef OPENER_CIPIOCONNECTION_H_
-#define OPENER_CIPIOCONNECTION_H_
+#ifndef SRC_CIP_CIPIOCONNECTION_H_
+#define SRC_CIP_CIPIOCONNECTION_H_
 
-#include "opener_api.h"
-#include "cipconnectionmanager.h"
-#include "cipconnectionobject.h"
+#include "api/opener_api.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipconnectionobject.h"
 
 /** @brief Setup all data in order to establish an IO connection
  *
- * This function can be called after all data has been parsed from the forward open request
- * @param connection_object pointer to the connection object structure holding the parsed data from the forward open request
+ * This function can be called after all data has been parsed from the forward
+ * open request
+ * @param connection_object pointer to the connection object structure holding
+ * the parsed data from the forward open request
  * @param extended_error the extended error code in case an error happened
  * @return general status on the establishment
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
 CipError EstablishIoConnection(
-  CipConnectionObject *RESTRICT const connection_object,
-  EipUint16 *const extended_error);
+  CipConnectionObject* RESTRICT const connection_object,
+  EipUint16* const extended_error);
 
-/** @brief Take the data given in the connection object structure and open the necessary communication channels
+/** @brief Take the data given in the connection object structure and open the
+ * necessary communication channels
  *
  * This function will use the g_stCPFDataItem!
  * @param connection_object pointer to the connection object data
@@ -65,17 +68,17 @@ CipError EstablishIoConnection(
  *    - EIP_OK ... on success
  *    - On an error the general status code to be put into the response
  */
-CipError OpenCommunicationChannels(CipConnectionObject *connection_object);
+CipError OpenCommunicationChannels(CipConnectionObject* connection_object);
 
-/** @brief close the communication channels of the given connection and remove it
- * from the active connections list.
+/** @brief close the communication channels of the given connection and remove
+ * it from the active connections list.
  *
  * @param connection_object pointer to the connection object data
  */
 void CloseCommunicationChannelsAndRemoveFromActiveConnectionsList(
-  CipConnectionObject *connection_object);
+  CipConnectionObject* connection_object);
 
-extern EipUint8 *g_config_data_buffer;
+extern EipUint8* g_config_data_buffer;
 extern unsigned int g_config_data_length;
 
-#endif /* OPENER_CIPIOCONNECTION_H_ */
+#endif  // SRC_CIP_CIPIOCONNECTION_H_

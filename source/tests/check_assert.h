@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2022, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
+
+#ifndef TESTS_CHECK_ASSERT_H_
+#define TESTS_CHECK_ASSERT_H_
+
 /*
  * This header contains definitions implementing a method for writing test
  * cases to confirm an OPENER_ASSERTION failure using the CHECK_ASSERT macro.
@@ -6,11 +15,9 @@
  */
 #include <setjmp.h>
 
-
 /* See OpENerTests.cpp for descriptions. */
 extern jmp_buf assert_jump;
-extern jmp_buf *assert_jump_enabled;
-
+extern jmp_buf* assert_jump_enabled;
 
 /*
  * This macro is intended to be used in the unit test code, not the
@@ -33,7 +40,6 @@ extern jmp_buf *assert_jump_enabled;
                                                                         \
     /* Store the assertion jump location. */                            \
     if (setjmp(assert_jump) == 0) {                                     \
-                                                                        \
       /* Code under test, which should longjmp() instead of return. */  \
       exp;                                                              \
                                                                         \
@@ -41,3 +47,5 @@ extern jmp_buf *assert_jump_enabled;
       FAIL("Did not assert as expected.");                              \
     }                                                                   \
   } while (0)
+
+#endif  // TESTS_CHECK_ASSERT_H_

@@ -4,16 +4,16 @@
  *
  ******************************************************************************/
 
-#include "cipqos.h"
+#include "cip/cipqos.h"
 
-#include "opener_user_conf.h"
-#include "cipcommon.h"
-#include "cipmessagerouter.h"
-#include "ciperror.h"
-#include "endianconv.h"
-#include "cipethernetlink.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "api/opener_api.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "cip/cipethernetlink.h"
+#include "cip/cipmessagerouter.h"
+#include "core/trace.h"
+#include "enet_encap/endianconv.h"
+#include "opener_user_conf.h"  // NOLINT(build/include_subdir)  // NOLINT(build/include_subdir)
 
 #define DEFAULT_DSCP_EVENT 59U
 #define DEFAULT_DSCP_GENERAL 47U
@@ -27,81 +27,74 @@
  *
  *  The global instance of the QoS object
  */
-CipQosObject g_qos = {
-  .q_frames_enable = false,
-  .dscp.event = DEFAULT_DSCP_EVENT,
-  .dscp.general = DEFAULT_DSCP_GENERAL,
-  .dscp.urgent = DEFAULT_DSCP_URGENT,
-  .dscp.scheduled = DEFAULT_DSCP_SCHEDULED,
-  .dscp.high = DEFAULT_DSCP_HIGH,
-  .dscp.low = DEFAULT_DSCP_LOW,
-  .dscp.explicit_msg = DEFAULT_DSCP_EXPLICIT
-};
+CipQosObject g_qos = { .q_frames_enable   = false,
+                       .dscp.event        = DEFAULT_DSCP_EVENT,
+                       .dscp.general      = DEFAULT_DSCP_GENERAL,
+                       .dscp.urgent       = DEFAULT_DSCP_URGENT,
+                       .dscp.scheduled    = DEFAULT_DSCP_SCHEDULED,
+                       .dscp.high         = DEFAULT_DSCP_HIGH,
+                       .dscp.low          = DEFAULT_DSCP_LOW,
+                       .dscp.explicit_msg = DEFAULT_DSCP_EXPLICIT };
 
-/** @brief Active set of DSCP data inherits its data from the QoS object on boot-up
+/** @brief Active set of DSCP data inherits its data from the QoS object on
+ * boot-up
  *
- *  The QoS DSCP values can be changed from the EIP network but the changes should come
- *  into effect only after a restart. Values are initialized with the default values.
- *  Changes are activated via the Identity Reset function
+ *  The QoS DSCP values can be changed from the EIP network but the changes
+ * should come into effect only after a restart. Values are initialized with the
+ * default values. Changes are activated via the Identity Reset function
  */
-static CipQosDscpValues s_active_dscp = {
-  .event = DEFAULT_DSCP_EVENT,
-  .general = DEFAULT_DSCP_GENERAL,
-  .urgent = DEFAULT_DSCP_URGENT,
-  .scheduled = DEFAULT_DSCP_SCHEDULED,
-  .high = DEFAULT_DSCP_HIGH,
-  .low = DEFAULT_DSCP_LOW,
-  .explicit_msg = DEFAULT_DSCP_EXPLICIT
-};
+static CipQosDscpValues s_active_dscp = { .event     = DEFAULT_DSCP_EVENT,
+                                          .general   = DEFAULT_DSCP_GENERAL,
+                                          .urgent    = DEFAULT_DSCP_URGENT,
+                                          .scheduled = DEFAULT_DSCP_SCHEDULED,
+                                          .high      = DEFAULT_DSCP_HIGH,
+                                          .low       = DEFAULT_DSCP_LOW,
+                                          .explicit_msg =
+                                            DEFAULT_DSCP_EXPLICIT };
 
 /************** Functions ****************************************/
-
 
 /**@brief Retrieve the given data according to CIP encoding from the
  * 		message buffer.
  *
- *  Implementation of the decode function for the SetAttributeSingle CIP service for QoS
- *  Objects.
+ *  Implementation of the decode function for the SetAttributeSingle CIP service
+ * for QoS Objects.
  *  @param data pointer to value to be written.
- *  @param message_router_request pointer to the request where the data should be taken from
- *  @param message_router_response pointer to the response where status should be set
+ *  @param message_router_request pointer to the request where the data should
+ * be taken from
+ *  @param message_router_response pointer to the response where status should
+ * be set
  *  @return length of taken bytes
  *          -1 .. error
  */
-int DecodeCipQoSAttribute(void *const data,
-		CipMessageRouterRequest *const message_router_request,
-		CipMessageRouterResponse *const message_router_response) {
+int DecodeCipQoSAttribute(
+  void* const data,
+  CipMessageRouterRequest* const message_router_request,
+  CipMessageRouterResponse* const message_router_response) {
+  const EipUint8** const cip_message = &(message_router_request->data);
 
-	const EipUint8 **const cip_message = &(message_router_request->data);
+  int number_of_decoded_bytes = -1;
 
-	int number_of_decoded_bytes = -1;
+  if (NULL != cip_message) {
+    CipUsint attribute_value_received = GetUsintFromMessage(cip_message);
+    if (attribute_value_received < 64U) {
+      *(CipUsint*)data = attribute_value_received;  // write value to attribute
 
-	if (NULL != cip_message) {
+      message_router_response->general_status = kCipErrorSuccess;
+      number_of_decoded_bytes                 = 1;
 
-		CipUsint attribute_value_received = GetUsintFromMessage(cip_message);
-		if (attribute_value_received < 64U) {
+    } else {
+      message_router_response->general_status = kCipErrorInvalidAttributeValue;
+    }
+  } else {
+    message_router_response->general_status = kCipErrorNotEnoughData;
+    OPENER_TRACE_INFO("CIP QoS not enough data\n");
+  }
 
-			*(CipUsint *)data = attribute_value_received; //write value to attribute
-
-			message_router_response->general_status = kCipErrorSuccess;
-			number_of_decoded_bytes = 1;
-
-		} else {
-			message_router_response->general_status =
-					kCipErrorInvalidAttributeValue;
-		}
-	} else {
-
-		message_router_response->general_status = kCipErrorNotEnoughData;
-		OPENER_TRACE_INFO("CIP QoS not enough data\n");
-	}
-
-	return number_of_decoded_bytes;
-
+  return number_of_decoded_bytes;
 }
 
 CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
-
   CipUsint priority_value;
   switch (priority) {
     case kConnectionObjectPriorityLow:
@@ -125,88 +118,88 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 }
 
 EipStatus CipQoSInit() {
+  CipClass* qos_class = NULL;
 
-  CipClass *qos_class = NULL;
-
-  if( ( qos_class = CreateCipClass(kCipQoSClassCode,
-                                   7, /* # class attributes */
-                                   7, /* # highest class attribute number */
-                                   2, /* # class services */
-                                   8, /* # instance attributes */
-                                   8, /* # highest instance attribute number */
-                                   2, /* # instance services */
-                                   1, /* # instances */
-                                   "Quality of Service",
-                                   1, /* # class revision */
-                                   NULL /* # function pointer for initialization */
-                                   ) ) == 0 ) {
-
+  if ((qos_class =
+         CreateCipClass(kCipQoSClassCode,
+                        7,  // # class attributes
+                        7,  // # highest class attribute number
+                        2,  // # class services
+                        8,  // # instance attributes
+                        8,  // # highest instance attribute number
+                        2,  // # instance services
+                        1,  // # instances
+                        "Quality of Service",
+                        1,      // # class revision
+                        NULL))  // # function pointer for initialization
+      == 0) {
     return kEipStatusError;
   }
 
-  CipInstance *instance = GetCipInstance(qos_class, 1); /* bind attributes to the instance #1 that was created above */
+  // bind attributes to the instance #1 that was created above
+  CipInstance* instance = GetCipInstance(qos_class, 1);
 
   InsertAttribute(instance,
                   1,
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *) &g_qos.q_frames_enable,
+                  (void*)&g_qos.q_frames_enable,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   2,
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *) &g_qos.dscp.event,
+                  (void*)&g_qos.dscp.event,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   3,
                   kCipUsint,
                   EncodeCipUsint,
                   NULL,
-                  (void *) &g_qos.dscp.general,
+                  (void*)&g_qos.dscp.general,
                   kNotSetOrGetable);
   InsertAttribute(instance,
                   4,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *) &g_qos.dscp.urgent,
+                  (void*)&g_qos.dscp.urgent,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   5,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *) &g_qos.dscp.scheduled,
+                  (void*)&g_qos.dscp.scheduled,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   6,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *) &g_qos.dscp.high,
+                  (void*)&g_qos.dscp.high,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   7,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *) &g_qos.dscp.low,
+                  (void*)&g_qos.dscp.low,
                   kGetableSingle | kSetable | kNvDataFunc);
   InsertAttribute(instance,
                   8,
                   kCipUsint,
                   EncodeCipUsint,
                   DecodeCipQoSAttribute,
-                  (void *) &g_qos.dscp.explicit_msg,
+                  (void*)&g_qos.dscp.explicit_msg,
                   kGetableSingle | kSetable | kNvDataFunc);
 
-  InsertService(qos_class, kGetAttributeSingle, &GetAttributeSingle,
-                "GetAttributeSingle");
-  InsertService(qos_class, kSetAttributeSingle, &SetAttributeSingle,
-                  "SetAttributeSingle");
+  InsertService(
+    qos_class, kGetAttributeSingle, &GetAttributeSingle, "GetAttributeSingle");
+  InsertService(
+    qos_class, kSetAttributeSingle, &SetAttributeSingle, "SetAttributeSingle");
 
   return kEipStatusOk;
 }
@@ -217,14 +210,14 @@ void CipQosUpdateUsedSetQosValues(void) {
 
 void CipQosResetAttributesToDefaultValues(void) {
   static const CipQosDscpValues kDefaultValues = {
-    .event = DEFAULT_DSCP_EVENT,
-    .general = DEFAULT_DSCP_GENERAL,
-    .urgent = DEFAULT_DSCP_URGENT,
-    .scheduled = DEFAULT_DSCP_SCHEDULED,
-    .high = DEFAULT_DSCP_HIGH,
-    .low = DEFAULT_DSCP_LOW,
+    .event        = DEFAULT_DSCP_EVENT,
+    .general      = DEFAULT_DSCP_GENERAL,
+    .urgent       = DEFAULT_DSCP_URGENT,
+    .scheduled    = DEFAULT_DSCP_SCHEDULED,
+    .high         = DEFAULT_DSCP_HIGH,
+    .low          = DEFAULT_DSCP_LOW,
     .explicit_msg = DEFAULT_DSCP_EXPLICIT
   };
   g_qos.q_frames_enable = false;
-  g_qos.dscp = kDefaultValues;
+  g_qos.dscp            = kDefaultValues;
 }

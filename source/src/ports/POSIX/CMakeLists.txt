@@ -49,7 +49,11 @@ endif()
 
 if( NOT OpENer_TESTS)
   add_executable(OpENer main.c)
-  target_link_libraries( OpENer PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} CIP Utils SAMPLE_APP ENET_ENCAP NVDATA rt cap pthread)
+  if(OpENer_RT)
+    target_link_libraries( OpENer PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} CIP Utils SAMPLE_APP ENET_ENCAP NVDATA rt cap pthread)
+  else()
+    target_link_libraries( OpENer PLATFORM_GENERIC ${OpENer_PLATFORM}PLATFORM ${PLATFORM_SPEC_LIBS} CIP Utils SAMPLE_APP ENET_ENCAP NVDATA)
+  endif(OpENer_RT)
 
   # Add additional CIP Objects
   string(COMPARE NOTEQUAL "${OpENer_ADD_CIP_OBJECTS}" "" OpENer_HAS_ADDITIONAL_OBJECT )

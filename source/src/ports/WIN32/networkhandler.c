@@ -3,15 +3,15 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include <string.h>
-#include <stdlib.h>
-#include <winsock2.h>
-#include <windows.h>
+#include "ports/networkhandler.h"
+
 #include <Ws2tcpip.h>
+#include <stdlib.h>
+#include <string.h>
+#include <windows.h>
+#include <winsock2.h>
 
-#include "networkhandler.h"
-
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 MicroSeconds GetMicroSeconds() {
   LARGE_INTEGER performance_counter;
@@ -20,12 +20,12 @@ MicroSeconds GetMicroSeconds() {
   QueryPerformanceCounter(&performance_counter);
   QueryPerformanceFrequency(&performance_frequency);
 
-  return (MicroSeconds) (performance_counter.QuadPart * 1000000LL
-                         / performance_frequency.QuadPart);
+  return (MicroSeconds)(performance_counter.QuadPart * 1000000LL /
+                        performance_frequency.QuadPart);
 }
 
 MilliSeconds GetMilliSeconds(void) {
-  return (MilliSeconds) (GetMicroSeconds() / 1000ULL);
+  return (MilliSeconds)(GetMicroSeconds() / 1000ULL);
 }
 
 EipStatus NetworkHandlerInitializePlatform(void) {
@@ -40,8 +40,8 @@ void ShutdownSocketPlatform(int socket_handle) {
   /* Suppress unused parameter compiler warning. */
   (void)socket_handle;
 
-#pragma \
-  message ("Untested. Is a shutdown() needed under Windows like for the POSIX port?")
+#pragma message( \
+  "Untested. Is a shutdown() needed under Windows like for the POSIX port?")
 }
 
 void CloseSocketPlatform(int socket_handle) {
@@ -53,11 +53,10 @@ int SetSocketToNonBlocking(int socket_handle) {
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-int SetQosOnSocket(const int socket,
-                   CipUsint qos_value) {
+int SetQosOnSocket(const int socket, CipUsint qos_value) {
   /* Suppress unused parameter compiler warning. */
-  (void) socket;
-  (void) qos_value;
+  (void)socket;
+  (void)qos_value;
 
-  return 0; // Dummy implementation, until a working one is viable
+  return 0;  // Dummy implementation, until a working one is viable
 }

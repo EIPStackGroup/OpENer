@@ -1,22 +1,27 @@
-#include <setjmp.h>
-#include <stdexcept>
-#include <stdio.h>
+/*******************************************************************************
+ * Copyright (c) 2017, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
 
 #include "OpENerTests.h"
+
+#include <csetjmp>
+#include <cstdio>
+#include <stdexcept>
+
 #include "CppUTest/TestRegistry.h"
 #include "CppUTestExt/MockSupportPlugin.h"
 
 extern "C" {
-#include "endianconv.h"
+#include "enet_encap/endianconv.h"
 }
-
 
 /*
  * Stores the location in the unit test function where execution should jump
  * to upon a failed assertion.
  */
 jmp_buf assert_jump;
-
 
 /*
  * This pointer is used to indicate if an assertion is expected in the code
@@ -26,12 +31,11 @@ jmp_buf assert_jump;
  * this pointer is never dereferenced. A pointer is used instead of a boolean
  * so the SetPointerPlugin can automatically reset it after every test.
  */
-jmp_buf *assert_jump_enabled;
+jmp_buf* assert_jump_enabled;
 
-
-int main(int argc,
-         char **argv) {
-  /* These checks are here to make sure assertions outside test runs don't crash */
+int main(int argc, char** argv) {
+  /* These checks are here to make sure assertions outside test runs don't crash
+   */
   CHECK(true);
   LONGS_EQUAL(1, 1);
 
@@ -52,7 +56,6 @@ int main(int argc,
   return CommandLineTestRunner::RunAllTests(argc, argv);
 }
 
-
 /*
  * This is the function called by the OPENER_ASSERT macro if the assertion
  * condition fails. It will interrupt the code under test in one of two ways
@@ -63,7 +66,7 @@ int main(int argc,
  * file - Path to the source file where the assertion failed.
  * line - Line number identifying the failed assertion.
  */
-extern "C" void test_assert_fail(const char *const file,
+extern "C" void test_assert_fail(const char* const file,
                                  const unsigned int line) {
   /*
    * Throw an exception with the assertion location if an assertion is not
@@ -75,7 +78,7 @@ extern "C" void test_assert_fail(const char *const file,
     char dummy;
 
     /* Determine how long the exception message would be. */
-    int len_no_null = snprintf(&dummy, 1, format, file, line);
+    int len_no_null = snprintf(&dummy, sizeof(dummy), format, file, line);
 
     if (len_no_null > 0) {
       /*
@@ -84,26 +87,27 @@ extern "C" void test_assert_fail(const char *const file,
        * exception terminates everything anyway.
        */
       const size_t len_with_null = len_no_null + 1;
-      char *msg = (char *)malloc(len_with_null);
+      char* msg                  = (char*)malloc(len_with_null);
 
       if (msg != NULL) {
         len_no_null = snprintf(msg, len_with_null, format, file, line);
 
         if (len_no_null > 0) {
-          throw std::runtime_error(msg);
+          std::runtime_error ex(msg);
+          free(msg);
+          throw ex;
         }
       }
+      free(msg);
     }
 
     /* Throw a generic exception if string generation fails. */
     throw std::runtime_error("Assertion failure.");
-  }
-
-  /*
-   * Execute the jump back to the unit test function if an assertion was
-   * expected.
-   */
-  else {
+  } else {
+    /*
+     * Execute the jump back to the unit test function if an assertion was
+     * expected.
+     */
     longjmp(assert_jump, 0);
   }
 }

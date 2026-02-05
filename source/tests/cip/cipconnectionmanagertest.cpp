@@ -11,10 +11,8 @@
 extern "C" {
 
 #include "cipconnectionmanager.h"
-
 }
 
-TEST_GROUP(CipConnectionManager) {
+TEST_GROUP(CipConnectionManager){
 
 };
-

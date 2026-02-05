@@ -9,6 +9,70 @@ cmake_minimum_required( VERSION 3.18 )
 project( OpENer LANGUAGES C VERSION 2.3 )
 
 #######################################
+# C Settings                          #
+#                                     #
+# Here you can set various C-related  #
+# options for the project.            #
+#######################################
+# Set C17 as minimum standard
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+# Add modern compiler warnings
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(
+        -Wall
+        -Wextra
+        -pedantic
+        -Wconversion
+        -Wshadow
+        -Wformat
+        -Wformat-security
+    )
+elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+    add_compile_options(/W4)
+endif()
+
+#######################################
+# AddressSanitizer Configuration      #
+#######################################
+option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer for memory error detection" OFF)
+option(ENABLE_UNDEFINED_SANITIZER "Enable UndefinedBehaviorSanitizer" OFF)
+
+if(ENABLE_ADDRESS_SANITIZER OR ENABLE_UNDEFINED_SANITIZER)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling sanitizers for security testing")
+
+        set(SANITIZER_FLAGS "")
+
+        if(ENABLE_ADDRESS_SANITIZER)
+            list(APPEND SANITIZER_FLAGS "-fsanitize=address")
+            message(STATUS "  - AddressSanitizer (ASAN) enabled")
+        endif()
+
+        if(ENABLE_UNDEFINED_SANITIZER)
+            list(APPEND SANITIZER_FLAGS "-fsanitize=undefined")
+            message(STATUS "  - UndefinedBehaviorSanitizer (UBSAN) enabled")
+        endif()
+
+        # Common sanitizer flags
+        add_compile_options(
+            ${SANITIZER_FLAGS}
+            -fno-omit-frame-pointer
+            -g
+        )
+        add_link_options(${SANITIZER_FLAGS})
+
+        # For memory leak detection in ASAN
+        set(ENV{ASAN_OPTIONS} "detect_leaks=1:halt_on_error=1")
+        set(ENV{UBSAN_OPTIONS} "print_stacktrace=1:halt_on_error=1")
+    else()
+        message(WARNING "Sanitizers requested but compiler is not GNU or Clang")
+    endif()
+endif()
+
+#######################################
 # Project version                     #
 #######################################
 
@@ -31,7 +95,7 @@ if(NOT DEFINED OpENer_Device_Minor_Version)
   set(OpENer_Device_Minor_Version ${PROJECT_VERSION_MINOR} CACHE STRING "Minor Version")
 endif()
 
-configure_file(  
+configure_file(
 	"${PROJECT_SOURCE_DIR}/src/ports/devicedata.h.in"
 	"${PROJECT_BINARY_DIR}/src/ports/devicedata.h"
 	)
@@ -105,13 +169,13 @@ if (DOXYGEN_FOUND)
 
     # exclude subdirectories of non active platforms depending on OpENer_PLATFORM
     set(OpENer_EXCLUDE_PATTERNS "")
-    if (NOT (${OpENer_PLATFORM} STREQUAL "POSIX"))
+    if (NOT OpENer_PLATFORM STREQUAL "POSIX")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/POSIX/*")
     endif ()
-    if (NOT (${OpENer_PLATFORM} STREQUAL "WIN32"))
+    if (NOT OpENer_PLATFORM STREQUAL "WIN32")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/WIN32/*")
     endif ()
-    if (NOT (${OpENer_PLATFORM} STREQUAL "MINGW"))
+    if (NOT OpENer_PLATFORM STREQUAL "MINGW")
         set(OpENer_EXCLUDE_PATTERNS "${OpENer_EXCLUDE_PATTERNS} */src/ports/MINGW/*")
     endif ()
 

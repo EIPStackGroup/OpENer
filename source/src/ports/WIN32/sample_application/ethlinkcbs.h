@@ -3,8 +3,8 @@
  * All rights reserved.
  *
  *****************************************************************************/
-#ifndef OPENER_ETHLINKCBS_H_
-#define OPENER_ETHLINKCBS_H_
+#ifndef SRC_PORTS_WIN32_SAMPLE_APPLICATION_ETHLINKCBS_H_
+#define SRC_PORTS_WIN32_SAMPLE_APPLICATION_ETHLINKCBS_H_
 /** @file
  * @brief Declaration of Ethernet Link object callbacks
  *
@@ -13,30 +13,22 @@
  *  of every Ethernet Link object of our device.
  */
 
-
 /*---------------------------------------------------------------------------*/
 /*                               INCLUDES                                    */
 /*---------------------------------------------------------------------------*/
-#include "typedefs.h"
-#include "ciptypes.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /*---------------------------------------------------------------------------*/
 /*                             PROTOTYPES                                    */
 /*---------------------------------------------------------------------------*/
 
-EipStatus EthLnkPreGetCallback
-(
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
-);
+EipStatus EthLnkPreGetCallback(CipInstance* const instance,
+                               CipAttributeStruct* const attribute,
+                               CipByte service);
 
-EipStatus EthLnkPostGetCallback
-(
-    CipInstance *const instance,
-    CipAttributeStruct *const attribute,
-    CipByte service
-);
+EipStatus EthLnkPostGetCallback(CipInstance* const instance,
+                                CipAttributeStruct* const attribute,
+                                CipByte service);
 
-
-#endif  /* #ifndef OPENER_ETHLINKCBS_H_ */
+#endif  // SRC_PORTS_WIN32_SAMPLE_APPLICATION_ETHLINKCBS_H_

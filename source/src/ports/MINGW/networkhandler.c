@@ -4,15 +4,15 @@
  *
  ******************************************************************************/
 #define WIN32_LEAN_AND_MEAN
-#include <string.h>
+#include "networkhandler.h"  // NOLINT(build/include_subdir)
+
 #include <stdlib.h>
-#include <winsock2.h>
+#include <string.h>
 #include <windows.h>
+#include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "networkhandler.h"
-
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 MicroSeconds getMicroSeconds() {
   LARGE_INTEGER performance_counter;
@@ -21,12 +21,12 @@ MicroSeconds getMicroSeconds() {
   QueryPerformanceCounter(&performance_counter);
   QueryPerformanceFrequency(&performance_frequency);
 
-  return (MicroSeconds) (performance_counter.QuadPart * 1000000LL
-                         / performance_frequency.QuadPart);
+  return (MicroSeconds)(performance_counter.QuadPart * 1000000LL /
+                        performance_frequency.QuadPart);
 }
 
 MilliSeconds GetMilliSeconds(void) {
-  return (MilliSeconds) (getMicroSeconds() / 1000ULL);
+  return (MilliSeconds)(getMicroSeconds() / 1000ULL);
 }
 
 EipStatus NetworkHandlerInitializePlatform(void) {
@@ -51,15 +51,11 @@ int SetSocketToNonBlocking(int socket_handle) {
   return ioctlsocket(socket_handle, FIONBIO, &iMode);
 }
 
-int SetQosOnSocket(int socket,
-                   CipUsint qos_value) {
+int SetQosOnSocket(int socket, CipUsint qos_value) {
   /* Quote from Vol. 2, Section 5-7.4.2 DSCP Value Attributes:
    *  Note that the DSCP value, if placed directly in the ToS field
    *  in the IP header, must be shifted left 2 bits. */
   DWORD set_tos = qos_value << 2;
-  return setsockopt(socket,
-                    IPPROTO_IP,
-                    IP_TOS,
-                    (char *)&set_tos,
-                    sizeof(set_tos) );
+  return setsockopt(
+    socket, IPPROTO_IP, IP_TOS, (char*)&set_tos, sizeof(set_tos));
 }

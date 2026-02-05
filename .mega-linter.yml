@@ -1,0 +1,50 @@
+# .mega-linter.yml
+# MegaLinter configuration for OpENer project
+
+# General settings
+FLAVOR_SUGGESTIONS: false
+SHOW_ELAPSED_TIME: true
+FILEIO_REPORTER: false
+
+# Apply fixes
+APPLY_FIXES: all
+
+# Linters configuration
+DISABLE_LINTERS:
+  - SPELL_CSPELL # Disabled
+
+# Formatter specific configuration
+C_CLANG_FORMAT_ARGUMENTS: "--style=file"
+
+# cpplint specific configuration
+# Use `source` as root so header-guard checks for headers under `source/tests`
+# don't require an extra `SOURCE_` prefix when file paths are evaluated.
+C_CPPLINT_ARGUMENTS:
+  - "--root=source"
+  - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
+  - "--recursive"
+CPP_CPPLINT_ARGUMENTS:
+  - "--root=source"
+  - "--filter=-whitespace/line_length,-readability/casting,-build/include_what_you_use"
+  - "--recursive"
+
+COPYPASTE_JSCPD_ARGUMENTS:
+  - "--ignore"
+  - "source/tests/**,source/src/ports/*/**"
+
+# Fix for Link Checker (Lychee)
+SPELL_LYCHEE_ARGUMENTS:
+  - "--exclude"
+  - "https://github/.*"
+  - "--exclude"
+  - 'https://github\.com/.*'
+  - "--exclude-path"
+  - "source/tests/ports/CHECKENCAPSULATIONINACTIVITY_TESTS.md"
+
+# Report configuration
+SARIF_REPORTER: true
+TEXT_REPORTER: true
+UPDATED_SOURCES_REPORTER: true
+
+# Parallel processing
+PARALLEL: true

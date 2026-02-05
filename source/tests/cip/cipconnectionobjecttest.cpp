@@ -11,10 +11,9 @@
 extern "C" {
 
 #include "cipconnectionobject.h"
-
 }
 
-TEST_GROUP (CipConnectionObject) {
+TEST_GROUP(CipConnectionObject){
 
 };
 
@@ -28,105 +27,105 @@ TEST(CipConnectionObject, InitializeEmpty) {
 
 /* Get State tests */
 TEST(CipConnectionObject, GetStateNonExistent) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 0;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 0;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateNonExistent, state);
 }
 
 TEST(CipConnectionObject, GetStateConfiguring) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 1;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 1;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateConfiguring, state);
 }
 
 TEST(CipConnectionObject, GetStateWaitingForConnectionID) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 2;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 2;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateWaitingForConnectionID, state);
 }
 
 TEST(CipConnectionObject, GetStateEstablished) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 3;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 3;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateEstablished, state);
 }
 
 TEST(CipConnectionObject, GetStateTimedOut) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 4;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 4;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateTimedOut, state);
 }
 
 TEST(CipConnectionObject, GetStateDeferredDelete) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 5;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 5;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateDeferredDelete, state);
 }
 
 TEST(CipConnectionObject, GetStateClosing) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 6;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 6;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateClosing, state);
 }
 
 TEST(CipConnectionObject, GetStateInvalid) {
-  CipConnectionObject connection_object = {0};
-  connection_object.state = 7;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.state               = 7;
   ConnectionObjectState state = ConnectionObjectGetState(&connection_object);
   CHECK_EQUAL(kConnectionObjectStateInvalid, state);
 }
 
 /* Set state tests */
 TEST(CipConnectionObject, SetStateNonExistent) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object,
                            kConnectionObjectStateNonExistent);
   CHECK_EQUAL(0, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateConfiguring) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object,
                            kConnectionObjectStateConfiguring);
   CHECK_EQUAL(1, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateWaitingForConnectionID) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object,
                            kConnectionObjectStateWaitingForConnectionID);
   CHECK_EQUAL(2, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateEstablished) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object,
                            kConnectionObjectStateEstablished);
   CHECK_EQUAL(3, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateTimedOut) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object, kConnectionObjectStateTimedOut);
   CHECK_EQUAL(4, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateDeferredDelete) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object,
                            kConnectionObjectStateDeferredDelete);
   CHECK_EQUAL(5, connection_object.state);
 }
 
 TEST(CipConnectionObject, SetStateClosing) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   ConnectionObjectSetState(&connection_object, kConnectionObjectStateClosing);
   CHECK_EQUAL(6, connection_object.state);
 }
@@ -134,110 +133,110 @@ TEST(CipConnectionObject, SetStateClosing) {
 /* Get InstanceType tests */
 
 TEST(CipConnectionObject, GetInstanceType) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type =
     kConnectionObjectInstanceTypeExplicitMessaging;
   CHECK_EQUAL(kConnectionObjectInstanceTypeExplicitMessaging,
-              ConnectionObjectGetInstanceType(&connection_object) );
+              ConnectionObjectGetInstanceType(&connection_object));
 }
 
 TEST(CipConnectionObject, InstanceTypeIExplicitMessaging) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type =
     kConnectionObjectInstanceTypeExplicitMessaging;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(0, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeIO) {
-  CipConnectionObject connection_object = {0};
-  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type       = kConnectionObjectInstanceTypeIO;
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(1, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeIOExclusiveOwner) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type =
     kConnectionObjectInstanceTypeIOExclusiveOwner;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(1, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeIOInputOnly) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(1, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeIOListenOnly) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(1, value);
 }
 
 TEST(CipConnectionObject, InstanceTypeCipBridged) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type = kConnectionObjectInstanceTypeCipBridged;
-  CipUsint value = ConnectionObjectGetInstanceTypeForAttribute(
-    &connection_object);
+  CipUsint value =
+    ConnectionObjectGetInstanceTypeForAttribute(&connection_object);
   CHECK_EQUAL(2, value);
 }
 
 TEST(CipConnectionObject, IsTypeNonLOIOConnectionTrue) {
-  CipConnectionObject connection_object = {0};
-  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type       = kConnectionObjectInstanceTypeIO;
   CHECK_EQUAL(true,
-              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object));
   connection_object.instance_type =
     kConnectionObjectInstanceTypeIOExclusiveOwner;
   CHECK_EQUAL(true,
-              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object));
   connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
   CHECK_EQUAL(true,
-              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object));
 }
 
 TEST(CipConnectionObject, IsTypeNonLOIOConnectionFalse) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
   CHECK_EQUAL(false,
-              ConnectionObjectIsTypeNonLOIOConnection(&connection_object) );
+              ConnectionObjectIsTypeNonLOIOConnection(&connection_object));
 }
 
 TEST(CipConnectionObject, IsTypeIOConnectionTrue) {
-  CipConnectionObject connection_object = {0};
-  connection_object.instance_type = kConnectionObjectInstanceTypeIO;
-  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type       = kConnectionObjectInstanceTypeIO;
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object));
   connection_object.instance_type =
     kConnectionObjectInstanceTypeIOExclusiveOwner;
-  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object));
   connection_object.instance_type = kConnectionObjectInstanceTypeIOInputOnly;
-  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object));
   connection_object.instance_type = kConnectionObjectInstanceTypeIOListenOnly;
-  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CHECK_EQUAL(true, ConnectionObjectIsTypeIOConnection(&connection_object));
 }
 
 TEST(CipConnectionObject, IsTypeIOConnectionFalse) {
-  CipConnectionObject connection_object = {0};
-  connection_object.instance_type = kConnectionObjectInstanceTypeInvalid;
-  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CipConnectionObject connection_object = { 0 };
+  connection_object.instance_type       = kConnectionObjectInstanceTypeInvalid;
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object));
   connection_object.instance_type =
     kConnectionObjectInstanceTypeExplicitMessaging;
-  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object));
   connection_object.instance_type = kConnectionObjectInstanceTypeCipBridged;
-  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object) );
+  CHECK_EQUAL(false, ConnectionObjectIsTypeIOConnection(&connection_object));
 }
 
 TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 0x80;
   ConnectionObjectTransportClassTriggerDirection direction =
     ConnectionObjectGetTransportClassTriggerDirection(&connection_object);
@@ -245,7 +244,7 @@ TEST(CipConnectionObject, TransportClassTriggerDirectionServer) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerDirectionClient) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 0x00;
   ConnectionObjectTransportClassTriggerDirection direction =
     ConnectionObjectGetTransportClassTriggerDirection(&connection_object);
@@ -253,7 +252,7 @@ TEST(CipConnectionObject, TransportClassTriggerDirectionClient) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerProductionTriggerInvalid) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 3 << 4;
   ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
     ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -263,7 +262,7 @@ TEST(CipConnectionObject, TransportClassTriggerProductionTriggerInvalid) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerProductionTriggerCyclic) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 0x00;
   ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
     ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -272,9 +271,8 @@ TEST(CipConnectionObject, TransportClassTriggerProductionTriggerCyclic) {
               production_trigger);
 }
 
-TEST(CipConnectionObject,
-     TransportClassTriggerProductionTriggerChangeOfState) {
-  CipConnectionObject connection_object = {0};
+TEST(CipConnectionObject, TransportClassTriggerProductionTriggerChangeOfState) {
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 1 << 4;
   ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
     ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -286,7 +284,7 @@ TEST(CipConnectionObject,
 
 TEST(CipConnectionObject,
      TransportClassTriggerProductionTriggerApplicationObject) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 2 << 4;
   ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
     ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -297,7 +295,7 @@ TEST(CipConnectionObject,
 }
 
 TEST(CipConnectionObject, TransportClassTriggerClassInvalid) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 5;
   ConnectionObjectTransportClassTriggerTransportClass transport_class =
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
@@ -306,7 +304,7 @@ TEST(CipConnectionObject, TransportClassTriggerClassInvalid) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerClass0) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 0;
   ConnectionObjectTransportClassTriggerTransportClass transport_class =
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
@@ -315,7 +313,7 @@ TEST(CipConnectionObject, TransportClassTriggerClass0) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerClass1) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 1;
   ConnectionObjectTransportClassTriggerTransportClass transport_class =
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
@@ -324,7 +322,7 @@ TEST(CipConnectionObject, TransportClassTriggerClass1) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerClass2) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 2;
   ConnectionObjectTransportClassTriggerTransportClass transport_class =
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
@@ -333,7 +331,7 @@ TEST(CipConnectionObject, TransportClassTriggerClass2) {
 }
 
 TEST(CipConnectionObject, TransportClassTriggerClass3) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object     = { 0 };
   connection_object.transport_class_trigger = 3;
   ConnectionObjectTransportClassTriggerTransportClass transport_class =
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
@@ -342,40 +340,42 @@ TEST(CipConnectionObject, TransportClassTriggerClass3) {
 }
 
 TEST(CipConnectionObject, ExpectedPacketRate) {
-  CipConnectionObject connection_object = {0};
-  connection_object.t_to_o_requested_packet_interval = 11 * 1000; // 11 ms in µs
+  CipConnectionObject connection_object = { 0 };
+  connection_object.t_to_o_requested_packet_interval =
+    11 * 1000;  // 11 ms in µs
   ConnectionObjectSetExpectedPacketRate(&connection_object);
-  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
-    &connection_object);
+  CipUint expected_packet_rate =
+    ConnectionObjectGetExpectedPacketRate(&connection_object);
   CHECK_EQUAL(20, expected_packet_rate);
 }
 
 TEST(CipConnectionObject, ExpectedPacketRateBelowTimerResolution) {
-  CipConnectionObject connection_object = {0};
-  connection_object.t_to_o_requested_packet_interval = 9 * 1000; // 9 ms in µs
+  CipConnectionObject connection_object              = { 0 };
+  connection_object.t_to_o_requested_packet_interval = 9 * 1000;  // 9 ms in µs
   ConnectionObjectSetExpectedPacketRate(&connection_object);
-  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
-    &connection_object);
+  CipUint expected_packet_rate =
+    ConnectionObjectGetExpectedPacketRate(&connection_object);
   CHECK_EQUAL(10, expected_packet_rate);
 }
 
 TEST(CipConnectionObject, ExpectedPacketRateZero) {
-  CipConnectionObject connection_object = {0};
-  connection_object.t_to_o_requested_packet_interval = 0; // A value of zero needs to be maintained, as this deactivates timeout
+  CipConnectionObject connection_object = { 0 };
+  connection_object.t_to_o_requested_packet_interval =
+    0;  // A value of zero needs to be maintained, as this deactivates timeout
   ConnectionObjectSetExpectedPacketRate(&connection_object);
-  CipUint expected_packet_rate = ConnectionObjectGetExpectedPacketRate(
-    &connection_object);
+  CipUint expected_packet_rate =
+    ConnectionObjectGetExpectedPacketRate(&connection_object);
   CHECK_EQUAL(0, expected_packet_rate);
 }
 
 TEST(CipConnectionObject, ParseConnectionData) {
-  CipConnectionObject connection_object = {0};
+  CipConnectionObject connection_object = { 0 };
   const CipOctet message[] =
     "\x06\x28\x00\x00\x00\x00\x00\x00\x00\x00\x98\xff\x18\x00\x78\x56"
     "\x34\x12\x00\x00\x00\x00\xe0\x93\x04\x00\x02\x40\xa0\x86\x01\x00"
     "\x22\x20\x01\x04\x20\x04\x24\x97\x2c\x98\x2c\x64";
 
-  const CipOctet *message_runner = (const CipOctet *)message;
+  const CipOctet* message_runner = (const CipOctet*)message;
 
   ConnectionObjectInitializeFromMessage(&message_runner, &connection_object);
   CipUdint o_to_t_network_connection_id =
@@ -386,15 +386,15 @@ TEST(CipConnectionObject, ParseConnectionData) {
     ConnectionObjectGetCipProducedConnectionID(&connection_object);
   CHECK_EQUAL(0, t_to_o_network_connection_id);
 
-  CipUint connection_serial_number = ConnectionObjectGetConnectionSerialNumber(
-    &connection_object);
+  CipUint connection_serial_number =
+    ConnectionObjectGetConnectionSerialNumber(&connection_object);
   CHECK_EQUAL(0xff98, connection_serial_number);
 
   CipUint vendor_id = ConnectionObjectGetOriginatorVendorId(&connection_object);
   CHECK_EQUAL(0x0018, vendor_id);
 
-  CipUdint originator_serial_number = ConnectionObjectGetOriginatorSerialNumber(
-    &connection_object);
+  CipUdint originator_serial_number =
+    ConnectionObjectGetOriginatorSerialNumber(&connection_object);
   CHECK_EQUAL(0x12345678, originator_serial_number);
 
   CipUsint connection_timeout_multiplier =
@@ -405,8 +405,8 @@ TEST(CipConnectionObject, ParseConnectionData) {
     ConnectionObjectGetOToTRequestedPacketInterval(&connection_object);
   CHECK_EQUAL(300000, o_to_t_rpi_in_microseconds);
 
-  bool o_to_t_redundant_owner = ConnectionObjectIsOToTRedundantOwner(
-    &connection_object);
+  bool o_to_t_redundant_owner =
+    ConnectionObjectIsOToTRedundantOwner(&connection_object);
   CHECK_EQUAL(false, o_to_t_redundant_owner);
 
   ConnectionObjectConnectionType o_to_t_connection_type =
@@ -414,8 +414,8 @@ TEST(CipConnectionObject, ParseConnectionData) {
   CHECK_EQUAL(kConnectionObjectConnectionTypePointToPoint,
               o_to_t_connection_type);
 
-  ConnectionObjectPriority o_to_t_priority = ConnectionObjectGetOToTPriority(
-    &connection_object);
+  ConnectionObjectPriority o_to_t_priority =
+    ConnectionObjectGetOToTPriority(&connection_object);
   CHECK_EQUAL(kConnectionObjectPriorityLow, o_to_t_priority);
 
   ConnectionObjectConnectionSizeType o_to_t_connection_size_type =
@@ -423,26 +423,26 @@ TEST(CipConnectionObject, ParseConnectionData) {
   CHECK_EQUAL(kConnectionObjectConnectionSizeTypeFixed,
               o_to_t_connection_size_type);
 
-  size_t o_to_t_connection_size = ConnectionObjectGetOToTConnectionSize(
-    &connection_object);
+  size_t o_to_t_connection_size =
+    ConnectionObjectGetOToTConnectionSize(&connection_object);
   CHECK_EQUAL(2ULL, o_to_t_connection_size);
 
-  //T to O Tests
+  // T to O Tests
 
   CipUdint t_to_o_rpi_in_microseconds =
     ConnectionObjectGetTToORequestedPacketInterval(&connection_object);
   CHECK_EQUAL(100000, t_to_o_rpi_in_microseconds);
 
-  bool t_to_o_redundant_owner = ConnectionObjectIsTToORedundantOwner(
-    &connection_object);
+  bool t_to_o_redundant_owner =
+    ConnectionObjectIsTToORedundantOwner(&connection_object);
   CHECK_EQUAL(false, t_to_o_redundant_owner);
 
   ConnectionObjectConnectionType t_to_o_connection_type =
     ConnectionObjectGetTToOConnectionType(&connection_object);
   CHECK_EQUAL(kConnectionObjectConnectionTypeMulticast, t_to_o_connection_type);
 
-  ConnectionObjectPriority t_to_o_priority = ConnectionObjectGetTToOPriority(
-    &connection_object);
+  ConnectionObjectPriority t_to_o_priority =
+    ConnectionObjectGetTToOPriority(&connection_object);
   CHECK_EQUAL(kConnectionObjectPriorityLow, t_to_o_priority);
 
   ConnectionObjectConnectionSizeType t_to_o_connection_size_type =
@@ -450,8 +450,8 @@ TEST(CipConnectionObject, ParseConnectionData) {
   CHECK_EQUAL(kConnectionObjectConnectionSizeTypeFixed,
               t_to_o_connection_size_type);
 
-  size_t t_to_o_connection_size = ConnectionObjectGetTToOConnectionSize(
-    &connection_object);
+  size_t t_to_o_connection_size =
+    ConnectionObjectGetTToOConnectionSize(&connection_object);
   CHECK_EQUAL(34ULL, t_to_o_connection_size);
 
   ConnectionObjectTransportClassTriggerDirection direction =
@@ -459,7 +459,8 @@ TEST(CipConnectionObject, ParseConnectionData) {
   CHECK_EQUAL(kConnectionObjectTransportClassTriggerDirectionClient, direction);
 
   ConnectionObjectTransportClassTriggerProductionTrigger trigger =
-    ConnectionObjectGetTransportClassTriggerProductionTrigger(&connection_object);
+    ConnectionObjectGetTransportClassTriggerProductionTrigger(
+      &connection_object);
   CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerCyclic,
               trigger);
 
@@ -467,5 +468,4 @@ TEST(CipConnectionObject, ParseConnectionData) {
     ConnectionObjectGetTransportClassTriggerTransportClass(&connection_object);
   CHECK_EQUAL(kConnectionObjectTransportClassTriggerTransportClass1,
               transport_class);
-
 }

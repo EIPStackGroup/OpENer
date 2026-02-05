@@ -4,17 +4,21 @@
  *
  ******************************************************************************/
 
-#include "ciptypes.h"
+#ifndef SRC_CIP_CIPSTRINGI_H_
+#define SRC_CIP_CIPSTRINGI_H_
 
-void CipStringIDelete(CipStringI *const string);
+#include "cip/ciptypes.h"
 
-bool CipStringIsAnyStringEmpty(const CipStringI *const string);
+void CipStringIDelete(CipStringI* const string);
 
-void CipStringICopy(CipStringI *const to,
-                    const CipStringI *const from);
+bool CipStringIsAnyStringEmpty(const CipStringI* const string);
 
-void CipStringIDecodeFromMessage(CipStringI *data_to,
-                                 CipMessageRouterRequest *const message_router_request);
+void CipStringICopy(CipStringI* const to, const CipStringI* const from);
 
-bool CipStringICompare(const CipStringI *const stringI_1,
-                       const CipStringI *const stringI_2);
+void CipStringIDecodeFromMessage(
+  CipStringI* data_to, CipMessageRouterRequest* const message_router_request);
+
+bool CipStringICompare(const CipStringI* const stringI_1,
+                       const CipStringI* const stringI_2);
+
+#endif  // SRC_CIP_CIPSTRINGI_H_

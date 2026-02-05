@@ -4,26 +4,26 @@
  *
  ******************************************************************************/
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "opener_api.h"
-#include "appcontype.h"
-#include "trace.h"
-#include "ciptcpipinterface.h"
-#include "cipqos.h"
-#include "nvdata.h"
+#include "api/opener_api.h"
+#include "cip/appcontype.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "core/trace.h"
+#include "ports/nvdata/nvdata.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
-  #include "cipethernetlink.h"
-  #include "ethlinkcbs.h"
+#include "cip/cipethernetlink.h"
+#include "ports/MINGW/sample_application/ethlinkcbs.h"
 #endif
 
-#define DEMO_APP_INPUT_ASSEMBLY_NUM                100 //0x064
-#define DEMO_APP_OUTPUT_ASSEMBLY_NUM               150 //0x096
-#define DEMO_APP_CONFIG_ASSEMBLY_NUM               151 //0x097
-#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM  152 //0x098
-#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153 //0x099
-#define DEMO_APP_EXPLICT_ASSEMBLY_NUM              154 //0x09A
+#define DEMO_APP_INPUT_ASSEMBLY_NUM 100U                  // 0x064
+#define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150U                 // 0x096
+#define DEMO_APP_CONFIG_ASSEMBLY_NUM 151U                 // 0x097
+#define DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM 152U   // 0x098
+#define DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM 153U  // 0x099
+#define DEMO_APP_EXPLICT_ASSEMBLY_NUM 154U                // 0x09A
 
 /* local functions */
 
@@ -37,16 +37,19 @@ EipUint8 g_assembly_data09A[32]; /* Explicit */
 EipStatus ApplicationInitialization(void) {
   /* create 3 assembly object instances*/
   /*INPUT*/
-  CreateAssemblyObject( DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assembly_data064[0],
-                        sizeof(g_assembly_data064) );
+  CreateAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM,
+                       &g_assembly_data064[0],
+                       sizeof(g_assembly_data064));
 
   /*OUTPUT*/
-  CreateAssemblyObject( DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assembly_data096[0],
-                        sizeof(g_assembly_data096) );
+  CreateAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM,
+                       &g_assembly_data096[0],
+                       sizeof(g_assembly_data096));
 
   /*CONFIG*/
-  CreateAssemblyObject( DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assembly_data097[0],
-                        sizeof(g_assembly_data097) );
+  CreateAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM,
+                       &g_assembly_data097[0],
+                       sizeof(g_assembly_data097));
 
   /*Heart-beat output assembly for Input only connections */
   CreateAssemblyObject(DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -55,29 +58,31 @@ EipStatus ApplicationInitialization(void) {
   CreateAssemblyObject(DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM, 0, 0);
 
   /* assembly for explicit messaging */
-  CreateAssemblyObject( DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assembly_data09A[0],
-                        sizeof(g_assembly_data09A) );
+  CreateAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM,
+                       &g_assembly_data09A[0],
+                       sizeof(g_assembly_data09A));
 
-  ConfigureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
+  ConfigureExclusiveOwnerConnectionPoint(0,
+                                         DEMO_APP_OUTPUT_ASSEMBLY_NUM,
                                          DEMO_APP_INPUT_ASSEMBLY_NUM,
                                          DEMO_APP_CONFIG_ASSEMBLY_NUM);
   ConfigureInputOnlyConnectionPoint(0,
                                     DEMO_APP_HEARTBEAT_INPUT_ONLY_ASSEMBLY_NUM,
                                     DEMO_APP_INPUT_ASSEMBLY_NUM,
                                     DEMO_APP_CONFIG_ASSEMBLY_NUM);
-  ConfigureListenOnlyConnectionPoint(0,
-                                     DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
-                                     DEMO_APP_INPUT_ASSEMBLY_NUM,
-                                     DEMO_APP_CONFIG_ASSEMBLY_NUM);
+  ConfigureListenOnlyConnectionPoint(
+    0,
+    DEMO_APP_HEARTBEAT_LISTEN_ONLY_ASSEMBLY_NUM,
+    DEMO_APP_INPUT_ASSEMBLY_NUM,
+    DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
   /* For NV data support connect callback functions for each object class with
    *  NV data.
    */
-  InsertGetSetCallback(GetCipClass(kCipQoSClassCode), NvQosSetCallback,
-                       kNvDataFunc);
-  InsertGetSetCallback(GetCipClass(kCipTcpIpInterfaceClassCode),
-                       NvTcpipSetCallback,
-                       kNvDataFunc);
+  InsertGetSetCallback(
+    GetCipClass(kCipQoSClassCode), NvQosSetCallback, kNvDataFunc);
+  InsertGetSetCallback(
+    GetCipClass(kCipTcpIpInterfaceClassCode), NvTcpipSetCallback, kNvDataFunc);
 
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   /* For the Ethernet Interface & Media Counters connect a PreGetCallback and
@@ -87,19 +92,13 @@ EipStatus ApplicationInitialization(void) {
    *  the hardware counters after the current data have been transmitted.
    */
   {
-    CipClass *p_eth_link_class = GetCipClass(kCipEthernetLinkClassCode);
-    InsertGetSetCallback(p_eth_link_class,
-                         EthLnkPreGetCallback,
-                         kPreGetFunc);
-    InsertGetSetCallback(p_eth_link_class,
-                         EthLnkPostGetCallback,
-                         kPostGetFunc);
+    CipClass* p_eth_link_class = GetCipClass(kCipEthernetLinkClassCode);
+    InsertGetSetCallback(p_eth_link_class, EthLnkPreGetCallback, kPreGetFunc);
+    InsertGetSetCallback(p_eth_link_class, EthLnkPostGetCallback, kPostGetFunc);
     /* Specify the attributes for which the callback should be executed. */
-    for (int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx)
-    {
-      CipAttributeStruct *p_eth_link_attr;
-      CipInstance *p_eth_link_inst =
-        GetCipInstance(p_eth_link_class, idx + 1);
+    for (int idx = 0; idx < OPENER_ETHLINK_INSTANCE_CNT; ++idx) {
+      CipAttributeStruct* p_eth_link_attr;
+      CipInstance* p_eth_link_inst = GetCipInstance(p_eth_link_class, idx + 1);
       OPENER_ASSERT(p_eth_link_inst);
 
       /* Interface counters attribute */
@@ -124,12 +123,12 @@ void CheckIoConnectionEvent(unsigned int pa_unOutputAssembly,
                             IoConnectionEvent pa_eIOConnectionEvent) {
   /* maintain a correct output state according to the connection state*/
 
-  (void) pa_unOutputAssembly; /* suppress compiler warning */
-  (void) pa_unInputAssembly; /* suppress compiler warning */
-  (void) pa_eIOConnectionEvent; /* suppress compiler warning */
+  (void)pa_unOutputAssembly;   /* suppress compiler warning */
+  (void)pa_unInputAssembly;    /* suppress compiler warning */
+  (void)pa_eIOConnectionEvent; /* suppress compiler warning */
 }
 
-EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
+EipStatus AfterAssemblyDataReceived(CipInstance* pa_pstInstance) {
   EipStatus nRetVal = kEipStatusOk;
 
   /*handle the data received e.g., update outputs of the device */
@@ -137,8 +136,9 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
     case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
       /* Data for the output assembly has been received.
        * Mirror it to the inputs */
-      memcpy( &g_assembly_data064[0], &g_assembly_data096[0],
-              sizeof(g_assembly_data064) );
+      memcpy(&g_assembly_data064[0],
+             &g_assembly_data096[0],
+             sizeof(g_assembly_data064));
       break;
     case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
       /* do something interesting with the new data from
@@ -156,7 +156,7 @@ EipStatus AfterAssemblyDataReceived(CipInstance *pa_pstInstance) {
   return nRetVal;
 }
 
-EipBool8 BeforeAssemblyDataSend(CipInstance *pa_pstInstance) {
+EipBool8 BeforeAssemblyDataSend(CipInstance* pa_pstInstance) {
   /*update data to be sent e.g., read inputs of the device */
   /*In this sample app we mirror the data from out to inputs on data receive
    * therefore we need nothing to do here. Just return true to inform that
@@ -186,17 +186,14 @@ EipStatus ResetDeviceToInitialConfiguration(void) {
   return kEipStatusOk;
 }
 
-void *
-CipCalloc(size_t pa_nNumberOfElements,
-          size_t pa_nSizeOfElement) {
+void* CipCalloc(size_t pa_nNumberOfElements, size_t pa_nSizeOfElement) {
   return calloc(pa_nNumberOfElements, pa_nSizeOfElement);
 }
 
-void CipFree(void *pa_poData) {
+void CipFree(void* pa_poData) {
   free(pa_poData);
 }
 
 void RunIdleChanged(EipUint32 pa_nRunIdleValue) {
-  (void) pa_nRunIdleValue;
+  (void)pa_nRunIdleValue;
 }
-

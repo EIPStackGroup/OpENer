@@ -3,11 +3,11 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_ENDIANCONV_H_
-#define OPENER_ENDIANCONV_H_
+#ifndef SRC_ENET_ENCAP_ENDIANCONV_H_
+#define SRC_ENET_ENCAP_ENDIANCONV_H_
 
-#include "typedefs.h"
-#include "ciptypes.h"
+#include "cip/ciptypes.h"
+#include "core/typedefs.h"
 
 /** @file endianconv.h
  * @brief Responsible for Endianess conversion
@@ -15,8 +15,8 @@
 
 typedef enum {
   kOpenerEndianessUnknown = -1,
-  kOpENerEndianessLittle = 0,
-  kOpENerEndianessBig = 1
+  kOpENerEndianessLittle  = 0,
+  kOpENerEndianessBig     = 1
 } OpenerEndianess;
 
 /** @ingroup ENCAP
@@ -24,37 +24,40 @@ typedef enum {
  *   @param buffer pointer where data should be reed.
  *   @return EIP_UINT8 data value
  */
-CipSint GetSintFromMessage(const EipUint8 **const buffer);
+CipSint GetSintFromMessage(const EipUint8** const buffer);
 
-CipByte GetByteFromMessage(const CipOctet **const buffer_address);
+CipByte GetByteFromMessage(const CipOctet** const buffer_address);
 
-CipUsint GetUsintFromMessage(const CipOctet **const buffer_address);
+CipUsint GetUsintFromMessage(const CipOctet** const buffer_address);
 
-CipBool GetBoolFromMessage(const EipBool8 **const buffer_address);
+CipBool GetBoolFromMessage(const EipBool8** const buffer_address);
 
 /** @ingroup ENCAP
  *
- * @brief Get an 16Bit integer from the network buffer, and moves pointer beyond the 16 bit value
- * @param buffer Pointer to the network buffer array. This pointer will be incremented by 2!
+ * @brief Get an 16Bit integer from the network buffer, and moves pointer beyond
+ * the 16 bit value
+ * @param buffer Pointer to the network buffer array. This pointer will be
+ * incremented by 2!
  * @return Extracted 16 bit integer value
  */
-CipInt GetIntFromMessage(const EipUint8 **const buffer);
+CipInt GetIntFromMessage(const EipUint8** const buffer);
 
-CipUint GetUintFromMessage(const CipOctet **const buffer_address);
+CipUint GetUintFromMessage(const CipOctet** const buffer_address);
 
-CipWord GetWordFromMessage(const CipOctet **const buffer_address);
+CipWord GetWordFromMessage(const CipOctet** const buffer_address);
 
 /** @ingroup ENCAP
  *
  * @brief Get an 32Bit integer from the network buffer.
- * @param buffer pointer to the network buffer array. This pointer will be incremented by 4!
+ * @param buffer pointer to the network buffer array. This pointer will be
+ * incremented by 4!
  * @return Extracted 32 bit integer value
  */
-CipDint GetDintFromMessage(const EipUint8 **const buffer);
+CipDint GetDintFromMessage(const EipUint8** const buffer);
 
-CipUdint GetUdintFromMessage(const CipOctet **const buffer_address);
+CipUdint GetUdintFromMessage(const CipOctet** const buffer_address);
 
-CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
+CipUdint GetDwordFromMessage(const CipOctet** const buffer_address);
 
 /** @ingroup ENCAP
  *
@@ -62,46 +65,49 @@ CipUdint GetDwordFromMessage(const CipOctet **const buffer_address);
  * @param data value to be written
  * @param buffer pointer where data should be written.
  */
-void AddSintToMessage(const EipUint8 data,
-                      ENIPMessage *const outgoing_message);
+void AddSintToMessage(const EipUint8 data, ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *
  * @brief Write an 16Bit integer to the network buffer.
  * @param data value to write
- * @param buffer pointer to the network buffer array. This pointer will be incremented by 2!
+ * @param buffer pointer to the network buffer array. This pointer will be
+ * incremented by 2!
  *
  * @return Length in bytes of the encoded message
  */
-void AddIntToMessage(const EipUint16 data,
-                     ENIPMessage *const outgoing_message);
+void AddIntToMessage(const EipUint16 data, ENIPMessage* const outgoing_message);
 
 /** @ingroup ENCAP
  *
  * @brief Write an 32Bit integer to the network buffer.
  * @param data value to write
- * @param buffer pointer to the network buffer array. This pointer will be incremented by 4!
+ * @param buffer pointer to the network buffer array. This pointer will be
+ * incremented by 4!
  *
  * @return Length in bytes of the encoded message
  */
 void AddDintToMessage(const EipUint32 data,
-                      ENIPMessage *const outgoing_message);
+                      ENIPMessage* const outgoing_message);
 
-EipUint64 GetLintFromMessage(const EipUint8 **const buffer);
+EipUint64 GetLintFromMessage(const EipUint8** const buffer);
 
 /** @ingroup ENCAP
  *
  * @brief Write an 64Bit integer to the network buffer.
  * @param data value to write
- * @param buffer pointer to the network buffer array. This pointer will be incremented by 8!
+ * @param buffer pointer to the network buffer array. This pointer will be
+ * incremented by 8!
  *
  */
 void AddLintToMessage(const EipUint64 pa_unData,
-                      ENIPMessage *const outgoing_message);
+                      ENIPMessage* const outgoing_message);
 
-/** @brief Encapsulate the sockaddr information as necessary for the Common Packet Format data items
+/** @brief Encapsulate the sockaddr information as necessary for the Common
+ * Packet Format data items
  *
- * Converts and adds the provided port and IP address into an common packet format message
+ * Converts and adds the provided port and IP address into an common packet
+ * format message
  *
  * @param port Port of the socket, has to be provided in big-endian
  * @param address IP address of the socket, has to be provided in big-endian
@@ -109,7 +115,7 @@ void AddLintToMessage(const EipUint64 pa_unData,
  */
 void EncapsulateIpAddress(EipUint16 port,
                           EipUint32 address,
-                          ENIPMessage *const outgoing_message);
+                          ENIPMessage* const outgoing_message);
 
 /** Identify if we are running on a big or little endian system and set
  * variable.
@@ -125,14 +131,15 @@ void DetermineEndianess(void);
 int GetEndianess(void);
 
 void MoveMessageNOctets(const int amount_of_bytes_moved,
-                        ENIPMessage *const outgoing_message);
+                        ENIPMessage* const outgoing_message);
 
 void FillNextNMessageOctetsWith(CipOctet value,
                                 unsigned int amount_of_bytes_written,
-                                ENIPMessage *const outgoing_message);
+                                ENIPMessage* const outgoing_message);
 
-void FillNextNMessageOctetsWithValueAndMoveToNextPosition(CipOctet value,
-                                                          unsigned int amount_of_filled_bytes,
-                                                          ENIPMessage *const outgoing_message);
+void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
+  CipOctet value,
+  unsigned int amount_of_filled_bytes,
+  ENIPMessage* const outgoing_message);
 
-#endif /* OPENER_ENDIANCONV_H_ */
+#endif  // SRC_ENET_ENCAP_ENDIANCONV_H_

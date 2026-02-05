@@ -10,28 +10,27 @@
  *  This is only a code skeleton. The real load and store operation is NOT
  *  implemented.
  */
-#include "nvtcpip.h"
+#include "ports/nvdata/nvtcpip.h"
 
 #include <string.h>
 
-#include "trace.h"
-#include "conffile.h"
+#include "core/trace.h"
+#include "ports/nvdata/conffile.h"
 
-#define TCPIP_CFG_NAME  "tcpip.cfg" /**< Name of the configuration file */
-
+#define TCPIP_CFG_NAME "tcpip.cfg" /**< Name of the configuration file */
 
 /** @brief Load NV data of the TCP/IP object from file
  *
  *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
+int NvTcpipLoad(CipTcpIpObject* p_tcp_ip) {
   /* Suppress unused parameter compiler warning. */
   (void)p_tcp_ip;
 
   EipStatus eip_status = kEipStatusOk;
 
-  FILE *p_file = ConfFileOpen(false, TCPIP_CFG_NAME);
+  FILE* p_file = ConfFileOpen(false, TCPIP_CFG_NAME);
   if (NULL != p_file) {
     /* Read input data */
     OPENER_TRACE_ERR(
@@ -43,9 +42,8 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
     /* TODO: copy all NV attributes */
 
     /* Need to try to close all stuff in any case. */
-    eip_status =
-      (kEipStatusError ==
-       ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
+    eip_status = (kEipStatusError == ConfFileClose(&p_file)) ? kEipStatusError
+                                                             : eip_status;
   }
 
   return eip_status;
@@ -56,11 +54,11 @@ int NvTcpipLoad(CipTcpIpObject *p_tcp_ip) {
  *  @param  p_tcp_ip pointer to the TCP/IP object's data structure
  *  @return kEipStatusOk: success; kEipStatusError: failure
  */
-EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
+EipStatus NvTcpipStore(const CipTcpIpObject* p_tcp_ip) {
   /* Suppress unused parameter compiler warning. */
   (void)p_tcp_ip;
 
-  FILE *p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
+  FILE* p_file = ConfFileOpen(true, TCPIP_CFG_NAME);
   if (NULL != p_file) {
     /* Print output data */
     OPENER_TRACE_ERR(
@@ -69,8 +67,8 @@ EipStatus NvTcpipStore(const CipTcpIpObject *p_tcp_ip) {
     EipStatus eip_status = kEipStatusError;
 
     /* Need to try to close all stuff in any case. */
-    return (kEipStatusError ==
-            ConfFileClose(&p_file) ) ? kEipStatusError : eip_status;
+    return (kEipStatusError == ConfFileClose(&p_file)) ? kEipStatusError
+                                                       : eip_status;
   } else {
     return kEipStatusError; /* File could not be openend*/
   }

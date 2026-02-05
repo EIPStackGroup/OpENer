@@ -1,3 +1,4 @@
+megalinter-reports/
 bin/
 contrib/
 source/src/cip_objects/
@@ -17,4 +18,5 @@ devicedata.h
 source/src/ports/POSIX/OpENer
 source/cip_objects/
 .vscode/
-build/
+build*/
+actionlint

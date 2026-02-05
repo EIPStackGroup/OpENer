@@ -1,32 +1,36 @@
 /*******************************************************************************
- * Copyright (c) 2015, Rockwell Automation, Inc.
+ * Copyright (c) 2015 - 2025, Rockwell Automation, Inc., Martin Melik Merkumians
  * All rights reserved.
  *
+ * Martin Melik Merkumians < Initial implementation >
+ * Martin Melik Merkumians < Updates for reentrant design >
  ******************************************************************************/
 
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
 
-extern "C"  {
-#include <xorshiftrandom.h>
+extern "C" {
+
+#include "utils/random.h"
+#include "utils/xorshiftrandom.h"
 }
 
-TEST_GROUP(XorShiftRandom)
-{
+TEST_GROUP(XorShiftRandom){
 
 };
 
 /*Characterization test*/
-TEST(XorShiftRandom, SeedOneCharacterization)
-{
+TEST(XorShiftRandom, SeedOneCharacterization) {
   uint32_t nResult;
-  SetXorShiftSeed(1);
-  nResult = NextXorShiftUint32();
+  Random* random = XorShiftRandomNew();
+  random->set_seed(random, 1);
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(270369, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(67634689, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(2647435461, nResult);
-  nResult = NextXorShiftUint32();
+  nResult = random->get_next_uint32(random);
   LONGS_EQUAL(307599695, nResult);
+  RandomDelete(&random);
 }

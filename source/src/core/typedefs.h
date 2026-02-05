@@ -3,16 +3,16 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_TYPEDEFS_H_
-#define OPENER_TYPEDEFS_H_
+#ifndef SRC_CORE_TYPEDEFS_H_
+#define SRC_CORE_TYPEDEFS_H_
 
 #include <inttypes.h>
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
-#include "platform_network_includes.h"
+#include "platform_network_includes.h"  // NOLINT(build/include_subdir)
 
-/** @file typedefs.h
+/** @file "core/typedefs.h"
    Do not use interface types for internal variables, such as "int i;", which is
    commonly used for loop counters or counting things.
 
@@ -27,37 +27,38 @@
 
 /** @brief EIP Data type definitions
  */
-typedef uint8_t EipByte; /**< 8-bit bit string */
-typedef int8_t EipInt8; /**< 8-bit signed number */
-typedef int16_t EipInt16; /**< 16-bit signed number */
-typedef int32_t EipInt32; /**< 32-bit signed number */
-typedef uint8_t EipUint8; /**< 8-bit unsigned number */
+typedef uint8_t EipByte;    /**< 8-bit bit string */
+typedef int8_t EipInt8;     /**< 8-bit signed number */
+typedef int16_t EipInt16;   /**< 16-bit signed number */
+typedef int32_t EipInt32;   /**< 32-bit signed number */
+typedef uint8_t EipUint8;   /**< 8-bit unsigned number */
 typedef uint16_t EipUint16; /**< 16-bit unsigned number */
 typedef uint32_t EipUint32; /**< 32-bit unsigned number */
-typedef float EipFloat; /**< IEEE 754 32-bit floating point number */
-typedef double EipDfloat; /**< IEEE 754 64-bit floating point number */
-typedef uint8_t EipBool8; /**< bool data types */
+typedef float EipFloat;     /**< IEEE 754 32-bit floating point number */
+typedef double EipDfloat;   /**< IEEE 754 64-bit floating point number */
+typedef uint8_t EipBool8;   /**< bool data types */
 
 /** @brief Data types as defined in the CIP Specification Vol 1 Appendix C
  */
-typedef uint8_t CipOctet; /**< 8 bit value that indicates particular data type */
+typedef uint8_t
+  CipOctet;              /**< 8 bit value that indicates particular data type */
 typedef uint8_t CipBool; /**< Boolean data type */
 typedef uint8_t CipByte; /**< 8-bit bit string */
-typedef uint16_t CipWord; /**< 16-bit bit string */
+typedef uint16_t CipWord;  /**< 16-bit bit string */
 typedef uint32_t CipDword; /**< 32-bit bit string */
-typedef uint8_t CipUsint; /**< 8-bit unsigned integer */
-typedef uint16_t CipUint; /**< CipUint 16-bit unsigned integer */
+typedef uint8_t CipUsint;  /**< 8-bit unsigned integer */
+typedef uint16_t CipUint;  /**< CipUint 16-bit unsigned integer */
 typedef uint32_t CipUdint; /**< CipUdint 32-bit unsigned integer */
-typedef int8_t CipSint; /**< 8-bit signed integer */
-typedef int16_t CipInt; /**< 16-bit signed integer */
-typedef int32_t CipDint; /**< 32-bit signed integer */
-typedef float CipReal; /**< 32-bit IEEE 754 floating point */
-typedef double CipLreal; /**< 64-bit IEEE 754 floating point */
+typedef int8_t CipSint;    /**< 8-bit signed integer */
+typedef int16_t CipInt;    /**< 16-bit signed integer */
+typedef int32_t CipDint;   /**< 32-bit signed integer */
+typedef float CipReal;     /**< 32-bit IEEE 754 floating point */
+typedef double CipLreal;   /**< 64-bit IEEE 754 floating point */
 
-typedef int64_t EipInt64; /**< 64-bit signed number */
+typedef int64_t EipInt64;   /**< 64-bit signed number */
 typedef uint64_t EipUint64; /**< 64-bit unsigned number */
 
-typedef int64_t CipLint; /**< 64-bit signed integer */
+typedef int64_t CipLint;   /**< 64-bit signed integer */
 typedef uint64_t CipUlint; /**< 64-bit unsigned integer */
 typedef uint64_t CipLword; /**< 64-bit bit string */
 
@@ -65,9 +66,8 @@ typedef uint64_t CipLword; /**< 64-bit bit string */
  */
 static const int kEipInvalidSocket = -1;
 
-typedef unsigned long MilliSeconds;
-typedef unsigned long long MicroSeconds;
-
+typedef uint32_t MilliSeconds;
+typedef uint64_t MicroSeconds;
 
 /** @brief CIP object instance number type.
  *
@@ -78,14 +78,12 @@ typedef unsigned long long MicroSeconds;
  */
 typedef CipUint CipInstanceNum;
 
-
 /** @brief Session handle type.
  *
  * Data type for storing session identifiers as described by @cite CipVol2,
  * 2-3.4; data type is derived from @cite CipVol2, Table 2-3.1.
  */
 typedef CipUdint CipSessionHandle;
-
 
 /**
 
@@ -110,9 +108,9 @@ typedef CipUdint CipSessionHandle;
  *
  */
 typedef enum {
-  kEipStatusOk = 0, /**< Stack is ok */
+  kEipStatusOk     = 0, /**< Stack is ok */
   kEipStatusOkSend = 1, /**< Stack is ok, after send */
-  kEipStatusError = -1 /**< Stack is in error */
+  kEipStatusError  = -1 /**< Stack is in error */
 } EipStatus;
 
 /** @brief Communication direction of an UDP socket; consuming is receiver,
@@ -122,16 +120,16 @@ typedef enum {
  */
 typedef enum {
   kUdpCommuncationDirectionConsuming = 0, /**< Consuming direction; receiver */
-  kUdpCommuncationDirectionProducing = 1 /**< Producing direction; sender */
+  kUdpCommuncationDirectionProducing = 1  /**< Producing direction; sender */
 } UdpCommuncationDirection;
 
-#ifndef __cplusplus
+#ifndef SRC___cplusplus
 /** @brief If we don't have C++ define a C++ -like "bool" keyword defines
  */
-//typedef enum {
-//  false = 0, /**< defines "false" as 0 */
-//  true = 1 /**< defines "true" as 1 */
-//} BoolKeywords;
+// typedef enum {
+//   false = 0, /**< defines "false" as 0 */
+//   true = 1 /**< defines "true" as 1 */
+// } BoolKeywords;
 #endif /* __cplusplus */
 
-#endif /* OPENER_TYPEDEFS_H_ */
+#endif  // SRC_CORE_TYPEDEFS_H_

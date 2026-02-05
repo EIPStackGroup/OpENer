@@ -19,11 +19,11 @@ FOREACH(CIP_OBJECT ${CIP_OBJECT_LIST})
 ENDFOREACH(CIP_OBJECT)
 
 file(WRITE ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt ${WRITE_FILE})
-  
-execute_process( COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists.txt RESULT_VARIABLE test_not_successful OUTPUT_QUIET ERROR_QUIET )  
+
+execute_process( COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists.txt RESULT_VARIABLE test_not_successful OUTPUT_QUIET ERROR_QUIET )
 
 IF(test_not_successful)
   file(REMOVE ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists.txt)
   file(RENAME ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists.txt)
-ENDIF( test_not_successful)  
-file(REMOVE ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt) 
+ENDIF( test_not_successful)
+file(REMOVE ${CMAKE_BINARY_DIR}/cip_objects/CMakeLists_new.txt)

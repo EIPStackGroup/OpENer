@@ -1,32 +1,50 @@
 /*******************************************************************************
- * Copyright (c) 2017, Rockwell Automation, Inc.
+ * Copyright (c) 2017 - 2025, Rockwell Automation, Inc., Martin Melik Merkumians
  * All rights reserved.
  *
+ * Martin Melik Merkumians < Initial implementation >
+ * Martin Melik Merkumians < Updates for reentrant design >
  ******************************************************************************/
 
+#include "utils/xorshiftrandom.h"
+
 #include <time.h>
-#include "xorshiftrandom.h"
 
-static uint32_t xor_shift_seed; /** < File-global variable holding the current seed*/
+Random* XorShiftRandomNew(void) {
+  return RandomNew(
+    XorShiftSetSeed, XorShiftGetNextUInt16, XorShiftGetNextUInt32);
+}
 
-void SetXorShiftSeed(uint32_t seed) {
-  xor_shift_seed = seed;
+void XorShiftRandomInit(Random* const random) {
+  RandomInit(
+    random, XorShiftSetSeed, XorShiftGetNextUInt16, XorShiftGetNextUInt32);
+}
+
+void XorShiftSetSeed(Random* const random, uint32_t seed) {
+  random->current_seed_value = seed;
 }
 
 /** @brief Pseudo-random number algorithm
  * The algorithm used to create the pseudo-random numbers.
  * Works directly on the file global variable
  */
-void CalculateNextSeed(void) {
-  if (xor_shift_seed == 0)
-    SetXorShiftSeed(time(NULL));
+void XorShiftCalculateNextSeed(Random* const random) {
+  if (random->current_seed_value == 0) {
+    XorShiftSetSeed(random, (uint32_t)time(NULL));
+  }
 
-  xor_shift_seed ^= xor_shift_seed << 13;
-  xor_shift_seed ^= xor_shift_seed >> 17;
-  xor_shift_seed ^= xor_shift_seed << 5;
+  random->current_seed_value ^= random->current_seed_value << 13;
+  random->current_seed_value ^= random->current_seed_value >> 17;
+  random->current_seed_value ^= random->current_seed_value << 5;
 }
 
-uint32_t NextXorShiftUint32(void) {
-  CalculateNextSeed();
-  return xor_shift_seed;
+uint16_t XorShiftGetNextUInt16(Random* const random) {
+  XorShiftCalculateNextSeed(random);
+  // Return the higher 16 bits, as they have better randomness properties
+  return (uint16_t)(random->current_seed_value >> 16);
+}
+
+uint32_t XorShiftGetNextUInt32(Random* const random) {
+  XorShiftCalculateNextSeed(random);
+  return random->current_seed_value;
 }
