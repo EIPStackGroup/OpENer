@@ -29,8 +29,8 @@ BUILD_DIR="${PROJECT_ROOT}/build_sanitizer"
 SANITIZER_TYPE="${1:-both}"
 
 if [[ ! "$SANITIZER_TYPE" =~ ^(asan|ubsan|both)$ ]]; then
-    echo "Usage: $0 [asan|ubsan|both]"
-    exit 1
+	echo "Usage: $0 [asan|ubsan|both]"
+	exit 1
 fi
 
 echo "=============================================="
@@ -48,13 +48,13 @@ cd "$BUILD_DIR"
 CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug -DOpENer_PLATFORM=POSIX -DOpENer_TESTS=ON"
 
 if [[ "$SANITIZER_TYPE" == "asan" || "$SANITIZER_TYPE" == "both" ]]; then
-    CMAKE_ARGS="$CMAKE_ARGS -DENABLE_ADDRESS_SANITIZER=ON"
-    echo "[+] AddressSanitizer enabled"
+	CMAKE_ARGS="$CMAKE_ARGS -DENABLE_ADDRESS_SANITIZER=ON"
+	echo "[+] AddressSanitizer enabled"
 fi
 
 if [[ "$SANITIZER_TYPE" == "ubsan" || "$SANITIZER_TYPE" == "both" ]]; then
-    CMAKE_ARGS="$CMAKE_ARGS -DENABLE_UNDEFINED_SANITIZER=ON"
-    echo "[+] UndefinedBehaviorSanitizer enabled"
+	CMAKE_ARGS="$CMAKE_ARGS -DENABLE_UNDEFINED_SANITIZER=ON"
+	echo "[+] UndefinedBehaviorSanitizer enabled"
 fi
 
 echo ""

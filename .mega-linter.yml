@@ -11,7 +11,7 @@ APPLY_FIXES: all
 
 # Linters configuration
 DISABLE_LINTERS:
-  - SPELL_CSPELL  # Disabled as per original config
+  - SPELL_CSPELL # Disabled
 
 # Formatter specific configuration
 C_CLANG_FORMAT_ARGUMENTS: "--style=file"
@@ -34,10 +34,10 @@ COPYPASTE_JSCPD_ARGUMENTS:
 
 # Fix for Link Checker (Lychee)
 SPELL_LYCHEE_ARGUMENTS:
-  # 1. Ignore the broken GitHub variable placeholders
-  # 2. Ignore local file links that are failing due to path nesting
   - "--exclude"
-  - 'https://github\.com/.*\$'
+  - "https://github/.*"
+  - "--exclude"
+  - 'https://github\.com/.*'
   - "--exclude-path"
   - "source/tests/ports/CHECKENCAPSULATIONINACTIVITY_TESTS.md"
 

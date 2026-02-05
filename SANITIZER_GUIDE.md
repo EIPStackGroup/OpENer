@@ -100,13 +100,13 @@ When ASAN detects an error, it produces output like:
 
 ### Common ASAN Error Types
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `heap-buffer-overflow` | Writing beyond allocated heap buffer | Validate buffer size before write |
-| `stack-buffer-overflow` | Writing beyond stack array | Check array bounds |
-| `use-after-free` | Accessing freed memory | Don't use pointer after free |
-| `memory-leak` | Allocated memory never freed | Add appropriate free/cleanup |
-| `double-free` | Freeing same pointer twice | Track free() calls |
+| Error                   | Cause                                | Fix                               |
+|-------------------------|--------------------------------------|-----------------------------------|
+| `heap-buffer-overflow`  | Writing beyond allocated heap buffer | Validate buffer size before write |
+| `stack-buffer-overflow` | Writing beyond stack array           | Check array bounds                |
+| `use-after-free`        | Accessing freed memory               | Don't use pointer after free      |
+| `memory-leak`           | Allocated memory never freed         | Add appropriate free/cleanup      |
+| `double-free`           | Freeing same pointer twice           | Track free() calls                |
 
 ## Security Test Suite
 
@@ -201,11 +201,11 @@ export UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1:verbosity=2"
 
 Sanitizers add significant overhead:
 
-| Metric | Normal | ASAN | UBSAN | Both |
-|--------|--------|------|-------|------|
-| Execution Speed | 1x | 2-4x slower | 1.1-1.5x slower | 2.5-5x slower |
-| Memory Overhead | 1x | 2-3x larger | ~1x | 2-3x larger |
-| Compile Time | Normal | +30% | +20% | +50% |
+| Metric          | Normal | ASAN        | UBSAN           | Both          |
+|-----------------|--------|-------------|-----------------|---------------|
+| Execution Speed | 1x     | 2-4x slower | 1.1-1.5x slower | 2.5-5x slower |
+| Memory Overhead | 1x     | 2-3x larger | ~1x             | 2-3x larger   |
+| Compile Time    | Normal | +30%        | +20%            | +50%          |
 
 **Recommendation**: Use sanitizers during development and CI, use optimized builds for production.
 

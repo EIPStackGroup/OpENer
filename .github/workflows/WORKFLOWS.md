@@ -70,14 +70,14 @@ Central MegaLinter configuration with:
 
 ### When Does Each Workflow Run?
 
-| Event | CI (Fast) | Exhaustive |
-|-------|-----------|------------|
-| Push to `master` | ✅ | ❌ |
-| Pull request | ✅ | ❌ |
-| Push to `release/*` | ❌ | ✅ |
-| Version tag (`v*`) | ❌ | ✅ |
-| Nightly (3 AM UTC) | ❌ | ✅ |
-| Manual trigger | ❌ | ✅ |
+| Event               | CI (Fast) | Exhaustive |
+|---------------------|-----------|------------|
+| Push to `master`    | ✅         | ❌          |
+| Pull request        | ✅         | ❌          |
+| Push to `release/*` | ❌         | ✅          |
+| Version tag (`v*`)  | ❌         | ✅          |
+| Nightly (3 AM UTC)  | ❌         | ✅          |
+| Manual trigger      | ❌         | ✅          |
 
 ## Benefits of This Approach
 
@@ -148,13 +148,13 @@ CPPCHECK_ARGUMENTS: --check-level=exhaustive --inline-suppr
 
 The new structure maintains all functionality from `build.yml`:
 
-| Old Feature | New Location | Changes |
-|------------|--------------|---------|
-| MegaLinter | `ci.yml` → lint | Split into standard/exhaustive |
-| Build & Test | `ci.yml` → build-test | Added parallel execution |
-| Coverage | `ci.yml` → build-test | Enhanced reporting |
-| Auto-fixes | `ci.yml` → lint | Simplified logic |
-| Release validation | NEW: `exhaustive-analysis.yml` | Added thorough checks |
+| Old Feature        | New Location                   | Changes                        |
+|--------------------|--------------------------------|--------------------------------|
+| MegaLinter         | `ci.yml` → lint                | Split into standard/exhaustive |
+| Build & Test       | `ci.yml` → build-test          | Added parallel execution       |
+| Coverage           | `ci.yml` → build-test          | Enhanced reporting             |
+| Auto-fixes         | `ci.yml` → lint                | Simplified logic               |
+| Release validation | NEW: `exhaustive-analysis.yml` | Added thorough checks          |
 
 ## Manual Workflow Execution
 

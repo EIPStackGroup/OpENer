@@ -8,7 +8,6 @@
 
 #include <csetjmp>
 #include <cstdio>
-
 #include <stdexcept>
 
 #include "CppUTest/TestRegistry.h"

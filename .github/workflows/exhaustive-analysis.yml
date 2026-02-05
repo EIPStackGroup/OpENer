@@ -13,7 +13,7 @@ on:
 
   # Nightly exhaustive analysis
   schedule:
-    - cron: "0 3 * * *"  # 3 AM UTC daily
+    - cron: "0 3 * * *" # 3 AM UTC daily
 
   # Manual trigger
   workflow_dispatch:

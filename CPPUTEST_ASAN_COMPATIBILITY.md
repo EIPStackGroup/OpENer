@@ -76,15 +76,15 @@ ASAN_OPTIONS="verbosity=0" ./tests/OpENer_Tests -g NetworkHandlerSecurity
 
 ## Memory Safety Coverage
 
-| Feature | CppUTest | ASAN | Both |
-|---------|----------|------|------|
-| Leak detection | ✓ | ✓ | ASAN only |
-| Buffer overflow | - | ✓ | ✓ |
-| Use-after-free | - | ✓ | ✓ |
-| Double-free | - | ✓ | ✓ |
-| Integer overflow | - | ✓ (UBSAN) | ✓ |
-| Stack issues | - | ✓ | ✓ |
-| Uninitialized reads | - | Limited | Limited |
+| Feature             | CppUTest | ASAN      | Both      |
+|---------------------|----------|-----------|-----------|
+| Leak detection      | ✓        | ✓         | ASAN only |
+| Buffer overflow     | -        | ✓         | ✓         |
+| Use-after-free      | -        | ✓         | ✓         |
+| Double-free         | -        | ✓         | ✓         |
+| Integer overflow    | -        | ✓ (UBSAN) | ✓         |
+| Stack issues        | -        | ✓         | ✓         |
+| Uninitialized reads | -        | Limited   | Limited   |
 
 **Recommendation**: Use ASAN for comprehensive memory safety testing.
 
@@ -106,7 +106,7 @@ echo "Exit code: $?"
 ## References
 
 - **CppUTest Memory Management**: Uses `CHECK_EQUAL_TEXT`, `CHECK_EQUAL_NOCASE_TEXT` for memory checks
-- **ASAN Documentation**: https://github.com/google/sanitizers/wiki/AddressSanitizer
+- **ASAN Documentation**: <https://github.com/google/sanitizers/wiki/AddressSanitizer>
 - **Best Practices**: Disable CppUTest's memory checking when using compiler sanitizers
 
 ## Future Improvements

@@ -98,7 +98,7 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
     case kCipShortString: {
       CipShortString* const toString   = (CipShortString*)to->string;
       CipShortString* const fromString = (CipShortString*)from->string;
-      toString->length           = fromString->length;
+      toString->length                 = fromString->length;
       toString->string = CipCalloc(toString->length, sizeof(CipOctet));
       memcpy(toString->string,
              fromString->string,
@@ -107,8 +107,8 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
     case kCipString: {
       CipString* const toString   = (CipString*)to->string;
       CipString* const fromString = (CipString*)from->string;
-      toString->length      = fromString->length;
-      toString->string      = CipCalloc(toString->length, sizeof(CipOctet));
+      toString->length            = fromString->length;
+      toString->string = CipCalloc(toString->length, sizeof(CipOctet));
       memcpy(toString->string,
              fromString->string,
              sizeof(CipOctet) * toString->length);
@@ -116,7 +116,7 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
     case kCipString2: {
       CipString2* const toString   = (CipString2*)to->string;
       CipString2* const fromString = (CipString2*)from->string;
-      toString->length       = fromString->length;
+      toString->length             = fromString->length;
       toString->string = CipCalloc(toString->length, 2 * sizeof(CipOctet));
       memcpy(toString->string,
              fromString->string,
@@ -125,8 +125,8 @@ void CipStringIDeepCopyInternalString(CipStringIStruct* const to,
     case kCipStringN: {
       CipStringN* const toString   = (CipStringN*)to->string;
       CipStringN* const fromString = (CipStringN*)from->string;
-      toString->length       = fromString->length;
-      toString->size         = fromString->size;
+      toString->length             = fromString->length;
+      toString->size               = fromString->size;
       toString->string =
         CipCalloc(toString->length, toString->size * sizeof(CipOctet));
       memcpy(toString->string,
@@ -251,9 +251,9 @@ bool CipStringICompare(const CipStringI* const stringI_1,
       } break;
       case kCipStringN: {
         const CipUint length = ((CipStringN*)string_1)->length;
-        const CipUint size   = ((CipStringN*)string_1)->size;  // bytes per symbol
-        len_1          = length * size;
-        string_1_data  = ((CipStringN*)string_1)->string;
+        const CipUint size = ((CipStringN*)string_1)->size;  // bytes per symbol
+        len_1              = length * size;
+        string_1_data      = ((CipStringN*)string_1)->string;
       } break;
       default:
         OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
@@ -283,9 +283,10 @@ bool CipStringICompare(const CipStringI* const stringI_1,
         } break;
         case kCipStringN: {
           const CipUint length = ((CipStringN*)string_2)->length;
-          const CipUint size   = ((CipStringN*)string_2)->size;  // bytes per symbol
-          len_2          = length * size;
-          string_2_data  = ((CipStringN*)string_2)->string;
+          const CipUint size =
+            ((CipStringN*)string_2)->size;  // bytes per symbol
+          len_2         = length * size;
+          string_2_data = ((CipStringN*)string_2)->string;
         } break;
         default:
           OPENER_TRACE_ERR("CIP File: No valid String type received!\n");
