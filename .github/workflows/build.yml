@@ -36,7 +36,7 @@ jobs:
 
       - name: Archive MegaLinter reports
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: megalinter-reports
           path: |
@@ -105,7 +105,7 @@ jobs:
           cat coverage-summary.txt
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: coverage-report
           path: |
@@ -139,7 +139,7 @@ jobs:
           echo "Coverage: $COVERAGE"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: build-artifacts
           path: ${{github.workspace}}/build
