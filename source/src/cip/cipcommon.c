@@ -1342,15 +1342,17 @@ void EncodeEPath(const void *const data,
   unsigned int length = epath->path_size;
   size_t start_length = message->used_message_length;
 
-  if(epath->class_id < 256) {
-    AddSintToMessage(0x20, message); /* 8 Bit Class Id */
-    AddSintToMessage( (EipUint8) epath->class_id, message );
-    length -= 1;
-  } else {
-    AddSintToMessage(0x21, message); /*16Bit Class Id */
-    AddSintToMessage(0, message); /*pad byte */
-    AddIntToMessage(epath->class_id, message);
-    length -= 2;
+  if(0 < length) {
+    if(epath->class_id < 256) {
+      AddSintToMessage(0x20, message); /* 8 Bit Class Id */
+      AddSintToMessage( (EipUint8) epath->class_id, message );
+      length -= 1;
+    } else {
+      AddSintToMessage(0x21, message); /*16Bit Class Id */
+      AddSintToMessage(0, message); /*pad byte */
+      AddIntToMessage(epath->class_id, message);
+      length -= 2;
+    }
   }
 
   if(0 < length) {
