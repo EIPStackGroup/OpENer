@@ -136,6 +136,12 @@ EipStatus NotifyConnectedCommonPacketFormat(
         /*TODO check connection id  and sequence count */
         if(g_common_packet_format_data_item.data_item.type_id ==
            kCipItemIdConnectedDataItem) {                                                       /* connected data item received*/
+          if(g_common_packet_format_data_item.data_item.length < 2) {
+            OPENER_TRACE_ERR(
+              "notifyCPF: connected data item too short for sequence number\n");
+            return kEipStatusError;
+          }
+
           EipUint8 *buffer = g_common_packet_format_data_item.data_item.data;
           g_common_packet_format_data_item.address_item.data.sequence_number =
             GetUintFromMessage( (const EipUint8 **const ) &buffer );
