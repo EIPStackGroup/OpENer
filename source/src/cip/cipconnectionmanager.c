@@ -588,9 +588,22 @@ EipStatus ForwardOpenRoutine(CipInstance *instance,
                              const struct sockaddr *originator_address,
                              const CipSessionHandle encapsulation_session) {
   (void) instance; /*suppress compiler warning */
+  const CipBool is_large_forward_open =
+    g_dummy_connection_object.is_large_forward_open;
+  const size_t minimum_request_size = is_large_forward_open ? 39U : 35U;
 
   bool is_null_request = false; /* 1 = Null Request, 0 =  Non-Null Request  */
   bool is_matching_request = false; /* 1 = Matching Request, 0 = Non-Matching Request  */
+
+  ConnectionObjectInitializeEmpty(&g_dummy_connection_object);
+  g_dummy_connection_object.is_large_forward_open = is_large_forward_open;
+
+  if(message_router_request->request_data_size < minimum_request_size) {
+    return AssembleForwardOpenResponse(&g_dummy_connection_object,
+                                       message_router_response,
+                                       kCipErrorNotEnoughData,
+                                       kConnectionManagerExtendedStatusCodeSuccess);
+  }
 
   /*first check if we have already a connection with the given params */
   ConnectionObjectInitializeFromMessage(&(message_router_request->data),
