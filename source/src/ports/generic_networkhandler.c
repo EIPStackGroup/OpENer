@@ -790,10 +790,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       }
       if(number_of_read_bytes < 0) {
         int error_code = GetSocketErrorNumber();
-        char *error_message = GetErrorMessage(error_code);
         if(OPENER_SOCKET_WOULD_BLOCK == error_code) {
           return kEipStatusOk;
-        } OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
+        }
+        char *error_message = GetErrorMessage(error_code);
+        OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                            error_code,
                            error_message);
         FreeErrorMessage(error_message);
@@ -829,10 +830,11 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   }
   if(number_of_read_bytes < 0) {
     int error_code = GetSocketErrorNumber();
-    char *error_message = GetErrorMessage(error_code);
     if(OPENER_SOCKET_WOULD_BLOCK == error_code) {
       return kEipStatusOk;
-    } OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
+    }
+    char *error_message = GetErrorMessage(error_code);
+    OPENER_TRACE_ERR("networkhandler: error on recv: %d - %s\n",
                        error_code,
                        error_message);
     FreeErrorMessage(error_message);
@@ -988,6 +990,7 @@ int SetQos(CipUsint qos_for_socket) {
     char *error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR("networkhandler: error on set QoS on socket: %d - %s\n",
                      error_code, error_message);
+    FreeErrorMessage(error_message);
     return error_code;
   }
   return 0;
