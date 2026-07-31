@@ -83,16 +83,21 @@ void HandleReceivedListIdentityCommandUdp(const int socket,
                                           const struct sockaddr_in *const from_address,
                                           const EncapsulationData *const receive_data);
 
-EipStatus HandleReceivedUnregisterSessionCommand(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
+EipStatus HandleReceivedUnregisterSessionCommand(int socket,
+                                                 const EncapsulationData *const receive_data,
+                                                 ENIPMessage *const outgoing_message);
 
-EipStatus HandleReceivedSendUnitDataCommand(const EncapsulationData *const receive_data, const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message);
+EipStatus HandleReceivedSendUnitDataCommand(int socket,
+                                            const EncapsulationData *const receive_data,
+                                            const struct sockaddr *const originator_address,
+                                            ENIPMessage *const outgoing_message);
 
 EipStatus HandleReceivedInvalidCommand(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
 int GetFreeSessionIndex(void);
 
-SessionStatus CheckRegisteredSessions(const EncapsulationData *const receive_data);
+SessionStatus CheckRegisteredSessions(int socket,
+                                      const EncapsulationData *const receive_data);
 
 void DetermineDelayTime(const EipByte *buffer_start, DelayedEncapsulationMessage *const delayed_message_buffer);
 
@@ -178,17 +183,25 @@ EipStatus HandleReceivedExplictTcpData(int socket, EipUint8 *buffer, size_t leng
 
         case (kEncapsulationCommandUnregisterSession):
           OPENER_TRACE_INFO("unregister session\n");
-          return_value = HandleReceivedUnregisterSessionCommand(&encapsulation_data, outgoing_message);
+          return_value = HandleReceivedUnregisterSessionCommand(socket,
+                                                                &encapsulation_data,
+                                                                outgoing_message);
           break;
 
         case (kEncapsulationCommandSendRequestReplyData):
           OPENER_TRACE_INFO("Send Request/Reply Data\n");
-          return_value = HandleReceivedSendRequestResponseDataCommand(&encapsulation_data, originator_address, outgoing_message);
+          return_value = HandleReceivedSendRequestResponseDataCommand(socket,
+                                                                      &encapsulation_data,
+                                                                      originator_address,
+                                                                      outgoing_message);
           break;
 
         case (kEncapsulationCommandSendUnitData):
           OPENER_TRACE_INFO("Send Unit Data\n");
-          return_value = HandleReceivedSendUnitDataCommand(&encapsulation_data, originator_address, outgoing_message);
+          return_value = HandleReceivedSendUnitDataCommand(socket,
+                                                           &encapsulation_data,
+                                                           originator_address,
+                                                           outgoing_message);
           break;
 
         default:
@@ -486,12 +499,14 @@ void HandleReceivedRegisterSessionCommand(int socket, const EncapsulationData *c
  *
  * Close all corresponding TCP connections and delete session handle.
  */
-EipStatus HandleReceivedUnregisterSessionCommand(const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedUnregisterSessionCommand(int socket,
+                                                 const EncapsulationData *const receive_data,
+                                                 ENIPMessage *const outgoing_message) {
   OPENER_TRACE_INFO("encap.c: Unregister Session Command\n");
   if((0 < receive_data->session_handle) && (receive_data->session_handle <=
   OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
     CipSessionHandle i = receive_data->session_handle - 1;
-    if(kEipInvalidSocket != g_registered_sessions[i]) {
+    if(socket == g_registered_sessions[i]) {
       CloseTcpSocket(g_registered_sessions[i]);
       g_registered_sessions[i] = kEipInvalidSocket;
       CloseClass3ConnectionBasedOnSession(i + 1);
@@ -509,8 +524,10 @@ EipStatus HandleReceivedUnregisterSessionCommand(const EncapsulationData *const 
  *  @param originator_address Address of the originator as received from socket
  *  @param outgoing_message The outgoing ENIP message
  */
-EipStatus HandleReceivedSendUnitDataCommand(const EncapsulationData *const receive_data, const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedSendUnitDataCommand(int socket,
+                                            const EncapsulationData *const receive_data,
+                                            const struct sockaddr *const originator_address,
+                                            ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /*EipStatus*/return_value = kEipStatusOk; /* TODO: Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6? */
 
@@ -521,7 +538,8 @@ EipStatus HandleReceivedSendUnitDataCommand(const EncapsulationData *const recei
     GetIntFromMessage((const EipUint8** const ) &receive_data->current_communication_buffer_position); /* skip over unused timeout value*/
     ((EncapsulationData* const ) receive_data)->data_length -= 6; /* the rest is in CPF format*/
 
-    if(kSessionStatusValid == CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
+    if(kSessionStatusValid == CheckRegisteredSessions(socket,
+                                                      receive_data)) /* see if the EIP session is registered*/
     {
       return_value = NotifyConnectedCommonPacketFormat(receive_data, originator_address, outgoing_message);
     } else { /* received a package with non registered session handle */
@@ -541,8 +559,10 @@ EipStatus HandleReceivedSendUnitDataCommand(const EncapsulationData *const recei
  *                      kEipStatusOkSend .. success & need to send response
  *                      kEipStatusError .. error
  */
-EipStatus HandleReceivedSendRequestResponseDataCommand(const EncapsulationData *const receive_data, const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message) {
+EipStatus HandleReceivedSendRequestResponseDataCommand(int socket,
+                                                       const EncapsulationData *const receive_data,
+                                                       const struct sockaddr *const originator_address,
+                                                       ENIPMessage *const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /* EipStatus*/return_value = kEipStatusOk; /* TODO: Shouldn't this be kEipStatusOk cause we must not send any response if data_length < 6? */
 
@@ -553,7 +573,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(const EncapsulationData *
     GetIntFromMessage((const EipUint8** const ) &receive_data->current_communication_buffer_position); /* skip over unused timeout value*/
     ((EncapsulationData* const ) receive_data)->data_length -= 6; /* the rest is in CPF format*/
 
-    if(kSessionStatusValid == CheckRegisteredSessions(receive_data)) /* see if the EIP session is registered*/
+    if(kSessionStatusValid == CheckRegisteredSessions(socket,
+                                                      receive_data)) /* see if the EIP session is registered*/
     {
       return_value = NotifyCommonPacketFormat(receive_data, originator_address, outgoing_message);
     } else { /* received a package with non registered session handle */
@@ -622,7 +643,8 @@ int_fast32_t CreateEncapsulationStructure(const EipUint8 *receive_buffer,
  *  @return 0 .. Session registered
  *              kInvalidSession .. invalid session -> return unsupported command received
  */
-SessionStatus CheckRegisteredSessions(const EncapsulationData *const receive_data) {
+SessionStatus CheckRegisteredSessions(int socket,
+                                      const EncapsulationData *const receive_data) {
 
   /* Skip the check when fuzzing
    in order to increase our code coverage
@@ -634,7 +656,7 @@ SessionStatus CheckRegisteredSessions(const EncapsulationData *const receive_dat
 
   if((0 < receive_data->session_handle) && (receive_data->session_handle <=
   OPENER_NUMBER_OF_SUPPORTED_SESSIONS)) {
-    if(kEipInvalidSocket != g_registered_sessions[receive_data->session_handle - 1]) {
+    if(socket == g_registered_sessions[receive_data->session_handle - 1]) {
       return kSessionStatusValid;
     }
   }
