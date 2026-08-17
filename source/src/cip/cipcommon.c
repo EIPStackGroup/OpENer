@@ -1133,6 +1133,7 @@ EipStatus GetAttributeList(CipInstance *instance,
 
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
+    CipUint attributes_returned = 0;
 
     CipOctet *attribute_count_responst_position =
       message_router_response->message.current_message_position;
@@ -1161,7 +1162,7 @@ EipStatus GetAttributeList(CipInstance *instance,
           message_router_response->message.current_message_position;
         message_router_response->message.current_message_position =
           attribute_count_responst_position;
-        AddIntToMessage(attribute_count_request,
+        AddIntToMessage(attributes_returned,
                         &message_router_response
                         ->message);       // Add current amount of attributes
         message_router_response->message.current_message_position =
@@ -1198,6 +1199,7 @@ EipStatus GetAttributeList(CipInstance *instance,
         AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
         message_router_response->general_status = kCipErrorAttributeListError;
       }
+      attributes_returned++;
     }
     // If we are there, we returned all elements
     message_router_response->message.used_message_length -= 2;  // Correct count from Move above
@@ -1206,7 +1208,7 @@ EipStatus GetAttributeList(CipInstance *instance,
     message_router_response->message.current_message_position =
       attribute_count_responst_position;
     AddIntToMessage(
-      attribute_count_request,
+      attributes_returned,
       &message_router_response->message);    // Add current amount of attributes
     message_router_response->message.current_message_position =
       save_current_position;
@@ -1239,6 +1241,7 @@ EipStatus SetAttributeList(CipInstance *instance,
 
     EipUint16 attribute_number = 0;
     CipAttributeStruct *attribute = NULL;
+    CipUint attributes_returned = 0;
 
     CipOctet *attribute_count_responst_position =
       message_router_response->message.current_message_position;
@@ -1267,7 +1270,7 @@ EipStatus SetAttributeList(CipInstance *instance,
           message_router_response->message.current_message_position;
         message_router_response->message.current_message_position =
           attribute_count_responst_position;
-        AddIntToMessage(attribute_count_request,
+        AddIntToMessage(attributes_returned,
                         &message_router_response
                         ->message);       // Add current amount of attributes
         message_router_response->message.current_message_position =
@@ -1306,6 +1309,16 @@ EipStatus SetAttributeList(CipInstance *instance,
             message_router_response->general_status =
               kCipErrorAttributeListError;
           } else {
+            attributes_returned++;
+            message_router_response->message.used_message_length -= 2;   // Correct count from Move above
+            CipOctet *const save_current_position =
+              message_router_response->message.current_message_position;
+            message_router_response->message.current_message_position =
+              attribute_count_responst_position;
+            AddIntToMessage(attributes_returned,
+                            &message_router_response->message);
+            message_router_response->message.current_message_position =
+              save_current_position;
             message_router_response->general_status = kCipErrorPartialTransfer;
             return kEipStatusOkSend;
           }
@@ -1316,6 +1329,7 @@ EipStatus SetAttributeList(CipInstance *instance,
         AddSintToMessage(0, &message_router_response->message); // Reserved, shall be 0
         message_router_response->general_status = kCipErrorAttributeListError;
       }
+      attributes_returned++;
     }
     // If we are there, we returned all elements
     message_router_response->message.used_message_length -=
@@ -1325,7 +1339,7 @@ EipStatus SetAttributeList(CipInstance *instance,
     message_router_response->message.current_message_position =
       attribute_count_responst_position;
     AddIntToMessage(
-      attribute_count_request,
+      attributes_returned,
       &message_router_response->message);    // Add current amount of attributes
     message_router_response->message.current_message_position =
       save_current_position;
