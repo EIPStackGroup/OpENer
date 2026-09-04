@@ -28,7 +28,6 @@ installed. You will need to have the following installed:
 * gcc
 * make
 * binutils
-* the development library of libcap (libcap-dev or equivalient)
 
 for normal building. These should be installed on most Linux installations and
 are part of the development packages of Cygwin.
@@ -183,7 +182,7 @@ This uses Ubuntu as the base image. It will copy OpENer to the image root and in
 #Filename: Dockerfile
 FROM ubuntu:20.04
 ADD ./bin/posix/src/ports/POSIX/OpENer /
-RUN apt-get update && apt-get install -y --no-install-recommends libcap-dev nmap
+RUN apt-get update && apt-get install -y --no-install-recommends nmap
 ENTRYPOINT ["./OpENer", "eth0"]
 
 3. Create a docker-compose.yml that will let you connect the macvlan network to the containers and easily build them and tear them down:
