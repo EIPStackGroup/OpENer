@@ -354,6 +354,11 @@ ConnectionObjectGetTransportClassTriggerProductionTrigger(
   const CipConnectionObject *const connection_object) {
   const CipByte kTransportClassTriggerProductionTriggerMask = 0x70;
 
+  if(kConnectionObjectTransportClassTriggerDirectionServer ==
+     ConnectionObjectGetTransportClassTriggerDirection(connection_object) ) {
+    return kConnectionObjectTransportClassTriggerProductionTriggerCyclic;
+  }
+
   ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
     kConnectionObjectTransportClassTriggerProductionTriggerInvalid;
   switch( (connection_object->transport_class_trigger) &
