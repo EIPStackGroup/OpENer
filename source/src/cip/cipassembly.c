@@ -125,7 +125,7 @@ CipInstance *CreateAssemblyObject(const CipInstanceNum instance_id,
                   EncodeCipByteArray,
                   DecodeCipAssemblyAttribute3,
                   assembly_byte_array,
-                  kSetAndGetAble | kPreGetFunc | kPostSetFunc);
+                  kSetAndGetAble | kPreGetFunc);
   /* Attribute 4 Number of bytes in Attribute 3 */
 
   InsertAttribute(instance, 4, kCipUint, EncodeCipUint,
