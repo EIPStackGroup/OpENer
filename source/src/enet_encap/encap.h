@@ -109,7 +109,9 @@ void HandleReceivedListInterfacesCommand(const EncapsulationData *const receive_
 
 void HandleReceivedRegisterSessionCommand(int socket, const EncapsulationData *const receive_data, ENIPMessage *const outgoing_message);
 
-EipStatus HandleReceivedSendRequestResponseDataCommand(const EncapsulationData *const receive_data, const struct sockaddr *const originator_address,
-    ENIPMessage *const outgoing_message);
+EipStatus HandleReceivedSendRequestResponseDataCommand(int socket,
+                                                       const EncapsulationData *const receive_data,
+                                                       const struct sockaddr *const originator_address,
+                                                       ENIPMessage *const outgoing_message);
 
 #endif /* OPENER_ENCAP_H_ */
