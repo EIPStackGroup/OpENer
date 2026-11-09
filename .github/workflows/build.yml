@@ -47,6 +47,9 @@ jobs:
   # Build, test and coverage job
   build-and-test:
     name: Build, Test & Coverage
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     needs: megalinter
     if: success() || failure()
