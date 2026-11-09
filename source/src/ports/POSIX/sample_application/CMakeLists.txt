@@ -15,3 +15,9 @@ endif()
 
 add_library(SAMPLE_APP sampleapplication.c ${SAMPLE_APP_DLR_ONLY_SRC})
 target_link_libraries( SAMPLE_APP NVDATA )
+if( OPENER_INSTALL_AS_LIB )
+  install(TARGETS SAMPLE_APP
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+endif()
