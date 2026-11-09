@@ -1,8 +1,11 @@
+#include "OpENerTests.h"
+
 #include <setjmp.h>
-#include <stdexcept>
 #include <stdio.h>
 
-#include "OpENerTests.h"
+#include <stdexcept>
+#include <vector>
+
 #include "CppUTest/TestRegistry.h"
 #include "CppUTestExt/MockSupportPlugin.h"
 
@@ -10,13 +13,11 @@ extern "C" {
 #include "endianconv.h"
 }
 
-
 /*
  * Stores the location in the unit test function where execution should jump
  * to upon a failed assertion.
  */
 jmp_buf assert_jump;
-
 
 /*
  * This pointer is used to indicate if an assertion is expected in the code
@@ -28,16 +29,15 @@ jmp_buf assert_jump;
  */
 jmp_buf *assert_jump_enabled;
 
-
-int main(int argc,
-         char **argv) {
-  /* These checks are here to make sure assertions outside test runs don't crash */
+int main(int argc, char **argv) {
+  /* These checks are here to make sure assertions outside test runs don't crash
+   */
   CHECK(true);
   LONGS_EQUAL(1, 1);
 
   DetermineEndianess();
 
-  TestRegistry* reg = TestRegistry::getCurrentRegistry();
+  TestRegistry *reg = TestRegistry::getCurrentRegistry();
 
   MockSupportPlugin mockPlugin;
   reg->installPlugin(&mockPlugin);
@@ -51,7 +51,6 @@ int main(int argc,
 
   return CommandLineTestRunner::RunAllTests(argc, argv);
 }
-
 
 /*
  * This is the function called by the OPENER_ASSERT macro if the assertion
@@ -78,20 +77,13 @@ extern "C" void test_assert_fail(const char *const file,
     int len_no_null = snprintf(&dummy, 1, format, file, line);
 
     if (len_no_null > 0) {
-      /*
-       * Allocate memory for the exception message, including the NULL
-       * terminator. This memory is not freed because the forthcoming
-       * exception terminates everything anyway.
-       */
-      const size_t len_with_null = len_no_null + 1;
-      char *msg = (char *)malloc(len_with_null);
+      /* Allocate memory for the exception message, including the NULL
+       * terminator. */
+      std::vector<char> msg(len_no_null + 1);
+      len_no_null = snprintf(&msg[0], msg.size(), format, file, line);
 
-      if (msg != NULL) {
-        len_no_null = snprintf(msg, len_with_null, format, file, line);
-
-        if (len_no_null > 0) {
-          throw std::runtime_error(msg);
-        }
+      if (len_no_null > 0) {
+        throw std::runtime_error(&msg[0]);
       }
     }
 

@@ -43,7 +43,7 @@ PointerAlignment: Left
 # 8. Namespace Indentation
 # Google Style default is false, matching:
 # Uncrustify: indent_namespace=false
-IndentNamespace: false
+NamespaceIndentation: None
 
 # 9. Case Label Indentation
 # Google Style default is to indent `case` labels.
@@ -59,6 +59,5 @@ AlignOperands: Align
 # These are generally handled by Google's requirement for braces, even for single statements.
 AllowShortBlocksOnASingleLine: Never
 AllowShortIfStatementsOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
-...
