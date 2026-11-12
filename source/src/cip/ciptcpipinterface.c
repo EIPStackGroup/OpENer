@@ -109,6 +109,7 @@ static bool isalnum_c(const EipByte byte) {
 /** Check passed string to conform to the rules for host name labels
  *
  *  @param  label pointer to the label string to check
+ *  @param  label_length length of the label string to check
  *  @return         true if label is valid
  *
  * A host name label is a string of length 1 to 63 characters with
@@ -119,20 +120,24 @@ static bool isalnum_c(const EipByte byte) {
  *  The minimum length of 1 is checked but not the maximum length
  *  that has already been enforced on data reception.
  */
-static bool IsValidNameLabel(const EipByte *label) {
-  if (!isalnum_c(*label) ) {
+static bool IsValidNameLabel(const EipByte *label, const size_t label_length) {
+  if(0 == label_length || !isalnum_c(label[0]) ) {
     return false;
   }
-  ++label;
-  while ('\0' != *label && (isalnum_c(*label) || '-' == *label) ) {
-    ++label;
+
+  for(size_t i = 1; i < label_length; i++) {
+    if(!(isalnum_c(label[i]) || '-' == label[i]) ) {
+      return false;
+    }
   }
-  return ('\0' == *label && '-' != label[-1]);
+
+  return '-' != label[label_length - 1];
 }
 
 /** Check if domain is a valid domain
  *
  *  @param  p_domain  pointer to domain string to check
+ *  @param  domain_length length of domain string to check
  *  @return           true if domain is valid
  *
  * We check here for domain names that are part of a valid host name.
@@ -143,33 +148,32 @@ static bool IsValidNameLabel(const EipByte *label) {
  *    be converted to punycode (see https://www.punycoder.com/) by
  *    the user in advance.
  */
-static bool IsValidDomain(EipByte *domain) {
-  bool status = true;
+static bool IsValidDomain(const EipByte *domain, const size_t domain_length) {
+  size_t label_start = 0;
 
-  OPENER_TRACE_INFO("Enter '%s'->", domain);
-  if ('.' == *domain) { /* Forbid leading dot */
+  OPENER_TRACE_INFO("Enter '%.*s'->\n", (int) domain_length, domain);
+  if(0 == domain_length || '.' == domain[0] || '.' == domain[domain_length - 1]) {
     return false;
   }
-  EipByte *dot = (EipByte *)strchr( (char *)domain, '.' );
-  if (dot) {
-    bool rc;
 
-    *dot = '\0';
-    status &= rc = IsValidNameLabel(domain);
-    OPENER_TRACE_INFO("Checked %d '%s'\n", rc, domain);
-    if ('\0' != dot[1]) {
-      status &= IsValidDomain(dot + 1);
+  for(size_t i = 0; i <= domain_length; i++) {
+    if(i == domain_length || '.' == domain[i]) {
+      const size_t label_length = i - label_start;
+      const bool status = IsValidNameLabel(domain + label_start, label_length);
+      OPENER_TRACE_INFO("Checked %d '%.*s'\n",
+                        status,
+                        (int) label_length,
+                        domain + label_start);
+      if(!status) {
+        return false;
+      }
+      if(i < domain_length) {
+        label_start = i + 1;
+      }
     }
-    else {  /* Forbid trailing dot */
-      status = false;
-    }
-    *dot = '.';
   }
-  else {
-    status = IsValidNameLabel(domain);
-    OPENER_TRACE_INFO("Check end %d '%s'\n", status, domain);
-  }
-  return status;
+
+  return true;
 }
 
 
@@ -442,21 +446,24 @@ int DecodeCipTcpIpInterfaceConfiguration( /* Attribute 5 */
 	}
 	SetCipStringByData(&if_cfg.domain_name, domain_name_length,
 			message_router_request->data);
-	domain_name_length = (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
-	OPENER_TRACE_INFO("Domain: ds %hu '%s'\n",
+	OPENER_TRACE_INFO("Domain: ds %hu '%.*s'\n",
 			domain_name_length,
+			(int) if_cfg.domain_name.length,
 			if_cfg.domain_name.string);
+	const CipUint padded_domain_name_length =
+	  (domain_name_length + 1) & (~0x0001u); /* Align for possible pad byte */
 
 	if (!IsValidNetworkConfig(&if_cfg)
 			|| (domain_name_length > 0
-					&& !IsValidDomain(if_cfg.domain_name.string))) {
+					&& !IsValidDomain(if_cfg.domain_name.string,
+					                 if_cfg.domain_name.length))) {
 		message_router_response->general_status =
 				kCipErrorInvalidAttributeValue;
 		return number_of_decoded_bytes;
 	}
 
 	*data = if_cfg; //write data to attribute
-	number_of_decoded_bytes = 20 + domain_name_length;
+	number_of_decoded_bytes = 20 + padded_domain_name_length;
 
 	/* Tell that this configuration change becomes active after a reset */
 	g_tcpip.status |= kTcpipStatusIfaceCfgPend;
@@ -486,12 +493,15 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 	          SetCipStringByData(&tmp_host_name,
 	                             host_name_length,
 	                             message_router_request->data);
-	          host_name_length = (host_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
-	          OPENER_TRACE_INFO("Host Name: ds %hu '%s'\n",
+	          OPENER_TRACE_INFO("Host Name: ds %hu '%.*s'\n",
 	                            host_name_length,
+	                            (int) tmp_host_name.length,
 	                            tmp_host_name.string);
+	          const CipUint padded_host_name_length =
+	            (host_name_length + 1) & (~0x0001u);  /* Align for possible pad byte */
 
-	          if (!IsValidNameLabel(tmp_host_name.string) ) {
+	          if (!IsValidNameLabel(tmp_host_name.string,
+	                                tmp_host_name.length) ) {
 	            message_router_response->general_status =
 	              kCipErrorInvalidAttributeValue;
 	            return number_of_decoded_bytes;
@@ -502,6 +512,7 @@ int DecodeCipTcpIpInterfaceHostName( /* Attribute 6 */
 	          /* Tell that this configuration change becomes active after a reset */
 	          g_tcpip.status |= kTcpipStatusIfaceCfgPend;
 	          message_router_response->general_status = kCipErrorSuccess;
+	          number_of_decoded_bytes = 2 + padded_host_name_length;
 
 	return number_of_decoded_bytes;
 
@@ -722,4 +733,3 @@ EipUint16 GetEncapsulationInactivityTimeout(CipInstance *instance) {
   EipUint16 encapsulation_inactivity_timeout = *data;
   return encapsulation_inactivity_timeout;
 }
-
