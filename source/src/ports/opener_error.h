@@ -4,6 +4,9 @@
  *
  ******************************************************************************/
 
+#ifndef SOURCE_SRC_PORTS_OPENER_ERROR_H_
+#define SOURCE_SRC_PORTS_OPENER_ERROR_H_
+
 /** @file opener_error.h
  *  @author Martin Melik Merkumians
  *  @brief This file includes the prototypes for error resolution functions like
@@ -40,3 +43,4 @@ char* GetErrorMessage(int error_number);
  * allocated by GetErrorMessage(int)
  */
 void FreeErrorMessage(char* error_message);
+#endif  // SOURCE_SRC_PORTS_OPENER_ERROR_H_

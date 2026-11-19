@@ -10,9 +10,9 @@
 
 extern "C" {
 
-#include "ciptypes.h"
-#include "encap.h"
-#include "enipmessage.h"
+#include "cip/ciptypes.h"
+#include "enet_encap/encap.h"
+#include "utils/enipmessage.h"
 }
 
 TEST_GROUP(EncapsulationProtocol){

@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipmessagerouter.h"
+#include "cip/cipmessagerouter.h"
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "endianconv.h"
-#include "enipmessage.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "enet_encap/endianconv.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
+#include "utils/enipmessage.h"
 
 CipMessageRouterRequest g_message_router_request;
 
@@ -126,8 +126,8 @@ EipStatus CipMessageRouterInit() {
                      1,                /* # of instances */
                      "message router", /* class name */
                      1,                /* # class revision*/
-                     InitializeCipMessageRouterClass); /* # function pointer for
-                                                          initialization*/
+                     InitializeCipMessageRouterClass);  // # function pointer
+                                                        // for initialization
   if (NULL == message_router) {
     return kEipStatusError;
   }
@@ -176,8 +176,8 @@ CipClass* GetCipClass(const CipUdint class_code) {
 CipInstance* GetCipInstance(const CipClass* RESTRICT const cip_class,
                             const CipInstanceNum instance_number) {
   if (instance_number == 0) {
-    return (CipInstance*)cip_class; /* if the instance number is zero, return
-                                       the class object itself*/
+    return (CipInstance*)cip_class;  // if the instance number is zero, return
+                                     // the class object itself
   }
   /* pointer to linked list of instances from the class object*/
   for (CipInstance* instance = cip_class->instances; instance;
@@ -196,12 +196,12 @@ EipStatus RegisterCipClass(CipClass* cip_class) {
 
   while (*message_router_object) {
     message_router_object =
-        &(*message_router_object)->next; /* follow the list until p points to an
-                                            empty link (list end)*/
+        &(*message_router_object)->next;  // follow the list until p points to
+                                          // an empty link (list end)
   }
   *message_router_object = (CipMessageRouterObject*)CipCalloc(
-      1, sizeof(CipMessageRouterObject)); /* create a new node at the end of the
-                                             list*/
+      1, sizeof(CipMessageRouterObject));  // create a new node at the end of
+                                           // the list
   if (*message_router_object == 0) {
     return kEipStatusError; /* check for memory error*/
   }
@@ -242,10 +242,10 @@ EipStatus NotifyMessageRouter(EipUint8* data,
           "class id 0x%x is not registered\n",
           (unsigned)g_message_router_request.request_path.class_id);
       message_router_response->general_status =
-          kCipErrorPathDestinationUnknown; /*according to the test tool this
-                                              should be the correct error flag
-                                              instead of
-                                              CIP_ERROR_OBJECT_DOES_NOT_EXIST;*/
+          kCipErrorPathDestinationUnknown;  // according to the test tool this
+                                            // should be the correct error flag
+                                            // instead of
+                                            // CIP_ERROR_OBJECT_DOES_NOT_EXIST;
       message_router_response->size_of_additional_status = 0;
       message_router_response->reserved                  = 0;
       message_router_response->reply_service =

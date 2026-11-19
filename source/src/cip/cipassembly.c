@@ -4,15 +4,15 @@
  *
  ******************************************************************************/
 
-#include "cipassembly.h"
+#include "cip/cipassembly.h"
 
 #include <stdbool.h>
 #include <string.h>
 
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 /** @brief Retrieve the given data according to CIP encoding from the
  *              message buffer.
@@ -155,8 +155,8 @@ EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
       (CipByteArray*)instance->attributes->data;
   if (assembly_byte_array->length != data_length) {
     OPENER_TRACE_ERR("wrong amount of data arrived for assembly object\n");
-    return kEipStatusError; /*TODO question should we notify the application
-                               that wrong data has been received???*/
+    return kEipStatusError;  // TODO question should we notify the application
+                             // that wrong data has been received???
   } else {
     memcpy(assembly_byte_array->data, data, data_length);
     /* call the application that new data arrived */

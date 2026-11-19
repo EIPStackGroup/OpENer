@@ -4,6 +4,9 @@
  * Only code implementing Cpputest test cases should include this header; it
  * should not be included by application code.
  */
+#ifndef SOURCE_TESTS_CHECK_ASSERT_H_
+#define SOURCE_TESTS_CHECK_ASSERT_H_
+
 #include <setjmp.h>
 
 /* See OpENerTests.cpp for descriptions. */
@@ -38,3 +41,4 @@ extern jmp_buf* assert_jump_enabled;
       FAIL("Did not assert as expected.");                              \
     }                                                                   \
   } while (0)
+#endif  // SOURCE_TESTS_CHECK_ASSERT_H_

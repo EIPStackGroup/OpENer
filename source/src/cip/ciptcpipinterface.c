@@ -3,21 +3,21 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "ciptcpipinterface.h"
+#include "cip/ciptcpipinterface.h"
 
 #include <string.h>
 
-#include "cipassembly.h"
-#include "cipcommon.h"
-#include "cipconnectionobject.h"
-#include "ciperror.h"
-#include "cipethernetlink.h"
-#include "cipmessagerouter.h"
-#include "cipstring.h"
-#include "endianconv.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "trace.h"
+#include "cip/cipassembly.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/ciperror.h"
+#include "cip/cipethernetlink.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/cipstring.h"
+#include "enet_encap/endianconv.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 /* Define constants to initialize the config_capability attribute (#2). These
  *   are needed as defines because we use them for static initialization. */
@@ -47,12 +47,12 @@
 
 /** definition of TCP/IP object instance 1 data */
 CipTcpIpObject g_tcpip = {
-    .status = 0x01, /* attribute #1 TCP status with 1 we indicate that we got a
-                       valid configuration from DHCP, BOOTP or NV data */
+    .status = 0x01,  // attribute #1 TCP status with 1 we indicate that we got a
+                     // valid configuration from DHCP, BOOTP or NV data
     .config_capability = CFG_CAPS, /* attribute #2 config_capability */
     .config_control =
-        0x02, /* attribute #3 config_control: 0x02 means that the device shall
-                 obtain its interface configuration values via DHCP. */
+        0x02,  // attribute #3 config_control: 0x02 means that the device shall
+               // obtain its interface configuration values via DHCP.
 #if 2 != OPENER_ETHLINK_INSTANCE_CNT
     /* For the details where the physical_link_object path should point to,
      * depending on the # of Ethernet Link objects refer to Vol. 2, Section
@@ -63,8 +63,8 @@ CipTcpIpObject g_tcpip = {
             2,                           /* PathSize in 16 Bit chunks */
             CIP_ETHERNETLINK_CLASS_CODE, /* Class Code */
             OPENER_ETHLINK_INSTANCE_CNT, /* Instance # */
-            0 /* Attribute # (not used as this is the EPATH to the EthernetLink
-                 object)*/
+            0  // Attribute # (not used as this is the EPATH to the EthernetLink
+               // object)
         },
 #else
     .physical_link_object =
@@ -99,13 +99,13 @@ CipTcpIpObject g_tcpip = {
             0, /* use the default allocation algorithm */
             0, /* reserved */
             1, /* we currently use only one multicast address */
-            0  /* the multicast address will be allocated on IP address
-                  configuration */
+            0  // the multicast address will be allocated on IP address
+               // configuration
         },
     .select_acd = false,
     .encapsulation_inactivity_timeout =
-        120 /* attribute #13 encapsulation_inactivity_timeout, use a default
-               value of 120 */
+        120  // attribute #13 encapsulation_inactivity_timeout, use a default
+             // value of 120
 };
 
 /************** Static Functions *********************************/
@@ -316,12 +316,11 @@ static bool IsIOConnectionActive(void) {
 
   return false;
 }
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 static CipUsint dummy_data_field =
-    0; /**< dummy data fiel to provide non-null data pointers for attributes
-          without data fields */
+    0;  ///< dummy data fiel to provide non-null data pointers for attributes
+        ///< without data fields
 
 /************** Functions ****************************************/
 
@@ -509,8 +508,7 @@ int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
   return number_of_decoded_bytes;
 }
 
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
                                                           void* const data,
@@ -619,8 +617,7 @@ EipStatus CipTcpIpInterfaceInit() {
                   &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
-#endif /* defined (OPENER_TCPIP_IFACE_CFG_SETTABLE) && 0 != \
-          OPENER_TCPIP_IFACE_CFG_SETTABLE*/
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
 
   InsertAttribute(instance,
                   7,

@@ -3,9 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_USER_CONF_H_
-#define OPENER_USER_CONF_H_
-
+#ifndef SOURCE_SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
+#define SOURCE_SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_
 /** @file POSIX/sample_application/opener_user_conf.h
  * @brief OpENer configuration setup
  *
@@ -23,16 +22,16 @@
  */
 #include <assert.h>
 
-#undef O_NONBLOCK /* in _default_fcntl.h defined as 0x4000, but lwip defines 1 \
-                     in sockets.h */
+#undef O_NONBLOCK  // lwIP defines O_NONBLOCK as 1.
+#include <task.h>
+
 #include "FreeRTOS.h"
 #include "lwip/api.h"
 #include "lwip/apps/fs.h"
 #include "lwip/arch.h"
 #include "lwip/opt.h"
 #include "lwip/sockets.h"
-#include "task.h"
-#include "typedefs.h"
+#include "src/typedefs.h"
 
 /** @brief Set this define if you have a CIP File capable device
  *
@@ -59,7 +58,7 @@
 #endif
 
 #ifdef OPENER_UNIT_TEST
-#include "test_assert.h"
+#include "tests/test_assert.h"
 #endif /* OPENER_UNIT_TEST */
 
 /** @brief Set this define if you have a DLR capable device
@@ -267,6 +266,5 @@ static const MilliSeconds kOpenerTimerTickInMilliSeconds = 10;
 
 #endif /* ifdef OPENER_WITH_TRACES */
 
-#endif /* ifndef OPENER_UNIT_TEST */
-
-#endif /*OPENER_USER_CONF_H_*/
+#endif  /* ifndef OPENER_UNIT_TEST */
+#endif  // SOURCE_SRC_PORTS_STM32_SAMPLE_APPLICATION_OPENER_USER_CONF_H_

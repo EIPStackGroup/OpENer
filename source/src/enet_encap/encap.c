@@ -3,33 +3,33 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "encap.h"
+#include "enet_encap/encap.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "cipidentity.h"
-#include "cipmessagerouter.h"
-#include "ciptcpipinterface.h"
-#include "cpf.h"
-#include "endianconv.h"
-#include "generic_networkhandler.h"
-#include "opener_api.h"
-#include "opener_error.h"
-#include "opener_user_conf.h"
-#include "socket_timer.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipidentity.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/ciptcpipinterface.h"
+#include "enet_encap/cpf.h"
+#include "enet_encap/endianconv.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/opener_error.h"
+#include "ports/opener_user_conf.h"
+#include "ports/socket_timer.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 /* IP address data taken from TCPIPInterfaceObject*/
 const EipUint16 kSupportedProtocolVersion =
     1; /**< Supported Encapsulation protocol version */
 
 const CipUdint kEncapsulationHeaderOptionsFlag =
-    0x00; /**< Mask of which options are supported as of the current CIP specs
-             no other option value as 0 should be supported.*/
+    0x00;  ///< Mask of which options are supported as of the current CIP specs
+           ///< no other option value as 0 should be supported.
 
 const int kEncapsulationHeaderSessionHandlePosition =
     4; /**< the position of the session handle within the encapsulation header*/
@@ -69,9 +69,8 @@ typedef enum {
   kCapabilityFlagsCipUdpClass0or1 = 0x0100
 } CapabilityFlags;
 
-#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES                     \
-  2 /**< According to EIP spec at least 2 delayed message requests should be \
-       supported */
+#define ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES \
+  2 /**< The EIP specification requires at least two delayed responses. */
 
 /* Encapsulation layer data  */
 
@@ -180,8 +179,8 @@ EipStatus HandleReceivedExplictTcpData(int socket,
       encapsulation_data.options) /*TODO generate appropriate error response*/
   {
     if (*number_of_remaining_bytes >=
-        0) /* check if the message is corrupt: header size + claimed payload
-              size > than what we actually received*/
+        0)  // check if the message is corrupt: header size + claimed payload
+            // size > than what we actually received
     {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
@@ -275,8 +274,8 @@ EipStatus HandleReceivedExplictUdpData(const int socket,
       encapsulation_data.options) /*TODO generate appropriate error response*/
   {
     if (*number_of_remaining_bytes >=
-        0) /* check if the message is corrupt: header size + claimed payload
-              size > than what we actually received*/
+        0)  // check if the message is corrupt: header size + claimed payload
+            // size > than what we actually received
     {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
@@ -510,8 +509,8 @@ void DetermineDelayTime(
   if (0 == maximum_delay_time) {
     maximum_delay_time = kListIdentityDefaultDelayTime;
   } else if (kListIdentityMinimumDelayTime >
-             maximum_delay_time) { /* if maximum_delay_time is between 1 and
-                                      500ms set it to 500ms */
+             maximum_delay_time) {  // if maximum_delay_time is between 1 and
+                                    // 500ms set it to 500ms
     maximum_delay_time = kListIdentityMinimumDelayTime;
   }
 
@@ -571,8 +570,8 @@ void HandleReceivedRegisterSessionCommand(
         OPENER_TRACE_INFO(
             "Error: A session is already registered at socket %d\n", socket);
         session_handle =
-            i + 1; /*return the already assigned session back, the cip spec is
-                      not clear about this needs to be tested*/
+            i + 1;  // return the already assigned session back, the cip spec is
+                    // not clear about this needs to be tested
         encapsulation_protocol_status = kEncapsulationProtocolInvalidCommand;
         session_index                 = kSessionStatusInvalid;
         break;
@@ -651,8 +650,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
     ENIPMessage* const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /*EipStatus*/ return_value =
-      kEipStatusOk; /* TODO: Shouldn't this be kEipStatusOk cause we must not
-                       send any response if data_length < 6? */
+      kEipStatusOk;  // TODO: Shouldn't this be kEipStatusOk cause we must not
+                     // send any response if data_length < 6?
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
@@ -660,12 +659,12 @@ EipStatus HandleReceivedSendUnitDataCommand(
     /* don't use the data yet */
     GetDintFromMessage(
         (const EipUint8** const)&receive_data
-            ->current_communication_buffer_position); /* skip over null
-                                                         interface handle*/
+            ->current_communication_buffer_position);  // skip over null
+                                                       // interface handle
     GetIntFromMessage(
         (const EipUint8** const)&receive_data
-            ->current_communication_buffer_position); /* skip over unused
-                                                         timeout value*/
+            ->current_communication_buffer_position);  // skip over unused
+                                                       // timeout value
     ((EncapsulationData* const)receive_data)->data_length -=
         6; /* the rest is in CPF format*/
 
@@ -683,8 +682,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
       return_value =
-          kEipStatusOkSend; /* TODO: Needs to be here if line with first TODO of
-                               this function is adjusted. */
+          kEipStatusOkSend;  // TODO: Needs to be here if line with first TODO
+                             // of this function is adjusted.
     }
   }
   return return_value;
@@ -704,8 +703,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     ENIPMessage* const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /* EipStatus*/ return_value =
-      kEipStatusOk; /* TODO: Shouldn't this be kEipStatusOk cause we must not
-                       send any response if data_length < 6? */
+      kEipStatusOk;  // TODO: Shouldn't this be kEipStatusOk cause we must not
+                     // send any response if data_length < 6?
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
@@ -713,12 +712,12 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     /* don't use the data yet */
     GetDintFromMessage(
         (const EipUint8** const)&receive_data
-            ->current_communication_buffer_position); /* skip over null
-                                                         interface handle*/
+            ->current_communication_buffer_position);  // skip over null
+                                                       // interface handle
     GetIntFromMessage(
         (const EipUint8** const)&receive_data
-            ->current_communication_buffer_position); /* skip over unused
-                                                         timeout value*/
+            ->current_communication_buffer_position);  // skip over unused
+                                                       // timeout value
     ((EncapsulationData* const)receive_data)->data_length -=
         6; /* the rest is in CPF format*/
 
@@ -736,8 +735,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
       return_value =
-          kEipStatusOkSend; /* TODO: Needs to be here if line with first TODO of
-                               this function is adjusted. */
+          kEipStatusOkSend;  // TODO: Needs to be here if line with first TODO
+                             // of this function is adjusted.
     }
   }
   return return_value;

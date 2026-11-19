@@ -1,3 +1,6 @@
+#ifndef SOURCE_TESTS_OPENERTESTS_H_
+#define SOURCE_TESTS_OPENERTESTS_H_
+
 #include "CppUTest/CommandLineTestRunner.h"
 
 IMPORT_TEST_GROUP(RandomClass);
@@ -13,3 +16,4 @@ IMPORT_TEST_GROUP(SocketTimer);
 IMPORT_TEST_GROUP(DoublyLinkedList);
 IMPORT_TEST_GROUP(EncapsulationProtocol);
 IMPORT_TEST_GROUP(CipString);
+#endif  // SOURCE_TESTS_OPENERTESTS_H_

@@ -11,11 +11,10 @@
  *
  */
 
-#ifndef OPENER_CIPDLR_H_
-#define OPENER_CIPDLR_H_
-
-#include "ciptypes.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPDLR_H_
+#define SOURCE_SRC_CIP_CIPDLR_H_
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 /** @brief DLR object class code */
 static const CipUint kCipDlrClassCode = 0x47U;
@@ -77,5 +76,4 @@ extern CipDlrObject g_dlr; /**< declaration of DLR object instance 1 data */
  * @return kEipStatusOk on success, otherwise kEipStatusError
  */
 EipStatus CipDlrInit(void);
-
-#endif /* of OPENER_CIPDLR_H_ */
+#endif  // SOURCE_SRC_CIP_CIPDLR_H_

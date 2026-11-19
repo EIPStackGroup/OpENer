@@ -4,12 +4,12 @@
  *
  ******************************************************************************/
 
-#include "doublylinkedlist.h"
+#include "utils/doublylinkedlist.h"
 
 #include <assert.h>
 #include <stdio.h>  // Needed to define NULL
 
-#include "opener_user_conf.h"
+#include "ports/opener_user_conf.h"
 
 void DoublyLinkedListInitialize(DoublyLinkedList* list,
                                 NodeMemoryAllocator allocator,

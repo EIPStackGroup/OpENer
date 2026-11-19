@@ -3,12 +3,11 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_ENCAP_H_
-#define OPENER_ENCAP_H_
-
-#include "cipconnectionobject.h"
-#include "generic_networkhandler.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_ENET_ENCAP_ENCAP_H_
+#define SOURCE_SRC_ENET_ENCAP_ENCAP_H_
+#include "cip/cipconnectionobject.h"
+#include "ports/generic_networkhandler.h"
+#include "src/typedefs.h"
 
 /** @file encap.h
  * @brief This file contains the public interface of the encapsulation layer
@@ -45,12 +44,12 @@ typedef struct encapsulation_data {
   CipOctet
       sender_context[8]; /**< length of 8, according to the specification */
   CipUdint options;
-  const EipUint8* communication_buffer_start; /**< Pointer to the communication
-                                                 buffer used for this message */
+  const EipUint8* communication_buffer_start;  ///< Pointer to the communication
+                                               ///< buffer used for this message
   const EipUint8*
-      current_communication_buffer_position; /**< The current position in the
-                                                communication buffer during the
-                                                decoding process */
+      current_communication_buffer_position;  ///< The current position in the
+                                              ///< communication buffer during
+                                              ///< the decoding process
 } EncapsulationData;
 
 typedef struct encapsulation_service_information {
@@ -137,5 +136,4 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     const EncapsulationData* const receive_data,
     const struct sockaddr* const originator_address,
     ENIPMessage* const outgoing_message);
-
-#endif /* OPENER_ENCAP_H_ */
+#endif  // SOURCE_SRC_ENET_ENCAP_ENCAP_H_

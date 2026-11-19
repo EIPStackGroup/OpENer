@@ -3,12 +3,11 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CPF_H_
-#define OPENER_CPF_H_
-
-#include "ciptypes.h"
-#include "encap.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_ENET_ENCAP_CPF_H_
+#define SOURCE_SRC_ENET_ENCAP_CPF_H_
+#include "cip/ciptypes.h"
+#include "enet_encap/encap.h"
+#include "src/typedefs.h"
 
 /** @ingroup ENCAP
  * @brief CPF is Common Packet Format
@@ -23,12 +22,12 @@
 /** @brief Definition of Item ID numbers used for address and data items in CPF
  * structures */
 typedef enum {
-  kCipItemIdNullAddress = 0x0000, /**< Type: Address; Indicates that
-                                     encapsulation routing is not needed. */
+  kCipItemIdNullAddress = 0x0000,  ///< Type: Address; Indicates that
+                                   ///< encapsulation routing is not needed.
   kCipItemIdListIdentityResponse = 0x000C,
   kCipItemIdConnectionAddress =
-      0x00A1, /**< Type: Address; Connection-based, used for connected messages,
-                 see Vol.2, p.42 */
+      0x00A1,  ///< Type: Address; Connection-based, used for connected
+               ///< messages, see Vol.2, p.42
   kCipItemIdConnectedDataItem =
       0x00B1, /**< Type: Data; Connected data item, see Vol.2, p.43 */
   kCipItemIdUnconnectedDataItem =
@@ -65,13 +64,14 @@ typedef struct {
   CipUint type_id;   /**< Either 0x8000 for O->T or 0x8001 for T->O */
   CipUint length;    /**< Length shall be 16 bytes */
   CipInt sin_family; /**< Shall be AF_INET = 2 in big endian order */
-  CipUint sin_port;  /**< For point-to-point connection this shall be set to the
-                        used UDP port (recommended port = 0x08AE). For multicast
-                        this shall be set to 0x08AE and treated by the receiver
-                        as don't care. Big endian order */
-  CipUdint sin_addr; /**< For multicast connections shall be set to the
-                        multicast address. For point-to-point shall be treated
-                        as don't care, recommended value 0. Big endian order. */
+  CipUint sin_port;  ///< For point-to-point connection this shall be set to the
+                     ///< used UDP port (recommended port = 0x08AE). For
+                     ///< multicast this shall be set to 0x08AE and treated by
+                     ///< the receiver as don't care. Big endian order
+  CipUdint
+      sin_addr;  ///< For multicast connections shall be set to the
+                 ///< multicast address. For point-to-point shall be treated
+                 ///< as don't care, recommended value 0. Big endian order.
   CipUsint nasin_zero[8]; /**< Length of 8, Recommended value zero */
 } SocketAddressInfoItem;
 
@@ -170,5 +170,4 @@ EipStatus AssembleLinearMessage(
  * necessary
  */
 extern CipCommonPacketFormatData g_common_packet_format_data_item;
-
-#endif /* OPENER_CPF_H_ */
+#endif  // SOURCE_SRC_ENET_ENCAP_CPF_H_

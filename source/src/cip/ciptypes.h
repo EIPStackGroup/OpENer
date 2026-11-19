@@ -3,13 +3,12 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPTYPES_H_
-#define OPENER_CIPTYPES_H_
-
-#include "enipmessage.h"
-#include "networkhandler.h"
-#include "opener_user_conf.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPTYPES_H_
+#define SOURCE_SRC_CIP_CIPTYPES_H_
+#include "ports/networkhandler.h"
+#include "ports/opener_user_conf.h"
+#include "src/typedefs.h"
+#include "utils/enipmessage.h"
 
 /** @brief Enum containing the encoding values for CIP data types for CIP
  * Messages */
@@ -40,25 +39,25 @@ typedef enum cip_data_types {
       0xD6, /**< Duration in micro-seconds, high resolution; range of DINT */
   kCipLtime =
       0xD7, /**< Duration in micro-seconds, high resolution, range of LINT */
-  kCipItime       = 0xD8, /**< Duration in milli-seconds, short; range of INT*/
-  kCipStringN     = 0xD9, /**< Character string, N byte per character */
-  kCipShortString = 0xDA, /**< Character string, 1 byte per character, 1 byte
-                             length indicator */
-  kCipTime    = 0xDB,     /**< Duration in milli-seconds; range of DINT */
-  kCipEpath   = 0xDC,     /**< CIP path segments*/
-  kCipEngUnit = 0xDD,     /**< Engineering Units, range of UINT*/
+  kCipItime       = 0xD8,  /**< Duration in milli-seconds, short; range of INT*/
+  kCipStringN     = 0xD9,  /**< Character string, N byte per character */
+  kCipShortString = 0xDA,  ///< Character string, 1 byte per character, 1 byte
+                           ///< length indicator
+  kCipTime    = 0xDB,      /**< Duration in milli-seconds; range of DINT */
+  kCipEpath   = 0xDC,      /**< CIP path segments*/
+  kCipEngUnit = 0xDD,      /**< Engineering Units, range of UINT*/
   /* definition of some CIP structs */
   /* need to be validated in IEC 61131-3 subclause 2.3.3 */
   /* TODO: Check these codes */
   kCipUsintUsint = 0xA0, /**< Used for CIP Identity attribute 4 Revision*/
   kCipUdintUdintUdintUdintUdintString =
-      0xA1, /**< TCP/IP attribute 5 - IP address, subnet mask, gateway, IP name
-               server 1, IP name server 2, domain name*/
-  kCip6Usint     = 0xA2, /**< Struct for MAC Address (six USINTs)*/
-  kCipMemberList = 0xA3, /**< */
-  kCipByteArray  = 0xA4, /**< */
-  kInternalUint6 = 0xF0, /**< bogus hack, for port class attribute 9, TODO
-                            figure out the right way to handle it */
+      0xA1,  ///< TCP/IP attribute 5 - IP address, subnet mask, gateway, IP name
+             ///< server 1, IP name server 2, domain name
+  kCip6Usint     = 0xA2,  /**< Struct for MAC Address (six USINTs)*/
+  kCipMemberList = 0xA3,  /**< */
+  kCipByteArray  = 0xA4,  /**< */
+  kInternalUint6 = 0xF0,  ///< bogus hack, for port class attribute 9, TODO
+                          ///< figure out the right way to handle it
   kCipStringI
 } CipDataType;
 
@@ -118,8 +117,8 @@ typedef enum {
 /** @brief Definition of Get and Set Flags for CIP Attributes */
 typedef enum {                          /* TODO: Rework */
                kNotSetOrGetable = 0x00, /**< Neither set-able nor get-able */
-               kGetableAll = 0x01, /**< Get-able, also part of Get Attribute All
-                                      service */
+               kGetableAll = 0x01,  ///< Get-able, also part of Get Attribute
+                                    ///< All service
                kGetableSingle = 0x02, /**< Get-able via Get Attribute */
                kSetable       = 0x04, /**< Set-able via Set Attribute */
                /* combined for convenience */
@@ -132,8 +131,8 @@ typedef enum {                          /* TODO: Rework */
                kPostGetFunc     = 0x20, /**< enable post get callback */
                kPreSetFunc      = 0x40, /**< enable pre set callback */
                kPostSetFunc     = 0x80, /**< enable post set callback */
-               kNvDataFunc = 0x80, /**< enable Non Volatile data callback, is
-                                      the same as @ref kPostSetFunc */
+               kNvDataFunc = 0x80,  ///< enable Non Volatile data callback, is
+                                    ///< the same as @ref kPostSetFunc
 } CIPAttributeFlag;
 
 typedef enum {
@@ -274,9 +273,8 @@ typedef struct {
   const CipOctet* data;
 } CipMessageRouterRequest;
 
-#define MAX_SIZE_OF_ADD_STATUS                                                \
-  2 /* for now we support extended status codes up to 2 16bit values there is \
-       mostly only one 16bit value used */
+#define MAX_SIZE_OF_ADD_STATUS \
+  2 /* Supports up to two 16-bit values. */
 
 typedef struct enip_message ENIPMessage;
 
@@ -284,18 +282,18 @@ typedef struct enip_message ENIPMessage;
  *
  */
 typedef struct {
-  CipUsint reply_service;  /**< Reply service code, the requested service code +
-                              0x80 */
+  CipUsint reply_service;  ///< Reply service code, the requested service code +
+                           ///< 0x80
   CipOctet reserved;       /**< Reserved; Shall be zero */
-  CipUsint general_status; /**< One of the General Status codes listed in CIP
-                              Specification Volume 1, Appendix B */
-  CipUsint size_of_additional_status; /**< Number of additional 16 bit words in
-                                         Additional Status Array */
+  CipUsint general_status;  ///< One of the General Status codes listed in CIP
+                            ///< Specification Volume 1, Appendix B
+  CipUsint size_of_additional_status;  ///< Number of additional 16 bit words in
+                                       ///< Additional Status Array
   EipUint16 additional_status
-      [MAX_SIZE_OF_ADD_STATUS]; /**< Array of 16 bit words; Additional status;
-                                   If SizeOfAdditionalStatus is 0. there is no
-                                   Additional Status */
-  ENIPMessage message;          /* The constructed message */
+      [MAX_SIZE_OF_ADD_STATUS];  ///< Array of 16 bit words; Additional status;
+                                 ///< If SizeOfAdditionalStatus is 0. there is
+                                 ///< no Additional Status
+  ENIPMessage message; /* The constructed message */
 } CipMessageRouterResponse;
 
 /** @brief self-describing data encoding for CIP types */
@@ -315,9 +313,9 @@ typedef struct {
   EipUint8 type;              /**< The @ref CipDataType of this attribute. */
   CipAttributeEncodeInMessage encode; /**< Self-describing its data encoding */
   CipAttributeDecodeFromMessage
-      decode;                       /**< Self-describing its data decoding */
-  CIPAttributeFlag attribute_flags; /**< See @ref CIPAttributeFlag declaration
-                                       for valid values. */
+      decode;                        /**< Self-describing its data decoding */
+  CIPAttributeFlag attribute_flags;  ///< See @ref CIPAttributeFlag declaration
+                                     ///< for valid values.
   void* data;
 } CipAttributeStruct;
 
@@ -329,12 +327,12 @@ typedef struct {
 typedef struct cip_instance {
   CipInstanceNum
       instance_number; /**< this instance's number (unique within the class) */
-  CipAttributeStruct* attributes; /**< pointer to an array of attributes which
-                                     is unique to this instance */
-  struct cip_class* cip_class;    /**< class the instance belongs to */
-  struct cip_instance* next; /**< next instance, all instances of a class live
-                                in a linked list */
-  void* data;                /**< pointer to instance data struct */
+  CipAttributeStruct* attributes;  ///< pointer to an array of attributes which
+                                   ///< is unique to this instance
+  struct cip_class* cip_class;     /**< class the instance belongs to */
+  struct cip_instance* next;  ///< next instance, all instances of a class live
+                              ///< in a linked list
+  void* data;                 /**< pointer to instance data struct */
 } CipInstance;
 
 /** @ingroup CIP_API
@@ -374,21 +372,21 @@ typedef EipStatus (*CipCallback)(
 
 /** @brief Type definition of CipClass that is a subclass of CipInstance */
 typedef struct cip_class {
-  CipInstance class_instance; /**< This is the instance that contains the
-                                 class attributes of this class. */
+  CipInstance class_instance;  ///< This is the instance that contains the
+                               ///< class attributes of this class.
   /* the rest of these are specific to the Class class only. */
   CipUdint class_code;    /**< class code */
   EipUint16 revision;     /**< class revision*/
   EipUint16 max_instance; /**< largest instance number existing in the class */
-  EipUint16 number_of_instances;  /**< number of instances in the class (not
-                                     including instance 0) */
+  EipUint16 number_of_instances;  ///< number of instances in the class (not
+                                  ///< including instance 0)
   EipUint16 number_of_attributes; /**< number of attributes of each instance */
-  EipUint16 highest_attribute_number; /**< highest defined attribute number
-                                         (attribute numbers are not necessarily
-                                         consecutive) */
-  uint8_t* get_single_bit_mask;       /**< bit mask for GetAttributeSingle */
-  uint8_t* set_bit_mask;              /**< bit mask for SetAttributeSingle */
-  uint8_t* get_all_bit_mask;          /**< bit mask for GetAttributeAll */
+  EipUint16 highest_attribute_number;  ///< highest defined attribute number
+                                       ///< (attribute numbers are not
+                                       ///< necessarily consecutive)
+  uint8_t* get_single_bit_mask; /**< bit mask for GetAttributeSingle */
+  uint8_t* set_bit_mask;        /**< bit mask for SetAttributeSingle */
+  uint8_t* get_all_bit_mask;    /**< bit mask for GetAttributeAll */
 
   EipUint16 number_of_services;        /**< number of services supported */
   CipInstance* instances;              /**< pointer to the list of instances */
@@ -507,5 +505,4 @@ typedef struct {
 #define MASK8(a, b, c, d, e, f, g, h)                                \
   (1 << (a) | 1 << (b) | 1 << (c) | 1 << (d) | 1 << (e) | 1 << (f) | \
    1 << (g) | 1 << (h))
-
-#endif /* OPENER_CIPTYPES_H_ */
+#endif  // SOURCE_SRC_CIP_CIPTYPES_H_

@@ -3,14 +3,13 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPCONNECTIONMANAGER_H_
-#define OPENER_CIPCONNECTIONMANAGER_H_
-
-#include "cipconnectionobject.h"
-#include "ciptypes.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPCONNECTIONMANAGER_H_
+#define SOURCE_SRC_CIP_CIPCONNECTIONMANAGER_H_
+#include "cip/cipconnectionobject.h"
+#include "cip/ciptypes.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/typedefs.h"
 
 /**
  * @brief Connection Type constants of the Forward Open service request
@@ -38,121 +37,123 @@ typedef enum {
   kConnectionManagerExtendedStatusCodeSuccess =
       0x00, /**< Obsolete code, should be General Status - Everything is ok */
   kConnectionManagerExtendedStatusCodeErrorConnectionInUseOrDuplicateForwardOpen =
-      0x0100, /**< General Status has to be 0x01, Connection is already in use,
-                 or a duplicate Forward Open was received */
+      0x0100,  ///< General Status has to be 0x01, Connection is already in use,
+               ///< or a duplicate Forward Open was received
   kConnectionManagerExtendedStatusCodeErrorTransportClassAndTriggerCombinationNotSupported =
-      0x0103, /**< General Status has to be 0x01, A Transport class and trigger
-                 combination has been specified, which is not supported by the
-                 target application */
+      0x0103,  ///< General Status has to be 0x01, A Transport class and trigger
+               ///< combination has been specified, which is not supported by
+               ///< the target application
   kConnectionManagerExtendedStatusCodeErrorOwnershipConflict =
-      0x0106, /**< General Status has to be 0x01, Another connection has already
-                 reserved some needed resources */
+      0x0106,  ///< General Status has to be 0x01, Another connection has
+               ///< already reserved some needed resources
   kConnectionManagerExtendedStatusCodeErrorConnectionTargetConnectionNotFound =
-      0x0107, /**< General Status has to be 0x01, Forward Close error message,
-                 if connection to be closed is not found at the target */
+      0x0107,  ///< General Status has to be 0x01, Forward Close error message,
+               ///< if connection to be closed is not found at the target
   kConnectionManagerExtendedStatusCodeErrorTargetForConnectionNotConfigured =
-      0x0110, /**< General Status has to be 0x01, Target application not
-                 configured and connection request does not contain data segment
-                 for configuration */
+      0x0110,  ///< General Status has to be 0x01, Target application not
+               ///< configured and connection request does not contain data
+               ///< segment for configuration
   kConnectionManagerExtendedStatusCodeRpiNotSupported = 0x0111,
   kConnectionManagerExtendedStatusCodeErrorRpiValuesNotAcceptable =
-      0x0112, /**< General Status has to be 0x01, Requested RPI parameters
-                 outside of range, needs 6 16-bit extended status words, see
-                 Vol.1 Table 3-5.33 */
+      0x0112,  ///< General Status has to be 0x01, Requested RPI parameters
+               ///< outside of range, needs 6 16-bit extended status words, see
+               ///< Vol.1 Table 3-5.33
   kConnectionManagerExtendedStatusCodeErrorNoMoreConnectionsAvailable =
-      0x0113, /**< General Status has to be 0x01, No free connection slots
-                 available */
+      0x0113,  ///< General Status has to be 0x01, No free connection slots
+               ///< available
   kConnectionManagerExtendedStatusCodeErrorVendorIdOrProductcodeError =
-      0x0114, /**< General Status has to be 0x01, The Product Code or Vendor ID
-                 in the electronic key logical segment does not match the
-                 Product Code or Vendor ID of the device, or if the
-                 compatibility bit is set and one or both are zero, or cannot be
-                 emulated. */
+      0x0114,  ///< General Status has to be 0x01, The Product Code or Vendor ID
+               ///< in the electronic key logical segment does not match the
+               ///< Product Code or Vendor ID of the device, or if the
+               ///< compatibility bit is set and one or both are zero, or cannot
+               ///< be emulated.
   kConnectionManagerExtendedStatusCodeErrorDeviceTypeError =
-      0x0115, /**< General Status has to be 0x01, Device Type specified in the
-                 electronic key logical segment does not match the Device Type,
-                 or if the compatibility bit is set and Device Type is zero, or
-                 cannot be emulated. */
+      0x0115,  ///< General Status has to be 0x01, Device Type specified in the
+               ///< electronic key logical segment does not match the Device
+               ///< Type, or if the compatibility bit is set and Device Type is
+               ///< zero, or cannot be emulated.
   kConnectionManagerExtendedStatusCodeErrorRevisionMismatch =
-      0x0116, /**< General Status has to be 0x01, Major and minor revision
-                 specified in the electronic key logical segment is not a valid
-                 revision of the device, or if the compatibility bit is set and
-                 the requested Major Revision and/or Minor Revision is 0 or the
-                 device cannot emulate the specified revision. */
+      0x0116,  ///< General Status has to be 0x01, Major and minor revision
+               ///< specified in the electronic key logical segment is not a
+               ///< valid revision of the device, or if the compatibility bit is
+               ///< set and the requested Major Revision and/or Minor Revision
+               ///< is 0 or the device cannot emulate the specified revision.
   kConnectionManagerExtendedStatusCodeNonListenOnlyConnectionNotOpened =
-      0x0119, /**< General Status has to be 0x01, listen-only connection cannot
-                 be established, if no non-listen only connections are
-                 established  */
+      0x0119,  ///< General Status has to be 0x01, listen-only connection cannot
+               ///< be established, if no non-listen only connections are
+               ///< established
   kConnectionManagerExtendedStatusCodeTargetObjectOutOfConnections =
-      0x011A, /**< Maximum number of connections supported by the instance of
-                 the target object exceeded */
+      0x011A,  ///< Maximum number of connections supported by the instance of
+               ///< the target object exceeded
   kConnectionManagerExtendedStatusCodeProductionInhibitTimerGreaterThanRpi =
-      0x011B, /**< The Production Inhibit Time is greater than the Target to
-                 Originator RPI */
+      0x011B,  ///< The Production Inhibit Time is greater than the Target to
+               ///< Originator RPI
   kConnectionManagerExtendedStatusCodeTransportClassNotSupported =
-      0x011C, /**< The transport class requested in the Transport Type/Trigger
-                 parameter is not supported. */
+      0x011C,  ///< The transport class requested in the Transport Type/Trigger
+               ///< parameter is not supported.
   kConnectionManagerExtendedStatusCodeProductionTriggerNotSuppoerted =
-      0x011D, /**< The production trigger requested in the Transport
-                 Type/Trigger parameter is not supported. */
+      0x011D,  ///< The production trigger requested in the Transport
+               ///< Type/Trigger parameter is not supported.
   kConnectionManagerExtendedStatusCodeDirectionNotSupported =
-      0x011E, /**< The direction requested in the Transport Type/Trigger
-                 parameter is not supported */
+      0x011E,  ///< The direction requested in the Transport Type/Trigger
+               ///< parameter is not supported
   kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionFixVar =
-      0x011F, /**< Shall be returned as the result of specifying an O->T fixed /
-                 variable flag that is not supported. */
+      0x011F,  ///< Shall be returned as the result of specifying an O->T fixed
+               ///< / variable flag that is not supported.
   kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionFixVar =
-      0x0120, /**< Shall be returned as the result of specifying an T->O fixed /
-                 variable flag that is not supported. */
+      0x0120,  ///< Shall be returned as the result of specifying an T->O fixed
+               ///< / variable flag that is not supported.
   kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionPriority =
-      0x0121, /**< Shall be returned as the result of specifying an O->T
-                 priority code that is not supported. */
+      0x0121,  ///< Shall be returned as the result of specifying an O->T
+               ///< priority code that is not supported.
   kConnectionManagerExtendedStatusCodeInvalidTToONetworkConnectionPriority =
-      0x0122, /**< Shall be returned as the result of specifying an T->O
-                 priority code that is not supported. */
+      0x0122,  ///< Shall be returned as the result of specifying an T->O
+               ///< priority code that is not supported.
   kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionType =
-      0x0123, /**< Shall be returned as the result of specifying an O->T
-                 connection type that is not supported */
+      0x0123,  ///< Shall be returned as the result of specifying an O->T
+               ///< connection type that is not supported
   kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionType =
-      0x0124, /**< Shall be returned as the result of specifying a T->O
-                 connection type that is not supported */
+      0x0124,  ///< Shall be returned as the result of specifying a T->O
+               ///< connection type that is not supported
   kConnectionManagerExtendedStatusCodeInvalidOToTNetworkConnectionRedundantOwner =
-      0x0125, /**< Shall be returned as the result of specifying an O->T
-                 Redundant Owner flag that is not supported. */
+      0x0125,  ///< Shall be returned as the result of specifying an O->T
+               ///< Redundant Owner flag that is not supported.
   kConnectionManagerExtendedStatusCodeInvalidConfigurationSize =
-      0x0126, /**< The data segment provided in the Connection_Path parameter
-                 did not contain an acceptable number of 16-bit words for the
-                 the configuration application path requested. Two additional
-                 status words shall follow, the error code plus the max size in
-                 words */
+      0x0126,  ///< The data segment provided in the Connection_Path parameter
+               ///< did not contain an acceptable number of 16-bit words for the
+               ///< the configuration application path requested. Two additional
+               ///< status words shall follow, the error code plus the max size
+               ///< in words
   kConnectionManagerExtendedStatusCodeErrorInvalidOToTConnectionSize =
-      0x0127, /**< The size of the consuming object declared in the Forward_Open
-                 request and available on the target does not match the size
-                 declared in the O->T Network Connection Parameter. Two
-                 additional status words shall follow, the error code plus the
-                 max size in words */
+      0x0127,  ///< The size of the consuming object declared in the
+               ///< Forward_Open request and available on the target does not
+               ///< match the size declared in the O->T Network Connection
+               ///< Parameter. Two additional status words shall follow, the
+               ///< error code plus the max size in words
   kConnectionManagerExtendedStatusCodeErrorInvalidTToOConnectionSize =
-      0x0128, /**< The size of the consuming object declared in the Forward_Open
-                 request and available on the target does not match the size
-                 declared in the T->O Network Connection Parameter. Two
-                 additional status words shall follow, the error code plus the
-                 max size in words  */
+      0x0128,  ///< The size of the consuming object declared in the
+               ///< Forward_Open request and available on the target does not
+               ///< match the size declared in the T->O Network Connection
+               ///< Parameter. Two additional status words shall follow, the
+               ///< error code plus the max size in words
   kConnectionManagerExtendedStatusCodeInvalidConfigurationApplicationPath =
-      0x0129, /**< Configuration application path specified does not correspond
-                 to a valid configuration application path within the target
-                 application. This error could also be returned if a
-                 configuration application path was required, but not provided
-                 by a connection request. */
+      0x0129,  ///< Configuration application path specified does not correspond
+               ///< to a valid configuration application path within the target
+               ///< application. This error could also be returned if a
+               ///< configuration application path was required, but not
+               ///< provided by a connection request.
   kConnectionManagerExtendedStatusCodeInvalidConsumingApplicationPath =
-      0x012A, /**< Consumed application path specified does not correspond to a
-                 valid consumed application path within the target application.
-                 This error could also be returned if a consumed application
-                 path was required, but not provided by a connection request. */
+      0x012A,  ///< Consumed application path specified does not correspond to a
+               ///< valid consumed application path within the target
+               ///< application. This error could also be returned if a consumed
+               ///< application path was required, but not provided by a
+               ///< connection request.
   kConnectionManagerExtendedStatusCodeInvalidProducingApplicationPath =
-      0x012B, /**< Produced application path specified does not correspond to a
-                 valid produced application path within the target application.
-                 This error could also be returned if a produced application
-                 path was required, but not provided by a connection request. */
+      0x012B,  ///< Produced application path specified does not correspond to a
+               ///< valid produced application path within the target
+               ///< application. This error could also be returned if a produced
+               ///< application path was required, but not provided by a
+               ///< connection request.
   kConnectionManagerExtendedStatusCodeConfigurationSymbolDoesNotExist = 0x012C,
   kConnectionManagerExtendedStatusCodeConsumingSymbolDoesNotExist     = 0x012D,
   kConnectionManagerExtendedStatusCodeProducingSymbolDoesNotExist     = 0x012E,
@@ -307,5 +308,4 @@ typedef void (*CloseSessionFunction)(
 void CheckForTimedOutConnectionsAndCloseTCPConnections(
     const CipConnectionObject* const connection_object,
     CloseSessionFunction CloseSessions);
-
-#endif /* OPENER_CIPCONNECTIONMANAGER_H_ */
+#endif  // SOURCE_SRC_CIP_CIPCONNECTIONMANAGER_H_

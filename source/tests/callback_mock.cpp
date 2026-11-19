@@ -6,7 +6,7 @@
 
 #include "CppUTestExt/MockSupport.h"
 extern "C" {
-#include "opener_api.h"
+#include "src/opener_api.h"
 }
 
 EipStatus ApplicationInitialization(void) {

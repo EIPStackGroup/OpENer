@@ -10,11 +10,10 @@
  *
  */
 
-#ifndef NVDATA_H_
-#define NVDATA_H_
-
-#include "ciptypes.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_PORTS_NVDATA_NVDATA_H_
+#define SOURCE_SRC_PORTS_NVDATA_NVDATA_H_
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 EipStatus NvdataLoad(void);
 
@@ -25,5 +24,4 @@ EipStatus NvQosSetCallback(CipInstance* const instance,
 EipStatus NvTcpipSetCallback(CipInstance* const instance,
                              CipAttributeStruct* const attribute,
                              CipByte service);
-
-#endif /* ifndef NVDATA_H_ */
+#endif  // SOURCE_SRC_PORTS_NVDATA_NVDATA_H_

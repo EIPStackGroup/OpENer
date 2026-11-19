@@ -4,31 +4,30 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_CIP_CIPCONNECTIONOBJECT_H_
-#define SRC_CIP_CIPCONNECTIONOBJECT_H_
-
-#include "cipelectronickey.h"
-#include "cipepath.h"
-#include "ciptypes.h"
-#include "doublylinkedlist.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPCONNECTIONOBJECT_H_
+#define SOURCE_SRC_CIP_CIPCONNECTIONOBJECT_H_
+#include "cip/cipelectronickey.h"
+#include "cip/cipepath.h"
+#include "cip/ciptypes.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/typedefs.h"
+#include "utils/doublylinkedlist.h"
 
 #define CIP_CONNECTION_OBJECT_CODE 0x05
 
 typedef enum {
   kConnectionObjectStateNonExistent = 0, /**< Connection is non existent */
-  kConnectionObjectStateConfiguring, /**< Waiting for both to be configured and
-                                        to apply the configuration */
+  kConnectionObjectStateConfiguring,  ///< Waiting for both to be configured and
+                                      ///< to apply the configuration
   kConnectionObjectStateWaitingForConnectionID, /**< Only used for device net */
   kConnectionObjectStateEstablished, /**< Connection is established */
-  kConnectionObjectStateTimedOut,    /**< Connection timed out - inactivity or
-                                        watchdog timer expired */
+  kConnectionObjectStateTimedOut,    ///< Connection timed out - inactivity or
+                                     ///< watchdog timer expired
   kConnectionObjectStateDeferredDelete, /**< Only used for device net */
-  kConnectionObjectStateClosing, /**< For CIP bridged connections - have to wait
-                                    for a successful forward close */
-  kConnectionObjectStateInvalid  /**< An invalid state, shall never occur! */
+  kConnectionObjectStateClosing,  ///< For CIP bridged connections - have to
+                                  ///< wait for a successful forward close
+  kConnectionObjectStateInvalid /**< An invalid state, shall never occur! */
 } ConnectionObjectState;
 
 typedef enum {
@@ -37,24 +36,24 @@ typedef enum {
   kConnectionObjectInstanceTypeExplicitMessaging =
       0, /**< Connection is an explicit messaging connection */
   kConnectionObjectInstanceTypeIO, /**< Connection is an I/O connection */
-  kConnectionObjectInstanceTypeIOExclusiveOwner, /**< Also I/O connection, only
-                                                    for easy differentiation */
-  kConnectionObjectInstanceTypeIOInputOnly,  /**< Also I/O connection, only for
-                                                easy differentiation */
-  kConnectionObjectInstanceTypeIOListenOnly, /**< Also I/O connection, only for
-                                                easy differentiation */
-  kConnectionObjectInstanceTypeCipBridged    /**< Connection is a bridged
-                                                connection */
+  kConnectionObjectInstanceTypeIOExclusiveOwner,  ///< Also I/O connection, only
+                                                  ///< for easy differentiation
+  kConnectionObjectInstanceTypeIOInputOnly,   ///< Also I/O connection, only for
+                                              ///< easy differentiation
+  kConnectionObjectInstanceTypeIOListenOnly,  ///< Also I/O connection, only for
+                                              ///< easy differentiation
+  kConnectionObjectInstanceTypeCipBridged     ///< Connection is a bridged
+                                              ///< connection
 } ConnectionObjectInstanceType;
 
 typedef enum {
   kConnectionObjectTransportClassTriggerDirectionClient =
       0, /**< Endpoint provides client behavior */
-  kConnectionObjectTransportClassTriggerDirectionServer /**< Endpoint provides
-                                                           server behavior -
-                                                           production trigger
-                                                           bits are to be
-                                                           ignored */
+  kConnectionObjectTransportClassTriggerDirectionServer  ///< Endpoint provides
+                                                         ///< server behavior -
+                                                         ///< production trigger
+                                                         ///< bits are to be
+                                                         ///< ignored
 } ConnectionObjectTransportClassTriggerDirection;
 
 typedef enum {
@@ -62,29 +61,27 @@ typedef enum {
       -1, /**< Invalid Production trigger - shall never occur! */
   kConnectionObjectTransportClassTriggerProductionTriggerCyclic =
       0, /**< Transmission Trigger Timer trigger data production */
-  kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,    /**<
-                                                                              Production
-                                                                              is
-                                                                              trigger
-                                                                              when
-                                                                              change-of-state
-                                                                              is
-                                                                              detected
-                                                                              by
-                                                                              the
-                                                                              Application
-                                                                              Object
-                                                                            */
-  kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject /**<
-                                                                              The
-                                                                              Application
-                                                                              Object
-                                                                              decided
-                                                                              when
-                                                                              production
-                                                                              is
-                                                                              triggered
-                                                                            */
+  kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,  ///<
+                                                                         ///< Production
+                                                                         ///< is
+                                                                         ///< trigger
+                                                                         ///< when
+                                                                         ///< change-of-state
+                                                                         ///< is
+                                                                         ///< detected
+                                                                         ///< by
+                                                                         ///< the
+                                                                         ///< Application
+                                                                         ///< Object
+  kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject  ///<
+                                                                            ///< The
+                                                                            ///< Application
+                                                                            ///< Object
+                                                                            ///< decided
+                                                                            ///< when
+                                                                            ///< production
+                                                                            ///< is
+                                                                            ///< triggered
 } ConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {
@@ -92,18 +89,19 @@ typedef enum {
       -1, /**< Invalid Transport Class - shall never occur! */
   kConnectionObjectTransportClassTriggerTransportClass0 =
       0, /**< Class 0 producing or consuming connection, based on Direction */
-  kConnectionObjectTransportClassTriggerTransportClass1, /**< Class 1 producing
-                                                            or consuming
-                                                            connection, based on
-                                                            Direction */
-  kConnectionObjectTransportClassTriggerTransportClass2, /**< Class 2 producing
-                                                            and consuming
-                                                            connection, Client
-                                                            starts producing */
-  kConnectionObjectTransportClassTriggerTransportClass3  /**< Class 3 producing
-                                                            and consuming
-                                                            connection, Client
-                                                            starts producing */
+  kConnectionObjectTransportClassTriggerTransportClass1,  ///< Class 1 producing
+                                                          ///< or consuming
+                                                          ///< connection, based
+                                                          ///< on Direction
+  kConnectionObjectTransportClassTriggerTransportClass2,  ///< Class 2 producing
+                                                          ///< and consuming
+                                                          ///< connection,
+                                                          ///< Client starts
+                                                          ///< producing
+  kConnectionObjectTransportClassTriggerTransportClass3  ///< Class 3 producing
+                                                         ///< and consuming
+                                                         ///< connection, Client
+                                                         ///< starts producing
   /* Higher transport classes not supported */
 } ConnectionObjectTransportClassTriggerTransportClass;
 
@@ -114,16 +112,16 @@ typedef enum {
 typedef enum {
   kConnectionObjectWatchdogTimeoutActionTransitionToTimedOut =
       0, /**< Default for I/O connections, invalid for Explicit Messaging */
-  kConnectionObjectWatchdogTimeoutActionAutoDelete, /**< Default for explicit
-                                                       connections */
-  kConnectionObjectWatchdogTimeoutActionAutoReset,  /**< Invalid for explicit
-                                                       connections */
-  kConnectionObjectWatchdogTimeoutActionDeferredDelete, /**< Only for Device
-                                                           Net, invalid for I/O
-                                                           connections */
-  kConnectionObjectWatchdogTimeoutActionInvalid /**< Invalid Watchdog Timeout
-                                                   Action - shall never occur!
-                                                 */
+  kConnectionObjectWatchdogTimeoutActionAutoDelete,  ///< Default for explicit
+                                                     ///< connections
+  kConnectionObjectWatchdogTimeoutActionAutoReset,   ///< Invalid for explicit
+                                                     ///< connections
+  kConnectionObjectWatchdogTimeoutActionDeferredDelete,  ///< Only for Device
+                                                         ///< Net, invalid for
+                                                         ///< I/O connections
+  kConnectionObjectWatchdogTimeoutActionInvalid  ///< Invalid Watchdog Timeout
+                                                 ///< Action - shall never
+                                                 ///< occur!
 } ConnectionObjectWatchdogTimeoutAction;
 
 typedef enum {
@@ -162,13 +160,15 @@ struct cip_connection_object {
   CipUsint instance_type;          /*< Attribute 2 */
   CipByte transport_class_trigger; /*< Attribute 3 */
   /* Attribute 4-6 only for device net*/
-  CipUint produced_connection_size; /*< Attribute 7 - Limits produced connection
-                                       size - for explicit messaging 0xFFFF
-                                       means no predefined limit */
-  CipUint consumed_connection_size; /*< Attribute 8 - Limits produced connection
-                                       size - for explicit messaging 0xFFFF
-                                       means no predefined limit */
-  CipUint expected_packet_rate; /*< Attribute 9 - Resolution in Milliseconds */
+  CipUint
+      produced_connection_size;  ///< Attribute 7 - Limits produced connection
+                                 ///< size - for explicit messaging 0xFFFF
+                                 ///< means no predefined limit
+  CipUint
+      consumed_connection_size;  ///< Attribute 8 - Limits produced connection
+                                 ///< size - for explicit messaging 0xFFFF
+                                 ///< means no predefined limit
+  CipUint expected_packet_rate;  /*< Attribute 9 - Resolution in Milliseconds */
   CipUdint cip_produced_connection_id;     /*< Attribute 10 */
   CipUdint cip_consumed_connection_id;     /*< Attribute 11 */
   CipUsint watchdog_timeout_action;        /*< Attribute 12 */
@@ -211,46 +211,46 @@ struct cip_connection_object {
   CipUdint t_to_o_requested_packet_interval;
   CipDword t_to_o_network_connection_parameters;
 
-  CipUint sequence_count_producing; /**< sequence Count for Class 1 Producing
-                                         Connections */
-  CipUint sequence_count_consuming; /**< sequence Count for Class 1 Producing
-                                         Connections */
+  CipUint sequence_count_producing;  ///< sequence Count for Class 1 Producing
+                                     ///< Connections
+  CipUint sequence_count_consuming;  ///< sequence Count for Class 1 Producing
+                                     ///< Connections
 
   EipUint32
-      eip_level_sequence_count_producing; /**< the EIP level sequence Count
-                                             for Class 0/1
-                                             Producing Connections may have a
-                                             different
-                                             value than SequenceCountProducing
-                                           */
+      eip_level_sequence_count_producing;  ///< the EIP level sequence Count
+                                           ///< for Class 0/1
+                                           ///< Producing Connections may have a
+                                           ///< different
+                                           ///< value than
+                                           ///< SequenceCountProducing
   EipUint32
-      eip_level_sequence_count_consuming; /**< the EIP level sequence Count
-                                             for Class 0/1
-                                             Producing Connections may have a
-                                             different
-                                             value than SequenceCountProducing
-                                           */
+      eip_level_sequence_count_consuming;  ///< the EIP level sequence Count
+                                           ///< for Class 0/1
+                                           ///< Producing Connections may have a
+                                           ///< different
+                                           ///< value than
+                                           ///< SequenceCountProducing
   CipBool
-      eip_first_level_sequence_count_received; /**< False if
-                                               eip_level_sequence_count_consuming
-                                               hasn't been initialized with a
-                                               sequence count yet, true
-                                               otherwise */
+      eip_first_level_sequence_count_received;  ///< False if
+                                                ///< eip_level_sequence_count_consuming
+                                                ///< hasn't been initialized
+                                                ///< with a sequence count yet,
+                                                ///< true otherwise
   CipInt correct_originator_to_target_size;
   CipInt correct_target_to_originator_size;
 
   /* Sockets for consuming and producing connection */
   int socket[2];
 
-  struct sockaddr_in remote_address;     /* socket address for produce */
-  struct sockaddr_in originator_address; /* the address of the originator that
-                                              established the connection. needed
-                                              for scanning if the right packet
-                                            is arriving */
+  struct sockaddr_in remote_address;      /* socket address for produce */
+  struct sockaddr_in originator_address;  // the address of the originator that
+                                          // established the connection. needed
+                                          // for scanning if the right packet
+                                          // is arriving
 
   CipSessionHandle
-      associated_encapsulation_session; /* The session handle ID via which the
-                                           forward open was sent */
+      associated_encapsulation_session;  // The session handle ID via which the
+                                         // forward open was sent
 
   /* pointers to connection handling functions */
   CipConnectionStateHandler current_state_handler;
@@ -515,5 +515,4 @@ bool EqualConnectionTriad(const CipConnectionObject* const object1,
 bool CipConnectionObjectOriginatorHasSameIP(
     const CipConnectionObject* const connection_object,
     const struct sockaddr* const originator_address);
-
-#endif /* SRC_CIP_CIPCONNECTIONOBJECT_H_ */
+#endif  // SOURCE_SRC_CIP_CIPCONNECTIONOBJECT_H_

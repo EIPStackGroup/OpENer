@@ -4,21 +4,20 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_CIP_CIPELECTRONICKEY_H_
-#define SRC_CIP_CIPELECTRONICKEY_H_
-
+#ifndef SOURCE_SRC_CIP_CIPELECTRONICKEY_H_
+#define SOURCE_SRC_CIP_CIPELECTRONICKEY_H_
 #include <stdbool.h>
 
-#include "typedefs.h"
+#include "src/typedefs.h"
 
 /** @brief CIP Electronic Key Segment struct
  *
  */
 typedef struct {
-  CipUsint key_format; /**< Key Format 0-3 reserved, 4 = see Key Format Table,
-                          5-255 = Reserved */
-  void* key_data;      /**< Depends on key format used, usually Key Format 4 as
-                               specified in CIP Specification, Volume 1*/
+  CipUsint key_format;  ///< Key Format 0-3 reserved, 4 = see Key Format Table,
+                        ///< 5-255 = Reserved
+  void* key_data;       ///< Depends on key format used, usually Key Format 4 as
+                        ///< specified in CIP Specification, Volume 1
 } CipElectronicKey;
 
 void ElectronicKeySetSegmentType(CipElectronicKey* const electronic_key,
@@ -148,5 +147,4 @@ void ElectronicKeyFormat4SetMinorRevision(
  */
 CipUsint ElectronicKeyFormat4GetMinorRevision(
     const ElectronicKeyFormat4* const electronic_key);
-
-#endif /* SRC_CIP_CIPELECTRONICKEY_H_ */
+#endif  // SOURCE_SRC_CIP_CIPELECTRONICKEY_H_

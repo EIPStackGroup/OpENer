@@ -10,8 +10,8 @@
 
 extern "C" {
 
-#include "cipelectronickey.h"
-#include "cipepath.h"
+#include "cip/cipelectronickey.h"
+#include "cip/cipepath.h"
 }
 
 TEST_GROUP(CipElectronicKeyFormat) {
@@ -172,7 +172,7 @@ TEST(CipElectronicKeyFormat, ParseElectronicKeyTest) {
 //	EipUint16 *extended_status = 0;
 //
 //	GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer,
-//key);
+// key);
 //
 //	CheckElectronicKeyData(4, key_data, extended_status);
 //

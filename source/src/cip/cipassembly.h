@@ -3,11 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPASSEMBLY_H_
-#define OPENER_CIPASSEMBLY_H_
-
-#include "ciptypes.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPASSEMBLY_H_
+#define SOURCE_SRC_CIP_CIPASSEMBLY_H_
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 /** @brief Assembly class code */
 static const CipUint kCipAssemblyClassCode = 0x04U;
@@ -57,5 +56,4 @@ void ShutdownAssemblies(void);
 EipStatus NotifyAssemblyConnectedDataReceived(CipInstance* const instance,
                                               const EipUint8* const data,
                                               const size_t data_length);
-
-#endif /* OPENER_CIPASSEMBLY_H_ */
+#endif  // SOURCE_SRC_CIP_CIPASSEMBLY_H_

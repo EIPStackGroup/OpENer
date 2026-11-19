@@ -3,11 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_ENDIANCONV_H_
-#define OPENER_ENDIANCONV_H_
-
-#include "ciptypes.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_ENET_ENCAP_ENDIANCONV_H_
+#define SOURCE_SRC_ENET_ENCAP_ENDIANCONV_H_
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 /** @file endianconv.h
  * @brief Responsible for Endianess conversion
@@ -141,5 +140,4 @@ void FillNextNMessageOctetsWithValueAndMoveToNextPosition(
     CipOctet value,
     unsigned int amount_of_filled_bytes,
     ENIPMessage* const outgoing_message);
-
-#endif /* OPENER_ENDIANCONV_H_ */
+#endif  // SOURCE_SRC_ENET_ENCAP_ENDIANCONV_H_

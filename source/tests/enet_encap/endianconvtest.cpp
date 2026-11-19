@@ -13,8 +13,8 @@ extern "C" {
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include "ciptypes.h"
-#include "endianconv.h"
+#include "cip/ciptypes.h"
+#include "enet_encap/endianconv.h"
 }
 
 TEST_GROUP(EndianConversion){

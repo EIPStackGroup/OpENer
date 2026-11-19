@@ -4,16 +4,16 @@
  *
  ******************************************************************************/
 
-#include "appcontype.h"
+#include "cip/appcontype.h"
 
+#include <assert.h>
 #include <string.h>
 
-#include "assert.h"
-#include "cipconnectionmanager.h"
-#include "cipconnectionobject.h"
-#include "cipepath.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/cipepath.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 /** @brief Exclusive Owner connection data */
 typedef struct {
@@ -21,8 +21,8 @@ typedef struct {
   unsigned int input_assembly;  /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
   CipConnectionObject
-      connection_data; /**< the connection data, only one connection is allowed
-                          per O-to-T point*/
+      connection_data;  ///< the connection data, only one connection is allowed
+                        ///< per O-to-T point
 } ExclusiveOwnerConnection;
 
 /** @brief Input Only connection data */
@@ -39,18 +39,18 @@ typedef struct {
   unsigned int output_assembly; /**< the O-to-T point for the connection */
   unsigned int input_assembly;  /**< the T-to-O point for the connection */
   unsigned int config_assembly; /**< the config point for the connection */
-  CipConnectionObject
-      connection_data[OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH]; /**< the
-                                                                         connection
-                                                                         data */
+  CipConnectionObject connection_data
+      [OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH];  ///< the
+                                                        ///< connection
+                                                        ///< data
 } ListenOnlyConnection;
 
 ExclusiveOwnerConnection g_exlusive_owner_connections
     [OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS]; /**< Exclusive Owner connections */
 
 InputOnlyConnection
-    g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS]; /**< Input Only
-                                                                  connections */
+    g_input_only_connections[OPENER_CIP_NUM_INPUT_ONLY_CONNS];  ///< Input Only
+                                                                ///< connections
 
 ListenOnlyConnection g_listen_only_connections
     [OPENER_CIP_NUM_LISTEN_ONLY_CONNS]; /**< Listen Only connections */

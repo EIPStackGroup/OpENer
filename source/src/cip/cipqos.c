@@ -4,16 +4,16 @@
  *
  ******************************************************************************/
 
-#include "cipqos.h"
+#include "cip/cipqos.h"
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "cipethernetlink.h"
-#include "cipmessagerouter.h"
-#include "endianconv.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "cip/cipethernetlink.h"
+#include "cip/cipmessagerouter.h"
+#include "enet_encap/endianconv.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 #define DEFAULT_DSCP_EVENT 59U
 #define DEFAULT_DSCP_GENERAL 47U

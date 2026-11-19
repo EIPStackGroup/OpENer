@@ -10,7 +10,7 @@
 
 extern "C" {
 
-#include "cipconnectionobject.h"
+#include "cip/cipconnectionobject.h"
 }
 
 TEST_GROUP(CipConnectionObject){

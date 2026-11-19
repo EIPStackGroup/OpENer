@@ -4,7 +4,10 @@
  *
  ******************************************************************************/
 
-#include "ciptypes.h"
+#ifndef SOURCE_SRC_CIP_CIPSTRINGI_H_
+#define SOURCE_SRC_CIP_CIPSTRINGI_H_
+
+#include "cip/ciptypes.h"
 
 void CipStringIDelete(CipStringI* const string);
 
@@ -17,3 +20,4 @@ void CipStringIDecodeFromMessage(
 
 bool CipStringICompare(const CipStringI* const stringI_1,
                        const CipStringI* const stringI_2);
+#endif  // SOURCE_SRC_CIP_CIPSTRINGI_H_

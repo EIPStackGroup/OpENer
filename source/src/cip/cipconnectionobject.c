@@ -4,14 +4,14 @@
  *
  ******************************************************************************/
 
-#include "cipconnectionobject.h"
+#include "cip/cipconnectionobject.h"
 
+#include <stdlib.h>
 #include <string.h>
 
-#include "cipconnectionmanager.h"
-#include "endianconv.h"
-#include "stdlib.h"
-#include "trace.h"
+#include "cip/cipconnectionmanager.h"
+#include "enet_encap/endianconv.h"
+#include "src/trace.h"
 
 #define CIP_CONNECTION_OBJECT_STATE_NON_EXISTENT 0U
 #define CIP_CONNECTION_OBJECT_STATE_CONFIGURING 1U
@@ -427,8 +427,8 @@ CipUint ConnectionObjectGetRequestedPacketInterval(
   CipUdint remainder_to_resolution =
       (connection_object->t_to_o_requested_packet_interval) %
       (kOpenerTimerTickInMilliSeconds * 1000);
-  if (0 == remainder_to_resolution) { /* Value can be represented in multiples
-                                         of the timer resolution */
+  if (0 == remainder_to_resolution) {  // Value can be represented in multiples
+                                       // of the timer resolution
     return (CipUint)(connection_object->t_to_o_requested_packet_interval /
                      1000);
   } else {
@@ -443,8 +443,8 @@ void ConnectionObjectSetExpectedPacketRate(
   CipUdint remainder_to_resolution =
       (connection_object->t_to_o_requested_packet_interval) %
       (kOpenerTimerTickInMilliSeconds * 1000);
-  if (0 == remainder_to_resolution) { /* Value can be represented in multiples
-                                         of the timer resolution */
+  if (0 == remainder_to_resolution) {  // Value can be represented in multiples
+                                       // of the timer resolution
     connection_object->expected_packet_rate =
         connection_object->t_to_o_requested_packet_interval / 1000;
   } else {
@@ -917,8 +917,8 @@ void ConnectionObjectGeneralConfiguration(
 
   ConnectionObjectSetWatchdogTimeoutAction(
       connection_object,
-      kConnectionObjectWatchdogTimeoutActionInvalid); /* Correct value not know
-                                                         at this point */
+      kConnectionObjectWatchdogTimeoutActionInvalid);  // Correct value not know
+                                                       // at this point
 
   ConnectionObjectResetProductionInhibitTimer(connection_object);
 

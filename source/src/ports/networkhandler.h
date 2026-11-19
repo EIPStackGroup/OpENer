@@ -3,10 +3,9 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_NETWORKHANDLER_H_
-#define OPENER_NETWORKHANDLER_H_
-
-#include "typedefs.h"
+#ifndef SOURCE_SRC_PORTS_NETWORKHANDLER_H_
+#define SOURCE_SRC_PORTS_NETWORKHANDLER_H_
+#include "src/typedefs.h"
 
 #define OPENER_SOCKET_WOULD_BLOCK EWOULDBLOCK
 
@@ -77,5 +76,4 @@ MilliSeconds GetMilliSeconds(void);
  *
  */
 int SetQosOnSocket(const int socket, CipUsint qos_value);
-
-#endif /* OPENER_NETWORKHANDLER_H_ */
+#endif  // SOURCE_SRC_PORTS_NETWORKHANDLER_H_

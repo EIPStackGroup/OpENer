@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkconfig.h"
+#include "ports/POSIX/networkconfig.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -18,11 +18,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "cipcommon.h"
-#include "ciperror.h"
-#include "cipstring.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/ciperror.h"
+#include "cip/cipstring.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 EipStatus IfaceGetMacAddress(const char* iface,
                              uint8_t* const physical_address) {

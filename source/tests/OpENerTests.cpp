@@ -10,7 +10,7 @@
 #include "CppUTestExt/MockSupportPlugin.h"
 
 extern "C" {
-#include "endianconv.h"
+#include "enet_encap/endianconv.h"
 }
 
 /*

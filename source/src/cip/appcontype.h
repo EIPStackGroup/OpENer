@@ -3,10 +3,9 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_APPCONTYPE_H_
-#define OPENER_APPCONTYPE_H_
-
-#include "cipconnectionmanager.h"
+#ifndef SOURCE_SRC_CIP_APPCONTYPE_H_
+#define SOURCE_SRC_CIP_APPCONTYPE_H_
+#include "cip/cipconnectionmanager.h"
 
 void InitializeIoConnectionData(void);
 
@@ -72,5 +71,4 @@ void CloseAllConnections(void);
  * @return true if connection was found, otherwise false
  */
 bool ConnectionWithSameConfigPointExists(const EipUint32 config_point);
-
-#endif /* OPENER_APPCONTYPE_H_ */
+#endif  // SOURCE_SRC_CIP_APPCONTYPE_H_

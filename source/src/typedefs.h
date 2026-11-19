@@ -3,14 +3,13 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_TYPEDEFS_H_
-#define OPENER_TYPEDEFS_H_
-
+#ifndef SOURCE_SRC_TYPEDEFS_H_
+#define SOURCE_SRC_TYPEDEFS_H_
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "platform_network_includes.h"
+#include "ports/platform_network_includes.h"
 
 /** @file typedefs.h
    Do not use interface types for internal variables, such as "int i;", which is
@@ -130,6 +129,5 @@ typedef enum {
 //   false = 0, /**< defines "false" as 0 */
 //   true = 1 /**< defines "true" as 1 */
 // } BoolKeywords;
-#endif /* __cplusplus */
-
-#endif /* OPENER_TYPEDEFS_H_ */
+#endif  /* __cplusplus */
+#endif  // SOURCE_SRC_TYPEDEFS_H_

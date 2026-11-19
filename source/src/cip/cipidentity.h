@@ -3,11 +3,10 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPIDENTITY_H_
-#define OPENER_CIPIDENTITY_H_
-
-#include "ciptypes.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_CIP_CIPIDENTITY_H_
+#define SOURCE_SRC_CIP_CIPIDENTITY_H_
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 /** @brief Identity class code */
 static const CipUint kCipIdentityClassCode = 0x01U;
@@ -16,24 +15,24 @@ static const CipUint kCipIdentityClassCode = 0x01U;
 typedef enum {
   kOwned = 0x0001, /**< Indicates that the device has an owner */
   kConfigured =
-      0x0004, /**< Indicates that the device is configured to do
-                 something different, than the out-of-the-box default. */
+      0x0004,  ///< Indicates that the device is configured to do
+               ///< something different, than the out-of-the-box default.
   kMinorRecoverableFault =
-      0x0100, /**< Indicates that the device detected a
-                 fault with itself, which was thought to be recoverable. The
-                 device did not switch to a faulted state. */
+      0x0100,  ///< Indicates that the device detected a
+               ///< fault with itself, which was thought to be recoverable. The
+               ///< device did not switch to a faulted state.
   kMinorUncoverableFault =
-      0x0200, /**< Indicates that the device detected a
-                 fault with itself, which was thought to be recoverable. The
-                 device did not switch to a faulted state. */
+      0x0200,  ///< Indicates that the device detected a
+               ///< fault with itself, which was thought to be recoverable. The
+               ///< device did not switch to a faulted state.
   kMajorRecoverableFault =
-      0x0400, /**< Indicates that the device detected a
-                 fault with itself,which was thought to be recoverable. The
-                 device changed to the "Major Recoverable Fault" state */
+      0x0400,  ///< Indicates that the device detected a
+               ///< fault with itself,which was thought to be recoverable. The
+               ///< device changed to the "Major Recoverable Fault" state
   kMajorUnrecoverableFault =
-      0x0800 /**< Indicates that the device detected a
-                fault with itself,which was thought to be recoverable. The
-                device changed to the "Major Unrecoverable Fault" state */
+      0x0800  ///< Indicates that the device detected a
+              ///< fault with itself,which was thought to be recoverable. The
+              ///< device changed to the "Major Unrecoverable Fault" state
 } CipIdentityStatus;
 
 /** @brief Constants for the extended status field in the Status word */
@@ -69,13 +68,13 @@ typedef struct {
   CipRevision
       revision;   /**< Attribute 4: Revision / CipUsint Major, CipUsint Minor */
   CipWord status; /**< Attribute 5: Status */
-  CipWord ext_status;     /**< Attribute 5: last set extended status, needed for
-                             Status handling */
-  CipUdint serial_number; /**< Attribute 6: Serial Number, has to be set prior
-                             to OpENer's network initialization */
+  CipWord ext_status;  ///< Attribute 5: last set extended status, needed for
+                       ///< Status handling
+  CipUdint serial_number;  ///< Attribute 6: Serial Number, has to be set prior
+                           ///< to OpENer's network initialization
   CipShortString product_name; /**< Attribute 7: Product Name */
-  CipUsint state; /** Attribute 8: state, this member could control the Module
-                     Status LED blink pattern */
+  CipUsint state;  ///< Attribute 8: state, this member could control the Module
+                   ///< Status LED blink pattern
 } CipIdentityObject;
 
 /* global public variables */
@@ -93,5 +92,4 @@ void CipIdentitySetStatusFlags(const CipWord status_flags);
 void CipIdentityClearStatusFlags(const CipWord status_flags);
 void CipIdentitySetExtendedDeviceStatus(
     CipIdentityExtendedStatus extended_status);
-
-#endif /* OPENER_CIPIDENTITY_H_ */
+#endif  // SOURCE_SRC_CIP_CIPIDENTITY_H_

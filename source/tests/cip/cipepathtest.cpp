@@ -12,7 +12,7 @@
 
 extern "C" {
 
-#include "cipepath.h"
+#include "cip/cipepath.h"
 }
 
 TEST_GROUP(CipEpath){

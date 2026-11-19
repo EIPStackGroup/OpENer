@@ -4,9 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef OPENER_RANDOM_H_
-#define OPENER_RANDOM_H_
-
+#ifndef SOURCE_SRC_UTILS_RANDOM_H_
+#define SOURCE_SRC_UTILS_RANDOM_H_
 #include <stdint.h>
 
 typedef void (*SetSeed)(uint32_t seed);
@@ -22,5 +21,4 @@ typedef struct {
 Random* RandomNew(SetSeed, GetNextUInt32);
 
 void RandomDelete(Random** random);
-
-#endif /* OPENER_RANDOM_H_ */
+#endif  // SOURCE_SRC_UTILS_RANDOM_H_

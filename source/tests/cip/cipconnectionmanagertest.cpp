@@ -10,7 +10,7 @@
 
 extern "C" {
 
-#include "cipconnectionmanager.h"
+#include "cip/cipconnectionmanager.h"
 }
 
 TEST_GROUP(CipConnectionManager){

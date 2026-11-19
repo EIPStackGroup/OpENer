@@ -8,14 +8,12 @@
  *  @brief This file provides the interface to handle TCP/IP object's NV data.
  *
  */
-#ifndef _NVTCPIP_H_
-#define _NVTCPIP_H_
-
-#include "ciptcpipinterface.h"
-#include "typedefs.h"
+#ifndef SOURCE_SRC_PORTS_NVDATA_NVTCPIP_H_
+#define SOURCE_SRC_PORTS_NVDATA_NVTCPIP_H_
+#include "cip/ciptcpipinterface.h"
+#include "src/typedefs.h"
 
 int NvTcpipLoad(CipTcpIpObject* p_tcp_ip);
 
 int NvTcpipStore(const CipTcpIpObject* p_tcp_ip);
-
-#endif /* _NVTCPIP_H_ */
+#endif  // SOURCE_SRC_PORTS_NVDATA_NVTCPIP_H_

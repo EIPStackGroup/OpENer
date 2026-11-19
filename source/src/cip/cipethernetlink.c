@@ -48,15 +48,15 @@
  *
  */
 
-#include "cipethernetlink.h"
+#include "cip/cipethernetlink.h"
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "endianconv.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "enet_encap/endianconv.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 #if OPENER_ETHLINK_INSTANCE_CNT > 1
 /* If we have more than 1 Ethernet Link instance then the interface label
@@ -88,8 +88,8 @@
 typedef struct speed_duplex_array_entry {
   CipUint interface_speed; /**< the interface speed in Mbit/s */
   CipUsint
-      interface_duplex_mode; /**< the interface's duplex mode: 0 = half duplex,
-                                1 = full duplex, 2-255 = reserved */
+      interface_duplex_mode;  ///< the interface's duplex mode: 0 = half duplex,
+                              ///< 1 = full duplex, 2-255 = reserved
 } CipEthernetLinkSpeedDuplexArrayEntry;
 
 /* forward declaration of functions to encode certain attribute objects */
@@ -172,8 +172,7 @@ static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] = {
     {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2},
 #endif
 };
-#endif /* defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != \
-          OPENER_ETHLINK_LABEL_ENABLE */
+#endif  // defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
 
 /* Two dummy variables to provide fill data for the GetAttributeAll service. */
 static CipUsint dummy_attribute_usint = 0;

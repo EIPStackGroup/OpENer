@@ -4,24 +4,23 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_CIP_CIPEPATH_H_
-#define SRC_CIP_CIPEPATH_H_
-
+#ifndef SOURCE_SRC_CIP_CIPEPATH_H_
+#define SOURCE_SRC_CIP_CIPEPATH_H_
 #include <stdbool.h>
 
-#include "cipelectronickey.h"
-#include "ciptypes.h"
+#include "cip/cipelectronickey.h"
+#include "cip/ciptypes.h"
 
-#define SEGMENT_TYPE_PORT_SEGMENT 0x00 /**< Message value of the Port segment \
-                                        */
+#define SEGMENT_TYPE_PORT_SEGMENT \
+  0x00 /**< Port segment */
 #define SEGMENT_TYPE_LOGICAL_SEGMENT \
   0x20 /**< Message value of the Logical segment */
 #define SEGMENT_TYPE_NETWORK_SEGMENT \
   0x40 /**< Message value of the Network segment */
 #define SEGMENT_TYPE_SYMBOLIC_SEGMENT \
   0x60 /**< Message value of the Symbolic segment */
-#define SEGMENT_TYPE_DATA_SEGMENT 0x80 /**< Message value of the Data segment \
-                                        */
+#define SEGMENT_TYPE_DATA_SEGMENT \
+  0x80 /**< Data segment */
 #define SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED \
   0xA0 /**< Message value of the Data type constructed */
 #define SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY \
@@ -34,18 +33,16 @@
   0x04 /**< Message value of the logical segment/logical type Instance ID */
 #define LOGICAL_SEGMENT_TYPE_MEMBER_ID \
   0x08 /**< Message value of the logical segment/logical type Member ID */
-#define LOGICAL_SEGMENT_TYPE_CONNECTION_POINT                                  \
-  0x0C /**< Message value of the logical segment/logical type Connection Point \
-        */
+#define LOGICAL_SEGMENT_TYPE_CONNECTION_POINT \
+  0x0C /**< Connection point */
 #define LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID \
   0x10 /**< Message value of the logical segment/logical type Attribute ID */
 #define LOGICAL_SEGMENT_TYPE_SPECIAL \
   0x14 /**< Message value of the logical segment/logical type Special */
 #define LOGICAL_SEGMENT_TYPE_SERVICE_ID \
   0x18 /**< Message value of the logical segment/logical type Service ID */
-#define LOGICAL_SEGMENT_TYPE_EXTENDED_LOGICAL                                  \
-  0x1C /**< Message value of the logical segment/logical type Extended Logical \
-        */
+#define LOGICAL_SEGMENT_TYPE_EXTENDED_LOGICAL \
+  0x1C /**< Extended logical segment */
 
 #define LOGICAL_SEGMENT_FORMAT_EIGHT_BIT \
   0x00 /**< Message value indicating an 8 bit value */
@@ -54,27 +51,20 @@
 #define LOGICAL_SEGMENT_FORMAT_THIRTY_TWO_BIT \
   0x02 /**< Message value indicating an 32 bit value */
 
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_RESERVED                           \
-  0x00 /**< Message value indicating an reserved/unused Extended Logical \
-          Segment type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_ARRAY_INDEX                             \
-  0x01 /**< Message value indicating the Array Index Extended Logical Segment \
-          type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_INDIRECT_ARRAY_INDEX                     \
-  0x02 /**< Message value indicating the Indirect Array Index Extended Logical \
-          Segment type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_BIT_INDEX                             \
-  0x03 /**< Message value indicating the Bit Index Extended Logical Segment \
-          type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_INDIRECT_BIT_INDEX                     \
-  0x04 /**< Message value indicating the Indirect Bit Index Extended Logical \
-          Segment type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_NUMBER              \
-  0x05 /**< Message value indicating the Structured Member Number Extended \
-          Logical Segment type */
-#define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_HANDLE               \
-  0x06 /**< Message value indicating the Structured Member Handler Extended \
-          Logical Segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_RESERVED \
+  0x00 /**< Reserved extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_ARRAY_INDEX \
+  0x01 /**< Array index extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_INDIRECT_ARRAY_INDEX \
+  0x02 /**< Indirect array index extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_BIT_INDEX \
+  0x03 /**< Bit index extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_INDIRECT_BIT_INDEX \
+  0x04 /**< Indirect bit index extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_NUMBER \
+  0x05 /**< Structured member number extended logical segment type */
+#define LOGICAL_SEGMENT_EXTENDED_TYPE_STRUCTURE_MEMBER_HANDLE \
+  0x06 /**< Structured member handle extended logical segment type */
 
 #define LOGICAL_SEGMENT_SPECIAL_TYPE_FORMAT_ELECTRONIC_KEY \
   0x00 /**< Message value indicating an electronic key */
@@ -84,14 +74,12 @@
   0x01 /**< Message value indicating a network segment schedule message */
 #define NETWORK_SEGMENT_FIXED_TAG \
   0x02 /**< Message value indicating a network segment fixed tag message */
-#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS            \
-  0x03 /**< Message value indicating a network segment PIT in milliseconds \
-          message */
+#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MILLISECONDS \
+  0x03 /**< Production inhibit time in milliseconds */
 #define NETWORK_SEGMENT_SAFETY \
   0x04 /**< Message value indicating a network segment safety message */
-#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS            \
-  0x10 /**< Message value indicating a network segment PIT in microseconds \
-          message */
+#define NETWORK_SEGMENT_PRODUCTION_INHIBIT_TIME_IN_MICROSECONDS \
+  0x10 /**< Production inhibit time in microseconds */
 #define NETWORK_SEGMENT_EXTENDED_NETWORK \
   0x1F /**< Message indicating a network message extended network message */
 
@@ -187,15 +175,17 @@ typedef enum network_segment_subtype {
   kNetworkSegmentSubtypeReserved,        /**< Reserverd */
   kNetworkSegmentSubtypeScheduleSegment, /**< Schedule segment */
   kNetworkSegmentSubtypeFixedTagSegment, /**< Fixed tag segment */
-  kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds, /**< Production
-                                                                Inhibit Time in
-                                                                milliseconds
-                                                                segment */
+  kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds,  ///< Production
+                                                              ///< Inhibit Time
+                                                              ///< in
+                                                              ///< milliseconds
+                                                              ///< segment
   kNetworkSegmentSubtypeSafetySegment, /**< Safety segment */
-  kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds, /**< Production
-                                                                Inhibit Time in
-                                                                microseconds
-                                                                segment */
+  kNetworkSegmentSubtypeProductionInhibitTimeInMicroseconds,  ///< Production
+                                                              ///< Inhibit Time
+                                                              ///< in
+                                                              ///< microseconds
+                                                              ///< segment
   kNetworkSegmentSubtypeExtendedNetworkSegment /**< Extended network segment */
 } NetworkSegmentSubtype;
 
@@ -220,10 +210,10 @@ typedef enum symbolic_segment_format {
  *
  */
 typedef enum symbolic_segment_extended_format {
-  kSymbolicSegmentExtendedFormatDoubleByteChars,    /**< Double byte character
-                                                       encoding */
-  kSymbolicSegmentExtendedFormatTripleByteChars,    /**< Triple byte character
-                                                       encoding */
+  kSymbolicSegmentExtendedFormatDoubleByteChars,    ///< Double byte character
+                                                    ///< encoding
+  kSymbolicSegmentExtendedFormatTripleByteChars,    ///< Triple byte character
+                                                    ///< encoding
   kSymbolicSegmentExtendedFormatNumericSymbolUSINT, /**< Numeric USINT symbol */
   kSymbolicSegmentExtendedFormatNumericSymbolUINT,  /**< Numeric UINT symbol */
   kSymbolicSegmentExtendedFormatNumericSymbolUDINT, /**< Numeric UDINT symbol */
@@ -449,5 +439,4 @@ bool CipEpathEqual(const CipOctet* const path1,
                    const CipUint path1_length,
                    const CipOctet* const path2,
                    const CipUint path2_length);
-
-#endif /* SRC_CIP_CIPEPATH_H_ */
+#endif  // SOURCE_SRC_CIP_CIPEPATH_H_

@@ -3,14 +3,14 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_CIPETHERNETLINK_H_
-#define OPENER_CIPETHERNETLINK_H_
+#ifndef SOURCE_SRC_CIP_CIPETHERNETLINK_H_
+#define SOURCE_SRC_CIP_CIPETHERNETLINK_H_
 /** @file
  *  @brief Declare public interface of the CIP Ethernet Link Object
  */
 
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
 /** @brief This Ethernet Link class code as #define is still needed for a static
  *  initialization. */
@@ -155,11 +155,11 @@ typedef struct {
 
 /** @brief Data of an CIP Ethernet Link object */
 typedef struct {
-  EipUint32 interface_speed;    /**< Attribute #1: 10/100/1000 Mbit/sec */
-  EipUint32 interface_flags;    /**< Attribute #2: Interface flags as defined in
-                                   the CIP specification */
-  EipUint8 physical_address[6]; /**< Attribute #3: MAC address of the Ethernet
-                                   link */
+  EipUint32 interface_speed;  /**< Attribute #1: 10/100/1000 Mbit/sec */
+  EipUint32 interface_flags;  ///< Attribute #2: Interface flags as defined in
+                              ///< the CIP specification
+  EipUint8 physical_address[6];  ///< Attribute #3: MAC address of the Ethernet
+                                 ///< link
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
   CipEthernetLinkInterfaceCounters
       interface_cntrs; /**< Attribute #4: Interface counters 32-bit wide */
@@ -196,5 +196,4 @@ void CipEthernetLinkSetMac(EipUint8* p_physical_address);
 /* global object instance(s) */
 
 extern CipEthernetLinkObject g_ethernet_link[];
-
-#endif /* OPENER_CIPETHERNETLINK_H_*/
+#endif  // SOURCE_SRC_CIP_CIPETHERNETLINK_H_

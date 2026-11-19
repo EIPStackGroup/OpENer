@@ -10,7 +10,7 @@
 
 extern "C" {
 
-#include "socket_timer.h"
+#include "ports/socket_timer.h"
 }
 
 TEST_GROUP(SocketTimer){

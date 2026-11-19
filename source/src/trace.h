@@ -3,9 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_TRACE_H_
-#define OPENER_TRACE_H_
-
+#ifndef SOURCE_SRC_TRACE_H_
+#define SOURCE_SRC_TRACE_H_
 /** @file trace.h
  * @brief Tracing infrastructure for OpENer
  */
@@ -13,7 +12,7 @@
 #ifdef OPENER_WITH_TRACES
 
 #ifndef OPENER_INSTALL_AS_LIB
-#include "opener_user_conf.h"
+#include "ports/opener_user_conf.h"
 #endif
 
 /** @def OPENER_TRACE_LEVEL_ERROR Enable tracing of error messages. This is the
@@ -97,5 +96,4 @@
 #define OPENER_TRACE_INFO(...)
 #endif
 /* TRACING *******************************************************************/
-
-#endif /*OPENER_TRACE_H_*/
+#endif  // SOURCE_SRC_TRACE_H_

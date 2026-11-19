@@ -8,12 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipidentity.h"
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/appcontype.h"
+#include "cip/cipidentity.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM 100                  // 0x064
 #define DEMO_APP_OUTPUT_ASSEMBLY_NUM 150                 // 0x096

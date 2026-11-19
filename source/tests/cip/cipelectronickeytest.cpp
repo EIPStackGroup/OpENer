@@ -10,8 +10,8 @@
 
 extern "C" {
 
-#include "cipelectronickey.h"
-#include "cipepath.h"
+#include "cip/cipelectronickey.h"
+#include "cip/cipepath.h"
 }
 
 TEST_GROUP(CipElectronicKey){

@@ -4,19 +4,19 @@
  *
  ******************************************************************************/
 
-#include "cipepath.h"
+#include "cip/cipepath.h"
 
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "cipelectronickey.h"
-#include "endianconv.h"
-#include "trace.h"
+#include "cip/cipelectronickey.h"
+#include "enet_encap/endianconv.h"
+#include "src/trace.h"
 
 const unsigned int kPortSegmentExtendedPort =
-    15; /**< Reserved port segment port value, indicating the use of the
-           extended port field */
+    15;  ///< Reserved port segment port value, indicating the use of the
+         ///< extended port field
 
 /*** Path Segment ***/
 SegmentType GetPathSegmentType(const CipOctet* const cip_path) {

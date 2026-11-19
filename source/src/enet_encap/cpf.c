@@ -3,19 +3,19 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cpf.h"
+#include "enet_encap/cpf.h"
 
 #include <string.h>
 
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "ciperror.h"
-#include "cipmessagerouter.h"
-#include "encap.h"
-#include "endianconv.h"
-#include "enipmessage.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/ciperror.h"
+#include "cip/cipmessagerouter.h"
+#include "enet_encap/encap.h"
+#include "enet_encap/endianconv.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
+#include "utils/enipmessage.h"
 
 const size_t kItemCountFieldSize =
     2; /**< The size of the item count field in the message */
@@ -52,13 +52,13 @@ EipStatus NotifyCommonPacketFormat(
            &g_common_packet_format_data_item))) {
     OPENER_TRACE_ERR("notifyCPF: error from createCPFstructure\n");
   } else {
-    return_value = kEipStatusOkSend; /* In cases of errors we normally need to
-                                        send an error response */
+    return_value = kEipStatusOkSend;  // In cases of errors we normally need to
+                                      // send an error response
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdNullAddress) /* check if NullAddressItem received, otherwise
-                                  it is no unconnected message and should not be
-                                  here*/
-    {                          /* found null address item*/
+        kCipItemIdNullAddress)  // check if NullAddressItem received, otherwise
+                                // it is no unconnected message and should not
+                                // be here
+    { /* found null address item*/
       if (g_common_packet_format_data_item.data_item.type_id ==
           kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
         return_value = NotifyMessageRouter(
@@ -129,13 +129,13 @@ EipStatus NotifyConnectedCommonPacketFormat(
   if (kEipStatusError == return_value) {
     OPENER_TRACE_ERR("notifyConnectedCPF: error from createCPFstructure\n");
   } else {
-    return_value = kEipStatusError; /* For connected explicit messages status
-                                       always has to be 0*/
+    return_value = kEipStatusError;  // For connected explicit messages status
+                                     // always has to be 0
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdConnectionAddress) /* check if ConnectedAddressItem received,
-                                        otherwise it is no connected message and
-                                        should not be here*/
-    {                                /* ConnectedAddressItem item */
+        kCipItemIdConnectionAddress)  // check if ConnectedAddressItem received,
+                                      // otherwise it is no connected message
+                                      // and should not be here
+    { /* ConnectedAddressItem item */
       CipConnectionObject* connection_object =
           GetConnectedObject(g_common_packet_format_data_item.address_item.data
                                  .connection_identifier);
@@ -334,8 +334,8 @@ EipStatus CreateCommonPacketFormatStructure(
       common_packet_format_data->address_info_item[0].type_id = 0;
     }
   }
-  if (length_count == data_length) { /* length of data is equal to length of
-                                        Addr and length of Data */
+  if (length_count == data_length) {  // length of data is equal to length of
+                                      // Addr and length of Data
     return kEipStatusOk;
   } else {
     OPENER_TRACE_WARN(

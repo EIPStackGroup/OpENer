@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkhandler.h"
+#include "ports/networkhandler.h"
 
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -14,10 +14,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "encap.h"
-#include "opener_error.h"
-#include "opener_user_conf.h"
-#include "trace.h"
+#include "enet_encap/encap.h"
+#include "ports/opener_error.h"
+#include "ports/opener_user_conf.h"
+#include "src/trace.h"
 
 MicroSeconds GetMicroSeconds(void) {
   struct timespec now = {.tv_nsec = 0, .tv_sec = 0};

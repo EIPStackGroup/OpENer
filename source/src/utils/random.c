@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "random.h"
+#include "utils/random.h"
 
 #include <stdlib.h>
 

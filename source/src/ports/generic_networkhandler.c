@@ -13,20 +13,20 @@
  * platform network handler
  */
 
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 #include <assert.h>
 #include <inttypes.h>
 #include <signal.h>
 #include <stdbool.h>
 
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "encap.h"
-#include "opener_error.h"
-#include "opener_user_conf.h"
-#include "trace.h"
-#include "typedefs.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "enet_encap/encap.h"
+#include "ports/opener_error.h"
+#include "ports/opener_user_conf.h"
+#include "src/trace.h"
+#include "src/typedefs.h"
 
 #define MAX_NO_OF_TCP_SOCKETS 10
 
@@ -489,8 +489,8 @@ EipStatus NetworkHandlerProcessCyclic(void) {
       select(highest_socket_handle + 1, &read_socket, 0, 0, &g_time_value);
 
   if (ready_socket == kEipInvalidSocket) {
-    if (EINTR == errno) /* we have somehow been interrupted. The default
-                           behavior is to go back into the select loop. */
+    if (EINTR == errno)  // we have somehow been interrupted. The default
+                         // behavior is to go back into the select loop.
     {
       return kEipStatusOk;
     } else {
@@ -619,9 +619,9 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
       /* if the active socket matches a registered UDP callback, handle a UDP
        * packet */
       if (sendto(g_network_status
-                     .udp_unicast_listener, /* sending from unicast port, due to
-                                               strange behavior of the broadcast
-                                               port */
+                     .udp_unicast_listener,  // sending from unicast port, due
+                                             // to strange behavior of the
+                                             // broadcast port
                  (char*)outgoing_message.message_buffer,
                  outgoing_message.used_message_length,
                  0,
@@ -1105,8 +1105,8 @@ void CheckAndHandleConsumingUdpSocket(void) {
   /* see a message of the registered UDP socket has been received     */
   while (NULL != iterator) {
     current_connection_object = (CipConnectionObject*)iterator->data;
-    iterator = iterator->next; /* do this at the beginning as the close function
-                                  may can make the entry invalid */
+    iterator = iterator->next;  // do this at the beginning as the close
+                                // function may can make the entry invalid
 
     if ((kEipInvalidSocket !=
          current_connection_object
@@ -1191,7 +1191,7 @@ int GetMaxSocket(int socket1, int socket2, int socket3, int socket4) {
 void CheckEncapsulationInactivity(int socket_handle) {
   if (0 <
       g_tcpip.encapsulation_inactivity_timeout) {  //*< Encapsulation inactivity
-                                                   //timeout is enabled
+                                                   // timeout is enabled
     SocketTimer* socket_timer = SocketTimerArrayGetSocketTimer(
         g_timestamps, OPENER_NUMBER_OF_SUPPORTED_SESSIONS, socket_handle);
 

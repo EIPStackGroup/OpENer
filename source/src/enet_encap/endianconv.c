@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "endianconv.h"
+#include "enet_encap/endianconv.h"
 
 OpenerEndianess g_opener_platform_endianess = kOpenerEndianessUnknown;
 

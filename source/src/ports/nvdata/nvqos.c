@@ -11,15 +11,15 @@
  *  Please think about atomic update of the external file or better parsing
  *  of the data on input.
  */
-#include "nvqos.h"
+#include "ports/nvdata/nvqos.h"
 
 #include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "ciptypes.h"
-#include "conffile.h"
+#include "cip/ciptypes.h"
+#include "ports/nvdata/conffile.h"
 
 #define QOS_CFG_NAME "qos.cfg"
 

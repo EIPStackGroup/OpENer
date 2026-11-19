@@ -7,15 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipqos.h"
-#include "ciptcpipinterface.h"
-#include "nvdata.h"
-#include "opener_api.h"
-#include "trace.h"
+#include "cip/appcontype.h"
+#include "cip/cipqos.h"
+#include "cip/ciptcpipinterface.h"
+#include "ports/nvdata/nvdata.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
 #if defined(OPENER_ETHLINK_CNTRS_ENABLE) && 0 != OPENER_ETHLINK_CNTRS_ENABLE
-#include "cipethernetlink.h"
-#include "ethlinkcbs.h"
+#include "cip/cipethernetlink.h"
+#include "ports/WIN32/sample_application/ethlinkcbs.h"
 #endif
 
 #define DEMO_APP_INPUT_ASSEMBLY_NUM 100                  // 0x064

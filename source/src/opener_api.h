@@ -3,20 +3,19 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#ifndef OPENER_OPENER_API_H_
-#define OPENER_OPENER_API_H_
-
+#ifndef SOURCE_SRC_OPENER_API_H_
+#define SOURCE_SRC_OPENER_API_H_
 #include <assert.h>
 #include <stdbool.h>
 
-#include "ciperror.h"
-#include "ciptypes.h"
-#include "typedefs.h"
+#include "cip/ciperror.h"
+#include "cip/ciptypes.h"
+#include "src/typedefs.h"
 
-#if defined(STM32) /** STM32 target -> uses a struct for the network interface \
-                    */
+// STM32 uses a struct for the network interface.
+#if defined(STM32)
 #define TcpIpInterface struct netif
-#else /** other targets -> string for the network interface */
+#else       /** other targets -> string for the network interface */
 #define TcpIpInterface const char
 #endif /** other targets */
 
@@ -70,8 +69,8 @@ EipStatus IfaceWaitForIp(TcpIpInterface* const iface,
                          int timeout,
                          volatile int* const abort_wait);
 
-#if defined(STM32) /** STM32 target, the hostname is linked to the network \
-                      interface */
+// On STM32, the hostname is linked to the network interface.
+#if defined(STM32)
 /** @ingroup CIP_API
  * @brief Get host name from platform
  *
@@ -1178,5 +1177,4 @@ void RegisterTimeoutChecker(TimeoutCheckerFunction timeout_checker_function);
  * @include "../license.txt"
  *
  */
-
-#endif /*OPENER_OPENER_API_H_*/
+#endif  // SOURCE_SRC_OPENER_API_H_

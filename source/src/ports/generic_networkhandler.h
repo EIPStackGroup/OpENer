@@ -14,9 +14,8 @@
  * access to the network layer
  */
 
-#ifndef GENERIC_NETWORKHANDLER_H_
-#define GENERIC_NETWORKHANDLER_H_
-
+#ifndef SOURCE_SRC_PORTS_GENERIC_NETWORKHANDLER_H_
+#define SOURCE_SRC_PORTS_GENERIC_NETWORKHANDLER_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,13 +25,13 @@
 #include "lwip/errno.h"
 #endif /* STM32 target */
 
-#include "appcontype.h"
-#include "cipconnectionmanager.h"
-#include "endianconv.h"
-#include "networkhandler.h"
-#include "opener_api.h"
-#include "socket_timer.h"
-#include "typedefs.h"
+#include "cip/appcontype.h"
+#include "cip/cipconnectionmanager.h"
+#include "enet_encap/endianconv.h"
+#include "ports/networkhandler.h"
+#include "ports/socket_timer.h"
+#include "src/opener_api.h"
+#include "src/typedefs.h"
 
 /*The port to be used per default for I/O messages on UDP.*/
 extern const uint16_t kOpenerEipIoUdpPort;
@@ -66,14 +65,13 @@ extern MilliSeconds g_last_time;
  *
  */
 typedef struct {
-  int tcp_listener;                  /**< TCP listener socket */
-  int udp_unicast_listener;          /**< UDP unicast listener socket */
-  int udp_global_broadcast_listener; /**< UDP global network broadcast listener
-                                      */
-  int udp_io_messaging;              /**< UDP IO messaging socket */
+  int tcp_listener;                   /**< TCP listener socket */
+  int udp_unicast_listener;           /**< UDP unicast listener socket */
+  int udp_global_broadcast_listener;  ///< UDP global network broadcast listener
+  int udp_io_messaging;               /**< UDP IO messaging socket */
   CipUdint ip_address; /**< IP being valid during NetworkHandlerInitialize() */
-  CipUdint network_mask; /**< network mask being valid during
-                            NetworkHandlerInitialize() */
+  CipUdint network_mask;  ///< network mask being valid during
+                          ///< NetworkHandlerInitialize()
   MilliSeconds elapsed_time;
 } NetworkStatus;
 
@@ -125,5 +123,4 @@ int SetSocketOptionsMulticastProduce(void);
  *
  * @return peer address if successful, else any address (0) */
 EipUint32 GetPeerAddress(void);
-
-#endif /* GENERIC_NETWORKHANDLER_H_ */
+#endif  // SOURCE_SRC_PORTS_GENERIC_NETWORKHANDLER_H_

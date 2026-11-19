@@ -12,8 +12,8 @@
 
 extern "C" {
 
-#include "cipstring.h"
-#include "opener_api.h"
+#include "cip/cipstring.h"
+#include "src/opener_api.h"
 }
 
 ENIPMessage message; /**< Test variable holds ENIP message*/

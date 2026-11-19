@@ -4,22 +4,22 @@
  *
  ******************************************************************************/
 
-#include "cipioconnection.h"
+#include "cip/cipioconnection.h"
 
 #include <stdbool.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipassembly.h"
-#include "cipcommon.h"
-#include "cipconnectionmanager.h"
-#include "cipidentity.h"
-#include "ciptcpipinterface.h"
-#include "cpf.h"
-#include "endianconv.h"
-#include "generic_networkhandler.h"
-#include "opener_error.h"
-#include "trace.h"
+#include "cip/appcontype.h"
+#include "cip/cipassembly.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionmanager.h"
+#include "cip/cipidentity.h"
+#include "cip/ciptcpipinterface.h"
+#include "enet_encap/cpf.h"
+#include "enet_encap/endianconv.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/opener_error.h"
+#include "src/trace.h"
 
 /* producing multicast connection have to consider the rules that apply for
  * application connection types.
@@ -63,8 +63,8 @@ EipStatus HandleReceivedIoConnectionData(CipConnectionObject* connection_object,
                                          EipUint16 data_length);
 
 /**** Global variables ****/
-EipUint8* g_config_data_buffer = NULL; /**< buffers for the config data coming
-                                          with a forward open request. */
+EipUint8* g_config_data_buffer = NULL;  ///< buffers for the config data coming
+                                        ///< with a forward open request.
 unsigned int g_config_data_length =
     0; /**< length of g_config_data_buffer. Initialized with 0 */
 
@@ -344,8 +344,8 @@ CipError EstablishIoConnection(
     }
   }
 
-  if (NULL != g_config_data_buffer) { /* config data has been sent with this
-                                         forward open request */
+  if (NULL != g_config_data_buffer) {  // config data has been sent with this
+                                       // forward open request
     *extended_error = HandleConfigData(io_connection_object);
     if (kConnectionManagerExtendedStatusCodeSuccess != *extended_error) {
       return kCipErrorConnectionFailure;
@@ -494,8 +494,8 @@ EipStatus OpenProducingMulticastConnection(
   sock_addr_info->type_id = kCipItemIdSocketAddressInfoTargetToOriginator;
 
   if (NULL ==
-      existing_connection_object) { /* we are the first connection producing for
-                                       the given Input Assembly */
+      existing_connection_object) {  // we are the first connection producing
+                                     // for the given Input Assembly
     return OpenMulticastConnection(kUdpCommuncationDirectionProducing,
                                    connection_object,
                                    common_packet_format_data);

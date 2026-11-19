@@ -3,38 +3,39 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "cipconnectionmanager.h"
+#include "cip/cipconnectionmanager.h"
 
 #include <stdbool.h>
 #include <string.h>
 
-#include "appcontype.h"
-#include "cipassembly.h"
-#include "cipclass3connection.h"
-#include "cipcommon.h"
-#include "cipconnectionobject.h"
-#include "cipelectronickey.h"
-#include "cipepath.h"
-#include "ciperror.h"
-#include "cipidentity.h"
-#include "cipioconnection.h"
-#include "cipmessagerouter.h"
-#include "cipqos.h"
-#include "cpf.h"
-#include "encap.h"
-#include "endianconv.h"
-#include "generic_networkhandler.h"
-#include "opener_api.h"
-#include "opener_user_conf.h"
-#include "trace.h"
-#include "xorshiftrandom.h"
+#include "cip/appcontype.h"
+#include "cip/cipassembly.h"
+#include "cip/cipclass3connection.h"
+#include "cip/cipcommon.h"
+#include "cip/cipconnectionobject.h"
+#include "cip/cipelectronickey.h"
+#include "cip/cipepath.h"
+#include "cip/ciperror.h"
+#include "cip/cipidentity.h"
+#include "cip/cipioconnection.h"
+#include "cip/cipmessagerouter.h"
+#include "cip/cipqos.h"
+#include "enet_encap/cpf.h"
+#include "enet_encap/encap.h"
+#include "enet_encap/endianconv.h"
+#include "ports/generic_networkhandler.h"
+#include "ports/opener_user_conf.h"
+#include "src/opener_api.h"
+#include "src/trace.h"
+#include "utils/xorshiftrandom.h"
 
 const size_t g_kForwardOpenHeaderLength =
-    36; /**< the length in bytes of the forward open command specific data till
-           the start of the connection path (including con path size)*/
+    36;  ///< the length in bytes of the forward open command specific data till
+         ///< the start of the connection path (including con path size)
 const size_t g_kLargeForwardOpenHeaderLength =
-    40; /**< the length in bytes of the large forward open command specific data
-           till the start of the connection path (including con path size)*/
+    40;  ///< the length in bytes of the large forward open command specific
+         ///< data till the start of the connection path (including con path
+         ///< size)
 
 static const unsigned int g_kNumberOfConnectableObjects =
     2 + OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS;
@@ -343,10 +344,10 @@ EipStatus HandleReceivedConnectedData(const EipUint8* const data,
     if ((g_common_packet_format_data_item.address_item.type_id ==
          kCipItemIdConnectionAddress) ||
         (g_common_packet_format_data_item.address_item.type_id ==
-         kCipItemIdSequencedAddressItem)) { /* found connected address item or
-                                               found sequenced address item ->
-                                               for now the sequence number will
-                                               be ignored */
+         kCipItemIdSequencedAddressItem)) {  // found connected address item or
+                                             // found sequenced address item ->
+                                             // for now the sequence number will
+                                             // be ignored
       if (g_common_packet_format_data_item.data_item.type_id ==
           kCipItemIdConnectedDataItem) { /* connected data item received */
 
@@ -539,10 +540,9 @@ EipStatus HandleNonNullNonMatchingForwardOpenRequest(
   /*parsing is now finished all data is available and check now establish the
    * connection */
   ConnectionManagementHandling* connection_management_entry =
-      GetConnectionManagementEntry(/* Gets correct open connection function for
-                                      the targeted object */
-                                   g_dummy_connection_object.configuration_path
-                                       .class_id);
+      GetConnectionManagementEntry(  // Gets correct open connection function
+                                     // for the targeted object
+          g_dummy_connection_object.configuration_path.class_id);
   if (NULL != connection_management_entry) {
     if (NULL != connection_management_entry->open_connection_function) {
       temp = connection_management_entry->open_connection_function(
@@ -1025,12 +1025,12 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
         ConnectionObjectGetState(connection_object)) {
       if ((NULL !=
            connection_object
-               ->consuming_instance) || /* we have a consuming connection check
-                                           inactivity watchdog timer */
+               ->consuming_instance) ||  // we have a consuming connection check
+                                         // inactivity watchdog timer
           (kConnectionObjectTransportClassTriggerDirectionServer ==
            ConnectionObjectGetTransportClassTriggerDirection(
-               connection_object))) /* all server connections have to maintain
-                                       an inactivity watchdog timer */
+               connection_object)))  // all server connections have to maintain
+                                     // an inactivity watchdog timer
       {
         if (elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
@@ -1050,8 +1050,8 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
         if ((0 != ConnectionObjectGetExpectedPacketRate(connection_object)) &&
             (kEipInvalidSocket !=
              connection_object->socket
-                 [kUdpCommuncationDirectionProducing])) /* only produce for the
-                                                           master connection */
+                 [kUdpCommuncationDirectionProducing]))  // only produce for the
+                                                         // master connection
         {
           if (kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
               ConnectionObjectGetTransportClassTriggerProductionTrigger(
@@ -1584,8 +1584,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
     if (kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
         kLogicalSegmentLogicalTypeInstanceId ==
             GetPathLogicalSegmentLogicalType(
-                message)) { /* store the configuration ID for later checking in
-                               the application connection types */
+                message)) {  // store the configuration ID for later checking in
+                             // the application connection types
       const CipDword temp_id = CipEpathGetLogicalValue(&message);
 
       OPENER_TRACE_INFO("Configuration instance id %" PRId32 "\n", temp_id);
@@ -1660,8 +1660,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
       if (kConnectionObjectConnectionTypeNull ==
           originator_to_target_connection_type) {
         if (kConnectionObjectConnectionTypeNull ==
-            target_to_originator_connection_type) { /* configuration only
-                                                       connection */
+            target_to_originator_connection_type) {  // configuration only
+                                                     // connection
           number_of_encoded_paths = 0;
           OPENER_TRACE_WARN("assembly: type invalid\n");
         } else { /* 1 path -> path is for production */
@@ -1671,8 +1671,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
         }
       } else {
         if (kConnectionObjectConnectionTypeNull ==
-            target_to_originator_connection_type) { /* 1 path -> path is for
-                                                       consumption */
+            target_to_originator_connection_type) {  // 1 path -> path is for
+                                                     // consumption
           OPENER_TRACE_INFO("assembly: type consume\n");
           number_of_encoded_paths = 1;
           paths_to_encode[0]      = &(connection_object->consumed_path);
@@ -1692,9 +1692,9 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
                  GetPathLogicalSegmentLogicalType(message) ||
              kLogicalSegmentLogicalTypeConnectionPoint ==
                  GetPathLogicalSegmentLogicalType(
-                     message))) /* Connection Point interpreted as InstanceNr ->
-                                   only in Assembly Objects */
-        {                       /* Attribute Id or Connection Point */
+                     message)))  // Connection Point interpreted as InstanceNr
+                                 // -> only in Assembly Objects
+        { /* Attribute Id or Connection Point */
 
           /* Validate encoded instance number. */
           const CipDword temp_instance_id = CipEpathGetLogicalValue(&message);
@@ -1730,8 +1730,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
       g_config_data_length = 0;
       g_config_data_buffer = NULL;
 
-      while (remaining_path > 0) { /* remaining_path_size something left in the
-                                      path should be configuration data */
+      while (remaining_path > 0) {  // remaining_path_size something left in the
+                                    // path should be configuration data
 
         SegmentType segment_type = GetPathSegmentType(message);
         switch (segment_type) {
@@ -1768,10 +1768,10 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
                 } else {
                   *extended_error =
                       connection_path_size -
-                      remaining_path; /*offset in 16Bit words where within the
-                                         connection path the error happened*/
-                  return kCipErrorPathSegmentError; /*status code for invalid
-                                                       segment type*/
+                      remaining_path;  // offset in 16Bit words where within the
+                                       // connection path the error happened
+                  return kCipErrorPathSegmentError;  // status code for invalid
+                                                     // segment type
                 }
                 break;
               default:
@@ -1786,8 +1786,8 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
                 "data\n");
             *extended_error =
                 connection_path_size -
-                remaining_path; /*offset in 16Bit words where within the
-                                   connection path the error happened*/
+                remaining_path;  // offset in 16Bit words where within the
+                                 // connection path the error happened
             return kConnectionManagerGeneralStatusPathSegmentErrorInUnconnectedSend;
         }
       }

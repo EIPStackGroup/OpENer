@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  ******************************************************************************/
-#include "networkhandler.h"
+#include "ports/networkhandler.h"
 
 #include <Ws2tcpip.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@
 #include <windows.h>
 #include <winsock2.h>
 
-#include "generic_networkhandler.h"
+#include "ports/generic_networkhandler.h"
 
 MicroSeconds GetMicroSeconds() {
   LARGE_INTEGER performance_counter;

@@ -4,9 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef SRC_UTILS_DOUBLYLINKEDLIST_H_
-#define SRC_UTILS_DOUBLYLINKEDLIST_H_
-
+#ifndef SOURCE_SRC_UTILS_DOUBLYLINKEDLIST_H_
+#define SOURCE_SRC_UTILS_DOUBLYLINKEDLIST_H_
 /**
  * @file doublylinkedlist.h
  *
@@ -62,5 +61,4 @@ void DoublyLinkedListInsertAfterNode(DoublyLinkedList* const list,
 
 void DoublyLinkedListRemoveNode(DoublyLinkedList* const list,
                                 DoublyLinkedListNode** pointer_to_node_pointer);
-
-#endif /* SRC_UTILS_DOUBLYLINKEDLIST_H_ */
+#endif  // SOURCE_SRC_UTILS_DOUBLYLINKEDLIST_H_
