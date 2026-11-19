@@ -643,7 +643,7 @@ LogicalSegmentLogicalFormat CipEpathGetNeededLogicalFormatForValue(
   return logical_format;
 }
 
-////TODO: Does not match the actual interface anymore, check how to fix
+// TODO(opener): Does not match the actual interface anymore, check how to fix
 // size_t CipEpathEncodeConnectionEpath(
 //   const CipConnectionPathEpath *const connection_epath,
 //   CipOctet **encoded_path) {

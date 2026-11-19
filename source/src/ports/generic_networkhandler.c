@@ -489,9 +489,8 @@ EipStatus NetworkHandlerProcessCyclic(void) {
       select(highest_socket_handle + 1, &read_socket, 0, 0, &g_time_value);
 
   if (ready_socket == kEipInvalidSocket) {
-    if (EINTR == errno)  // we have somehow been interrupted. The default
-                         // behavior is to go back into the select loop.
-    {
+    if (EINTR == errno) {
+      // The default behavior after an interruption is to retry select.
       return kEipStatusOk;
     } else {
       int error_code      = GetSocketErrorNumber();
@@ -513,8 +512,8 @@ EipStatus NetworkHandlerProcessCyclic(void) {
     for (int socket = 0; socket <= highest_socket_handle; socket++) {
       if (true == CheckSocketSet(socket)) {
         /* if it is still checked it is a TCP receive */
-        if (kEipStatusError == HandleDataOnTcpSocket(socket)) /* if error */
-        {
+        if (kEipStatusError == HandleDataOnTcpSocket(socket)) {
+          /* Close the socket after a receive error. */
           CloseTcpSocket(socket);
           RemoveSession(socket); /* clean up session and close the socket */
         }
@@ -808,9 +807,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       number_of_read_bytes =
           recv(socket, NWBUF_CAST & incoming_message[0], data_sent, 0);
 
-      if (number_of_read_bytes ==
-          0) /* got error or connection closed by client */
-      {
+      if (number_of_read_bytes == 0) {
+        /* An error occurred or the client closed the connection. */
         int error_code      = GetSocketErrorNumber();
         char* error_message = GetErrorMessage(error_code);
         OPENER_TRACE_ERR(
@@ -847,8 +845,8 @@ EipStatus HandleDataOnTcpSocket(int socket) {
   number_of_read_bytes =
       recv(socket, NWBUF_CAST & incoming_message[4], data_size, 0);
 
-  if (0 == number_of_read_bytes) /* got error or connection closed by client */
-  {
+  if (0 == number_of_read_bytes) {
+    /* An error occurred or the client closed the connection. */
     int error_code      = GetSocketErrorNumber();
     char* error_message = GetErrorMessage(error_code);
     OPENER_TRACE_ERR(

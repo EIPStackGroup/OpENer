@@ -1,3 +1,8 @@
+/*******************************************************************************
+ * Copyright (c) 2009, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
 /*
  * This header defines an implementation of the OPENER_ASSERT macro that
  * can be used with Cpputest unit tests to confirm an assertion fails

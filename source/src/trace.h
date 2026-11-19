@@ -34,7 +34,7 @@
 #pragma message( \
     "OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR")
 #else
-#warning OPENER_TRACE_LEVEL was not defined setting it to OPENER_TRACE_LEVEL_ERROR
+#warning OPENER_TRACE_LEVEL undefined; defaulting to ERROR
 #endif
 
 #define OPENER_TRACE_LEVEL OPENER_TRACE_LEVEL_ERROR

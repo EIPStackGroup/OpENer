@@ -172,7 +172,8 @@ static const CipShortString iface_label_table[OPENER_ETHLINK_INSTANCE_CNT] = {
     {.length = sizeof IFACE_LABEL_2 - 1, .string = (EipByte*)IFACE_LABEL_2},
 #endif
 };
-#endif  // defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 != OPENER_ETHLINK_LABEL_ENABLE
+#endif  // defined(OPENER_ETHLINK_LABEL_ENABLE) && 0 !=
+        // OPENER_ETHLINK_LABEL_ENABLE
 
 /* Two dummy variables to provide fill data for the GetAttributeAll service. */
 static CipUsint dummy_attribute_usint = 0;

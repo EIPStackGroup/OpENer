@@ -14,9 +14,7 @@ extern "C" {
 #include "cip/cipepath.h"
 }
 
-TEST_GROUP(CipElectronicKey){
-
-};
+TEST_GROUP(CipElectronicKey){};
 
 TEST(CipElectronicKey, SetKeyFormat) {
   CipElectronicKey key;

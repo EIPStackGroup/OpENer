@@ -835,9 +835,9 @@ EipStatus SendConnectedData(CipConnectionObject* connection_object) {
   /* assembleCPFData */
   common_packet_format_data->item_count = 2;
   if (kConnectionObjectTransportClassTriggerTransportClass0 !=
-      ConnectionObjectGetTransportClassTriggerTransportClass(connection_object))
-  /* use Sequenced Address Items if not Connection Class 0 */
-  {
+      ConnectionObjectGetTransportClassTriggerTransportClass(
+          connection_object)) {
+    /* Use Sequenced Address Items if not Connection Class 0. */
     common_packet_format_data->address_item.type_id =
         kCipItemIdSequencedAddressItem;
     common_packet_format_data->address_item.length = 8;
@@ -977,9 +977,8 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
   /* open a connection "point to point" or "multicast" based on the
    * ConnectionParameter */
   if (originator_to_target_connection_type ==
-      kConnectionObjectConnectionTypeMulticast)
-  /* Multicast consuming */
-  {
+      kConnectionObjectConnectionTypeMulticast) {
+    /* Multicast consuming. */
     if (OpenMulticastConnection(kUdpCommuncationDirectionConsuming,
                                 connection_object,
                                 common_packet_format_data) != kEipStatusError) {
@@ -987,9 +986,8 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
       return kCipErrorConnectionFailure;
     }
   } else if (originator_to_target_connection_type ==
-             kConnectionObjectConnectionTypePointToPoint)
-  /* Point to Point consuming */
-  {
+             kConnectionObjectConnectionTypePointToPoint) {
+    /* Point-to-point consuming. */
     if (OpenConsumingPointToPointConnection(
             connection_object, common_packet_format_data) == kEipStatusError) {
       OPENER_TRACE_ERR("error in PointToPoint consuming connection\n");
@@ -998,18 +996,16 @@ CipError OpenCommunicationChannels(CipConnectionObject* connection_object) {
   }
 
   if (target_to_originator_connection_type ==
-      kConnectionObjectConnectionTypeMulticast)
-  /* Multicast producing */
-  {
+      kConnectionObjectConnectionTypeMulticast) {
+    /* Multicast producing. */
     if (OpenProducingMulticastConnection(
             connection_object, common_packet_format_data) == kEipStatusError) {
       OPENER_TRACE_ERR("error in OpenMulticast Connection\n");
       return kCipErrorConnectionFailure;
     }
   } else if (target_to_originator_connection_type ==
-             kConnectionObjectConnectionTypePointToPoint)
-  /* Point to Point producing */
-  {
+             kConnectionObjectConnectionTypePointToPoint) {
+    /* Point-to-point producing. */
     if (OpenProducingPointToPointConnection(
             connection_object, common_packet_format_data) != kCipErrorSuccess) {
       OPENER_TRACE_ERR("error in PointToPoint producing connection\n");

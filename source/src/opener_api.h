@@ -15,7 +15,7 @@
 // STM32 uses a struct for the network interface.
 #if defined(STM32)
 #define TcpIpInterface struct netif
-#else       /** other targets -> string for the network interface */
+#else /** other targets -> string for the network interface */
 #define TcpIpInterface const char
 #endif /** other targets */
 
@@ -400,7 +400,7 @@ void InsertGetSetCallback(CipClass* const cip_class,
                           CipGetSetCallback callback_function,
                           CIPAttributeFlag callbacks_to_install);
 
-// TODO: Update documentation
+// TODO(opener): Update documentation
 /** @ingroup CIP_API
  * @brief Produce the data according to CIP encoding onto the message buffer.
  *

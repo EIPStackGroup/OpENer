@@ -15,9 +15,7 @@ extern "C" {
 #include "utils/enipmessage.h"
 }
 
-TEST_GROUP(EncapsulationProtocol){
-
-};
+TEST_GROUP(EncapsulationProtocol){};
 
 TEST(EncapsulationProtocol, AnswerListIdentityRequest) {
   CipOctet incoming_message[] =

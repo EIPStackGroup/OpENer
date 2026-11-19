@@ -55,10 +55,8 @@ EipStatus NotifyCommonPacketFormat(
     return_value = kEipStatusOkSend;  // In cases of errors we normally need to
                                       // send an error response
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdNullAddress)  // check if NullAddressItem received, otherwise
-                                // it is no unconnected message and should not
-                                // be here
-    { /* found null address item*/
+        kCipItemIdNullAddress) {
+      /* Found a null address item. */
       if (g_common_packet_format_data_item.data_item.type_id ==
           kCipItemIdUnconnectedDataItem) { /* unconnected data item received*/
         return_value = NotifyMessageRouter(
@@ -132,10 +130,8 @@ EipStatus NotifyConnectedCommonPacketFormat(
     return_value = kEipStatusError;  // For connected explicit messages status
                                      // always has to be 0
     if (g_common_packet_format_data_item.address_item.type_id ==
-        kCipItemIdConnectionAddress)  // check if ConnectedAddressItem received,
-                                      // otherwise it is no connected message
-                                      // and should not be here
-    { /* ConnectedAddressItem item */
+        kCipItemIdConnectionAddress) {
+      /* ConnectedAddressItem item. */
       CipConnectionObject* connection_object =
           GetConnectedObject(g_common_packet_format_data_item.address_item.data
                                  .connection_identifier);
@@ -294,9 +290,9 @@ EipStatus CreateCommonPacketFormatStructure(
     CipUint address_item_count =
         (CipUint)(common_packet_format_data->item_count - 2U);
 
+    // TODO(opener): Add a limit check for the address item count.
     for (size_t j = 0; j < (address_item_count > 2 ? 2 : address_item_count);
-         j++) /* TODO there needs to be a limit check here???*/
-    {
+         j++) {
       common_packet_format_data->address_info_item[j].type_id =
           GetIntFromMessage(&data);
       OPENER_TRACE_INFO(

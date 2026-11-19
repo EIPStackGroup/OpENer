@@ -27,7 +27,7 @@ typedef enum {
   kConnectionObjectStateDeferredDelete, /**< Only used for device net */
   kConnectionObjectStateClosing,  ///< For CIP bridged connections - have to
                                   ///< wait for a successful forward close
-  kConnectionObjectStateInvalid /**< An invalid state, shall never occur! */
+  kConnectionObjectStateInvalid   /**< An invalid state, shall never occur! */
 } ConnectionObjectState;
 
 typedef enum {
@@ -61,27 +61,11 @@ typedef enum {
       -1, /**< Invalid Production trigger - shall never occur! */
   kConnectionObjectTransportClassTriggerProductionTriggerCyclic =
       0, /**< Transmission Trigger Timer trigger data production */
-  kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,  ///<
-                                                                         ///< Production
-                                                                         ///< is
-                                                                         ///< trigger
-                                                                         ///< when
-                                                                         ///< change-of-state
-                                                                         ///< is
-                                                                         ///< detected
-                                                                         ///< by
-                                                                         ///< the
-                                                                         ///< Application
-                                                                         ///< Object
-  kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject  ///<
-                                                                            ///< The
-                                                                            ///< Application
-                                                                            ///< Object
-                                                                            ///< decided
-                                                                            ///< when
-                                                                            ///< production
-                                                                            ///< is
-                                                                            ///< triggered
+  /// Production is triggered when a change of state is detected by the
+  /// Application Object.
+  kConnectionObjectTransportClassTriggerProductionTriggerChangeOfState,
+  /// Production timing is decided by the Application Object.
+  kConnectionObjectTransportClassTriggerProductionTriggerApplicationObject
 } ConnectionObjectTransportClassTriggerProductionTrigger;
 
 typedef enum {
@@ -98,10 +82,10 @@ typedef enum {
                                                           ///< connection,
                                                           ///< Client starts
                                                           ///< producing
-  kConnectionObjectTransportClassTriggerTransportClass3  ///< Class 3 producing
-                                                         ///< and consuming
-                                                         ///< connection, Client
-                                                         ///< starts producing
+  kConnectionObjectTransportClassTriggerTransportClass3   ///< Class 3 producing
+                                                          ///< and consuming
+  ///< connection, Client
+  ///< starts producing
   /* Higher transport classes not supported */
 } ConnectionObjectTransportClassTriggerTransportClass;
 
@@ -184,7 +168,7 @@ struct cip_connection_object {
 
   /* End of CIP attributes */
   /* Start of needed non-object variables */
-  CipElectronicKey electronic_key;  // TODO: Check if really needed
+  CipElectronicKey electronic_key;  // TODO(opener): Check if really needed
 
   CipConnectionPathEpath configuration_path;
 
@@ -216,26 +200,12 @@ struct cip_connection_object {
   CipUint sequence_count_consuming;  ///< sequence Count for Class 1 Producing
                                      ///< Connections
 
-  EipUint32
-      eip_level_sequence_count_producing;  ///< the EIP level sequence Count
-                                           ///< for Class 0/1
-                                           ///< Producing Connections may have a
-                                           ///< different
-                                           ///< value than
-                                           ///< SequenceCountProducing
-  EipUint32
-      eip_level_sequence_count_consuming;  ///< the EIP level sequence Count
-                                           ///< for Class 0/1
-                                           ///< Producing Connections may have a
-                                           ///< different
-                                           ///< value than
-                                           ///< SequenceCountProducing
-  CipBool
-      eip_first_level_sequence_count_received;  ///< False if
-                                                ///< eip_level_sequence_count_consuming
-                                                ///< hasn't been initialized
-                                                ///< with a sequence count yet,
-                                                ///< true otherwise
+  /// EIP-level sequence count for producing connections.
+  EipUint32 eip_level_sequence_count_producing;
+  /// EIP-level sequence count for consuming connections.
+  EipUint32 eip_level_sequence_count_consuming;
+  /// True if the consuming sequence count has been initialized.
+  CipBool eip_first_level_sequence_count_received;
   CipInt correct_originator_to_target_size;
   CipInt correct_target_to_originator_size;
 

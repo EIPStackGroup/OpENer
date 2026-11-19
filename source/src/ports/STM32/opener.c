@@ -3,6 +3,8 @@
  * All rights reserved.
  *
  ******************************************************************************/
+#include "ports/STM32/opener.h"
+
 #include "cip/cipconnectionobject.h"
 #include "cip/cipethernetlink.h"
 #include "cip/ciptcpipinterface.h"

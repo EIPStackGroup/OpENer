@@ -40,7 +40,7 @@ TEST(CipElectronicKeyFormat, DeleteElectronicKey) {
 TEST(CipElectronicKeyFormat, SetVendorID) {
   CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea));
-  CipUint* vendor_id = (CipUint*)demoArea;
+  CipUint* vendor_id = reinterpret_cast<CipUint*>(demoArea);
   *vendor_id         = 1;
   ElectronicKeyFormat4SetVendorId(key, 1);
 
@@ -50,7 +50,7 @@ TEST(CipElectronicKeyFormat, SetVendorID) {
 TEST(CipElectronicKeyFormat, GetVendorID) {
   CipUint expected_vendor_id = 1;
 
-  CipUint* vendor_id_data = (CipUint*)key;
+  CipUint* vendor_id_data = reinterpret_cast<CipUint*>(key);
   *vendor_id_data         = expected_vendor_id;
 
   CipUint vendor_id = ElectronicKeyFormat4GetVendorId(key);
@@ -60,7 +60,7 @@ TEST(CipElectronicKeyFormat, GetVendorID) {
 TEST(CipElectronicKeyFormat, SetDeviceType) {
   CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea));
-  CipUint* device_type = (CipUint*)demoArea + 1;
+  CipUint* device_type = reinterpret_cast<CipUint*>(demoArea) + 1;
   *device_type         = 1;
 
   ElectronicKeyFormat4SetDeviceType(key, 1);
@@ -70,7 +70,7 @@ TEST(CipElectronicKeyFormat, SetDeviceType) {
 TEST(CipElectronicKeyFormat, GetDeviceType) {
   CipUint expected_device_type = 1;
 
-  CipUint* device_type_data = (CipUint*)key + 1;
+  CipUint* device_type_data = reinterpret_cast<CipUint*>(key) + 1;
   *device_type_data         = expected_device_type;
 
   CipUint device_type = ElectronicKeyFormat4GetDeviceType(key);
@@ -80,7 +80,7 @@ TEST(CipElectronicKeyFormat, GetDeviceType) {
 TEST(CipElectronicKeyFormat, SetProductCode) {
   CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea));
-  CipUint* product_code = (CipUint*)demoArea + 2;
+  CipUint* product_code = reinterpret_cast<CipUint*>(demoArea) + 2;
   *product_code         = 1;
 
   ElectronicKeyFormat4SetProductCode(key, 1);
@@ -90,7 +90,7 @@ TEST(CipElectronicKeyFormat, SetProductCode) {
 TEST(CipElectronicKeyFormat, GetProductCode) {
   CipUint expected_product_code = 1;
 
-  CipUint* product_code_data = (CipUint*)key + 2;
+  CipUint* product_code_data = reinterpret_cast<CipUint*>(key) + 2;
   *product_code_data         = expected_product_code;
 
   CipUint product_code = ElectronicKeyFormat4GetProductCode(key);
@@ -100,8 +100,9 @@ TEST(CipElectronicKeyFormat, GetProductCode) {
 TEST(CipElectronicKeyFormat, SetMajorRevisionCompatibility) {
   CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea));
-  CipByte* major_revision_compatiblitiy = (CipByte*)demoArea + 6;
-  *major_revision_compatiblitiy         = 0x81;
+  CipByte* major_revision_compatiblitiy =
+      reinterpret_cast<CipByte*>(demoArea) + 6;
+  *major_revision_compatiblitiy = 0x81;
 
   ElectronicKeyFormat4SetMajorRevisionCompatibility(key, 0x81);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
@@ -111,7 +112,7 @@ TEST(CipElectronicKeyFormat, GetMajorRevision) {
   const CipUsint expected_major_revision = 0x1;
 
   CipUsint set_major_revision  = 0x1;
-  CipByte* expected_major_data = (CipByte*)key + 6;
+  CipByte* expected_major_data = reinterpret_cast<CipByte*>(key) + 6;
   *expected_major_data         = set_major_revision;
 
   CipUint product_code = ElectronicKeyFormat4GetMajorRevision(key);
@@ -121,7 +122,7 @@ TEST(CipElectronicKeyFormat, GetMajorRevision) {
 TEST(CipElectronicKeyFormat, GetMajorRevisionCompatibility) {
   const CipUsint expected_major_revision = 0x81;
 
-  CipByte* expected_major_data = (CipByte*)key + 6;
+  CipByte* expected_major_data = reinterpret_cast<CipByte*>(key) + 6;
   *expected_major_data         = expected_major_revision;
 
   bool compatibility = ElectronicKeyFormat4GetMajorRevisionCompatibility(key);
@@ -131,8 +132,9 @@ TEST(CipElectronicKeyFormat, GetMajorRevisionCompatibility) {
 TEST(CipElectronicKeyFormat, SetMinorRevision) {
   CipOctet demoArea[kElectronicKeyFormat4Size];
   memset(demoArea, 0, sizeof(demoArea));
-  CipByte* minor_revision_compatiblitiy = (CipByte*)demoArea + 7;
-  *minor_revision_compatiblitiy         = 0x81;
+  CipByte* minor_revision_compatiblitiy =
+      reinterpret_cast<CipByte*>(demoArea) + 7;
+  *minor_revision_compatiblitiy = 0x81;
 
   ElectronicKeyFormat4SetMinorRevision(key, 0x81);
   MEMCMP_EQUAL(demoArea, key, kElectronicKeyFormat4Size);
@@ -141,7 +143,7 @@ TEST(CipElectronicKeyFormat, SetMinorRevision) {
 TEST(CipElectronicKeyFormat, GetMinorRevision) {
   CipUsint expected_minor_revision = 0x1;
 
-  CipByte* expected_minor_data = (CipByte*)key + 7;
+  CipByte* expected_minor_data = reinterpret_cast<CipByte*>(key) + 7;
   *expected_minor_data         = expected_minor_revision;
 
   CipUint product_code = ElectronicKeyFormat4GetMinorRevision(key);
@@ -167,13 +169,13 @@ TEST(CipElectronicKeyFormat, ParseElectronicKeyTest) {
 }
 
 // TEST(CipElectronicKeyFormat, CheckElectronicKeyWrongVendorId) {
-//	const CipOctet message [] = "\x34\x04\x02\x00\x0c\x00\xe9\xfd\x01\x02";
-//	const CipOctet *message_buffer = message;
-//	EipUint16 *extended_status = 0;
+//  const CipOctet message [] = "\x34\x04\x02\x00\x0c\x00\xe9\xfd\x01\x02";
+//  const CipOctet *message_buffer = message;
+//  EipUint16 *extended_status = 0;
 //
-//	GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer,
+//  GetElectronicKeyFormat4FromMessage((const CipOctet**)&message_buffer,
 // key);
 //
-//	CheckElectronicKeyData(4, key_data, extended_status);
+//  CheckElectronicKeyData(4, key_data, extended_status);
 //
 // }

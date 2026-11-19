@@ -7,7 +7,7 @@ Linter raw log:
 [0000] ERROR failed to fetch latest version: Get "https://toolbox-data.anchore.io/grype/releases/latest/VERSION": dial tcp: lookup toolbox-data.anchore.io on 168.63.129.16:53: server misbehaving
 [0000]  WARN unable to check for vulnerability database update
 [0000]  WARN unable to check for vulnerability database update
-[0000]  WARN error updating db error=unable to download listing: Get "https://grype.anchore.io/databases/v6/latest.json": dial tcp: lookup grype.anchore.io on 168.63.129.16:53: server misbehaving
+[0000]  WARN error updating db error=unable to download listing: Get "https://grype.anchore.io/databases/v6/latest.json": dial tcp: lookup grype.anchore.io on 168.63.129.16:53: no such host
 [0000]  WARN no explicit name and version provided for directory source, deriving artifact ID from the given path (which is not ideal) from=syft
 [0001] ERROR failed to load vulnerability db: database does not exist
 

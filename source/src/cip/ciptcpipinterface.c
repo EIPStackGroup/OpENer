@@ -316,7 +316,8 @@ static bool IsIOConnectionActive(void) {
 
   return false;
 }
-#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) &&
+        // OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 static CipUsint dummy_data_field =
     0;  ///< dummy data fiel to provide non-null data pointers for attributes
@@ -508,7 +509,8 @@ int DecodeCipTcpIpInterfaceHostName(/* Attribute 6 */
   return number_of_decoded_bytes;
 }
 
-#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) &&
+        // OPENER_TCPIP_IFACE_CFG_SETTABLE
 
 int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
                                                           void* const data,
@@ -535,19 +537,19 @@ int DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout(/* Attribute 13 */
 EipStatus CipTcpIpInterfaceInit() {
   CipClass* tcp_ip_class = NULL;
 
-  if ((tcp_ip_class =
-           CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */
-                          0,                           /* # class attributes */
-                          7,  /* # highest class attribute number */
-                          2,  /* # class services */
-                          13, /* # instance attributes */
-                          13, /* # highest instance attribute number */
-                          3,  /* # instance services */
-                          1,  /* # instances */
-                          "TCP/IP interface",
-                          4,   /* # class revision */
-                          NULL /* # function pointer for initialization */
-                          )) == 0) {
+  tcp_ip_class =
+      CreateCipClass(kCipTcpIpInterfaceClassCode, /* class code */
+                     0,                           /* # class attributes */
+                     7,  /* # highest class attribute number */
+                     2,  /* # class services */
+                     13, /* # instance attributes */
+                     13, /* # highest instance attribute number */
+                     3,  /* # instance services */
+                     1,  /* # instances */
+                     "TCP/IP interface",
+                     4, /* # class revision */
+                     NULL /* # function pointer for initialization */);
+  if (NULL == tcp_ip_class) {
     return kEipStatusError;
   }
 
@@ -617,7 +619,8 @@ EipStatus CipTcpIpInterfaceInit() {
                   &g_tcpip.hostname,
                   kGetableSingleAndAll | kNvDataFunc | IFACE_CFG_SET_MODE);
 
-#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) && OPENER_TCPIP_IFACE_CFG_SETTABLE
+#endif  // defined(OPENER_TCPIP_IFACE_CFG_SETTABLE) &&
+        // OPENER_TCPIP_IFACE_CFG_SETTABLE
 
   InsertAttribute(instance,
                   7,

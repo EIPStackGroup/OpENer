@@ -641,7 +641,8 @@ void ConnectionObjectSetConnectionNumber(
 }
 
 CipUint GenerateRandomConnectionNumber(void) {
-  CipUint rand_num = (CipUint)rand();  // TODO: update to random.c functions
+  CipUint rand_num =
+      (CipUint)rand();  // TODO(opener): update to random.c functions
 
   // search for existing connection_numbers
   DoublyLinkedListNode* iterator                = connection_list.first;

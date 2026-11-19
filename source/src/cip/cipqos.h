@@ -42,7 +42,7 @@ typedef struct {
   CipUsint q_frames_enable;  ///< Attr. #1: Enables or disable sending 802.1Q
                              ///< frames on CIP and IEEE 1588 messages
   CipQosDscpValues dscp;     ///< Attributes #2 ... #8 of DSCP values - beware!
-                          ///< must not be the used set
+                             ///< must not be the used set
 } CipQosObject;
 
 /* public data */

@@ -151,8 +151,8 @@ CipMessageRouterObject* GetRegisteredObject(EipUint32 class_id) {
   CipMessageRouterObject* object =
       g_first_object; /* get pointer to head of class registration list */
 
-  while (NULL != object) /* for each entry in list*/
-  {
+  while (NULL != object) {
+    /* Check each entry in the list. */
     OPENER_ASSERT(NULL != object->cip_class);
     if (object->cip_class->class_code == class_id) {
       return object; /* return registration node if it matches class ID*/
@@ -181,8 +181,8 @@ CipInstance* GetCipInstance(const CipClass* RESTRICT const cip_class,
   }
   /* pointer to linked list of instances from the class object*/
   for (CipInstance* instance = cip_class->instances; instance;
-       instance              = instance->next) /* follow the list*/
-  {
+       instance              = instance->next) {
+    /* Follow the instance list. */
     if (instance->instance_number == instance_number) {
       return instance; /* if the number matches, return the instance*/
     }
@@ -325,9 +325,8 @@ void DeleteAllClasses(void) {
     while (NULL != instance) {
       instance_to_delete = instance;
       instance           = instance->next;
-      if (message_router_object_to_delete->cip_class
-              ->number_of_attributes) /* if the class has instance attributes */
-      { /* then free storage for the attribute array */
+      if (message_router_object_to_delete->cip_class->number_of_attributes) {
+        /* Free storage for the attribute array. */
         CipFree(instance_to_delete->attributes);
       }
       CipFree(instance_to_delete);

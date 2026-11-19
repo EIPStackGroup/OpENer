@@ -12,16 +12,15 @@ extern "C" {
 #include <doublylinkedlist.h>
 }
 
-TEST_GROUP(DoublyLinkedList){
-
-};
+TEST_GROUP(DoublyLinkedList){};
 
 const size_t kNodesAmount = 5;
 
 static DoublyLinkedListNode nodes[kNodesAmount] = {0};
 
 DoublyLinkedListNode* CallocAllocator() {
-  return (DoublyLinkedListNode*)calloc(1, sizeof(DoublyLinkedListNode));
+  return reinterpret_cast<DoublyLinkedListNode*>(
+      calloc(1, sizeof(DoublyLinkedListNode)));
 }
 
 void CallocDeallocator(DoublyLinkedListNode** node) {
@@ -50,7 +49,7 @@ TEST(DoublyLinkedList, CallocAllocatorCreateTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
       DoublyLinkedListNodeCreate(&test_data, CallocAllocator);
-  CHECK_EQUAL(test_data, *((int*)node->data));
+  CHECK_EQUAL(test_data, *(reinterpret_cast<int*>(node->data)));
   CallocDeallocator(&node);
 }
 
@@ -66,7 +65,7 @@ TEST(DoublyLinkedList, ArrayAllocatorCreateTest) {
   int test_data = 8;
   DoublyLinkedListNode* node =
       DoublyLinkedListNodeCreate(&test_data, ArrayAllocator);
-  CHECK_EQUAL(test_data, *((int*)node->data));
+  CHECK_EQUAL(test_data, *(reinterpret_cast<int*>(node->data)));
   ArrayFree(&node);
 }
 
@@ -175,7 +174,7 @@ TEST(DoublyLinkedList, InsertAfterNode) {
   DoublyLinkedListInsertAtHead(&list, &test_data_1);
   DoublyLinkedListInsertAtHead(&list, &test_data_2);
   DoublyLinkedListInsertAfterNode(&list, list.first, &test_data_3);
-  CHECK_EQUAL(8, *((int*)list.first->next->data));
+  CHECK_EQUAL(8, *(reinterpret_cast<int*>(list.first->next->data)));
   DoublyLinkedListDestroy(&list);
 }
 
@@ -188,7 +187,7 @@ TEST(DoublyLinkedList, InsertAfterLastNode) {
   DoublyLinkedListInsertAtHead(&list, &test_data_1);
   DoublyLinkedListInsertAtHead(&list, &test_data_2);
   DoublyLinkedListInsertAfterNode(&list, list.last, &test_data_3);
-  CHECK_EQUAL(8, *((int*)list.last->data));
+  CHECK_EQUAL(8, *(reinterpret_cast<int*>(list.last->data)));
   DoublyLinkedListDestroy(&list);
 }
 
@@ -201,7 +200,7 @@ TEST(DoublyLinkedList, InsertBeforeNode) {
   DoublyLinkedListInsertAtHead(&list, &test_data_1);
   DoublyLinkedListInsertAtHead(&list, &test_data_2);
   DoublyLinkedListInsertBeforeNode(&list, list.last, &test_data_3);
-  CHECK_EQUAL(8, *((int*)list.last->previous->data));
+  CHECK_EQUAL(8, *(reinterpret_cast<int*>(list.last->previous->data)));
   DoublyLinkedListDestroy(&list);
 }
 
@@ -214,7 +213,7 @@ TEST(DoublyLinkedList, InsertBeforeFirstNode) {
   DoublyLinkedListInsertAtHead(&list, &test_data_1);
   DoublyLinkedListInsertAtHead(&list, &test_data_2);
   DoublyLinkedListInsertBeforeNode(&list, list.first, &test_data_3);
-  CHECK_EQUAL(8, *((int*)list.first->data));
+  CHECK_EQUAL(8, *(reinterpret_cast<int*>(list.first->data)));
   DoublyLinkedListDestroy(&list);
 }
 
@@ -230,7 +229,7 @@ TEST(DoublyLinkedList, RemoveFirstElementInList) {
   DoublyLinkedListNode* node_to_be_deleted = list.first;
   DoublyLinkedListRemoveNode(&list, &node_to_be_deleted);
   CHECK_EQUAL(2, test_data_1);
-  CHECK_EQUAL(4, *((int*)list.first->data));
+  CHECK_EQUAL(4, *(reinterpret_cast<int*>(list.first->data)));
   DoublyLinkedListDestroy(&list);
 }
 

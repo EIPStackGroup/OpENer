@@ -4,6 +4,11 @@
  * Only code implementing Cpputest test cases should include this header; it
  * should not be included by application code.
  */
+/*******************************************************************************
+ * Copyright (c) 2009, Rockwell Automation, Inc.
+ * All rights reserved.
+ *
+ ******************************************************************************/
 #ifndef SOURCE_TESTS_CHECK_ASSERT_H_
 #define SOURCE_TESTS_CHECK_ASSERT_H_
 

@@ -1,0 +1,131 @@
+Results of git_diff linter (version 2.54.0)
+See documentation on https://megalinter.io/10.2.0/descriptors/repository_git_diff/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+warning: in the working copy of 'megalinter-reports/betterleaks-config.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/copy-paste/jscpd-report.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/jscpd-config.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/COPYPASTE_JSCPD-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/CPP_CPPLINT-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/C_CPPLINT-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/MARKDOWN_MARKDOWNLINT-WARNING.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/MARKDOWN_MARKDOWN_TABLE_FORMATTER-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_BETTERLEAKS-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_GRYPE-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_OSV_SCANNER-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_SECRETLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_SYFT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRIVY-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRIVY_SBOM-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRUFFLEHOG-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/SPELL_LYCHEE-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/XML_XMLLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/YAML_YAMLLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/megalinter.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/sbom/syft.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/sbom/trivy.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/secretlint-ignore-paths.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/trufflehog-exclude-paths.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/CMakeLists.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipassembly.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipcommon.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionmanager.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionobject.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionobject.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipdlr.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipepath.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipepath.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipethernetlink.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipidentity.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipioconnection.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipmessagerouter.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipqos.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipqos.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipstringi.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptcpipinterface.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptcpipinterface.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptypes.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/enet_encap/cpf.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/enet_encap/encap.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/opener_api.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/STM32/opener.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/generic_networkhandler.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/opener_user_conf.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/platform_network_includes.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/trace.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/utils/doublylinkedlist.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/OpENerTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/OpENerTests.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/callback_mock.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/check_assert.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipcommontests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipconnectionmanagertest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipconnectionobjecttest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipelectronickeyformattest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipelectronickeytest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipepathtest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipstringtests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/enet_encap/encaptest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/enet_encap/endianconvtest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/ports/socket_timer_tests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/test_assert.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/doublylinkedlistTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/randomTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/xorshiftrandomtests.cpp', LF will be replaced by CRLF the next time Git touches it
+megalinter-reports/copy-paste/jscpd-report.html:708: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:731: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:749: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:766: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:784: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:801: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:818: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:1307: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2102: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2118: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2378: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2416: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3198: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3228: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3258: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:4758: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5269: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5285: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5301: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5317: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5333: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5349: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5365: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5381: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5397: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:6223: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:7188: trailing whitespace.
++          
+

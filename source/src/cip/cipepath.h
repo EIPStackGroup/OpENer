@@ -11,16 +11,14 @@
 #include "cip/cipelectronickey.h"
 #include "cip/ciptypes.h"
 
-#define SEGMENT_TYPE_PORT_SEGMENT \
-  0x00 /**< Port segment */
+#define SEGMENT_TYPE_PORT_SEGMENT 0x00 /**< Port segment */
 #define SEGMENT_TYPE_LOGICAL_SEGMENT \
   0x20 /**< Message value of the Logical segment */
 #define SEGMENT_TYPE_NETWORK_SEGMENT \
   0x40 /**< Message value of the Network segment */
 #define SEGMENT_TYPE_SYMBOLIC_SEGMENT \
   0x60 /**< Message value of the Symbolic segment */
-#define SEGMENT_TYPE_DATA_SEGMENT \
-  0x80 /**< Data segment */
+#define SEGMENT_TYPE_DATA_SEGMENT 0x80 /**< Data segment */
 #define SEGMENT_TYPE_DATA_TYPE_CONSTRUCTED \
   0xA0 /**< Message value of the Data type constructed */
 #define SEGMENT_TYPE_DATA_TYPE_ELEMENTARTY \
@@ -33,8 +31,7 @@
   0x04 /**< Message value of the logical segment/logical type Instance ID */
 #define LOGICAL_SEGMENT_TYPE_MEMBER_ID \
   0x08 /**< Message value of the logical segment/logical type Member ID */
-#define LOGICAL_SEGMENT_TYPE_CONNECTION_POINT \
-  0x0C /**< Connection point */
+#define LOGICAL_SEGMENT_TYPE_CONNECTION_POINT 0x0C /**< Connection point */
 #define LOGICAL_SEGMENT_TYPE_ATTRIBUTE_ID \
   0x10 /**< Message value of the logical segment/logical type Attribute ID */
 #define LOGICAL_SEGMENT_TYPE_SPECIAL \
@@ -430,7 +427,7 @@ SymbolicSegmentExtendedFormat GetPathSymbolicSegmentExtendedFormat(
     const unsigned char* const cip_path);
 
 /* Special purpose encoding and decoding functions */
-// TODO currently not fully implemented
+// TODO(opener): currently not fully implemented
 // size_t CipEpathEncodeConnectionEpath(
 //   const CipConnectionPathEpath *const connection_epath,
 //   CipOctet **encoded_path);

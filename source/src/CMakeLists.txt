@@ -23,4 +23,7 @@ if( OPENER_INSTALL_AS_LIB )
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h"
    )
+  install(FILES opener_api.h trace.h typedefs.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/src
+  )
 endif()

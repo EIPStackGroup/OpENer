@@ -68,9 +68,9 @@ typedef struct {
   CipTcpIpInterfaceConfiguration
       interface_configuration;  ///< attribute #5 IP, network mask, gateway,
                                 ///< name server 1 & 2, domain name
-  CipString hostname;        /**< #6 host name*/
-  CipUsint mcast_ttl_value;  ///< #8 the time to live value to be used for
-                             ///< multi-cast connections
+  CipString hostname;           /**< #6 host name*/
+  CipUsint mcast_ttl_value;     ///< #8 the time to live value to be used for
+                                ///< multi-cast connections
 
   /** #9 The multicast configuration for this device */
   MulticastAddressConfiguration mcast_config;

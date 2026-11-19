@@ -18,9 +18,7 @@ extern "C" {
 
 ENIPMessage message; /**< Test variable holds ENIP message*/
 
-TEST_GROUP(CipCommon){
-
-    void setup(){InitializeENIPMessage(&message);
+TEST_GROUP(CipCommon){void setup(){InitializeENIPMessage(&message);
 }
 }
 ;

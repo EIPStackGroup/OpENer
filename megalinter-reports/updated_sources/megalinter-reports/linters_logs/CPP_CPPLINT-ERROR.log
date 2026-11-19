@@ -1,0 +1,125 @@
+Results of cpplint linter (version 2.0.2)
+See documentation on https://megalinter.io/10.2.0/descriptors/cpp_cpplint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+source/src/cip/cipconnectionmanager.h:39:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:42:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:118:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:173:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:177:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:197:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:207:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:209:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:215:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:231:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:232:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:233:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:240:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionmanager.h:241:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipstring.h:187:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.h:14:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptypes.h:505:  Weird number of spaces at line-start.  Are you using a 2-space indent?  [whitespace/indent] [3]
+source/src/cip/ciptypes.h:215:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/sample_application/opener_user_conf.h:30:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/WIN32/sample_application/opener_user_conf.h:26:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/typedefs.h:68:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/typedefs.h:69:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/tests/cip/cipcommontests.cpp:24:  Line contains only semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+source/tests/cip/cipcommontests.cpp:152:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/tests/cip/cipelectronickeyformattest.cpp:33:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:21:  Line contains only semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+source/tests/cip/cipstringtests.cpp:26:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:31:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:45:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:54:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:82:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:87:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:99:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:107:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:133:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:138:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:150:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:158:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:184:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:189:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:202:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:211:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:232:  Add #include <string> for string  [build/include_what_you_use] [4]
+Done processing source/src/cip/appcontype.h
+Done processing source/src/cip/cipassembly.h
+Done processing source/src/cip/cipclass3connection.h
+Done processing source/src/cip/cipcommon.h
+Done processing source/src/cip/cipconnectionmanager.h
+Done processing source/src/cip/cipconnectionobject.h
+Done processing source/src/cip/cipdlr.h
+Done processing source/src/cip/cipelectronickey.h
+Done processing source/src/cip/cipepath.h
+Done processing source/src/cip/ciperror.h
+Done processing source/src/cip/cipethernetlink.h
+Done processing source/src/cip/cipidentity.h
+Done processing source/src/cip/cipioconnection.h
+Done processing source/src/cip/cipmessagerouter.h
+Done processing source/src/cip/cipqos.h
+Done processing source/src/cip/cipstring.h
+Done processing source/src/cip/cipstringi.h
+Done processing source/src/cip/ciptcpipinterface.h
+Done processing source/src/cip/ciptypes.h
+Done processing source/src/enet_encap/cpf.h
+Done processing source/src/enet_encap/encap.h
+Done processing source/src/enet_encap/endianconv.h
+Done processing source/src/opener_api.h
+Done processing source/src/ports/MINGW/networkconfig.h
+Done processing source/src/ports/MINGW/platform_network_includes.h
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.h
+Done processing source/src/ports/MINGW/sample_application/opener_user_conf.h
+Done processing source/src/ports/POSIX/networkconfig.h
+Done processing source/src/ports/POSIX/platform_network_includes.h
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.h
+Done processing source/src/ports/POSIX/sample_application/opener_user_conf.h
+Done processing source/src/ports/STM32/networkconfig.h
+Done processing source/src/ports/STM32/opener.h
+Done processing source/src/ports/STM32/platform_network_includes.h
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/STM32/sample_application/opener_user_conf.h
+Done processing source/src/ports/WIN32/networkconfig.h
+Done processing source/src/ports/WIN32/platform_network_includes.h
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/WIN32/sample_application/opener_user_conf.h
+Done processing source/src/ports/generic_networkhandler.h
+Done processing source/src/ports/networkhandler.h
+Done processing source/src/ports/nvdata/conffile.h
+Done processing source/src/ports/nvdata/nvdata.h
+Done processing source/src/ports/nvdata/nvqos.h
+Done processing source/src/ports/nvdata/nvtcpip.h
+Done processing source/src/ports/opener_error.h
+Done processing source/src/ports/opener_user_conf.h
+Done processing source/src/ports/platform_network_includes.h
+Done processing source/src/ports/socket_timer.h
+Done processing source/src/trace.h
+Done processing source/src/typedefs.h
+Done processing source/src/utils/doublylinkedlist.h
+Done processing source/src/utils/enipmessage.h
+Done processing source/src/utils/random.h
+Done processing source/src/utils/xorshiftrandom.h
+Done processing source/tests/OpENerTests.cpp
+Done processing source/tests/OpENerTests.h
+Done processing source/tests/callback_mock.cpp
+Done processing source/tests/check_assert.h
+Done processing source/tests/cip/cipcommontests.cpp
+Done processing source/tests/cip/cipconnectionmanagertest.cpp
+Done processing source/tests/cip/cipconnectionobjecttest.cpp
+Done processing source/tests/cip/cipelectronickeyformattest.cpp
+Done processing source/tests/cip/cipelectronickeytest.cpp
+Done processing source/tests/cip/cipepathtest.cpp
+Done processing source/tests/cip/cipstringtests.cpp
+Done processing source/tests/enet_encap/encaptest.cpp
+Done processing source/tests/enet_encap/endianconvtest.cpp
+Done processing source/tests/ports/socket_timer_tests.cpp
+Done processing source/tests/test_assert.h
+Done processing source/tests/utils/doublylinkedlistTests.cpp
+Done processing source/tests/utils/randomTests.cpp
+Done processing source/tests/utils/xorshiftrandomtests.cpp
+Total errors found: 43
+

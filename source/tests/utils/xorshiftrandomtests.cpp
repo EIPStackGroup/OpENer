@@ -11,9 +11,7 @@ extern "C" {
 #include <xorshiftrandom.h>
 }
 
-TEST_GROUP(XorShiftRandom){
-
-};
+TEST_GROUP(XorShiftRandom){};
 
 /*Characterization test*/
 TEST(XorShiftRandom, SeedOneCharacterization) {

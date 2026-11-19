@@ -117,8 +117,8 @@ typedef enum {
 /** @brief Definition of Get and Set Flags for CIP Attributes */
 typedef enum {                          /* TODO: Rework */
                kNotSetOrGetable = 0x00, /**< Neither set-able nor get-able */
-               kGetableAll = 0x01,  ///< Get-able, also part of Get Attribute
-                                    ///< All service
+               kGetableAll = 0x01,    ///< Get-able, also part of Get Attribute
+                                      ///< All service
                kGetableSingle = 0x02, /**< Get-able via Get Attribute */
                kSetable       = 0x04, /**< Set-able via Set Attribute */
                /* combined for convenience */
@@ -273,8 +273,7 @@ typedef struct {
   const CipOctet* data;
 } CipMessageRouterRequest;
 
-#define MAX_SIZE_OF_ADD_STATUS \
-  2 /* Supports up to two 16-bit values. */
+#define MAX_SIZE_OF_ADD_STATUS 2 /* Supports up to two 16-bit values. */
 
 typedef struct enip_message ENIPMessage;
 
@@ -293,7 +292,7 @@ typedef struct {
       [MAX_SIZE_OF_ADD_STATUS];  ///< Array of 16 bit words; Additional status;
                                  ///< If SizeOfAdditionalStatus is 0. there is
                                  ///< no Additional Status
-  ENIPMessage message; /* The constructed message */
+  ENIPMessage message;           /* The constructed message */
 } CipMessageRouterResponse;
 
 /** @brief self-describing data encoding for CIP types */
@@ -384,9 +383,9 @@ typedef struct cip_class {
   EipUint16 highest_attribute_number;  ///< highest defined attribute number
                                        ///< (attribute numbers are not
                                        ///< necessarily consecutive)
-  uint8_t* get_single_bit_mask; /**< bit mask for GetAttributeSingle */
-  uint8_t* set_bit_mask;        /**< bit mask for SetAttributeSingle */
-  uint8_t* get_all_bit_mask;    /**< bit mask for GetAttributeAll */
+  uint8_t* get_single_bit_mask;        /**< bit mask for GetAttributeSingle */
+  uint8_t* set_bit_mask;               /**< bit mask for SetAttributeSingle */
+  uint8_t* get_all_bit_mask;           /**< bit mask for GetAttributeAll */
 
   EipUint16 number_of_services;        /**< number of services supported */
   CipInstance* instances;              /**< pointer to the list of instances */
@@ -416,7 +415,6 @@ typedef struct cip_class {
   CipCallback PreResetCallback;
   /** Is called in Reset service. */
   CipCallback PostResetCallback;
-
 } CipClass;
 
 /** @ingroup CIP_API

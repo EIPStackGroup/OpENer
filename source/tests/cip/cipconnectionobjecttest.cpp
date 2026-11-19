@@ -13,9 +13,7 @@ extern "C" {
 #include "cip/cipconnectionobject.h"
 }
 
-TEST_GROUP(CipConnectionObject){
-
-};
+TEST_GROUP(CipConnectionObject){};
 
 TEST(CipConnectionObject, InitializeEmpty) {
   CipConnectionObject connection_object;

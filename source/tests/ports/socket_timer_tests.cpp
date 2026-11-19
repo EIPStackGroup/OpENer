@@ -13,9 +13,7 @@ extern "C" {
 #include "ports/socket_timer.h"
 }
 
-TEST_GROUP(SocketTimer){
-
-};
+TEST_GROUP(SocketTimer){};
 
 TEST(SocketTimer, GetAvailableEmptySocketTimer) {
   SocketTimer timers[10];

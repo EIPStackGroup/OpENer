@@ -112,22 +112,20 @@ EipStatus NotifyClass(const CipClass* RESTRICT const cip_class,
   CipInstance* instance = GetCipInstance(
       cip_class, instance_number);  // look up the instance (note that if
                                     // inst==0 this will be the class itself)
-  if (instance) /* if instance is found */
-  {
+  /* If the instance is found, continue processing its services. */
+  if (instance) {
     OPENER_TRACE_INFO("notify: found instance %d%s\n",
                       instance_number,
                       instance_number == 0 ? " (class object)" : "");
 
     CipServiceStruct* service =
         instance->cip_class->services; /* get pointer to array of services */
-    if (NULL != service)               /* if services are defined */
-    {
-      for (size_t i = 0; i < instance->cip_class->number_of_services;
-           i++) /* seach the services list */
-      {
-        if (message_router_request->service ==
-            service->service_number) /* if match is found */
-        {
+    /* If services are defined, search for the requested service. */
+    if (NULL != service) {
+      for (size_t i = 0; i < instance->cip_class->number_of_services; i++) {
+        /* Search the services list. */
+        if (message_router_request->service == service->service_number) {
+          /* If a match is found, call the service. */
           /* call the service, and return what it returns */
           OPENER_TRACE_INFO("notify: calling %s service\n", service->name);
           OPENER_ASSERT(NULL != service->service_function);
@@ -202,9 +200,8 @@ CipInstance* AddCipInstances(CipClass* RESTRICT const cip_class,
       found_free_number = true; /* anticipate instance_number is not in use*/
 
       /* loop through existing instances */
-      while (*next_instance)  // as long as what next_instance points to is not
-                              // zero
-      {
+      // Continue while next_instance points to an instance.
+      while (*next_instance) {
         /* check if instance number in use */
         if (instance_number == (*next_instance)->instance_number) {
           found_free_number = false; /* instance number exists already */
@@ -236,9 +233,8 @@ CipInstance* AddCipInstances(CipClass* RESTRICT const cip_class,
     current_instance->cip_class =
         cip_class; /* point each instance to its class */
 
-    if (cip_class->number_of_attributes)  // if the class calls for instance
-                                          // attributes
-    { /* then allocate storage for the attribute array */
+    // Allocate storage when the class has instance attributes.
+    if (cip_class->number_of_attributes) {
       current_instance->attributes = (CipAttributeStruct*)CipCalloc(
           cip_class->number_of_attributes, sizeof(CipAttributeStruct));
       OPENER_ASSERT(
@@ -412,8 +408,8 @@ CipClass* CreateCipClass(const CipUdint class_code,
 
   if (number_of_instances > 0) {
     AddCipInstances(cip_class,
-                    number_of_instances);  // TODO handle return value and clean
-                                           // up if necessary
+                    number_of_instances);  // TODO(opener): handle return value
+                                           // and clean up if necessary
   }
 
   if (RegisterCipClass(cip_class) ==
@@ -564,12 +560,11 @@ void InsertService(const CipClass* const cip_class,
   OPENER_ASSERT(service != NULL);
   /* adding a service to a class that was not declared to have services is not
    * allowed*/
-  for (int i = 0; i < cip_class->number_of_services;
-       i++) /* Iterate over all service slots attached to the class */
-  {
+  /* Iterate over the service slots attached to the class. */
+  for (int i = 0; i < cip_class->number_of_services; i++) {
     if (service->service_number == service_number ||
-        service->service_function == NULL) /* found undefined service slot*/
-    {
+        service->service_function == NULL) {
+      /* Fill an undefined service slot or update the matching service. */
       service->service_number = service_number; /* fill in service number*/
       service->service_function =
           service_function; /* fill in function address*/
@@ -1149,9 +1144,8 @@ int DecodeCipShortString(
 CipServiceStruct* GetCipService(const CipInstance* const instance,
                                 CipUsint service_number) {
   CipServiceStruct* service = instance->cip_class->services;
-  for (size_t i = 0; i < instance->cip_class->number_of_services;
-       i++) /* hunt for the GET_ATTRIBUTE_SINGLE service*/
-  {
+  /* Search for the requested service. */
+  for (size_t i = 0; i < instance->cip_class->number_of_services; i++) {
     if (service->service_number == service_number) {
       return service; /* found the service */
     }
@@ -1663,8 +1657,8 @@ EipStatus CipDeleteService(
         instance->instance_number) {  // if instance to delete is head
       class->instances = instances->next;
     } else {
-      while (NULL != instances->next)  // as long as pointer in not NULL
-      {
+      // Continue while the next instance exists.
+      while (NULL != instances->next) {
         CipInstance* next_instance = instances->next;
         if (next_instance->instance_number == instance->instance_number) {
           instances->next = next_instance->next;

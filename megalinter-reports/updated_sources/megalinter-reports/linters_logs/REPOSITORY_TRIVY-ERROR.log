@@ -1,0 +1,20 @@
+Results of trivy linter (version 0.76.1)
+See documentation on https://megalinter.io/10.2.0/descriptors/repository_trivy/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+2026-11-19T19:09:19Z	INFO	[vulndb] Need to update DB
+2026-11-19T19:09:19Z	INFO	[vulndb] Downloading vulnerability DB...
+2026-11-19T19:09:19Z	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-11-19T19:09:19Z	FATAL	Fatal error	run error: init error: DB error: failed to download vulnerability DB: OCI artifact error: failed to download vulnerability DB: failed to download artifact from mirror.gcr.io/aquasec/trivy-db:2: OCI repository error: 1 error occurred:
+	* Get "https://mirror.gcr.io/v2/": dial tcp: lookup mirror.gcr.io on 168.63.129.16:53: server misbehaving
+
+
+
+
+[REPOSITORY_TRIVY_ERROR_DB_DOWNLOAD_FAILED] trivy could not download or refresh its vulnerability database from the configured registry.
+Workarounds:
+  - Retry the run; this is often transient.
+  - Set `TRIVY_DB_REPOSITORY` to an alternative mirror (e.g. an internal registry or AWS ECR Public Gallery).
+  - Pre-populate `~/.cache/trivy` in CI.

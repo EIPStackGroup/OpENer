@@ -17,9 +17,7 @@ extern "C" {
 #include "enet_encap/endianconv.h"
 }
 
-TEST_GROUP(EndianConversion){
-
-};
+TEST_GROUP(EndianConversion){};
 
 TEST(EndianConversion, GetSintFromMessage) {
   const CipOctet test_message[]   = {8};

@@ -29,6 +29,9 @@
 
 #include <string.h>
 
+/** @brief The device's configuration data for the Identity Object */
+#include <devicedata.h>
+
 #include "cip/cipcommon.h"
 #include "cip/ciperror.h"
 #include "cip/cipmessagerouter.h"
@@ -37,9 +40,6 @@
 #include "ports/opener_user_conf.h"
 #include "src/opener_api.h"
 #include "src/trace.h"
-
-/** @brief The device's configuration data for the Identity Object */
-#include <devicedata.h>
 
 /** @brief Definition of the global Identity Object */
 CipIdentityObject g_identity = {
@@ -293,7 +293,7 @@ EipStatus CipIdentityInit() {
       1,          /* # of instances*/
       "identity", /* # class name (for debug)*/
       1,
-      /* # class revision*/    // TODO: change revision to 2 - check
+      /* # class revision*/    // TODO(opener): change revision to 2 - check
       &InitializeCipIdentity); /* # function pointer for initialization*/
 
   if (class == 0) {

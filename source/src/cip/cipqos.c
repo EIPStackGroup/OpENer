@@ -119,19 +119,18 @@ CipUsint CipQosGetDscpPriority(ConnectionObjectPriority priority) {
 EipStatus CipQoSInit() {
   CipClass* qos_class = NULL;
 
-  if ((qos_class =
-           CreateCipClass(kCipQoSClassCode,
-                          7, /* # class attributes */
-                          7, /* # highest class attribute number */
-                          2, /* # class services */
-                          8, /* # instance attributes */
-                          8, /* # highest instance attribute number */
-                          2, /* # instance services */
-                          1, /* # instances */
-                          "Quality of Service",
-                          1,   /* # class revision */
-                          NULL /* # function pointer for initialization */
-                          )) == 0) {
+  qos_class = CreateCipClass(kCipQoSClassCode,
+                             7, /* # class attributes */
+                             7, /* # highest class attribute number */
+                             2, /* # class services */
+                             8, /* # instance attributes */
+                             8, /* # highest instance attribute number */
+                             2, /* # instance services */
+                             1, /* # instances */
+                             "Quality of Service",
+                             1, /* # class revision */
+                             NULL /* # function pointer for initialization */);
+  if (NULL == qos_class) {
     return kEipStatusError;
   }
 

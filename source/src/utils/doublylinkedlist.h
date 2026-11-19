@@ -30,7 +30,6 @@ typedef struct {
 
   NodeMemoryAllocator allocator;
   NodeMemoryDeallocator deallocator;
-
 } DoublyLinkedList;
 
 void DoublyLinkedListInitialize(DoublyLinkedList* list,

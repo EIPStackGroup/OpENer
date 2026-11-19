@@ -15,9 +15,7 @@ extern "C" {
 #include "cip/cipepath.h"
 }
 
-TEST_GROUP(CipEpath){
-
-};
+TEST_GROUP(CipEpath){};
 
 /** Segment type tests **/
 TEST(CipEpath, GetSegmentTypePortSegment) {

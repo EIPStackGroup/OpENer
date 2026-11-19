@@ -350,7 +350,6 @@ EipStatus HandleReceivedConnectedData(const EipUint8* const data,
                                              // be ignored
       if (g_common_packet_format_data_item.data_item.type_id ==
           kCipItemIdConnectedDataItem) { /* connected data item received */
-
         CipConnectionObject* connection_object =
             GetConnectedObject(g_common_packet_format_data_item.address_item
                                    .data.connection_identifier);
@@ -1023,15 +1022,12 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
     CipConnectionObject* connection_object = node->data;
     if (kConnectionObjectStateEstablished ==
         ConnectionObjectGetState(connection_object)) {
-      if ((NULL !=
-           connection_object
-               ->consuming_instance) ||  // we have a consuming connection check
-                                         // inactivity watchdog timer
+      // Check the watchdog for consuming connections and all server
+      // connections.
+      if ((NULL != connection_object->consuming_instance) ||
           (kConnectionObjectTransportClassTriggerDirectionServer ==
            ConnectionObjectGetTransportClassTriggerDirection(
-               connection_object)))  // all server connections have to maintain
-                                     // an inactivity watchdog timer
-      {
+               connection_object))) {
         if (elapsed_time >= connection_object->inactivity_watchdog_timer) {
           /* we have a timed out connection perform watchdog time out action*/
           OPENER_TRACE_INFO(">>>>>>>>>>Connection ConnNr: %u timed out\n",
@@ -1047,12 +1043,10 @@ EipStatus ManageConnections(MilliSeconds elapsed_time) {
       if (kConnectionObjectStateEstablished ==
           ConnectionObjectGetState(connection_object)) {
         /* client connection */
+        // Produce only for the master connection.
         if ((0 != ConnectionObjectGetExpectedPacketRate(connection_object)) &&
             (kEipInvalidSocket !=
-             connection_object->socket
-                 [kUdpCommuncationDirectionProducing]))  // only produce for the
-                                                         // master connection
-        {
+             connection_object->socket[kUdpCommuncationDirectionProducing])) {
           if (kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
               ConnectionObjectGetTransportClassTriggerProductionTrigger(
                   connection_object)) {
@@ -1535,7 +1529,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
       }
     }
 
-    // TODO: Refactor this afterwards
+    // TODO(opener): Refactor this afterwards
     if (kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
         ConnectionObjectGetTransportClassTriggerProductionTrigger(
             connection_object)) {
@@ -1600,7 +1594,7 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
       instance_id = (CipInstanceNum)temp_id;
       /* 1 or 2 16Bit words for the configuration instance part of the path  */
       remaining_path -=
-          (instance_id > 0xFF) ? 2 : 1;  // TODO: 32 bit case missing
+          (instance_id > 0xFF) ? 2 : 1;  // TODO(opener): 32 bit case missing
     } else {
       OPENER_TRACE_INFO("no config data\n");
     }
@@ -1684,18 +1678,16 @@ EipUint8 ParseConnectionPath(CipConnectionObject* connection_object,
         }
       }
 
-      for (size_t i = 0; i < number_of_encoded_paths;
-           i++) /* process up to 2 encoded paths */
-      {
+      /* Process up to two encoded paths. */
+      for (size_t i = 0; i < number_of_encoded_paths; i++) {
+        // Interpret the Connection Point as an Instance Number only for
+        // Assembly Objects.
         if (kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
             (kLogicalSegmentLogicalTypeInstanceId ==
                  GetPathLogicalSegmentLogicalType(message) ||
              kLogicalSegmentLogicalTypeConnectionPoint ==
-                 GetPathLogicalSegmentLogicalType(
-                     message)))  // Connection Point interpreted as InstanceNr
-                                 // -> only in Assembly Objects
-        { /* Attribute Id or Connection Point */
-
+                 GetPathLogicalSegmentLogicalType(message))) {
+          /* Attribute Id or Connection Point */
           /* Validate encoded instance number. */
           const CipDword temp_instance_id = CipEpathGetLogicalValue(&message);
           if (temp_instance_id > kCipInstanceNumMax) {

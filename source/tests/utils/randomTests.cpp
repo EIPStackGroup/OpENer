@@ -12,9 +12,7 @@ extern "C" {
 #include <xorshiftrandom.h>
 }
 
-TEST_GROUP(RandomClass){
-
-};
+TEST_GROUP(RandomClass){};
 
 TEST(RandomClass, CreateXOrShiftObject) {
   Random* pRandom  = NULL;

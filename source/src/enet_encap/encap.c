@@ -175,13 +175,10 @@ EipStatus HandleReceivedExplictTcpData(int socket,
     return kEipStatusError;
   }
 
-  if (kEncapsulationHeaderOptionsFlag ==
-      encapsulation_data.options) /*TODO generate appropriate error response*/
-  {
-    if (*number_of_remaining_bytes >=
-        0)  // check if the message is corrupt: header size + claimed payload
-            // size > than what we actually received
-    {
+  // TODO(opener): Generate an appropriate error response.
+  if (kEncapsulationHeaderOptionsFlag == encapsulation_data.options) {
+    // Ensure the header and claimed payload fit in the received data.
+    if (*number_of_remaining_bytes >= 0) {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
       return_value              = kEipStatusOkSend;
@@ -270,13 +267,10 @@ EipStatus HandleReceivedExplictUdpData(const int socket,
     return kEipStatusError;
   }
 
-  if (kEncapsulationHeaderOptionsFlag ==
-      encapsulation_data.options) /*TODO generate appropriate error response*/
-  {
-    if (*number_of_remaining_bytes >=
-        0)  // check if the message is corrupt: header size + claimed payload
-            // size > than what we actually received
-    {
+  // TODO(opener): Generate an appropriate error response.
+  if (kEncapsulationHeaderOptionsFlag == encapsulation_data.options) {
+    // Ensure the header and claimed payload fit in the received data.
+    if (*number_of_remaining_bytes >= 0) {
       /* full package or more received */
       encapsulation_data.status = kEncapsulationProtocolSuccess;
       return_value              = kEipStatusOkSend;
@@ -315,7 +309,7 @@ EipStatus HandleReceivedExplictUdpData(const int socket,
         case (kEncapsulationCommandSendUnitData):
         default:
           OPENER_TRACE_INFO("No command\n");
-          // TODO: Check this
+          // TODO(opener): Check this
           encapsulation_data.status      = kEncapsulationProtocolInvalidCommand;
           encapsulation_data.data_length = 0;
           break;
@@ -471,7 +465,7 @@ void EncodeListIdentityCipIdentityItem(ENIPMessage* const outgoing_message) {
   AddDintToMessage(g_identity.serial_number, outgoing_message);
   AddSintToMessage((unsigned char)g_identity.product_name.length,
                    outgoing_message);
-  // TODO Change to EncodeCipString
+  // TODO(opener): Change to EncodeCipString
   memcpy(outgoing_message->current_message_position,
          g_identity.product_name.string,
          g_identity.product_name.length);
@@ -580,9 +574,8 @@ void HandleReceivedRegisterSessionCommand(
 
     if (kSessionStatusInvalid != session_index) {
       session_index = GetFreeSessionIndex();
-      if (kSessionStatusInvalid ==
-          session_index) /* no more sessions available */
-      {
+      if (kSessionStatusInvalid == session_index) {
+        /* No more sessions are available. */
         encapsulation_protocol_status =
             kEncapsulationProtocolInsufficientMemory;
       } else { /* successful session registered */
@@ -650,8 +643,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
     ENIPMessage* const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /*EipStatus*/ return_value =
-      kEipStatusOk;  // TODO: Shouldn't this be kEipStatusOk cause we must not
-                     // send any response if data_length < 6?
+      kEipStatusOk;  // TODO(opener): Shouldn't this be kEipStatusOk cause we
+                     // must not send any response if data_length < 6?
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
@@ -668,10 +661,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
     ((EncapsulationData* const)receive_data)->data_length -=
         6; /* the rest is in CPF format*/
 
-    if (kSessionStatusValid ==
-        CheckRegisteredSessions(
-            receive_data)) /* see if the EIP session is registered*/
-    {
+    if (kSessionStatusValid == CheckRegisteredSessions(receive_data)) {
+      /* Check whether the EIP session is registered. */
       return_value = NotifyConnectedCommonPacketFormat(
           receive_data, originator_address, outgoing_message);
     } else { /* received a package with non registered session handle */
@@ -682,8 +673,8 @@ EipStatus HandleReceivedSendUnitDataCommand(
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
       return_value =
-          kEipStatusOkSend;  // TODO: Needs to be here if line with first TODO
-                             // of this function is adjusted.
+          kEipStatusOkSend;  // TODO(opener): Needs to be here if line with
+                             // first TODO of this function is adjusted.
     }
   }
   return return_value;
@@ -703,8 +694,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     ENIPMessage* const outgoing_message) {
   EipStatus return_value = kEipStatusOkSend;
   /* EipStatus*/ return_value =
-      kEipStatusOk;  // TODO: Shouldn't this be kEipStatusOk cause we must not
-                     // send any response if data_length < 6?
+      kEipStatusOk;  // TODO(opener): Shouldn't this be kEipStatusOk cause we
+                     // must not send any response if data_length < 6?
 
   if (receive_data->data_length >= 6) {
     /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF
@@ -721,10 +712,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
     ((EncapsulationData* const)receive_data)->data_length -=
         6; /* the rest is in CPF format*/
 
-    if (kSessionStatusValid ==
-        CheckRegisteredSessions(
-            receive_data)) /* see if the EIP session is registered*/
-    {
+    if (kSessionStatusValid == CheckRegisteredSessions(receive_data)) {
+      /* Check whether the EIP session is registered. */
       return_value = NotifyCommonPacketFormat(
           receive_data, originator_address, outgoing_message);
     } else { /* received a package with non registered session handle */
@@ -735,8 +724,8 @@ EipStatus HandleReceivedSendRequestResponseDataCommand(
                                   kEncapsulationProtocolInvalidSessionHandle,
                                   outgoing_message);
       return_value =
-          kEipStatusOkSend;  // TODO: Needs to be here if line with first TODO
-                             // of this function is adjusted.
+          kEipStatusOkSend;  // TODO(opener): Needs to be here if line with
+                             // first TODO of this function is adjusted.
     }
   }
   return return_value;
