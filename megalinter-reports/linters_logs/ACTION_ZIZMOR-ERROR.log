@@ -1,0 +1,45 @@
+Results of zizmor linter (version 1.25.0)
+See documentation on https://megalinter.io/10.2.0/descriptors/action_zizmor/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+ INFO zizmor: 🌈 zizmor v1.25.0
+ INFO audit: zizmor: 🌈 completed .github/workflows/build.yml
+warning[artipacked]: credential persistence through GitHub Actions artifacts
+  --> .github/workflows/build.yml:24:9
+   |
+24 |         - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+   |  _________^
+25 | |         with:
+26 | |           fetch-depth: 0
+   | |________________________^ does not set persist-credentials: false
+   |
+   = note: audit confidence → Low
+   = note: this finding has an auto-fix
+   = help: audit documentation → https://docs.zizmor.sh/audits/#artipacked
+
+warning[artipacked]: credential persistence through GitHub Actions artifacts
+  --> .github/workflows/build.yml:58:9
+   |
+58 |         - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+   |  _________^
+59 | |         with:
+60 | |           fetch-depth: 0
+   | |________________________^ does not set persist-credentials: false
+   |
+   = note: audit confidence → Low
+   = note: this finding has an auto-fix
+   = help: audit documentation → https://docs.zizmor.sh/audits/#artipacked
+
+error[unpinned-uses]: unpinned action reference
+  --> .github/workflows/build.yml:29:15
+   |
+29 |         uses: oxsecurity/megalinter/flavors/c_cpp@v10.2.0
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ action is not pinned to a hash (required by blanket policy)
+   |
+   = note: audit confidence → High
+   = help: audit documentation → https://docs.zizmor.sh/audits/#unpinned-uses
+
+12 findings (9 suppressed, 2 unsafe fixes): 0 informational, 0 low, 2 medium, 1 high
+

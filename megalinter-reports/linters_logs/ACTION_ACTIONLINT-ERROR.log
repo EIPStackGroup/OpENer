@@ -1,0 +1,11 @@
+Results of actionlint linter (version 1.7.12)
+See documentation on https://megalinter.io/10.2.0/descriptors/action_actionlint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+.github/workflows/build.yml:154:9: shellcheck reported issue in this script: SC2086:info:3:41: Double quote to prevent globbing and word splitting [shellcheck]
+    |
+154 |         run: |
+    |         ^~~~
+

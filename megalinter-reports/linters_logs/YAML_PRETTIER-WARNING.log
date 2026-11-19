@@ -1,0 +1,10 @@
+Results of prettier linter (version 3.9.10)
+See documentation on https://megalinter.io/10.2.0/descriptors/yaml_prettier/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+Checking formatting...
+[warn] .github/workflows/build.yml
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.
+

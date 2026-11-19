@@ -1,0 +1,8 @@
+[0000] ERROR failed to fetch latest version: Get "https://toolbox-data.anchore.io/syft/releases/latest/VERSION": dial tcp: lookup toolbox-data.anchore.io on 168.63.129.16:53: server misbehaving
+[0000]  WARN no explicit name and version provided for directory source, deriving artifact ID from the given path (which is not ideal)
+NAME                                 VERSION                                   TYPE           
+actions/checkout                     3d3c42e5aac5ba805825da76410c181273ba90b1  github-action  
+actions/github-script                3a2844b7e9c422d3c10d287c895573f7108da1b3  github-action  
+actions/setup-python                 6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  github-action  
+actions/upload-artifact              cf430e030ddbb5b0abf93d22962f4752f3646cd9  github-action  
+oxsecurity/megalinter/flavors/c_cpp  v10.2.0                                   github-action

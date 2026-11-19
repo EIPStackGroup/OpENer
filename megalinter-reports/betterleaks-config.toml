@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+    '(^|/)\.git/',
+    '(^|/)megalinter\-reports/',
+]

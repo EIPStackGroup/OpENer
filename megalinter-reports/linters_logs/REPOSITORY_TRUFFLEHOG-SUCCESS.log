@@ -1,0 +1,5 @@
+Results of trufflehog linter (version 3.99.7)
+See documentation on https://megalinter.io/10.2.0/descriptors/repository_trufflehog/
+-----------------------------------------------
+
+✅ [SUCCESS] for workspace /tmp/lint

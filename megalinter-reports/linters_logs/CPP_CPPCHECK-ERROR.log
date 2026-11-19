@@ -1,0 +1,385 @@
+Results of cppcheck linter (version 2.21.0)
+See documentation on https://megalinter.io/10.2.0/descriptors/cpp_cppcheck/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+Checking source/src/cip/appcontype.h ...
+1/72 files checked 0% done
+Checking source/src/cip/cipassembly.h ...
+2/72 files checked 1% done
+Checking source/src/cip/cipclass3connection.h ...
+3/72 files checked 2% done
+Checking source/src/cip/cipcommon.h ...
+4/72 files checked 4% done
+Checking source/src/cip/cipconnectionmanager.h ...
+5/72 files checked 9% done
+Checking source/src/cip/cipconnectionobject.h ...
+6/72 files checked 14% done
+Checking source/src/cip/cipdlr.h ...
+7/72 files checked 15% done
+Checking source/src/cip/cipelectronickey.h ...
+8/72 files checked 16% done
+Checking source/src/cip/cipepath.h ...
+9/72 files checked 21% done
+Checking source/src/cip/ciperror.h ...
+10/72 files checked 23% done
+Checking source/src/cip/cipethernetlink.h ...
+Checking source/src/cip/cipethernetlink.h: OPENER_ETHLINK_CNTRS_ENABLE=OPENER_ETHLINK_CNTRS_ENABLE...
+Checking source/src/cip/cipethernetlink.h: OPENER_ETHLINK_IFACE_CTRL_ENABLE=OPENER_ETHLINK_IFACE_CTRL_ENABLE...
+11/72 files checked 25% done
+Checking source/src/cip/cipidentity.h ...
+12/72 files checked 26% done
+Checking source/src/cip/cipioconnection.h ...
+13/72 files checked 27% done
+Checking source/src/cip/cipmessagerouter.h ...
+14/72 files checked 27% done
+Checking source/src/cip/cipqos.h ...
+15/72 files checked 28% done
+Checking source/src/cip/cipstring.h ...
+16/72 files checked 30% done
+Checking source/src/cip/cipstringi.h ...
+17/72 files checked 30% done
+Checking source/src/cip/ciptcpipinterface.h ...
+18/72 files checked 31% done
+Checking source/src/cip/ciptypes.h ...
+19/72 files checked 36% done
+Checking source/src/enet_encap/cpf.h ...
+20/72 files checked 38% done
+Checking source/src/enet_encap/encap.h ...
+21/72 files checked 39% done
+Checking source/src/enet_encap/endianconv.h ...
+22/72 files checked 41% done
+Checking source/src/opener_api.h ...
+Checking source/src/opener_api.h: STM32=STM32...
+23/72 files checked 54% done
+Checking source/src/ports/MINGW/networkconfig.h ...
+24/72 files checked 54% done
+Checking source/src/ports/MINGW/platform_network_includes.h ...
+25/72 files checked 54% done
+Checking source/src/ports/MINGW/sample_application/ethlinkcbs.h ...
+26/72 files checked 55% done
+Checking source/src/ports/MINGW/sample_application/opener_user_conf.h ...
+Checking source/src/ports/MINGW/sample_application/opener_user_conf.h: IDLING_ASSERT=IDLING_ASSERT;OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+Checking source/src/ports/MINGW/sample_application/opener_user_conf.h: OPENER_UNIT_TEST=OPENER_UNIT_TEST...
+Checking source/src/ports/MINGW/sample_application/opener_user_conf.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+27/72 files checked 57% done
+Checking source/src/ports/POSIX/networkconfig.h ...
+28/72 files checked 57% done
+Checking source/src/ports/POSIX/platform_network_includes.h ...
+29/72 files checked 57% done
+Checking source/src/ports/POSIX/sample_application/ethlinkcbs.h ...
+30/72 files checked 57% done
+Checking source/src/ports/POSIX/sample_application/opener_user_conf.h ...
+Checking source/src/ports/POSIX/sample_application/opener_user_conf.h: IDLING_ASSERT=IDLING_ASSERT;OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+Checking source/src/ports/POSIX/sample_application/opener_user_conf.h: OPENER_UNIT_TEST=OPENER_UNIT_TEST...
+Checking source/src/ports/POSIX/sample_application/opener_user_conf.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+31/72 files checked 60% done
+Checking source/src/ports/STM32/networkconfig.h ...
+32/72 files checked 60% done
+Checking source/src/ports/STM32/opener.h ...
+33/72 files checked 60% done
+Checking source/src/ports/STM32/platform_network_includes.h ...
+34/72 files checked 60% done
+Checking source/src/ports/STM32/sample_application/ethlinkcbs.h ...
+35/72 files checked 61% done
+Checking source/src/ports/STM32/sample_application/opener_user_conf.h ...
+Checking source/src/ports/STM32/sample_application/opener_user_conf.h: IDLING_ASSERT=IDLING_ASSERT;OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+Checking source/src/ports/STM32/sample_application/opener_user_conf.h: OPENER_UNIT_TEST=OPENER_UNIT_TEST...
+Checking source/src/ports/STM32/sample_application/opener_user_conf.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+36/72 files checked 63% done
+Checking source/src/ports/WIN32/networkconfig.h ...
+37/72 files checked 63% done
+Checking source/src/ports/WIN32/platform_network_includes.h ...
+38/72 files checked 63% done
+Checking source/src/ports/WIN32/sample_application/ethlinkcbs.h ...
+39/72 files checked 64% done
+Checking source/src/ports/WIN32/sample_application/opener_user_conf.h ...
+Checking source/src/ports/WIN32/sample_application/opener_user_conf.h: IDLING_ASSERT=IDLING_ASSERT;OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+Checking source/src/ports/WIN32/sample_application/opener_user_conf.h: OPENER_UNIT_TEST=OPENER_UNIT_TEST...
+Checking source/src/ports/WIN32/sample_application/opener_user_conf.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+40/72 files checked 66% done
+Checking source/src/ports/generic_networkhandler.h ...
+Checking source/src/ports/generic_networkhandler.h: STM32...
+41/72 files checked 67% done
+Checking source/src/ports/networkhandler.h ...
+42/72 files checked 68% done
+Checking source/src/ports/nvdata/conffile.h ...
+43/72 files checked 68% done
+Checking source/src/ports/nvdata/nvdata.h ...
+44/72 files checked 68% done
+Checking source/src/ports/nvdata/nvqos.h ...
+45/72 files checked 68% done
+Checking source/src/ports/nvdata/nvtcpip.h ...
+46/72 files checked 68% done
+Checking source/src/ports/opener_error.h ...
+47/72 files checked 69% done
+Checking source/src/ports/socket_timer.h ...
+48/72 files checked 70% done
+Checking source/src/trace.h ...
+Checking source/src/trace.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES...
+Checking source/src/trace.h: OPENER_WITH_TRACES=OPENER_WITH_TRACES;WIN32=WIN32...
+49/72 files checked 70% done
+Checking source/src/typedefs.h ...
+50/72 files checked 72% done
+Checking source/src/utils/doublylinkedlist.h ...
+51/72 files checked 72% done
+Checking source/src/utils/enipmessage.h ...
+52/72 files checked 73% done
+Checking source/src/utils/random.h ...
+53/72 files checked 73% done
+Checking source/src/utils/xorshiftrandom.h ...
+54/72 files checked 73% done
+Checking source/tests/OpENerTests.cpp ...
+55/72 files checked 74% done
+Checking source/tests/OpENerTests.h ...
+56/72 files checked 74% done
+Checking source/tests/callback_mock.cpp ...
+57/72 files checked 74% done
+Checking source/tests/check_assert.h ...
+58/72 files checked 75% done
+Checking source/tests/cip/cipcommontests.cpp ...
+59/72 files checked 76% done
+Checking source/tests/cip/cipconnectionmanagertest.cpp ...
+60/72 files checked 77% done
+Checking source/tests/cip/cipconnectionobjecttest.cpp ...
+61/72 files checked 82% done
+Checking source/tests/cip/cipelectronickeyformattest.cpp ...
+62/72 files checked 83% done
+Checking source/tests/cip/cipelectronickeytest.cpp ...
+63/72 files checked 84% done
+Checking source/tests/cip/cipepathtest.cpp ...
+source/tests/cip/cipepathtest.cpp:344:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:344:3: note: Null pointer dereference
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT | LOGICAL_SEGMENT_FORMAT_EIGHT_BIT;
+  ^
+source/tests/cip/cipepathtest.cpp:345:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[1] = 20;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:345:3: note: Null pointer dereference
+  message[1] = 20;
+  ^
+source/tests/cip/cipepathtest.cpp:346:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:346:3: note: Null pointer dereference
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:347:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:347:3: note: Null pointer dereference
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:348:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:348:3: note: Null pointer dereference
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:349:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[5] = 24;
+  ^
+source/tests/cip/cipepathtest.cpp:342:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:342:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:349:3: note: Null pointer dereference
+  message[5] = 24;
+  ^
+source/tests/cip/cipepathtest.cpp:358:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:358:3: note: Null pointer dereference
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+  ^
+source/tests/cip/cipepathtest.cpp:360:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[1] = 0;
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:360:3: note: Null pointer dereference
+  message[1] = 0;
+  ^
+source/tests/cip/cipepathtest.cpp:361:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:361:3: note: Null pointer dereference
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:362:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:362:3: note: Null pointer dereference
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:363:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:363:3: note: Null pointer dereference
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:364:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[5] = 24;
+  ^
+source/tests/cip/cipepathtest.cpp:356:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:356:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:364:3: note: Null pointer dereference
+  message[5] = 24;
+  ^
+source/tests/cip/cipepathtest.cpp:373:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:373:3: note: Null pointer dereference
+  message[0] = SEGMENT_TYPE_LOGICAL_SEGMENT |
+  ^
+source/tests/cip/cipepathtest.cpp:375:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[1] = 0;
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:375:3: note: Null pointer dereference
+  message[1] = 0;
+  ^
+source/tests/cip/cipepathtest.cpp:376:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:376:3: note: Null pointer dereference
+  message[2] = 21;
+  ^
+source/tests/cip/cipepathtest.cpp:377:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:377:3: note: Null pointer dereference
+  message[3] = 22;
+  ^
+source/tests/cip/cipepathtest.cpp:378:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:378:3: note: Null pointer dereference
+  message[4] = 23;
+  ^
+source/tests/cip/cipepathtest.cpp:379:3: warning: If memory allocation fails, then there is a possible null pointer dereference: message [nullPointerOutOfMemory]
+  message[5] = 24;
+  ^
+source/tests/cip/cipepathtest.cpp:371:42: note: Assuming allocation function fails
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                                         ^
+source/tests/cip/cipepathtest.cpp:371:23: note: Assignment 'message=(CipOctet*)calloc(6,sizeof(CipOctet))', assigned value is 0
+  CipOctet *message = (CipOctet *)calloc (6, sizeof(CipOctet) );
+                      ^
+source/tests/cip/cipepathtest.cpp:379:3: note: Null pointer dereference
+  message[5] = 24;
+  ^
+64/72 files checked 91% done
+Checking source/tests/cip/cipstringtests.cpp ...
+65/72 files checked 93% done
+Checking source/tests/enet_encap/encaptest.cpp ...
+66/72 files checked 94% done
+Checking source/tests/enet_encap/endianconvtest.cpp ...
+67/72 files checked 96% done
+Checking source/tests/ports/socket_timer_tests.cpp ...
+68/72 files checked 96% done
+Checking source/tests/test_assert.h ...
+69/72 files checked 96% done
+Checking source/tests/utils/doublylinkedlistTests.cpp ...
+70/72 files checked 99% done
+Checking source/tests/utils/randomTests.cpp ...
+71/72 files checked 99% done
+Checking source/tests/utils/xorshiftrandomtests.cpp ...
+72/72 files checked 100% done
+
