@@ -4,10 +4,12 @@
  *
  ******************************************************************************/
 
-#include <time.h>
 #include "xorshiftrandom.h"
 
-static uint32_t xor_shift_seed; /** < File-global variable holding the current seed*/
+#include <time.h>
+
+static uint32_t
+    xor_shift_seed; /** < File-global variable holding the current seed*/
 
 void SetXorShiftSeed(uint32_t seed) {
   xor_shift_seed = seed;

@@ -4,4 +4,4 @@
  *
  ******************************************************************************/
 
-#define IfaceLinkIsUp(iface)  netif_is_link_up(iface)
+#define IfaceLinkIsUp(iface) netif_is_link_up(iface)

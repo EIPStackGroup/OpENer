@@ -24,9 +24,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: MegaLinter
-        uses: oxsecurity/megalinter/flavors/c_cpp@v10.2.0
+        uses: oxsecurity/megalinter/flavors/c_cpp@f2fe8c1cba37091848df3e524066c8c23ef353ed
         env:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,6 +59,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install dependencies
         run: |
@@ -154,7 +156,7 @@ jobs:
         run: |
           # Extract coverage percentage
           COVERAGE=$(gcovr --print-summary | grep 'lines:' | awk '{print $2}')
-          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> $GITHUB_ENV
+          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> "$GITHUB_ENV"
           echo "Coverage: $COVERAGE"
 
       - name: Upload build artifacts

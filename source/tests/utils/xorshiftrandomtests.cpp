@@ -7,18 +7,16 @@
 #include <CppUTest/TestHarness.h>
 #include <stdint.h>
 
-extern "C"  {
+extern "C" {
 #include <xorshiftrandom.h>
 }
 
-TEST_GROUP(XorShiftRandom)
-{
+TEST_GROUP(XorShiftRandom){
 
 };
 
 /*Characterization test*/
-TEST(XorShiftRandom, SeedOneCharacterization)
-{
+TEST(XorShiftRandom, SeedOneCharacterization) {
   uint32_t nResult;
   SetXorShiftSeed(1);
   nResult = NextXorShiftUint32();

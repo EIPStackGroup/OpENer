@@ -27,9 +27,9 @@ jmp_buf assert_jump;
  * this pointer is never dereferenced. A pointer is used instead of a boolean
  * so the SetPointerPlugin can automatically reset it after every test.
  */
-jmp_buf *assert_jump_enabled;
+jmp_buf* assert_jump_enabled;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   /* These checks are here to make sure assertions outside test runs don't crash
    */
   CHECK(true);
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
   DetermineEndianess();
 
-  TestRegistry *reg = TestRegistry::getCurrentRegistry();
+  TestRegistry* reg = TestRegistry::getCurrentRegistry();
 
   MockSupportPlugin mockPlugin;
   reg->installPlugin(&mockPlugin);
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
  * file - Path to the source file where the assertion failed.
  * line - Line number identifying the failed assertion.
  */
-extern "C" void test_assert_fail(const char *const file,
+extern "C" void test_assert_fail(const char* const file,
                                  const unsigned int line) {
   /*
    * Throw an exception with the assertion location if an assertion is not
