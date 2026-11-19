@@ -874,10 +874,10 @@ void AssembleConnectionDataResponseMessage(
   // Connection state UINT
   AddIntToMessage(connection_object->state, &message_router_response->message);
   // Originator Port UINT
-  AddIntToMessage(connection_object->originator_address.sin_port,
+  AddIntToMessage(ntohs(connection_object->originator_address.sin_port),
                   &message_router_response->message);
   // Target Port UINT
-  AddIntToMessage(connection_object->remote_address.sin_port,
+  AddIntToMessage(ntohs(connection_object->remote_address.sin_port),
                   &message_router_response->message);
   // Connection Serial Number UINT
   AddIntToMessage(connection_object->connection_serial_number,
