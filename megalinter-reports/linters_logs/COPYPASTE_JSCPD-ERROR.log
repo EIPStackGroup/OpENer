@@ -1,0 +1,801 @@
+Results of jscpd linter (version 5.4.2)
+See documentation on https://megalinter.io/10.2.0/descriptors/copypaste_jscpd/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+Using config from megalinter-reports/jscpd-config.json
+Clone found (diff)
+ - source/doc/STM32/LwIP_HTTP_Server_Netconn_RTOS_OpENer.patch [121:15 - 127:11] (7 lines, 68 tokens)
+   source/doc/STM32/LwIP_HTTP_Server_Netconn_RTOS_OpENer.patch [130:15 - 136:13]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipassembly.c [1:1 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipcommon.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipconnectionmanager.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipepath.c [1:1 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipmessagerouter.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/ciptcpipinterface.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/ciptypes.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/enet_encap/cpf.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/enet_encap/encap.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:2] (7 lines, 232 tokens)
+   source/src/enet_encap/endianconv.c [1:1 - 7:2]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/MINGW/main.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:2] (7 lines, 232 tokens)
+   source/src/ports/MINGW/networkhandler.c [1:1 - 6:2]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/POSIX/main.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/POSIX/networkhandler.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/STM32/networkhandler.c [1:1 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/WIN32/main.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/WIN32/networkhandler.c [1:1 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipclass3connection.c [2:22 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipconnectionobject.c [2:22 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipelectronickey.c [2:22 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipqos.c [2:23 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipstringi.c [2:22 - 7:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/ports/POSIX/networkconfig.c [2:22 - 6:9]
+Clone found (c)
+ - source/src/cip/appcontype.c [18:27 - 24:22] (7 lines, 158 tokens)
+   source/src/cip/appcontype.c [28:22 - 33:38]
+Clone found (c)
+ - source/src/cip/appcontype.c [28:17 - 34:8] (7 lines, 164 tokens)
+   source/src/cip/appcontype.c [37:18 - 43:8]
+Clone found (c)
+ - source/src/cip/appcontype.c [62:19 - 67:21] (6 lines, 196 tokens)
+   source/src/cip/appcontype.c [75:14 - 80:21]
+Clone found (c)
+ - source/src/cip/appcontype.c [75:9 - 80:21] (6 lines, 201 tokens)
+   source/src/cip/appcontype.c [88:10 - 93:21]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipassembly.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipcommon.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipconnectionmanager.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciperror.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipethernetlink.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipidentity.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipmessagerouter.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipqos.h [1:1 - 7:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciptcpipinterface.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciptypes.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/cpf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/encap.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/endianconv.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/opener_api.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/networkconfig.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/platform_network_includes.h [1:1 - 7:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/sample_application/opener_user_conf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/networkconfig.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/platform_network_includes.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/networkconfig.h [1:1 - 7:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/platform_network_includes.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/networkconfig.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/platform_network_includes.h [1:1 - 7:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/networkhandler.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/opener_error.h [1:1 - 7:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/opener_user_conf.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/platform_network_includes.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/trace.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/typedefs.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/tests/OpENerTests.h [1:1 - 6:8]
+Clone found (c-header)
+ - source/src/cip/appcontype.h [1:1 - 6:8] (6 lines, 233 tokens)
+   source/tests/check_assert.h [7:1 - 12:8]
+Clone found (c)
+ - source/src/cip/cipassembly.c [23:1 - 31:4] (9 lines, 287 tokens)
+   source/src/cip/cipqos.c [61:1 - 69:4]
+Clone found (c)
+ - source/src/cip/cipassembly.c [215:40 - 222:7] (8 lines, 62 tokens)
+   source/src/cip/cipassembly.c [227:41 - 234:7]
+Clone found (c)
+ - source/src/cip/cipclass3connection.c [1:51 - 7:9] (7 lines, 184 tokens)
+   source/src/cip/cipioconnection.c [1:51 - 7:9]
+Clone found (c-header)
+ - source/src/cip/cipclass3connection.h [2:21 - 7:8] (6 lines, 134 tokens)
+   source/src/cip/cipstringi.h [2:21 - 7:8]
+Clone found (c-header)
+ - source/src/cip/cipclass3connection.h [43:1 - 50:9] (8 lines, 349 tokens)
+   source/src/cip/cipioconnection.h [47:1 - 54:9]
+Clone found (c)
+ - source/src/cip/cipcommon.c [254:3 - 259:5] (6 lines, 65 tokens)
+   source/src/cip/cipcommon.c [279:3 - 284:9]
+Clone found (c)
+ - source/src/cip/cipcommon.c [426:5 - 438:40] (13 lines, 65 tokens)
+   source/src/cip/cipmessagerouter.c [57:3 - 69:38]
+Clone found (c)
+ - source/src/cip/cipcommon.c [447:29 - 454:30] (8 lines, 66 tokens)
+   source/src/cip/cipmessagerouter.c [77:33 - 83:40]
+Clone found (c)
+ - source/src/cip/cipcommon.c [455:25 - 461:42] (7 lines, 66 tokens)
+   source/src/cip/cipmessagerouter.c [84:30 - 90:40]
+Clone found (c)
+ - source/src/cip/cipcommon.c [456:44 - 463:35] (8 lines, 64 tokens)
+   source/src/cip/cipconnectionmanager.c [248:38 - 255:33]
+Clone found (c)
+ - source/src/cip/cipcommon.c [462:37 - 468:66] (7 lines, 67 tokens)
+   source/src/cip/cipmessagerouter.c [91:30 - 97:64]
+Clone found (c)
+ - source/src/cip/cipcommon.c [469:35 - 475:65] (7 lines, 57 tokens)
+   source/src/cip/cipmessagerouter.c [98:39 - 104:63]
+Clone found (c)
+ - source/src/cip/cipcommon.c [616:38 - 624:2] (9 lines, 52 tokens)
+   source/src/cip/cipcommon.c [872:38 - 880:2]
+Clone found (c)
+ - source/src/cip/cipcommon.c [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [882:29 - 890:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1583:27 - 1591:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1625:27 - 1633:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1690:26 - 1698:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [630:37 - 635:31] (6 lines, 70 tokens)
+   source/src/cip/cipcommon.c [1159:53 - 1164:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [789:22 - 796:2] (8 lines, 99 tokens)
+   source/src/cip/cipcommon.c [798:22 - 805:2]
+Clone found (c)
+ - source/src/cip/cipcommon.c [791:5 - 798:5] (8 lines, 85 tokens)
+   source/src/cip/cipcommon.c [800:5 - 807:7]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1157:26 - 1166:60] (10 lines, 90 tokens)
+   source/src/cip/cipcommon.c [1201:27 - 1210:60]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1157:26 - 1166:60] (10 lines, 90 tokens)
+   source/src/cip/cipcommon.c [1320:27 - 1329:60]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1206:21 - 1269:16] (64 lines, 337 tokens)
+   source/src/cip/cipcommon.c [1325:21 - 1388:16]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1206:21 - 1214:58] (9 lines, 78 tokens)
+   source/src/cip/cipcommon.c [1589:21 - 1597:58]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1245:9 - 1255:35] (11 lines, 53 tokens)
+   source/src/cip/cipcommon.c [1302:5 - 1312:31]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1291:9 - 1318:2] (28 lines, 106 tokens)
+   source/src/cip/cipcommon.c [1421:9 - 1447:2]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1302:37 - 1320:10] (19 lines, 64 tokens)
+   source/src/cip/cipcommon.c [1431:37 - 1449:5]
+Clone found (c)
+ - source/src/cip/cipcommon.c [1635:74 - 1645:18] (11 lines, 61 tokens)
+   source/src/cip/cipcommon.c [1700:72 - 1710:18]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [53:1 - 60:43] (8 lines, 382 tokens)
+   source/src/cip/cipcommon.h [78:1 - 85:43]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [76:75 - 85:29] (10 lines, 371 tokens)
+   source/src/cip/cipcommon.h [165:77 - 174:29]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [77:1 - 85:29] (9 lines, 370 tokens)
+   source/src/cip/cipcommon.h [187:1 - 195:29]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [77:1 - 85:29] (9 lines, 370 tokens)
+   source/src/cip/cipcommon.h [209:1 - 217:29]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [87:29 - 94:42] (8 lines, 68 tokens)
+   source/src/cip/cipcommon.h [176:27 - 183:42]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [87:29 - 94:42] (8 lines, 68 tokens)
+   source/src/cip/cipcommon.h [197:27 - 204:42]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [96:35 - 106:10] (11 lines, 450 tokens)
+   source/src/cip/cipcommon.h [115:28 - 125:10]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [99:46 - 106:10] (8 lines, 262 tokens)
+   source/src/cip/cipcommon.h [137:45 - 144:10]
+Clone found (c-header)
+ - source/src/cip/cipcommon.h [106:26 - 112:42] (7 lines, 64 tokens)
+   source/src/cip/cipcommon.h [125:27 - 131:42]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [217:33 - 233:45] (17 lines, 89 tokens)
+   source/src/cip/cipidentity.c [211:27 - 227:45]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [233:44 - 277:39] (45 lines, 413 tokens)
+   source/src/cip/cipidentity.c [227:45 - 271:39]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [255:38 - 262:33] (8 lines, 57 tokens)
+   source/src/cip/cipmessagerouter.c [92:42 - 99:33]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [267:32 - 280:10] (14 lines, 107 tokens)
+   source/src/cip/cipmessagerouter.c [104:36 - 117:10]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [421:50 - 428:32] (8 lines, 75 tokens)
+   source/src/cip/cipconnectionmanager.c [452:47 - 459:32]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [421:50 - 428:32] (8 lines, 75 tokens)
+   source/src/cip/cipconnectionmanager.c [481:50 - 488:32]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [421:50 - 427:9] (7 lines, 68 tokens)
+   source/src/cip/cipconnectionmanager.c [508:53 - 514:9]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [834:28 - 844:43] (11 lines, 89 tokens)
+   source/src/cip/cipconnectionmanager.c [883:31 - 894:43]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [862:74 - 881:2] (20 lines, 94 tokens)
+   source/src/cip/cipconnectionmanager.c [925:34 - 943:2]
+Clone found (c)
+ - source/src/cip/cipconnectionmanager.c [972:65 - 982:58] (11 lines, 59 tokens)
+   source/src/cip/cipconnectionmanager.c [993:65 - 1003:58]
+Clone found (c)
+ - source/src/cip/cipconnectionobject.c [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/doublylinkedlist.c [1:52 - 7:9]
+Clone found (c)
+ - source/src/cip/cipconnectionobject.c [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/random.c [1:52 - 7:9]
+Clone found (c)
+ - source/src/cip/cipconnectionobject.c [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/xorshiftrandom.c [1:52 - 7:9]
+Clone found (c-header)
+ - source/src/cip/cipconnectionobject.h [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/utils/doublylinkedlist.h [1:52 - 7:8]
+Clone found (c-header)
+ - source/src/cip/cipconnectionobject.h [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/utils/random.h [1:52 - 7:8]
+Clone found (c)
+ - source/src/cip/cipdlr.c [1:52 - 7:22] (7 lines, 210 tokens)
+   source/src/cip/cipstring.c [1:52 - 8:22]
+Clone found (c)
+ - source/src/cip/cipdlr.c [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/conffile.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/cip/cipdlr.c [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvdata.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/cip/cipdlr.c [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvqos.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/cip/cipdlr.c [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvtcpip.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/cip/cipelectronickey.c [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/ports/socket_timer.c [1:52 - 7:9]
+Clone found (c-header)
+ - source/src/cip/cipelectronickey.h [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/cip/cipepath.h [1:52 - 7:8]
+Clone found (c-header)
+ - source/src/cip/cipelectronickey.h [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/ports/socket_timer.h [1:52 - 7:8]
+Clone found (c)
+ - source/src/cip/cipethernetlink.c [115:49 - 121:3] (7 lines, 60 tokens)
+   source/src/cip/cipethernetlink.c [326:39 - 330:9]
+Clone found (c)
+ - source/src/cip/cipethernetlink.c [419:64 - 425:9] (7 lines, 56 tokens)
+   source/src/cip/cipethernetlink.c [439:60 - 445:9]
+Clone found (c)
+ - source/src/cip/cipioconnection.c [160:5 - 172:9] (13 lines, 126 tokens)
+   source/src/cip/cipioconnection.c [248:5 - 259:9]
+Clone found (c)
+ - source/src/cip/cipioconnection.c [172:28 - 179:30] (8 lines, 189 tokens)
+   source/src/cip/cipioconnection.c [259:28 - 265:30]
+Clone found (c)
+ - source/src/cip/cipioconnection.c [752:7 - 758:8] (7 lines, 140 tokens)
+   source/src/cip/cipioconnection.c [796:7 - 802:8]
+Clone found (c)
+ - source/src/cip/cipqos.c [138:16 - 143:28] (6 lines, 71 tokens)
+   source/src/cip/ciptcpipinterface.c [557:19 - 562:28]
+Clone found (c)
+ - source/src/cip/cipstring.c [36:20 - 43:43] (8 lines, 60 tokens)
+   source/src/cip/cipstring.c [220:24 - 227:43]
+Clone found (c)
+ - source/src/cip/cipstring.c [111:39 - 119:22] (9 lines, 52 tokens)
+   source/src/cip/cipstring.c [150:36 - 158:22]
+Clone found (c)
+ - source/src/cip/cipstring.c [111:39 - 119:22] (9 lines, 52 tokens)
+   source/src/cip/cipstring.c [198:51 - 206:22]
+Clone found (c)
+ - source/src/cip/cipstring.c [177:23 - 190:2] (14 lines, 101 tokens)
+   source/src/cip/cipstring.c [241:28 - 254:2]
+Clone found (c-header)
+ - source/src/cip/cipstring.h [113:3 - 119:20] (7 lines, 154 tokens)
+   source/src/cip/cipstring.h [154:7 - 160:20]
+Clone found (c)
+ - source/src/cip/cipstringi.c [2:21 - 7:9] (6 lines, 134 tokens)
+   source/src/ports/MINGW/sample_application/sampleapplication.c [2:21 - 7:9]
+Clone found (c)
+ - source/src/cip/cipstringi.c [97:51 - 104:9] (8 lines, 62 tokens)
+   source/src/cip/cipstringi.c [106:41 - 113:9]
+Clone found (c)
+ - source/src/cip/ciptcpipinterface.c [469:3 - 474:2] (6 lines, 86 tokens)
+   source/src/cip/ciptcpipinterface.c [505:3 - 510:2]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [72:13 - 77:64] (6 lines, 88 tokens)
+   source/src/enet_encap/cpf.c [195:21 - 200:66]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [361:58 - 366:5] (6 lines, 178 tokens)
+   source/src/enet_encap/cpf.c [618:19 - 623:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [415:27 - 421:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [429:37 - 435:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [443:23 - 449:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [507:60 - 512:5] (6 lines, 139 tokens)
+   source/src/enet_encap/cpf.c [519:51 - 524:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [507:66 - 512:5] (6 lines, 133 tokens)
+   source/src/enet_encap/cpf.c [566:31 - 572:5]
+Clone found (c)
+ - source/src/enet_encap/cpf.c [616:44 - 623:5] (8 lines, 215 tokens)
+   source/src/enet_encap/cpf.c [634:43 - 641:5]
+Clone found (c-header)
+ - source/src/enet_encap/cpf.h [90:23 - 99:10] (10 lines, 318 tokens)
+   source/src/enet_encap/cpf.h [107:3 - 116:10]
+Clone found (c)
+ - source/src/enet_encap/encap.c [161:3 - 167:43] (7 lines, 173 tokens)
+   source/src/enet_encap/encap.c [253:3 - 259:43]
+Clone found (c)
+ - source/src/enet_encap/encap.c [167:50 - 187:15] (21 lines, 159 tokens)
+   source/src/enet_encap/encap.c [259:57 - 279:15]
+Clone found (c)
+ - source/src/enet_encap/encap.c [645:5 - 666:21] (22 lines, 280 tokens)
+   source/src/enet_encap/encap.c [696:6 - 717:21]
+Clone found (c)
+ - source/src/enet_encap/encap.c [666:55 - 681:2] (16 lines, 101 tokens)
+   source/src/enet_encap/encap.c [717:46 - 732:2]
+Clone found (c)
+ - source/src/enet_encap/endianconv.c [128:61 - 133:5] (6 lines, 114 tokens)
+   source/src/enet_encap/endianconv.c [142:62 - 147:5]
+Clone found (c)
+ - source/src/enet_encap/endianconv.c [142:26 - 147:5] (6 lines, 150 tokens)
+   source/src/enet_encap/endianconv.c [179:29 - 184:5]
+Clone found (c-header)
+ - source/src/opener_api.h [78:21 - 83:18] (6 lines, 151 tokens)
+   source/src/opener_api.h [88:20 - 93:18]
+Clone found (c-header)
+ - source/src/opener_api.h [667:40 - 675:5] (9 lines, 275 tokens)
+   source/src/opener_api.h [686:36 - 694:5]
+Clone found (c-header)
+ - source/src/opener_api.h [675:44 - 682:11] (8 lines, 51 tokens)
+   source/src/opener_api.h [713:40 - 720:11]
+Clone found (c-header)
+ - source/src/opener_api.h [686:31 - 694:5] (9 lines, 280 tokens)
+   source/src/opener_api.h [705:32 - 713:5]
+Clone found (c-header)
+ - source/src/opener_api.h [810:1 - 815:5] (6 lines, 174 tokens)
+   source/src/opener_api.h [864:1 - 869:5]
+Clone found (c-header)
+ - source/src/opener_api.h [908:29 - 913:10] (6 lines, 159 tokens)
+   source/src/opener_api.h [917:3 - 922:10]
+Clone found (cmake)
+ - source/src/ports/MINGW/CMakeLists.txt [1:1 - 21:114] (21 lines, 76 tokens)
+   source/src/ports/WIN32/CMakeLists.txt [1:1 - 21:115]
+Clone found (cmake)
+ - source/src/ports/MINGW/CMakeLists.txt [21:124 - 35:8] (15 lines, 77 tokens)
+   source/src/ports/WIN32/CMakeLists.txt [21:125 - 35:8]
+Clone found (cmake)
+ - source/src/ports/MINGW/CMakeLists.txt [22:7 - 35:8] (14 lines, 70 tokens)
+   source/src/ports/POSIX/CMakeLists.txt [52:148 - 65:10]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [5:34 - 11:9] (7 lines, 76 tokens)
+   source/src/ports/POSIX/main.c [5:34 - 10:9]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [5:34 - 14:9] (10 lines, 85 tokens)
+   source/src/ports/WIN32/main.c [5:34 - 14:9]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [15:1 - 38:13] (24 lines, 466 tokens)
+   source/src/ports/POSIX/main.c [23:1 - 46:13]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [15:1 - 173:6] (159 lines, 2969 tokens)
+   source/src/ports/WIN32/main.c [15:1 - 173:6]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [46:40 - 55:20] (10 lines, 220 tokens)
+   source/src/ports/POSIX/main.c [62:40 - 71:20]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [56:55 - 83:43] (28 lines, 657 tokens)
+   source/src/ports/POSIX/main.c [72:45 - 99:43]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [84:3 - 95:6] (12 lines, 255 tokens)
+   source/src/ports/POSIX/main.c [100:26 - 111:6]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [95:3 - 104:60] (10 lines, 264 tokens)
+   source/src/ports/POSIX/main.c [117:3 - 126:60]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [119:3 - 128:72] (10 lines, 237 tokens)
+   source/src/ports/POSIX/main.c [140:3 - 149:72]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [137:18 - 144:68] (8 lines, 97 tokens)
+   source/src/ports/POSIX/main.c [160:22 - 167:68]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [147:5 - 166:7] (20 lines, 185 tokens)
+   source/src/ports/POSIX/main.c [230:5 - 249:7]
+Clone found (c)
+ - source/src/ports/MINGW/main.c [173:31 - 180:2] (8 lines, 73 tokens)
+   source/src/ports/WIN32/main.c [176:31 - 183:2]
+Clone found (c)
+ - source/src/ports/MINGW/networkconfig.c [11:1 - 260:57] (250 lines, 4948 tokens)
+   source/src/ports/WIN32/networkconfig.c [11:1 - 261:38]
+Clone found (c)
+ - source/src/ports/MINGW/networkconfig.c [260:74 - 268:22] (9 lines, 101 tokens)
+   source/src/ports/MINGW/networkconfig.c [305:74 - 313:22]
+Clone found (c)
+ - source/src/ports/MINGW/networkconfig.c [260:58 - 498:2] (239 lines, 2210 tokens)
+   source/src/ports/WIN32/networkconfig.c [261:45 - 499:2]
+Clone found (c)
+ - source/src/ports/MINGW/networkconfig.c [299:3 - 304:10] (6 lines, 117 tokens)
+   source/src/ports/MINGW/networkconfig.c [393:3 - 398:10]
+Clone found (c)
+ - source/src/ports/MINGW/networkhandler.c [17:29 - 29:25] (13 lines, 50 tokens)
+   source/src/ports/WIN32/networkhandler.c [16:29 - 28:25]
+Clone found (c)
+ - source/src/ports/MINGW/opener_error.c [7:11 - 14:2] (8 lines, 164 tokens)
+   source/src/ports/POSIX/opener_error.c [7:17 - 14:2]
+Clone found (c)
+ - source/src/ports/MINGW/opener_error.c [9:67 - 37:2] (29 lines, 132 tokens)
+   source/src/ports/WIN32/opener_error.c [9:67 - 37:2]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.c [5:48 - 24:9]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [5:48 - 24:9]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.c [5:48 - 24:9]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [26:1 - 187:53] (162 lines, 2911 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.c [26:1 - 187:53]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [26:1 - 65:79] (40 lines, 1511 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [26:1 - 65:79]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [26:1 - 187:53] (162 lines, 2911 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.c [26:1 - 187:53]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [66:18 - 153:51] (88 lines, 924 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [66:12 - 153:51]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.c [154:18 - 187:53] (34 lines, 474 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [154:12 - 187:53]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.h [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.h [8:1 - 33:7]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.h [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.h [8:1 - 33:7]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/ethlinkcbs.h [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.h [8:1 - 33:7]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/opener_user_conf.h [9:1 - 24:9] (16 lines, 375 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [9:1 - 23:9]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/opener_user_conf.h [32:1 - 238:7] (207 lines, 5161 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [59:1 - 265:7]
+Clone found (c-header)
+ - source/src/ports/MINGW/sample_application/opener_user_conf.h [138:24 - 143:8] (6 lines, 157 tokens)
+   source/src/ports/MINGW/sample_application/opener_user_conf.h [152:25 - 157:8]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [1:52 - 7:11] (7 lines, 184 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [1:52 - 7:11] (7 lines, 184 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [1:52 - 7:11]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [1:52 - 18:9] (18 lines, 230 tokens)
+   source/src/ports/WIN32/sample_application/sampleapplication.c [1:52 - 18:9]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [19:1 - 200:2] (182 lines, 2505 tokens)
+   source/src/ports/WIN32/sample_application/sampleapplication.c [19:1 - 200:2]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [30:1 - 35:48] (6 lines, 143 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [30:1 - 35:48]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [35:45 - 40:52] (6 lines, 56 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [39:40 - 43:52]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [62:46 - 122:41] (61 lines, 800 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [65:42 - 125:41]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [86:35 - 122:41] (37 lines, 645 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [75:35 - 111:41]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [136:25 - 153:10] (18 lines, 438 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [139:19 - 156:10]
+Clone found (c)
+ - source/src/ports/MINGW/sample_application/sampleapplication.c [157:17 - 190:23] (34 lines, 474 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [164:16 - 197:23]
+Clone found (c)
+ - source/src/ports/POSIX/main.c [99:1 - 104:50] (6 lines, 100 tokens)
+   source/src/ports/STM32/opener.c [51:3 - 56:52]
+Clone found (c)
+ - source/src/ports/POSIX/main.c [257:20 - 262:75] (6 lines, 96 tokens)
+   source/src/ports/STM32/opener.c [84:48 - 88:75]
+Clone found (c)
+ - source/src/ports/POSIX/networkconfig.c [1:52 - 6:9] (6 lines, 183 tokens)
+   source/src/ports/STM32/networkconfig.c [1:52 - 6:9]
+Clone found (c)
+ - source/src/ports/POSIX/networkconfig.c [1:52 - 6:9] (6 lines, 183 tokens)
+   source/src/utils/enipmessage.c [1:52 - 7:9]
+Clone found (c)
+ - source/src/ports/POSIX/networkconfig.c [265:3 - 273:2] (9 lines, 153 tokens)
+   source/src/ports/STM32/networkconfig.c [52:3 - 60:2]
+Clone found (c)
+ - source/src/ports/POSIX/networkconfig.c [267:76 - 275:3] (9 lines, 74 tokens)
+   source/src/ports/STM32/networkconfig.c [54:76 - 62:5]
+Clone found (c)
+ - source/src/ports/POSIX/networkhandler.c [33:52 - 68:2] (36 lines, 374 tokens)
+   source/src/ports/STM32/networkhandler.c [15:26 - 50:2]
+Clone found (c)
+ - source/src/ports/POSIX/opener_error.c [5:40 - 37:2] (33 lines, 313 tokens)
+   source/src/ports/STM32/opener_error.c [5:40 - 37:2]
+Clone found (c)
+ - source/src/ports/POSIX/opener_error.c [7:16 - 14:2] (8 lines, 165 tokens)
+   source/src/ports/WIN32/opener_error.c [7:16 - 14:2]
+Clone found (c-header)
+ - source/src/ports/POSIX/sample_application/opener_user_conf.h [8:1 - 23:11] (16 lines, 428 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [8:1 - 23:11]
+Clone found (c-header)
+ - source/src/ports/POSIX/sample_application/opener_user_conf.h [8:16 - 23:11] (16 lines, 414 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [8:16 - 23:11]
+Clone found (c-header)
+ - source/src/ports/POSIX/sample_application/opener_user_conf.h [29:1 - 265:7] (237 lines, 5767 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [34:1 - 270:7]
+Clone found (c-header)
+ - source/src/ports/POSIX/sample_application/opener_user_conf.h [55:1 - 265:7] (211 lines, 5189 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [30:1 - 240:7]
+Clone found (c)
+ - source/src/ports/POSIX/sample_application/sampleapplication.c [5:34 - 15:9] (11 lines, 81 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [5:34 - 15:9]
+Clone found (c)
+ - source/src/ports/POSIX/sample_application/sampleapplication.c [23:1 - 80:37] (58 lines, 545 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [18:1 - 75:37]
+Clone found (c)
+ - source/src/ports/POSIX/sample_application/sampleapplication.c [122:16 - 214:2] (93 lines, 1312 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [108:16 - 200:2]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [278:78 - 285:56] (8 lines, 67 tokens)
+   source/src/ports/generic_networkhandler.c [330:17 - 337:56]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [293:46 - 298:4] (6 lines, 55 tokens)
+   source/src/ports/generic_networkhandler.c [346:55 - 351:4]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [293:46 - 298:4] (6 lines, 55 tokens)
+   source/src/ports/generic_networkhandler.c [362:51 - 367:4]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [576:80 - 586:24] (11 lines, 62 tokens)
+   source/src/ports/generic_networkhandler.c [651:71 - 661:24]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [616:54 - 621:44] (6 lines, 97 tokens)
+   source/src/ports/generic_networkhandler.c [688:52 - 692:56]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [774:78 - 789:4] (16 lines, 69 tokens)
+   source/src/ports/generic_networkhandler.c [857:35 - 872:4]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [776:18 - 789:4] (14 lines, 61 tokens)
+   source/src/ports/generic_networkhandler.c [821:34 - 835:8]
+Clone found (c)
+ - source/src/ports/generic_networkhandler.c [810:36 - 815:78] (6 lines, 78 tokens)
+   source/src/ports/generic_networkhandler.c [848:32 - 853:78]
+Clone found (c-header)
+ - source/src/ports/networkhandler.h [39:41 - 49:6] (11 lines, 485 tokens)
+   source/src/ports/networkhandler.h [53:41 - 63:6]
+Clone found (c)
+ - source/src/ports/nvdata/conffile.c [5:40 - 11:59] (7 lines, 264 tokens)
+   source/src/ports/nvdata/nvqos.c [5:40 - 11:59]
+Clone found (c)
+ - source/src/ports/nvdata/conffile.c [92:28 - 97:22] (6 lines, 77 tokens)
+   source/src/ports/nvdata/nvqos.c [63:35 - 68:22]
+Clone found (c)
+ - source/src/ports/nvdata/nvdata.c [69:3 - 76:57] (8 lines, 103 tokens)
+   source/src/ports/nvdata/nvdata.c [102:3 - 109:57]
+Clone found (c)
+ - source/src/ports/nvdata/nvqos.c [120:5 - 125:2] (6 lines, 69 tokens)
+   source/src/ports/nvdata/nvtcpip.c [44:5 - 50:2]
+Clone found (cpp)
+ - source/tests/OpENerTests.cpp [1:1 - 6:9] (6 lines, 233 tokens)
+   source/tests/callback_mock.cpp [7:1 - 12:9]
+Clone found (cpp)
+ - source/tests/cip/cipcommontests.cpp [1:51 - 9:20] (9 lines, 205 tokens)
+   source/tests/enet_encap/encaptest.cpp [1:51 - 9:20]
+Clone found (cpp)
+ - source/tests/cip/cipcommontests.cpp [5:54 - 11:9] (7 lines, 51 tokens)
+   source/tests/cip/cipepathtest.cpp [5:54 - 11:9]
+Clone found (cpp)
+ - source/tests/cip/cipcommontests.cpp [102:20 - 108:6] (7 lines, 50 tokens)
+   source/tests/cip/cipcommontests.cpp [138:31 - 144:6]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/cip/cipelectronickeyformattest.cpp [1:52 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [1:52 - 9:20] (9 lines, 204 tokens)
+   source/tests/cip/cipepathtest.cpp [1:52 - 9:20]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/enet_encap/endianconvtest.cpp [1:52 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/ports/socket_timer_tests.cpp [1:52 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/cip/cipconnectionobjecttest.cpp [5:54 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/cip/cipelectronickeytest.cpp [5:54 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionmanagertest.cpp [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/enet_encap/encaptest.cpp [5:54 - 13:9]
+Clone found (cpp)
+ - source/tests/cip/cipconnectionobjecttest.cpp [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [1:52 - 12:9]
+Clone found (cpp)
+ - source/tests/cip/cipelectronickeyformattest.cpp [5:59 - 17:12] (13 lines, 56 tokens)
+   source/tests/cip/cipelectronickeytest.cpp [5:59 - 17:12]
+Clone found (cpp)
+ - source/tests/cip/cipepathtest.cpp [395:52 - 400:2] (6 lines, 69 tokens)
+   source/tests/cip/cipepathtest.cpp [407:54 - 412:14]
+Clone found (cpp)
+ - source/tests/cip/cipstringtests.cpp [33:43 - 38:75] (6 lines, 58 tokens)
+   source/tests/cip/cipstringtests.cpp [47:42 - 52:65]
+Clone found (cpp)
+ - source/tests/cip/cipstringtests.cpp [89:43 - 94:13] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [101:42 - 106:17]
+Clone found (cpp)
+ - source/tests/cip/cipstringtests.cpp [140:42 - 145:12] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [152:41 - 157:16]
+Clone found (cpp)
+ - source/tests/cip/cipstringtests.cpp [191:47 - 196:79] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [204:46 - 209:65]
+Clone found (cpp)
+ - source/tests/enet_encap/endianconvtest.cpp [5:59 - 13:11] (9 lines, 50 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [5:59 - 12:11]
+Clone found (cpp)
+ - source/tests/utils/doublylinkedlistTests.cpp [108:31 - 116:23] (9 lines, 75 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [146:31 - 154:23]
+Clone found (cpp)
+ - source/tests/utils/doublylinkedlistTests.cpp [109:17 - 116:23] (8 lines, 64 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [123:17 - 130:23]
+Clone found (cpp)
+ - source/tests/utils/doublylinkedlistTests.cpp [168:39 - 176:47] (9 lines, 55 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [181:43 - 189:47]
+Clone found (cpp)
+ - source/tests/utils/doublylinkedlistTests.cpp [194:40 - 202:48] (9 lines, 55 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [207:45 - 215:48]
+Clone found (cpp)
+ - source/tests/utils/randomTests.cpp [1:52 - 11:11] (11 lines, 203 tokens)
+   source/tests/utils/xorshiftrandomtests.cpp [1:52 - 11:11]
+┌──────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐
+│ Format   │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ c        │ 55             │ 18526       │ 209757       │ 160          │ 3104 (16.75%)    │ 49261 (23.48%)    │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ c-header │ 59             │ 7163        │ 153343       │ 68           │ 1183 (16.52%)    │ 33396 (21.78%)    │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ cmake    │ 12             │ 565         │ 2081         │ 3            │ 50 (8.85%)       │ 223 (10.72%)      │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ cpp      │ 15             │ 2676        │ 20329        │ 24           │ 215 (8.03%)      │ 2579 (12.69%)     │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ diff     │ 1              │ 172         │ 2591         │ 1            │ 7 (4.07%)        │ 68 (2.62%)        │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ latex    │ 1              │ 309         │ 4392         │ 0            │ 0 (0.00%)        │ 0 (0.00%)         │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ python   │ 1              │ 38          │ 239          │ 0            │ 0 (0.00%)        │ 0 (0.00%)         │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ txt      │ 2              │ 703         │ 4327         │ 0            │ 0 (0.00%)        │ 0 (0.00%)         │
+├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ Total:   │ 146            │ 30152       │ 397059       │ 256          │ 4559 (15.12%)    │ 85527 (21.54%)    │
+└──────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘
+Found 256 clones.
+HTML report saved to megalinter-reports/copy-paste/jscpd-report.html
+ERROR: jscpd found too many duplicates (15.1%) over threshold (0.0%)
+time: 815.347ms
+

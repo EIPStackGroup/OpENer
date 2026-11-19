@@ -11,9 +11,8 @@
  */
 #include <stdint.h>
 
-#ifndef OPENER_XORSHIFTRANDOM_H_
-#define OPENER_XORSHIFTRANDOM_H_
-
+#ifndef SOURCE_SRC_UTILS_XORSHIFTRANDOM_H_
+#define SOURCE_SRC_UTILS_XORSHIFTRANDOM_H_
 /**
  * @brief Sets the initial seed for the XOR shift pseudo-random algorithm
  * @param seed The initial seed value
@@ -25,5 +24,4 @@ void SetXorShiftSeed(uint32_t seed);
  * @return The next pseudo-random number
  */
 uint32_t NextXorShiftUint32(void);
-
-#endif /* OPENER__XORSHIFTRANDOM_H_ */
+#endif  // SOURCE_SRC_UTILS_XORSHIFTRANDOM_H_

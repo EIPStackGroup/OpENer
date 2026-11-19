@@ -1,0 +1,1702 @@
+----------------------------------------------------------------------------------------------------
+------------------------------------ MegaLinter, by OX Security ------------------------------------
+----------------------------------------------------------------------------------------------------
+ - Image Creation Date: 2026-10-31T20:02:21Z
+ - Image Revision: f2fe8c1cba37091848df3e524066c8c23ef353ed
+ - Image Version: v10.2.0
+----------------------------------------------------------------------------------------------------
+The MegaLinter documentation can be found at:
+ - https://megalinter.io/10.2.0
+----------------------------------------------------------------------------------------------------
+MegaLinter initialization
+MegaLinter will analyze workspace [/tmp/lint]
+
+[Activation] ANSIBLE_ANSIBLE_LINT has been set inactive, as none of these files has been found: ['.ansible-lint', '.ansible-lint.yml', '.ansible-lint.yaml', '.config/ansible-lint.yml', '.config/ansible-lint.yaml']
+[Activation] CSS_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] EDITORCONFIG_EDITORCONFIG_CHECKER has been set inactive, as none of these files has been found: ['.editorconfig']
+[Activation] GRAPHQL_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] JAVASCRIPT_ES has been set inactive, as none of these files has been found: ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml', '.eslintrc.js', '.eslintrc.cjs', 'package.json:eslintConfig']
+[Activation] JAVASCRIPT_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] JSON_NPM_PACKAGE_JSON_LINT has been set inactive, as none of these files has been found: ['package.json']
+[Activation] JSON_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] JSX_ESLINT has been set inactive, as none of these files has been found: ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml', '.eslintrc.js', '.eslintrc.cjs', 'package.json:eslintConfig']
+[Activation] JSX_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] KUBERNETES_KUBECONFORM has been set inactive, as subdirectory has not been found: kubernetes (set value "any" to always activate)
+[Activation] KUBERNETES_HELM has been set inactive, as none of these files has been found: ['Chart.yml', 'Chart.yaml']
+[Activation] KUBERNETES_KUBESCAPE has been set inactive, as none of these files has been found: ['Chart.yml', 'Chart.yaml']
+[Activation] REPOSITORY_LS_LINT has been set inactive, as none of these files has been found: ['.ls-lint.yml']
+[SemgrepLinter] Deactivated because no ruleset has been defined
+[Activation] SALESFORCE_CODE_ANALYZER_APEX has been set inactive, as subdirectory has not been found: force-app (set value "any" to always activate)
+[Activation] SALESFORCE_CODE_ANALYZER_AURA has been set inactive, as subdirectory has not been found: force-app (set value "any" to always activate)
+[Activation] SALESFORCE_CODE_ANALYZER_LWC has been set inactive, as subdirectory has not been found: force-app (set value "any" to always activate)
+[Activation] SALESFORCE_CODE_ANALYZER_FLOW has been set inactive, as subdirectory has not been found: force-app (set value "any" to always activate)
+[Activation] SPELL_PROSELINT has been set inactive, as none of these files has been found: ['.proselintrc.json', 'proselint/config.json']
+[Activation] SPELL_VALE has been set inactive, as none of these files has been found: ['.vale.ini']
+[Activation] SPELL_CODESPELL has been set inactive, as none of these files has been found: ['.codespellrc']
+[Activation] SQL_SQLFLUFF has been set inactive, as none of these files has been found: ['.sqlfluff']
+[Activation] SWIFT_SWIFTLINT has been set inactive, as none of these files has been found: ['.swiftlint.yml']
+[Activation] TSX_ESLINT has been set inactive, as none of these files has been found: ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml', '.eslintrc.js', '.eslintrc.cjs', 'package.json:eslintConfig']
+[Activation] TSX_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+[Activation] TYPESCRIPT_ES has been set inactive, as none of these files has been found: ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml', '.eslintrc.js', '.eslintrc.cjs', 'package.json:eslintConfig']
+[Activation] TYPESCRIPT_BIOME has been set inactive, as none of these files has been found: ['biome.json', 'biome.jsonc']
+COFFEE_COFFEELINT has been disabled in MegaLinter for the following reason: CoffeeScript tooling is discontinued, and coffeelint can not honor EXCLUDED_DIRECTORIES (it has no exclusion option and only reads .coffeelintignore from its working directory). The linter will be removed in a future version
+GRAPHQL_GRAPHQL_SCHEMA_LINTER has been disabled in MegaLinter for the following reason: graphql-schema-linter is unmaintained (no release or commit since May 2022) and its peer dependency range pins graphql to ^15 or ^16, which blocks the whole GraphQL npm install from moving to graphql v17. Use GRAPHQL_BIOME to lint GraphQL files. The linter will be removed in a future version
+Skipped linters: ANSIBLE_ANSIBLE_LINT, COFFEE_COFFEELINT, CSS_BIOME, EDITORCONFIG_EDITORCONFIG_CHECKER, GRAPHQL_BIOME, GRAPHQL_GRAPHQL_SCHEMA_LINTER, JAVASCRIPT_BIOME, JAVASCRIPT_ES, JAVASCRIPT_PRETTIER, JSON_BIOME, JSON_NPM_PACKAGE_JSON_LINT, JSX_BIOME, JSX_ESLINT, KUBERNETES_HELM, KUBERNETES_KUBECONFORM, KUBERNETES_KUBESCAPE, MARKDOWN_RUMDL, PYTHON_RUFF_FORMAT, REPOSITORY_LS_LINT, REPOSITORY_SEMGREP, SALESFORCE_CODE_ANALYZER_APEX, SALESFORCE_CODE_ANALYZER_APEXGURU, SALESFORCE_CODE_ANALYZER_AURA, SALESFORCE_CODE_ANALYZER_FLOW, SALESFORCE_CODE_ANALYZER_LWC, SPELL_CODESPELL, SPELL_CSPELL, SPELL_PROSELINT, SPELL_VALE, SQL_SQLFLUFF, SWIFT_SWIFTLINT, TSX_BIOME, TSX_ESLINT, TYPESCRIPT_BIOME, TYPESCRIPT_ES, TYPESCRIPT_PRETTIER
+Some linters were skipped due to activation rules:
+- JAVASCRIPT_PRETTIER: JAVASCRIPT_DEFAULT_STYLE=standard (set JAVASCRIPT_DEFAULT_STYLE=prettier to activate)
+- MARKDOWN_RUMDL: MARKDOWN_DEFAULT_STYLE=markdownlint (set MARKDOWN_DEFAULT_STYLE=rumdl to activate)
+- PYTHON_RUFF_FORMAT: PYTHON_DEFAULT_STYLE=black (set PYTHON_DEFAULT_STYLE=ruff to activate)
+- SALESFORCE_CODE_ANALYZER_APEXGURU: SFDX_AUTH_URL is not set (define SFDX_AUTH_URL to activate)
+- TYPESCRIPT_PRETTIER: TYPESCRIPT_DEFAULT_STYLE=standard (set TYPESCRIPT_DEFAULT_STYLE=prettier to activate)
+[ApiReporter] Not enabled as API_REPORTER is not defined to true
+To receive reports as email, please set variable EMAIL_REPORTER_EMAIL
+
+MegaLinter now collects the files to analyse
+Listing all files in directory [/tmp/lint], then filter with:
+- File extensions: , .R, .RMD, .Rmd, .bash, .bicep, .c, .c++, .cc, .cdxml, .clj, .cljc, .cljs, .config, .cpp, .cs, .csproj, .css, .cu, .cuh, .cxx, .dart, .dash, .edn, .env, .feature, .go, .gradle, .groovy, .gvy, .h, .h++, .hcl, .hh, .hpp, .htm, .html, .hxx, .ipynb, .java, .js, .json, .json5, .jsonc, .ksh, .kt, .kts, .lua, .markdown, .md, .mdx, .nf, .p6, .php, .pl, .pl6, .pm, .pm6, .props, .proto, .ps1, .ps1xml, .psd1, .psm1, .psrc, .pssc, .pxd, .py, .pyi, .pyx, .r, .raku, .rakumod, .rakutest, .rb, .resource, .robot, .rs, .rst, .saas, .scala, .scss, .sh, .smk, .t, .targets, .tex, .tf, .tofu, .ts, .txt, .vb, .xml, .xsd, .yaml, .yml
+- File names (regex): (.*\.)?Dockerfile, Containerfile, Jenkinsfile, Snakefile
+- Excluding .gitignored files [16]: bin/mingw/setup_mingw.bat, bin/posix/setup_posix.sh, bin/posix/setup_posix_fuzz_afl.sh, bin/win32/setup_windows.bat, megalinter-reports/IDE-config/.idea/**, megalinter-reports/IDE-config/.vscode/**, source/buildsupport/CodeCoverage.cmake, source/buildsupport/MINGW/OpENer_PLATFORM_INCLUDES.cmake, source/buildsupport/OpENer.cmake, source/buildsupport/OpENer_CIP_Object_generator.cmake,…(full list in DEBUG)
+Kept [166] files on [194] found files
+MegaLinter flavor [c_cpp] doesn't contain linters PYTHON_PYLINT, PYTHON_BLACK, PYTHON_FLAKE8, PYTHON_ISORT, PYTHON_BANDIT, PYTHON_MYPY, PYTHON_PYRIGHT, PYTHON_RUFF, LATEX_CHKTEX, REPOSITORY_DEVSKIM, REPOSITORY_DUSTILOCK, REPOSITORY_KINGFISHER.
+As they're not available in this docker image, they will not be processed
+To solve this problem, please either: 
+- use default flavor oxsecurity/megalinter
+- add ignored linters in DISABLE or DISABLE_LINTERS variables in your .mega-linter.yml config file located in your root directory
+- ignore this message by setting config variable FLAVOR_SUGGESTIONS to false
+
++----MATCHING LINTERS-------------------+------------------------------------------------------------------------+----------------+------------+
+| Descriptor | Linter                   | Criteria                                                               | Matching files | Format/Fix |
++------------+--------------------------+------------------------------------------------------------------------+----------------+------------+
+| ACTION     | actionlint               | .yml|.yaml                                                             | 1              | no         |
+| ACTION     | zizmor                   | .yml|.yaml                                                             | 1              | no         |
+| C          | cppcheck                 | .c|.h                                                                  | 114            | no         |
+| C          | cpplint                  | .c|.h                                                                  | 114            | no         |
+| C          | clang-format             | .c|.h                                                                  | 114            | no         |
+| COPYPASTE  | jscpd                    |                                                                        | project        | no         |
+| CPP        | cppcheck                 | .cpp|.h|.cc|.hpp|.cxx|.cu|.hxx|.c++|.hh|.h++|.cuh                      | 74             | no         |
+| CPP        | cpplint                  | .cpp|.h|.cc|.hpp|.cxx|.cu|.hxx|.c++|.hh|.h++|.cuh                      | 74             | no         |
+| CPP        | clang-format             | .cpp|.h|.cc|.hpp|.cxx|.cu|.hxx|.c++|.hh|.h++|.cuh                      | 74             | no         |
+| MARKDOWN   | markdownlint             | .md                                                                    | 1              | no         |
+| MARKDOWN   | markdown-table-formatter | .md                                                                    | 1              | no         |
+| REPOSITORY | checkov                  |                                                                        | project        | no         |
+| REPOSITORY | git_diff                 |                                                                        | project        | no         |
+| REPOSITORY | betterleaks              |                                                                        | project        | no         |
+| REPOSITORY | grype                    |                                                                        | project        | no         |
+| REPOSITORY | osv-scanner              |                                                                        | project        | no         |
+| REPOSITORY | secretlint               |                                                                        | project        | no         |
+| REPOSITORY | syft                     |                                                                        | project        | no         |
+| REPOSITORY | trivy                    |                                                                        | project        | no         |
+| REPOSITORY | trivy-sbom               |                                                                        | project        | no         |
+| REPOSITORY | trufflehog               |                                                                        | project        | no         |
+| SPELL      | lychee                   | .md|.mdx|.markdown|.html|.htm|.rst|.txt|.json|.jsonc|.json5|.yaml|.yml | 24             | no         |
+| XML        | xmllint                  | .xml|.xsd                                                              | 1              | no         |
+| YAML       | prettier                 | .yml|.yaml                                                             | 2              | no         |
+| YAML       | yamllint                 | .yml|.yaml                                                             | 2              | no         |
+| YAML       | v8r                      | .yml|.yaml                                                             | 2              | no         |
++------------+--------------------------+------------------------------------------------------------------------+----------------+------------+
+
+Processing linters on [3] parallel cores of [4], one core is kept free outside CI… (can be changed with variable PARALLEL_PROCESS_NUMBER)
+[Checkov] Adding '--skip-framework secrets' to the checkov command, as secrets scanning is delegated to REPOSITORY_BETTERLEAKS, REPOSITORY_SECRETLINT, REPOSITORY_TRUFFLEHOG. Define --framework or --skip-framework in REPOSITORY_CHECKOV_ARGUMENTS to override this behavior.
+[grype] [REPOSITORY_GRYPE_ERROR_DB_UPDATE_FAILED] grype could not update its vulnerability database (network, TLS, or CDN issue talking to grype.anchore.io).
+This is an environment issue, not a vulnerability finding.
+Workarounds:
+  - Retry the run later (issue is often transient).
+  - Pre-populate the grype DB in a cached layer / volume in CI.
+  - Temporarily mark the linter as non-blocking by adding to your .mega-linter.yml:
+      DISABLE_ERRORS_LINTERS:
+        - REPOSITORY_GRYPE
+Unable to get number of errors with regex_count and (Low|Medium|High|Critical)
+[osv-scanner] [REPOSITORY_OSV_SCANNER_ERROR_NO_PACKAGE_SOURCES] osv-scanner found no lockfiles, manifests, or SBOMs to scan in the repository.
+This is a configuration/scope issue, not a vulnerability finding.
+Resolutions:
+  - Verify the repository actually contains a supported lockfile (package-lock.json, go.sum, Gemfile.lock, Pipfile.lock, etc.) at the scanned path.
+  - If this is expected for some sub-projects, disable osv-scanner for the affected paths or mark it non-blocking via `DISABLE_ERRORS_LINTERS`.
+[osv-scanner] No package sources found (exit 128) — treating as success (nothing to scan)
+[trivy] [REPOSITORY_TRIVY_ERROR_DB_DOWNLOAD_FAILED] trivy could not download or refresh its vulnerability database from the configured registry.
+Workarounds:
+  - Retry the run; this is often transient.
+  - Set `TRIVY_DB_REPOSITORY` to an alternative mirror (e.g. an internal registry or AWS ECR Public Gallery).
+  - Pre-populate `~/.cache/trivy` in CI.
+Unable to get number of errors with regex_number and Errors\.+([0-9]+)
+[32m✅ Linted [ACTION] files with [actionlint] successfully - (0.03s)[0m
+- Using [actionlint v1.7.12] https://megalinter.io/10.2.0/descriptors/action_actionlint
+- MegaLinter key: [ACTION_ACTIONLINT]
+- Rules config: identified by [actionlint]
+- Number of files analyzed: [1]
+- CWD: [/tmp/lint]
+- Command: [actionlint .github/workflows/build.yml]
+
+[32m✅ Linted [ACTION] files with [zizmor] successfully - (0.06s)[0m
+- Using [zizmor v1.25.0] https://megalinter.io/10.2.0/descriptors/action_zizmor
+- MegaLinter key: [ACTION_ZIZMOR]
+- Rules config: identified by [zizmor]
+- Number of files analyzed: [1]
+- CWD: [/tmp/lint]
+- Command: [zizmor .github/workflows/build.yml]
+
+[32m✅ Linted [C] files with [clang-format] successfully - (0.93s)[0m
+- Using [clang-format v22.1.3] https://megalinter.io/10.2.0/descriptors/c_clang_format
+- MegaLinter key: [C_CLANG_FORMAT]
+- Rules config: [/.clang-format]
+- Number of files analyzed: [114]
+- CWD: [/tmp/lint]
+- Command: [clang-format --Werror --dry-run --style=file:/tmp/lint/.clang-format source/src/cip/appcontype.c source/src/cip/appcontype.h source/src/cip/cipassembly.c source/src/cip/cipassembly.h source/src/cip/cipclass3connection.c source/src/cip/cipclass3connec...(truncated)]
+
+[32m✅ Linted [C] files with [cppcheck] successfully - (2.53s)[0m
+- Using [cppcheck v2.21.0] https://megalinter.io/10.2.0/descriptors/c_cppcheck
+- MegaLinter key: [C_CPPCHECK]
+- Rules config: identified by [cppcheck]
+- Number of files analyzed: [114]
+- CWD: [/tmp/lint]
+- Command: [cppcheck --error-exitcode=1 source/src/cip/appcontype.c source/src/cip/appcontype.h source/src/cip/cipassembly.c source/src/cip/cipassembly.h source/src/cip/cipclass3connection.c source/src/cip/cipclass3connection.h source/src/cip/cipcommon.c source/...(truncated)]
+
+[31m❌ Linted [C] files with [cpplint]: Found 81 error(s) and 0 warning(s) - (6.36s)[0m
+- Using [cpplint v2.0.2] https://megalinter.io/10.2.0/descriptors/c_cpplint
+- MegaLinter key: [C_CPPLINT]
+- Rules config: identified by [cpplint]
+- Number of files analyzed: [114]
+- CWD: [/tmp/lint]
+- Command: [cpplint --extensions=c,h source/src/cip/appcontype.c source/src/cip/appcontype.h source/src/cip/cipassembly.c source/src/cip/cipassembly.h source/src/cip/cipclass3connection.c source/src/cip/cipclass3connection.h source/src/cip/cipcommon.c source/src...(truncated)]
+--Error detail:
+source/src/cip/appcontype.c:162:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:254:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:309:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:317:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipcommon.c:1111:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipconnectionmanager.c:495:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:527:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:707:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:753:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:801:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1176:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1184:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1563:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1617:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1695:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1710:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1752:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1783:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1898:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:39:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:42:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:118:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:173:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:177:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:197:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:207:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:209:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:215:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:231:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:232:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:233:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:240:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionmanager.h:241:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionobject.c:28:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:30:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:32:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:346:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:350:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:354:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:356:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipethernetlink.c:172:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipidentity.c:50:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/cipioconnection.c:123:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:208:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:212:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:224:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:229:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:690:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipstring.c:288:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstring.h:187:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.c:288:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.h:14:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptcpipinterface.c:61:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:71:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:80:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:92:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:97:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:415:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:517:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:518:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:519:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:520:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:700:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptypes.h:505:  Weird number of spaces at line-start.  Are you using a 2-space indent?  [whitespace/indent] [3]
+source/src/cip/ciptypes.h:215:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/enet_encap/encap.c:511:  Consider using rand_r(...) instead of rand(...) for improved thread safety.  [runtime/threadsafe_fn] [2]
+source/src/enet_encap/encap.c:149:  Add #include <cstdio> for snprintf  [build/include_what_you_use] [4]
+source/src/enet_encap/encap.c:470:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/networkconfig.c:242:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/sample_application/opener_user_conf.h:30:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/POSIX/networkconfig.c:121:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/POSIX/networkconfig.c:237:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/STM32/opener.c:48:  Consider using rand_r(...) instead of rand(...) for improved thread safety.  [runtime/threadsafe_fn] [2]
+source/src/ports/WIN32/networkconfig.c:242:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/WIN32/sample_application/opener_user_conf.h:26:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/generic_networkhandler.c:752:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/generic_networkhandler.c:764:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/nvdata/conffile.c:132:  Add #include <cstdio> for fclose  [build/include_what_you_use] [4]
+source/src/ports/nvdata/nvtcpip.c:61:  Add #include <cstdio> for FILE  [build/include_what_you_use] [4]
+source/src/typedefs.h:68:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/typedefs.h:69:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+Done processing source/src/cip/appcontype.c
+Done processing source/src/cip/appcontype.h
+Done processing source/src/cip/cipassembly.c
+Done processing source/src/cip/cipassembly.h
+Done processing source/src/cip/cipclass3connection.c
+Done processing source/src/cip/cipclass3connection.h
+Done processing source/src/cip/cipcommon.c
+Done processing source/src/cip/cipcommon.h
+Done processing source/src/cip/cipconnectionmanager.c
+Done processing source/src/cip/cipconnectionmanager.h
+Done processing source/src/cip/cipconnectionobject.c
+Done processing source/src/cip/cipconnectionobject.h
+Done processing source/src/cip/cipdlr.c
+Done processing source/src/cip/cipdlr.h
+Done processing source/src/cip/cipelectronickey.c
+Done processing source/src/cip/cipelectronickey.h
+Done processing source/src/cip/cipepath.c
+Done processing source/src/cip/cipepath.h
+Done processing source/src/cip/ciperror.h
+Done processing source/src/cip/cipethernetlink.c
+Done processing source/src/cip/cipethernetlink.h
+Done processing source/src/cip/cipidentity.c
+Done processing source/src/cip/cipidentity.h
+Done processing source/src/cip/cipioconnection.c
+Done processing source/src/cip/cipioconnection.h
+Done processing source/src/cip/cipmessagerouter.c
+Done processing source/src/cip/cipmessagerouter.h
+Done processing source/src/cip/cipqos.c
+Done processing source/src/cip/cipqos.h
+Done processing source/src/cip/cipstring.c
+Done processing source/src/cip/cipstring.h
+Done processing source/src/cip/cipstringi.c
+Done processing source/src/cip/cipstringi.h
+Done processing source/src/cip/ciptcpipinterface.c
+Done processing source/src/cip/ciptcpipinterface.h
+Done processing source/src/cip/ciptypes.c
+Done processing source/src/cip/ciptypes.h
+Done processing source/src/enet_encap/cpf.c
+Done processing source/src/enet_encap/cpf.h
+Done processing source/src/enet_encap/encap.c
+Done processing source/src/enet_encap/encap.h
+Done processing source/src/enet_encap/endianconv.c
+Done processing source/src/enet_encap/endianconv.h
+Done processing source/src/opener_api.h
+Done processing source/src/ports/MINGW/main.c
+Done processing source/src/ports/MINGW/networkconfig.c
+Done processing source/src/ports/MINGW/networkconfig.h
+Done processing source/src/ports/MINGW/networkhandler.c
+Done processing source/src/ports/MINGW/opener_error.c
+Done processing source/src/ports/MINGW/platform_network_includes.h
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.c
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.h
+Done processing source/src/ports/MINGW/sample_application/opener_user_conf.h
+Done processing source/src/ports/MINGW/sample_application/sampleapplication.c
+Done processing source/src/ports/POSIX/main.c
+Done processing source/src/ports/POSIX/networkconfig.c
+Done processing source/src/ports/POSIX/networkconfig.h
+Done processing source/src/ports/POSIX/networkhandler.c
+Done processing source/src/ports/POSIX/opener_error.c
+Done processing source/src/ports/POSIX/platform_network_includes.h
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.c
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.h
+Done processing source/src/ports/POSIX/sample_application/opener_user_conf.h
+Done processing source/src/ports/POSIX/sample_application/sampleapplication.c
+Done processing source/src/ports/STM32/networkconfig.c
+Done processing source/src/ports/STM32/networkconfig.h
+Done processing source/src/ports/STM32/networkhandler.c
+Done processing source/src/ports/STM32/opener.c
+Done processing source/src/ports/STM32/opener.h
+Done processing source/src/ports/STM32/opener_error.c
+Done processing source/src/ports/STM32/platform_network_includes.h
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.c
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/STM32/sample_application/opener_user_conf.h
+Done processing source/src/ports/STM32/sample_application/sampleapplication.c
+Done processing source/src/ports/WIN32/main.c
+Done processing source/src/ports/WIN32/networkconfig.c
+Done processing source/src/ports/WIN32/networkconfig.h
+Done processing source/src/ports/WIN32/networkhandler.c
+Done processing source/src/ports/WIN32/opener_error.c
+Done processing source/src/ports/WIN32/platform_network_includes.h
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.c
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/WIN32/sample_application/opener_user_conf.h
+Done processing source/src/ports/WIN32/sample_application/sampleapplication.c
+Done processing source/src/ports/generic_networkhandler.c
+Done processing source/src/ports/generic_networkhandler.h
+Done processing source/src/ports/networkhandler.h
+Done processing source/src/ports/nvdata/conffile.c
+Done processing source/src/ports/nvdata/conffile.h
+Done processing source/src/ports/nvdata/nvdata.c
+Done processing source/src/ports/nvdata/nvdata.h
+Done processing source/src/ports/nvdata/nvqos.c
+Done processing source/src/ports/nvdata/nvqos.h
+Done processing source/src/ports/nvdata/nvtcpip.c
+Done processing source/src/ports/nvdata/nvtcpip.h
+Done processing source/src/ports/opener_error.h
+Done processing source/src/ports/opener_user_conf.h
+Done processing source/src/ports/platform_network_includes.h
+Done processing source/src/ports/socket_timer.c
+Done processing source/src/ports/socket_timer.h
+Done processing source/src/trace.h
+Done processing source/src/typedefs.h
+Done processing source/src/utils/doublylinkedlist.c
+Done processing source/src/utils/doublylinkedlist.h
+Done processing source/src/utils/enipmessage.c
+Done processing source/src/utils/enipmessage.h
+Done processing source/src/utils/random.c
+Done processing source/src/utils/random.h
+Done processing source/src/utils/xorshiftrandom.c
+Done processing source/src/utils/xorshiftrandom.h
+Done processing source/tests/OpENerTests.h
+Done processing source/tests/check_assert.h
+Done processing source/tests/test_assert.h
+Total errors found: 81
+
+
+[31m❌ Linted [COPYPASTE] files with [jscpd]: Found 256 error(s) and 0 warning(s) - (1.71s)[0m
+- Using [jscpd v5.4.2] https://megalinter.io/10.2.0/descriptors/copypaste_jscpd
+- MegaLinter key: [COPYPASTE_JSCPD]
+- Rules config: [.jscpd.json]
+- CWD: [/tmp/lint]
+- Command: [jscpd --reporters console,html --output /tmp/lint/megalinter-reports/copy-paste/ -c /tmp/lint/megalinter-reports/jscpd-config.json]
+[Excluded directories] Generated /tmp/lint/megalinter-reports/jscpd-config.json merging EXCLUDED_DIRECTORIES into the jscpd ignore list (disable with COPYPASTE_JSCPD_FORWARD_EXCLUDED_DIRECTORIES: false)
+--Error detail:
+Using config from /tmp/lint/megalinter-reports/jscpd-config.json
+[1mClone found (diff)[22m
+ - [1m[32msource/doc/STM32/LwIP_HTTP_Server_Netconn_RTOS_OpENer.patch[39m[22m [121:15 - 127:11] (7 lines, 68 tokens)
+   source/doc/STM32/LwIP_HTTP_Server_Netconn_RTOS_OpENer.patch [130:15 - 136:13]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipassembly.c [1:1 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipcommon.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipconnectionmanager.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipepath.c [1:1 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/cipmessagerouter.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/ciptcpipinterface.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/cip/ciptypes.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/enet_encap/cpf.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/enet_encap/encap.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:2] (7 lines, 232 tokens)
+   source/src/enet_encap/endianconv.c [1:1 - 7:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/MINGW/main.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:2] (7 lines, 232 tokens)
+   source/src/ports/MINGW/networkhandler.c [1:1 - 6:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/POSIX/main.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/POSIX/networkhandler.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/STM32/networkhandler.c [1:1 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/WIN32/main.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [1:1 - 7:9] (7 lines, 233 tokens)
+   source/src/ports/WIN32/networkhandler.c [1:1 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipclass3connection.c [2:22 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipconnectionobject.c [2:22 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipelectronickey.c [2:22 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipqos.c [2:23 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/cip/cipstringi.c [2:22 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [2:22 - 7:9] (6 lines, 133 tokens)
+   source/src/ports/POSIX/networkconfig.c [2:22 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [18:27 - 24:22] (7 lines, 158 tokens)
+   source/src/cip/appcontype.c [28:22 - 33:38]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [28:17 - 34:8] (7 lines, 164 tokens)
+   source/src/cip/appcontype.c [37:18 - 43:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [62:19 - 67:21] (6 lines, 196 tokens)
+   source/src/cip/appcontype.c [75:14 - 80:21]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/appcontype.c[39m[22m [75:9 - 80:21] (6 lines, 201 tokens)
+   source/src/cip/appcontype.c [88:10 - 93:21]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipassembly.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipcommon.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipconnectionmanager.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciperror.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipethernetlink.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipidentity.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipmessagerouter.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/cipqos.h [1:1 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciptcpipinterface.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/cip/ciptypes.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/cpf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/encap.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/enet_encap/endianconv.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/opener_api.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/networkconfig.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/platform_network_includes.h [1:1 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/MINGW/sample_application/opener_user_conf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/networkconfig.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/platform_network_includes.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/networkconfig.h [1:1 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/platform_network_includes.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/networkconfig.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/platform_network_includes.h [1:1 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/networkhandler.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/opener_error.h [1:1 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/opener_user_conf.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/ports/platform_network_includes.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/trace.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/src/typedefs.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/tests/OpENerTests.h [1:1 - 6:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/appcontype.h[39m[22m [1:1 - 6:8] (6 lines, 233 tokens)
+   source/tests/check_assert.h [7:1 - 12:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipassembly.c[39m[22m [23:1 - 31:4] (9 lines, 287 tokens)
+   source/src/cip/cipqos.c [61:1 - 69:4]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipassembly.c[39m[22m [215:40 - 222:7] (8 lines, 62 tokens)
+   source/src/cip/cipassembly.c [227:41 - 234:7]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipclass3connection.c[39m[22m [1:51 - 7:9] (7 lines, 184 tokens)
+   source/src/cip/cipioconnection.c [1:51 - 7:9]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipclass3connection.h[39m[22m [2:21 - 7:8] (6 lines, 134 tokens)
+   source/src/cip/cipstringi.h [2:21 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipclass3connection.h[39m[22m [43:1 - 50:9] (8 lines, 349 tokens)
+   source/src/cip/cipioconnection.h [47:1 - 54:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [254:3 - 259:5] (6 lines, 65 tokens)
+   source/src/cip/cipcommon.c [279:3 - 284:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [426:5 - 438:40] (13 lines, 65 tokens)
+   source/src/cip/cipmessagerouter.c [57:3 - 69:38]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [447:29 - 454:30] (8 lines, 66 tokens)
+   source/src/cip/cipmessagerouter.c [77:33 - 83:40]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [455:25 - 461:42] (7 lines, 66 tokens)
+   source/src/cip/cipmessagerouter.c [84:30 - 90:40]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [456:44 - 463:35] (8 lines, 64 tokens)
+   source/src/cip/cipconnectionmanager.c [248:38 - 255:33]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [462:37 - 468:66] (7 lines, 67 tokens)
+   source/src/cip/cipmessagerouter.c [91:30 - 97:64]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [469:35 - 475:65] (7 lines, 57 tokens)
+   source/src/cip/cipmessagerouter.c [98:39 - 104:63]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [616:38 - 624:2] (9 lines, 52 tokens)
+   source/src/cip/cipcommon.c [872:38 - 880:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [882:29 - 890:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1583:27 - 1591:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1625:27 - 1633:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [627:29 - 635:31] (9 lines, 85 tokens)
+   source/src/cip/cipcommon.c [1690:26 - 1698:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [630:37 - 635:31] (6 lines, 70 tokens)
+   source/src/cip/cipcommon.c [1159:53 - 1164:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [789:22 - 796:2] (8 lines, 99 tokens)
+   source/src/cip/cipcommon.c [798:22 - 805:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [791:5 - 798:5] (8 lines, 85 tokens)
+   source/src/cip/cipcommon.c [800:5 - 807:7]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1157:26 - 1166:60] (10 lines, 90 tokens)
+   source/src/cip/cipcommon.c [1201:27 - 1210:60]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1157:26 - 1166:60] (10 lines, 90 tokens)
+   source/src/cip/cipcommon.c [1320:27 - 1329:60]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1206:21 - 1269:16] (64 lines, 337 tokens)
+   source/src/cip/cipcommon.c [1325:21 - 1388:16]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1206:21 - 1214:58] (9 lines, 78 tokens)
+   source/src/cip/cipcommon.c [1589:21 - 1597:58]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1245:9 - 1255:35] (11 lines, 53 tokens)
+   source/src/cip/cipcommon.c [1302:5 - 1312:31]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1291:9 - 1318:2] (28 lines, 106 tokens)
+   source/src/cip/cipcommon.c [1421:9 - 1447:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1302:37 - 1320:10] (19 lines, 64 tokens)
+   source/src/cip/cipcommon.c [1431:37 - 1449:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipcommon.c[39m[22m [1635:74 - 1645:18] (11 lines, 61 tokens)
+   source/src/cip/cipcommon.c [1700:72 - 1710:18]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [53:1 - 60:43] (8 lines, 382 tokens)
+   source/src/cip/cipcommon.h [78:1 - 85:43]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [76:75 - 85:29] (10 lines, 371 tokens)
+   source/src/cip/cipcommon.h [165:77 - 174:29]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [77:1 - 85:29] (9 lines, 370 tokens)
+   source/src/cip/cipcommon.h [187:1 - 195:29]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [77:1 - 85:29] (9 lines, 370 tokens)
+   source/src/cip/cipcommon.h [209:1 - 217:29]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [87:29 - 94:42] (8 lines, 68 tokens)
+   source/src/cip/cipcommon.h [176:27 - 183:42]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [87:29 - 94:42] (8 lines, 68 tokens)
+   source/src/cip/cipcommon.h [197:27 - 204:42]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [96:35 - 106:10] (11 lines, 450 tokens)
+   source/src/cip/cipcommon.h [115:28 - 125:10]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [99:46 - 106:10] (8 lines, 262 tokens)
+   source/src/cip/cipcommon.h [137:45 - 144:10]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipcommon.h[39m[22m [106:26 - 112:42] (7 lines, 64 tokens)
+   source/src/cip/cipcommon.h [125:27 - 131:42]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [217:33 - 233:45] (17 lines, 89 tokens)
+   source/src/cip/cipidentity.c [211:27 - 227:45]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [233:44 - 277:39] (45 lines, 413 tokens)
+   source/src/cip/cipidentity.c [227:45 - 271:39]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [255:38 - 262:33] (8 lines, 57 tokens)
+   source/src/cip/cipmessagerouter.c [92:42 - 99:33]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [267:32 - 280:10] (14 lines, 107 tokens)
+   source/src/cip/cipmessagerouter.c [104:36 - 117:10]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [421:50 - 428:32] (8 lines, 75 tokens)
+   source/src/cip/cipconnectionmanager.c [452:47 - 459:32]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [421:50 - 428:32] (8 lines, 75 tokens)
+   source/src/cip/cipconnectionmanager.c [481:50 - 488:32]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [421:50 - 427:9] (7 lines, 68 tokens)
+   source/src/cip/cipconnectionmanager.c [508:53 - 514:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [834:28 - 844:43] (11 lines, 89 tokens)
+   source/src/cip/cipconnectionmanager.c [883:31 - 894:43]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [862:74 - 881:2] (20 lines, 94 tokens)
+   source/src/cip/cipconnectionmanager.c [925:34 - 943:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionmanager.c[39m[22m [972:65 - 982:58] (11 lines, 59 tokens)
+   source/src/cip/cipconnectionmanager.c [993:65 - 1003:58]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionobject.c[39m[22m [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/doublylinkedlist.c [1:52 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionobject.c[39m[22m [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/random.c [1:52 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipconnectionobject.c[39m[22m [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/utils/xorshiftrandom.c [1:52 - 7:9]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipconnectionobject.h[39m[22m [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/utils/doublylinkedlist.h [1:52 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipconnectionobject.h[39m[22m [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/utils/random.h [1:52 - 7:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipdlr.c[39m[22m [1:52 - 7:22] (7 lines, 210 tokens)
+   source/src/cip/cipstring.c [1:52 - 8:22]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipdlr.c[39m[22m [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/conffile.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipdlr.c[39m[22m [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvdata.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipdlr.c[39m[22m [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvqos.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipdlr.c[39m[22m [1:52 - 7:2] (7 lines, 190 tokens)
+   source/src/ports/nvdata/nvtcpip.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipelectronickey.c[39m[22m [1:52 - 7:9] (7 lines, 183 tokens)
+   source/src/ports/socket_timer.c [1:52 - 7:9]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipelectronickey.h[39m[22m [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/cip/cipepath.h [1:52 - 7:8]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipelectronickey.h[39m[22m [1:52 - 7:8] (7 lines, 183 tokens)
+   source/src/ports/socket_timer.h [1:52 - 7:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipethernetlink.c[39m[22m [115:49 - 121:3] (7 lines, 60 tokens)
+   source/src/cip/cipethernetlink.c [326:39 - 330:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipethernetlink.c[39m[22m [419:64 - 425:9] (7 lines, 56 tokens)
+   source/src/cip/cipethernetlink.c [439:60 - 445:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipioconnection.c[39m[22m [160:5 - 172:9] (13 lines, 126 tokens)
+   source/src/cip/cipioconnection.c [248:5 - 259:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipioconnection.c[39m[22m [172:28 - 179:30] (8 lines, 189 tokens)
+   source/src/cip/cipioconnection.c [259:28 - 265:30]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipioconnection.c[39m[22m [752:7 - 758:8] (7 lines, 140 tokens)
+   source/src/cip/cipioconnection.c [796:7 - 802:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipqos.c[39m[22m [138:16 - 143:28] (6 lines, 71 tokens)
+   source/src/cip/ciptcpipinterface.c [557:19 - 562:28]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstring.c[39m[22m [36:20 - 43:43] (8 lines, 60 tokens)
+   source/src/cip/cipstring.c [220:24 - 227:43]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstring.c[39m[22m [111:39 - 119:22] (9 lines, 52 tokens)
+   source/src/cip/cipstring.c [150:36 - 158:22]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstring.c[39m[22m [111:39 - 119:22] (9 lines, 52 tokens)
+   source/src/cip/cipstring.c [198:51 - 206:22]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstring.c[39m[22m [177:23 - 190:2] (14 lines, 101 tokens)
+   source/src/cip/cipstring.c [241:28 - 254:2]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/cip/cipstring.h[39m[22m [113:3 - 119:20] (7 lines, 154 tokens)
+   source/src/cip/cipstring.h [154:7 - 160:20]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstringi.c[39m[22m [2:21 - 7:9] (6 lines, 134 tokens)
+   source/src/ports/MINGW/sample_application/sampleapplication.c [2:21 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/cipstringi.c[39m[22m [97:51 - 104:9] (8 lines, 62 tokens)
+   source/src/cip/cipstringi.c [106:41 - 113:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/cip/ciptcpipinterface.c[39m[22m [469:3 - 474:2] (6 lines, 86 tokens)
+   source/src/cip/ciptcpipinterface.c [505:3 - 510:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [72:13 - 77:64] (6 lines, 88 tokens)
+   source/src/enet_encap/cpf.c [195:21 - 200:66]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [361:58 - 366:5] (6 lines, 178 tokens)
+   source/src/enet_encap/cpf.c [618:19 - 623:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [415:27 - 421:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [429:37 - 435:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [401:30 - 407:5] (7 lines, 200 tokens)
+   source/src/enet_encap/cpf.c [443:23 - 449:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [507:60 - 512:5] (6 lines, 139 tokens)
+   source/src/enet_encap/cpf.c [519:51 - 524:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [507:66 - 512:5] (6 lines, 133 tokens)
+   source/src/enet_encap/cpf.c [566:31 - 572:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/cpf.c[39m[22m [616:44 - 623:5] (8 lines, 215 tokens)
+   source/src/enet_encap/cpf.c [634:43 - 641:5]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/enet_encap/cpf.h[39m[22m [90:23 - 99:10] (10 lines, 318 tokens)
+   source/src/enet_encap/cpf.h [107:3 - 116:10]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/encap.c[39m[22m [161:3 - 167:43] (7 lines, 173 tokens)
+   source/src/enet_encap/encap.c [253:3 - 259:43]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/encap.c[39m[22m [167:50 - 187:15] (21 lines, 159 tokens)
+   source/src/enet_encap/encap.c [259:57 - 279:15]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/encap.c[39m[22m [645:5 - 666:21] (22 lines, 280 tokens)
+   source/src/enet_encap/encap.c [696:6 - 717:21]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/encap.c[39m[22m [666:55 - 681:2] (16 lines, 101 tokens)
+   source/src/enet_encap/encap.c [717:46 - 732:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/endianconv.c[39m[22m [128:61 - 133:5] (6 lines, 114 tokens)
+   source/src/enet_encap/endianconv.c [142:62 - 147:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/enet_encap/endianconv.c[39m[22m [142:26 - 147:5] (6 lines, 150 tokens)
+   source/src/enet_encap/endianconv.c [179:29 - 184:5]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [78:21 - 83:18] (6 lines, 151 tokens)
+   source/src/opener_api.h [88:20 - 93:18]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [667:40 - 675:5] (9 lines, 275 tokens)
+   source/src/opener_api.h [686:36 - 694:5]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [675:44 - 682:11] (8 lines, 51 tokens)
+   source/src/opener_api.h [713:40 - 720:11]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [686:31 - 694:5] (9 lines, 280 tokens)
+   source/src/opener_api.h [705:32 - 713:5]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [810:1 - 815:5] (6 lines, 174 tokens)
+   source/src/opener_api.h [864:1 - 869:5]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/opener_api.h[39m[22m [908:29 - 913:10] (6 lines, 159 tokens)
+   source/src/opener_api.h [917:3 - 922:10]
+[1mClone found (cmake)[22m
+ - [1m[32msource/src/ports/MINGW/CMakeLists.txt[39m[22m [1:1 - 21:114] (21 lines, 76 tokens)
+   source/src/ports/WIN32/CMakeLists.txt [1:1 - 21:115]
+[1mClone found (cmake)[22m
+ - [1m[32msource/src/ports/MINGW/CMakeLists.txt[39m[22m [21:124 - 35:8] (15 lines, 77 tokens)
+   source/src/ports/WIN32/CMakeLists.txt [21:125 - 35:8]
+[1mClone found (cmake)[22m
+ - [1m[32msource/src/ports/MINGW/CMakeLists.txt[39m[22m [22:7 - 35:8] (14 lines, 70 tokens)
+   source/src/ports/POSIX/CMakeLists.txt [52:148 - 65:10]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [5:34 - 11:9] (7 lines, 76 tokens)
+   source/src/ports/POSIX/main.c [5:34 - 10:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [5:34 - 14:9] (10 lines, 85 tokens)
+   source/src/ports/WIN32/main.c [5:34 - 14:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [15:1 - 38:13] (24 lines, 466 tokens)
+   source/src/ports/POSIX/main.c [23:1 - 46:13]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [15:1 - 173:6] (159 lines, 2969 tokens)
+   source/src/ports/WIN32/main.c [15:1 - 173:6]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [46:40 - 55:20] (10 lines, 220 tokens)
+   source/src/ports/POSIX/main.c [62:40 - 71:20]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [56:55 - 83:43] (28 lines, 657 tokens)
+   source/src/ports/POSIX/main.c [72:45 - 99:43]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [84:3 - 95:6] (12 lines, 255 tokens)
+   source/src/ports/POSIX/main.c [100:26 - 111:6]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [95:3 - 104:60] (10 lines, 264 tokens)
+   source/src/ports/POSIX/main.c [117:3 - 126:60]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [119:3 - 128:72] (10 lines, 237 tokens)
+   source/src/ports/POSIX/main.c [140:3 - 149:72]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [137:18 - 144:68] (8 lines, 97 tokens)
+   source/src/ports/POSIX/main.c [160:22 - 167:68]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [147:5 - 166:7] (20 lines, 185 tokens)
+   source/src/ports/POSIX/main.c [230:5 - 249:7]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/main.c[39m[22m [173:31 - 180:2] (8 lines, 73 tokens)
+   source/src/ports/WIN32/main.c [176:31 - 183:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/networkconfig.c[39m[22m [11:1 - 260:57] (250 lines, 4948 tokens)
+   source/src/ports/WIN32/networkconfig.c [11:1 - 261:38]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/networkconfig.c[39m[22m [260:74 - 268:22] (9 lines, 101 tokens)
+   source/src/ports/MINGW/networkconfig.c [305:74 - 313:22]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/networkconfig.c[39m[22m [260:58 - 498:2] (239 lines, 2210 tokens)
+   source/src/ports/WIN32/networkconfig.c [261:45 - 499:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/networkconfig.c[39m[22m [299:3 - 304:10] (6 lines, 117 tokens)
+   source/src/ports/MINGW/networkconfig.c [393:3 - 398:10]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/networkhandler.c[39m[22m [17:29 - 29:25] (13 lines, 50 tokens)
+   source/src/ports/WIN32/networkhandler.c [16:29 - 28:25]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/opener_error.c[39m[22m [7:11 - 14:2] (8 lines, 164 tokens)
+   source/src/ports/POSIX/opener_error.c [7:17 - 14:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/opener_error.c[39m[22m [9:67 - 37:2] (29 lines, 132 tokens)
+   source/src/ports/WIN32/opener_error.c [9:67 - 37:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.c [5:48 - 24:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [5:48 - 24:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [5:48 - 24:9] (20 lines, 866 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.c [5:48 - 24:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [26:1 - 187:53] (162 lines, 2911 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.c [26:1 - 187:53]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [26:1 - 65:79] (40 lines, 1511 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [26:1 - 65:79]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [26:1 - 187:53] (162 lines, 2911 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.c [26:1 - 187:53]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [66:18 - 153:51] (88 lines, 924 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [66:12 - 153:51]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.c[39m[22m [154:18 - 187:53] (34 lines, 474 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.c [154:12 - 187:53]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.h[39m[22m [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/POSIX/sample_application/ethlinkcbs.h [8:1 - 33:7]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.h[39m[22m [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/STM32/sample_application/ethlinkcbs.h [8:1 - 33:7]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/ethlinkcbs.h[39m[22m [8:1 - 33:7] (26 lines, 772 tokens)
+   source/src/ports/WIN32/sample_application/ethlinkcbs.h [8:1 - 33:7]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/opener_user_conf.h[39m[22m [9:1 - 24:9] (16 lines, 375 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [9:1 - 23:9]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/opener_user_conf.h[39m[22m [32:1 - 238:7] (207 lines, 5161 tokens)
+   source/src/ports/POSIX/sample_application/opener_user_conf.h [59:1 - 265:7]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/opener_user_conf.h[39m[22m [138:24 - 143:8] (6 lines, 157 tokens)
+   source/src/ports/MINGW/sample_application/opener_user_conf.h [152:25 - 157:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [1:52 - 7:11] (7 lines, 184 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [1:52 - 7:11] (7 lines, 184 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [1:52 - 7:11]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [1:52 - 18:9] (18 lines, 230 tokens)
+   source/src/ports/WIN32/sample_application/sampleapplication.c [1:52 - 18:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [19:1 - 200:2] (182 lines, 2505 tokens)
+   source/src/ports/WIN32/sample_application/sampleapplication.c [19:1 - 200:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [30:1 - 35:48] (6 lines, 143 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [30:1 - 35:48]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [35:45 - 40:52] (6 lines, 56 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [39:40 - 43:52]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [62:46 - 122:41] (61 lines, 800 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [65:42 - 125:41]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [86:35 - 122:41] (37 lines, 645 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [75:35 - 111:41]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [136:25 - 153:10] (18 lines, 438 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [139:19 - 156:10]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/MINGW/sample_application/sampleapplication.c[39m[22m [157:17 - 190:23] (34 lines, 474 tokens)
+   source/src/ports/POSIX/sample_application/sampleapplication.c [164:16 - 197:23]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/main.c[39m[22m [99:1 - 104:50] (6 lines, 100 tokens)
+   source/src/ports/STM32/opener.c [51:3 - 56:52]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/main.c[39m[22m [257:20 - 262:75] (6 lines, 96 tokens)
+   source/src/ports/STM32/opener.c [84:48 - 88:75]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/networkconfig.c[39m[22m [1:52 - 6:9] (6 lines, 183 tokens)
+   source/src/ports/STM32/networkconfig.c [1:52 - 6:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/networkconfig.c[39m[22m [1:52 - 6:9] (6 lines, 183 tokens)
+   source/src/utils/enipmessage.c [1:52 - 7:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/networkconfig.c[39m[22m [265:3 - 273:2] (9 lines, 153 tokens)
+   source/src/ports/STM32/networkconfig.c [52:3 - 60:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/networkconfig.c[39m[22m [267:76 - 275:3] (9 lines, 74 tokens)
+   source/src/ports/STM32/networkconfig.c [54:76 - 62:5]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/networkhandler.c[39m[22m [33:52 - 68:2] (36 lines, 374 tokens)
+   source/src/ports/STM32/networkhandler.c [15:26 - 50:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/opener_error.c[39m[22m [5:40 - 37:2] (33 lines, 313 tokens)
+   source/src/ports/STM32/opener_error.c [5:40 - 37:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/opener_error.c[39m[22m [7:16 - 14:2] (8 lines, 165 tokens)
+   source/src/ports/WIN32/opener_error.c [7:16 - 14:2]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/opener_user_conf.h[39m[22m [8:1 - 23:11] (16 lines, 428 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [8:1 - 23:11]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/opener_user_conf.h[39m[22m [8:16 - 23:11] (16 lines, 414 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [8:16 - 23:11]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/opener_user_conf.h[39m[22m [29:1 - 265:7] (237 lines, 5767 tokens)
+   source/src/ports/STM32/sample_application/opener_user_conf.h [34:1 - 270:7]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/opener_user_conf.h[39m[22m [55:1 - 265:7] (211 lines, 5189 tokens)
+   source/src/ports/WIN32/sample_application/opener_user_conf.h [30:1 - 240:7]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/sampleapplication.c[39m[22m [5:34 - 15:9] (11 lines, 81 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [5:34 - 15:9]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/sampleapplication.c[39m[22m [23:1 - 80:37] (58 lines, 545 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [18:1 - 75:37]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/POSIX/sample_application/sampleapplication.c[39m[22m [122:16 - 214:2] (93 lines, 1312 tokens)
+   source/src/ports/STM32/sample_application/sampleapplication.c [108:16 - 200:2]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [278:78 - 285:56] (8 lines, 67 tokens)
+   source/src/ports/generic_networkhandler.c [330:17 - 337:56]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [293:46 - 298:4] (6 lines, 55 tokens)
+   source/src/ports/generic_networkhandler.c [346:55 - 351:4]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [293:46 - 298:4] (6 lines, 55 tokens)
+   source/src/ports/generic_networkhandler.c [362:51 - 367:4]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [576:80 - 586:24] (11 lines, 62 tokens)
+   source/src/ports/generic_networkhandler.c [651:71 - 661:24]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [616:54 - 621:44] (6 lines, 97 tokens)
+   source/src/ports/generic_networkhandler.c [688:52 - 692:56]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [774:78 - 789:4] (16 lines, 69 tokens)
+   source/src/ports/generic_networkhandler.c [857:35 - 872:4]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [776:18 - 789:4] (14 lines, 61 tokens)
+   source/src/ports/generic_networkhandler.c [821:34 - 835:8]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/generic_networkhandler.c[39m[22m [810:36 - 815:78] (6 lines, 78 tokens)
+   source/src/ports/generic_networkhandler.c [848:32 - 853:78]
+[1mClone found (c-header)[22m
+ - [1m[32msource/src/ports/networkhandler.h[39m[22m [39:41 - 49:6] (11 lines, 485 tokens)
+   source/src/ports/networkhandler.h [53:41 - 63:6]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/nvdata/conffile.c[39m[22m [5:40 - 11:59] (7 lines, 264 tokens)
+   source/src/ports/nvdata/nvqos.c [5:40 - 11:59]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/nvdata/conffile.c[39m[22m [92:28 - 97:22] (6 lines, 77 tokens)
+   source/src/ports/nvdata/nvqos.c [63:35 - 68:22]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/nvdata/nvdata.c[39m[22m [69:3 - 76:57] (8 lines, 103 tokens)
+   source/src/ports/nvdata/nvdata.c [102:3 - 109:57]
+[1mClone found (c)[22m
+ - [1m[32msource/src/ports/nvdata/nvqos.c[39m[22m [120:5 - 125:2] (6 lines, 69 tokens)
+   source/src/ports/nvdata/nvtcpip.c [44:5 - 50:2]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/OpENerTests.cpp[39m[22m [1:1 - 6:9] (6 lines, 233 tokens)
+   source/tests/callback_mock.cpp [7:1 - 12:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipcommontests.cpp[39m[22m [1:51 - 9:20] (9 lines, 205 tokens)
+   source/tests/enet_encap/encaptest.cpp [1:51 - 9:20]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipcommontests.cpp[39m[22m [5:54 - 11:9] (7 lines, 51 tokens)
+   source/tests/cip/cipepathtest.cpp [5:54 - 11:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipcommontests.cpp[39m[22m [102:20 - 108:6] (7 lines, 50 tokens)
+   source/tests/cip/cipcommontests.cpp [138:31 - 144:6]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/cip/cipelectronickeyformattest.cpp [1:52 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [1:52 - 9:20] (9 lines, 204 tokens)
+   source/tests/cip/cipepathtest.cpp [1:52 - 9:20]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/enet_encap/endianconvtest.cpp [1:52 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/ports/socket_timer_tests.cpp [1:52 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/cip/cipconnectionobjecttest.cpp [5:54 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/cip/cipelectronickeytest.cpp [5:54 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionmanagertest.cpp[39m[22m [5:54 - 13:9] (9 lines, 54 tokens)
+   source/tests/enet_encap/encaptest.cpp [5:54 - 13:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipconnectionobjecttest.cpp[39m[22m [1:52 - 13:9] (13 lines, 209 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [1:52 - 12:9]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipelectronickeyformattest.cpp[39m[22m [5:59 - 17:12] (13 lines, 56 tokens)
+   source/tests/cip/cipelectronickeytest.cpp [5:59 - 17:12]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipepathtest.cpp[39m[22m [395:52 - 400:2] (6 lines, 69 tokens)
+   source/tests/cip/cipepathtest.cpp [407:54 - 412:14]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipstringtests.cpp[39m[22m [33:43 - 38:75] (6 lines, 58 tokens)
+   source/tests/cip/cipstringtests.cpp [47:42 - 52:65]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipstringtests.cpp[39m[22m [89:43 - 94:13] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [101:42 - 106:17]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipstringtests.cpp[39m[22m [140:42 - 145:12] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [152:41 - 157:16]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/cip/cipstringtests.cpp[39m[22m [191:47 - 196:79] (6 lines, 51 tokens)
+   source/tests/cip/cipstringtests.cpp [204:46 - 209:65]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/enet_encap/endianconvtest.cpp[39m[22m [5:59 - 13:11] (9 lines, 50 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [5:59 - 12:11]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/utils/doublylinkedlistTests.cpp[39m[22m [108:31 - 116:23] (9 lines, 75 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [146:31 - 154:23]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/utils/doublylinkedlistTests.cpp[39m[22m [109:17 - 116:23] (8 lines, 64 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [123:17 - 130:23]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/utils/doublylinkedlistTests.cpp[39m[22m [168:39 - 176:47] (9 lines, 55 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [181:43 - 189:47]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/utils/doublylinkedlistTests.cpp[39m[22m [194:40 - 202:48] (9 lines, 55 tokens)
+   source/tests/utils/doublylinkedlistTests.cpp [207:45 - 215:48]
+[1mClone found (cpp)[22m
+ - [1m[32msource/tests/utils/randomTests.cpp[39m[22m [1:52 - 11:11] (11 lines, 203 tokens)
+   source/tests/utils/xorshiftrandomtests.cpp [1:52 - 11:11]
+[90m┌──────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐[39m
+[90m│[39m[31m Format   [39m[90m│[39m[31m Files analyzed [39m[90m│[39m[31m Total lines [39m[90m│[39m[31m Total tokens [39m[90m│[39m[31m Clones found [39m[90m│[39m[31m Duplicated lines [39m[90m│[39m[31m Duplicated tokens [39m[90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m c        [90m│[39m 55             [90m│[39m 18526       [90m│[39m 209757       [90m│[39m 160          [90m│[39m 3104 (16.75%)    [90m│[39m 49261 (23.48%)    [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m c-header [90m│[39m 59             [90m│[39m 7163        [90m│[39m 153343       [90m│[39m 68           [90m│[39m 1183 (16.52%)    [90m│[39m 33396 (21.78%)    [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m cmake    [90m│[39m 12             [90m│[39m 565         [90m│[39m 2081         [90m│[39m 3            [90m│[39m 50 (8.85%)       [90m│[39m 223 (10.72%)      [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m cpp      [90m│[39m 15             [90m│[39m 2676        [90m│[39m 20329        [90m│[39m 24           [90m│[39m 215 (8.03%)      [90m│[39m 2579 (12.69%)     [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m diff     [90m│[39m 1              [90m│[39m 172         [90m│[39m 2591         [90m│[39m 1            [90m│[39m 7 (4.07%)        [90m│[39m 68 (2.62%)        [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m latex    [90m│[39m 1              [90m│[39m 309         [90m│[39m 4392         [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m python   [90m│[39m 1              [90m│[39m 38          [90m│[39m 239          [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m txt      [90m│[39m 2              [90m│[39m 703         [90m│[39m 4327         [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├──────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m [1mTotal:[22m   [90m│[39m 146            [90m│[39m 30152       [90m│[39m 397059       [90m│[39m 256          [90m│[39m 4559 (15.12%)    [90m│[39m 85527 (21.54%)    [90m│[39m
+[90m└──────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘[39m
+[90mFound 256 clones.[39m
+[32mHTML report saved to /tmp/lint/megalinter-reports/copy-paste/jscpd-report.html[39m
+ERROR: jscpd found too many duplicates (15.1%) over threshold (0.0%)
+[90mtime: 815.347ms[39m
+
+
+[32m✅ Linted [CPP] files with [clang-format] successfully - (0.38s)[0m
+- Using [clang-format v22.1.3] https://megalinter.io/10.2.0/descriptors/cpp_clang_format
+- MegaLinter key: [CPP_CLANG_FORMAT]
+- Rules config: [/.clang-format]
+- Number of files analyzed: [74]
+- CWD: [/tmp/lint]
+- Command: [clang-format --Werror --dry-run --style=file:/tmp/lint/.clang-format source/src/cip/appcontype.h source/src/cip/cipassembly.h source/src/cip/cipclass3connection.h source/src/cip/cipcommon.h source/src/cip/cipconnectionmanager.h source/src/cip/cipconn...(truncated)]
+
+[32m✅ Linted [CPP] files with [cppcheck] successfully - (0.36s)[0m
+- Using [cppcheck v2.21.0] https://megalinter.io/10.2.0/descriptors/cpp_cppcheck
+- MegaLinter key: [CPP_CPPCHECK]
+- Rules config: identified by [cppcheck]
+- Number of files analyzed: [74]
+- CWD: [/tmp/lint]
+- Command: [cppcheck --error-exitcode=1 source/src/cip/appcontype.h source/src/cip/cipassembly.h source/src/cip/cipclass3connection.h source/src/cip/cipcommon.h source/src/cip/cipconnectionmanager.h source/src/cip/cipconnectionobject.h source/src/cip/cipdlr.h so...(truncated)]
+
+[31m❌ Linted [CPP] files with [cpplint]: Found 43 error(s) and 0 warning(s) - (2.07s)[0m
+- Using [cpplint v2.0.2] https://megalinter.io/10.2.0/descriptors/cpp_cpplint
+- MegaLinter key: [CPP_CPPLINT]
+- Rules config: identified by [cpplint]
+- Number of files analyzed: [74]
+- CWD: [/tmp/lint]
+- Command: [cpplint --extensions=h,cpp source/src/cip/appcontype.h source/src/cip/cipassembly.h source/src/cip/cipclass3connection.h source/src/cip/cipcommon.h source/src/cip/cipconnectionmanager.h source/src/cip/cipconnectionobject.h source/src/cip/cipdlr.h sou...(truncated)]
+--Error detail:
+source/src/cip/cipconnectionmanager.h:39:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:42:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:118:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:173:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:177:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:197:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:207:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:209:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:215:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:231:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:232:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:233:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:240:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionmanager.h:241:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipstring.h:187:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.h:14:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptypes.h:505:  Weird number of spaces at line-start.  Are you using a 2-space indent?  [whitespace/indent] [3]
+source/src/cip/ciptypes.h:215:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/sample_application/opener_user_conf.h:30:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/WIN32/sample_application/opener_user_conf.h:26:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/typedefs.h:68:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/typedefs.h:69:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/tests/cip/cipcommontests.cpp:24:  Line contains only semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+source/tests/cip/cipcommontests.cpp:152:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/tests/cip/cipelectronickeyformattest.cpp:33:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:21:  Line contains only semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+source/tests/cip/cipstringtests.cpp:26:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:31:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:45:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:54:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:82:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:87:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:99:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:107:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:133:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:138:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:150:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:158:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:184:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:189:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:202:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:211:  You don't need a ; after a }  [readability/braces] [4]
+source/tests/cip/cipstringtests.cpp:232:  Add #include <string> for string  [build/include_what_you_use] [4]
+Done processing source/src/cip/appcontype.h
+Done processing source/src/cip/cipassembly.h
+Done processing source/src/cip/cipclass3connection.h
+Done processing source/src/cip/cipcommon.h
+Done processing source/src/cip/cipconnectionmanager.h
+Done processing source/src/cip/cipconnectionobject.h
+Done processing source/src/cip/cipdlr.h
+Done processing source/src/cip/cipelectronickey.h
+Done processing source/src/cip/cipepath.h
+Done processing source/src/cip/ciperror.h
+Done processing source/src/cip/cipethernetlink.h
+Done processing source/src/cip/cipidentity.h
+Done processing source/src/cip/cipioconnection.h
+Done processing source/src/cip/cipmessagerouter.h
+Done processing source/src/cip/cipqos.h
+Done processing source/src/cip/cipstring.h
+Done processing source/src/cip/cipstringi.h
+Done processing source/src/cip/ciptcpipinterface.h
+Done processing source/src/cip/ciptypes.h
+Done processing source/src/enet_encap/cpf.h
+Done processing source/src/enet_encap/encap.h
+Done processing source/src/enet_encap/endianconv.h
+Done processing source/src/opener_api.h
+Done processing source/src/ports/MINGW/networkconfig.h
+Done processing source/src/ports/MINGW/platform_network_includes.h
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.h
+Done processing source/src/ports/MINGW/sample_application/opener_user_conf.h
+Done processing source/src/ports/POSIX/networkconfig.h
+Done processing source/src/ports/POSIX/platform_network_includes.h
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.h
+Done processing source/src/ports/POSIX/sample_application/opener_user_conf.h
+Done processing source/src/ports/STM32/networkconfig.h
+Done processing source/src/ports/STM32/opener.h
+Done processing source/src/ports/STM32/platform_network_includes.h
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/STM32/sample_application/opener_user_conf.h
+Done processing source/src/ports/WIN32/networkconfig.h
+Done processing source/src/ports/WIN32/platform_network_includes.h
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/WIN32/sample_application/opener_user_conf.h
+Done processing source/src/ports/generic_networkhandler.h
+Done processing source/src/ports/networkhandler.h
+Done processing source/src/ports/nvdata/conffile.h
+Done processing source/src/ports/nvdata/nvdata.h
+Done processing source/src/ports/nvdata/nvqos.h
+Done processing source/src/ports/nvdata/nvtcpip.h
+Done processing source/src/ports/opener_error.h
+Done processing source/src/ports/opener_user_conf.h
+Done processing source/src/ports/platform_network_includes.h
+Done processing source/src/ports/socket_timer.h
+Done processing source/src/trace.h
+Done processing source/src/typedefs.h
+Done processing source/src/utils/doublylinkedlist.h
+Done processing source/src/utils/enipmessage.h
+Done processing source/src/utils/random.h
+Done processing source/src/utils/xorshiftrandom.h
+Done processing source/tests/OpENerTests.cpp
+Done processing source/tests/OpENerTests.h
+Done processing source/tests/callback_mock.cpp
+Done processing source/tests/check_assert.h
+Done processing source/tests/cip/cipcommontests.cpp
+Done processing source/tests/cip/cipconnectionmanagertest.cpp
+Done processing source/tests/cip/cipconnectionobjecttest.cpp
+Done processing source/tests/cip/cipelectronickeyformattest.cpp
+Done processing source/tests/cip/cipelectronickeytest.cpp
+Done processing source/tests/cip/cipepathtest.cpp
+Done processing source/tests/cip/cipstringtests.cpp
+Done processing source/tests/enet_encap/encaptest.cpp
+Done processing source/tests/enet_encap/endianconvtest.cpp
+Done processing source/tests/ports/socket_timer_tests.cpp
+Done processing source/tests/test_assert.h
+Done processing source/tests/utils/doublylinkedlistTests.cpp
+Done processing source/tests/utils/randomTests.cpp
+Done processing source/tests/utils/xorshiftrandomtests.cpp
+Total errors found: 43
+
+
+[33m⚠️ Linted [MARKDOWN] files with [markdownlint]: Found 52 non blocking error(s) and 0 non blocking warning(s) - (0.35s)[0m
+- Using [markdownlint v0.49.1] https://megalinter.io/10.2.0/descriptors/markdown_markdownlint
+- MegaLinter key: [MARKDOWN_MARKDOWNLINT]
+- Rules config: [.markdownlint.json]
+- Number of files analyzed: [1]
+- CWD: [/tmp/lint]
+- Command: [markdownlint -c /action/lib/.automation/.markdownlint.json README.md]
+--Error detail:
+README.md:4:18 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: '!']
+README.md:10:7 error MD034/no-bare-urls Bare URL used [Context: "http://www.odva.org"]
+README.md:12:12 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: '!']
+README.md:16:26 error MD034/no-bare-urls Bare URL used [Context: "https://groups.google.com/foru..."]
+README.md:18:21 error MD034/no-bare-urls Bare URL used [Context: "https://groups.google.com/foru..."]
+README.md:20:13 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:24:57 error MD034/no-bare-urls Bare URL used [Context: "http://www.cygwin.com"]
+README.md:36:1 error MD034/no-bare-urls Bare URL used [Context: "https://github.com/cpputest/cp..."]
+README.md:41:24 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:46:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:47:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:49:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:51:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:61:45 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:67:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:68:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:69:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:71:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:73:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:77:41 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:88 error MD040/fenced-code-language Fenced code blocks should have a language specified [Context: "```"]
+README.md:95:20 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:101:1 error MD007/ul-indent Unordered list indentation [Expected: 2; Actual: 1]
+README.md:101:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:102:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:102:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:103:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:103:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:104:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:104:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:105:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:105:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:106:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:106:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:107:1 error MD007/ul-indent Unordered list indentation [Expected: 2; Actual: 1]
+README.md:107:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:108:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:108:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:109:1 error MD007/ul-indent Unordered list indentation [Expected: 4; Actual: 2]
+README.md:109:1 error MD010/no-hard-tabs Hard tabs [Column: 1]
+README.md:111:14 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:122 error MD003/heading-style Heading style [Expected: setext; Actual: atx]
+README.md:135 error MD003/heading-style Heading style [Expected: setext; Actual: atx]
+README.md:138 error MD040/fenced-code-language Fenced code blocks should have a language specified [Context: "```"]
+README.md:153 error MD003/heading-style Heading style [Expected: setext; Actual: atx]
+README.md:155 error MD040/fenced-code-language Fenced code blocks should have a language specified [Context: "```"]
+README.md:164 error MD003/heading-style Heading style [Expected: setext; Actual: atx]
+README.md:169:26 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:182:1 error MD018/no-missing-space-atx No space after hash on atx style heading [Context: "#Filename: Dockerfile"]
+README.md:201:15 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:206:23 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
+README.md:214 error MD040/fenced-code-language Fenced code blocks should have a language specified [Context: "```"]
+
+
+[32m✅ Linted [MARKDOWN] files with [markdown-table-formatter] successfully - (0.14s)[0m
+- Using [markdown-table-formatter v1.7.0] https://megalinter.io/10.2.0/descriptors/markdown_markdown_table_formatter
+- MegaLinter key: [MARKDOWN_MARKDOWN_TABLE_FORMATTER]
+- Rules config: identified by [markdown-table-formatter]
+- Number of files analyzed: [1]
+- CWD: [/tmp/lint]
+- Command: [markdown-table-formatter --check README.md]
+
+[32m✅ Linted [REPOSITORY] files with [betterleaks] successfully - (0.48s)[0m
+- Using [betterleaks v1.7.3] https://megalinter.io/10.2.0/descriptors/repository_betterleaks
+- MegaLinter key: [REPOSITORY_BETTERLEAKS]
+- Rules config: identified by [betterleaks]
+- CWD: [/tmp/lint]
+- Command: [betterleaks --redact --verbose dir -c /tmp/lint/megalinter-reports/betterleaks-config.toml .]
+[Excluded directories] Generated /tmp/lint/megalinter-reports/betterleaks-config.toml extending the default ruleset with EXCLUDED_DIRECTORIES as allowlist paths (disable with REPOSITORY_BETTERLEAKS_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[32m✅ Linted [REPOSITORY] files with [checkov] successfully - (33.73s)[0m
+- Using [checkov v3.3.30] https://megalinter.io/10.2.0/descriptors/repository_checkov
+- MegaLinter key: [REPOSITORY_CHECKOV]
+- Rules config: [.checkov.yml]
+- CWD: [/tmp/lint]
+- Command: [checkov --config-file /action/lib/.automation/.checkov.yml --skip-path .git --skip-path megalinter-reports --directory . --skip-framework secrets]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to checkov through --skip-path (disable with REPOSITORY_CHECKOV_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[31m❌ Linted [REPOSITORY] files with [git_diff]: Found 1 error(s) and 0 warning(s) - (0.22s)[0m
+- Using [git_diff v2.54.0] https://megalinter.io/10.2.0/descriptors/repository_git_diff
+- MegaLinter key: [REPOSITORY_GIT_DIFF]
+- Rules config: identified by [git_diff]
+- CWD: [/tmp/lint]
+- Command: [git diff --check]
+--Error detail:
+warning: in the working copy of 'megalinter-reports/betterleaks-config.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/copy-paste/jscpd-report.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/jscpd-config.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/COPYPASTE_JSCPD-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/CPP_CPPLINT-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/C_CPPLINT-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/MARKDOWN_MARKDOWNLINT-WARNING.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/MARKDOWN_MARKDOWN_TABLE_FORMATTER-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_BETTERLEAKS-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_GRYPE-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_OSV_SCANNER-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_SECRETLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_SYFT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRIVY-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRIVY_SBOM-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/REPOSITORY_TRUFFLEHOG-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/SPELL_LYCHEE-ERROR.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/XML_XMLLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/linters_logs/YAML_YAMLLINT-SUCCESS.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/megalinter.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/sbom/syft.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/sbom/trivy.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/secretlint-ignore-paths.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'megalinter-reports/trufflehog-exclude-paths.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/CMakeLists.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipassembly.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipcommon.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionmanager.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionobject.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipconnectionobject.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipdlr.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipepath.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipepath.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipethernetlink.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipidentity.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipioconnection.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipmessagerouter.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipqos.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipqos.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/cipstringi.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptcpipinterface.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptcpipinterface.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/cip/ciptypes.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/enet_encap/cpf.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/enet_encap/encap.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/opener_api.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/STM32/opener.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/generic_networkhandler.c', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/opener_user_conf.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/ports/platform_network_includes.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/trace.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/src/utils/doublylinkedlist.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/OpENerTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/OpENerTests.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/callback_mock.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/check_assert.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipcommontests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipconnectionmanagertest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipconnectionobjecttest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipelectronickeyformattest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipelectronickeytest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipepathtest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/cip/cipstringtests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/enet_encap/encaptest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/enet_encap/endianconvtest.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/ports/socket_timer_tests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/test_assert.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/doublylinkedlistTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/randomTests.cpp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'source/tests/utils/xorshiftrandomtests.cpp', LF will be replaced by CRLF the next time Git touches it
+megalinter-reports/copy-paste/jscpd-report.html:708: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:731: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:749: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:766: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:784: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:801: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:818: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:1307: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2102: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2118: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2378: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:2416: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3198: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3228: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:3258: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:4758: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5269: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5285: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5301: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5317: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5333: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5349: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5365: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5381: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:5397: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:6223: trailing whitespace.
++          
+megalinter-reports/copy-paste/jscpd-report.html:7188: trailing whitespace.
++          
+
+
+[31m❌ Linted [REPOSITORY] files with [grype]: Found 1 error(s) and 0 warning(s) - (1.05s)[0m
+- Using [grype v0.121.0] https://megalinter.io/10.2.0/descriptors/repository_grype
+- MegaLinter key: [REPOSITORY_GRYPE]
+- Rules config: [.grype.yaml]
+- CWD: [/tmp/lint]
+- Command: [grype --config /action/lib/.automation/.grype.yaml --exclude **/.git --exclude **/megalinter-reports dir:.]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to grype through --exclude (disable with REPOSITORY_GRYPE_FORWARD_EXCLUDED_DIRECTORIES: false)
+--Error detail:
+[0000] ERROR failed to fetch latest version: Get "https://toolbox-data.anchore.io/grype/releases/latest/VERSION": dial tcp: lookup toolbox-data.anchore.io on 168.63.129.16:53: server misbehaving
+[0000]  WARN unable to check for vulnerability database update
+[0000]  WARN unable to check for vulnerability database update
+[0000]  WARN error updating db error=unable to download listing: Get "https://grype.anchore.io/databases/v6/latest.json": dial tcp: lookup grype.anchore.io on 168.63.129.16:53: no such host
+[0000]  WARN no explicit name and version provided for directory source, deriving artifact ID from the given path (which is not ideal) from=syft
+[0001] ERROR [31mfailed to load vulnerability db: database does not exist[0m
+
+
+[REPOSITORY_GRYPE_ERROR_DB_UPDATE_FAILED] grype could not update its vulnerability database (network, TLS, or CDN issue talking to grype.anchore.io).
+This is an environment issue, not a vulnerability finding.
+Workarounds:
+  - Retry the run later (issue is often transient).
+  - Pre-populate the grype DB in a cached layer / volume in CI.
+  - Temporarily mark the linter as non-blocking by adding to your .mega-linter.yml:
+      DISABLE_ERRORS_LINTERS:
+        - REPOSITORY_GRYPE
+
+[32m✅ Linted [REPOSITORY] files with [osv-scanner] successfully - (0.06s)[0m
+- Using [osv-scanner v2.3.8] https://megalinter.io/10.2.0/descriptors/repository_osv_scanner
+- MegaLinter key: [REPOSITORY_OSV_SCANNER]
+- Rules config: identified by [osv-scanner]
+- CWD: [/tmp/lint]
+- Command: [osv-scanner scan source --experimental-exclude .git --experimental-exclude megalinter-reports --recursive .]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to osv-scanner through --experimental-exclude (disable with REPOSITORY_OSV_SCANNER_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[32m✅ Linted [REPOSITORY] files with [secretlint] successfully - (1.38s)[0m
+- Using [secretlint v13.0.7] https://megalinter.io/10.2.0/descriptors/repository_secretlint
+- MegaLinter key: [REPOSITORY_SECRETLINT]
+- Rules config: [.secretlintrc.json]
+- CWD: [/tmp/lint]
+- Command: [secretlint --secretlintrc /action/lib/.automation/.secretlintrc.json --no-gitignore **/* --secretlintignore megalinter-reports/secretlint-ignore-paths.txt]
+[Excluded directories] Generated /tmp/lint/megalinter-reports/secretlint-ignore-paths.txt to forward EXCLUDED_DIRECTORIES to secretlint (disable with REPOSITORY_SECRETLINT_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[32m✅ Linted [REPOSITORY] files with [syft] successfully - (1.0s)[0m
+- Using [syft v1.55.0] https://megalinter.io/10.2.0/descriptors/repository_syft
+- MegaLinter key: [REPOSITORY_SYFT]
+- Rules config: identified by [syft]
+- CWD: [/tmp/lint]
+- Command: [syft scan --exclude **/.git --exclude **/megalinter-reports dir:.]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to syft through --exclude (disable with REPOSITORY_SYFT_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[31m❌ Linted [REPOSITORY] files with [trivy]: Found 1 error(s) and 0 warning(s) - (0.1s)[0m
+- Using [trivy v0.76.1] https://megalinter.io/10.2.0/descriptors/repository_trivy
+- MegaLinter key: [REPOSITORY_TRIVY]
+- Rules config: identified by [trivy]
+- CWD: [/tmp/lint]
+- Command: [trivy fs --scanners vuln,misconfig --exit-code 1 --skip-dirs **/.git --skip-dirs **/megalinter-reports .]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to trivy through --skip-dirs (disable with REPOSITORY_TRIVY_FORWARD_EXCLUDED_DIRECTORIES: false)
+--Error detail:
+2026-11-19T19:09:19Z	INFO	[vulndb] Need to update DB
+2026-11-19T19:09:19Z	INFO	[vulndb] Downloading vulnerability DB...
+2026-11-19T19:09:19Z	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-11-19T19:09:19Z	FATAL	Fatal error	run error: init error: DB error: failed to download vulnerability DB: OCI artifact error: failed to download vulnerability DB: failed to download artifact from mirror.gcr.io/aquasec/trivy-db:2: OCI repository error: 1 error occurred:
+	* Get "https://mirror.gcr.io/v2/": dial tcp: lookup mirror.gcr.io on 168.63.129.16:53: server misbehaving
+
+
+
+
+[REPOSITORY_TRIVY_ERROR_DB_DOWNLOAD_FAILED] trivy could not download or refresh its vulnerability database from the configured registry.
+Workarounds:
+  - Retry the run; this is often transient.
+  - Set `TRIVY_DB_REPOSITORY` to an alternative mirror (e.g. an internal registry or AWS ECR Public Gallery).
+  - Pre-populate `~/.cache/trivy` in CI.
+
+[32m✅ Linted [REPOSITORY] files with [trivy-sbom] successfully - (0.13s)[0m
+- Using [trivy-sbom v0.76.1] https://megalinter.io/10.2.0/descriptors/repository_trivy_sbom
+- MegaLinter key: [REPOSITORY_TRIVY_SBOM]
+- Rules config: identified by [trivy-sbom]
+- CWD: [/tmp/lint]
+- Command: [trivy fs --format cyclonedx --skip-dirs **/.git --skip-dirs **/megalinter-reports .]
+[Excluded directories] Forwarded EXCLUDED_DIRECTORIES to trivy-sbom through --skip-dirs (disable with REPOSITORY_TRIVY_SBOM_FORWARD_EXCLUDED_DIRECTORIES: false)
+
+[32m✅ Linted [REPOSITORY] files with [trufflehog] successfully - (2.07s)[0m
+- Using [trufflehog v3.99.7] https://megalinter.io/10.2.0/descriptors/repository_trufflehog
+- MegaLinter key: [REPOSITORY_TRUFFLEHOG]
+- Rules config: identified by [trufflehog]
+- CWD: [/tmp/lint]
+- Command: [trufflehog --fail --only-verified --no-update filesystem . --exclude-paths=/tmp/lint/megalinter-reports/trufflehog-exclude-paths.txt]
+
+[31m❌ Linted [SPELL] files with [lychee]: Found 1 error(s) and 0 warning(s) - (0.01s)[0m
+- Using [lychee v0.24.2] https://megalinter.io/10.2.0/descriptors/spell_lychee
+- MegaLinter key: [SPELL_LYCHEE]
+- Rules config: identified by [lychee]
+- Number of files analyzed: [24]
+- CWD: [/tmp/lint]
+- Command: [lychee --format detailed --no-progress .github/dependabot.yml .github/workflows/build.yml ChangeLog.txt README.md branding/license.txt license.txt source/CMakeLists.txt source/src/CMakeLists.txt source/src/cip/CMakeLists.txt source/src/enet_encap/CMa...(truncated)]
+--Error detail:
+  [WARN] Error loading CA root certificate: failed to read PEM from file: No such file or directory (os error 2) at 'HIDDEN_BY_MEGALINTER'
+  [WARN] Error loading CA root certificate: opening directory: No such file or directory (os error 2) at 'HIDDEN_BY_MEGALINTER'
+Error: Failed to create request client
+
+Caused by:
+    0: Failed to create HTTP request client: builder error
+    1: builder error
+    2: unexpected error: No CA certificates were loaded from the system
+
+
+[32m✅ Linted [XML] files with [xmllint] successfully - (0.03s)[0m
+- Using [xmllint v21309] https://megalinter.io/10.2.0/descriptors/xml_xmllint
+- MegaLinter key: [XML_XMLLINT]
+- Rules config: identified by [xmllint]
+- Number of files analyzed: [1]
+- CWD: [/tmp/lint]
+- Command: [xmllint source/doc/STM32/OpENer STM32 Paths and Symbols.xml]
+
+[32m✅ Linted [YAML] files with [prettier] successfully - (0.24s)[0m
+- Using [prettier v3.9.10] https://megalinter.io/10.2.0/descriptors/yaml_prettier
+- MegaLinter key: [YAML_PRETTIER]
+- Rules config: identified by [prettier]
+- Number of files analyzed: [2]
+- CWD: [/tmp/lint]
+- Command: [prettier --check .github/dependabot.yml .github/workflows/build.yml]
+
+[32m✅ Linted [YAML] files with [v8r] successfully - (21.26s)[0m
+- Using [v8r v6.1.0] https://megalinter.io/10.2.0/descriptors/yaml_v8r
+- MegaLinter key: [YAML_V8R]
+- Rules config: identified by [v8r]
+- Number of files analyzed: [2]
+- CWD: [/tmp/lint]
+- Command: [v8r --ignore-errors .github/dependabot.yml .github/workflows/build.yml]
+
+[32m✅ Linted [YAML] files with [yamllint] successfully - (0.3s)[0m
+- Using [yamllint v1.38.0] https://megalinter.io/10.2.0/descriptors/yaml_yamllint
+- MegaLinter key: [YAML_YAMLLINT]
+- Rules config: [.yamllint.yml]
+- Number of files analyzed: [2]
+- CWD: [/tmp/lint]
+- Command: [yamllint --format standard -c /action/lib/.automation/.yamllint.yml .github/dependabot.yml .github/workflows/build.yml]
+
+
++----SUMMARY---+--------------------------+---------------+-------+-------+--------+------------+----------+--------------+
+| Descriptor   | Linter                   | Mode          | Files | Fixed | Errors | Max errors | Warnings | Elapsed time |
++--------------+--------------------------+---------------+-------+-------+--------+------------+----------+--------------+
+| ✅ ACTION     | actionlint               | list_of_files |     1 |       |      0 |            |        0 | 0.03s        |
+| ✅ ACTION     | zizmor                   | list_of_files |     1 |       |      0 |            |        0 | 0.06s        |
+| ✅ C          | clang-format             | list_of_files |   114 |       |      0 |            |        0 | 0.93s        |
+| ✅ C          | cppcheck                 | list_of_files |   114 |       |      0 |            |        0 | 2.53s        |
+| ❌ C          | cpplint                  | list_of_files |   114 |       |     81 |            |        0 | 6.36s        |
+| ❌ COPYPASTE  | jscpd                    | project       |   n/a |       |    256 |            |        0 | 1.71s        |
+| ✅ CPP        | clang-format             | list_of_files |    74 |       |      0 |            |        0 | 0.38s        |
+| ✅ CPP        | cppcheck                 | list_of_files |    74 |       |      0 |            |        0 | 0.36s        |
+| ❌ CPP        | cpplint                  | list_of_files |    74 |       |     43 |            |        0 | 2.07s        |
+| ⚠️ MARKDOWN  | markdownlint             | list_of_files |     1 |       |     52 |            |        0 | 0.35s        |
+| ✅ MARKDOWN   | markdown-table-formatter | list_of_files |     1 |       |      0 |            |        0 | 0.14s        |
+| ✅ REPOSITORY | betterleaks              | project       |   n/a |       |      0 |            |        0 | 0.48s        |
+| ✅ REPOSITORY | checkov                  | project       |   n/a |       |      0 |            |        0 | 33.73s       |
+| ❌ REPOSITORY | git_diff                 | project       |   n/a |       |      1 |            |        0 | 0.22s        |
+| ❌ REPOSITORY | grype                    | project       |   n/a |       |      1 |            |        0 | 1.05s        |
+| ✅ REPOSITORY | osv-scanner              | project       |   n/a |       |      0 |            |        0 | 0.06s        |
+| ✅ REPOSITORY | secretlint               | project       |   n/a |       |      0 |            |        0 | 1.38s        |
+| ✅ REPOSITORY | syft                     | project       |   n/a |       |      0 |            |        0 | 1.0s         |
+| ❌ REPOSITORY | trivy                    | project       |   n/a |       |      1 |            |        0 | 0.1s         |
+| ✅ REPOSITORY | trivy-sbom               | project       |   n/a |       |      0 |            |        0 | 0.13s        |
+| ✅ REPOSITORY | trufflehog               | project       |   n/a |       |      0 |            |        0 | 2.07s        |
+| ❌ SPELL      | lychee                   | list_of_files |    24 |       |      1 |            |        0 | 0.01s        |
+| ✅ XML        | xmllint                  | list_of_files |     1 |       |      0 |            |        0 | 0.03s        |
+| ✅ YAML       | prettier                 | list_of_files |     2 |       |      0 |            |        0 | 0.24s        |
+| ✅ YAML       | v8r                      | list_of_files |     2 |       |      0 |            |        0 | 21.26s       |
+| ✅ YAML       | yamllint                 | list_of_files |     2 |       |      0 |            |        0 | 0.3s         |
++--------------+--------------------------+---------------+-------+-------+--------+------------+----------+--------------+
+
+[34mYour project could benefit from a custom flavor, which would allow you to run only the linters you need, and thus improve runtime performances. (Skip this info by defining `FLAVOR_SUGGESTIONS: false`)
+[0m- Documentation: https://megalinter.io/10.2.0/custom-flavors/
+- Command: `npx mega-linter-runner@10.2.0 --custom-flavor-setup --custom-flavor-linters ACTION_ACTIONLINT,ACTION_ZIZMOR,C_CPPCHECK,C_CPPLINT,C_CLANG_FORMAT,COPYPASTE_JSCPD,CPP_CPPCHECK,CPP_CPPLINT,CPP_CLANG_FORMAT,MARKDOWN_MARKDOWNLINT,MARKDOWN_MARKDOWN_TABLE_FORMATTER,REPOSITORY_CHECKOV,REPOSITORY_GIT_DIFF,REPOSITORY_BETTERLEAKS,REPOSITORY_GRYPE,REPOSITORY_OSV_SCANNER,REPOSITORY_SECRETLINT,REPOSITORY_SYFT,REPOSITORY_TRIVY,REPOSITORY_TRIVY_SBOM,REPOSITORY_TRUFFLEHOG,SPELL_LYCHEE,XML_XMLLINT,YAML_PRETTIER,YAML_YAMLLINT,YAML_V8R`
+
+[Updated Sources Reporter] copied 55 fixed source files in folder /tmp/lint/megalinter-reports/updated_sources.
+[31m❌ Error(s) have been found during linting[0m
+To disable linters or customize their checks, you can use a .mega-linter.yml file at the root of your repository
+More info at https://megalinter.io/10.2.0/configuration/

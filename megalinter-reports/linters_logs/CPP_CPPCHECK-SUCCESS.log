@@ -1,0 +1,5 @@
+Results of cppcheck linter (version 2.21.0)
+See documentation on https://megalinter.io/10.2.0/descriptors/cpp_cppcheck/
+-----------------------------------------------
+
+✅ [SUCCESS] for workspace /tmp/lint

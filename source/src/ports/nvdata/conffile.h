@@ -8,18 +8,14 @@
  *  @brief The interface to handle a configuration file in an abstracted way.
  *
  */
-#ifndef _CONFFILE_H_
-#define _CONFFILE_H_
-
+#ifndef SOURCE_SRC_PORTS_NVDATA_CONFFILE_H_
+#define SOURCE_SRC_PORTS_NVDATA_CONFFILE_H_
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "src/typedefs.h"
 
-#include "typedefs.h"
+FILE* ConfFileOpen(const bool write, const char* const p_name);
 
-FILE *ConfFileOpen(const bool write,
-                   const char *const p_name);
-
-EipStatus ConfFileClose(FILE **p_filep);
-
-#endif  /* _CONFFILE_H_ */
+EipStatus ConfFileClose(FILE** p_filep);
+#endif  // SOURCE_SRC_PORTS_NVDATA_CONFFILE_H_

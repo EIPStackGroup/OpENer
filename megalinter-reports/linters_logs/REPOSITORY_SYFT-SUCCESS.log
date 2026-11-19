@@ -1,0 +1,5 @@
+Results of syft linter (version 1.55.0)
+See documentation on https://megalinter.io/10.2.0/descriptors/repository_syft/
+-----------------------------------------------
+
+✅ [SUCCESS] for workspace /tmp/lint

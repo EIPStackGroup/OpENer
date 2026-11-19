@@ -4,19 +4,20 @@
  *
  ******************************************************************************/
 
-#include "random.h"
+#include "utils/random.h"
 
 #include <stdlib.h>
 
-Random *RandomNew(SetSeed set_seed,
-                  GetNextUInt32 get_next_uint32) {
-  Random *random = malloc( sizeof(Random) );
-  *random =
-    (Random ) { .set_seed = set_seed, .get_next_uint32 = get_next_uint32 };
+Random* RandomNew(SetSeed set_seed, GetNextUInt32 get_next_uint32) {
+  Random* random = malloc(sizeof(Random));
+  if (random == NULL) {
+    return NULL;
+  }
+  *random = (Random){.set_seed = set_seed, .get_next_uint32 = get_next_uint32};
   return random;
 }
 
-void RandomDelete(Random **random) {
+void RandomDelete(Random** random) {
   free(*random);
   *random = NULL;
 }

@@ -1,10 +1,11 @@
+---
 name: Build, Lint & Coverage
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   BUILD_TYPE: Release
@@ -23,9 +24,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: MegaLinter
-        uses: oxsecurity/megalinter/flavors/c_cpp@v10.1.0
+        uses: oxsecurity/megalinter/flavors/c_cpp@f2fe8c1cba37091848df3e524066c8c23ef353ed
         env:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,6 +48,9 @@ jobs:
   # Build, test and coverage job
   build-and-test:
     name: Build, Test & Coverage
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     needs: megalinter
     if: success() || failure()
@@ -54,6 +59,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install dependencies
         run: |
@@ -66,7 +72,7 @@ jobs:
       - name: Set up Python for gcovr
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install gcovr
         run: pip install gcovr
@@ -83,7 +89,7 @@ jobs:
             -DCPPUTEST_HOME:PATH=/usr
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
 
       - name: Test
         working-directory: ${{github.workspace}}/build
@@ -116,12 +122,27 @@ jobs:
 
       - name: Create coverage summary comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           script: |
             const fs = require('fs');
             const summary = fs.readFileSync('coverage-summary.txt', 'utf8');
-            const comment = `## 📊 Coverage Report\n\n\`\`\`\n${summary}\n\`\`\`\n\nDownload the [detailed HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) from the artifacts.`;
+            const runUrl = [
+              context.serverUrl,
+              context.repo.owner,
+              context.repo.repo,
+              'actions',
+              'runs',
+              context.runId,
+            ].join('/');
+            const comment = [
+              '## 📊 Coverage Report\n\n',
+              '```\n',
+              summary,
+              '\n```\n\nDownload the [detailed HTML report](',
+              runUrl,
+              ') from the artifacts.',
+            ].join('');
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -135,7 +156,7 @@ jobs:
         run: |
           # Extract coverage percentage
           COVERAGE=$(gcovr --print-summary | grep 'lines:' | awk '{print $2}')
-          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> $GITHUB_ENV
+          echo "COVERAGE_PERCENTAGE=$COVERAGE" >> "$GITHUB_ENV"
           echo "Coverage: $COVERAGE"
 
       - name: Upload build artifacts

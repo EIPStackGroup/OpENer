@@ -1,0 +1,203 @@
+Results of cpplint linter (version 2.0.2)
+See documentation on https://megalinter.io/10.2.0/descriptors/c_cpplint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+source/src/cip/appcontype.c:162:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:254:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:309:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/appcontype.c:317:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipcommon.c:1111:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipconnectionmanager.c:495:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:527:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:707:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:753:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:801:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1176:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1184:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1563:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1617:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1695:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1710:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1752:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1783:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.c:1898:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:39:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:42:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:118:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:173:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:177:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:197:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:207:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:209:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:215:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionmanager.h:231:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:232:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:233:  Using C-style cast.  Use static_cast<int>(...) instead  [readability/casting] [4]
+source/src/cip/cipconnectionmanager.h:240:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionmanager.h:241:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/cip/cipconnectionobject.c:28:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:30:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:32:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:346:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:350:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:354:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipconnectionobject.c:356:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipethernetlink.c:172:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipidentity.c:50:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/cipioconnection.c:123:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:208:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:212:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:224:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:229:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipioconnection.c:690:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/cipstring.c:288:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstring.h:187:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.c:288:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/cipstringi.h:14:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptcpipinterface.c:61:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:71:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:80:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:92:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:97:  { should almost always be at the end of the previous line  [whitespace/braces] [4]
+source/src/cip/ciptcpipinterface.c:415:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:517:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:518:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:519:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:520:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+source/src/cip/ciptcpipinterface.c:700:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/cip/ciptypes.h:505:  Weird number of spaces at line-start.  Are you using a 2-space indent?  [whitespace/indent] [3]
+source/src/cip/ciptypes.h:215:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/enet_encap/encap.c:511:  Consider using rand_r(...) instead of rand(...) for improved thread safety.  [runtime/threadsafe_fn] [2]
+source/src/enet_encap/encap.c:149:  Add #include <cstdio> for snprintf  [build/include_what_you_use] [4]
+source/src/enet_encap/encap.c:470:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/networkconfig.c:242:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/MINGW/sample_application/opener_user_conf.h:30:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/POSIX/networkconfig.c:121:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/POSIX/networkconfig.c:237:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/STM32/opener.c:48:  Consider using rand_r(...) instead of rand(...) for improved thread safety.  [runtime/threadsafe_fn] [2]
+source/src/ports/WIN32/networkconfig.c:242:  Add #include <string> for string  [build/include_what_you_use] [4]
+source/src/ports/WIN32/sample_application/opener_user_conf.h:26:  Use int16_t/int64_t/etc, rather than the C type short  [runtime/int] [4]
+source/src/ports/generic_networkhandler.c:752:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/generic_networkhandler.c:764:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/ports/nvdata/conffile.c:132:  Add #include <cstdio> for fclose  [build/include_what_you_use] [4]
+source/src/ports/nvdata/nvtcpip.c:61:  Add #include <cstdio> for FILE  [build/include_what_you_use] [4]
+source/src/typedefs.h:68:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+source/src/typedefs.h:69:  Use int16_t/int64_t/etc, rather than the C type long  [runtime/int] [4]
+Done processing source/src/cip/appcontype.c
+Done processing source/src/cip/appcontype.h
+Done processing source/src/cip/cipassembly.c
+Done processing source/src/cip/cipassembly.h
+Done processing source/src/cip/cipclass3connection.c
+Done processing source/src/cip/cipclass3connection.h
+Done processing source/src/cip/cipcommon.c
+Done processing source/src/cip/cipcommon.h
+Done processing source/src/cip/cipconnectionmanager.c
+Done processing source/src/cip/cipconnectionmanager.h
+Done processing source/src/cip/cipconnectionobject.c
+Done processing source/src/cip/cipconnectionobject.h
+Done processing source/src/cip/cipdlr.c
+Done processing source/src/cip/cipdlr.h
+Done processing source/src/cip/cipelectronickey.c
+Done processing source/src/cip/cipelectronickey.h
+Done processing source/src/cip/cipepath.c
+Done processing source/src/cip/cipepath.h
+Done processing source/src/cip/ciperror.h
+Done processing source/src/cip/cipethernetlink.c
+Done processing source/src/cip/cipethernetlink.h
+Done processing source/src/cip/cipidentity.c
+Done processing source/src/cip/cipidentity.h
+Done processing source/src/cip/cipioconnection.c
+Done processing source/src/cip/cipioconnection.h
+Done processing source/src/cip/cipmessagerouter.c
+Done processing source/src/cip/cipmessagerouter.h
+Done processing source/src/cip/cipqos.c
+Done processing source/src/cip/cipqos.h
+Done processing source/src/cip/cipstring.c
+Done processing source/src/cip/cipstring.h
+Done processing source/src/cip/cipstringi.c
+Done processing source/src/cip/cipstringi.h
+Done processing source/src/cip/ciptcpipinterface.c
+Done processing source/src/cip/ciptcpipinterface.h
+Done processing source/src/cip/ciptypes.c
+Done processing source/src/cip/ciptypes.h
+Done processing source/src/enet_encap/cpf.c
+Done processing source/src/enet_encap/cpf.h
+Done processing source/src/enet_encap/encap.c
+Done processing source/src/enet_encap/encap.h
+Done processing source/src/enet_encap/endianconv.c
+Done processing source/src/enet_encap/endianconv.h
+Done processing source/src/opener_api.h
+Done processing source/src/ports/MINGW/main.c
+Done processing source/src/ports/MINGW/networkconfig.c
+Done processing source/src/ports/MINGW/networkconfig.h
+Done processing source/src/ports/MINGW/networkhandler.c
+Done processing source/src/ports/MINGW/opener_error.c
+Done processing source/src/ports/MINGW/platform_network_includes.h
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.c
+Done processing source/src/ports/MINGW/sample_application/ethlinkcbs.h
+Done processing source/src/ports/MINGW/sample_application/opener_user_conf.h
+Done processing source/src/ports/MINGW/sample_application/sampleapplication.c
+Done processing source/src/ports/POSIX/main.c
+Done processing source/src/ports/POSIX/networkconfig.c
+Done processing source/src/ports/POSIX/networkconfig.h
+Done processing source/src/ports/POSIX/networkhandler.c
+Done processing source/src/ports/POSIX/opener_error.c
+Done processing source/src/ports/POSIX/platform_network_includes.h
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.c
+Done processing source/src/ports/POSIX/sample_application/ethlinkcbs.h
+Done processing source/src/ports/POSIX/sample_application/opener_user_conf.h
+Done processing source/src/ports/POSIX/sample_application/sampleapplication.c
+Done processing source/src/ports/STM32/networkconfig.c
+Done processing source/src/ports/STM32/networkconfig.h
+Done processing source/src/ports/STM32/networkhandler.c
+Done processing source/src/ports/STM32/opener.c
+Done processing source/src/ports/STM32/opener.h
+Done processing source/src/ports/STM32/opener_error.c
+Done processing source/src/ports/STM32/platform_network_includes.h
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.c
+Done processing source/src/ports/STM32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/STM32/sample_application/opener_user_conf.h
+Done processing source/src/ports/STM32/sample_application/sampleapplication.c
+Done processing source/src/ports/WIN32/main.c
+Done processing source/src/ports/WIN32/networkconfig.c
+Done processing source/src/ports/WIN32/networkconfig.h
+Done processing source/src/ports/WIN32/networkhandler.c
+Done processing source/src/ports/WIN32/opener_error.c
+Done processing source/src/ports/WIN32/platform_network_includes.h
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.c
+Done processing source/src/ports/WIN32/sample_application/ethlinkcbs.h
+Done processing source/src/ports/WIN32/sample_application/opener_user_conf.h
+Done processing source/src/ports/WIN32/sample_application/sampleapplication.c
+Done processing source/src/ports/generic_networkhandler.c
+Done processing source/src/ports/generic_networkhandler.h
+Done processing source/src/ports/networkhandler.h
+Done processing source/src/ports/nvdata/conffile.c
+Done processing source/src/ports/nvdata/conffile.h
+Done processing source/src/ports/nvdata/nvdata.c
+Done processing source/src/ports/nvdata/nvdata.h
+Done processing source/src/ports/nvdata/nvqos.c
+Done processing source/src/ports/nvdata/nvqos.h
+Done processing source/src/ports/nvdata/nvtcpip.c
+Done processing source/src/ports/nvdata/nvtcpip.h
+Done processing source/src/ports/opener_error.h
+Done processing source/src/ports/opener_user_conf.h
+Done processing source/src/ports/platform_network_includes.h
+Done processing source/src/ports/socket_timer.c
+Done processing source/src/ports/socket_timer.h
+Done processing source/src/trace.h
+Done processing source/src/typedefs.h
+Done processing source/src/utils/doublylinkedlist.c
+Done processing source/src/utils/doublylinkedlist.h
+Done processing source/src/utils/enipmessage.c
+Done processing source/src/utils/enipmessage.h
+Done processing source/src/utils/random.c
+Done processing source/src/utils/random.h
+Done processing source/src/utils/xorshiftrandom.c
+Done processing source/src/utils/xorshiftrandom.h
+Done processing source/tests/OpENerTests.h
+Done processing source/tests/check_assert.h
+Done processing source/tests/test_assert.h
+Total errors found: 81
+

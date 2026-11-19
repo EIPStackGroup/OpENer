@@ -1,0 +1,15 @@
+Results of lychee linter (version 0.24.2)
+See documentation on https://megalinter.io/10.2.0/descriptors/spell_lychee/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+  [WARN] Error loading CA root certificate: failed to read PEM from file: No such file or directory (os error 2) at 'HIDDEN_BY_MEGALINTER'
+  [WARN] Error loading CA root certificate: opening directory: No such file or directory (os error 2) at 'HIDDEN_BY_MEGALINTER'
+Error: Failed to create request client
+
+Caused by:
+    0: Failed to create HTTP request client: builder error
+    1: builder error
+    2: unexpected error: No CA certificates were loaded from the system
+
