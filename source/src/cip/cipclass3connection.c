@@ -38,6 +38,9 @@ CipError EstablishClass3Connection(
     ConnectionObjectDeepCopy(explicit_connection, connection_object);
 
     ConnectionObjectGeneralConfiguration(explicit_connection);
+    ConnectionObjectSetWatchdogTimeoutAction(
+      explicit_connection,
+      kConnectionObjectWatchdogTimeoutActionAutoDelete);
 
     ConnectionObjectSetInstanceType(explicit_connection,
                                     kConnectionObjectInstanceTypeExplicitMessaging);
