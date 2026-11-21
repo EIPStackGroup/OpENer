@@ -285,6 +285,17 @@ TEST(CipConnectionObject,
 }
 
 TEST(CipConnectionObject,
+     TransportClassTriggerProductionTriggerIgnoredForServerDirection) {
+  CipConnectionObject connection_object = {0};
+  connection_object.transport_class_trigger = 0x80 | (3 << 4);
+  ConnectionObjectTransportClassTriggerProductionTrigger production_trigger =
+    ConnectionObjectGetTransportClassTriggerProductionTrigger(
+      &connection_object);
+  CHECK_EQUAL(kConnectionObjectTransportClassTriggerProductionTriggerCyclic,
+              production_trigger);
+}
+
+TEST(CipConnectionObject,
      TransportClassTriggerProductionTriggerApplicationObject) {
   CipConnectionObject connection_object = {0};
   connection_object.transport_class_trigger = 2 << 4;
