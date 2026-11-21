@@ -1455,6 +1455,7 @@ EipStatus DecodePaddedEPath(CipEpath *epath,
       case SEGMENT_TYPE_LOGICAL_SEGMENT + LOGICAL_SEGMENT_TYPE_MEMBER_ID +
         LOGICAL_SEGMENT_FORMAT_SIXTEEN_BIT:
         message_runner += 2;
+        GetUintFromMessage( &(message_runner) );
         number_of_decoded_elements++;
         break;
 
