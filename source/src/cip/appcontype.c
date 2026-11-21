@@ -190,7 +190,7 @@ CipConnectionObject *GetExclusiveOwnerConnection(
       /* check if on other connection point with the same output assembly is currently connected */
       const CipConnectionObject *const exclusive_owner =
         GetConnectedOutputAssembly(
-          connection_object->produced_path.instance_id);
+          connection_object->consumed_path.instance_id);
       if ( NULL
            != exclusive_owner ) {
         if(kConnectionObjectStateEstablished ==

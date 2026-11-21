@@ -1234,7 +1234,7 @@ CipConnectionObject *GetConnectedOutputAssembly(
            || kConnectionObjectStateTimedOut ==
            ConnectionObjectGetState(iterator->data) )
        && output_assembly_id ==
-       ( (CipConnectionObject *) iterator->data )->produced_path.instance_id) {
+       ( (CipConnectionObject *) iterator->data )->consumed_path.instance_id) {
       return iterator->data;
     }
     iterator = iterator->next;
